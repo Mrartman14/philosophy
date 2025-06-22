@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useLayoutEffect, useState } from "react";
+import { ScrollProgressBar } from "./scroll-progress-bar";
 
 export type AsideNavItem = {
   render: (p: { isSelected: boolean; depth: number }) => React.ReactNode;
@@ -44,8 +45,11 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items }) => {
   }, [items]);
 
   return (
-    <div className="grid gap-4 content-start sticky top-4">
-      <h3>Содержание</h3>
+    <div className="w-full grid gap-4 content-start sticky top-4">
+      <div className="grid gap-4">
+        <h3>Содержание</h3>
+        <ScrollProgressBar />
+      </div>
       {items.map((item) => (
         <AsideMenuItem
           key={item.id}

@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 const geistClasses = "font-[family-name:var(--font-geist-sans)]";
-const philosopherClasses = philosopher.className;
+const philosopherClasses = geistClasses;
 
 const finalClasses = philosopherClasses;
 
