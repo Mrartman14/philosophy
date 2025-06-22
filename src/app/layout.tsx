@@ -30,9 +30,8 @@ export default function RootLayout({
         className={`
           root
           ${geistSans.variable} ${geistMono.variable} antialiased
-          grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]
+          grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-4 gap-16 font-[family-name:var(--font-geist-sans)]
           `}
-        style={{ isolation: "isolate" }}
       >
         <AppHeader />
         <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
