@@ -7,11 +7,11 @@ import ThemeSelect from "./theme-select";
 
 const links: { name: string; href: string }[] = [
   { name: "Home", href: "/" },
-  { name: "Introduction", href: "/lections/introduction" },
-  { name: "Experimental science", href: "/lections/experimental-science" },
-  { name: "Ancient ethics", href: "/lections/ancient-ethics" },
+  { name: "Вступление", href: "/lections/introduction" },
+  { name: "Экспериментальная наука", href: "/lections/experimental-science" },
+  { name: "Античная этика", href: "/lections/ancient-ethics" },
   {
-    name: "New european theory of knowledge",
+    name: "Новоевропейская теория познания",
     href: "/lections/new-european-theory-of-knowledge",
   },
 ];

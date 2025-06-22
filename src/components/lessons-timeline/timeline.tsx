@@ -1,22 +1,56 @@
-import React from "react";
+"use client";
 
-type Philosopher = {
+import Image from "next/image";
+import React, { useState } from "react";
+
+type Timeline = {
   name: string;
-  birth: number;
-  death: number;
+  from: number;
+  to: number;
   level: number;
+  imageSrc?: string;
 };
-let philosophers: Philosopher[] = [
-  { name: "Парменид", birth: -540, death: -470, level: 0 },
-  { name: "Гераклит", birth: -544, death: -483, level: 0 },
-  { name: "Платон", birth: -427, death: -347, level: 0 },
-  { name: "Аристотель", birth: -384, death: -322, level: 0 },
-  { name: "Эпикур", birth: -341, death: -270, level: 0 },
+let philosophers: Timeline[] = [
+  {
+    name: "Парменид",
+    from: -540,
+    to: -470,
+    level: 0,
+    imageSrc: "/philosophers/parmenides.jpeg",
+  },
+  {
+    name: "Гераклит",
+    from: -544,
+    to: -483,
+    level: 0,
+    imageSrc: "/philosophers/heraclitus.jpg",
+  },
+  {
+    name: "Платон",
+    from: -427,
+    to: -347,
+    level: 0,
+    imageSrc: "/philosophers/plato.jpg",
+  },
+  {
+    name: "Аристотель",
+    from: -384,
+    to: -322,
+    level: 0,
+    imageSrc: "/philosophers/aristotle.jpg",
+  },
+  {
+    name: "Эпикур",
+    from: -341,
+    to: -270,
+    level: 0,
+    imageSrc: "/philosophers/epicurus.jpg",
+  },
 ];
 
-function assignLevels(p: Philosopher[]) {
+function assignLevels(p: Timeline[]) {
   // Клонируем массив, чтобы не мутировать исходные данные
-  const sorted = [...p].sort((a, b) => a.birth - b.birth);
+  const sorted = [...p].sort((a, b) => a.from - b.from);
   const levels = [];
   const result = [];
 
@@ -26,7 +60,7 @@ function assignLevels(p: Philosopher[]) {
       // Проверяем, не пересекается ли с кем-то на этом уровне
       if (
         levels[levelIndex].every(
-          (p) => philosopher.birth > p.death || philosopher.death < p.birth
+          (p) => philosopher.from > p.to || philosopher.to < p.from
         )
       ) {
         levels[levelIndex].push(philosopher);
@@ -45,7 +79,7 @@ function assignLevels(p: Philosopher[]) {
 }
 
 function generateCenturyMarks(min: number, max: number, step = 100) {
-  const marks = [];
+  const marks: number[] = [];
   // Округляем вниз до ближайшей сотни
   const start = Math.floor(min / step) * step;
   for (let year = start; year <= max; year += step) {
@@ -56,10 +90,10 @@ function generateCenturyMarks(min: number, max: number, step = 100) {
 
 philosophers = assignLevels(philosophers);
 
-const scale = 5;
+const scale = 3;
 // Определяем минимальный и максимальный год для шкалы
-const minYear = Math.min(...philosophers.map((p) => p.birth)) - 10;
-const maxYear = Math.max(...philosophers.map((p) => p.death)) + 10;
+const minYear = Math.min(...philosophers.map((p) => p.from)) - 10;
+const maxYear = Math.max(...philosophers.map((p) => p.to)) + 10;
 // const totalWidth = Math.abs(minYear) + Math.abs(maxYear);
 const timelineWidth = (maxYear - minYear) * scale;
 
@@ -87,7 +121,7 @@ export const PhilosophersTimeline: React.FC = () => {
         {/* Линия времени */}
         <div
           className={`absolute
-            h-1 bg-gray-300 dark:bg-gray-600 rounded
+            h-1 dark:bg-gray-600 rounded
         `}
           style={{
             top: `${TIMELINE_HEIGHT}px`,
@@ -102,7 +136,7 @@ export const PhilosophersTimeline: React.FC = () => {
               className="absolute"
               style={{ left: `${left}px`, top: 0, height: "100%" }}
             >
-              <div className="h-full w-px bg-gray-400 opacity-40" />
+              <div className="h-full w-px dark:bg-gray-600" />
               <div
                 className={`absolute left-1/2 -translate-x-1/2 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap`}
                 style={{ top: TIMELINE_HEIGHT - 20 }}
@@ -115,38 +149,7 @@ export const PhilosophersTimeline: React.FC = () => {
 
         {/* Метки философов */}
         {philosophers.map((philosopher) => {
-          const left = (philosopher.birth - minYear) * scale;
-          const width = (philosopher.death - philosopher.birth) * scale;
-          const top = `calc(${TIMELINE_HEIGHT}px + ${
-            philosopher.level * LEVEL_HEIGHT
-          }px + 1rem)`;
-          //   const top = `calc(50% + ${
-          //     philosopher.level * LEVEL_HEIGHT
-          //   }px - 1rem)`;
-
-          return (
-            <div
-              key={philosopher.name}
-              className="absolute"
-              style={{ left, width, top }}
-            >
-              <div
-                className="h-2 rounded bg-indigo-500 opacity-70"
-                style={{ width }}
-                title={`${philosopher.name}: ${formatYear(
-                  philosopher.birth
-                )} — ${formatYear(philosopher.death)}`}
-              />
-              <div className="text-md mt-2 text-center" style={{ width }}>
-                <span className="font-semibold">{philosopher.name}</span>
-                {/* <br />
-                <span className="text-gray-500 dark:text-gray-400">
-                  {formatYear(philosopher.birth)} —{" "}
-                  {formatYear(philosopher.death)}
-                </span> */}
-              </div>
-            </div>
-          );
+          return <TimelineItem key={philosopher.name} timeline={philosopher} />;
         })}
         {/* Метки начала и конца шкалы */}
         {/* <div className="absolute left-0 -bottom-6 text-xs text-gray-500 dark:text-gray-400">
@@ -156,6 +159,43 @@ export const PhilosophersTimeline: React.FC = () => {
           {formatYear(maxYear)}
         </div> */}
       </div>
+    </div>
+  );
+};
+
+const TimelineItem: React.FC<{ timeline: Timeline }> = ({ timeline }) => {
+  const [hovered, setHovered] = useState(false);
+
+  const left = (timeline.from - minYear) * scale;
+  const width = (timeline.to - timeline.from) * scale;
+  const top = `${TIMELINE_HEIGHT}px`;
+  //   const top = `calc(${TIMELINE_HEIGHT}px + ${
+  //     timeline.level * LEVEL_HEIGHT
+  //   }px + 1rem)`;
+
+  return (
+    <div
+      key={timeline.name}
+      className={`absolute h-2 ${
+        hovered ? "rounded bg-indigo-500 opacity-70" : ""
+      }`}
+      style={{ left, width, top }}
+      title={`${timeline.name}: ${formatYear(timeline.from)} — ${formatYear(
+        timeline.to
+      )}`}
+      onMouseOver={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {timeline.imageSrc && (
+        <Image
+          src={timeline.imageSrc}
+          alt={`${timeline.name} image`}
+          width={20}
+          height={20}
+          className="object-cover w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{ borderRadius: "50%" }}
+        />
+      )}
     </div>
   );
 };
