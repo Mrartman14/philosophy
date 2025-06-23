@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Philosopher } from "next/font/google";
+// import { Philosopher } from "next/font/google";
 import "./globals.css";
 
 import { AppHeader } from "@/components/app/app-header";
 
-const philosopher = Philosopher({
-  subsets: ["latin", "cyrillic"], // укажите нужные подмножества
-  weight: ["400", "700"], // выберите необходимые начертания
-  display: "swap", // настройка отображения
-});
-const philosopherClasses = philosopher.className;
+// const philosopher = Philosopher({
+//   subsets: ["latin", "cyrillic"], // укажите нужные подмножества
+//   weight: ["400", "700"], // выберите необходимые начертания
+//   display: "swap", // настройка отображения
+// });
+// const philosopherClasses = philosopher.className;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
