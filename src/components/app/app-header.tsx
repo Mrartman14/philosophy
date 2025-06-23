@@ -16,7 +16,7 @@ export const AppHeader: React.FC = () => {
     >
       <nav className="flex items-center gap-4">
         {structure.map((link) => {
-          const href = `/lections/${link.slug}`;
+          const href = `/lectures/${link.slug}`;
           const isActive = pathname === href;
 
           return (

@@ -1,43 +1,52 @@
-type PageConfig = {
-  /** url сегмент страницы после /lections */
-  slug: string;
+export type PageData = {
   /** заголовок лекции */
   title: string;
-  /** путь до mdx файла лекции */
-  mdxFile: string;
-  /** обложка */
+  /** номер лекции */
+  order: number;
+  /** url сегмент в url страницы после /lectures */
+  slug: string;
+  /** путь до docx файла лекции */
+  docxUrl: string;
+  /** путь до обдожки лекции */
   cover?: string;
+
   /** любая мета-инфа */
   meta: {
     description: string;
   };
 };
 
-export const structure: PageConfig[] = [
+export const structure: PageData[] = [
   {
-    slug: "introduction",
     title: "Вступление",
-    mdxFile: "introduction/page.mdx",
+    order: 1,
+    slug: "introduction",
+    docxUrl: "/introduction.docx",
     cover: "/lesson-previews/lesson-3-preview.jpeg",
     meta: { description: "Test metadata" },
   },
   {
-    slug: "ancient-ethics",
+    title: "Экспериментальная наука",
+    order: 2,
+    slug: "experimental-science",
+    meta: { description: "Test metadata" },
+    cover: "/lesson-previews/lesson-13-preview.jpeg",
+    docxUrl: "/experimental-science.docx",
+  },
+  {
     title: "Античная этика",
-    mdxFile: "ancient-ethics/page.mdx",
+    order: 3,
+    slug: "ancient-ethics",
+    docxUrl: "/ancient-ethics.docx",
     cover: "/lesson-previews/lesson-17-preview.jpeg",
     meta: { description: "Test metadata" },
   },
   {
-    title: "Экспериментальная наука",
-    slug: "experimental-science",
-    mdxFile: "experimental-science/page.mdx",
-    meta: { description: "Test metadata" },
-  },
-  {
     title: "Новоевропейская теория познания",
+    order: 4,
     slug: "new-european-theory-of-knowledge",
-    mdxFile: "new-european-theory-of-knowledge/page.mdx",
     meta: { description: "Test metadata" },
+    docxUrl: "/new-european-theory-of-knowledge.docx",
+    cover: "/lesson-previews/lesson-30-preview.jpeg",
   },
 ];
