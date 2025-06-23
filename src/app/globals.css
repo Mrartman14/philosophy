@@ -3,6 +3,7 @@
 
 * {
   scroll-margin-top: var(--header-height);
+  scrollbar-color: var(--border) transparent;
 }
 
 :root {

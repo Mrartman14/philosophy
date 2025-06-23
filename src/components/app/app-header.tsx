@@ -24,9 +24,8 @@ export const AppHeader: React.FC = () => {
                 <ChevronDownIcon />
               </NavigationMenu.Icon>
             </NavigationMenu.Trigger>
-
             <NavigationMenu.Content className={contentClassName}>
-              <ul className="grid list-none grid-cols-1 gap-0 xs:grid-cols-[12rem_12rem]">
+              <ul className="grid list-none gap-0 grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
                 {structure.map((item) => {
                   const href = `/lectures/${item.slug}`;
                   const isActive = pathname === href;
@@ -80,7 +79,7 @@ const triggerClassName =
   "font-semibold leading-6 select-none no-underline ";
 
 const contentClassName =
-  "w-[400px] h-full p-6 xs:w-max xs:min-w-[400px] xs:w-max " +
+  "max-w-[90vw] overflow-y-scroll max-h-[80vh] p-4 " +
   "transition-[opacity,transform,translate] duration-[var(--duration)] ease-[var(--easing)] " +
   "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 " +
   "data-[starting-style]:data-[activation-direction=left]:translate-x-[-50%] " +
