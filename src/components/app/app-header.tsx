@@ -15,7 +15,7 @@ export const AppHeader: React.FC = () => {
       className="sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] bg-(--background) border-b border-(--border)"
       style={{ height: "var(--header-height)" }}
     >
-      <NavigationMenu.Root className="min-w-max rounded-lg bg-(--background)">
+      <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">
         <NavigationMenu.List className="relative flex h-full items-stretch">
           <NavigationMenu.Item className="flex items-center">
             <NavigationMenu.Trigger className={triggerClassName}>
@@ -36,7 +36,7 @@ export const AppHeader: React.FC = () => {
                       <Link
                         href={href}
                         className={`${
-                          isActive ? "text-(--primary)" : ""
+                          isActive ? "text-(--link)" : ""
                         } ${linkCardClassName}`}
                       >
                         {item.title}

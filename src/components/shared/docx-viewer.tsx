@@ -84,7 +84,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
   const proseClasses = "prose dark:prose-invert text-justify lg:prose-xl";
   const containerClasses =
-    "w-full grid gap-4 border-l border-r border-(--border) p-4";
+    "w-full grid border-l border-r border-(--border) p-4";
 
   return (
     <div className="grid gap-4 static w-full items-start justify-items-center grid-cols-[minmax(auto,_1fr)_250px]">
