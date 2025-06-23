@@ -70,13 +70,13 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   const outroLinks = [
     {
       href: prevData ? `/lectures/${prevData?.slug}` : undefined,
-      title: "← Предыдущий урок",
+      title: "← Назад",
       description: prevData?.title,
       imageSrc: prevData?.cover,
     },
     {
       href: nextData ? `/lectures/${nextData?.slug}` : undefined,
-      title: "Следующий урок →",
+      title: "Дальше →",
       description: nextData?.title,
       imageSrc: nextData?.cover,
     },
