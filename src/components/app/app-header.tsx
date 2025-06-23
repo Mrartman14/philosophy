@@ -25,7 +25,7 @@ export const AppHeader: React.FC = () => {
               </NavigationMenu.Icon>
             </NavigationMenu.Trigger>
             <NavigationMenu.Content className={contentClassName}>
-              <ul className="grid list-none gap-0 grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
+              <ul className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
                 {structure.map((item) => {
                   const href = `/lectures/${item.slug}`;
                   const isActive = pathname === href;
@@ -38,7 +38,7 @@ export const AppHeader: React.FC = () => {
                           isActive ? "text-(--link)" : ""
                         } ${linkCardClassName}`}
                       >
-                        {item.title}
+                        {item.order}. {item.title}
                       </Link>
                     </li>
                   );
@@ -75,7 +75,7 @@ export const AppHeader: React.FC = () => {
 
 const triggerClassName =
   "box-border flex items-center justify-center gap-1.5 h-10 " +
-  "px-2 xs:px-3.5 m-0 rounded-md" +
+  "px-2 m-0 rounded-md" +
   "font-semibold leading-6 select-none no-underline ";
 
 const contentClassName =

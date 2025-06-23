@@ -19,31 +19,37 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
     <Link
       key={title}
       href={href ?? ""}
-      className="flex flex-col justify-center items-center rounded-2xl no-underline transition bg-none hover:bg-cover hover:bg-center"
-      style={{
-        pointerEvents: href ? "auto" : "none",
-        filter: href ? "none" : "grayscale(80%)",
-        backgroundImage: hover ? `url(${imageSrc})` : "none",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className={`overflow-hidden relative rounded-2xl border border-(--border) no-underline transition`}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <span
-        className={`p-1 text-4xl font-bold ${
-          hover ? "rounded-2md bg-black/60" : ""
+      <div
+        className={`z-10 w-full absolute grid p-1 ${
+          hover ? "rounded-2md bg-(--text-pane)" : ""
         }`}
+        style={{
+          transform: "translate(-50%, -50%)",
+          top: "50%",
+          left: "50%",
+          justifyItems: "center",
+        }}
       >
-        {title}
-      </span>
-      <span
-        className={`p-1 text-lg text-(--description) ${
-          hover ? "rounded-2md bg-black/60" : ""
-        }`}
-      >
-        {description}
-      </span>
+        <span className={`text-4xl font-bold`}>{title}</span>
+        <span className={`text-lg text-(--description)`}>{description}</span>
+      </div>
+      {imageSrc && (
+        <img
+          alt={`${title} image`}
+          className={`absolute w-full h-full object-cover transition-transform duration-500`}
+          src={imageSrc}
+          style={{
+            margin: 0,
+            transform: hover ? "scale(1.2)" : undefined,
+            opacity: hover ? 1 : 0,
+            pointerEvents: hover ? "auto" : "none",
+          }}
+        />
+      )}
     </Link>
   );
 };
