@@ -30,11 +30,17 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <span className={`text-4xl font-bold ${hover ? "text-black" : ""}`}>
+      <span
+        className={`p-1 text-4xl font-bold ${
+          hover ? "rounded-2md bg-black/60" : ""
+        }`}
+      >
         {title}
       </span>
       <span
-        className={`text-lg text-(--description) ${hover ? "text-black" : ""}`}
+        className={`p-1 text-lg text-(--description) ${
+          hover ? "rounded-2md bg-black/60" : ""
+        }`}
       >
         {description}
       </span>
