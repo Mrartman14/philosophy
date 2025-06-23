@@ -48,11 +48,12 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
           nextAsideItems.push({
             id: id,
-            render: ({ isSelected, depth }) => (
+            render: ({ isSelected }) => (
               <span
-                className={`pl-${depth * 4} ${
+                className={`${
                   isSelected ? "underline underline-offset-4" : "no-underline"
                 }`}
+                style={{ paddingLeft: (i - 2) * 20 }}
               >
                 {h.textContent}
               </span>
@@ -76,13 +77,13 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
     },
     {
       href: nextData ? `/lectures/${nextData?.slug}` : undefined,
-      title: "Дальше →",
+      title: "Вперёд →",
       description: nextData?.title,
       imageSrc: nextData?.cover,
     },
   ];
 
-  const proseClasses = "prose dark:prose-invert text-justify lg:prose-xl";
+  const proseClasses = "prose dark:prose-invert lg:prose-xl";
   const containerClasses =
     "w-full grid border-l border-r border-(--border) p-4";
 
@@ -97,8 +98,10 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               style={{ margin: 0 }}
             />
             <h1
-              className="absolute p-0.5 bottom-4 right-1 backdrop-blur-3xl"
-              style={{ textAlign: "right" }}
+              className="font-secondary absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
+              style={{
+                textAlign: "right",
+              }}
             >
               {data.title}
             </h1>

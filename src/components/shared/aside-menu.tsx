@@ -45,9 +45,12 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items }) => {
   }, [items]);
 
   return (
-    <div className="w-full grid gap-4 content-start sticky top-[var(--header-height)]">
+    <div
+      className="w-full grid gap-4 content-start sticky"
+      style={{ top: "calc(var(--header-height) + 10px)" }}
+    >
       <div className="grid gap-4">
-        <h3>Содержание</h3>
+        <h3 className="text-(--description)">Содержание</h3>
         <ScrollProgressBar />
       </div>
       {items.map((item) => (
