@@ -13,7 +13,8 @@
   --background: #ffffff;
   --border: #c4cde071;
   --link: rgb(14, 98, 182);
-  --description: #b9c2d5;
+  --description: #58637a;
+  --text-pane: #ffffff92;
 }
 
 .dark {
@@ -22,4 +23,9 @@
   --border: #41485671;
   --link: rgb(91, 153, 216);
   --description: #8b98b2;
+  --text-pane: #00000092;
+}
+
+.prose p {
+  @apply text-justify;
 }
