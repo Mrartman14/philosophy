@@ -91,7 +91,7 @@ export const MDXWrapper: React.FC<MDXComponents["wrapper"]> = ({
   ];
 
   return (
-    <div className="grid gap-4 static w-full items-start justify-items-center grid-cols-[minmax(auto,_1fr)_300px]">
+    <div className="grid gap-4 static w-full items-start justify-items-center grid-cols-[minmax(auto,_1fr)_250px]">
       <article
         id={contentId}
         className="prose dark:prose-invert text-justify lg:prose-xl p-4 border-l border-r border-gray-200 dark:border-gray-700"

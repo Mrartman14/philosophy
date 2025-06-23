@@ -4,17 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import ThemeSelect from "./theme-select";
-
-const links: { name: string; href: string }[] = [
-  { name: "Home", href: "/" },
-  { name: "Вступление", href: "/lections/introduction" },
-  { name: "Экспериментальная наука", href: "/lections/experimental-science" },
-  { name: "Античная этика", href: "/lections/ancient-ethics" },
-  {
-    name: "Новоевропейская теория познания",
-    href: "/lections/new-european-theory-of-knowledge",
-  },
-];
+import { structure } from "@/structure";
 
 export const AppHeader: React.FC = () => {
   const pathname = usePathname();
@@ -25,17 +15,18 @@ export const AppHeader: React.FC = () => {
       style={{ height: "var(--header-height)" }}
     >
       <nav className="flex items-center gap-4">
-        {links.map((link) => {
-          const isActive = pathname === link.href;
+        {structure.map((link) => {
+          const href = `/lections/${link.slug}`;
+          const isActive = pathname === href;
 
           return (
             <Link
-              key={link.name}
-              href={link.href}
+              key={href}
+              href={href}
               className={`dark:text-indigo-400 text-lg
                 ${isActive ? "underline underline-offset-4" : "no-underline"}`}
             >
-              {link.name}
+              {link.title}
             </Link>
           );
         })}
