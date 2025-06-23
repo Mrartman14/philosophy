@@ -10,21 +10,19 @@ const philosopher = Philosopher({
   weight: ["400", "700"], // выберите необходимые начертания
   display: "swap", // настройка отображения
 });
+const philosopherClasses = philosopher.className;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 const geistClasses = "font-[family-name:var(--font-geist-sans)]";
-const philosopherClasses = geistClasses;
 
-const finalClasses = philosopherClasses;
+const finalClasses = geistClasses;
 
 export const metadata: Metadata = {
   title: "Philosophy",
@@ -42,7 +40,7 @@ export default function RootLayout({
         className={`
           root
           ${geistSans.variable} ${geistMono.variable} antialiased
-          grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-4 gap-16
+          grid grid-rows-[auto_1fr_20px] items-center justify-items-center min-h-screen
           ${finalClasses}
           `}
       >

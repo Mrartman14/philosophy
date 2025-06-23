@@ -4,6 +4,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --header-height: 50px;
+}
+
+* {
+  scroll-margin-top: var(--header-height);
 }
 
 @theme inline {
