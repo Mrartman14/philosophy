@@ -12,6 +12,7 @@
   --background: #ffffff;
   --border: #c4cde071;
   --link: rgb(14, 98, 182);
+  --description: #b9c2d5;
 }
 
 .dark {
@@ -19,4 +20,5 @@
   --background: #111a20;
   --border: #41485671;
   --link: rgb(91, 153, 216);
+  --description: #8b98b2;
 }
