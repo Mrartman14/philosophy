@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 
 type Timeline = {
   name: string;
@@ -55,14 +54,14 @@ let philosophers: Timeline[] = [
   },
 ];
 
-const lessons = [
-  {
-    type: "intro",
-    number: 1,
-    name: "Урок 1. Что такое философия.",
-    mentions: ["Пифагор"],
-  },
-];
+// const lessons = [
+//   {
+//     type: "intro",
+//     number: 1,
+//     name: "Урок 1. Что такое философия.",
+//     mentions: ["Пифагор"],
+//   },
+// ];
 
 function assignLevels(p: Timeline[]) {
   // Клонируем массив, чтобы не мутировать исходные данные
@@ -113,13 +112,13 @@ const maxYear = Math.max(...philosophers.map((p) => p.to)) + 10;
 // const totalWidth = Math.abs(minYear) + Math.abs(maxYear);
 // const timelineWidth = (maxYear - minYear) * scale;
 
-const maxLevel = Math.max(...philosophers.map((p) => p.level));
-const LEVEL_HEIGHT = 60;
-const TIMELINE_HEIGHT = 50;
-const containerHeight = 500 + maxLevel * LEVEL_HEIGHT;
+// const maxLevel = Math.max(...philosophers.map((p) => p.level));
+// const LEVEL_HEIGHT = 60;
+// const TIMELINE_HEIGHT = 50;
+// const containerHeight = 500 + maxLevel * LEVEL_HEIGHT;
 
 const margin = 60;
-const laneHeight = 40;
+// const laneHeight = 40;
 const svgWidth = (maxYear - minYear) * scale + margin * 2;
 const svgHeight = 200;
 // const svgHeight =
@@ -202,8 +201,8 @@ export const PhilosophersTimeline: React.FC = () => {
 const TimelineItem: React.FC<{ timeline: Timeline }> = ({ timeline }) => {
   const x = margin + (timeline.from - minYear) * scale;
   const width = (timeline.to - timeline.from) * scale;
-  const y =
-    svgHeight / 2 + (timeline.level - philosophers.length / 2) * laneHeight;
+  // const y =
+  //   svgHeight / 2 + (timeline.level - philosophers.length / 2) * laneHeight;
   return (
     <g>
       <rect
