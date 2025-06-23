@@ -84,15 +84,19 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
   const proseClasses = "prose dark:prose-invert text-justify lg:prose-xl";
   const containerClasses =
-    "w-full grid gap-4 border-l border-r border-gray-200 dark:border-gray-700 p-4";
+    "w-full grid gap-4 border-l border-r border-(--border) p-4";
 
   return (
     <div className="grid gap-4 static w-full items-start justify-items-center grid-cols-[minmax(auto,_1fr)_250px]">
       <div className={`${proseClasses} ${containerClasses}`}>
         {data.cover ? (
           <div className="relative">
-            <img src={data.cover} alt={`${data.title} lesson preview`} />
-            <h1 className="text-6xl absolute p-0.5 bottom-4 right-4 backdrop-blur-lg">
+            <img
+              src={data.cover}
+              alt={`${data.title} lesson preview`}
+              style={{ margin: 0 }}
+            />
+            <h1 className="absolute p-0.5 bottom-4 right-4 backdrop-blur-3xl">
               {data.title}
             </h1>
           </div>
