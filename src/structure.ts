@@ -25,7 +25,7 @@ export const structure: PageData[] = [
     meta: {},
   },
   {
-    title: "Миф и презумпция ненаивности",
+    title: "Презумпция ненаивности",
     order: 2,
     slug: "lesson-2",
     docxUrl: "/lesson-2.docx",
