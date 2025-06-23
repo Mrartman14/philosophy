@@ -12,6 +12,13 @@ type Timeline = {
 };
 let philosophers: Timeline[] = [
   {
+    name: "Пифагор",
+    from: -570,
+    to: -490,
+    level: 0,
+    imageSrc: "/philosophers/pythagoras.jpg",
+  },
+  {
     name: "Парменид",
     from: -540,
     to: -470,
@@ -45,6 +52,15 @@ let philosophers: Timeline[] = [
     to: -270,
     level: 0,
     imageSrc: "/philosophers/epicurus.jpg",
+  },
+];
+
+const lessons = [
+  {
+    type: "intro",
+    number: 1,
+    name: "Урок 1. Что такое философия.",
+    mentions: ["Пифагор"],
   },
 ];
 
@@ -95,12 +111,20 @@ const scale = 3;
 const minYear = Math.min(...philosophers.map((p) => p.from)) - 10;
 const maxYear = Math.max(...philosophers.map((p) => p.to)) + 10;
 // const totalWidth = Math.abs(minYear) + Math.abs(maxYear);
-const timelineWidth = (maxYear - minYear) * scale;
+// const timelineWidth = (maxYear - minYear) * scale;
 
 const maxLevel = Math.max(...philosophers.map((p) => p.level));
 const LEVEL_HEIGHT = 60;
 const TIMELINE_HEIGHT = 50;
 const containerHeight = 500 + maxLevel * LEVEL_HEIGHT;
+
+const margin = 60;
+const laneHeight = 40;
+const svgWidth = (maxYear - minYear) * scale + margin * 2;
+const svgHeight = 200;
+// const svgHeight =
+//   philosophers.reduce((max, p) => Math.max(max, p.level), 0) * laneHeight +
+//   margin * 2;
 
 const centuryMarks = generateCenturyMarks(minYear, maxYear);
 
@@ -111,15 +135,22 @@ function formatYear(year: number) {
 
 export const PhilosophersTimeline: React.FC = () => {
   return (
-    <div className="w-3xl mx-auto py-8">
-      <div
-        className={`
-          relative overflow-y-scroll h-32 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center
-      `}
-        style={{ height: `${containerHeight}px` }}
-      >
-        {/* Линия времени */}
-        <div
+    <svg
+      width={svgWidth}
+      height={svgHeight * 2}
+      className="bg-gray-100 dark:bg-gray-800"
+    >
+      {/* Линия времени */}
+      <line
+        x1={margin}
+        y1={svgHeight / 2}
+        x2={svgWidth - margin}
+        y2={svgHeight / 2}
+        stroke="#a3a3a3"
+        strokeWidth={2}
+      />
+
+      {/* <div
           className={`absolute
             h-1 dark:bg-gray-600 rounded
         `}
@@ -127,75 +158,85 @@ export const PhilosophersTimeline: React.FC = () => {
             top: `${TIMELINE_HEIGHT}px`,
             width: `${timelineWidth}px`,
           }}
-        />
-        {centuryMarks.map((year) => {
-          const left = (year - minYear) * scale;
-          return (
-            <div
-              key={year}
-              className="absolute"
-              style={{ left: `${left}px`, top: 0, height: "100%" }}
+        /> */}
+      {centuryMarks.map((year) => {
+        const x = margin + (year - minYear) * scale;
+        return (
+          <g key={year}>
+            <line
+              x1={x}
+              y1={margin / 2}
+              x2={x}
+              y2={svgHeight - margin / 2}
+              stroke="#d1d5db"
+              strokeWidth={1}
+            />
+            <text
+              x={x}
+              y={svgHeight - margin / 4}
+              fontSize={12}
+              fill="#6b7280"
+              textAnchor="middle"
             >
-              <div className="h-full w-px dark:bg-gray-600" />
-              <div
-                className={`absolute left-1/2 -translate-x-1/2 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap`}
-                style={{ top: TIMELINE_HEIGHT - 20 }}
-              >
-                {Math.abs(year)} до н.э.
-              </div>
-            </div>
-          );
-        })}
+              {formatYear(year)}
+            </text>
+          </g>
+        );
+      })}
 
-        {/* Метки философов */}
-        {philosophers.map((philosopher) => {
-          return <TimelineItem key={philosopher.name} timeline={philosopher} />;
-        })}
-        {/* Метки начала и конца шкалы */}
-        {/* <div className="absolute left-0 -bottom-6 text-xs text-gray-500 dark:text-gray-400">
+      {/* Метки философов */}
+      {philosophers.map((philosopher) => {
+        return <TimelineItem key={philosopher.name} timeline={philosopher} />;
+      })}
+      {/* Метки начала и конца шкалы */}
+      {/* <div className="absolute left-0 -bottom-6 text-xs text-gray-500 dark:text-gray-400">
           {formatYear(minYear)}
         </div>
         <div className="absolute right-0 -bottom-6 text-xs text-gray-500 dark:text-gray-400">
           {formatYear(maxYear)}
         </div> */}
-      </div>
-    </div>
+    </svg>
   );
 };
 
 const TimelineItem: React.FC<{ timeline: Timeline }> = ({ timeline }) => {
-  const [hovered, setHovered] = useState(false);
-
-  const left = (timeline.from - minYear) * scale;
+  const x = margin + (timeline.from - minYear) * scale;
   const width = (timeline.to - timeline.from) * scale;
-  const top = `${TIMELINE_HEIGHT}px`;
-  //   const top = `calc(${TIMELINE_HEIGHT}px + ${
-  //     timeline.level * LEVEL_HEIGHT
-  //   }px + 1rem)`;
-
+  const y =
+    svgHeight / 2 + (timeline.level - philosophers.length / 2) * laneHeight;
   return (
-    <div
-      key={timeline.name}
-      className={`absolute h-2 ${
-        hovered ? "rounded bg-indigo-500 opacity-70" : ""
-      }`}
-      style={{ left, width, top }}
-      title={`${timeline.name}: ${formatYear(timeline.from)} — ${formatYear(
-        timeline.to
-      )}`}
-      onMouseOver={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {timeline.imageSrc && (
-        <Image
-          src={timeline.imageSrc}
-          alt={`${timeline.name} image`}
-          width={20}
-          height={20}
-          className="object-cover w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ borderRadius: "50%" }}
-        />
-      )}
-    </div>
+    <g>
+      <rect
+        x={x}
+        y1={svgHeight / 2}
+        // y={y - 10}
+        width={width}
+        height={10}
+        fill="#6366f1"
+        opacity={0.8}
+        rx={6}
+      />
+      <text
+        x={x + width / 2}
+        // y={y - 18}
+        y1={svgHeight / 2 - 10}
+        fontSize={14}
+        fill="#1e293b"
+        textAnchor="middle"
+        fontWeight="bold"
+      >
+        {timeline.name}
+      </text>
+      <text
+        x={x + width / 2}
+        // y={y + 22}
+        y1={svgHeight / 2 + 10}
+        fontSize={11}
+        fill="#374151"
+        textAnchor="middle"
+      >
+        {formatYear(timeline.from)} — {formatYear(timeline.to)}
+      </text>
+    </g>
   );
 };

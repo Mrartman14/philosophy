@@ -20,7 +20,10 @@ export const AppHeader: React.FC = () => {
   const pathname = usePathname();
 
   return (
-    <header className="grid gap-4 grid-cols-[1fr_auto]">
+    <header
+      className="sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] bg-background border-b border-gray-200 dark:border-gray-700"
+      style={{ height: "var(--header-height)" }}
+    >
       <nav className="flex items-center gap-4">
         {links.map((link) => {
           const isActive = pathname === link.href;
