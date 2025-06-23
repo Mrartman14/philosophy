@@ -96,7 +96,10 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               alt={`${data.title} lesson preview`}
               style={{ margin: 0 }}
             />
-            <h1 className="absolute p-0.5 bottom-4 right-4 backdrop-blur-3xl">
+            <h1
+              className="absolute p-0.5 bottom-4 right-1 backdrop-blur-3xl"
+              style={{ textAlign: "right" }}
+            >
               {data.title}
             </h1>
           </div>
