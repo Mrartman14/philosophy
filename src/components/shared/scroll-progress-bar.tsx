@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type ScrollProgressBarProps = {};
+type ScrollProgressBarProps = object;
 export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = () => {
   const [scroll, setScroll] = useState(0);
 
@@ -21,9 +21,9 @@ export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = () => {
   }, []);
 
   return (
-    <div className="left-0 w-full h-1 bg-blue-300 z-50 rounded">
+    <div className="left-0 w-full h-1 bg-(--border) z-10 rounded">
       <div
-        className="h-full bg-blue-500 rounded"
+        className="h-full bg-(--primary) rounded"
         style={{ width: `${scroll}%` }}
       />
     </div>

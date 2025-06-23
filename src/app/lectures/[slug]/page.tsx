@@ -33,10 +33,12 @@ export default async function Page({ params }: PageProps) {
     structure.find((p) => p.order === pageConfig.order + 1) ?? null;
 
   return (
-    <DocxViewer
-      data={pageConfig}
-      prevData={prevPageConfig}
-      nextData={nextPageConfig}
-    />
+    <div className="grid grid-cols-1">
+      <DocxViewer
+        data={pageConfig}
+        prevData={prevPageConfig}
+        nextData={nextPageConfig}
+      />
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { AppHeader } from "@/components/app/app-header";
+import Theme from "./_providers/theme";
 
 // const philosopher = Philosopher({
 //   subsets: ["latin", "cyrillic"], // укажите нужные подмножества
@@ -38,17 +39,19 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`
-          root
+          root bg-(--background)
           ${geistSans.variable} ${geistMono.variable} antialiased
           grid grid-rows-[auto_1fr_20px] items-center justify-items-center min-h-screen
           ${finalClasses}
           `}
       >
-        <AppHeader />
-        <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-          {children}
-        </main>
-        <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>
+        <Theme>
+          <AppHeader />
+          <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+            {children}
+          </main>
+          <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>
+        </Theme>
       </body>
     </html>
   );
