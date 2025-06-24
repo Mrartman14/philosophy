@@ -97,14 +97,15 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               alt={`${data.title} lesson preview`}
               style={{ margin: 0 }}
             />
-            <h1
+            <div
               className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
               style={{
                 textAlign: "right",
               }}
             >
-              {data.title}
-            </h1>
+              {/* <span className="text-(--description)">{data.section}</span> */}
+              <h1>{data.title}</h1>
+            </div>
           </div>
         ) : (
           <h1>{data.title}</h1>
