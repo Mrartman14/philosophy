@@ -136,7 +136,7 @@ export const AppHeader: React.FC = () => {
 
 const triggerClassName =
   "box-border flex items-center justify-center gap-1.5 " +
-  "px-2 m-0 rounded-md" +
+  "data-[popup-open]:text-(--description) " +
   "font-semibold leading-6 select-none no-underline ";
 
 const contentClassName =
