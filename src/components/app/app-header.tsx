@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import groupBy from "lodash/groupBy";
-import { Fragment, useMemo } from "react";
 import { usePathname } from "next/navigation";
+import { Fragment, useMemo } from "react";
 import { NavigationMenu } from "@base-ui-components/react";
 
 import { ThemeSelect } from "./theme-select";
@@ -16,6 +16,24 @@ export const AppHeader: React.FC = () => {
     () => groupBy(structure, (x) => x.section),
     []
   );
+
+  // const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  // const { refs, floatingStyles, context } = useFloating({
+  //   open: true,
+  // });
+
+  // const listRef = useRef<HTMLLIElement[]>([]);
+
+  // const listNavigation = useListNavigation(context, {
+  //   listRef,
+  //   activeIndex,
+  //   onNavigate: setActiveIndex,
+  // });
+
+  // const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(
+  //   [listNavigation]
+  // );
 
   return (
     <header
@@ -42,11 +60,19 @@ export const AppHeader: React.FC = () => {
                       {data.map((item) => {
                         const href = `/lectures/${item.slug}`;
                         const isActive = pathname === href;
+                        // const itemIndex = chapterIndex + index;
 
                         return (
                           <li
                             key={href}
                             className="p-2 rounded hover:bg-(--primary)"
+                            // tabIndex={activeIndex === itemIndex ? 0 : -1}
+                            // ref={(node) => {
+                            //   if (node) {
+                            //     listRef.current[index] = node;
+                            //   }
+                            // }}
+                            // {...getItemProps()}
                           >
                             <Link
                               href={href}
