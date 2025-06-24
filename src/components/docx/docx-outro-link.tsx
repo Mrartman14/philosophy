@@ -34,8 +34,10 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
           justifyItems: "center",
         }}
       >
-        <span className={`text-4xl font-bold`}>{title}</span>
-        <span className={`text-lg text-(--description)`}>{description}</span>
+        <span className={`text-xl md:text-4xl font-bold`}>{title}</span>
+        <span className={`text-sm md:text-lg text-(--description)`}>
+          {description}
+        </span>
       </div>
       {imageSrc && (
         <img
