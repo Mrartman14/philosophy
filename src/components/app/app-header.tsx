@@ -17,7 +17,7 @@ export const AppHeader: React.FC = () => {
     >
       <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">
         <NavigationMenu.List className="relative flex h-full items-stretch">
-          <NavigationMenu.Item className="flex items-center">
+          <NavigationMenu.Item className="flex items-stretch">
             <NavigationMenu.Trigger className={triggerClassName}>
               Лекции
               <NavigationMenu.Icon className="transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180">
@@ -50,7 +50,7 @@ export const AppHeader: React.FC = () => {
 
         <NavigationMenu.Portal>
           <NavigationMenu.Positioner
-            sideOffset={15}
+            sideOffset={10}
             collisionPadding={{ top: 5, bottom: 5, left: 20, right: 20 }}
             className="box-border h-[var(--positioner-height)] w-[var(--positioner-width)] max-w-[var(--available-width)] transition-[top,left,right,bottom] duration-[var(--duration)] ease-[var(--easing)] before:absolute before:content-[''] data-[instant]:transition-none data-[side=bottom]:before:top-[-10px] data-[side=bottom]:before:right-0 data-[side=bottom]:before:left-0 data-[side=bottom]:before:h-2.5 data-[side=left]:before:top-0 data-[side=left]:before:right-[-10px] data-[side=left]:before:bottom-0 data-[side=left]:before:w-2.5 data-[side=right]:before:top-0 data-[side=right]:before:bottom-0 data-[side=right]:before:left-[-10px] data-[side=right]:before:w-2.5 data-[side=top]:before:right-0 data-[side=top]:before:bottom-[-10px] data-[side=top]:before:left-0 data-[side=top]:before:h-2.5"
             style={{
@@ -74,7 +74,7 @@ export const AppHeader: React.FC = () => {
 };
 
 const triggerClassName =
-  "box-border flex items-center justify-center gap-1.5 h-10 " +
+  "box-border flex items-center justify-center gap-1.5 " +
   "px-2 m-0 rounded-md" +
   "font-semibold leading-6 select-none no-underline ";
 

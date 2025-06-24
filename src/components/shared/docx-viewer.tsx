@@ -98,7 +98,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               style={{ margin: 0 }}
             />
             <h1
-              className="font-secondary absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
+              className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
               style={{
                 textAlign: "right",
               }}
