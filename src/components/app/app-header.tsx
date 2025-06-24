@@ -1,14 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import groupBy from "lodash/groupBy";
+import { Fragment, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui-components/react";
 
-import ThemeSelect from "./theme-select";
+import { ThemeSelect } from "./theme-select";
 import { structure } from "@/structure";
+import { Mention } from "../shared/mention";
 
 export const AppHeader: React.FC = () => {
   const pathname = usePathname();
+  const groupedByChapter = useMemo(
+    () => groupBy(structure, (x) => x.section),
+    []
+  );
 
   return (
     <header
@@ -26,21 +33,43 @@ export const AppHeader: React.FC = () => {
             </NavigationMenu.Trigger>
             <NavigationMenu.Content className={contentClassName}>
               <ul className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
-                {structure.map((item) => {
-                  const href = `/lectures/${item.slug}`;
-                  const isActive = pathname === href;
-
+                {Object.entries(groupedByChapter).map(([chapter, data]) => {
                   return (
-                    <li key={href}>
-                      <Link
-                        href={href}
-                        className={`${
-                          isActive ? "text-(--link)" : ""
-                        } ${linkCardClassName}`}
-                      >
-                        {item.order}. {item.title}
-                      </Link>
-                    </li>
+                    <Fragment key={chapter}>
+                      <h6 className={`text-(--description) text-lg`}>
+                        {chapter}
+                      </h6>
+                      {data.map((item) => {
+                        const href = `/lectures/${item.slug}`;
+                        const isActive = pathname === href;
+
+                        return (
+                          <li
+                            key={href}
+                            className="p-2 rounded hover:bg-(--primary)"
+                          >
+                            <Link
+                              href={href}
+                              className={`${
+                                isActive ? "text-(--link)" : ""
+                              } ${linkCardClassName}`}
+                            >
+                              {item.order}. {item.title}
+                            </Link>
+                            <div className="flex gap-1">
+                              {item.mentions.map((m, i, arr) => (
+                                <Fragment key={m}>
+                                  <Mention className="text-xs">
+                                    {m}
+                                    {i < arr.length - 1 && ","}
+                                  </Mention>
+                                </Fragment>
+                              ))}
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </Fragment>
                   );
                 })}
               </ul>
@@ -87,8 +116,7 @@ const contentClassName =
   "data-[ending-style]:data-[activation-direction=left]:translate-x-[50%] " +
   "data-[ending-style]:data-[activation-direction=right]:translate-x-[-50%]";
 
-const linkCardClassName =
-  "block rounded-md p-2 xs:p-3 no-underline hover:underline font-semibold";
+const linkCardClassName = "block no-underline hover:underline font-semibold";
 
 function ChevronDownIcon(props: React.ComponentProps<"svg">) {
   return (

@@ -1,5 +1,11 @@
 import { Author } from "next/dist/lib/metadata/types/metadata-types";
 
+type Section =
+  | "Интро"
+  | "Экспериментальная наука"
+  | "Античная этика"
+  | "Новоевропейская теория познания";
+
 export type PageData = {
   /** заголовок лекции */
   title: string;
@@ -11,6 +17,11 @@ export type PageData = {
   docxUrl: string;
   /** путь до обдожки лекции */
   cover?: string;
+
+  /** упомянутые в лекции личности */
+  mentions: string[];
+  /** раздел лекций */
+  section: Section;
 
   meta?: {
     description?: string;
@@ -27,6 +38,8 @@ export const structure: PageData[] = [
     order: 1,
     slug: "lesson-1",
     docxUrl: "/lesson-1.docx",
+    section: "Интро",
+    mentions: [],
     meta: {},
   },
   {
@@ -34,6 +47,8 @@ export const structure: PageData[] = [
     order: 2,
     slug: "lesson-2",
     docxUrl: "/lesson-2.docx",
+    section: "Интро",
+    mentions: [],
     meta: {},
   },
   {
@@ -42,6 +57,8 @@ export const structure: PageData[] = [
     slug: "lesson-3",
     docxUrl: "/lesson-3.docx",
     cover: "/lesson-previews/lesson-3-preview.jpeg",
+    section: "Интро",
+    mentions: ["Парменид", "Гераклит"],
     meta: {},
   },
   {
@@ -49,6 +66,8 @@ export const structure: PageData[] = [
     order: 4,
     slug: "lesson-4",
     docxUrl: "/lesson-4.docx",
+    section: "Интро",
+    mentions: ["Зенон"],
     meta: {},
   },
   {
@@ -57,6 +76,8 @@ export const structure: PageData[] = [
     slug: "lesson-5",
     docxUrl: "/lesson-5.docx",
     cover: "/lesson-previews/lesson-5-preview.jpeg",
+    section: "Интро",
+    mentions: ["Сократ"],
     meta: {},
   },
   {
@@ -65,6 +86,8 @@ export const structure: PageData[] = [
     slug: "lesson-6",
     docxUrl: "/lesson-6.docx",
     cover: "/lesson-previews/lesson-6-preview.jpeg",
+    section: "Интро",
+    mentions: [],
     meta: {},
   },
   {
@@ -73,6 +96,8 @@ export const structure: PageData[] = [
     slug: "lesson-7",
     docxUrl: "/lesson-7.docx",
     cover: "/lesson-previews/lesson-7-preview.jpeg",
+    section: "Интро",
+    mentions: [],
     meta: {},
   },
   {
@@ -81,6 +106,8 @@ export const structure: PageData[] = [
     slug: "lesson-8",
     docxUrl: "/lesson-8.docx",
     cover: "/lesson-previews/lesson-8-preview.jpeg",
+    section: "Интро",
+    mentions: [],
     meta: {},
   },
   {
@@ -89,6 +116,8 @@ export const structure: PageData[] = [
     slug: "lesson-9",
     docxUrl: "/lesson-9.docx",
     cover: "/lesson-previews/lesson-9-preview.jpeg",
+    section: "Интро",
+    mentions: [],
     meta: {},
   },
   {
@@ -97,6 +126,8 @@ export const structure: PageData[] = [
     slug: "lesson-10",
     docxUrl: "/lesson-10.docx",
     cover: "/lesson-previews/lesson-10-preview.jpeg",
+    section: "Интро",
+    mentions: [],
     meta: {},
   },
   {
@@ -105,6 +136,8 @@ export const structure: PageData[] = [
     slug: "lesson-11",
     docxUrl: "/lesson-11.docx",
     cover: "/lesson-previews/lesson-11-preview.jpeg",
+    section: "Интро",
+    mentions: ["Декарт"],
     meta: {},
   },
   {
@@ -113,14 +146,18 @@ export const structure: PageData[] = [
     slug: "lesson-12",
     docxUrl: "/lesson-12.docx",
     cover: "/lesson-previews/lesson-12-preview.jpeg",
+    section: "Интро",
+    mentions: ["Декарт", "Гоббс"],
     meta: {},
   },
   {
-    title: "Исток экспериментальной науки. Платон",
+    title: "Исток экспериментальной науки",
     order: 13,
     slug: "lesson-13",
     docxUrl: "/lesson-13.docx",
     cover: "/lesson-previews/lesson-13-preview.jpeg",
+    section: "Экспериментальная наука",
+    mentions: ["Платон"],
     meta: {},
   },
   {
@@ -129,6 +166,8 @@ export const structure: PageData[] = [
     slug: "lesson-14",
     docxUrl: "/lesson-14.docx",
     cover: "/lesson-previews/lesson-14-preview.jpeg",
+    section: "Экспериментальная наука",
+    mentions: ["Аристотель"],
     meta: {},
   },
   {
@@ -137,6 +176,8 @@ export const structure: PageData[] = [
     slug: "lesson-15",
     docxUrl: "/lesson-15.docx",
     cover: "/lesson-previews/lesson-15-preview.jpeg",
+    section: "Экспериментальная наука",
+    mentions: [],
     meta: {},
   },
   {
@@ -145,14 +186,18 @@ export const structure: PageData[] = [
     slug: "lesson-16",
     docxUrl: "/lesson-16.docx",
     cover: "/lesson-previews/lesson-16-preview.jpeg",
+    section: "Экспериментальная наука",
+    mentions: ["Галилей"],
     meta: {},
   },
   {
-    title: "Введение в этику. Диоген Синопский",
+    title: "Введение в этику",
     order: 17,
     slug: "lesson-17",
     docxUrl: "/lesson-17.docx",
     cover: "/lesson-previews/lesson-17-preview.jpeg",
+    section: "Античная этика",
+    mentions: ["Диоген Синопский"],
     meta: {},
   },
   {
@@ -161,6 +206,8 @@ export const structure: PageData[] = [
     slug: "lesson-18",
     docxUrl: "/lesson-18.docx",
     cover: "/lesson-previews/lesson-18-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -169,6 +216,8 @@ export const structure: PageData[] = [
     slug: "lesson-19",
     docxUrl: "/lesson-19.docx",
     cover: "/lesson-previews/lesson-19-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -177,6 +226,8 @@ export const structure: PageData[] = [
     slug: "lesson-20",
     docxUrl: "/lesson-20.docx",
     cover: "/lesson-previews/lesson-20-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -185,6 +236,8 @@ export const structure: PageData[] = [
     slug: "lesson-21",
     docxUrl: "/lesson-21.docx",
     cover: "/lesson-previews/lesson-21-preview.jpeg",
+    section: "Античная этика",
+    mentions: ["Эпикур"],
     meta: {},
   },
   {
@@ -193,6 +246,8 @@ export const structure: PageData[] = [
     slug: "lesson-22",
     docxUrl: "/lesson-22.docx",
     cover: "/lesson-previews/lesson-22-preview.jpeg",
+    section: "Античная этика",
+    mentions: ["Эпикур"],
     meta: {},
   },
   {
@@ -201,6 +256,8 @@ export const structure: PageData[] = [
     slug: "lesson-23",
     docxUrl: "/lesson-23.docx",
     cover: "/lesson-previews/lesson-23-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -209,6 +266,8 @@ export const structure: PageData[] = [
     slug: "lesson-24",
     docxUrl: "/lesson-24.docx",
     cover: "/lesson-previews/lesson-24-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -217,6 +276,8 @@ export const structure: PageData[] = [
     slug: "lesson-25",
     docxUrl: "/lesson-25.docx",
     cover: "/lesson-previews/lesson-25-preview.jpeg",
+    section: "Античная этика",
+    mentions: ["Иисус Христос"],
     meta: {},
   },
   {
@@ -225,6 +286,8 @@ export const structure: PageData[] = [
     slug: "lesson-26",
     docxUrl: "/lesson-26.docx",
     cover: "/lesson-previews/lesson-26-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -233,6 +296,8 @@ export const structure: PageData[] = [
     slug: "lesson-27",
     docxUrl: "/lesson-27.docx",
     cover: "/lesson-previews/lesson-27-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -241,6 +306,8 @@ export const structure: PageData[] = [
     slug: "lesson-28",
     docxUrl: "/lesson-28.docx",
     cover: "/lesson-previews/lesson-28-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -249,6 +316,8 @@ export const structure: PageData[] = [
     slug: "lesson-29",
     docxUrl: "/lesson-29.docx",
     cover: "/lesson-previews/lesson-29-preview.jpeg",
+    section: "Античная этика",
+    mentions: [],
     meta: {},
   },
   {
@@ -257,6 +326,8 @@ export const structure: PageData[] = [
     slug: "lesson-30",
     docxUrl: "/lesson-30.docx",
     cover: "/lesson-previews/lesson-30-preview.jpeg",
+    section: "Новоевропейская теория познания",
+    mentions: ["Локк"],
     meta: {},
   },
   {
@@ -265,6 +336,8 @@ export const structure: PageData[] = [
     slug: "lesson-31",
     docxUrl: "/lesson-31.docx",
     cover: "/lesson-previews/lesson-31-preview.jpeg",
+    section: "Новоевропейская теория познания",
+    mentions: ["Беркли"],
     meta: {},
   },
   {
@@ -273,6 +346,8 @@ export const structure: PageData[] = [
     slug: "lesson-32",
     docxUrl: "/lesson-32.docx",
     cover: "/lesson-previews/lesson-32-preview.jpeg",
+    section: "Новоевропейская теория познания",
+    mentions: ["Юм"],
     meta: {},
   },
   {
@@ -281,6 +356,8 @@ export const structure: PageData[] = [
     slug: "lesson-33",
     docxUrl: "/lesson-33.docx",
     cover: "/lesson-previews/lesson-33-preview.jpeg",
+    section: "Новоевропейская теория познания",
+    mentions: ["Юм"],
     meta: {},
   },
 ];

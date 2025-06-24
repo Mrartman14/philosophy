@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes";
 
-export default function ThemeSelect() {
+export const ThemeSelect: React.FC = () => {
   const { theme, setTheme } = useTheme();
 
   return null;
@@ -18,4 +18,4 @@ export default function ThemeSelect() {
       ))}
     </select>
   );
-}
+};
