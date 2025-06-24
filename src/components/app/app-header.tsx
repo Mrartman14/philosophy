@@ -9,6 +9,7 @@ import { NavigationMenu } from "@base-ui-components/react";
 import { ThemeSelect } from "./theme-select";
 import { structure } from "@/structure";
 import { Mention } from "../shared/mention";
+import Image from "next/image";
 
 export const AppHeader: React.FC = () => {
   const pathname = usePathname();
@@ -41,8 +42,13 @@ export const AppHeader: React.FC = () => {
       style={{ height: "var(--header-height)" }}
     >
       <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">
-        <NavigationMenu.List className="relative flex h-full items-stretch">
-          <NavigationMenu.Item className="flex items-stretch">
+        <NavigationMenu.List className="relative grid grid-cols-[auto_1fr] w-full h-full items-stretch">
+          <NavigationMenu.Item>
+            <Link href="/">
+              <Image src="/logo.png" alt="Logo image" width={49} height={49} />
+            </Link>
+          </NavigationMenu.Item>
+          <NavigationMenu.Item className="flex items-stretch justify-center">
             <NavigationMenu.Trigger className={triggerClassName}>
               Лекции
               <NavigationMenu.Icon className="transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180">
@@ -65,7 +71,7 @@ export const AppHeader: React.FC = () => {
                         return (
                           <li
                             key={href}
-                            className="p-2 rounded hover:bg-(--primary)"
+                            className="p-2 rounded hover:bg-(--text-pane)"
                             // tabIndex={activeIndex === itemIndex ? 0 : -1}
                             // ref={(node) => {
                             //   if (node) {
@@ -77,7 +83,7 @@ export const AppHeader: React.FC = () => {
                             <Link
                               href={href}
                               className={`${
-                                isActive ? "text-(--link)" : ""
+                                isActive ? "text-(--primary)" : ""
                               } ${linkCardClassName}`}
                             >
                               {item.order}. {item.title}

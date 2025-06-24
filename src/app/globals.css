@@ -9,16 +9,16 @@
 :root {
   --header-height: 50px;
 
-  --primary: #b1cce7;
+  --primary: rgba(213, 148, 82, 255);
   --background: #ffffff;
   --border: #c4cde071;
   --link: rgb(14, 98, 182);
   --description: #58637a;
-  --text-pane: #ffffff92;
+  --text-pane: #d2d2d292;
 }
 
 .dark {
-  --primary: #396088;
+  --primary: rgba(213, 148, 82, 255);
   --background: #111a20;
   --border: #41485671;
   --link: rgb(91, 153, 216);

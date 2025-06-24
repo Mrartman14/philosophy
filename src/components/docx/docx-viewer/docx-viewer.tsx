@@ -6,6 +6,7 @@ import { convertToHtml } from "mammoth";
 import { PageData } from "@/structure";
 import { DocxOutroLink } from "../docx-outro-link";
 import { AsideMenu, AsideNavItem } from "../../shared/aside-menu";
+import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
 import "./docx-viewer.css";
 
@@ -91,6 +92,9 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
   return (
     <div className="docx-viewer grid gap-4 static w-full items-start justify-items-center grid-cols-1 md:grid-cols-[1fr_250px]">
+      <div className="fixed top-0 w-full z-50">
+        <ScrollProgressBar className="sticky top-0" />
+      </div>
       <div className={`${proseClasses} ${containerClasses}`}>
         {data.cover ? (
           <div className="relative">

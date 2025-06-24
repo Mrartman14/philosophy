@@ -1,7 +1,6 @@
 "use client";
 
-import { Fragment, useLayoutEffect, useState } from "react";
-import { ScrollProgressBar } from "./scroll-progress-bar";
+import { useLayoutEffect, useState } from "react";
 
 export type AsideNavItem = {
   render: (p: { isSelected: boolean; depth: number }) => React.ReactNode;
@@ -13,6 +12,7 @@ type AsideMenuProps = {
   className?: string;
 };
 export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
+  const [atTop, setAtTop] = useState(true);
   const [intersected, setIntersected] = useState<string | null>();
 
   useLayoutEffect(() => {
@@ -21,6 +21,8 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
 
   useLayoutEffect(() => {
     function listen() {
+      setAtTop(window.scrollY === 0);
+
       const elements: { el: HTMLElement; id: string }[] = [];
 
       items.forEach(({ id }) => {
@@ -46,23 +48,34 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   }, [items]);
 
   return (
-    <div
+    <nav
       className={`w-full grid gap-4 content-start sticky ${className}`}
       style={{ top: "calc(var(--header-height) + 10px)" }}
     >
       <div className="grid gap-4">
         <h3 className="text-(--description)">Содержание</h3>
-        <ScrollProgressBar />
       </div>
-      {items.map((item) => (
-        <AsideMenuItem
-          key={item.id}
-          item={item}
-          depth={0}
-          intersected={intersected}
-        />
-      ))}
-    </div>
+      <ul className="grid gap-4">
+        {items.map((item) => (
+          <AsideMenuItem
+            key={item.id}
+            item={item}
+            depth={0}
+            intersected={intersected}
+          />
+        ))}
+      </ul>
+      <div>
+        <button
+          className={`text-(--description) transition-opacity ${
+            atTop ? "opacity-0" : "opacity-100"
+          }`}
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          Листать вверх ↑
+        </button>
+      </div>
+    </nav>
   );
 };
 
@@ -78,7 +91,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
 }) => {
   const isSelected = intersected === item.id;
   return (
-    <Fragment>
+    <li>
       <a
         key={item.id}
         href={`#${item.id}`}
@@ -97,6 +110,6 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
           intersected={intersected}
         />
       ))}
-    </Fragment>
+    </li>
   );
 };
