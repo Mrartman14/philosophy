@@ -4,10 +4,13 @@ import React, { useEffect, useState } from "react";
 import { convertToHtml } from "mammoth";
 
 import { PageData } from "@/structure";
-import { DocxOutroLink } from "./docx-outro-link";
-import { AsideMenu, AsideNavItem } from "../shared/aside-menu";
+import { DocxOutroLink } from "../docx-outro-link";
+import { AsideMenu, AsideNavItem } from "../../shared/aside-menu";
+
+import "./docx-viewer.css";
 
 interface DocxViewerProps {
+  docxArrayBuffer: ArrayBuffer;
   data: PageData;
   prevData: PageData | null;
   nextData: PageData | null;
@@ -16,16 +19,15 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   data,
   prevData,
   nextData,
+  docxArrayBuffer,
 }) => {
   const [parsedHtml, setParsedHtml] = useState<Document | null>(null);
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
 
   useEffect(() => {
     async function fetchAndConvert() {
-      const response = await fetch(data.docxUrl);
-      const arrayBuffer = await response.arrayBuffer();
       const { value } = await convertToHtml(
-        { arrayBuffer },
+        { arrayBuffer: docxArrayBuffer },
         {
           includeEmbeddedStyleMap: false,
           ignoreEmptyParagraphs: true,
@@ -66,7 +68,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
       }
     }
     fetchAndConvert();
-  }, [data.docxUrl]);
+  }, [docxArrayBuffer]);
 
   const outroLinks = [
     {
@@ -88,7 +90,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
     "w-full grid border-l border-r border-(--border) p-4";
 
   return (
-    <div className="grid gap-4 static w-full items-start justify-items-center grid-cols-[minmax(auto,_1fr)_250px]">
+    <div className="docx-viewer grid gap-4 static w-full items-start justify-items-center grid-cols-1 md:grid-cols-[1fr_250px]">
       <div className={`${proseClasses} ${containerClasses}`}>
         {data.cover ? (
           <div className="relative">
@@ -119,7 +121,10 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
           ))}
         </div>
       </div>
-      <AsideMenu items={asideItems} />
+      <AsideMenu
+        className="docx-viewer-aside hidden md:grid"
+        items={asideItems}
+      />
     </div>
   );
 };

@@ -10,8 +10,9 @@ export type AsideNavItem = {
 };
 type AsideMenuProps = {
   items: AsideNavItem[];
+  className?: string;
 };
-export const AsideMenu: React.FC<AsideMenuProps> = ({ items }) => {
+export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   const [intersected, setIntersected] = useState<string | null>();
 
   useLayoutEffect(() => {
@@ -46,7 +47,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items }) => {
 
   return (
     <div
-      className="w-full grid gap-4 content-start sticky"
+      className={`w-full grid gap-4 content-start sticky ${className}`}
       style={{ top: "calc(var(--header-height) + 10px)" }}
     >
       <div className="grid gap-4">
