@@ -1,3 +1,5 @@
+import { Author } from "next/dist/lib/metadata/types/metadata-types";
+
 export type PageData = {
   /** заголовок лекции */
   title: string;
@@ -10,9 +12,12 @@ export type PageData = {
   /** путь до обдожки лекции */
   cover?: string;
 
-  /** любая мета-инфа */
-  meta: {
+  meta?: {
     description?: string;
+    creator?: null | string | undefined;
+    category?: null | string | undefined;
+    keywords?: null | string | Array<string> | undefined;
+    authors?: null | Author | Array<Author> | undefined;
   };
 };
 
