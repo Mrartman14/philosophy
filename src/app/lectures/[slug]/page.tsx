@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { structure } from "@/structure";
-import DocxViewer from "@/components/shared/docx-viewer";
+import DocxViewer from "@/components/docx/docx-viewer";
 
 export async function generateStaticParams() {
   return structure.map((page) => ({ slug: page.slug }));

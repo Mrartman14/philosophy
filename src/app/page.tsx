@@ -6,7 +6,7 @@ export default function Home() {
     <div>
       <Image
         // className="dark:invert"
-        src="/main-image.jpeg"
+        src="/logo.png"
         alt="Logo"
         width={300}
         height={300}
