@@ -34,7 +34,7 @@ export type PageData = {
 
 export const structure: PageData[] = [
   {
-    title: "Введение",
+    title: "Не ассорти",
     order: 1,
     slug: "lesson-1",
     docxUrl: "/lesson-1.docx",
@@ -48,7 +48,7 @@ export const structure: PageData[] = [
     slug: "lesson-2",
     docxUrl: "/lesson-2.docx",
     section: "Интро",
-    mentions: [],
+    mentions: ["Пифагор"],
     meta: {},
   },
   {
@@ -62,12 +62,12 @@ export const structure: PageData[] = [
     meta: {},
   },
   {
-    title: "Зенон и апории",
+    title: "Апории",
     order: 4,
     slug: "lesson-4",
     docxUrl: "/lesson-4.docx",
     section: "Интро",
-    mentions: ["Зенон"],
+    mentions: ["Зенон", "Парменид", "Гераклит"],
     meta: {},
   },
   {
@@ -97,7 +97,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-7.docx",
     cover: "/lesson-previews/lesson-7-preview.jpeg",
     section: "Интро",
-    mentions: [],
+    mentions: ["Августин Аврелий", "Пелагий"],
     meta: {},
   },
   {
@@ -107,7 +107,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-8.docx",
     cover: "/lesson-previews/lesson-8-preview.jpeg",
     section: "Интро",
-    mentions: [],
+    mentions: ["Мартин Лютер"],
     meta: {},
   },
   {
@@ -127,7 +127,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-10.docx",
     cover: "/lesson-previews/lesson-10-preview.jpeg",
     section: "Интро",
-    mentions: [],
+    mentions: ["Декарт"],
     meta: {},
   },
   {
@@ -207,7 +207,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-18.docx",
     cover: "/lesson-previews/lesson-18-preview.jpeg",
     section: "Античная этика",
-    mentions: [],
+    mentions: ["Хрисипп", "Марк Аврелий"],
     meta: {},
   },
   {
@@ -327,11 +327,11 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-30.docx",
     cover: "/lesson-previews/lesson-30-preview.jpeg",
     section: "Новоевропейская теория познания",
-    mentions: ["Локк"],
+    mentions: ["Локк", "Беркли"],
     meta: {},
   },
   {
-    title: "Больше о Беркли и абстракциях",
+    title: "Больше об абстракциях",
     order: 31,
     slug: "lesson-31",
     docxUrl: "/lesson-31.docx",
@@ -341,7 +341,7 @@ export const structure: PageData[] = [
     meta: {},
   },
   {
-    title: "Дэвид Юм",
+    title: "Никаких больше субстанций",
     order: 32,
     slug: "lesson-32",
     docxUrl: "/lesson-32.docx",
@@ -351,11 +351,21 @@ export const structure: PageData[] = [
     meta: {},
   },
   {
-    title: "Дэвид Юм. Часть 2",
+    title: "Откуда берутся субъекты и объекты",
     order: 33,
     slug: "lesson-33",
     docxUrl: "/lesson-33.docx",
     cover: "/lesson-previews/lesson-33-preview.jpeg",
+    section: "Новоевропейская теория познания",
+    mentions: ["Юм"],
+    meta: {},
+  },
+  {
+    title: "??",
+    order: 34,
+    slug: "lesson-34",
+    docxUrl: "",
+    cover: "/lesson-previews/lesson-34-preview.jpeg",
     section: "Новоевропейская теория познания",
     mentions: ["Юм"],
     meta: {},

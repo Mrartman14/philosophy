@@ -132,6 +132,7 @@ function formatYear(year: number) {
   return `${Math.abs(year)} до н.э.`;
 }
 
+// TODO: d3 axis для времени https://d3js.org/d3-axis
 export const PhilosophersTimeline: React.FC = () => {
   return (
     <svg

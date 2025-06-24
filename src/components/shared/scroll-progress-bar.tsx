@@ -23,11 +23,8 @@ export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = ({
   }, []);
 
   return (
-    <div className={`w-full h-1 bg-(--border) rounded ${className}`}>
-      <div
-        className="h-full bg-(--primary) rounded"
-        style={{ width: `${scroll}%` }}
-      />
+    <div className={`w-full h-1 bg-(--border) ${className}`}>
+      <div className="h-full bg-(--primary)" style={{ width: `${scroll}%` }} />
     </div>
   );
 };
