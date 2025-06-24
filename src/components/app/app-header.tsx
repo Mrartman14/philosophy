@@ -50,17 +50,22 @@ export const AppHeader: React.FC = () => {
           </NavigationMenu.Item>
           <NavigationMenu.Item className="flex items-stretch justify-center">
             <NavigationMenu.Trigger className={triggerClassName}>
-              Лекции
+              <span className="text-xl">Лекции</span>
               <NavigationMenu.Icon className="transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180">
                 <ChevronDownIcon />
               </NavigationMenu.Icon>
             </NavigationMenu.Trigger>
             <NavigationMenu.Content className={contentClassName}>
-              <ul className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
+              <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll p-2">
                 {Object.entries(groupedByChapter).map(([chapter, data]) => {
                   return (
-                    <Fragment key={chapter}>
-                      <h6 className={`text-(--description) text-lg`}>
+                    <div
+                      key={chapter}
+                      className="static w-full grid grid-cols-1"
+                    >
+                      <h6
+                        className={`sticky top-0 text-(--description) bg-(--background) text-lg border-b-1 border-b-(--border) text-right`}
+                      >
                         {chapter}
                       </h6>
                       {data.map((item) => {
@@ -101,7 +106,7 @@ export const AppHeader: React.FC = () => {
                           </li>
                         );
                       })}
-                    </Fragment>
+                    </div>
                   );
                 })}
               </ul>
@@ -140,7 +145,6 @@ const triggerClassName =
   "font-semibold leading-6 select-none no-underline ";
 
 const contentClassName =
-  "max-w-[90vw] overflow-y-scroll max-h-[80vh] p-4 " +
   "transition-[opacity,transform,translate] duration-[var(--duration)] ease-[var(--easing)] " +
   "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 " +
   "data-[starting-style]:data-[activation-direction=left]:translate-x-[-50%] " +
