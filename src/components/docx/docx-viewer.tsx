@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { convertToHtml } from "mammoth";
 
 import { PageData } from "@/structure";
-import { DocxOutroLink } from "../docx/docx-outro-link";
-import { AsideMenu, AsideNavItem } from "./aside-menu";
+import { DocxOutroLink } from "./docx-outro-link";
+import { AsideMenu, AsideNavItem } from "../shared/aside-menu";
 
 interface DocxViewerProps {
   data: PageData;
