@@ -92,16 +92,16 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
   const outroLinks = [
     {
-      href: prevData ? `${basePath}/lectures/${prevData?.slug}` : undefined,
+      href: prevData ? `/lectures/${prevData?.slug}` : undefined,
       title: "← Назад",
       description: prevData?.title,
-      imageSrc: prevData?.cover,
+      imageSrc: `${basePath}${prevData?.cover}`,
     },
     {
-      href: nextData ? `${basePath}/lectures/${nextData?.slug}` : undefined,
+      href: nextData ? `/lectures/${nextData?.slug}` : undefined,
       title: "Вперёд →",
       description: nextData?.title,
-      imageSrc: nextData?.cover,
+      imageSrc: `${basePath}${nextData?.cover}`,
     },
   ];
 
