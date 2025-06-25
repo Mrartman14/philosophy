@@ -22,6 +22,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   nextData,
   docxArrayBuffer,
 }) => {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const [parsedHtml, setParsedHtml] = useState<Document | null>(null);
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
 
@@ -91,13 +92,13 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
   const outroLinks = [
     {
-      href: prevData ? `/lectures/${prevData?.slug}` : undefined,
+      href: prevData ? `${basePath}/lectures/${prevData?.slug}` : undefined,
       title: "← Назад",
       description: prevData?.title,
       imageSrc: prevData?.cover,
     },
     {
-      href: nextData ? `/lectures/${nextData?.slug}` : undefined,
+      href: nextData ? `${basePath}/lectures/${nextData?.slug}` : undefined,
       title: "Вперёд →",
       description: nextData?.title,
       imageSrc: nextData?.cover,
@@ -117,7 +118,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
         {data.cover ? (
           <div className="relative">
             <img
-              src={data.cover}
+              src={`${basePath}${data.cover}`}
               alt={`${data.title} lesson preview`}
               style={{ margin: 0 }}
             />
