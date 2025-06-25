@@ -93,7 +93,7 @@ export const AppHeader: React.FC = () => {
                             >
                               {item.order}. {item.title}
                             </Link>
-                            <div className="flex gap-1 items-center">
+                            <div className="flex gap-1 items-center flex-wrap">
                               {item.mentions.map((m, i, arr) => (
                                 <Fragment key={m}>
                                   <Mention className="text-xs">
