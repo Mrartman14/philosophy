@@ -23,8 +23,21 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
+      {imageSrc && (
+        <img
+          alt={`${title} image`}
+          className={`absolute w-full h-full object-cover transition-transform duration-500`}
+          src={imageSrc}
+          style={{
+            margin: 0,
+            transform: hover ? "scale(1.2)" : undefined,
+            opacity: hover ? 1 : 0,
+            pointerEvents: hover ? "auto" : "none",
+          }}
+        />
+      )}
       <div
-        className={`z-10 w-full absolute grid p-1 ${
+        className={`w-full absolute grid p-1 ${
           hover ? "rounded-2md bg-(--text-pane)" : ""
         }`}
         style={{
@@ -39,19 +52,6 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
           {description}
         </span>
       </div>
-      {imageSrc && (
-        <img
-          alt={`${title} image`}
-          className={`absolute w-full h-full object-cover transition-transform duration-500`}
-          src={imageSrc}
-          style={{
-            margin: 0,
-            transform: hover ? "scale(1.2)" : undefined,
-            opacity: hover ? 1 : 0,
-            pointerEvents: hover ? "auto" : "none",
-          }}
-        />
-      )}
     </Link>
   );
 };
