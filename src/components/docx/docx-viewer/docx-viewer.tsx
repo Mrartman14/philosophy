@@ -13,7 +13,7 @@ import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import "./docx-viewer.css";
 
 interface DocxViewerProps {
-  docxArrayBuffer: ArrayBuffer;
+  // docxArrayBuffer: ArrayBuffer;
   data: PageData;
   prevData: PageData | null;
   nextData: PageData | null;
@@ -22,7 +22,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   data,
   prevData,
   nextData,
-  docxArrayBuffer,
+  // docxArrayBuffer,
 }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const [parsedHtml, setParsedHtml] = useState<Document | null>(null);
@@ -30,6 +30,11 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
   useEffect(() => {
     async function fetchAndConvert() {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const url = `${baseUrl}${data.docxUrl}`;
+      const response = await fetch(url);
+      const docxArrayBuffer = await response.arrayBuffer();
+
       const { value } = await convertToHtml(
         { arrayBuffer: docxArrayBuffer },
         {
@@ -89,7 +94,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
       setAsideItems(nextAsideItems);
     }
     fetchAndConvert();
-  }, [docxArrayBuffer]);
+  }, [data.docxUrl]);
 
   const outroLinks = [
     {

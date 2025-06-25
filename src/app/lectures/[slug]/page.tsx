@@ -42,10 +42,10 @@ export default async function Page({ params }: PageProps) {
   const nextPageConfig =
     structure.find((p) => p.order === pageConfig.order + 1) ?? null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const url = `${baseUrl}${pageConfig.docxUrl}`;
-  const response = await fetch(url);
-  const docxArrayBuffer = await response.arrayBuffer();
+  // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  // const url = `${baseUrl}${pageConfig.docxUrl}`;
+  // const response = await fetch(url);
+  // const docxArrayBuffer = await response.arrayBuffer();
 
   return (
     <div className="grid grid-cols-1">
@@ -53,7 +53,7 @@ export default async function Page({ params }: PageProps) {
         data={pageConfig}
         prevData={prevPageConfig}
         nextData={nextPageConfig}
-        docxArrayBuffer={docxArrayBuffer}
+        // docxArrayBuffer={docxArrayBuffer}
       />
     </div>
   );
