@@ -39,7 +39,7 @@ export const structure: PageData[] = [
     slug: "lesson-1",
     docxUrl: "/lesson-1.docx",
     section: "Интро",
-    mentions: [],
+    mentions: ["Пифагор"],
     meta: {},
   },
   {

@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import groupBy from "lodash/groupBy";
 import { usePathname } from "next/navigation";
 import { Fragment, useMemo } from "react";
 import { NavigationMenu } from "@base-ui-components/react";
 
-import { ThemeSelect } from "./theme-select";
 import { structure } from "@/structure";
 import { Mention } from "../shared/mention";
-import Image from "next/image";
+import { ThemeSelect } from "./theme-select";
 
 export const AppHeader: React.FC = () => {
   const pathname = usePathname();
@@ -93,7 +93,7 @@ export const AppHeader: React.FC = () => {
                             >
                               {item.order}. {item.title}
                             </Link>
-                            <div className="flex gap-1">
+                            <div className="flex gap-1 items-center">
                               {item.mentions.map((m, i, arr) => (
                                 <Fragment key={m}>
                                   <Mention className="text-xs">

@@ -33,8 +33,26 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
           includeEmbeddedStyleMap: false,
           ignoreEmptyParagraphs: true,
           styleMap: [
-            "highlight => span.highlight",
-            "highlight[color='yellow'] => span.text-amber-300",
+            "comment-reference => sup", // отображение комментов
+
+            "u => span.underline.decoration-1",
+
+            "p[style-name='Quote'] => blockquote:fresh",
+
+            "highlight[color='yellow'] => span.bg-amber-700",
+            "highlight[color='green'] => span.bg-green-700",
+            "highlight[color='cyan'] => span.bg-cyan-700",
+            "highlight[color='magenta'] => span.bg-pink-700",
+            "highlight[color='blue'] => span.bg-blue-700",
+            "highlight[color='red'] => span.bg-red-700",
+            "highlight[color='darkYellow'] => span.bg-yellow-700",
+            "highlight[color='darkGreen'] => span.bg-green-700",
+            "highlight[color='darkCyan'] => span.bg-cyan-700",
+            "highlight[color='darkMagenta'] => span.bg-pink-700",
+            "highlight[color='darkBlue'] => span.bg-blue-700",
+            "highlight[color='darkRed'] => span.bg-red-700",
+            "highlight[color='black'] => span.bg-black",
+            "highlight[color='white'] => span.bg-white",
           ],
         }
       );

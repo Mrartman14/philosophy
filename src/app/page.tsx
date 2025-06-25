@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { PhilosophersTimeline } from "@/components/lessons-timeline/timeline";
+// import { PhilosophersTimeline } from "@/components/lessons-timeline/timeline";
 
 export default function Home() {
   return (
@@ -8,11 +8,11 @@ export default function Home() {
         // className="dark:invert"
         src="/logo.png"
         alt="Logo"
-        width={300}
-        height={300}
+        width={500}
+        height={500}
         priority
       />
-      <PhilosophersTimeline />
+      {/* <PhilosophersTimeline /> */}
       <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
         {/* <li className="mb-2 tracking-[-.01em]">
           Get started by editing{" "}
