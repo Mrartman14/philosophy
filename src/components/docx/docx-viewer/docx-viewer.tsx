@@ -61,31 +61,54 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
       const parser = new DOMParser();
       const doc = parser.parseFromString(value, "text/html");
       const nextAsideItems: AsideNavItem[] = [];
+      const headings = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
 
-      for (let i = 1; i <= 6; i++) {
-        const tag = "h" + i;
-        doc.querySelectorAll(tag).forEach((h) => {
-          const id = (h.textContent ?? "").replaceAll(" ", "-");
-          h.setAttribute("id", id);
+      headings.forEach((h) => {
+        const level = parseInt(h.tagName[1], 10);
+        const id = (h.textContent ?? "").replaceAll(" ", "-");
+        h.setAttribute("id", id);
 
-          nextAsideItems.push({
-            id: id,
-            render: ({ isSelected }) => (
-              <span
-                className={`${
-                  isSelected ? "underline underline-offset-4" : "no-underline"
-                }`}
-                style={{ paddingLeft: (i - 2) * 20 }}
-              >
-                {h.textContent}
-              </span>
-            ),
-          });
+        nextAsideItems.push({
+          id,
+          render: ({ isSelected }) => (
+            <span
+              className={`${
+                isSelected ? "underline underline-offset-4" : "no-underline"
+              }`}
+              style={{ paddingLeft: (level - 2) * 20 }}
+            >
+              {h.textContent}
+            </span>
+          ),
         });
+      });
 
-        setParsedHtml(doc);
-        setAsideItems(nextAsideItems);
-      }
+      setParsedHtml(doc);
+      setAsideItems(nextAsideItems);
+      // for (let i = 1; i <= 6; i++) {
+      //   const tag = "h" + i;
+      //   doc.querySelectorAll(tag).forEach((h) => {
+      //     const id = (h.textContent ?? "").replaceAll(" ", "-");
+      //     h.setAttribute("id", id);
+
+      //     nextAsideItems.push({
+      //       id: id,
+      //       render: ({ isSelected }) => (
+      //         <span
+      //           className={`${
+      //             isSelected ? "underline underline-offset-4" : "no-underline"
+      //           }`}
+      //           style={{ paddingLeft: (i - 2) * 20 }}
+      //         >
+      //           {h.textContent}
+      //         </span>
+      //       ),
+      //     });
+      //   });
+
+      //   setParsedHtml(doc);
+      //   setAsideItems(nextAsideItems);
+      // }
     }
     fetchAndConvert();
   }, [docxArrayBuffer]);
@@ -139,9 +162,13 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
           dangerouslySetInnerHTML={{ __html: parsedHtml?.body.innerHTML ?? "" }}
         />
         <div className="grid grid-cols-2 grid-rows-[150] gap-4 w-full">
-          {outroLinks.map((link) => (
-            <DocxOutroLink key={link.title} {...link} />
-          ))}
+          {outroLinks.map((link) => {
+            if (link.href) {
+              return <DocxOutroLink key={link.title} {...link} />;
+            } else {
+              return <div key={link.title} />;
+            }
+          })}
         </div>
       </div>
       <AsideMenu
