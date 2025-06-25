@@ -62,7 +62,7 @@ export const AppHeader: React.FC = () => {
               </NavigationMenu.Icon>
             </NavigationMenu.Trigger>
             <NavigationMenu.Content className={contentClassName}>
-              <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll p-2">
+              <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll">
                 {Object.entries(groupedByChapter).map(([chapter, data]) => {
                   return (
                     <div
@@ -70,7 +70,7 @@ export const AppHeader: React.FC = () => {
                       className="static w-full grid grid-cols-1"
                     >
                       <h6
-                        className={`sticky top-0 text-(--description) bg-(--background) text-lg border-b-1 border-b-(--border) text-right`}
+                        className={`sticky top-0 text-(--description) bg-(--background) text-lg p-2 border-b-1 border-b-(--border) rounded text-right`}
                       >
                         {chapter}
                       </h6>
@@ -130,7 +130,7 @@ export const AppHeader: React.FC = () => {
               ["--easing" as string]: "cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <NavigationMenu.Popup className="w-full rounded-lg bg-(--background) outline outline-(--border) -outline-offset-1 data-[ending-style]:easing-[ease] relative h-[var(--popup-height)] origin-[var(--transform-origin)] transition-[opacity,transform,width,height,scale,translate] duration-[var(--duration)] ease-[var(--easing)] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[ending-style]:duration-150 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 min-[500px]:w-[var(--popup-width)] xs:w-[var(--popup-width)]">
+            <NavigationMenu.Popup className="w-full rounded bg-(--background) border border-(--border) data-[ending-style]:easing-[ease] relative h-[var(--popup-height)] origin-[var(--transform-origin)] transition-[opacity,transform,width,height,scale,translate] duration-[var(--duration)] ease-[var(--easing)] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[ending-style]:duration-150 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 min-[500px]:w-[var(--popup-width)] xs:w-[var(--popup-width)]">
               <NavigationMenu.Arrow className="flex transition-[left] duration-[var(--duration)] ease-[var(--easing)] data-[side=bottom]:top-[-8px] data-[side=left]:right-[-13px] data-[side=left]:rotate-90 data-[side=right]:left-[-13px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-8px] data-[side=top]:rotate-180">
                 <ArrowSvg />
               </NavigationMenu.Arrow>

@@ -26,7 +26,7 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
       {imageSrc && (
         <img
           alt={`${title} image`}
-          className={`absolute w-full h-full object-cover transition-transform duration-500`}
+          className={`absolute hidden md:block w-full h-full object-cover transition-transform duration-500`}
           src={imageSrc}
           style={{
             margin: 0,
