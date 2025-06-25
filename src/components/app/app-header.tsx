@@ -3,8 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import groupBy from "lodash/groupBy";
-import { usePathname } from "next/navigation";
 import { Fragment, useMemo } from "react";
+import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui-components/react";
 
 import { structure } from "@/structure";
@@ -17,6 +17,7 @@ export const AppHeader: React.FC = () => {
     () => groupBy(structure, (x) => x.section),
     []
   );
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   // const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -45,7 +46,12 @@ export const AppHeader: React.FC = () => {
         <NavigationMenu.List className="relative grid grid-cols-[auto_1fr] w-full h-full items-stretch">
           <NavigationMenu.Item>
             <Link href="/">
-              <Image src="/logo.png" alt="Logo image" width={49} height={49} />
+              <Image
+                src={`${basePath}/logo.png`}
+                alt="Logo image"
+                width={49}
+                height={49}
+              />
             </Link>
           </NavigationMenu.Item>
           <NavigationMenu.Item className="flex items-stretch justify-center">
