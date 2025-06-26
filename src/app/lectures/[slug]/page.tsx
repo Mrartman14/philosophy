@@ -40,7 +40,7 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const pageConfig = structure.find((p) => p.slug === slug);
-  if (!pageConfig) return notFound();
+  if (!pageConfig || !pageConfig.docxUrl) return notFound();
 
   const prevPageConfig =
     structure.find((p) => p.order === pageConfig.order - 1) ?? null;
