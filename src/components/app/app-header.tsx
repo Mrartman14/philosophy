@@ -21,24 +21,6 @@ export const AppHeader: React.FC = () => {
   );
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-  // const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  // const { refs, floatingStyles, context } = useFloating({
-  //   open: true,
-  // });
-
-  // const listRef = useRef<HTMLLIElement[]>([]);
-
-  // const listNavigation = useListNavigation(context, {
-  //   listRef,
-  //   activeIndex,
-  //   onNavigate: setActiveIndex,
-  // });
-
-  // const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(
-  //   [listNavigation]
-  // );
-
   return (
     <header
       className="sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] bg-(--background) border-b border-(--border)"
@@ -63,8 +45,8 @@ export const AppHeader: React.FC = () => {
                 <ChevronDownIcon />
               </NavigationMenu.Icon>
             </NavigationMenu.Trigger>
-            <NavigationMenu.Content className={contentClassName}>
-              <ul className="grid grid-cols-1 gap-2 w-[95vw] md:w-[500px] max-h-[80vh] overflow-y-scroll">
+            <NavigationMenu.Content className={contentAnimationClassName}>
+              <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll">
                 {Object.entries(groupedByChapter).map(([chapter, data]) => {
                   return (
                     <div
@@ -79,38 +61,27 @@ export const AppHeader: React.FC = () => {
                       {data.map((item) => {
                         const href = `/lectures/${item.slug}`;
                         const isActive = pathname === href;
-                        // const itemIndex = chapterIndex + index;
+                        const lClasses = `${
+                          isActive ? "text-(--primary)" : ""
+                        } group block p-2 hover:bg-(--text-pane) font-semibold`;
 
                         return (
-                          <li
-                            key={href}
-                            className="p-2 rounded hover:bg-(--text-pane)"
-                            // tabIndex={activeIndex === itemIndex ? 0 : -1}
-                            // ref={(node) => {
-                            //   if (node) {
-                            //     listRef.current[index] = node;
-                            //   }
-                            // }}
-                            // {...getItemProps()}
-                          >
-                            <Link
-                              href={href}
-                              className={`${
-                                isActive ? "text-(--primary)" : ""
-                              } ${linkCardClassName}`}
-                            >
-                              {item.order}. {item.title}
+                          <li key={href}>
+                            <Link href={href} className={lClasses}>
+                              <span className="group-hover:underline group-focus:underline">
+                                {item.order}. {item.title}
+                              </span>
+                              <div className="flex gap-1 items-center flex-wrap">
+                                {item.mentions.map((m, i, arr) => (
+                                  <Fragment key={m}>
+                                    <Mention className="text-xs">
+                                      {m}
+                                      {i < arr.length - 1 && ","}
+                                    </Mention>
+                                  </Fragment>
+                                ))}
+                              </div>
                             </Link>
-                            <div className="flex gap-1 items-center flex-wrap">
-                              {item.mentions.map((m, i, arr) => (
-                                <Fragment key={m}>
-                                  <Mention className="text-xs">
-                                    {m}
-                                    {i < arr.length - 1 && ","}
-                                  </Mention>
-                                </Fragment>
-                              ))}
-                            </div>
                           </li>
                         );
                       })}
@@ -126,14 +97,14 @@ export const AppHeader: React.FC = () => {
           <NavigationMenu.Positioner
             sideOffset={10}
             collisionPadding={{ top: 5, bottom: 5, left: 20, right: 20 }}
-            className="box-border h-[var(--positioner-height)] w-[var(--positioner-width)] max-w-[var(--available-width)] transition-[top,left,right,bottom] duration-[var(--duration)] ease-[var(--easing)] before:absolute before:content-[''] data-[instant]:transition-none data-[side=bottom]:before:top-[-10px] data-[side=bottom]:before:right-0 data-[side=bottom]:before:left-0 data-[side=bottom]:before:h-2.5 data-[side=left]:before:top-0 data-[side=left]:before:right-[-10px] data-[side=left]:before:bottom-0 data-[side=left]:before:w-2.5 data-[side=right]:before:top-0 data-[side=right]:before:bottom-0 data-[side=right]:before:left-[-10px] data-[side=right]:before:w-2.5 data-[side=top]:before:right-0 data-[side=top]:before:bottom-[-10px] data-[side=top]:before:left-0 data-[side=top]:before:h-2.5"
+            className={positionerClassName}
             style={{
               ["--duration" as string]: "0.35s",
               ["--easing" as string]: "cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
-            <NavigationMenu.Popup className="w-full rounded bg-(--background) border border-(--border) data-[ending-style]:easing-[ease] relative h-[var(--popup-height)] origin-[var(--transform-origin)] transition-[opacity,transform,width,height,scale,translate] duration-[var(--duration)] ease-[var(--easing)] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[ending-style]:duration-150 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 min-[500px]:w-[var(--popup-width)] xs:w-[var(--popup-width)]">
-              <NavigationMenu.Arrow className="flex transition-[left] duration-[var(--duration)] ease-[var(--easing)] data-[side=bottom]:top-[-8px] data-[side=left]:right-[-13px] data-[side=left]:rotate-90 data-[side=right]:left-[-13px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-8px] data-[side=top]:rotate-180">
+            <NavigationMenu.Popup className={popupClassName}>
+              <NavigationMenu.Arrow className={arrowClassName}>
                 <DropdownArrowIcon />
               </NavigationMenu.Arrow>
               <NavigationMenu.Viewport className="relative h-full w-full overflow-hidden" />
@@ -150,14 +121,21 @@ export const AppHeader: React.FC = () => {
 const triggerClassName =
   "box-border flex items-center justify-center gap-1.5 " +
   "data-[popup-open]:text-(--description) " +
-  "font-semibold leading-6 select-none no-underline ";
+  "font-semibold leading-6 select-none ";
 
-const contentClassName =
+const positionerClassName =
+  "box-border h-[var(--positioner-height)] w-[var(--positioner-width)] max-w-[var(--available-width)] transition-[top,left,right,bottom] duration-[var(--duration)] ease-[var(--easing)] before:absolute before:content-[''] data-[instant]:transition-none data-[side=bottom]:before:top-[-10px] data-[side=bottom]:before:right-0 data-[side=bottom]:before:left-0 data-[side=bottom]:before:h-2.5 data-[side=left]:before:top-0 data-[side=left]:before:right-[-10px] data-[side=left]:before:bottom-0 data-[side=left]:before:w-2.5 data-[side=right]:before:top-0 data-[side=right]:before:bottom-0 data-[side=right]:before:left-[-10px] data-[side=right]:before:w-2.5 data-[side=top]:before:right-0 data-[side=top]:before:bottom-[-10px] data-[side=top]:before:left-0 data-[side=top]:before:h-2.5";
+
+const popupClassName =
+  "w-full rounded bg-(--background) border border-(--border) data-[ending-style]:easing-[ease] relative h-[var(--popup-height)] origin-[var(--transform-origin)] transition-[opacity,transform,width,height,scale,translate] duration-[var(--duration)] ease-[var(--easing)] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[ending-style]:duration-150 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 min-[500px]:w-[var(--popup-width)] xs:w-[var(--popup-width)]";
+
+const arrowClassName =
+  "flex transition-[left] duration-[var(--duration)] ease-[var(--easing)] data-[side=bottom]:top-[-8px] data-[side=left]:right-[-13px] data-[side=left]:rotate-90 data-[side=right]:left-[-13px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-8px] data-[side=top]:rotate-180";
+
+const contentAnimationClassName =
   "transition-[opacity,transform,translate] duration-[var(--duration)] ease-[var(--easing)] " +
   "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 " +
   "data-[starting-style]:data-[activation-direction=left]:translate-x-[-50%] " +
   "data-[starting-style]:data-[activation-direction=right]:translate-x-[50%] " +
   "data-[ending-style]:data-[activation-direction=left]:translate-x-[50%] " +
   "data-[ending-style]:data-[activation-direction=right]:translate-x-[-50%]";
-
-const linkCardClassName = "block no-underline hover:underline font-semibold";
