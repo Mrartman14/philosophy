@@ -376,7 +376,7 @@ export const structure: PageData[] = [
     title: "??",
     order: 34,
     slug: "lesson-34",
-    docxUrl: "/lesson-34.docx",
+    docxUrl: "",
     cover: "/lesson-previews/lesson-34-preview.jpeg",
     section: "Новоевропейская теория познания",
     mentions: ["Юм"],
