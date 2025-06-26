@@ -301,8 +301,8 @@ export const structure: PageData[] = [
     cover: "/lesson-previews/lesson-27-preview.jpeg",
     section: "Античная этика",
     mentions: [
-      "Савелий",
-      "Тертуиллиан",
+      "Савеллий",
+      "Тертуллиан",
       "Арий",
       "Евномий",
       "Василий Великий",
@@ -349,7 +349,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-31.docx",
     cover: "/lesson-previews/lesson-31-preview.jpeg",
     section: "Новоевропейская теория познания",
-    mentions: ["Беркли", "Молиньё"],
+    mentions: ["Беркли", "Молинью"],
     meta: {},
   },
   {

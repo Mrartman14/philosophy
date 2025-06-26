@@ -26,7 +26,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
 
   const minYear = Math.min(...philosophers.map((d) => d.from));
   const maxYear = Math.max(...philosophers.map((d) => d.to));
-  const virtualWidth = width * 1;
+  const virtualWidth = width * 2;
   const xScale = d3
     .scaleLinear()
     .domain([minYear, maxYear])
@@ -37,12 +37,12 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     const svg = d3.select(svgRef.current);
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.5, 5])
+      .scaleExtent([0.1, 15])
       .on("zoom", (event) => setTransform(event.transform));
     svg.call(zoom);
   }, []);
 
-  const d = useMemo(() => {
+  const lessonLines = useMemo(() => {
     const coords = philosophers.map((philosopher) => ({
       ...philosopher,
       x: Math.trunc(xScale((philosopher.from + philosopher.to) / 2)),
@@ -53,12 +53,21 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
 
     const paths = Object.entries(groupedByChapter).map(
       ([ch, lessons], index) => {
-        const yGap = (index + 1) * 20;
-        let points: { point: { x: number; y: number }; lesson: string }[] = [
-          {
-            lesson: lessons[0]!.title,
-            point: { x: xScale(minYear), y: height - yGap },
-          },
+        const yGap = (index + 1) * 30;
+        type LessonPoint = {
+          point: { x: number; y: number };
+          lesson: string;
+          chapter: string;
+        };
+        let points: LessonPoint[] = [
+          // {
+          //   point: {
+          //     x: Math.trunc(xScale(minYear)),
+          //     y: Math.trunc(height - yGap),
+          //   },
+          //   lesson: lessons[0]!.title,
+          //   chapter: ch,
+          // },
         ];
 
         lessons
@@ -70,7 +79,14 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                 .map(({ x, y }) => ({ x, y }));
 
               points = points.concat(
-                point.map((x) => ({ point: x, lesson: lesson.title }))
+                point.map((x) => {
+                  const r: LessonPoint = {
+                    point: x,
+                    lesson: lesson.title,
+                    chapter: ch,
+                  };
+                  return r;
+                })
               );
             });
           });
@@ -87,42 +103,46 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     );
 
     return paths;
-  }, [height, minYear, xScale]);
+  }, [height, xScale]);
 
-  const tickStep = 50;
-  const ticks = [];
-  for (
-    let year = Math.ceil(minYear / tickStep) * tickStep;
-    year <= maxYear;
-    year += tickStep
-  ) {
-    ticks.push(year);
-  }
+  const ticks = useMemo(() => {
+    const tickStep = 50;
+    const result = [];
+    for (
+      let year = Math.ceil(minYear / tickStep) * tickStep;
+      year <= maxYear;
+      year += tickStep
+    ) {
+      result.push(year);
+    }
+    return result;
+  }, [maxYear, minYear]);
 
   return (
     <div className="overflow-x-auto w-full border border-(--border) rounded-2xl">
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
-          {ticks.map((year) => (
-            <g key={year}>
-              <line
-                x1={xScale(year)}
-                x2={xScale(year)}
-                y1={height - 40}
-                y2={height - 30}
-                stroke="var(--link)"
-                strokeWidth={1}
-              />
-              <text
-                x={xScale(year)}
-                y={height - 15}
-                textAnchor="middle"
-                className="text-xs"
-              >
-                {year < 0 ? `−${Math.abs(year)}` : year}
-              </text>
-            </g>
-          ))}
+          {transform.k > 1.5 &&
+            ticks.map((year) => (
+              <g key={year}>
+                <line
+                  x1={xScale(year)}
+                  x2={xScale(year)}
+                  y1={height - 40}
+                  y2={height - 30}
+                  stroke="var(--link)"
+                  strokeWidth={1}
+                />
+                <text
+                  x={xScale(year)}
+                  y={height - 15}
+                  textAnchor="middle"
+                  fontSize={12 / transform.k}
+                >
+                  {year < 0 ? `-${Math.abs(year)}` : year}
+                </text>
+              </g>
+            ))}
 
           <line
             x1={xScale(minYear)}
@@ -133,7 +153,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
             strokeWidth={2}
           />
 
-          {d.map(({ color, d }) => (
+          {lessonLines.map(({ color, d }) => (
             <g key={color}>
               <path d={d} stroke={color} strokeWidth={2} fill="none" />
             </g>
