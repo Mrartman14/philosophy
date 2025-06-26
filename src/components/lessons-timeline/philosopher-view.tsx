@@ -13,14 +13,14 @@ type PhilosopherViewProps = {
 export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
   x,
   y,
-  scale,
+  // scale,
   philosopher,
 }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const radius = 10;
 
   const size = radius * 2;
-  const size2 = (radius * 2) / (scale / 1.5);
+  // const size2 = (radius * 2) / (scale / 1.5);
   return (
     <foreignObject
       x={x - radius}
@@ -31,6 +31,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
     >
       <Popover.Root openOnHover>
         <Popover.Trigger
+          className="cursor-pointer"
           style={{
             position: "absolute",
             top: "50%",
@@ -50,7 +51,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
           /> */}
           <div
             style={{
-              width: size2,
+              width: size,
               aspectRatio: "1 / 1",
               borderRadius: "50%",
             }}
