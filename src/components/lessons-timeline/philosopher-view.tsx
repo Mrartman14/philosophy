@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Popover } from "@base-ui-components/react/popover";
 
-import type { Timeline } from "./timeline";
+import type { Timeline } from "@/utils/philosophers";
 import { DropdownArrowIcon } from "@/assets/icons/arrow-icon";
 
 type PhilosopherViewProps = {
