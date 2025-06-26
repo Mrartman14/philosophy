@@ -45,6 +45,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
               borderRadius: "50%",
               backgroundSize: "cover",
               backgroundImage: `url(${basePath}${philosopher.imageSrc})`,
+              outline: "2px solid var(--link)",
             }}
           />
           {/* <div
@@ -62,7 +63,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
                 objectFit: "cover",
                 borderRadius: "50%",
                 margin: 0,
-                outline: "1px solid #2c6590",
+                outline: "1px solid var(--link)",
               }}
             />
           </div> */}
