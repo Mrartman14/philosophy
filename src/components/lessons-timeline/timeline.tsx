@@ -4,7 +4,6 @@ import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 
 import { PhilosopherView } from "./philosopher-view";
-import { structure } from "@/utils/structure";
 
 export type Timeline = {
   name: string;
@@ -95,24 +94,6 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     .scaleLinear()
     .domain([minYear, maxYear])
     .range([60, virtualWidth - 60]);
-
-  // const introLessons = structure.filter((x) => x.section === "Интро");
-  // const lessons = data.filter((x) =>
-  //   introLessons.some((y) => y.mentions.includes(x.name))
-  // );
-  // const points = lessons.map(
-  //   (x) => [xScale((x.from + x.to) / 2), height - 60] as [number, number]
-  // );
-
-  // const d = points
-  //   .map((p, i) => (i === 0 ? `M${p.x} ${p.y}` : `L${p.x} ${p.y}`))
-  //   .join(" ");
-
-  // const lineGenerator = d3.line();
-  // const qweee = qwe.map(
-  //   (x) => [xScale((x.from + x.to) / 2), height - 60] as [number, number]
-  // );
-  // const pathData = lineGenerator(qweee);
 
   useEffect(() => {
     if (!svgRef.current) return;
