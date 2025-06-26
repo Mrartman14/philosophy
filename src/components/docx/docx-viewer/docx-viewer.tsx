@@ -107,10 +107,9 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
             {data.mentions.map((m) => (
               <Mention
                 key={m}
+                name={m}
                 className="pl-1 pr-1 border border-(--border) rounded-lg"
-              >
-                {m}
-              </Mention>
+              />
             ))}
           </div>
         )}
