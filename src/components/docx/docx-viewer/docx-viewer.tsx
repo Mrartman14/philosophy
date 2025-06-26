@@ -2,7 +2,7 @@
 
 import React, { useLayoutEffect, useState } from "react";
 
-import { PageData } from "@/structure";
+import { PageData } from "@/utils/structure";
 import { DocxOutroLink } from "../docx-outro-link";
 import { Mention } from "@/components/shared/mention";
 import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";

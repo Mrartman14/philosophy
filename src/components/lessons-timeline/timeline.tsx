@@ -25,7 +25,7 @@ const data: Timeline[] = [
     from: -540,
     to: -470,
     level: 0,
-    imageSrc: "/philosophers/parmenides.jpeg",
+    imageSrc: "/philosophers/parmenides.jpg",
   },
   {
     name: "Гераклит",
@@ -75,17 +75,18 @@ type PhilosophersTimelineProps = {
   height?: number;
   width?: number;
 };
-export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
-  height = 800,
-  width = 1000,
-}) => {
+
+const width = document.documentElement.clientWidth / 1.5,
+  height = document.documentElement.clientHeight / 1.5 - 50;
+
+export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   const [transform, setTransform] = useState(d3.zoomIdentity);
   const svgRef = useRef<SVGSVGElement>(null);
 
   // Вычисляем шкалу времени
   const minYear = Math.min(...data.map((d) => d.from));
   const maxYear = Math.max(...data.map((d) => d.to));
-  const virtualWidth = width * 3;
+  const virtualWidth = width * 1;
   const xScale = d3
     .scaleLinear()
     .domain([minYear, maxYear])
@@ -113,7 +114,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
   }
 
   return (
-    <div className="prose dark:prose-invert overflow-x-auto w-full border border-(--border) rounded-2xl">
+    <div className="overflow-x-auto w-full border border-(--border) rounded-2xl">
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
           {ticks.map((year) => (
@@ -123,33 +124,27 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
                 x2={xScale(year)}
                 y1={height - 40}
                 y2={height - 30}
-                stroke="red"
+                stroke="#2c6590"
                 strokeWidth={1}
               />
-              <text
-                x={xScale(year)}
-                y={height - 15}
-                textAnchor="middle"
-                // fontSize={12}
-              >
+              <text x={xScale(year)} y={height - 15} textAnchor="middle">
                 {year < 0 ? `−${Math.abs(year)}` : year}
               </text>
             </g>
           ))}
-          {/* Ось времени */}
-          {/* <g ref={axisRef} transform={`translate(0, ${height - 40})`} /> */}
           {/* Прямая времени */}
           <line
             x1={xScale(minYear)}
             x2={xScale(maxYear)}
             y1={height - 40}
             y2={height - 40}
-            stroke="red"
+            stroke="#2c6590"
             strokeWidth={2}
           />
           {/* Точки-философы как React-компоненты */}
           {data.map((philosopher) => (
             <PhilosopherView
+              scale={transform.k}
               key={philosopher.name}
               x={xScale((philosopher.from + philosopher.to) / 2)}
               y={height - 40}
