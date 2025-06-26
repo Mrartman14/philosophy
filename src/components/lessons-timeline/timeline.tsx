@@ -1,7 +1,7 @@
 "use client";
 
 import * as d3 from "d3";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { PhilosopherView } from "./philosopher-view";
 
@@ -76,10 +76,13 @@ type PhilosophersTimelineProps = {
   width?: number;
 };
 
-const width = document.documentElement.clientWidth / 1.5,
-  height = document.documentElement.clientHeight / 1.5 - 50;
-
 export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
+  const { width, height } = useMemo(() => {
+    const width = document.documentElement.clientWidth / 1.5,
+      height = document.documentElement.clientHeight / 1.5 - 50;
+    return { width, height };
+  }, []);
+
   const [transform, setTransform] = useState(d3.zoomIdentity);
   const svgRef = useRef<SVGSVGElement>(null);
 
