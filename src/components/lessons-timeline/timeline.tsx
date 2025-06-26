@@ -113,8 +113,8 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
   }
 
   return (
-    <div className="overflow-x-auto w-full border border-(--border) rounded-2xl">
-      <svg ref={svgRef} width={width} height={height}>
+    <div className="prose dark:prose-invert overflow-x-auto w-full border border-(--border) rounded-2xl">
+      <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
           {ticks.map((year) => (
             <g key={year}>
@@ -130,8 +130,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
                 x={xScale(year)}
                 y={height - 15}
                 textAnchor="middle"
-                fontSize={12}
-                fill="#444"
+                // fontSize={12}
               >
                 {year < 0 ? `−${Math.abs(year)}` : year}
               </text>
