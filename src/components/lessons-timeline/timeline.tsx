@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 
 import { PhilosopherView } from "./philosopher-view";
+import { structure } from "@/utils/structure";
 
 export type Timeline = {
   name: string;
@@ -87,7 +88,6 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   const [transform, setTransform] = useState(d3.zoomIdentity);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  // Вычисляем шкалу времени
   const minYear = Math.min(...data.map((d) => d.from));
   const maxYear = Math.max(...data.map((d) => d.to));
   const virtualWidth = width * 1;
@@ -96,7 +96,24 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     .domain([minYear, maxYear])
     .range([60, virtualWidth - 60]);
 
-  // D3 Zoom
+  // const introLessons = structure.filter((x) => x.section === "Интро");
+  // const lessons = data.filter((x) =>
+  //   introLessons.some((y) => y.mentions.includes(x.name))
+  // );
+  // const points = lessons.map(
+  //   (x) => [xScale((x.from + x.to) / 2), height - 60] as [number, number]
+  // );
+
+  // const d = points
+  //   .map((p, i) => (i === 0 ? `M${p.x} ${p.y}` : `L${p.x} ${p.y}`))
+  //   .join(" ");
+
+  // const lineGenerator = d3.line();
+  // const qweee = qwe.map(
+  //   (x) => [xScale((x.from + x.to) / 2), height - 60] as [number, number]
+  // );
+  // const pathData = lineGenerator(qweee);
+
   useEffect(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
@@ -136,7 +153,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               </text>
             </g>
           ))}
-          {/* Прямая времени */}
+
           <line
             x1={xScale(minYear)}
             x2={xScale(maxYear)}
@@ -145,13 +162,13 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
             stroke="#2c6590"
             strokeWidth={2}
           />
-          {/* Точки-философы как React-компоненты */}
+
           {data.map((philosopher) => (
             <PhilosopherView
               scale={transform.k}
               key={philosopher.name}
-              x={xScale((philosopher.from + philosopher.to) / 2)}
-              y={height - 40}
+              x={Math.trunc(xScale((philosopher.from + philosopher.to) / 2))}
+              y={Math.trunc(height - 40)}
               philosopher={philosopher}
             />
           ))}

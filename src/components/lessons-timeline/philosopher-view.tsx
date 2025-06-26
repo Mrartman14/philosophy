@@ -18,19 +18,36 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
 }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const radius = 10;
-  const scaledSize = (radius * 2) / (scale / 1.5);
 
+  const size = radius * 2;
+  const size2 = (radius * 2) / (scale / 1.5);
   return (
     <foreignObject
-      x={x - scaledSize / 2}
-      y={y - scaledSize / 2}
-      width={scaledSize}
-      height={scaledSize}
-      style={{ overflow: "visible" }}
+      x={x - radius}
+      y={y - radius}
+      width={size}
+      height={size}
+      style={{ overflow: "visible", position: "relative" }}
     >
       <Popover.Root openOnHover>
-        <Popover.Trigger style={{ aspectRatio: "1 / 1" }}>
+        <Popover.Trigger
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
           <div
+            style={{
+              width: size2,
+              height: size2,
+              borderRadius: "50%",
+              backgroundSize: "cover",
+              backgroundImage: `url(${basePath}${philosopher.imageSrc})`,
+            }}
+          />
+          {/* <div
             style={{
               width: scaledSize,
               aspectRatio: "1 / 1",
@@ -45,9 +62,10 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
                 objectFit: "cover",
                 borderRadius: "50%",
                 margin: 0,
+                outline: "1px solid #2c6590",
               }}
             />
-          </div>
+          </div> */}
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Positioner sideOffset={8}>
