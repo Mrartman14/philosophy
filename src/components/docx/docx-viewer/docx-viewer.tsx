@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { convertToHtml } from "mammoth";
+import React, { useLayoutEffect, useState } from "react";
 
 import { PageData } from "@/structure";
 import { DocxOutroLink } from "../docx-outro-link";
@@ -13,7 +12,12 @@ import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import "./docx-viewer.css";
 
 interface DocxViewerProps {
-  // docxArrayBuffer: ArrayBuffer;
+  htmlString: string;
+  headingsData: {
+    id: string;
+    text: string | null;
+    level: number;
+  }[];
   data: PageData;
   prevData: PageData | null;
   nextData: PageData | null;
@@ -22,79 +26,35 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   data,
   prevData,
   nextData,
-  // docxArrayBuffer,
+  htmlString,
+  headingsData,
 }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-  const [parsedHtml, setParsedHtml] = useState<Document | null>(null);
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
 
-  useEffect(() => {
-    async function fetchAndConvert() {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const url = `${baseUrl}${data.docxUrl}`;
-      const response = await fetch(url);
-      const docxArrayBuffer = await response.arrayBuffer();
+  useLayoutEffect(() => {
+    const nextAsideItems: AsideNavItem[] = [];
 
-      const { value } = await convertToHtml(
-        { arrayBuffer: docxArrayBuffer },
-        {
-          includeEmbeddedStyleMap: false,
-          ignoreEmptyParagraphs: true,
-          styleMap: [
-            "comment-reference => sup", // отображение комментов
-
-            "u => span.underline.decoration-1",
-
-            "p[style-name='Quote'] => blockquote:fresh",
-
-            "highlight[color='yellow'] => span.bg-amber-700",
-            "highlight[color='green'] => span.bg-green-700",
-            "highlight[color='cyan'] => span.bg-cyan-700",
-            "highlight[color='magenta'] => span.bg-pink-700",
-            "highlight[color='blue'] => span.bg-blue-700",
-            "highlight[color='red'] => span.bg-red-700",
-            "highlight[color='darkYellow'] => span.bg-yellow-700",
-            "highlight[color='darkGreen'] => span.bg-green-700",
-            "highlight[color='darkCyan'] => span.bg-cyan-700",
-            "highlight[color='darkMagenta'] => span.bg-pink-700",
-            "highlight[color='darkBlue'] => span.bg-blue-700",
-            "highlight[color='darkRed'] => span.bg-red-700",
-            "highlight[color='black'] => span.bg-black",
-            "highlight[color='white'] => span.bg-white",
-          ],
-        }
-      );
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(value, "text/html");
-      const nextAsideItems: AsideNavItem[] = [];
-      const headings = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
-
-      headings.forEach((h) => {
-        const level = parseInt(h.tagName[1], 10);
-        const id = (h.textContent ?? "").replaceAll(" ", "-");
-        h.setAttribute("id", id);
-
-        nextAsideItems.push({
-          id,
-          render: ({ isSelected }) => (
-            <span
-              className={`${
-                isSelected ? "underline underline-offset-4" : "no-underline"
-              }`}
-              style={{ paddingLeft: (level - 2) * 20 }}
-            >
-              {h.textContent}
-            </span>
-          ),
-        });
+    headingsData.forEach((h) => {
+      nextAsideItems.push({
+        id: h.id,
+        render: ({ isSelected }) => (
+          <span
+            className={`${
+              isSelected ? "underline underline-offset-4" : "no-underline"
+            }`}
+            style={{ paddingLeft: (h.level - 2) * 20 }}
+          >
+            {h.text}
+          </span>
+        ),
       });
+    });
 
-      setParsedHtml(doc);
-      setAsideItems(nextAsideItems);
-    }
-    fetchAndConvert();
-  }, [data.docxUrl]);
+    setAsideItems(nextAsideItems);
+  }, [headingsData]);
+
+  if (!htmlString) return null;
 
   const outroLinks = [
     {
@@ -154,9 +114,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
             ))}
           </div>
         )}
-        <article
-          dangerouslySetInnerHTML={{ __html: parsedHtml?.body.innerHTML ?? "" }}
-        />
+        <article dangerouslySetInnerHTML={{ __html: htmlString }} />
         <div className="grid grid-cols-2 grid-rows-[150] gap-4 w-full">
           {outroLinks.map((link) => {
             if (link.href) {
