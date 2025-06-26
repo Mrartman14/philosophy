@@ -8,6 +8,7 @@ import { structure } from "@/utils/structure";
 import { PhilosopherView } from "./philosopher-view";
 import { philosophers } from "@/utils/philosophers";
 import { getColorFromString } from "@/utils/get-color-from-str";
+import { WidthSlider } from "./width-slider";
 
 type PhilosophersTimelineProps = {
   height?: number;
@@ -15,6 +16,8 @@ type PhilosophersTimelineProps = {
 };
 export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   const [{ height, width }, setSize] = useState({ width: 0, height: 0 });
+  const [virtualWidthK, setVirtualWidthK] = useState(2);
+
   useEffect(() => {
     const width = document.documentElement.clientWidth / 1.5;
     const height = document.documentElement.clientHeight / 1.5 - 50;
@@ -26,7 +29,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
 
   const minYear = Math.min(...philosophers.map((d) => d.from));
   const maxYear = Math.max(...philosophers.map((d) => d.to));
-  const virtualWidth = width * 2;
+  const virtualWidth = width * virtualWidthK;
   const xScale = d3
     .scaleLinear()
     .domain([minYear, maxYear])
@@ -119,29 +122,35 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   }, [maxYear, minYear, transform.k]);
 
   return (
-    <div className="overflow-x-auto w-full border border-(--border) rounded-2xl">
+    <div className="relative overflow-x-auto w-full border border-(--border) rounded-2xl">
+      <WidthSlider
+        value={virtualWidthK}
+        onChange={setVirtualWidthK}
+        className="absolute top-2 right-2"
+      />
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
-          {ticks.map((year) => (
-            <g key={year}>
-              <line
-                x1={xScale(year)}
-                x2={xScale(year)}
-                y1={height - 40}
-                y2={height - 30}
-                stroke="var(--link)"
-                strokeWidth={1}
-              />
-              <text
-                x={xScale(year)}
-                y={height - 15}
-                textAnchor="middle"
-                fontSize={12 / transform.k}
-              >
-                {year < 0 ? `-${Math.abs(year)}` : year}
-              </text>
-            </g>
-          ))}
+          {transform.k > 0.5 &&
+            ticks.map((year) => (
+              <g key={year}>
+                <line
+                  x1={xScale(year)}
+                  x2={xScale(year)}
+                  y1={height - 40}
+                  y2={height - 30}
+                  stroke="var(--link)"
+                  strokeWidth={1}
+                />
+                <text
+                  x={xScale(year)}
+                  y={height - 15}
+                  textAnchor="middle"
+                  fontSize={12 / transform.k}
+                >
+                  {year < 0 ? `-${Math.abs(year)}` : year}
+                </text>
+              </g>
+            ))}
 
           <line
             x1={xScale(minYear)}
