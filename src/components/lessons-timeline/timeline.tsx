@@ -6,64 +6,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { structure } from "@/utils/structure";
 import { PhilosopherView } from "./philosopher-view";
+import { philosophers } from "@/utils/philosophers";
 import { getColorFromString } from "@/utils/get-color-from-str";
-
-export type Timeline = {
-  name: string;
-  from: number;
-  to: number;
-  imageSrc?: string;
-};
-const data: Timeline[] = [
-  {
-    name: "Пифагор",
-    from: -570,
-    to: -490,
-    imageSrc: "/philosophers/pythagoras.jpg",
-  },
-  {
-    name: "Парменид",
-    from: -540,
-    to: -470,
-    imageSrc: "/philosophers/parmenides.jpg",
-  },
-  {
-    name: "Гераклит",
-    from: -544,
-    to: -483,
-    imageSrc: "/philosophers/heraclitus.jpg",
-  },
-  {
-    name: "Зенон",
-    from: -490,
-    to: -425,
-    imageSrc: "/philosophers/zenon.jpg",
-  },
-  {
-    name: "Платон",
-    from: -427,
-    to: -347,
-    imageSrc: "/philosophers/plato.jpg",
-  },
-  {
-    name: "Аристотель",
-    from: -384,
-    to: -322,
-    imageSrc: "/philosophers/aristotle.jpg",
-  },
-  {
-    name: "Эпикур",
-    from: -341,
-    to: -270,
-    imageSrc: "/philosophers/epicurus.jpg",
-  },
-  {
-    name: "Сократ",
-    from: -469,
-    to: -399,
-    imageSrc: "/philosophers/socrates.jpg",
-  },
-];
 
 type PhilosophersTimelineProps = {
   height?: number;
@@ -80,8 +24,8 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   const [transform, setTransform] = useState(d3.zoomIdentity);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const minYear = Math.min(...data.map((d) => d.from));
-  const maxYear = Math.max(...data.map((d) => d.to));
+  const minYear = Math.min(...philosophers.map((d) => d.from));
+  const maxYear = Math.max(...philosophers.map((d) => d.to));
   const virtualWidth = width * 1;
   const xScale = d3
     .scaleLinear()
@@ -99,7 +43,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   }, []);
 
   const d = useMemo(() => {
-    const coords = data.map((philosopher) => ({
+    const coords = philosophers.map((philosopher) => ({
       ...philosopher,
       x: Math.trunc(xScale((philosopher.from + philosopher.to) / 2)),
       y: Math.trunc(height - 40),
@@ -195,7 +139,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
             </g>
           ))}
 
-          {data.map((philosopher) => (
+          {philosophers.map((philosopher) => (
             <PhilosopherView
               key={philosopher.name}
               scale={transform.k}
