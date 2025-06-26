@@ -7,7 +7,7 @@ import { Fragment, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui-components/react";
 
-import { structure } from "@/structure";
+import { structure } from "@/utils/structure";
 import { Mention } from "../shared/mention";
 import { ThemeSelect } from "./theme-select";
 import { DropdownArrowIcon } from "@/assets/icons/arrow-icon";

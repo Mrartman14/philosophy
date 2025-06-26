@@ -5,7 +5,7 @@ import { convertToHtml } from "mammoth";
 import { notFound } from "next/navigation";
 import createDOMPurify from "dompurify";
 
-import { structure } from "@/structure";
+import { structure } from "@/utils/structure";
 import { generateAnchorId } from "@/utils/generate-anchor-id";
 import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
 
