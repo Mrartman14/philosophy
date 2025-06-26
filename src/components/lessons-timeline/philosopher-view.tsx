@@ -37,7 +37,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
         cy={y}
         r={radius}
         fill="none"
-        stroke="#fff"
+        stroke="var(--border)"
         strokeWidth={1}
       />
       {/* Имя философа */}
