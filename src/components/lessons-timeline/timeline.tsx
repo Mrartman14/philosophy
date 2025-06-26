@@ -106,7 +106,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   }, [height, xScale]);
 
   const ticks = useMemo(() => {
-    const tickStep = 50;
+    const tickStep = transform.k > 1.5 ? 100 : 500;
     const result = [];
     for (
       let year = Math.ceil(minYear / tickStep) * tickStep;
@@ -116,33 +116,32 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       result.push(year);
     }
     return result;
-  }, [maxYear, minYear]);
+  }, [maxYear, minYear, transform.k]);
 
   return (
     <div className="overflow-x-auto w-full border border-(--border) rounded-2xl">
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
-          {transform.k > 1.5 &&
-            ticks.map((year) => (
-              <g key={year}>
-                <line
-                  x1={xScale(year)}
-                  x2={xScale(year)}
-                  y1={height - 40}
-                  y2={height - 30}
-                  stroke="var(--link)"
-                  strokeWidth={1}
-                />
-                <text
-                  x={xScale(year)}
-                  y={height - 15}
-                  textAnchor="middle"
-                  fontSize={12 / transform.k}
-                >
-                  {year < 0 ? `-${Math.abs(year)}` : year}
-                </text>
-              </g>
-            ))}
+          {ticks.map((year) => (
+            <g key={year}>
+              <line
+                x1={xScale(year)}
+                x2={xScale(year)}
+                y1={height - 40}
+                y2={height - 30}
+                stroke="var(--link)"
+                strokeWidth={1}
+              />
+              <text
+                x={xScale(year)}
+                y={height - 15}
+                textAnchor="middle"
+                fontSize={12 / transform.k}
+              >
+                {year < 0 ? `-${Math.abs(year)}` : year}
+              </text>
+            </g>
+          ))}
 
           <line
             x1={xScale(minYear)}
