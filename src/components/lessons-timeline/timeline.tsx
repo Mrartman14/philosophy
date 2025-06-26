@@ -32,6 +32,13 @@ let philosophers: Timeline[] = [
     imageSrc: "/philosophers/heraclitus.jpg",
   },
   {
+    name: "Зенон",
+    from: -490,
+    to: -425,
+    level: 0,
+    imageSrc: "/philosophers/zenon.jpg",
+  },
+  {
     name: "Платон",
     from: -427,
     to: -347,
@@ -52,16 +59,14 @@ let philosophers: Timeline[] = [
     level: 0,
     imageSrc: "/philosophers/epicurus.jpg",
   },
+  {
+    name: "Сократ",
+    from: -469,
+    to: -399,
+    level: 0,
+    imageSrc: "/philosophers/socrates.jpg",
+  },
 ];
-
-// const lessons = [
-//   {
-//     type: "intro",
-//     number: 1,
-//     name: "Урок 1. Что такое философия.",
-//     mentions: ["Пифагор"],
-//   },
-// ];
 
 function assignLevels(p: Timeline[]) {
   // Клонируем массив, чтобы не мутировать исходные данные
