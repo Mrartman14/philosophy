@@ -38,7 +38,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
             transform: "translate(-50%, -50%)",
           }}
         >
-          <div
+          {/* <div
             style={{
               width: size2,
               height: size2,
@@ -47,10 +47,10 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
               backgroundImage: `url(${basePath}${philosopher.imageSrc})`,
               outline: "2px solid var(--link)",
             }}
-          />
-          {/* <div
+          /> */}
+          <div
             style={{
-              width: scaledSize,
+              width: size2,
               aspectRatio: "1 / 1",
               borderRadius: "50%",
             }}
@@ -59,6 +59,8 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
               fill
               src={`${basePath}${philosopher.imageSrc}`}
               alt={`${philosopher.name} image`}
+              quality={1}
+              sizes="100px"
               style={{
                 objectFit: "cover",
                 borderRadius: "50%",
@@ -66,7 +68,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
                 outline: "1px solid var(--link)",
               }}
             />
-          </div> */}
+          </div>
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Positioner sideOffset={8}>

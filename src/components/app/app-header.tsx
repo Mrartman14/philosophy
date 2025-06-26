@@ -73,12 +73,13 @@ export const AppHeader: React.FC = () => {
                               </span>
                               <div className="flex gap-1 items-center flex-wrap">
                                 {item.mentions.map((m, i, arr) => (
-                                  <Fragment key={m}>
-                                    <Mention className="text-xs">
-                                      {m}
-                                      {i < arr.length - 1 && ","}
-                                    </Mention>
-                                  </Fragment>
+                                  <div
+                                    key={m}
+                                    className="flex items-center text-xs"
+                                  >
+                                    <Mention className="text-xs" name={m} />
+                                    <span>{i < arr.length - 1 && ","}</span>
+                                  </div>
                                 ))}
                               </div>
                             </Link>
