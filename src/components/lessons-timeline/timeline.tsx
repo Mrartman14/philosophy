@@ -1,7 +1,7 @@
 "use client";
 
 import * as d3 from "d3";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { PhilosopherView } from "./philosopher-view";
 
@@ -77,10 +77,11 @@ type PhilosophersTimelineProps = {
 };
 
 export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
-  const { width, height } = useMemo(() => {
-    const width = document.documentElement.clientWidth / 1.5,
-      height = document.documentElement.clientHeight / 1.5 - 50;
-    return { width, height };
+  const [{ height, width }, setSize] = useState({ width: 0, height: 0 });
+  useEffect(() => {
+    const width = document.documentElement.clientWidth / 1.5;
+    const height = document.documentElement.clientHeight / 1.5 - 50;
+    setSize({ width, height });
   }, []);
 
   const [transform, setTransform] = useState(d3.zoomIdentity);
