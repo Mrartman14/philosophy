@@ -102,30 +102,50 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
     svg.call(zoom);
   }, []);
 
-  // Ось времени
-  const axisRef = useRef<SVGGElement>(null);
-  useEffect(() => {
-    if (!axisRef.current) return;
-    const axis = d3.axisBottom(xScale).tickFormat((d) => {
-      const q = d as number;
-      return `${q < 0 ? "−" + Math.abs(q) : q} г.`;
-    });
-    d3.select(axisRef.current).call(axis);
-  }, [xScale]);
+  const tickStep = 50;
+  const ticks = [];
+  for (
+    let year = Math.ceil(minYear / tickStep) * tickStep;
+    year <= maxYear;
+    year += tickStep
+  ) {
+    ticks.push(year);
+  }
 
   return (
     <div className="overflow-x-auto w-full border border-(--border) rounded-2xl">
       <svg ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
+          {ticks.map((year) => (
+            <g key={year}>
+              <line
+                x1={xScale(year)}
+                x2={xScale(year)}
+                y1={height - 40}
+                y2={height - 30}
+                stroke="red"
+                strokeWidth={1}
+              />
+              <text
+                x={xScale(year)}
+                y={height - 15}
+                textAnchor="middle"
+                fontSize={12}
+                fill="#444"
+              >
+                {year < 0 ? `−${Math.abs(year)}` : year}
+              </text>
+            </g>
+          ))}
           {/* Ось времени */}
-          <g ref={axisRef} transform={`translate(0, ${height - 40})`} />
+          {/* <g ref={axisRef} transform={`translate(0, ${height - 40})`} /> */}
           {/* Прямая времени */}
           <line
             x1={xScale(minYear)}
             x2={xScale(maxYear)}
             y1={height - 40}
             y2={height - 40}
-            stroke="#333"
+            stroke="red"
             strokeWidth={2}
           />
           {/* Точки-философы как React-компоненты */}
