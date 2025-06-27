@@ -190,7 +190,11 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-16.docx",
     cover: "/lesson-previews/lesson-16-preview.jpeg",
     section: "Экспериментальная наука",
-    mentions: ["Галилей", "Коперник", "Френсис Бэкон"],
+    mentions: [
+      "Галилей",
+      "Коперник",
+      //  "Френсис Бэкон"
+    ],
     meta: {},
   },
   {
@@ -260,7 +264,10 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-23.docx",
     cover: "/lesson-previews/lesson-23-preview.jpeg",
     section: "Античная этика",
-    mentions: ["Секст Эмпирик", "Мелани Кляйн"],
+    mentions: [
+      "Секст Эмпирик",
+      // "Мелани Кляйн"
+    ],
     meta: {},
   },
   {
@@ -290,7 +297,10 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-26.docx",
     cover: "/lesson-previews/lesson-26-preview.jpeg",
     section: "Античная этика",
-    mentions: ["Апостол Павел", "Джордж Агамбен"],
+    mentions: [
+      "Апостол Павел",
+      // "Джордж Агамбен"
+    ],
     meta: {},
   },
   {
@@ -308,7 +318,7 @@ export const structure: PageData[] = [
       "Василий Великий",
       "Григорий Богослов",
       "Григорий Нисский",
-      "Жак Деррида",
+      // "Жак Деррида",
     ],
     meta: {},
   },
