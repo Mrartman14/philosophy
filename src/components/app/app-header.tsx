@@ -35,6 +35,7 @@ export const AppHeader: React.FC = () => {
                 alt="Logo image"
                 width={49}
                 height={49}
+                sizes="50px"
               />
             </Link>
           </NavigationMenu.Item>

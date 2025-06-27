@@ -42,6 +42,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
         trigger={
           <div
             style={{
+              position: "relative",
               width: size,
               aspectRatio: "1 / 1",
               borderRadius: "50%",

@@ -120,7 +120,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-9.docx",
     cover: "/lesson-previews/lesson-9-preview.jpeg",
     section: "Интро",
-    mentions: ["Рене  Декарт", "Галилей"],
+    mentions: ["Рене Декарт", "Галилей"],
     meta: {},
   },
   {
@@ -130,7 +130,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-10.docx",
     cover: "/lesson-previews/lesson-10-preview.jpeg",
     section: "Интро",
-    mentions: ["Рене  Декарт"],
+    mentions: ["Рене Декарт"],
     meta: {},
   },
   {
