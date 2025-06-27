@@ -6,12 +6,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { WidthSlider } from "./width-slider";
 import { structure } from "@/utils/structure";
-import { philosophers, Timeline } from "@/utils/philosophers";
 import { PhilosopherView } from "./philosopher-view";
-// import { getColorFromString } from "@/utils/get-color-from-str";
+import { philosophers, Timeline } from "@/utils/philosophers";
+import { getPolylineCenter } from "@/utils/get-polyline-center";
+import { getColorFromStringWithPrefix } from "@/utils/get-color-from-str";
 
-type Point = { x: number; y: number };
-const getLinePath = (point: Point, i: number) =>
+export type Coordinate = { x: number; y: number };
+const getLinePath = (point: Coordinate, i: number) =>
   i === 0 ? `M${point.x} ${point.y}` : `L${point.x} ${point.y}`;
 type LessonPoint = {
   point: { x: number; y: number };
@@ -19,8 +20,8 @@ type LessonPoint = {
   chapter: string;
   mention: string;
 };
-const CHAPTER_GAP = 50 as const;
-const LESSON_LINE_WIDTH = 2 as const;
+const CHAPTER_GAP = 100 as const;
+const LESSON_LINE_WIDTH = 5 as const;
 const LESSON_GAP = LESSON_LINE_WIDTH + 1;
 const LESSON_SKEW = 0 as const;
 
@@ -60,11 +61,13 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   }, []);
 
   const chaptersLines = useMemo(() => {
-    const coords: (Timeline & Point)[] = philosophers.map((philosopher) => ({
-      ...philosopher,
-      x: Math.trunc(xScale((philosopher.from + philosopher.to) / 2)),
-      y: Math.trunc(height - 40),
-    }));
+    const coords: (Timeline & Coordinate)[] = philosophers.map(
+      (philosopher) => ({
+        ...philosopher,
+        x: Math.trunc(xScale((philosopher.from + philosopher.to) / 2)),
+        y: Math.trunc(height - 40),
+      })
+    );
 
     const groupedByChapter = groupBy(structure, (x) => x.section);
 
@@ -87,7 +90,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               (chapterIndex + 1) * CHAPTER_GAP + lessonIndex * LESSON_GAP;
 
             // все кого упомянули на уроке
-            const mentions: (Timeline & Point)[] = lesson.mentions
+            const mentions: (Timeline & Coordinate)[] = lesson.mentions
               .map((m) => coords.find((x) => x.name === m) ?? null)
               .filter((x) => x !== null);
 
@@ -196,51 +199,70 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
           />
 
           {chaptersLines.map((chapterPoints, index) => {
-            // const paths = lessonsPoints.map((points) => {
-            //   return points
-            //     .map(({ point }, i) => getLinePath(point, i))
-            //     .join(" ");
-            // });
-
-            // const connectionsD = connectionPoints.map((points) => {
-            //   return points
-            //     .map(({ point }, i) => getLinePath(point, i))
-            //     .join(" ");
-            // });
-
             return (
               <g key={index}>
                 {chapterPoints.map(
                   ({ lessonPoints, connectionPoints, lesson, chapter }) => {
-                    const lessonPath = lessonPoints
-                      .map(({ point }, i) => getLinePath(point, i))
-                      .join(" ");
-                    const connectionsD = connectionPoints
-                      .map(({ point }, i) => getLinePath(point, i))
-                      .join(" ");
-
+                    const isOnePath = lessonPoints.length === 1;
                     const prefixLength = chapter.length + 1;
-                    const color = getColorFromString(
+                    const color = getColorFromStringWithPrefix(
                       `${chapter}-${lesson}`,
                       prefixLength
                     );
 
+                    const node = isOnePath ? (
+                      <circle
+                        cx={lessonPoints[0]!.point.x}
+                        cy={lessonPoints[0]!.point.y}
+                        r={LESSON_LINE_WIDTH / 2}
+                        fill={color}
+                      />
+                    ) : (
+                      <path
+                        key={`${lesson}`}
+                        d={lessonPoints
+                          .map(({ point }, i) => getLinePath(point, i))
+                          .join(" ")}
+                        stroke={color}
+                        strokeWidth={LESSON_LINE_WIDTH}
+                        fill="none"
+                      />
+                    );
+
+                    // const lessonPath = lessonPoints
+                    //   .map(({ point }, i) => getLinePath(point, i))
+                    //   .join(" ");
+                    const connectionsD = connectionPoints
+                      .map(({ point }, i) => getLinePath(point, i))
+                      .join(" ");
+
+                    const center = getPolylineCenter(
+                      lessonPoints.map((x) => x.point)
+                    );
+
                     return (
                       <g key={lesson}>
-                        <path
-                          key={`${lesson}`}
-                          d={lessonPath}
-                          stroke={color}
-                          strokeWidth={LESSON_LINE_WIDTH}
-                          fill="none"
-                        />
-                        <path
-                          key={`${lesson}-connector`}
-                          d={connectionsD}
-                          stroke={color}
-                          strokeWidth={LESSON_LINE_WIDTH}
-                          fill="none"
-                        />
+                        {node}
+                        {transform.k > 1 && (
+                          <>
+                            <text
+                              x={center?.x ?? 0}
+                              y={center?.y ?? 0}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              fontSize={12 / transform.k}
+                            >
+                              {lesson}
+                            </text>
+                            <path
+                              key={`${lesson}-connector`}
+                              d={connectionsD}
+                              stroke={color}
+                              strokeWidth={0.1}
+                              fill="none"
+                            />
+                          </>
+                        )}
                       </g>
                     );
                   }
@@ -265,24 +287,3 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     </div>
   );
 };
-
-function hashToInt(value: string, maxValue: number) {
-  // Простая хеш-функция для строки
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash << 5) - hash + value.charCodeAt(i);
-    hash |= 0; // Преобразование в 32-битное целое
-  }
-  return Math.abs(hash) % maxValue;
-}
-
-function getColorFromString(s: string, prefixLength = 3) {
-  const prefix = s.substring(0, prefixLength);
-  const suffix = s.substring(prefixLength);
-
-  const hue = hashToInt(prefix, 360);
-  const saturation = 40 + hashToInt(suffix, 40); // 40–80%
-  const lightness = 40 + hashToInt(suffix.split("").reverse().join(""), 30); // 40–70%
-
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
