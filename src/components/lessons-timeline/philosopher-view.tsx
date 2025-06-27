@@ -27,7 +27,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
       y={y - radius}
       width={size}
       height={size}
-      style={{ overflow: "visible", position: "relative" }}
+      style={{ overflow: "visible" }}
     >
       <Popup
         trigger={
