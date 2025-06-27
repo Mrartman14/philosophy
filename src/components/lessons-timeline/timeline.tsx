@@ -4,11 +4,11 @@ import * as d3 from "d3";
 import groupBy from "lodash/groupBy";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { structure } from "@/utils/structure";
-import { PhilosopherView } from "./philosopher-view";
-import { philosophers } from "@/utils/philosophers";
-import { getColorFromString } from "@/utils/get-color-from-str";
 import { WidthSlider } from "./width-slider";
+import { structure } from "@/utils/structure";
+import { philosophers } from "@/utils/philosophers";
+import { PhilosopherView } from "./philosopher-view";
+import { getColorFromString } from "@/utils/get-color-from-str";
 
 type PhilosophersTimelineProps = {
   height?: number;
@@ -62,16 +62,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
           lesson: string;
           chapter: string;
         };
-        let points: LessonPoint[] = [
-          // {
-          //   point: {
-          //     x: Math.trunc(xScale(minYear)),
-          //     y: Math.trunc(height - yGap),
-          //   },
-          //   lesson: lessons[0]!.title,
-          //   chapter: ch,
-          // },
-        ];
+        let points: LessonPoint[] = [];
 
         lessons
           .toSorted((a, b) => a.order - b.order)
@@ -82,9 +73,12 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                 .map(({ x, y }) => ({ x, y }));
 
               points = points.concat(
-                point.map((x) => {
+                point.map((point) => {
                   const r: LessonPoint = {
-                    point: x,
+                    point: {
+                      x: point.x,
+                      y: point.y - yGap,
+                    },
                     lesson: lesson.title,
                     chapter: ch,
                   };
@@ -94,14 +88,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
             });
           });
 
-        const d = points
-          .flatMap(({ point }, i) =>
-            i === 0
-              ? `M${point.x} ${point.y - yGap}`
-              : `L${point.x} ${point.y - yGap}`
-          )
-          .join(" ");
-        return { d, color: getColorFromString(ch) };
+        return { points, color: getColorFromString(ch) };
       }
     );
 
@@ -161,11 +148,18 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
             strokeWidth={2}
           />
 
-          {lessonLines.map(({ color, d }) => (
-            <g key={color}>
-              <path d={d} stroke={color} strokeWidth={2} fill="none" />
-            </g>
-          ))}
+          {lessonLines.map(({ color, points }) => {
+            const d = points
+              .flatMap(({ point }, i) =>
+                i === 0 ? `M${point.x} ${point.y}` : `L${point.x} ${point.y}`
+              )
+              .join(" ");
+            return (
+              <g key={color}>
+                <path d={d} stroke={color} strokeWidth={2} fill="none" />
+              </g>
+            );
+          })}
 
           {philosophers.map((philosopher) => (
             <PhilosopherView
