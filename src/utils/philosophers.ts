@@ -240,4 +240,10 @@ export const philosophers: Timeline[] = [
     from: 1711,
     to: 1776,
   },
+  {
+    name: "Эйнштейн",
+    imageSrc: "/philosophers/einstein.jpg",
+    from: 1879,
+    to: 1955,
+  },
 ];

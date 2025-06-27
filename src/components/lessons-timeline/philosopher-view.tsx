@@ -20,6 +20,7 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
   const radius = 10;
 
   const size = radius * 2;
+  // TODO: нижняя стики стрела времени
   // const size2 = (radius * 2) / (scale / 1.5);
   return (
     <foreignObject
@@ -59,14 +60,3 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
     </foreignObject>
   );
 };
-
-//   <div
-//   style={{
-//     width: size2,
-//     height: size2,
-//     borderRadius: "50%",
-//     backgroundSize: "cover",
-//     backgroundImage: `url(${basePath}${philosopher.imageSrc})`,
-//     outline: "2px solid var(--link)",
-//   }}
-// />
