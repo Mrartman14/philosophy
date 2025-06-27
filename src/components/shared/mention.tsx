@@ -1,5 +1,6 @@
-// import Image from "next/image";
-// import { philosophers } from "@/utils/philosophers";
+import { Popup } from "./popup/popup";
+import { MentionInfo } from "./mention-info";
+import { philosophers } from "@/utils/philosophers";
 
 type MentionProps = {
   className?: string;
@@ -11,24 +12,22 @@ export const Mention: React.FC<MentionProps> = ({
   name,
   style,
   className,
-  // withPopover = false,
+  withPopover = false,
 }) => {
-  // const imageSrc = philosophers.find((x) => x.name === name)?.imageSrc;
-  // const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
-  return (
+  const textNode = (
     <span className={`text-(--description) ${className}`} style={style}>
-      {/* {imageSrc && (
-        <Image
-          src={`${basePath}${imageSrc}`}
-          alt={`${name} image`}
-          quality={1}
-          sizes="100px"
-          width={25}
-          height={25}
-        />
-      )} */}
       {name}
     </span>
+  );
+
+  if (!withPopover) {
+    return textNode;
+  }
+
+  const philosopher = philosophers.find((x) => x.name === name);
+  if (!philosopher) return textNode;
+
+  return (
+    <Popup trigger={textNode} content={<MentionInfo data={philosopher} />} />
   );
 };

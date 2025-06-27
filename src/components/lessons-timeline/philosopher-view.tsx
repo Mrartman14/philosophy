@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { Popover } from "@base-ui-components/react/popover";
 
+import { Popup } from "../shared/popup/popup";
 import type { Timeline } from "@/utils/philosophers";
-import { DropdownArrowIcon } from "@/assets/icons/arrow-icon";
+import { MentionInfo } from "../shared/mention-info";
 
 type PhilosopherViewProps = {
   x: number;
@@ -29,17 +29,25 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
       height={size}
       style={{ overflow: "visible", position: "relative" }}
     >
-      <Popover.Root openOnHover>
-        <Popover.Trigger
-          className="cursor-pointer"
-          style={{
+      <Popup
+        triggerProps={{
+          className: "cursor-pointer",
+          style: {
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-          }}
-        >
-          {/* <div
+          },
+        }}
+        trigger={
+          <div
+            style={{
+              width: size,
+              aspectRatio: "1 / 1",
+              borderRadius: "50%",
+            }}
+          >
+            {/* <div
             style={{
               width: size2,
               height: size2,
@@ -49,13 +57,6 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
               outline: "2px solid var(--link)",
             }}
           /> */}
-          <div
-            style={{
-              width: size,
-              aspectRatio: "1 / 1",
-              borderRadius: "50%",
-            }}
-          >
             <Image
               fill
               src={`${basePath}${philosopher.imageSrc}`}
@@ -70,30 +71,9 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
               }}
             />
           </div>
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Positioner sideOffset={8}>
-            <Popover.Popup className="bg-(--background) rounded-lg px-6 py-4 outline outline-(--border) origin-[var(--transform-origin)] transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0">
-              <Popover.Arrow className="data-[side=bottom]:top-[-8px] data-[side=left]:right-[-13px] data-[side=left]:rotate-90 data-[side=right]:left-[-13px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-8px] data-[side=top]:rotate-180">
-                <DropdownArrowIcon />
-              </Popover.Arrow>
-              <Image
-                src={`${basePath}${philosopher.imageSrc}`}
-                alt={`${philosopher.name} image`}
-                width={100}
-                height={50}
-                style={{
-                  margin: 0,
-                }}
-              />
-              <h1 className="text-lg">{philosopher.name}</h1>
-              <p>
-                Годы жизни: {philosopher.from} — {philosopher.to}
-              </p>
-            </Popover.Popup>
-          </Popover.Positioner>
-        </Popover.Portal>
-      </Popover.Root>
+        }
+        content={<MentionInfo data={philosopher} />}
+      />
     </foreignObject>
   );
 };
