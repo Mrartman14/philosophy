@@ -108,6 +108,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               <Mention
                 key={m}
                 name={m}
+                withPopover
                 className="pl-1 pr-1 border border-(--border) rounded-lg"
               />
             ))}
