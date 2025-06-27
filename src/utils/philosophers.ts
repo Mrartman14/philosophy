@@ -246,4 +246,10 @@ export const philosophers: Timeline[] = [
     from: 1879,
     to: 1955,
   },
+  {
+    name: "Пуанкаре",
+    imageSrc: "/philosophers/poincare.jpg",
+    from: 1854,
+    to: 1912,
+  },
 ];
