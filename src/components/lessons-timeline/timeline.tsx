@@ -10,6 +10,13 @@ import { philosophers } from "@/utils/philosophers";
 import { PhilosopherView } from "./philosopher-view";
 import { getColorFromString } from "@/utils/get-color-from-str";
 
+type LessonPoint = {
+  point: { x: number; y: number };
+  lesson: string;
+  chapter: string;
+};
+const LEVEL_HEIGHT = 30 as const;
+
 type PhilosophersTimelineProps = {
   height?: number;
   width?: number;
@@ -54,14 +61,9 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
 
     const groupedByChapter = groupBy(structure, (x) => x.section);
 
-    const paths = Object.entries(groupedByChapter).map(
+    const chapterPaths = Object.entries(groupedByChapter).map(
       ([ch, lessons], index) => {
-        const yGap = (index + 1) * 30;
-        type LessonPoint = {
-          point: { x: number; y: number };
-          lesson: string;
-          chapter: string;
-        };
+        const yGap = (index + 1) * LEVEL_HEIGHT;
         let points: LessonPoint[] = [];
 
         lessons
@@ -92,7 +94,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       }
     );
 
-    return paths;
+    return chapterPaths;
   }, [height, xScale]);
 
   const ticks = useMemo(() => {
