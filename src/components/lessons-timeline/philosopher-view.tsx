@@ -30,40 +30,21 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
       style={{ overflow: "visible", position: "relative" }}
     >
       <Popup
-        triggerProps={{
-          className: "cursor-pointer",
-          style: {
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          },
-        }}
         trigger={
           <div
             style={{
-              position: "relative",
               width: size,
               aspectRatio: "1 / 1",
               borderRadius: "50%",
             }}
           >
-            {/* <div
-            style={{
-              width: size2,
-              height: size2,
-              borderRadius: "50%",
-              backgroundSize: "cover",
-              backgroundImage: `url(${basePath}${philosopher.imageSrc})`,
-              outline: "2px solid var(--link)",
-            }}
-          /> */}
             <Image
               fill
               src={`${basePath}${philosopher.imageSrc}`}
               alt={`${philosopher.name} image`}
               quality={1}
-              sizes="100px"
+              sizes={`${size}px`}
+              className="cursor-pointer"
               style={{
                 objectFit: "cover",
                 borderRadius: "50%",
@@ -78,3 +59,14 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
     </foreignObject>
   );
 };
+
+//   <div
+//   style={{
+//     width: size2,
+//     height: size2,
+//     borderRadius: "50%",
+//     backgroundSize: "cover",
+//     backgroundImage: `url(${basePath}${philosopher.imageSrc})`,
+//     outline: "2px solid var(--link)",
+//   }}
+// />
