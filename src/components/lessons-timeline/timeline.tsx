@@ -5,7 +5,7 @@ import groupBy from "lodash/groupBy";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { WidthSlider } from "./width-slider";
-import { structure } from "@/utils/structure";
+import { PageData, structure } from "@/utils/structure";
 import { PhilosopherView } from "./philosopher-view";
 import { philosophers, Timeline } from "@/utils/philosophers";
 import { getPolylineCenter } from "@/utils/get-polyline-center";
@@ -16,7 +16,7 @@ const getLinePath = (point: Coordinate, i: number) =>
   i === 0 ? `M${point.x} ${point.y}` : `L${point.x} ${point.y}`;
 type LessonPoint = {
   point: { x: number; y: number };
-  lesson: string;
+  lesson: PageData;
   chapter: string;
   mention: string;
 };
@@ -31,11 +31,11 @@ type PhilosophersTimelineProps = {
 };
 export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   const [{ height, width }, setSize] = useState({ width: 0, height: 0 });
-  const [virtualWidthK, setVirtualWidthK] = useState(2);
+  const [virtualWidthK, setVirtualWidthK] = useState(1);
 
   useEffect(() => {
-    const width = document.documentElement.clientWidth / 1.5;
-    const height = document.documentElement.clientHeight / 1.5 - 50;
+    const width = document.documentElement.clientWidth / 1;
+    const height = document.documentElement.clientHeight / 1 - 50;
     setSize({ width, height });
   }, []);
 
@@ -104,7 +104,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                   x: x + xGap,
                   y: y - yGap,
                 },
-                lesson: lesson.title,
+                lesson,
                 chapter,
                 mention: name,
               };
@@ -113,13 +113,13 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               // перпендикуляр соединения этой точки с точкой философа на стреле времени [1]
               const connectionPoint1: LessonPoint = {
                 chapter,
-                lesson: lesson.title,
+                lesson,
                 point: { x, y },
                 mention: name,
               };
               const connectionPoint2: LessonPoint = {
                 chapter,
-                lesson: lesson.title,
+                lesson,
                 point: { x: x + xGap, y: y - yGap },
                 mention: name,
               };
@@ -127,12 +127,13 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               connectionPoints.push(connectionPoint2);
             });
 
-            lessonsPoints.push({
+            const lessonPoint = {
               chapter,
               lessonPoints,
               lesson: lesson.title,
               connectionPoints,
-            });
+            };
+            lessonsPoints.push(lessonPoint);
           });
 
         return lessonsPoints;
@@ -156,7 +157,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   }, [maxYear, minYear, transform.k]);
 
   return (
-    <div className="relative overflow-x-auto w-full border border-(--border) rounded-2xl">
+    <div className="relative overflow-x-auto w-full">
       <WidthSlider
         value={virtualWidthK}
         onChange={setVirtualWidthK}
@@ -164,7 +165,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       />
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
-          {transform.k > 0.5 && (
+          {transform.k > 1 && (
             <g data-id="timestamps">
               {ticks.map((year) => (
                 <g key={year}>
@@ -229,9 +230,6 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                       />
                     );
 
-                    // const lessonPath = lessonPoints
-                    //   .map(({ point }, i) => getLinePath(point, i))
-                    //   .join(" ");
                     const connectionsD = connectionPoints
                       .map(({ point }, i) => getLinePath(point, i))
                       .join(" ");
