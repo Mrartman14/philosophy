@@ -91,6 +91,12 @@ export const philosophers: Timeline[] = [
     to: 1650,
   },
   {
+    name: "Гоббс",
+    imageSrc: "/philosophers/thomas-hobbes.jpg",
+    from: 1588,
+    to: 1679,
+  },
+  {
     name: "Галилей",
     imageSrc: "/philosophers/galileo-galilei.jpg",
     from: 1564,
