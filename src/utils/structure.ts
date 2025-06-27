@@ -120,7 +120,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-9.docx",
     cover: "/lesson-previews/lesson-9-preview.jpeg",
     section: "Интро",
-    mentions: ["Декарт", "Галилей"],
+    mentions: ["Рене  Декарт", "Галилей"],
     meta: {},
   },
   {
@@ -130,7 +130,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-10.docx",
     cover: "/lesson-previews/lesson-10-preview.jpeg",
     section: "Интро",
-    mentions: ["Декарт"],
+    mentions: ["Рене  Декарт"],
     meta: {},
   },
   {
@@ -140,7 +140,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-11.docx",
     cover: "/lesson-previews/lesson-11-preview.jpeg",
     section: "Интро",
-    mentions: ["Декарт"],
+    mentions: ["Рене Декарт"],
     meta: {},
   },
   {
@@ -150,7 +150,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-12.docx",
     cover: "/lesson-previews/lesson-12-preview.jpeg",
     section: "Интро",
-    mentions: ["Декарт", "Гоббс"],
+    mentions: ["Рене Декарт", "Гоббс"],
     meta: {},
   },
   {
@@ -329,7 +329,7 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-29.docx",
     cover: "/lesson-previews/lesson-29-preview.jpeg",
     section: "Античная этика",
-    mentions: ["Августин Аврелий", "Декарт"],
+    mentions: ["Августин Аврелий", "Рене Декарт"],
     meta: {},
   },
   {
