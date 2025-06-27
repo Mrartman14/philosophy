@@ -8,7 +8,7 @@ import { WidthSlider } from "./width-slider";
 import { PageData, structure } from "@/utils/structure";
 import { PhilosopherView } from "./philosopher-view";
 import { philosophers, Timeline } from "@/utils/philosophers";
-import { getPolylineCenter } from "@/utils/get-polyline-center";
+import { getAverageX } from "@/utils/get-polyline-center";
 import { getColorFromStringWithPrefix } from "@/utils/get-color-from-str";
 
 export type Coordinate = { x: number; y: number };
@@ -24,6 +24,7 @@ const CHAPTER_GAP = 100 as const;
 const LESSON_LINE_WIDTH = 5 as const;
 const LESSON_GAP = LESSON_LINE_WIDTH + 1;
 const LESSON_SKEW = 0 as const;
+const PADDING = 0 as const; // 50
 
 type PhilosophersTimelineProps = {
   height?: number;
@@ -48,7 +49,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   const xScale = d3
     .scaleLinear()
     .domain([minYear, maxYear])
-    .range([60, virtualWidth - 60]);
+    .range([PADDING, virtualWidth - PADDING]);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -165,7 +166,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       />
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <g transform={transform.toString()}>
-          {transform.k > 1 && (
+          {transform.k >= 1 && (
             <g data-id="timestamps">
               {ticks.map((year) => (
                 <g key={year}>
@@ -234,18 +235,21 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                       .map(({ point }, i) => getLinePath(point, i))
                       .join(" ");
 
-                    const center = getPolylineCenter(
-                      lessonPoints.map((x) => x.point)
-                    );
+                    const center = {
+                      x:
+                        getAverageX(lessonPoints.map((point) => point.point)) ??
+                        0,
+                      y: lessonPoints[0].point.y ?? 0,
+                    };
 
                     return (
                       <g key={lesson}>
                         {node}
-                        {transform.k > 1 && (
+                        {transform.k >= 1 && (
                           <>
                             <text
-                              x={center?.x ?? 0}
-                              y={center?.y ?? 0}
+                              x={center.x}
+                              y={center.y}
                               textAnchor="middle"
                               dominantBaseline="middle"
                               fontSize={12 / transform.k}

@@ -10,6 +10,7 @@ import { NavigationMenu } from "@base-ui-components/react";
 import { structure } from "@/utils/structure";
 import { Mention } from "../shared/mention";
 import { ThemeSelect } from "./theme-select";
+import { DnaIcon } from "@/assets/icons/dna-icon";
 import { DropdownArrowIcon } from "@/assets/icons/arrow-icon";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 
@@ -27,7 +28,7 @@ export const AppHeader: React.FC = () => {
       style={{ height: "var(--header-height)" }}
     >
       <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">
-        <NavigationMenu.List className="relative grid grid-cols-[auto_1fr] w-full h-full items-stretch">
+        <NavigationMenu.List className="relative grid grid-cols-[auto_auto_1fr] gap-4 w-full h-full items-stretch">
           <NavigationMenu.Item>
             <Link href="/">
               <Image
@@ -37,6 +38,11 @@ export const AppHeader: React.FC = () => {
                 height={49}
                 sizes="50px"
               />
+            </Link>
+          </NavigationMenu.Item>
+          <NavigationMenu.Item className="flex items-center">
+            <Link href="/graph">
+              <DnaIcon className="w-[30px] h-[30px] text-(--primary)" />
             </Link>
           </NavigationMenu.Item>
           <NavigationMenu.Item className="flex items-stretch justify-center">
