@@ -11,7 +11,7 @@ import { structure } from "@/utils/structure";
 import { Mention } from "../shared/mention";
 import { ThemeSelect } from "./theme-select";
 import { DnaIcon } from "@/assets/icons/dna-icon";
-import { DropdownArrowIcon } from "@/assets/icons/arrow-icon";
+import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 
 export const AppHeader: React.FC = () => {

@@ -182,6 +182,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                     x={xScale(year)}
                     y={height - 15}
                     textAnchor="middle"
+                    className="text-(--description) font-light"
                     fontSize={12 / transform.k}
                   >
                     {year < 0 ? `-${Math.abs(year)}` : year}
@@ -250,6 +251,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                             <text
                               x={center.x}
                               y={center.y}
+                              className="font-semibold"
                               textAnchor="middle"
                               dominantBaseline="middle"
                               fontSize={12 / transform.k}
