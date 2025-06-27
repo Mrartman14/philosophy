@@ -85,7 +85,7 @@ export const philosophers: Timeline[] = [
     to: 1564,
   },
   {
-    name: "Декарт",
+    name: "Рене Декарт",
     imageSrc: "/philosophers/rene-descartes.png",
     from: 1596,
     to: 1650,
