@@ -10,6 +10,9 @@ import { philosophers } from "@/utils/philosophers";
 import { PhilosopherView } from "./philosopher-view";
 import { getColorFromString } from "@/utils/get-color-from-str";
 
+type Point = { x: number; y: number };
+const getLinePath = (point: Point, i: number) =>
+  i === 0 ? `M${point.x} ${point.y}` : `L${point.x} ${point.y}`;
 type LessonPoint = {
   point: { x: number; y: number };
   lesson: string;
@@ -65,32 +68,50 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       ([ch, lessons], index) => {
         const yGap = (index + 1) * LEVEL_HEIGHT;
         let points: LessonPoint[] = [];
+        const connectionPoints: LessonPoint[][] = [];
 
         lessons
           .toSorted((a, b) => a.order - b.order)
           .forEach((lesson) => {
             lesson.mentions.forEach((mention) => {
-              const point = coords
+              const lessonPoints = coords
                 .filter((x) => x.name === mention)
-                .map(({ x, y }) => ({ x, y }));
-
-              points = points.concat(
-                point.map((point) => {
-                  const r: LessonPoint = {
+                .map(({ x, y }) => {
+                  // точка урока, лежащая параллельно стреле времени и перпендикулярно философу на стреле времени
+                  const point: LessonPoint = {
                     point: {
-                      x: point.x,
-                      y: point.y - yGap,
+                      x,
+                      y: y - yGap,
                     },
                     lesson: lesson.title,
                     chapter: ch,
                   };
-                  return r;
-                })
-              );
+
+                  // перпендикуляр соединения этой точки с точкой философа на стреле времени [1]
+                  const connectionPoint1: LessonPoint = {
+                    chapter: ch,
+                    lesson: lesson.title,
+                    point: { x, y },
+                  };
+                  const connectionPoint2: LessonPoint = {
+                    chapter: ch,
+                    lesson: lesson.title,
+                    point: { x, y: y - yGap },
+                  };
+                  connectionPoints.push([connectionPoint1, connectionPoint2]);
+
+                  return point;
+                });
+
+              points = points.concat(lessonPoints);
             });
           });
 
-        return { points, color: getColorFromString(ch) };
+        return {
+          points,
+          connectionPoints,
+          color: getColorFromString(ch),
+        };
       }
     );
 
@@ -150,15 +171,27 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
             strokeWidth={2}
           />
 
-          {lessonLines.map(({ color, points }) => {
+          {lessonLines.map(({ color, points, connectionPoints }) => {
             const d = points
-              .flatMap(({ point }, i) =>
-                i === 0 ? `M${point.x} ${point.y}` : `L${point.x} ${point.y}`
-              )
+              .flatMap(({ point }, i) => getLinePath(point, i))
               .join(" ");
+
+            const connectionsD = connectionPoints.map((points) =>
+              points.flatMap(({ point }, i) => getLinePath(point, i)).join(" ")
+            );
+
             return (
               <g key={color}>
                 <path d={d} stroke={color} strokeWidth={2} fill="none" />
+                {connectionsD.map((path) => (
+                  <path
+                    key={path}
+                    d={path}
+                    stroke={color}
+                    strokeWidth={2}
+                    fill="none"
+                  />
+                ))}
               </g>
             );
           })}
