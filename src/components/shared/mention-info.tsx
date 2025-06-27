@@ -2,6 +2,9 @@ import Image from "next/image";
 
 import { Timeline } from "@/utils/philosophers";
 
+const yearFormat = (year: number) =>
+  year < 0 ? `${Math.abs(year)} г. до н.э.` : `${year} г.`;
+
 type MentionInfoProps = { data: Timeline };
 export const MentionInfo: React.FC<MentionInfoProps> = ({ data }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -19,7 +22,7 @@ export const MentionInfo: React.FC<MentionInfoProps> = ({ data }) => {
       />
       <h1 className="text-lg">{data.name}</h1>
       <p>
-        Годы жизни: {data.from} — {data.to}
+        {yearFormat(data.from)} — {yearFormat(data.to)}
       </p>
     </>
   );

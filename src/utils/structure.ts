@@ -373,7 +373,7 @@ export const structure: PageData[] = [
     meta: {},
   },
   {
-    title: "??",
+    title: "В поисках дна",
     order: 34,
     slug: "lesson-34",
     docxUrl: "/lesson-34.docx",

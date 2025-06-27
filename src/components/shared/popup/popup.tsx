@@ -1,4 +1,4 @@
-import { DropdownArrowIcon } from "@/assets/icons/arrow-icon";
+import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { Popover } from "@base-ui-components/react/popover";
 
 type PopupProps = {
