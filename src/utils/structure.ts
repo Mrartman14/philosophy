@@ -379,7 +379,12 @@ export const structure: PageData[] = [
     docxUrl: "/lesson-34.docx",
     cover: "/lesson-previews/lesson-34-preview.jpeg",
     section: "Новоевропейская теория познания",
-    mentions: ["Юм", "Эйнштейн", "Пуанкаре"],
+    mentions: [
+      "Юм",
+      "Эйнштейн",
+      "Пуанкаре",
+      // "Анри Мишо"
+    ],
     meta: {},
   },
   // {
