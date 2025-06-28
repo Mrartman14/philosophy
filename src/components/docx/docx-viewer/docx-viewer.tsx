@@ -5,6 +5,7 @@ import React, { useLayoutEffect, useState } from "react";
 import { PageData } from "@/utils/structure";
 import { DocxOutroLink } from "../docx-outro-link";
 import { Mention } from "@/components/shared/mention";
+import { Expander } from "@/components/shared/expander";
 import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { AsideMenu, AsideNavItem } from "../../shared/aside-menu";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
@@ -18,6 +19,10 @@ interface DocxViewerProps {
     text: string | null;
     level: number;
   }[];
+  thesesData: {
+    text: string;
+    number: string;
+  }[];
   data: PageData;
   prevData: PageData | null;
   nextData: PageData | null;
@@ -27,6 +32,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   prevData,
   nextData,
   htmlString,
+  thesesData,
   headingsData,
 }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -113,6 +119,13 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               />
             ))}
           </div>
+        )}
+        {thesesData.length > 0 && (
+          <Expander trigger={`Тезисы`}>
+            {thesesData.map((x) => (
+              <p key={x.number}>{x.text}</p>
+            ))}
+          </Expander>
         )}
         <article dangerouslySetInnerHTML={{ __html: htmlString }} />
         <div className="grid grid-cols-2 grid-rows-[150] gap-4 w-full">
