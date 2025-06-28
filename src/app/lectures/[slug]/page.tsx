@@ -103,6 +103,24 @@ export default async function Page({ params }: PageProps) {
     };
   });
 
+  /**
+   * находятся параграфы с тезисами и удаляются из html
+   * чтобы затем на клиенте отрендериться в аккордионе
+   */
+  const thesisPattern = /^#(\d+)\./;
+  const paragraphs = document.querySelectorAll("p");
+  const thesesData: { text: string; number: string }[] = [];
+  paragraphs.forEach((p) => {
+    const text = p.textContent?.trim() ?? "";
+    const match = text.match(thesisPattern);
+    if (match) {
+      const number = match[1];
+      thesesData.push({ number, text });
+      // p.id = `thesis-${number}`;
+      p.remove();
+    }
+  });
+
   const modifiedHtml = document.body.innerHTML;
   const DOMPurify = createDOMPurify(window);
   const cleanHtml = DOMPurify.sanitize(modifiedHtml);
@@ -115,6 +133,7 @@ export default async function Page({ params }: PageProps) {
         prevData={prevPageConfig}
         nextData={nextPageConfig}
         htmlString={cleanHtml}
+        thesesData={thesesData}
       />
     </div>
   );
