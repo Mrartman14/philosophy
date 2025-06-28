@@ -5,10 +5,10 @@ import groupBy from "lodash/groupBy";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { WidthSlider } from "./width-slider";
-import { PageData, structure } from "@/utils/structure";
 import { PhilosopherView } from "./philosopher-view";
-import { philosophers, Timeline } from "@/utils/philosophers";
+import { PageData, structure } from "@/utils/structure";
 import { getAverageX } from "@/utils/get-polyline-center";
+import { philosophers, Timeline } from "@/utils/philosophers";
 import { getColorFromStringWithPrefix } from "@/utils/get-color-from-str";
 
 export type Coordinate = { x: number; y: number };
@@ -145,7 +145,25 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
   }, [height, xScale]);
 
   const ticks = useMemo(() => {
-    const tickStep = transform.k > 1.5 ? 100 : 500;
+    const zoomMap: Record<string, number> = {
+      0.05: 1000,
+      1: 500,
+      2: 100,
+      3: 50,
+      8: 25,
+    };
+    let tickStep = 10000;
+    const zoomLevels = Object.keys(zoomMap)
+      .map(Number)
+      .sort((a, b) => b - a);
+
+    for (const k of zoomLevels) {
+      if (transform.k >= k) {
+        tickStep = zoomMap[k];
+        break;
+      }
+    }
+
     const result = [];
     for (
       let year = Math.ceil(minYear / tickStep) * tickStep;
@@ -157,6 +175,8 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     return result;
   }, [maxYear, minYear, transform.k]);
 
+  const newXScale = transform.rescaleX(xScale);
+
   return (
     <div className="relative overflow-x-auto w-full">
       <WidthSlider
@@ -165,47 +185,56 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
         className="absolute top-2 right-2"
       />
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
-        <g transform={transform.toString()}>
-          {transform.k >= 1 && (
-            <g data-id="timestamps">
-              {ticks.map((year) => (
-                <g key={year}>
-                  <line
-                    x1={xScale(year)}
-                    x2={xScale(year)}
-                    y1={height - 40}
-                    y2={height - 30}
-                    stroke="var(--link)"
-                    strokeWidth={1}
-                  />
-                  <text
-                    x={xScale(year)}
-                    y={height - 15}
-                    textAnchor="middle"
-                    className="text-(--description) font-light"
-                    fontSize={12 / transform.k}
-                  >
-                    {year < 0 ? `-${Math.abs(year)}` : year}
-                  </text>
-                </g>
-              ))}
-            </g>
-          )}
+        <line
+          y1={height - 40}
+          y2={height - 40}
+          x1={0}
+          x2={width}
+          stroke="var(--link)"
+          strokeWidth={2}
+        />
 
-          <line
-            x1={xScale(minYear)}
-            x2={xScale(maxYear)}
-            y1={height - 40}
-            y2={height - 40}
-            stroke="var(--link)"
-            strokeWidth={2}
-          />
+        <g data-id="timestamps">
+          {ticks.map((year) => (
+            <text
+              key={year}
+              textAnchor="middle"
+              className="text-(--description) font-light"
+              x={Math.trunc(newXScale(year))}
+              y={Math.trunc(height - 10)}
+            >
+              {year < 0 ? `-${Math.abs(year)}` : year}
+            </text>
+          ))}
+        </g>
 
+        <g
+          data-id="philosophers"
+          // transform={`translate(${transform.x}, 0) scale(${transform.k}, 1)`}
+        >
+          {philosophers.map((philosopher) => (
+            <PhilosopherView
+              key={philosopher.name}
+              scale={transform.k}
+              // x={Math.trunc(xScale((philosopher.from + philosopher.to) / 2))}
+              x={Math.trunc(newXScale((philosopher.from + philosopher.to) / 2))}
+              y={Math.trunc(height - 40)}
+              philosopher={philosopher}
+            />
+          ))}
+        </g>
+
+        <g transform={transform.toString()} data-id="lessons">
           {chaptersLines.map((chapterPoints, index) => {
             return (
               <g key={index}>
                 {chapterPoints.map(
-                  ({ lessonPoints, connectionPoints, lesson, chapter }) => {
+                  ({
+                    lesson,
+                    chapter,
+                    lessonPoints,
+                    // connectionPoints
+                  }) => {
                     const isOnePath = lessonPoints.length === 1;
                     const prefixLength = chapter.length + 1;
                     const color = getColorFromStringWithPrefix(
@@ -232,9 +261,9 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                       />
                     );
 
-                    const connectionsD = connectionPoints
-                      .map(({ point }, i) => getLinePath(point, i))
-                      .join(" ");
+                    // const connectionsD = connectionPoints
+                    //   .map(({ point }, i) => getLinePath(point, i))
+                    //   .join(" ");
 
                     const center = {
                       x:
@@ -258,13 +287,13 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
                             >
                               {lesson}
                             </text>
-                            <path
+                            {/* <path
                               key={`${lesson}-connector`}
                               d={connectionsD}
                               stroke={color}
                               strokeWidth={0.1}
                               fill="none"
-                            />
+                            /> */}
                           </>
                         )}
                       </g>
@@ -274,18 +303,6 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               </g>
             );
           })}
-
-          <g>
-            {philosophers.map((philosopher) => (
-              <PhilosopherView
-                key={philosopher.name}
-                scale={transform.k}
-                x={Math.trunc(xScale((philosopher.from + philosopher.to) / 2))}
-                y={Math.trunc(height - 40)}
-                philosopher={philosopher}
-              />
-            ))}
-          </g>
         </g>
       </svg>
     </div>
