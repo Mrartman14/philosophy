@@ -17,19 +17,12 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
   philosopher,
 }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-  const radius = 10;
+  const radius = 15;
 
   const size = radius * 2;
-  // TODO: нижняя стики стрела времени
   // const size2 = (radius * 2) / (scale / 1.5);
   return (
-    <foreignObject
-      x={x - radius}
-      y={y - radius}
-      width={size}
-      height={size}
-      style={{ overflow: "visible" }}
-    >
+    <foreignObject x={x - radius} y={y - radius} width={size} height={size}>
       <Popup
         trigger={
           <div
@@ -50,7 +43,6 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
                 objectFit: "cover",
                 borderRadius: "50%",
                 margin: 0,
-                outline: "1px solid var(--link)",
               }}
             />
           </div>
