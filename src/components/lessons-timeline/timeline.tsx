@@ -25,7 +25,7 @@ const LESSON_LINE_WIDTH = 5 as const;
 const LESSON_GAP = LESSON_LINE_WIDTH + 1;
 const LESSON_SKEW = 0 as const;
 const PADDING = 0 as const; // 50
-const TIMELINE_BOTTOM_OFFSET = 100;
+const TIMELINE_BOTTOM_OFFSET = 150;
 
 type PhilosophersTimelineProps = {
   height?: number;
@@ -186,45 +186,6 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
         className="absolute top-2 right-2"
       />
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
-        <line
-          y1={height - TIMELINE_BOTTOM_OFFSET}
-          y2={height - TIMELINE_BOTTOM_OFFSET}
-          x1={0}
-          x2={width}
-          stroke="var(--link)"
-          strokeWidth={2}
-        />
-
-        <g data-id="timestamps">
-          {ticks.map((year) => (
-            <text
-              key={year}
-              textAnchor="middle"
-              className="text-(--description) font-light"
-              x={Math.trunc(newXScale(year))}
-              y={Math.trunc(height - TIMELINE_BOTTOM_OFFSET + 20)}
-            >
-              {year < 0 ? `-${Math.abs(year)}` : year}
-            </text>
-          ))}
-        </g>
-
-        <g
-          data-id="philosophers"
-          // transform={`translate(${transform.x}, 0) scale(${transform.k}, 1)`}
-        >
-          {philosophers.map((philosopher) => (
-            <PhilosopherView
-              key={philosopher.name}
-              scale={transform.k}
-              // x={Math.trunc(xScale((philosopher.from + philosopher.to) / 2))}
-              x={Math.trunc(newXScale((philosopher.from + philosopher.to) / 2))}
-              y={Math.trunc(height - TIMELINE_BOTTOM_OFFSET)}
-              philosopher={philosopher}
-            />
-          ))}
-        </g>
-
         <g transform={transform.toString()} data-id="lessons">
           {chaptersLines.map((chapterPoints, index) => {
             return (
@@ -304,6 +265,45 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               </g>
             );
           })}
+        </g>
+
+        <line
+          y1={height - TIMELINE_BOTTOM_OFFSET}
+          y2={height - TIMELINE_BOTTOM_OFFSET}
+          x1={0}
+          x2={width}
+          stroke="var(--link)"
+          strokeWidth={2}
+        />
+
+        <g data-id="timestamps">
+          {ticks.map((year) => (
+            <text
+              key={year}
+              textAnchor="middle"
+              className="text-(--description) font-light"
+              x={Math.trunc(newXScale(year))}
+              y={Math.trunc(height - TIMELINE_BOTTOM_OFFSET + 40)}
+            >
+              {year < 0 ? `-${Math.abs(year)}` : year}
+            </text>
+          ))}
+        </g>
+
+        <g
+          data-id="philosophers"
+          // transform={`translate(${transform.x}, 0) scale(${transform.k}, 1)`}
+        >
+          {philosophers.map((philosopher) => (
+            <PhilosopherView
+              key={philosopher.name}
+              scale={transform.k}
+              // x={Math.trunc(xScale((philosopher.from + philosopher.to) / 2))}
+              x={Math.trunc(newXScale((philosopher.from + philosopher.to) / 2))}
+              y={Math.trunc(height - TIMELINE_BOTTOM_OFFSET)}
+              philosopher={philosopher}
+            />
+          ))}
         </g>
       </svg>
     </div>
