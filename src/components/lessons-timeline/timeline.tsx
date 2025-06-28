@@ -25,6 +25,7 @@ const LESSON_LINE_WIDTH = 5 as const;
 const LESSON_GAP = LESSON_LINE_WIDTH + 1;
 const LESSON_SKEW = 0 as const;
 const PADDING = 0 as const; // 50
+const TIMELINE_BOTTOM_OFFSET = 100;
 
 type PhilosophersTimelineProps = {
   height?: number;
@@ -66,7 +67,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       (philosopher) => ({
         ...philosopher,
         x: Math.trunc(xScale((philosopher.from + philosopher.to) / 2)),
-        y: Math.trunc(height - 40),
+        y: Math.trunc(height - TIMELINE_BOTTOM_OFFSET),
       })
     );
 
@@ -186,8 +187,8 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       />
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
         <line
-          y1={height - 40}
-          y2={height - 40}
+          y1={height - TIMELINE_BOTTOM_OFFSET}
+          y2={height - TIMELINE_BOTTOM_OFFSET}
           x1={0}
           x2={width}
           stroke="var(--link)"
@@ -201,7 +202,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               textAnchor="middle"
               className="text-(--description) font-light"
               x={Math.trunc(newXScale(year))}
-              y={Math.trunc(height - 10)}
+              y={Math.trunc(height - TIMELINE_BOTTOM_OFFSET + 20)}
             >
               {year < 0 ? `-${Math.abs(year)}` : year}
             </text>
@@ -218,7 +219,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
               scale={transform.k}
               // x={Math.trunc(xScale((philosopher.from + philosopher.to) / 2))}
               x={Math.trunc(newXScale((philosopher.from + philosopher.to) / 2))}
-              y={Math.trunc(height - 40)}
+              y={Math.trunc(height - TIMELINE_BOTTOM_OFFSET)}
               philosopher={philosopher}
             />
           ))}
