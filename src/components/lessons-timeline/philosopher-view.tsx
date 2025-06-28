@@ -1,4 +1,4 @@
-import Image from "next/image";
+// import Image from "next/image";
 
 import { Popup } from "../shared/popup/popup";
 import type { Timeline } from "@/utils/philosophers";
@@ -28,24 +28,37 @@ export const PhilosopherView: React.FC<PhilosopherViewProps> = ({
           <div
             style={{
               width: size,
+              height: size,
               aspectRatio: "1 / 1",
               borderRadius: "50%",
+              backgroundImage: `url(${basePath}${philosopher.imageSrc})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              cursor: "pointer",
             }}
-          >
-            <Image
-              fill
-              src={`${basePath}${philosopher.imageSrc}`}
-              alt={`${philosopher.name} image`}
-              quality={1}
-              sizes={`${size}px`}
-              className="cursor-pointer"
-              style={{
-                objectFit: "cover",
-                borderRadius: "50%",
-                margin: 0,
-              }}
-            />
-          </div>
+          />
+          // <div
+          //   style={{
+          //     width: size,
+          //     height: size,
+          //     aspectRatio: "1 / 1",
+          //     borderRadius: "50%",
+          //   }}
+          // >
+          //   <Image
+          //     fill
+          //     src={`${basePath}${philosopher.imageSrc}`}
+          //     alt={`${philosopher.name} image`}
+          //     quality={1}
+          //     sizes={`${size}px`}
+          //     className="cursor-pointer"
+          //     style={{
+          //       objectFit: "cover",
+          //       borderRadius: "50%",
+          //       margin: 0,
+          //     }}
+          //   />
+          // </div>
         }
         content={<MentionInfo data={philosopher} />}
       />
