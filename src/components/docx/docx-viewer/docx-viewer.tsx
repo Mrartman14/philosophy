@@ -6,6 +6,7 @@ import { PageData } from "@/utils/structure";
 import { DocxOutroLink } from "../docx-outro-link";
 import { Mention } from "@/components/shared/mention";
 import { Expander } from "@/components/shared/expander";
+import { SummaryIcon } from "@/assets/icons/summary-icon";
 import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { AsideMenu, AsideNavItem } from "../../shared/aside-menu";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
@@ -121,7 +122,18 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
           </div>
         )}
         {thesesData.length > 0 && (
-          <Expander trigger={`Тезисы`}>
+          <Expander
+            trigger={
+              <h5 className="flex items-center gap-2">
+                <SummaryIcon />
+                {thesesData.map(({ number }) => (
+                  <span key={number} className="text-(--description)">
+                    #{number}
+                  </span>
+                ))}
+              </h5>
+            }
+          >
             {thesesData.map((x) => (
               <p key={x.number}>{x.text}</p>
             ))}
