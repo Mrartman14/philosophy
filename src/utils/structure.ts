@@ -1,5 +1,3 @@
-import { Author } from "next/dist/lib/metadata/types/metadata-types";
-
 type Section =
   | "Интро"
   | "Экспериментальная наука"
@@ -13,8 +11,8 @@ export type PageData = {
   order: number;
   /** url сегмент в url страницы после /lectures */
   slug: string;
-  /** путь до docx файла лекции */
-  docxUrl: string;
+  /** путь до docx файлов лекции */
+  sources: { path: string; name: string }[];
   /** путь до обдожки лекции */
   cover?: string;
 
@@ -28,7 +26,6 @@ export type PageData = {
     creator?: null | string | undefined;
     category?: null | string | undefined;
     keywords?: null | string | Array<string> | undefined;
-    authors?: null | Author | Array<Author> | undefined;
   };
 };
 
@@ -37,7 +34,10 @@ export const structure: PageData[] = [
     title: "Не ассорти",
     order: 1,
     slug: "lesson-1",
-    docxUrl: "/lesson-1.docx",
+    sources: [
+      { path: "/lesson-1.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/logo.png",
     section: "Интро",
     mentions: ["Пифагор"],
@@ -47,7 +47,10 @@ export const structure: PageData[] = [
     title: "Презумпция ненаивности",
     order: 2,
     slug: "lesson-2",
-    docxUrl: "/lesson-2.docx",
+    sources: [
+      { path: "/lesson-2.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-2-preview.jpeg",
     section: "Интро",
     mentions: ["Пифагор"],
@@ -57,7 +60,10 @@ export const structure: PageData[] = [
     title: "Отцы философии",
     order: 3,
     slug: "lesson-3",
-    docxUrl: "/lesson-3.docx",
+    sources: [
+      { path: "/lesson-3.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-3-preview.jpeg",
     section: "Интро",
     mentions: ["Парменид", "Гераклит"],
@@ -67,7 +73,10 @@ export const structure: PageData[] = [
     title: "Неразрешимые противоречия",
     order: 4,
     slug: "lesson-4",
-    docxUrl: "/lesson-4.docx",
+    sources: [
+      { path: "/lesson-4.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-4-preview.jpeg",
     section: "Интро",
     mentions: ["Зенон", "Парменид", "Гераклит"],
@@ -77,7 +86,10 @@ export const structure: PageData[] = [
     title: "Предельное основание",
     order: 5,
     slug: "lesson-5",
-    docxUrl: "/lesson-5.docx",
+    sources: [
+      { path: "/lesson-5.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-5-preview.jpeg",
     section: "Интро",
     mentions: ["Сократ"],
@@ -87,7 +99,10 @@ export const structure: PageData[] = [
     title: "От суда к сотворению",
     order: 6,
     slug: "lesson-6",
-    docxUrl: "/lesson-6.docx",
+    sources: [
+      { path: "/lesson-6.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-6-preview.jpeg",
     section: "Интро",
     mentions: ["Фома Аквинский"],
@@ -97,7 +112,10 @@ export const structure: PageData[] = [
     title: "Свобода воли, грех и спасение",
     order: 7,
     slug: "lesson-7",
-    docxUrl: "/lesson-7.docx",
+    sources: [
+      { path: "/lesson-7.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-7-preview.jpeg",
     section: "Интро",
     mentions: ["Августин Аврелий", "Пелагий", "Мартин Лютер"],
@@ -107,7 +125,10 @@ export const structure: PageData[] = [
     title: "Gracia",
     order: 8,
     slug: "lesson-8",
-    docxUrl: "/lesson-8.docx",
+    sources: [
+      { path: "/lesson-8.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-8-preview.jpeg",
     section: "Интро",
     mentions: ["Августин Аврелий", "Пелагий", "Мартин Лютер", "Жан Кальвин"],
@@ -117,7 +138,10 @@ export const structure: PageData[] = [
     title: "Лоскутное одеяло",
     order: 9,
     slug: "lesson-9",
-    docxUrl: "/lesson-9.docx",
+    sources: [
+      { path: "/lesson-9.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-9-preview.jpeg",
     section: "Интро",
     mentions: ["Рене Декарт", "Галилей"],
@@ -127,7 +151,10 @@ export const structure: PageData[] = [
     title: "Точка опоры",
     order: 10,
     slug: "lesson-10",
-    docxUrl: "/lesson-10.docx",
+    sources: [
+      { path: "/lesson-10.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-10-preview.jpeg",
     section: "Интро",
     mentions: ["Рене Декарт"],
@@ -137,7 +164,10 @@ export const structure: PageData[] = [
     title: "Бог из логики",
     order: 11,
     slug: "lesson-11",
-    docxUrl: "/lesson-11.docx",
+    sources: [
+      { path: "/lesson-11.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-11-preview.jpeg",
     section: "Интро",
     mentions: ["Рене Декарт"],
@@ -147,7 +177,10 @@ export const structure: PageData[] = [
     title: "Очень холодная ночь",
     order: 12,
     slug: "lesson-12",
-    docxUrl: "/lesson-12.docx",
+    sources: [
+      { path: "/lesson-12.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-12-preview.jpeg",
     section: "Интро",
     mentions: ["Рене Декарт", "Гоббс"],
@@ -157,7 +190,10 @@ export const structure: PageData[] = [
     title: "Непознаваемый стул",
     order: 13,
     slug: "lesson-13",
-    docxUrl: "/lesson-13.docx",
+    sources: [
+      { path: "/lesson-13.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-13-preview.jpeg",
     section: "Экспериментальная наука",
     mentions: ["Платон"],
@@ -167,7 +203,10 @@ export const structure: PageData[] = [
     title: "Слепой бог",
     order: 14,
     slug: "lesson-14",
-    docxUrl: "/lesson-14.docx",
+    sources: [
+      { path: "/lesson-14.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-14-preview.jpeg",
     section: "Экспериментальная наука",
     mentions: ["Аристотель"],
@@ -177,7 +216,10 @@ export const structure: PageData[] = [
     title: "Схоластика",
     order: 15,
     slug: "lesson-15",
-    docxUrl: "/lesson-15.docx",
+    sources: [
+      { path: "/lesson-15.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-15-preview.jpeg",
     section: "Экспериментальная наука",
     mentions: ["Фома Аквинский", "Уильям Оккам"],
@@ -187,7 +229,10 @@ export const structure: PageData[] = [
     title: "Порывая со здравым смыслом",
     order: 16,
     slug: "lesson-16",
-    docxUrl: "/lesson-16.docx",
+    sources: [
+      { path: "/lesson-16.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-16-preview.jpeg",
     section: "Экспериментальная наука",
     mentions: ["Галилей", "Коперник", "Френсис Бэкон"],
@@ -197,7 +242,10 @@ export const structure: PageData[] = [
     title: "Единственный в своём роде",
     order: 17,
     slug: "lesson-17",
-    docxUrl: "/lesson-17.docx",
+    sources: [
+      { path: "/lesson-17.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-17-preview.jpeg",
     section: "Античная этика",
     mentions: ["Диоген Синопский"],
@@ -207,7 +255,10 @@ export const structure: PageData[] = [
     title: "Одно мгновение",
     order: 18,
     slug: "lesson-18",
-    docxUrl: "/lesson-18.docx",
+    sources: [
+      { path: "/lesson-18.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-18-preview.jpeg",
     section: "Античная этика",
     mentions: ["Хрисипп", "Марк Аврелий"],
@@ -217,7 +268,10 @@ export const structure: PageData[] = [
     title: "Сходство с пылью",
     order: 19,
     slug: "lesson-19",
-    docxUrl: "/lesson-19.docx",
+    sources: [
+      { path: "/lesson-19.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-19-preview.jpeg",
     section: "Античная этика",
     mentions: ["Марк Аврелий"],
@@ -227,7 +281,10 @@ export const structure: PageData[] = [
     title: "Сорта удовольствий",
     order: 20,
     slug: "lesson-20",
-    docxUrl: "/lesson-20.docx",
+    sources: [
+      { path: "/lesson-20.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-20-preview.jpeg",
     section: "Античная этика",
     mentions: ["Эпикур"],
@@ -237,7 +294,10 @@ export const structure: PageData[] = [
     title: "Второй шанс",
     order: 21,
     slug: "lesson-21",
-    docxUrl: "/lesson-21.docx",
+    sources: [
+      { path: "/lesson-21.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-21-preview.jpeg",
     section: "Античная этика",
     mentions: ["Эпикур"],
@@ -247,7 +307,10 @@ export const structure: PageData[] = [
     title: "Четыре варианта смерти",
     order: 22,
     slug: "lesson-22",
-    docxUrl: "/lesson-22.docx",
+    sources: [
+      { path: "/lesson-22.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-22-preview.jpeg",
     section: "Античная этика",
     mentions: ["Эпикур"],
@@ -257,7 +320,10 @@ export const structure: PageData[] = [
     title: "Секст и пустота",
     order: 23,
     slug: "lesson-23",
-    docxUrl: "/lesson-23.docx",
+    sources: [
+      { path: "/lesson-23.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-23-preview.jpeg",
     section: "Античная этика",
     mentions: ["Секст Эмпирик", "Мелани Кляйн"],
@@ -267,7 +333,10 @@ export const structure: PageData[] = [
     title: "Что со мной не так",
     order: 24,
     slug: "lesson-24",
-    docxUrl: "/lesson-24.docx",
+    sources: [
+      { path: "/lesson-24.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-24-preview.jpeg",
     section: "Античная этика",
     mentions: ["Секст Эмпирик"],
@@ -277,7 +346,10 @@ export const structure: PageData[] = [
     title: "Бесконечное падение",
     order: 25,
     slug: "lesson-25",
-    docxUrl: "/lesson-25.docx",
+    sources: [
+      { path: "/lesson-25.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-25-preview.jpeg",
     section: "Античная этика",
     mentions: ["Иисус Христос", "Апостол Павел"],
@@ -287,7 +359,10 @@ export const structure: PageData[] = [
     title: "Фокусы со временем",
     order: 26,
     slug: "lesson-26",
-    docxUrl: "/lesson-26.docx",
+    sources: [
+      { path: "/lesson-26.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-26-preview.jpeg",
     section: "Античная этика",
     mentions: ["Апостол Павел", "Джордж Агамбен"],
@@ -297,7 +372,10 @@ export const structure: PageData[] = [
     title: "Потеряли счёт",
     order: 27,
     slug: "lesson-27",
-    docxUrl: "/lesson-27.docx",
+    sources: [
+      { path: "/lesson-27.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-27-preview.jpeg",
     section: "Античная этика",
     mentions: [
@@ -316,7 +394,10 @@ export const structure: PageData[] = [
     title: "И от сына тоже",
     order: 28,
     slug: "lesson-28",
-    docxUrl: "/lesson-28.docx",
+    sources: [
+      { path: "/lesson-28.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-28-preview.jpeg",
     section: "Античная этика",
     mentions: ["Василий Великий", "Григорий Богослов", "Григорий Нисский"],
@@ -326,7 +407,10 @@ export const structure: PageData[] = [
     title: "Si fallor, sum",
     order: 29,
     slug: "lesson-29",
-    docxUrl: "/lesson-29.docx",
+    sources: [
+      { path: "/lesson-29.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-29-preview.jpeg",
     section: "Античная этика",
     mentions: ["Августин Аврелий", "Рене Декарт"],
@@ -336,7 +420,10 @@ export const structure: PageData[] = [
     title: "Сколько субстанций?",
     order: 30,
     slug: "lesson-30",
-    docxUrl: "/lesson-30.docx",
+    sources: [
+      { path: "/lesson-30.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-30-preview.jpeg",
     section: "Новоевропейская теория познания",
     mentions: ["Локк", "Беркли"],
@@ -346,7 +433,10 @@ export const structure: PageData[] = [
     title: "Быть",
     order: 31,
     slug: "lesson-31",
-    docxUrl: "/lesson-31.docx",
+    sources: [
+      { path: "/lesson-31.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-31-preview.jpeg",
     section: "Новоевропейская теория познания",
     mentions: ["Беркли", "Молинью"],
@@ -356,7 +446,10 @@ export const structure: PageData[] = [
     title: "Никаких больше субстанций",
     order: 32,
     slug: "lesson-32",
-    docxUrl: "/lesson-32.docx",
+    sources: [
+      { path: "/lesson-32.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-32-preview.jpeg",
     section: "Новоевропейская теория познания",
     mentions: ["Юм"],
@@ -366,7 +459,10 @@ export const structure: PageData[] = [
     title: "Случайность",
     order: 33,
     slug: "lesson-33",
-    docxUrl: "/lesson-33.docx",
+    sources: [
+      { path: "/lesson-33.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-33-preview.jpeg",
     section: "Новоевропейская теория познания",
     mentions: ["Юм"],
@@ -376,7 +472,10 @@ export const structure: PageData[] = [
     title: "В поисках дна",
     order: 34,
     slug: "lesson-34",
-    docxUrl: "/lesson-34.docx",
+    sources: [
+      { path: "/lesson-34.docx", name: "Конспект" },
+      // { path: "", name: "LLM" },
+    ],
     cover: "/lesson-previews/lesson-34-preview.jpeg",
     section: "Новоевропейская теория познания",
     mentions: [
@@ -391,7 +490,13 @@ export const structure: PageData[] = [
   //   title: "???",
   //   order: 35,
   //   slug: "lesson-35",
-  //   docxUrl: "/lesson-35.docx",
+  //   sources: [
+  //     {
+  //       path: "/lesson-35.docx",
+  //       name: "Конспект",
+  //     },
+  //     { path: "", name: "LLM" },
+  //   ],
   //   cover: "/lesson-previews/lesson-35-preview.jpeg",
   //   section: "Новоевропейская теория познания",
   //   mentions: ["Юм"],
