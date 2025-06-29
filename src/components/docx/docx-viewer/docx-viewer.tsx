@@ -125,6 +125,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
             {thesesData.map((x) => (
               <p key={x.number}>{x.text}</p>
             ))}
+            <hr style={{ margin: 0 }} />
           </Expander>
         )}
         <article dangerouslySetInnerHTML={{ __html: htmlString }} />
