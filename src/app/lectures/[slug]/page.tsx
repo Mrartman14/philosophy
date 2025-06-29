@@ -40,7 +40,7 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const pageConfig = structure.find((p) => p.slug === slug);
-  if (!pageConfig || !pageConfig.docxUrl) return notFound();
+  if (!pageConfig || pageConfig.sources.length === 0) return notFound();
 
   const prevPageConfig =
     structure.find((p) => p.order === pageConfig.order - 1) ?? null;
@@ -48,7 +48,7 @@ export default async function Page({ params }: PageProps) {
     structure.find((p) => p.order === pageConfig.order + 1) ?? null;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const url = `${baseUrl}${pageConfig.docxUrl}`;
+  const url = `${baseUrl}${pageConfig.sources[0].path}`;
   const response = await fetch(url);
   const docxArrayBuffer = await response.arrayBuffer();
   const docxBuffer = Buffer.from(docxArrayBuffer);
