@@ -39,7 +39,7 @@ export const structure: PageData[] = [
     sources: [
       { path: "/lesson-1.docx", name: "Конспект" },
       // { path: "/lesson-1-llm.docx", name: "LLM" },
-      // { path: "/lesson-1-theses.docx", name: "Тезисы" },
+      { path: "/lesson-1-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-1-preview.jpeg",
     section: "Интро",
