@@ -4,7 +4,7 @@ type Section =
   | "Античная этика"
   | "Новоевропейская теория познания";
 
-export type SourceVersion = "Конспект" | "LLM" | "Тезисы";
+export type SourceVersion = "Конспект" | "LLM" | "Тезисы" | "Вопросы";
 
 export type PageData = {
   /** заголовок лекции */
@@ -40,6 +40,7 @@ export const structure: PageData[] = [
       { path: "/lesson-1.docx", name: "Конспект" },
       { path: "/lesson-1-llm.docx", name: "LLM" },
       { path: "/lesson-1-theses.docx", name: "Тезисы" },
+      { path: "/lesson-1-faq.docx", name: "Вопросы" },
     ],
     cover: "/lesson-previews/lesson-1-preview.jpeg",
     section: "Интро",
@@ -52,7 +53,8 @@ export const structure: PageData[] = [
     slug: "lesson-2",
     sources: [
       { path: "/lesson-2.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-2-theses.docx", name: "Тезисы" },
+      { path: "/lesson-2-faq.docx", name: "Вопросы" },
     ],
     cover: "/lesson-previews/lesson-2-preview.jpeg",
     section: "Интро",
@@ -65,7 +67,7 @@ export const structure: PageData[] = [
     slug: "lesson-3",
     sources: [
       { path: "/lesson-3.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-3-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-3-preview.jpeg",
     section: "Интро",
@@ -78,7 +80,7 @@ export const structure: PageData[] = [
     slug: "lesson-4",
     sources: [
       { path: "/lesson-4.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-4-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-4-preview.jpeg",
     section: "Интро",
@@ -91,7 +93,7 @@ export const structure: PageData[] = [
     slug: "lesson-5",
     sources: [
       { path: "/lesson-5.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-5-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-5-preview.jpeg",
     section: "Интро",
@@ -104,7 +106,7 @@ export const structure: PageData[] = [
     slug: "lesson-6",
     sources: [
       { path: "/lesson-6.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-6-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-6-preview.jpeg",
     section: "Интро",
@@ -117,7 +119,7 @@ export const structure: PageData[] = [
     slug: "lesson-7",
     sources: [
       { path: "/lesson-7.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-7-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-7-preview.jpeg",
     section: "Интро",
@@ -130,7 +132,7 @@ export const structure: PageData[] = [
     slug: "lesson-8",
     sources: [
       { path: "/lesson-8.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-8-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-8-preview.jpeg",
     section: "Интро",
@@ -143,7 +145,7 @@ export const structure: PageData[] = [
     slug: "lesson-9",
     sources: [
       { path: "/lesson-9.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-9-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-9-preview.jpeg",
     section: "Интро",
@@ -156,7 +158,7 @@ export const structure: PageData[] = [
     slug: "lesson-10",
     sources: [
       { path: "/lesson-10.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-10-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-10-preview.jpeg",
     section: "Интро",
@@ -169,7 +171,7 @@ export const structure: PageData[] = [
     slug: "lesson-11",
     sources: [
       { path: "/lesson-11.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-11-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-11-preview.jpeg",
     section: "Интро",
@@ -182,7 +184,7 @@ export const structure: PageData[] = [
     slug: "lesson-12",
     sources: [
       { path: "/lesson-12.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-12-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-12-preview.jpeg",
     section: "Интро",
@@ -195,7 +197,8 @@ export const structure: PageData[] = [
     slug: "lesson-13",
     sources: [
       { path: "/lesson-13.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-13-llm.docx", name: "LLM" },
+      { path: "/lesson-13-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-13-preview.jpeg",
     section: "Экспериментальная наука",
@@ -208,7 +211,8 @@ export const structure: PageData[] = [
     slug: "lesson-14",
     sources: [
       { path: "/lesson-14.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-14-llm.docx", name: "LLM" },
+      { path: "/lesson-14-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-14-preview.jpeg",
     section: "Экспериментальная наука",
@@ -221,7 +225,8 @@ export const structure: PageData[] = [
     slug: "lesson-15",
     sources: [
       { path: "/lesson-15.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-15-llm.docx", name: "LLM" },
+      { path: "/lesson-15-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-15-preview.jpeg",
     section: "Экспериментальная наука",
@@ -234,7 +239,7 @@ export const structure: PageData[] = [
     slug: "lesson-16",
     sources: [
       { path: "/lesson-16.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-16-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-16-preview.jpeg",
     section: "Экспериментальная наука",
@@ -247,7 +252,8 @@ export const structure: PageData[] = [
     slug: "lesson-17",
     sources: [
       { path: "/lesson-17.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-17-llm.docx", name: "LLM" },
+      { path: "/lesson-17-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-17-preview.jpeg",
     section: "Античная этика",
@@ -260,7 +266,8 @@ export const structure: PageData[] = [
     slug: "lesson-18",
     sources: [
       { path: "/lesson-18.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-18-llm.docx", name: "LLM" },
+      { path: "/lesson-18-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-18-preview.jpeg",
     section: "Античная этика",
@@ -273,7 +280,8 @@ export const structure: PageData[] = [
     slug: "lesson-19",
     sources: [
       { path: "/lesson-19.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-19-llm.docx", name: "LLM" },
+      { path: "/lesson-19-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-19-preview.jpeg",
     section: "Античная этика",
@@ -286,7 +294,8 @@ export const structure: PageData[] = [
     slug: "lesson-20",
     sources: [
       { path: "/lesson-20.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-20-llm.docx", name: "LLM" },
+      { path: "/lesson-20-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-20-preview.jpeg",
     section: "Античная этика",
@@ -299,7 +308,8 @@ export const structure: PageData[] = [
     slug: "lesson-21",
     sources: [
       { path: "/lesson-21.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-21-llm.docx", name: "LLM" },
+      { path: "/lesson-21-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-21-preview.jpeg",
     section: "Античная этика",
@@ -312,7 +322,8 @@ export const structure: PageData[] = [
     slug: "lesson-22",
     sources: [
       { path: "/lesson-22.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-22-llm.docx", name: "LLM" },
+      { path: "/lesson-22-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-22-preview.jpeg",
     section: "Античная этика",
@@ -325,7 +336,8 @@ export const structure: PageData[] = [
     slug: "lesson-23",
     sources: [
       { path: "/lesson-23.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-23-llm.docx", name: "LLM" },
+      { path: "/lesson-23-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-23-preview.jpeg",
     section: "Античная этика",
@@ -338,7 +350,8 @@ export const structure: PageData[] = [
     slug: "lesson-24",
     sources: [
       { path: "/lesson-24.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-24-llm.docx", name: "LLM" },
+      { path: "/lesson-24-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-24-preview.jpeg",
     section: "Античная этика",
@@ -351,7 +364,8 @@ export const structure: PageData[] = [
     slug: "lesson-25",
     sources: [
       { path: "/lesson-25.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-25-llm.docx", name: "LLM" },
+      { path: "/lesson-25-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-25-preview.jpeg",
     section: "Античная этика",
@@ -364,7 +378,8 @@ export const structure: PageData[] = [
     slug: "lesson-26",
     sources: [
       { path: "/lesson-26.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-26-llm.docx", name: "LLM" },
+      { path: "/lesson-26-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-26-preview.jpeg",
     section: "Античная этика",
@@ -377,7 +392,8 @@ export const structure: PageData[] = [
     slug: "lesson-27",
     sources: [
       { path: "/lesson-27.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-27-llm.docx", name: "LLM" },
+      { path: "/lesson-27-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-27-preview.jpeg",
     section: "Античная этика",
@@ -399,7 +415,8 @@ export const structure: PageData[] = [
     slug: "lesson-28",
     sources: [
       { path: "/lesson-28.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-28-llm.docx", name: "LLM" },
+      { path: "/lesson-28-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-28-preview.jpeg",
     section: "Античная этика",
@@ -412,7 +429,8 @@ export const structure: PageData[] = [
     slug: "lesson-29",
     sources: [
       { path: "/lesson-29.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-29-llm.docx", name: "LLM" },
+      { path: "/lesson-29-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-29-preview.jpeg",
     section: "Античная этика",
@@ -420,12 +438,13 @@ export const structure: PageData[] = [
     meta: {},
   },
   {
-    title: "Сколько субстанций?",
+    title: "Esse est percepi",
     order: 30,
     slug: "lesson-30",
     sources: [
       { path: "/lesson-30.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-30-llm.docx", name: "LLM" },
+      { path: "/lesson-30-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-30-preview.jpeg",
     section: "Новоевропейская теория познания",
@@ -438,7 +457,8 @@ export const structure: PageData[] = [
     slug: "lesson-31",
     sources: [
       { path: "/lesson-31.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-31-llm.docx", name: "LLM" },
+      { path: "/lesson-31-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-31-preview.jpeg",
     section: "Новоевропейская теория познания",
@@ -451,7 +471,8 @@ export const structure: PageData[] = [
     slug: "lesson-32",
     sources: [
       { path: "/lesson-32.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-32-llm.docx", name: "LLM" },
+      { path: "/lesson-32-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-32-preview.jpeg",
     section: "Новоевропейская теория познания",
@@ -464,7 +485,7 @@ export const structure: PageData[] = [
     slug: "lesson-33",
     sources: [
       { path: "/lesson-33.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-33-llm.docx", name: "LLM" },
     ],
     cover: "/lesson-previews/lesson-33-preview.jpeg",
     section: "Новоевропейская теория познания",
@@ -477,7 +498,7 @@ export const structure: PageData[] = [
     slug: "lesson-34",
     sources: [
       { path: "/lesson-34.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      { path: "/lesson-34-llm.docx", name: "LLM" },
     ],
     cover: "/lesson-previews/lesson-34-preview.jpeg",
     section: "Новоевропейская теория познания",
