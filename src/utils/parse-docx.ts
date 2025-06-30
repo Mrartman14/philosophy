@@ -1,6 +1,6 @@
-import { JSDOM } from "jsdom";
+// import { JSDOM } from "jsdom";
 import { convertToHtml } from "mammoth";
-import createDOMPurify from "dompurify";
+// import createDOMPurify from "dompurify";
 
 import { generateAnchorId } from "./generate-anchor-id";
 import type { PageData, SourceVersion } from "./structure";
@@ -13,31 +13,44 @@ export type ParsedData = {
     text: string | null;
     level: number;
   }[];
-  //   thesesData: {
-  //     text: string;
-  //     number: string;
-  //   }[];
 };
 
-export async function parseDocx(pageConfig: PageData): Promise<ParsedData[]> {
-  const results = await Promise.all(pageConfig.sources.map(processSource));
+export async function parseDocx(
+  pageConfig: PageData,
+  onServer = false
+): Promise<ParsedData[]> {
+  const results = await Promise.all(
+    pageConfig.sources.map((x) => processSource(x, onServer))
+  );
 
   return results;
 }
 
 async function processSource(
-  source: PageData["sources"][number]
+  source: PageData["sources"][number],
+  onServer = false
 ): Promise<ParsedData> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   const url = `${baseUrl}${source.path}`;
   const response = await fetch(url);
   const docxArrayBuffer = await response.arrayBuffer();
-  const docxBuffer = Buffer.from(docxArrayBuffer);
-  //   console.log(source.path);
+
+  const options: { buffer?: Buffer<ArrayBuffer>; arrayBuffer?: ArrayBuffer } =
+    {};
+
+  if (onServer) {
+    const docxBuffer = Buffer.from(docxArrayBuffer);
+    options.buffer = docxBuffer;
+  } else {
+    options.arrayBuffer = docxArrayBuffer;
+  }
 
   const { value: dirtyHtmlString } = await convertToHtml(
-    { buffer: docxBuffer },
+    {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...(options as any),
+    },
     {
       includeEmbeddedStyleMap: false,
       ignoreEmptyParagraphs: true,
@@ -63,11 +76,54 @@ async function processSource(
     }
   );
 
-  const dom = new JSDOM(dirtyHtmlString);
-  const { window } = dom;
-  const document = window.document;
+  let htmlString: string;
+  let headingsData: ParsedData["headingsData"];
 
-  const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+  if (onServer) {
+    throw new Error("not implemented yet!");
+    // const jsDom = new JSDOM(dirtyHtmlString);
+    // const parsedDocument = jsDom.window.document;
+
+    // headingsData = prepareHeadings(parsedDocument);
+
+    // const modifiedHtml = parsedDocument.body.innerHTML;
+    // const DOMPurify = createDOMPurify(jsDom.window);
+    // htmlString = DOMPurify.sanitize(modifiedHtml);
+  } else {
+    const parser = new DOMParser();
+    const parsedDocument = parser.parseFromString(dirtyHtmlString, "text/html");
+    headingsData = prepareHeadings(parsedDocument);
+    htmlString = parsedDocument.body.innerHTML;
+  }
+
+  // const headings = parsedDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
+  // const headingsData = Array.from(headings).map((h) => {
+  //   const text = h.textContent;
+  //   const id = generateAnchorId(text);
+  //   const level = parseInt(h.tagName[1], 10);
+  //   h.id = id;
+  //   return { id, text, level };
+  // });
+
+  // let htmlString: string;
+
+  // if (onServer) {
+  //   const modifiedHtml = parsedDocument.body.innerHTML;
+  //   const DOMPurify = createDOMPurify(jsDom.window);
+  //   htmlString = DOMPurify.sanitize(modifiedHtml);
+  // } else {
+  // }
+
+  return {
+    htmlString,
+    headingsData,
+    // thesesData,
+    version: source.name,
+  };
+}
+
+function prepareHeadings(parsedDocument: Document) {
+  const headings = parsedDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
   const headingsData = Array.from(headings).map((h) => {
     const text = h.textContent;
     const id = generateAnchorId(text);
@@ -76,27 +132,5 @@ async function processSource(
     return { id, text, level };
   });
 
-  //   const thesisPattern = /^#(\d+)\./;
-  //   const paragraphs = document.querySelectorAll("p");
-  //   const thesesData: { text: string; number: string }[] = [];
-  //   paragraphs.forEach((p) => {
-  //     const text = p.textContent?.trim() ?? "";
-  //     const match = text.match(thesisPattern);
-  //     if (match) {
-  //       const number = match[1];
-  //       thesesData.push({ number, text });
-  //       p.remove();
-  //     }
-  //   });
-
-  const modifiedHtml = document.body.innerHTML;
-  const DOMPurify = createDOMPurify(window);
-  const cleanHtml = DOMPurify.sanitize(modifiedHtml);
-
-  return {
-    htmlString: cleanHtml,
-    headingsData,
-    // thesesData,
-    version: source.name,
-  };
+  return headingsData;
 }

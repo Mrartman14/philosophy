@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { structure } from "@/utils/structure";
-import { parseDocx } from "@/utils/parse-docx";
+// import { parseDocx } from "@/utils/parse-docx";
 import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
 
 export async function generateStaticParams() {
@@ -43,13 +43,13 @@ export default async function Page({ params }: PageProps) {
   const nextPageConfig =
     structure.find((p) => p.order === pageConfig.order + 1) ?? null;
 
-  const parsedData = await parseDocx(pageConfig);
+  // const parsedData = await parseDocx(pageConfig);
 
   return (
     <div className="grid grid-cols-1">
       <DocxViewer
         data={pageConfig}
-        parsedData={parsedData}
+        // parsedData={parsedData}
         prevData={prevPageConfig}
         nextData={nextPageConfig}
       />

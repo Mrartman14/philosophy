@@ -38,7 +38,7 @@ export const structure: PageData[] = [
     slug: "lesson-1",
     sources: [
       { path: "/lesson-1.docx", name: "Конспект" },
-      // { path: "/lesson-1-llm.docx", name: "LLM" },
+      { path: "/lesson-1-llm.docx", name: "LLM" },
       { path: "/lesson-1-theses.docx", name: "Тезисы" },
     ],
     cover: "/lesson-previews/lesson-1-preview.jpeg",

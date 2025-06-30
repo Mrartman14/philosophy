@@ -50,7 +50,10 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
         }}
       >
         <span className={`text-xl md:text-4xl font-bold`}>{title}</span>
-        <span className={`text-sm md:text-lg text-(--description)`}>
+        <span
+          className={`text-sm md:text-lg text-(--description)`}
+          style={{ textAlign: "center" }}
+        >
           {description}
         </span>
       </div>

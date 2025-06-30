@@ -5,7 +5,7 @@ import { Tabs } from "@base-ui-components/react/tabs";
 // import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { PageData, SourceVersion } from "@/utils/structure";
-import { ParsedData } from "@/utils/parse-docx";
+import { ParsedData, parseDocx } from "@/utils/parse-docx";
 import { DocxOutroLink } from "../docx-outro-link";
 import { Mention } from "@/components/shared/mention";
 // import { Expander } from "@/components/shared/expander";
@@ -19,7 +19,7 @@ import "./docx-viewer.css";
 // const VERSION_URL_PARAM = "version" as const;
 
 interface DocxViewerProps {
-  parsedData: ParsedData[];
+  // parsedData: ParsedData[];
   data: PageData;
   prevData: PageData | null;
   nextData: PageData | null;
@@ -28,22 +28,31 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   data,
   prevData,
   nextData,
-  parsedData,
+  // parsedData,
 }) => {
   // const router = useRouter();
   // const pathname = usePathname();
   // const searchParams = useSearchParams();
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
+  const [parsedData, setParsedData] = useState<ParsedData[]>([
+    { headingsData: [], htmlString: "", version: "Конспект" },
+  ]);
 
   // const selectedVersion: SourceVersion =
   //   (searchParams.get(VERSION_URL_PARAM) as SourceVersion) ?? "Конспект";
   const [selectedVersion, setSelectedVersion] =
     useState<SourceVersion>("Конспект");
+
+  useEffect(() => {
+    parseDocx(data, false).then(setParsedData);
+  }, [data]);
+
   const {
     headingsData,
     htmlString,
     //  thesesData
   } = parsedData.find((x) => x.version === selectedVersion)!;
+
   const allVersions = parsedData.map(({ version }) => version);
 
   useEffect(() => {
