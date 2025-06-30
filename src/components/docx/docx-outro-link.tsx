@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type DocxOutroLinkProps = {
   href?: string;
@@ -24,7 +25,8 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
       onMouseLeave={() => setHover(false)}
     >
       {imageSrc && (
-        <img
+        <Image
+          fill
           alt={`${title} image`}
           className={`absolute hidden md:block w-full h-full object-cover transition-transform duration-500`}
           src={imageSrc}

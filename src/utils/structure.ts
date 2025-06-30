@@ -4,6 +4,8 @@ type Section =
   | "Античная этика"
   | "Новоевропейская теория познания";
 
+export type SourceVersion = "Конспект" | "LLM" | "Тезисы";
+
 export type PageData = {
   /** заголовок лекции */
   title: string;
@@ -12,7 +14,7 @@ export type PageData = {
   /** url сегмент в url страницы после /lectures */
   slug: string;
   /** путь до docx файлов лекции */
-  sources: { path: string; name: string }[];
+  sources: { path: string; name: SourceVersion }[];
   /** путь до обдожки лекции */
   cover?: string;
 
@@ -36,9 +38,10 @@ export const structure: PageData[] = [
     slug: "lesson-1",
     sources: [
       { path: "/lesson-1.docx", name: "Конспект" },
-      // { path: "", name: "LLM" },
+      // { path: "/lesson-1-llm.docx", name: "LLM" },
+      // { path: "/lesson-1-theses.docx", name: "Тезисы" },
     ],
-    cover: "/logo.png",
+    cover: "/lesson-previews/lesson-1-preview.jpeg",
     section: "Интро",
     mentions: ["Пифагор"],
     meta: {},

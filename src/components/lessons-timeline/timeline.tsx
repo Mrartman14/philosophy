@@ -1,8 +1,8 @@
 "use client";
 
-import * as d3 from "d3";
 import groupBy from "lodash/groupBy";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { scaleLinear, select, zoom as d3Zoom, zoomIdentity } from "d3";
 
 import { WidthSlider } from "./width-slider";
 import { PhilosopherView } from "./philosopher-view";
@@ -41,22 +41,20 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     setSize({ width, height });
   }, []);
 
-  const [transform, setTransform] = useState(d3.zoomIdentity);
+  const [transform, setTransform] = useState(zoomIdentity);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const minYear = Math.min(...philosophers.map((d) => d.from));
   const maxYear = Math.max(...philosophers.map((d) => d.to));
   const virtualWidth = width * virtualWidthK;
-  const xScale = d3
-    .scaleLinear()
+  const xScale = scaleLinear()
     .domain([minYear, maxYear])
     .range([PADDING, virtualWidth - PADDING]);
 
   useEffect(() => {
     if (!svgRef.current) return;
-    const svg = d3.select(svgRef.current);
-    const zoom = d3
-      .zoom<SVGSVGElement, unknown>()
+    const svg = select(svgRef.current);
+    const zoom = d3Zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 15])
       .on("zoom", (event) => setTransform(event.transform));
     svg.call(zoom);

@@ -1,29 +1,25 @@
 "use client";
 
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Tabs } from "@base-ui-components/react/tabs";
+// import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-import { PageData } from "@/utils/structure";
+import { PageData, SourceVersion } from "@/utils/structure";
+import { ParsedData } from "@/utils/parse-docx";
 import { DocxOutroLink } from "../docx-outro-link";
 import { Mention } from "@/components/shared/mention";
-import { Expander } from "@/components/shared/expander";
-import { SummaryIcon } from "@/assets/icons/summary-icon";
+// import { Expander } from "@/components/shared/expander";
+// import { SummaryIcon } from "@/assets/icons/summary-icon";
 import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
-import { AsideMenu, AsideNavItem } from "../../shared/aside-menu";
+import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
 import "./docx-viewer.css";
 
+// const VERSION_URL_PARAM = "version" as const;
+
 interface DocxViewerProps {
-  htmlString: string;
-  headingsData: {
-    id: string;
-    text: string | null;
-    level: number;
-  }[];
-  thesesData: {
-    text: string;
-    number: string;
-  }[];
+  parsedData: ParsedData[];
   data: PageData;
   prevData: PageData | null;
   nextData: PageData | null;
@@ -32,18 +28,27 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   data,
   prevData,
   nextData,
-  htmlString,
-  thesesData,
-  headingsData,
+  parsedData,
 }) => {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  // const router = useRouter();
+  // const pathname = usePathname();
+  // const searchParams = useSearchParams();
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
 
-  useLayoutEffect(() => {
-    const nextAsideItems: AsideNavItem[] = [];
+  // const selectedVersion: SourceVersion =
+  //   (searchParams.get(VERSION_URL_PARAM) as SourceVersion) ?? "Конспект";
+  const [selectedVersion, setSelectedVersion] =
+    useState<SourceVersion>("Конспект");
+  const {
+    headingsData,
+    htmlString,
+    //  thesesData
+  } = parsedData.find((x) => x.version === selectedVersion)!;
+  const allVersions = parsedData.map(({ version }) => version);
 
-    headingsData.forEach((h) => {
-      nextAsideItems.push({
+  useEffect(() => {
+    const nextAsideItems: AsideNavItem[] = headingsData.map((h) => {
+      return {
         id: h.id,
         render: ({ isSelected }) => (
           <span
@@ -55,7 +60,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
             {h.text}
           </span>
         ),
-      });
+      };
     });
 
     setAsideItems(nextAsideItems);
@@ -63,6 +68,14 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 
   if (!htmlString) return null;
 
+  const handleSetVersion = (value: SourceVersion) => {
+    // const params = new URLSearchParams(searchParams.toString());
+    // params.set(VERSION_URL_PARAM, value);
+    // router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    setSelectedVersion(value);
+  };
+
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const outroLinks = [
     {
       href: prevData ? `/lectures/${prevData?.slug}` : undefined,
@@ -101,7 +114,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
                 textAlign: "right",
               }}
             >
-              {/* <span className="text-(--description)">{data.section}</span> */}
               <h1>{data.title}</h1>
             </div>
           </div>
@@ -121,7 +133,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
             ))}
           </div>
         )}
-        {thesesData.length > 0 && (
+        {/* {thesesData.length > 0 && (
           <Expander
             trigger={
               <h5 className="flex items-center gap-2">
@@ -137,10 +149,44 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
             {thesesData.map((x) => (
               <p key={x.number}>{x.text}</p>
             ))}
-            <hr style={{ margin: 0 }} />
           </Expander>
-        )}
-        <article dangerouslySetInnerHTML={{ __html: htmlString }} />
+        )} */}
+        <Tabs.Root
+          value={selectedVersion}
+          onValueChange={(x) => handleSetVersion(x)}
+        >
+          <Tabs.List className="flex items-center justify-center relative z-0 ">
+            <div className="w-full border-b border-b-(--border)" />
+            {allVersions.map((v) => (
+              <Tabs.Tab
+                className="flex items-center justify-center border-0 p-2 cursor-pointer outline-none select-none before:inset-x-0 before:inset-y-1 before:rounded-sm before:-outline-offset-1 before:outline-blue-800 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
+                value={v}
+                key={v}
+              >
+                <h3
+                  style={{ margin: 0, color: "inherit" }}
+                  className="font-semibold"
+                >
+                  {v}
+                </h3>
+              </Tabs.Tab>
+            ))}
+            <div className="w-full border-b border-b-(--border)" />
+            <Tabs.Indicator className="border border-(--border) rounded-lg h-12 absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out" />
+          </Tabs.List>
+          {parsedData.map((d) => {
+            return (
+              <Tabs.Panel
+                value={d.version}
+                key={d.version}
+                tabIndex={-1}
+                data-version={d.version}
+                render={(props) => <article {...props} />}
+                dangerouslySetInnerHTML={{ __html: d.htmlString }}
+              />
+            );
+          })}
+        </Tabs.Root>
         <div className="grid grid-cols-2 grid-rows-[150] gap-4 w-full">
           {outroLinks.map((link) => {
             if (link.href) {
