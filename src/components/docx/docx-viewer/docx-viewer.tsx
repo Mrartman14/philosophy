@@ -7,10 +7,10 @@ import { Tabs } from "@base-ui-components/react/tabs";
 import { PageData, SourceVersion } from "@/utils/structure";
 import { ParsedData, parseDocx } from "@/utils/parse-docx";
 import { DocxOutroLink } from "../docx-outro-link";
-import { Mention } from "@/components/shared/mention";
+// import { Mention } from "@/components/shared/mention";
 // import { Expander } from "@/components/shared/expander";
 // import { SummaryIcon } from "@/assets/icons/summary-icon";
-import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
+// import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
@@ -129,7 +129,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
         ) : (
           <h1>{data.title}</h1>
         )}
-        {data.mentions.length > 0 && (
+        {/* {data.mentions.length > 0 && (
           <div className="flex gap-2 flex-wrap items-center">
             <PhilosopherIcon className="w-6 h-6" />
             {data.mentions.map((m) => (
@@ -141,43 +141,20 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               />
             ))}
           </div>
-        )}
-        {/* {thesesData.length > 0 && (
-          <Expander
-            trigger={
-              <h5 className="flex items-center gap-2">
-                <SummaryIcon />
-                {thesesData.map(({ number }) => (
-                  <span key={number} className="text-(--description)">
-                    #{number}
-                  </span>
-                ))}
-              </h5>
-            }
-          >
-            {thesesData.map((x) => (
-              <p key={x.number}>{x.text}</p>
-            ))}
-          </Expander>
         )} */}
         <Tabs.Root
           value={selectedVersion}
           onValueChange={(x) => handleSetVersion(x)}
         >
-          <Tabs.List className="flex items-center justify-center relative z-0 ">
+          <Tabs.List className="flex items-center justify-center relative z-0 my-4">
             <div className="w-full border-b border-b-(--border)" />
             {allVersions.map((v) => (
               <Tabs.Tab
-                className="flex items-center justify-center border-0 p-2 cursor-pointer outline-none select-none before:inset-x-0 before:inset-y-1 before:rounded-sm before:-outline-offset-1 before:outline-blue-800 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
+                className="flex items-center justify-center border-0 px-2 cursor-pointer outline-none select-none before:inset-x-0 before:inset-y-1 before:rounded-sm before:-outline-offset-1 before:outline-blue-800 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
                 value={v}
                 key={v}
               >
-                <h3
-                  style={{ margin: 0, color: "inherit" }}
-                  className="font-semibold"
-                >
-                  {v}
-                </h3>
+                <h4 style={{ margin: 0, color: "inherit" }}>{v}</h4>
               </Tabs.Tab>
             ))}
             <div className="w-full border-b border-b-(--border)" />
