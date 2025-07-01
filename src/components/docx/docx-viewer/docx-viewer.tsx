@@ -35,7 +35,11 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   // const searchParams = useSearchParams();
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
   const [parsedData, setParsedData] = useState<ParsedData[]>([
-    { headingsData: [], htmlString: "", version: "Конспект" },
+    {
+      headingsData: [],
+      htmlString: "",
+      version: data.sources[0].name ?? "Конспект",
+    },
   ]);
 
   // const selectedVersion: SourceVersion =
@@ -100,7 +104,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
     },
   ];
 
-  const proseClasses = "prose dark:prose-invert lg:prose-xl";
+  const proseClasses = "prose dark:prose-invert lg:prose-xl pb-0";
   const containerClasses =
     "w-full grid gap-4 border-l border-r border-(--border) p-4";
 

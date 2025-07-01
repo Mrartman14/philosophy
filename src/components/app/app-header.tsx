@@ -69,7 +69,7 @@ export const AppHeader: React.FC = () => {
                         const isActive = pathname === href;
                         const lClasses = `${
                           isActive ? "text-(--primary)" : ""
-                        } group block p-2 hover:bg-(--text-pane) font-semibold`;
+                        } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
 
                         return (
                           <li key={href}>
