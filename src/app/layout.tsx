@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import { Philosopher } from "next/font/google";
 import "./globals.css";
 
 import { AppHeader } from "@/components/app/app-header";
 import Theme from "./_providers/theme";
-
-// const philosopher = Philosopher({
-//   subsets: ["latin", "cyrillic"], // укажите нужные подмножества
-//   weight: ["400", "700"], // выберите необходимые начертания
-//   display: "swap", // настройка отображения
-// });
-// const philosopherClasses = philosopher.className;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +14,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 const geistClasses = "font-[family-name:var(--font-geist-sans)]";
-
 const finalClasses = geistClasses;
 
 export const metadata: Metadata = {
