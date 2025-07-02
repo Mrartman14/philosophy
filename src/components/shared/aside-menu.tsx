@@ -53,7 +53,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
       style={{ top: "calc(var(--header-height) + 10px)" }}
     >
       <div className="grid gap-4">
-        <h3 className="text-(--description)">Содержание</h3>
+        <h3 className="text-(--description) font-semibold">Содержание</h3>
       </div>
       <ul className="grid gap-4">
         {items.map((item) => (
@@ -95,7 +95,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
       <a
         key={item.id}
         href={`#${item.id}`}
-        className={`text-(--link) ${
+        className={`${
           isSelected ? "underline underline-offset-4" : "no-underline"
         }`}
         style={{ paddingLeft: `${depth * 20}px` }}
