@@ -2,21 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { Tabs } from "@base-ui-components/react/tabs";
-// import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { PageData, SourceVersion } from "@/utils/structure";
 import { ParsedData, parseDocx } from "@/utils/parse-docx";
-import { DocxOutroLink } from "../docx-outro-link";
-// import { Mention } from "@/components/shared/mention";
-// import { Expander } from "@/components/shared/expander";
-// import { SummaryIcon } from "@/assets/icons/summary-icon";
-// import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
+import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
 import "./docx-viewer.css";
-
-// const VERSION_URL_PARAM = "version" as const;
 
 interface DocxViewerProps {
   // parsedData: ParsedData[];
@@ -30,9 +23,8 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   nextData,
   // parsedData,
 }) => {
-  // const router = useRouter();
-  // const pathname = usePathname();
-  // const searchParams = useSearchParams();
+  const [selectedVersion, setSelectedVersion] =
+    useState<SourceVersion>("Конспект");
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
   const [parsedData, setParsedData] = useState<ParsedData[]>([
     {
@@ -41,11 +33,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
       version: data.sources[0].name ?? "Конспект",
     },
   ]);
-
-  // const selectedVersion: SourceVersion =
-  //   (searchParams.get(VERSION_URL_PARAM) as SourceVersion) ?? "Конспект";
-  const [selectedVersion, setSelectedVersion] =
-    useState<SourceVersion>("Конспект");
 
   useEffect(() => {
     parseDocx(data, false).then(setParsedData);
@@ -82,9 +69,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
   if (!htmlString) return null;
 
   const handleSetVersion = (value: SourceVersion) => {
-    // const params = new URLSearchParams(searchParams.toString());
-    // params.set(VERSION_URL_PARAM, value);
-    // router.push(`${pathname}?${params.toString()}`, { scroll: false });
     setSelectedVersion(value);
   };
 
