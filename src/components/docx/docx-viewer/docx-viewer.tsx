@@ -25,12 +25,13 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
 }) => {
   const [selectedVersion, setSelectedVersion] =
     useState<SourceVersion>("Конспект");
+  const allVersions = data.sources.map(({ version }) => version);
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
   const [parsedData, setParsedData] = useState<ParsedData[]>([
     {
       headingsData: [],
       htmlString: "",
-      version: data.sources[0].name ?? "Конспект",
+      version: data.sources[0].version ?? "Конспект",
     },
   ]);
 
@@ -43,8 +44,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
     htmlString,
     //  thesesData
   } = parsedData.find((x) => x.version === selectedVersion)!;
-
-  const allVersions = parsedData.map(({ version }) => version);
 
   useEffect(() => {
     const nextAsideItems: AsideNavItem[] = headingsData.map((h) => {

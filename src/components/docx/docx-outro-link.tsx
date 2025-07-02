@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -14,46 +13,26 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
   imageSrc,
   title,
 }) => {
-  const [hover, setHover] = useState(false);
-
   return (
     <Link
       key={title}
       href={href ?? ""}
-      className={`overflow-hidden relative rounded-2xl border border-(--border) no-underline transition`}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      className={`group overflow-hidden relative rounded-2xl border border-(--border) no-underline transition`}
     >
       {imageSrc && (
         <Image
           fill
           alt={`${title} image`}
-          className={`absolute hidden md:block w-full h-full object-cover transition-transform duration-500`}
           src={imageSrc}
+          className="absolute hidden w-full h-full object-cover transition-transform duration-500 opacity-0 scale-100 group-hover:scale-120 group-hover:opacity-100 md:block"
           style={{
             margin: 0,
-            transform: hover ? "scale(1.2)" : undefined,
-            opacity: hover ? 1 : 0,
-            pointerEvents: hover ? "auto" : "none",
           }}
         />
       )}
-      <div
-        className={`w-full absolute grid p-1 ${
-          hover ? "rounded-2md bg-(--text-pane)" : ""
-        }`}
-        style={{
-          transform: "translate(-50%, -50%)",
-          top: "50%",
-          left: "50%",
-          justifyItems: "center",
-        }}
-      >
-        <span className={`text-xl md:text-4xl font-bold`}>{title}</span>
-        <span
-          className={`text-sm md:text-lg text-(--description)`}
-          style={{ textAlign: "center" }}
-        >
+      <div className="absolute top-1/2 left-1/2 w-full p-1 grid justify-items-center transform -translate-x-1/2 -translate-y-1/2 group-hover:bg-(--text-pane)">
+        <span className="text-xl md:text-4xl font-bold">{title}</span>
+        <span className="text-sm md:text-lg text-(--description) text-center">
           {description}
         </span>
       </div>

@@ -117,8 +117,7 @@ async function processSource(
   return {
     htmlString,
     headingsData,
-    // thesesData,
-    version: source.name,
+    version: source.version,
   };
 }
 
