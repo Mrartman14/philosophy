@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`
           root bg-(--background)
           ${geistSans.variable} ${geistMono.variable} antialiased
-          grid grid-rows-[auto_1fr_20px] items-center justify-items-center min-h-screen
+          grid grid-rows-[auto_1fr] items-center justify-items-center min-h-screen
           ${finalClasses}
           `}
       >
@@ -47,4 +47,3 @@ export default function RootLayout({
     </html>
   );
 }
-// TODO: collapsible theses

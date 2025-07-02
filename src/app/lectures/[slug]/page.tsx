@@ -64,8 +64,8 @@ export default async function Page({ params }: PageProps) {
   ];
 
   const proseClasses = "prose dark:prose-invert lg:prose-xl";
-  const containerClasses =
-    "w-full grid gap-4 border-l border-r md:border-b border-(--border) md:rounded-bl-2xl md:rounded-br-2xl";
+  const borderClasses = "md:border-l md:border-r border-(--border)";
+  const containerClasses = "w-full grid gap-4";
 
   return (
     <div className="grid gap-x-4 static w-full items-start justify-items-center grid-cols-1 md:grid-cols-[1fr_250px]">
@@ -73,9 +73,7 @@ export default async function Page({ params }: PageProps) {
         <ScrollProgressBar className="sticky top-0" />
       </div>
       {pageConfig.cover ? (
-        <div
-          className={`p-4 border-l border-r border-(--border) ${proseClasses}`}
-        >
+        <div className={`p-4 ${borderClasses} ${proseClasses}`}>
           <div className={`relative`}>
             <img
               src={`${basePath}${pageConfig.cover}`}
@@ -98,13 +96,15 @@ export default async function Page({ params }: PageProps) {
       )}
       <DocxViewer
         data={pageConfig}
-        className={`${proseClasses} ${containerClasses}`}
+        className={`${proseClasses} ${containerClasses} ${borderClasses}`}
         // parsedData={parsedData}
       />
 
       <div />
 
-      <div className="grid grid-cols-2 grid-rows-[100] gap-4 w-full p-4 md:p-0 md:pt-4 md:grid-rows-[150]">
+      <div
+        className={`grid grid-cols-2 grid-rows-[100] gap-4 w-full p-4 md:grid-rows-[150] ${borderClasses}`}
+      >
         {outroLinks.map((link) => {
           if (link.href) {
             return <DocxOutroLink key={link.title} {...link} />;
