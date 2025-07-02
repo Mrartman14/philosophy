@@ -1,24 +1,13 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import groupBy from "lodash/groupBy";
-import { useMemo } from "react";
-import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui-components/react";
 
-import { structure } from "@/utils/structure";
-import { Mention } from "../shared/mention";
+import { AppNav } from "./app-nav";
 import { DnaIcon } from "@/assets/icons/dna-icon";
-import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
+import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 
 export const AppHeader: React.FC = () => {
-  const pathname = usePathname();
-  const groupedByChapter = useMemo(
-    () => groupBy(structure, (x) => x.section),
-    []
-  );
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
@@ -52,50 +41,7 @@ export const AppHeader: React.FC = () => {
               </NavigationMenu.Icon>
             </NavigationMenu.Trigger>
             <NavigationMenu.Content className={contentAnimationClassName}>
-              <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll">
-                {Object.entries(groupedByChapter).map(([chapter, data]) => {
-                  return (
-                    <div
-                      key={chapter}
-                      className="static w-full grid grid-cols-1"
-                    >
-                      <h6
-                        className={`sticky top-0 text-(--description) bg-(--background) text-lg p-2 border-b-1 border-b-(--border) rounded text-right`}
-                      >
-                        {chapter}
-                      </h6>
-                      {data.map((item) => {
-                        const href = `/lectures/${item.slug}`;
-                        const isActive = pathname === href;
-                        const lClasses = `${
-                          isActive ? "text-(--primary)" : ""
-                        } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
-
-                        return (
-                          <li key={href}>
-                            <Link href={href} className={lClasses}>
-                              <span className="group-hover:underline group-focus:underline">
-                                {item.order}. {item.title}
-                              </span>
-                              <div className="flex gap-1 items-center flex-wrap">
-                                {item.mentions.map((m, i, arr) => (
-                                  <div
-                                    key={m}
-                                    className="flex items-center text-xs"
-                                  >
-                                    <Mention className="text-xs" name={m} />
-                                    <span>{i < arr.length - 1 && ","}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </ul>
+              <AppNav />
             </NavigationMenu.Content>
           </NavigationMenu.Item>
         </NavigationMenu.List>
