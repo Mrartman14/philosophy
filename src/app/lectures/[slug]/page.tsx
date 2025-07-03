@@ -37,29 +37,27 @@ interface PageProps {
 }
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  const pageConfig = structure.find((p) => p.slug === slug);
-  if (!pageConfig || pageConfig.sources.length === 0) return notFound();
+  const data = structure.find((p) => p.slug === slug);
+  if (!data || data.sources.length === 0) return notFound();
 
-  const prevPageConfig =
-    structure.find((p) => p.order === pageConfig.order - 1) ?? null;
-  const nextPageConfig =
-    structure.find((p) => p.order === pageConfig.order + 1) ?? null;
+  const prevData = structure.find((p) => p.order === data.order - 1) ?? null;
+  const nextData = structure.find((p) => p.order === data.order + 1) ?? null;
 
   // const parsedData = await parseDocx(pageConfig);
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const outroLinks = [
     {
-      href: prevPageConfig ? `/lectures/${prevPageConfig?.slug}` : undefined,
+      href: prevData ? `/lectures/${prevData?.slug}` : undefined,
       title: "← Назад",
-      description: prevPageConfig?.title,
-      imageSrc: `${basePath}${prevPageConfig?.cover}`,
+      description: prevData?.title,
+      imageSrc: `${basePath}${prevData?.cover}`,
     },
     {
-      href: nextPageConfig ? `/lectures/${nextPageConfig?.slug}` : undefined,
+      href: nextData ? `/lectures/${nextData?.slug}` : undefined,
       title: "Вперёд →",
-      description: nextPageConfig?.title,
-      imageSrc: `${basePath}${nextPageConfig?.cover}`,
+      description: nextData?.title,
+      imageSrc: `${basePath}${nextData?.cover}`,
     },
   ];
 
@@ -72,13 +70,12 @@ export default async function Page({ params }: PageProps) {
       <div className="fixed top-0 w-full z-50">
         <ScrollProgressBar className="sticky top-0" />
       </div>
-      {pageConfig.cover ? (
+      {data.cover ? (
         <div className={`p-4 ${borderClasses} ${proseClasses}`}>
           <div className={`relative`}>
             <img
-              src={`${basePath}${pageConfig.cover}`}
-              alt={`${pageConfig.title} lesson preview`}
-              className=""
+              src={`${basePath}${data.cover}`}
+              alt={`${data.title} lesson preview`}
               style={{ margin: 0 }}
             />
             <div
@@ -87,15 +84,15 @@ export default async function Page({ params }: PageProps) {
                 textAlign: "right",
               }}
             >
-              <h1>{pageConfig.title}</h1>
+              <h1>{data.title}</h1>
             </div>
           </div>
         </div>
       ) : (
-        <h1>{pageConfig.title}</h1>
+        <h1>{data.title}</h1>
       )}
       <DocxViewer
-        data={pageConfig}
+        data={data}
         className={`${proseClasses} ${containerClasses} ${borderClasses}`}
         // parsedData={parsedData}
       />

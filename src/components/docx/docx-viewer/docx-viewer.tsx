@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { Tabs } from "@base-ui-components/react/tabs";
 
-import { PageData, SourceVersion } from "@/utils/structure";
+import { LessonPageData, SourceVersion } from "@/utils/structure";
 import { ParsedData, parseDocx } from "@/utils/parse-docx";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 
 interface DocxViewerProps {
   // parsedData: ParsedData[];
-  data: PageData;
+  data: LessonPageData;
   className: string;
 }
 const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
@@ -21,7 +21,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
     {
       headingsData: [],
       htmlString: "",
-      version: data.sources[0].version ?? "Конспект",
+      id: data.sources[0].version ?? "Конспект",
     },
   ]);
 
@@ -33,7 +33,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
     headingsData,
     htmlString,
     //  thesesData
-  } = parsedData.find((x) => x.version === selectedVersion)!;
+  } = parsedData.find((x) => x.id === selectedVersion)!;
 
   useEffect(() => {
     const nextAsideItems: AsideNavItem[] = headingsData.map((h) => {
@@ -98,10 +98,10 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
         {parsedData.map((d) => {
           return (
             <Tabs.Panel
-              value={d.version}
-              key={d.version}
+              value={d.id}
+              key={d.id}
               tabIndex={-1}
-              data-version={d.version}
+              data-version={d.id}
               render={(props) => <article className="px-4" {...props} />}
               dangerouslySetInnerHTML={{ __html: d.htmlString }}
             />

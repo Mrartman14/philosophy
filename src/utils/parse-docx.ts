@@ -3,10 +3,10 @@ import { convertToHtml } from "mammoth";
 // import createDOMPurify from "dompurify";
 
 import { generateAnchorId } from "./generate-anchor-id";
-import type { PageData, SourceVersion } from "./structure";
+import type { PageData } from "./structure";
 
 export type ParsedData = {
-  version: SourceVersion;
+  id: string;
   htmlString: string;
   headingsData: {
     id: string;
@@ -15,24 +15,23 @@ export type ParsedData = {
   }[];
 };
 
-export async function parseDocx(
-  pageConfig: PageData,
-  onServer = false
-): Promise<ParsedData[]> {
+export async function parseDocx(pageConfig: PageData, onServer = false) {
   const results = await Promise.all(
-    pageConfig.sources.map((x) => processSource(x, onServer))
+    pageConfig.sources.map((x) => {
+      return processSource(x, onServer);
+    })
   );
 
   return results;
 }
 
-async function processSource(
-  source: PageData["sources"][number],
+export async function processSource(
+  data: PageData["sources"][number],
   onServer = false
 ): Promise<ParsedData> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const url = `${baseUrl}${source.path}`;
+  const url = `${baseUrl}${data.path}`;
   const response = await fetch(url);
   const docxArrayBuffer = await response.arrayBuffer();
 
@@ -115,9 +114,9 @@ async function processSource(
   // }
 
   return {
+    id: data.version,
     htmlString,
     headingsData,
-    version: source.version,
   };
 }
 

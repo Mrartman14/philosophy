@@ -34,3 +34,14 @@
   font-weight: 300;
   font-style: normal;
 }
+
+.spoiler {
+  filter: blur(5px);
+  cursor: pointer;
+  user-select: none;
+  transition: filter 0.5s ease;
+}
+
+.spoiler.revealed {
+  filter: none;
+}

@@ -3,8 +3,7 @@ import Image from "next/image";
 import { NavigationMenu } from "@base-ui-components/react";
 
 import { AppNav } from "./app-nav";
-import { DnaIcon } from "@/assets/icons/dna-icon";
-import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
+// import { DnaIcon } from "@/assets/icons/dna-icon";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 
 export const AppHeader: React.FC = () => {
@@ -16,7 +15,7 @@ export const AppHeader: React.FC = () => {
       style={{ height: "var(--header-height)" }}
     >
       <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">
-        <NavigationMenu.List className="relative grid grid-cols-[auto_auto_1fr] gap-4 w-full h-full items-stretch">
+        <NavigationMenu.List className="relative grid grid-cols-[auto_1fr_auto_auto_1fr] gap-8 w-full h-full items-stretch">
           <NavigationMenu.Item>
             <Link href="/">
               <Image
@@ -28,22 +27,14 @@ export const AppHeader: React.FC = () => {
               />
             </Link>
           </NavigationMenu.Item>
-          <NavigationMenu.Item className="flex items-center">
+          {/* <NavigationMenu.Item className="flex items-center">
             <Link href="/graph">
               <DnaIcon className="w-[30px] h-[30px] text-(--primary)" />
             </Link>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item className="flex items-stretch justify-center">
-            <NavigationMenu.Trigger className={triggerClassName}>
-              <span className="text-xl">Лекции</span>
-              <NavigationMenu.Icon className="transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180">
-                <ChevronDownIcon />
-              </NavigationMenu.Icon>
-            </NavigationMenu.Trigger>
-            <NavigationMenu.Content className={contentAnimationClassName}>
-              <AppNav />
-            </NavigationMenu.Content>
-          </NavigationMenu.Item>
+          </NavigationMenu.Item> */}
+          <div />
+          <AppNav />
+          <div />
         </NavigationMenu.List>
 
         <NavigationMenu.Portal>
@@ -69,11 +60,6 @@ export const AppHeader: React.FC = () => {
   );
 };
 
-const triggerClassName =
-  "box-border flex items-center justify-center gap-1.5 " +
-  "data-[popup-open]:text-(--description) " +
-  "font-semibold leading-6 select-none ";
-
 const positionerClassName =
   "box-border h-[var(--positioner-height)] w-[var(--positioner-width)] max-w-[var(--available-width)] transition-[top,left,right,bottom] duration-[var(--duration)] ease-[var(--easing)] before:absolute before:content-[''] data-[instant]:transition-none data-[side=bottom]:before:top-[-10px] data-[side=bottom]:before:right-0 data-[side=bottom]:before:left-0 data-[side=bottom]:before:h-2.5 data-[side=left]:before:top-0 data-[side=left]:before:right-[-10px] data-[side=left]:before:bottom-0 data-[side=left]:before:w-2.5 data-[side=right]:before:top-0 data-[side=right]:before:bottom-0 data-[side=right]:before:left-[-10px] data-[side=right]:before:w-2.5 data-[side=top]:before:right-0 data-[side=top]:before:bottom-[-10px] data-[side=top]:before:left-0 data-[side=top]:before:h-2.5";
 
@@ -82,11 +68,3 @@ const popupClassName =
 
 const arrowClassName =
   "flex transition-[left] duration-[var(--duration)] ease-[var(--easing)] data-[side=bottom]:top-[-8px] data-[side=left]:right-[-13px] data-[side=left]:rotate-90 data-[side=right]:left-[-13px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-8px] data-[side=top]:rotate-180";
-
-const contentAnimationClassName =
-  "transition-[opacity,transform,translate] duration-[var(--duration)] ease-[var(--easing)] " +
-  "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 " +
-  "data-[starting-style]:data-[activation-direction=left]:translate-x-[-50%] " +
-  "data-[starting-style]:data-[activation-direction=right]:translate-x-[50%] " +
-  "data-[ending-style]:data-[activation-direction=left]:translate-x-[50%] " +
-  "data-[ending-style]:data-[activation-direction=right]:translate-x-[-50%]";

@@ -6,7 +6,7 @@ import { scaleLinear, select, zoom as d3Zoom, zoomIdentity } from "d3";
 
 import { WidthSlider } from "./width-slider";
 import { PhilosopherView } from "./philosopher-view";
-import { PageData, structure } from "@/utils/structure";
+import { LessonPageData, structure } from "@/utils/structure";
 import { getAverageX } from "@/utils/get-polyline-center";
 import { philosophers, Timeline } from "@/utils/philosophers";
 import { getColorFromStringWithPrefix } from "@/utils/get-color-from-str";
@@ -16,7 +16,7 @@ const getLinePath = (point: Coordinate, i: number) =>
   i === 0 ? `M${point.x} ${point.y}` : `L${point.x} ${point.y}`;
 type LessonPoint = {
   point: { x: number; y: number };
-  lesson: PageData;
+  lesson: LessonPageData;
   chapter: string;
   mention: string;
 };

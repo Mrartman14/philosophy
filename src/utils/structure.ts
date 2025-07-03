@@ -13,11 +13,13 @@ export type PageData = {
   order: number;
   /** url сегмент в url страницы после /lectures */
   slug: string;
-  /** путь до docx файлов лекции */
+  /** путь до docx файлов */
   sources: { path: string; version: SourceVersion }[];
   /** путь до обдожки лекции */
   cover?: string;
+};
 
+export type LessonPageData = PageData & {
   /** упомянутые в лекции личности */
   mentions: string[];
   /** раздел лекций */
@@ -31,7 +33,7 @@ export type PageData = {
   };
 };
 
-export const structure: PageData[] = [
+export const structure: LessonPageData[] = [
   {
     title: "Не ассорти",
     order: 1,
