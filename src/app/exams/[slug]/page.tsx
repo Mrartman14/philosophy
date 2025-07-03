@@ -75,7 +75,7 @@ export default async function Page({ params }: PageProps) {
       </div>
 
       <ExamViewer
-        config={data}
+        // config={data}
         className={`${proseClasses} ${containerClasses} ${borderClasses}`}
       />
     </div>
