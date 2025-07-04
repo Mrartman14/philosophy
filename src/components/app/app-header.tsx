@@ -11,7 +11,7 @@ export const AppHeader: React.FC = () => {
 
   return (
     <header
-      className="sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] bg-(--background) border-b border-(--border)"
+      className="app-header sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] bg-(--background) border-b border-(--border)"
       style={{ height: "var(--header-height)" }}
     >
       <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">

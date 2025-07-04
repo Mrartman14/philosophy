@@ -45,3 +45,14 @@
 .spoiler.revealed {
   filter: none;
 }
+
+/* для области сверху телефона в pwa */
+.app-header::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  backdrop-filter: blur(8px);
+}
