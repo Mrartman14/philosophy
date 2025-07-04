@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import { SWProvider } from "@/components/shared/sw-provider";
+
 export default function Home() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -12,6 +14,7 @@ export default function Home() {
         height={500}
         priority
       />
+      <SWProvider />
     </div>
   );
 }

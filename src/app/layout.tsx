@@ -17,8 +17,10 @@ const geistClasses = "font-[family-name:var(--font-geist-sans)]";
 const finalClasses = geistClasses;
 
 export const metadata: Metadata = {
-  title: "Philosophy",
-  description: "",
+  title: "Философия-ликбез",
+  description: "Архив занятий курса Философия-ликбез",
+  // icons: [{ rel: "icon", url: "/icons/icon-192x192.png" }],
+  // themeColor: "#ff0000",
 };
 
 export default function RootLayout({
@@ -27,7 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="ФЛБЗ" />
+      </head>
       <body
         className={`
           root bg-(--background)

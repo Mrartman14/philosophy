@@ -152,7 +152,7 @@ export const ExamViewer: React.FC<ExamViewerProps> = ({
       ))}
       {voted.length === data.length && (
         <>
-          <p className="text-3xl" style={{ textAlign: "right" }}>
+          <p className="text-lg md:text-3xl" style={{ textAlign: "right" }}>
             Итоговый результат: {correctVoted.length} / {data.length}
           </p>
           <p className="pb-2">
