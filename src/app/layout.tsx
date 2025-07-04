@@ -36,9 +36,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* <head>
-        <meta name="apple-mobile-web-app-title" content="ФЛБЗ" />
-      </head> */}
+      <head>
+        <meta
+          name="theme-color"
+          content="#f8f8f8"
+          media="(prefers-color-scheme: light)"
+        />
+        <meta
+          name="theme-color"
+          content="#111a20"
+          media="(prefers-color-scheme: dark)"
+        />
+      </head>
       <body
         className={`
           root bg-(--background)
