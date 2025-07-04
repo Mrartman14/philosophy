@@ -95,9 +95,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
       <a
         key={item.id}
         href={`#${item.id}`}
-        className={`${
-          isSelected ? "underline underline-offset-4" : "no-underline"
-        }`}
+        className={`${isSelected ? "" : "text-(--description) font-light"}`}
         style={{ paddingLeft: `${depth * 20}px` }}
       >
         {item.render({ isSelected, depth })}

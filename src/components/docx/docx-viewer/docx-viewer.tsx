@@ -41,9 +41,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
         id: h.id,
         render: ({ isSelected }) => (
           <span
-            className={`${
-              isSelected ? "underline underline-offset-4" : "no-underline"
-            }`}
+            className={`${isSelected ? "" : "text-(--description)"}`}
             style={{ paddingLeft: (h.level - 2) * 20 }}
           >
             {h.text}

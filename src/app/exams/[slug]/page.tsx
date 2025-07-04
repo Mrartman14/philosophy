@@ -63,7 +63,7 @@ export default async function Page({ params }: PageProps) {
             <div
               className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
               style={{
-                textAlign: "right",
+                textAlign: "center",
               }}
             >
               <h1>{data.title}</h1>
