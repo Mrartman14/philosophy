@@ -24,18 +24,18 @@ export const SWProvider: React.FC<SWProviderProps> = ({ children }) => {
       setIsSupported(true);
 
       async function registerServiceWorker() {
-        const registration = await navigator.serviceWorker.register(`./sw.js`, {
-          scope: "/",
-          updateViaCache: "none",
-        });
-        // const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-        // const registration = await navigator.serviceWorker.register(
-        //   `${basePath}/sw.js`,
-        //   {
-        //     scope: "/",
-        //     updateViaCache: "none",
-        //   }
-        // );
+        // const registration = await navigator.serviceWorker.register(`./sw.js`, {
+        //   scope: "/",
+        //   updateViaCache: "none",
+        // });
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+        const registration = await navigator.serviceWorker.register(
+          `${basePath}/sw.js`,
+          {
+            scope: "/",
+            updateViaCache: "none",
+          }
+        );
         const sub = await registration.pushManager.getSubscription();
         setSubscription(sub);
       }
