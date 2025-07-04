@@ -1,7 +1,7 @@
 {
     "name": "Философия ликбез",
     "short_name": "ФЛБЗ",
-    "start_url": "./",
+    "start_url": "/",
     "display": "standalone",
     "theme_color": "#ffffff",
     "background_color": "#111a20",

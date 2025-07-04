@@ -17,17 +17,16 @@ const geistMono = Geist_Mono({
 const geistClasses = "font-[family-name:var(--font-geist-sans)]";
 const finalClasses = geistClasses;
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export const metadata: Metadata = {
   title: "Философия-ликбез",
   description: "Архив занятий курса Философия-ликбез",
-  manifest: "/manifest.webmanifest",
+  manifest: `${basePath}/manifest.webmanifest`,
   appleWebApp: {
     title: "ФЛБЗ",
     capable: true,
     statusBarStyle: "black-translucent",
   },
-  // icons: [{ rel: "icon", url: "/icons/icon-192x192.png" }],
-  // themeColor: "#ff0000",
 };
 
 export default function RootLayout({

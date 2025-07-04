@@ -1,29 +1,18 @@
 import type { NextConfig } from "next";
-// import pwa from "next-pwa";
 
-const isProd = process.env.NODE_ENV === "production";
-
-// const withPWA = pwa({
-//   dest: "public",
-//   register: true,
-//   skipWaiting: true,
-//   // disable: process.env.NODE_ENV === 'development',
-//   // scope: '/app',
-//   // sw: 'service-worker.js',
-//   //...
-// });
+// const isProd = process.env.NODE_ENV === "production";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    unoptimized: true, // GitHub Pages не поддерживает оптимизацию изображений Next.js
+    // GitHub Pages не поддерживает оптимизацию изображений Next.js
+    unoptimized: true,
   },
-  assetPrefix: isProd ? "/philosophy/" : "",
-  basePath: isProd ? "/philosophy" : "",
+  assetPrefix: `${basePath}/`,
+  // assetPrefix: isProd ? "/philosophy/" : "",
+  basePath: basePath,
   output: "export",
 };
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// module.exports = withPWA(nextConfig as any);
 
 module.exports = nextConfig;
