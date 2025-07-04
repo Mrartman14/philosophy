@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { AppHeader } from "@/components/app/app-header";
 import Theme from "./_providers/theme";
+import { AppHeader } from "@/components/app/app-header";
+import { SWProvider } from "@/components/shared/sw-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +20,12 @@ const finalClasses = geistClasses;
 export const metadata: Metadata = {
   title: "Философия-ликбез",
   description: "Архив занятий курса Философия-ликбез",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    title: "ФЛБЗ",
+    capable: true,
+    statusBarStyle: "black-translucent",
+  },
   // icons: [{ rel: "icon", url: "/icons/icon-192x192.png" }],
   // themeColor: "#ff0000",
 };
@@ -29,10 +36,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" suppressHydrationWarning>
-      <head>
+    <html lang="en" suppressHydrationWarning>
+      {/* <head>
         <meta name="apple-mobile-web-app-title" content="ФЛБЗ" />
-      </head>
+      </head> */}
       <body
         className={`
           root bg-(--background)
@@ -41,6 +48,7 @@ export default function RootLayout({
           ${finalClasses}
           `}
       >
+        <SWProvider />
         <Theme>
           <AppHeader />
           <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
