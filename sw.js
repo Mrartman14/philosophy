@@ -1,3 +1,11 @@
+self.addEventListener("install", function (event) {
+	console.log('[SW] - install event', event)
+});
+
+self.addEventListener("activate", function (event) {
+	console.log('[SW] - activate event', event)
+});
+
 self.addEventListener('push', function (event) {
     if (event.data) {
         const data = event.data.json()
