@@ -19,7 +19,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
   const [selectedVersion, setSelectedVersion] = useState<SourceVersion>(
     data.sources[0].version
   );
-  const allVersions = data.sources.map(({ version }) => version);
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
   const [parsedData, setParsedData] = useState<ParsedData[]>([
     {
@@ -104,10 +103,10 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
               }
             >
               <div className="w-full border-b border-b-(--border)" />
-              {allVersions.map((v) => (
+              {parsedData.map((v) => (
                 <Tabs.Tab
-                  key={v}
-                  value={v}
+                  key={v.id}
+                  value={v.id}
                   render={<li style={{ margin: 0 }} />}
                   className="flex p-2 items-center justify-center border-b border-b-(--border) data-[selected]:border-b-0 px-2 outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
                 >
@@ -115,28 +114,20 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
                     className="text-lg md:text-2xl"
                     style={{ margin: 0, color: "inherit" }}
                   >
-                    {v}
+                    {v.id}
                   </h4>
                 </Tabs.Tab>
               ))}
               <div className="w-full border-b border-b-(--border)" />
-              <Tabs.Indicator className="border border-(--border) rounded-lg border-b-0 rounded-bl-[0px] rounded-br-[0px] h-11 md:h-14 absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out" />
+              <Tabs.Indicator className="border border-(--border) rounded-lg border-b-0 rounded-bl-[0px] rounded-br-[0px] h-full absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out" />
             </Tabs.List>
           </nav>
 
           {parsedData.map((d) => {
             return (
-              <Tabs.Panel
-                value={d.id}
-                key={d.id}
-                tabIndex={-1}
-                data-version={d.id}
-              >
+              <Tabs.Panel value={d.id} key={d.id} tabIndex={-1}>
                 <div className="w-full">
-                  <DocxViewerMetaInfo
-                    selectedData={selectedData}
-                    sourceUrl={sourceUrl}
-                  />
+                  <DocxViewerMetaInfo selectedData={d} sourceUrl={sourceUrl} />
                   <style>
                     {`
                       #${d.id} p {
