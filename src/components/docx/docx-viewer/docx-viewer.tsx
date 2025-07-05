@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { Tabs } from "@base-ui-components/react/tabs";
 
-import { DocxViewerToolbar } from "./docx-viewer-toolbar";
+// import { DocxViewerToolbar } from "./docx-viewer-toolbar";
 import { ParsedData, parseDocx } from "@/utils/parse-docx";
+import { DocxViewerMetaInfo } from "./docx-viewer-meta-info";
 import { LessonPageData, SourceVersion } from "@/utils/structure";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 
@@ -13,8 +14,7 @@ interface DocxViewerProps {
   className: string;
 }
 const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
-  const [textAlign, setTextAlign] =
-    useState<React.CSSProperties["textAlign"]>("justify");
+  const [textAlign] = useState<React.CSSProperties["textAlign"]>("justify");
 
   const [selectedVersion, setSelectedVersion] = useState<SourceVersion>(
     data.sources[0].version
@@ -26,13 +26,16 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
       headingsData: [],
       htmlString: "",
       id: data.sources[0].version,
-      meta: {
+      docxMeta: {
         title: null,
         createdBy: null,
         lastModifiedBy: null,
         version: null,
         keywords: null,
         lastModified: null,
+      },
+      fileMeta: {
+        fileName: null,
         fileSizeInBytes: null,
       },
     },
@@ -79,7 +82,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
   return (
     <>
       <AsideMenu className="hidden md:grid" items={asideItems} />
-      <div>
+      <div className={`w-full ${className}`}>
         {/* <DocxViewerToolbar
           sourceUrl={sourceUrl}
           selectedData={selectedData}
@@ -87,13 +90,12 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
           onChangeTextAlign={setTextAlign}
         /> */}
         <Tabs.Root
-          className={className}
           value={selectedVersion}
           onValueChange={(x) => handleSetVersion(x)}
         >
           <nav className="w-full pt-4">
             <Tabs.List
-              className="flex items-center justify-center relative w-full z-0"
+              className="flex items-end justify-center relative w-full z-0"
               render={
                 <ul
                   className="flex items-center"
@@ -107,13 +109,18 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
                   key={v}
                   value={v}
                   render={<li style={{ margin: 0 }} />}
-                  className="flex p-2 items-center justify-center border-0 px-2 cursor-pointer outline-none select-none before:inset-x-0 before:inset-y-1 before:rounded-sm before:-outline-offset-1 before:outline-blue-800 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
+                  className="flex p-2 items-center justify-center border-b border-b-(--border) data-[selected]:border-b-0 px-2 outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
                 >
-                  <h4 style={{ margin: 0, color: "inherit" }}>{v}</h4>
+                  <h4
+                    className="text-lg md:text-2xl"
+                    style={{ margin: 0, color: "inherit" }}
+                  >
+                    {v}
+                  </h4>
                 </Tabs.Tab>
               ))}
               <div className="w-full border-b border-b-(--border)" />
-              <Tabs.Indicator className="border border-(--border) rounded-lg h-12 absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out" />
+              <Tabs.Indicator className="border border-(--border) rounded-lg border-b-0 rounded-bl-[0px] rounded-br-[0px] h-11 md:h-14 absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out" />
             </Tabs.List>
           </nav>
 
@@ -124,10 +131,26 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
                 key={d.id}
                 tabIndex={-1}
                 data-version={d.id}
-                render={(props) => <article className="px-4" {...props} />}
-                dangerouslySetInnerHTML={{ __html: d.htmlString }}
-                style={{ textAlign }}
-              />
+              >
+                <div className="w-full">
+                  <DocxViewerMetaInfo
+                    selectedData={selectedData}
+                    sourceUrl={sourceUrl}
+                  />
+                  <style>
+                    {`
+                      #${d.id} p {
+                        text-align: ${textAlign};
+                      }
+                    `}
+                  </style>
+                  <article
+                    id={d.id}
+                    className="px-4 w-full"
+                    dangerouslySetInnerHTML={{ __html: d.htmlString }}
+                  />
+                </div>
+              </Tabs.Panel>
             );
           })}
         </Tabs.Root>

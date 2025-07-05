@@ -42,7 +42,7 @@
   filter: none;
 }
 
-/* для области сверху телефона в pwa */
+/* для области шторы телефона в pwa */
 .app-header::before {
   content: "";
   position: absolute;

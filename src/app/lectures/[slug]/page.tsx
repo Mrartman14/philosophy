@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { structure } from "@/utils/structure";
-// import { parseDocx } from "@/utils/parse-docx";
 import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
@@ -42,8 +41,6 @@ export default async function Page({ params }: PageProps) {
 
   const prevData = structure.find((p) => p.order === data.order - 1) ?? null;
   const nextData = structure.find((p) => p.order === data.order + 1) ?? null;
-
-  // const parsedData = await parseDocx(pageConfig);
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const outroLinks = [
@@ -110,7 +107,6 @@ export default async function Page({ params }: PageProps) {
       <DocxViewer
         data={data}
         className={`${proseClasses} ${containerClasses} ${borderClasses}`}
-        // parsedData={parsedData}
       />
 
       <div />

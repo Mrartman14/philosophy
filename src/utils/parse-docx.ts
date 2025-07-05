@@ -13,6 +13,7 @@ import {
   parseDocxTitle,
   parseDocxVersion,
 } from "./get-docx-metadata";
+import { getFilenameFromContentDisposition } from "./files";
 
 export type ParsedData = {
   id: string;
@@ -22,14 +23,17 @@ export type ParsedData = {
     text: string | null;
     level: number;
   }[];
-  meta: {
+  fileMeta: {
+    fileName: string | null;
+    fileSizeInBytes: number | null;
+  };
+  docxMeta: {
     title: string | null;
     createdBy: string | null;
     lastModifiedBy: string | null;
     lastModified: Date | null;
     version: string | null;
     keywords: string | null;
-    fileSizeInBytes: number | null;
   };
 };
 
@@ -51,8 +55,12 @@ export async function processSource(
 
   const url = `${baseUrl}${data.path}`;
   const response = await fetch(url);
+  const contentDisposition = response.headers.get("Content-Disposition");
+  const fileName = getFilenameFromContentDisposition(contentDisposition);
+
   const docxArrayBuffer = await response.arrayBuffer();
   const fileSizeInBytes = docxArrayBuffer.byteLength;
+  // docxArrayBuffer.
 
   const zip = await JSZip.loadAsync(docxArrayBuffer);
   const coreXml = await zip.file("docProps/core.xml")?.async("text");
@@ -145,13 +153,16 @@ export async function processSource(
     id: data.version,
     htmlString,
     headingsData,
-    meta: {
+    docxMeta: {
       title,
       version,
       keywords,
       createdBy,
       lastModified,
       lastModifiedBy,
+    },
+    fileMeta: {
+      fileName,
       fileSizeInBytes,
     },
   };
