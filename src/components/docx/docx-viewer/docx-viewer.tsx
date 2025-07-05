@@ -37,6 +37,9 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
         fileName: null,
         fileSizeInBytes: null,
       },
+      meta: {
+        readingTime: 0,
+      },
     },
   ]);
 
@@ -92,7 +95,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
           value={selectedVersion}
           onValueChange={(x) => handleSetVersion(x)}
         >
-          <nav className="w-full pt-4">
+          <nav className="w-full">
             <Tabs.List
               className="flex items-end justify-center relative w-full z-0"
               render={

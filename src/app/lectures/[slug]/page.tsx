@@ -68,42 +68,40 @@ export default async function Page({ params }: PageProps) {
       <div className="fixed top-0 w-full z-50">
         <ScrollProgressBar className="sticky top-0" />
       </div>
-      {data.cover ? (
-        <div className={`p-4 ${borderClasses} ${proseClasses}`}>
-          <div className={`relative`}>
-            {/* <div
-              style={{
-                background: `url(${imgSrc}) center/cover no-repeat`,
-                filter: "blur(30px)",
-                position: "absolute",
-                top: "20px",
-                left: "20px",
-                right: "20px",
-                bottom: "20px",
-                zIndex: -1,
-              }}
-            /> */}
-            <img
-              src={`${imgSrc}`}
-              alt={`${data.title} lesson preview`}
-              style={{
-                margin: 0,
-                // width: "65ch",
-              }}
-            />
-            <div
-              className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
-              style={{
-                textAlign: "right",
-              }}
-            >
-              <h1>{data.title}</h1>
-            </div>
+
+      <div className={`overflow-x-hidden p-4 ${borderClasses} ${proseClasses}`}>
+        <div className={`relative`}>
+          {/* <div
+            style={{
+              background: `url(${imgSrc}) center/cover no-repeat`,
+              filter: "blur(50px)",
+              position: "absolute",
+              top: "20px",
+              left: "20px",
+              right: "20px",
+              bottom: "100px",
+              zIndex: -1,
+            }}
+          /> */}
+          <img
+            src={`${imgSrc}`}
+            alt={`${data.title} lesson preview`}
+            style={{
+              margin: 0,
+              // width: "65ch",
+            }}
+          />
+          <div
+            className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
+            style={{
+              textAlign: "right",
+            }}
+          >
+            <h1>{data.title}</h1>
           </div>
         </div>
-      ) : (
-        <h1>{data.title}</h1>
-      )}
+      </div>
+
       <DocxViewer
         data={data}
         className={`${proseClasses} ${containerClasses} ${borderClasses}`}

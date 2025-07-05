@@ -16,7 +16,7 @@ export type PageData = {
   /** путь до docx файлов */
   sources: { path: string; version: SourceVersion }[];
   /** путь до обдожки лекции */
-  cover?: string;
+  cover: string;
 };
 
 export type LessonPageData = PageData & {

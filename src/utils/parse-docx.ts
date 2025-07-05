@@ -14,6 +14,7 @@ import {
   parseDocxVersion,
 } from "./get-docx-metadata";
 import { getFilenameFromContentDisposition } from "./files";
+import { calculateReadingTime } from "./calculateReadingTime";
 
 export type ParsedData = {
   id: string;
@@ -23,6 +24,9 @@ export type ParsedData = {
     text: string | null;
     level: number;
   }[];
+  meta: {
+    readingTime: number;
+  };
   fileMeta: {
     fileName: string | null;
     fileSizeInBytes: number | null;
@@ -112,6 +116,7 @@ export async function processSource(
   );
 
   let htmlString: string;
+  let readingTime: number;
   let headingsData: ParsedData["headingsData"];
 
   if (onServer) {
@@ -129,6 +134,8 @@ export async function processSource(
     const parsedDocument = parser.parseFromString(dirtyHtmlString, "text/html");
     headingsData = prepareHeadings(parsedDocument);
     htmlString = parsedDocument.body.innerHTML;
+
+    readingTime = calculateReadingTime(htmlString, 200);
   }
 
   // const headings = parsedDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
@@ -160,6 +167,9 @@ export async function processSource(
       createdBy,
       lastModified,
       lastModifiedBy,
+    },
+    meta: {
+      readingTime,
     },
     fileMeta: {
       fileName,
