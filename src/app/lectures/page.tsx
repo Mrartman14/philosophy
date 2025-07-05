@@ -16,9 +16,9 @@ export default async function Page({ params }: PageProps) {
       {Object.entries(groupedByChapter).map(([chapter, lections]) => (
         <Fragment key={chapter}>
           <div>
-            <h2 className="inline-block text-4xl font-semibold relative">
+            <h2 className="inline text-4xl font-semibold relative">
               {chapter}
-              <span className="absolute top-0 left-full text-sm text-(--description)">
+              <span className="absolute left-full text-sm text-(--description)">
                 {lections.length}
               </span>
             </h2>
@@ -41,15 +41,13 @@ export default async function Page({ params }: PageProps) {
   );
 }
 
-export const LessonCard: React.FC<{ lesson: LessonPageData }> = ({
-  lesson,
-}) => {
+const LessonCard: React.FC<{ lesson: LessonPageData }> = ({ lesson }) => {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
     <a
       href={`/lectures/${lesson.slug}`}
-      className="group relative rounded-xl border border-(--border) overflow-hidden"
+      className="group relative rounded-xl border-4 border-(--border) overflow-hidden"
     >
       <img
         src={`${basePath}${lesson.cover}`}
