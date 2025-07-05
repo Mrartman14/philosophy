@@ -28,7 +28,7 @@ export const AppNav: React.FC = () => {
           </NavigationMenu.Icon>
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={contentAnimationClassName}>
-          <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll">
+          <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[70vh] overflow-y-scroll">
             {Object.entries(groupedByChapter).map(([chapter, data]) => {
               return (
                 <div key={chapter} className="static w-full grid grid-cols-1">

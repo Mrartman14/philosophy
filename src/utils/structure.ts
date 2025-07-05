@@ -512,20 +512,20 @@ export const structure: LessonPageData[] = [
     ],
     meta: {},
   },
-  // {
-  //   title: "???",
-  //   order: 35,
-  //   slug: "lesson-35",
-  //   sources: [
-  //     {
-  //       path: "/lesson-35.docx",
-  //       name: "Конспект",
-  //     },
-  //     { path: "", name: "LLM" },
-  //   ],
-  //   cover: "/lesson-previews/lesson-35-preview.jpeg",
-  //   section: "Новоевропейская теория познания",
-  //   mentions: ["Юм"],
-  //   meta: {},
-  // },
+  {
+    title: "???",
+    order: 35,
+    slug: "lesson-35",
+    sources: [
+      {
+        path: "/lesson-35.docx",
+        version: "Конспект",
+      },
+      { path: "", version: "LLM" },
+    ],
+    cover: "/lesson-previews/lesson-35-preview.jpeg",
+    section: "Новоевропейская теория познания",
+    mentions: ["Юм"],
+    meta: {},
+  },
 ];
