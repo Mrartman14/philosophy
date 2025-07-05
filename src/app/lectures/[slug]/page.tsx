@@ -65,6 +65,7 @@ export default async function Page({ params }: PageProps) {
   const borderClasses = "md:border-l md:border-r border-(--border)";
   const containerClasses = "w-full grid gap-4";
 
+  const imgSrc = `${basePath}${data.cover}`;
   return (
     <div className="grid gap-x-4 static w-full items-start justify-items-center grid-cols-1 md:grid-cols-[1fr_250px]">
       <div className="fixed top-0 w-full z-50">
@@ -73,10 +74,25 @@ export default async function Page({ params }: PageProps) {
       {data.cover ? (
         <div className={`p-4 ${borderClasses} ${proseClasses}`}>
           <div className={`relative`}>
+            {/* <div
+              style={{
+                background: `url(${imgSrc}) center/cover no-repeat`,
+                filter: "blur(30px)",
+                position: "absolute",
+                top: "20px",
+                left: "20px",
+                right: "20px",
+                bottom: "20px",
+                zIndex: -1,
+              }}
+            /> */}
             <img
-              src={`${basePath}${data.cover}`}
+              src={`${imgSrc}`}
               alt={`${data.title} lesson preview`}
-              style={{ margin: 0 }}
+              style={{
+                margin: 0,
+                // width: "65ch",
+              }}
             />
             <div
               className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"

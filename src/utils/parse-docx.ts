@@ -1,9 +1,18 @@
 // import { JSDOM } from "jsdom";
 import { convertToHtml } from "mammoth";
+import JSZip from "jszip";
 // import createDOMPurify from "dompurify";
 
-import { generateAnchorId } from "./generate-anchor-id";
 import type { PageData } from "./structure";
+import { generateAnchorId } from "./generate-anchor-id";
+import {
+  parseDocxCreator,
+  parseDocxKeywords,
+  parseDocxLastModifiedBy,
+  parseDocxModifiedDate,
+  parseDocxTitle,
+  parseDocxVersion,
+} from "./get-docx-metadata";
 
 export type ParsedData = {
   id: string;
@@ -13,6 +22,15 @@ export type ParsedData = {
     text: string | null;
     level: number;
   }[];
+  meta: {
+    title: string | null;
+    createdBy: string | null;
+    lastModifiedBy: string | null;
+    lastModified: Date | null;
+    version: string | null;
+    keywords: string | null;
+    fileSizeInBytes: number | null;
+  };
 };
 
 export async function parseDocx(pageConfig: PageData, onServer = false) {
@@ -34,6 +52,16 @@ export async function processSource(
   const url = `${baseUrl}${data.path}`;
   const response = await fetch(url);
   const docxArrayBuffer = await response.arrayBuffer();
+  const fileSizeInBytes = docxArrayBuffer.byteLength;
+
+  const zip = await JSZip.loadAsync(docxArrayBuffer);
+  const coreXml = await zip.file("docProps/core.xml")?.async("text");
+  const lastModified = coreXml ? parseDocxModifiedDate(coreXml) : null;
+  const version = coreXml ? parseDocxVersion(coreXml) : null;
+  const keywords = coreXml ? parseDocxKeywords(coreXml) : null;
+  const title = coreXml ? parseDocxTitle(coreXml) : null;
+  const createdBy = coreXml ? parseDocxCreator(coreXml) : null;
+  const lastModifiedBy = coreXml ? parseDocxLastModifiedBy(coreXml) : null;
 
   const options: { buffer?: Buffer<ArrayBuffer>; arrayBuffer?: ArrayBuffer } =
     {};
@@ -117,6 +145,15 @@ export async function processSource(
     id: data.version,
     htmlString,
     headingsData,
+    meta: {
+      title,
+      version,
+      keywords,
+      createdBy,
+      lastModified,
+      lastModifiedBy,
+      fileSizeInBytes,
+    },
   };
 }
 

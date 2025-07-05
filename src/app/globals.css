@@ -26,10 +26,6 @@
   --text-pane: #00000092;
 }
 
-.prose p {
-  @apply text-justify;
-}
-
 .prose blockquote {
   font-weight: 300;
   font-style: normal;
