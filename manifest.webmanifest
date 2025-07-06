@@ -2,7 +2,7 @@
   "name": "Философия ликбез",
   "short_name": "ФЛБЗ",
   "start_url": "/philosophy/",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#f8f8f8",
   "background_color": "#111a20",
   "icons": [
