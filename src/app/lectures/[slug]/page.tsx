@@ -88,6 +88,7 @@ export default async function Page({ params }: PageProps) {
             alt={`${data.title} lesson preview`}
             style={{
               margin: 0,
+              width: "100vw",
               // width: "65ch",
             }}
           />
