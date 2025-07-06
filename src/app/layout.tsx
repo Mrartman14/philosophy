@@ -5,6 +5,7 @@ import "./globals.css";
 import Theme from "./_providers/theme";
 import { AppHeader } from "@/components/app/app-header";
 import { SWProvider } from "@/app/_providers/sw-provider";
+import { NewLessonsProvider } from "./_providers/new-lessons-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +58,7 @@ export default function RootLayout({
           `}
       >
         <SWProvider />
+        <NewLessonsProvider />
         <Theme>
           <AppHeader />
           <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
