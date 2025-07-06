@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 // import { subscribeUser, unsubscribeUser, sendNotification } from "../actions";
-import { SWProvider, SWProviderState } from "@/components/shared/sw-provider";
+import { SWProvider, SWProviderState } from "@/app/_providers/sw-provider";
 
 // for more detailed guide see https://nextjs.org/docs/app/guides/progressive-web-apps
 

@@ -4,6 +4,7 @@ import { NavigationMenu } from "@base-ui-components/react";
 
 import { AppNav } from "./app-nav";
 // import { DnaIcon } from "@/assets/icons/dna-icon";
+import { NetworkIndicator } from "./network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 
 export const AppHeader: React.FC = () => {
@@ -11,7 +12,7 @@ export const AppHeader: React.FC = () => {
 
   return (
     <header
-      className="app-header sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] bg-(--background) border-b border-(--border)"
+      className="app-header sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] items-center bg-(--background) border-b border-(--border)"
       style={{ height: "var(--header-height)" }}
     >
       <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">
@@ -56,6 +57,8 @@ export const AppHeader: React.FC = () => {
           </NavigationMenu.Positioner>
         </NavigationMenu.Portal>
       </NavigationMenu.Root>
+
+      <NetworkIndicator />
     </header>
   );
 };

@@ -24,7 +24,7 @@ export const DocxViewerMetaInfo: React.FC<DocxViewerMetaInfoProps> = ({
         <HourglassIcon aria-label="Среднее время чтения" />
         {parsedData.meta.readingTime} мин.
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         {/* {selectedData.meta.lastModified && (
           <span className="flex items-center gap-2 text-(--description)">
             <DocUpdateIcon /> {getRelativeDate(selectedData.meta.lastModified)}

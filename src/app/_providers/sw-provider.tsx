@@ -33,6 +33,7 @@ export const SWProvider: React.FC<SWProviderProps> = ({ children }) => {
           `${basePath}/sw.js`,
           {
             scope: "/",
+            type: "module",
             updateViaCache: "none",
           }
         );

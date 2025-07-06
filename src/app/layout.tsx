@@ -4,7 +4,7 @@ import "./globals.css";
 
 import Theme from "./_providers/theme";
 import { AppHeader } from "@/components/app/app-header";
-import { SWProvider } from "@/components/shared/sw-provider";
+import { SWProvider } from "@/app/_providers/sw-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,7 +52,7 @@ export default function RootLayout({
         className={`
           root bg-(--background)
           ${geistSans.variable} ${geistMono.variable} antialiased
-          grid grid-rows-[auto_1fr] items-center justify-items-center min-h-screen
+          grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen
           ${finalClasses}
           `}
       >
@@ -62,7 +62,7 @@ export default function RootLayout({
           <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
             {children}
           </main>
-          <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>
+          <footer className="flex gap-[24px] flex-wrap items-center justify-center border-t border-(--border) h-0 w-full"></footer>
         </Theme>
       </body>
     </html>
