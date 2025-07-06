@@ -6,6 +6,7 @@ class AppBadgeService {
       try {
         if (count > 0) {
           await (navigator as any).setAppBadge(count);
+          console.log("updateAppBadge: success");
         } else {
           await (navigator as any).clearAppBadge();
         }
