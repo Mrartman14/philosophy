@@ -20,6 +20,7 @@ self.addEventListener('install', event => {
     caches.open(STATIC_CACHE)
       .then(cache => cache.addAll(STATIC_ASSETS))
       .then(() => self.skipWaiting())
+      .catch((e) => console.error(e))
   );
 });
 
@@ -33,6 +34,7 @@ self.addEventListener('activate', event => {
           .map(key => caches.delete(key))
       )
     ).then(() => self.clients.claim())
+      .catch((e) => console.error(e))
   );
 
   console.log('[SW] - activate event', event)
