@@ -32,8 +32,8 @@ export const SWProvider: React.FC<SWProviderProps> = ({ children }) => {
         const registration = await navigator.serviceWorker.register(
           `${basePath}/sw.js`,
           {
-            scope: "/",
             type: "module",
+            scope: `${basePath}/`,
             updateViaCache: "none",
           }
         );
