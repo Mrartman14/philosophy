@@ -130,7 +130,11 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
             return (
               <Tabs.Panel value={d.id} key={d.id} tabIndex={-1}>
                 <div className="w-full">
-                  <DocxViewerMetaInfo selectedData={d} sourceUrl={sourceUrl} />
+                  <DocxViewerMetaInfo
+                    data={data}
+                    parsedData={d}
+                    sourceUrl={sourceUrl}
+                  />
                   <style>
                     {`
                       #${d.id} p {
