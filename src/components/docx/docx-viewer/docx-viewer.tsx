@@ -111,6 +111,14 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
                   key={v.id}
                   value={v.id}
                   render={<li style={{ margin: 0 }} />}
+                  onClick={() => {
+                    if (
+                      typeof window !== "undefined" &&
+                      "vibrate" in navigator
+                    ) {
+                      navigator.vibrate?.(100);
+                    }
+                  }}
                   className="flex p-2 items-center justify-center border-b border-b-(--border) data-[selected]:border-b-0 px-2 outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
                 >
                   <h4
