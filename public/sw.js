@@ -1,13 +1,13 @@
 const STATIC_CACHE = 'static-v1';
 const NEXT_ASSETS_CACHE = 'next-assets-v1';
 const DOCX_CACHE = 'docx-v1';
-// const PAGE_DATA_CACHE = 'page-data-v1';
+const PAGE_DATA_CACHE = 'page-data-v1';
 const LECTURES_PAGE_CACHE = 'lecture-pages-v1';
 
 const STATIC_ASSETS = [
   '/',
   '/logo.png',
-  '/page-data.json',
+  // '/page-data.json',
   '/favicon.ico',
   '/index.html',
   '/offline.html',
@@ -53,11 +53,10 @@ self.addEventListener('fetch', event => {
   }
 
   // 0. page-data: stale-while-revalidate
-  // включить это когда получение жсона будет осуществляться не через файловую систему а через фетч
-  // if (request.url.endsWith('page-data.json')) {
-  //   event.respondWith(staleWhileRevalidate(request, PAGE_DATA_CACHE));
-  //   return;
-  // }
+  if (request.url.endsWith('page-data.json')) {
+    event.respondWith(staleWhileRevalidate(request, PAGE_DATA_CACHE));
+    return;
+  }
 
   // 1. DOCX-файлы: stale-while-revalidate
   if (request.url.endsWith('.docx')) {

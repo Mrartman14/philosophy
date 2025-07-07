@@ -1,11 +1,22 @@
+import path from "path";
+import fs from "fs/promises";
 import { Metadata } from "next";
 
-import { getExamBySlug, getExamList } from "@/api/pages-api";
+import { getExamBySlug } from "@/api/pages-api";
+import { ExamPageData } from "@/entities/page-data";
 import { ExamViewer } from "@/components/docx/exam-viewer/exam-viewer";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
+// TODO: когда-нибудь вынести файл page-data.json на бекенд и получать нормально по http
+const getExamListFromFs = async () => {
+  const filePath = path.join(process.cwd(), "public", "page-data.json");
+  const fileContents = await fs.readFile(filePath, "utf-8");
+  const json = JSON.parse(fileContents);
+  return json.exams as Promise<ExamPageData[]>;
+};
+
 export async function generateStaticParams() {
-  const exams = await getExamList();
+  const exams = await getExamListFromFs();
   return exams.map((data) => ({ slug: data.slug }));
 }
 
@@ -44,16 +55,15 @@ export default async function Page({ params }: PageProps) {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   const proseClasses = "prose dark:prose-invert lg:prose-xl";
-  const borderClasses = "md:border-l md:border-r border-(--border)";
   const containerClasses = "w-full grid gap-4";
 
   return (
-    <div className="grid gap-x-4 static w-full items-start justify-items-center grid-cols-1">
+    <div className="grid static w-full items-start justify-items-center grid-cols-1">
       <div className="fixed top-0 w-full z-50">
         <ScrollProgressBar className="sticky top-0" />
       </div>
 
-      <div className={`p-4 width-full ${borderClasses} ${proseClasses}`}>
+      <div className={`p-4 width-full ${proseClasses}`}>
         {data.cover ? (
           <div className={`relative`}>
             <img
@@ -75,10 +85,7 @@ export default async function Page({ params }: PageProps) {
         )}
       </div>
 
-      <ExamViewer
-        // config={data}
-        className={`${proseClasses} ${containerClasses} ${borderClasses}`}
-      />
+      <ExamViewer className={`${proseClasses} ${containerClasses}`} />
     </div>
   );
 }

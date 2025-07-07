@@ -19,3 +19,8 @@ export type LessonPageData = PageData & {
 };
 
 export type ExamPageData = PageData & { description: string };
+
+export type PageConfig = {
+  lectures: LessonPageData[];
+  exams: ExamPageData[];
+};

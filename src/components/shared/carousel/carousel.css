@@ -1,0 +1,34 @@
+.carousel {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-inner {
+  display: flex;
+  gap: 10px;
+  transition: transform 500ms ease-in-out;
+}
+
+.carousel-slide {
+  min-width: 100%;
+}
+
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+}
+
+.carousel-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+  margin: 0 5px;
+  border: none;
+}
+
+.carousel-indicator.active {
+  background: var(--primary);
+}

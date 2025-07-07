@@ -6,20 +6,18 @@ import groupBy from "lodash/groupBy";
 import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
 
-// import { examsConfig } from "@/utils/exams-config";
 import { Mention } from "@/components/shared/mention";
-import { LessonPageData, ExamPageData } from "@/entities/page-data";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
+import { useAppPageConfig } from "@/app/_providers/app-page-client-provider";
 
-type AppNavProps = {
-  exams: ExamPageData[];
-  lessons: LessonPageData[];
-};
-export const AppNav: React.FC<AppNavProps> = ({ lessons, exams }) => {
+type AppNavProps = object;
+export const AppNav: React.FC<AppNavProps> = () => {
   const pathname = usePathname();
+  const { exams, lectures } = useAppPageConfig();
+
   const groupedByChapter = useMemo(
-    () => groupBy(lessons, (x) => x.section),
-    [lessons]
+    () => groupBy(lectures, (x) => x.section),
+    [lectures]
   );
 
   return (

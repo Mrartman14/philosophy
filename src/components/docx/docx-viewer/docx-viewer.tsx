@@ -12,8 +12,13 @@ import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 interface DocxViewerProps {
   data: LessonPageData;
   className: string;
+  asideClassName: string;
 }
-const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
+const DocxViewer: React.FC<DocxViewerProps> = ({
+  data,
+  className,
+  asideClassName,
+}) => {
   const [textAlign] = useState<React.CSSProperties["textAlign"]>("justify");
 
   const [selectedVersion, setSelectedVersion] = useState<string>(
@@ -81,7 +86,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
 
   return (
     <>
-      <AsideMenu className="hidden md:grid" items={asideItems} />
       <div className={`w-full ${className}`}>
         {/* <DocxViewerToolbar
           sourceUrl={sourceUrl}
@@ -151,6 +155,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
           })}
         </Tabs.Root>
       </div>
+      <AsideMenu items={asideItems} className={`${asideClassName}`} />
     </>
   );
 };

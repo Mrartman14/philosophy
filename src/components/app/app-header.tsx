@@ -5,14 +5,9 @@ import { NavigationMenu } from "@base-ui-components/react";
 import { AppNav } from "./app-nav";
 // import { DnaIcon } from "@/assets/icons/dna-icon";
 import { NetworkIndicator } from "./network-indicator";
-import { getLessonList, getExamList } from "@/api/pages-api";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 
 export const AppHeader: React.FC = async () => {
-  const lessons = await getLessonList();
-  const exams = await getExamList();
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
   return (
     <header
       className="app-header sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] items-center bg-(--background) border-b border-(--border)"
@@ -23,12 +18,13 @@ export const AppHeader: React.FC = async () => {
           <NavigationMenu.Item>
             <Link href="/">
               <Image
-                src={`${basePath}/logo.png`}
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH}/logo.png`}
                 alt="Logo image"
                 width={49}
                 height={49}
                 sizes="50px"
                 priority
+                className="grayscale hover:grayscale-0"
               />
             </Link>
           </NavigationMenu.Item>
@@ -38,7 +34,7 @@ export const AppHeader: React.FC = async () => {
             </Link>
           </NavigationMenu.Item> */}
           <div />
-          <AppNav lessons={lessons} exams={exams} />
+          <AppNav />
           <div />
         </NavigationMenu.List>
 

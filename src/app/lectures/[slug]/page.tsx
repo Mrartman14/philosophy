@@ -1,21 +1,32 @@
+import path from "path";
+import fs from "fs/promises";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import {
-  getLessonList,
-  getLessonBySlug,
-  getAdjacentLessonsBySlug,
-} from "@/api/pages-api";
-import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
+import { LessonPageData } from "@/entities/page-data";
+import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
+import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
+import { getLessonBySlug, getAdjacentLessonsBySlug } from "@/api/pages-api";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
+import { LessonViewObserver } from "@/components/observers/lesson-view-observer";
+
+import "./lecture-page.css";
 
 interface LecturePageParams {
   slug: string;
 }
 
+// TODO: когда-нибудь вынести файл page-data.json на бекенд и получать нормально по http
+const getLessonListFromFs = async () => {
+  const filePath = path.join(process.cwd(), "public", "page-data.json");
+  const fileContents = await fs.readFile(filePath, "utf-8");
+  const json = JSON.parse(fileContents);
+  return json.lectures as Promise<LessonPageData[]>;
+};
+
 export async function generateStaticParams(): Promise<LecturePageParams[]> {
-  const lessons = await getLessonList();
+  const lessons = await getLessonListFromFs();
   return lessons.map((page) => ({ slug: page.slug }));
 }
 
@@ -62,17 +73,21 @@ export default async function Page({ params }: PageProps) {
   ];
 
   const proseClasses = "prose dark:prose-invert lg:prose-xl";
-  const borderClasses = "md:border-l md:border-r border-(--border)";
+  const borderClasses = "md:border-r md:border-(--border)";
   const containerClasses = "w-full grid gap-4";
 
   const imgSrc = `${basePath}${data.cover}`;
   return (
-    <div className="grid gap-x-4 static w-full items-start justify-items-center grid-cols-1 md:grid-cols-[1fr_250px]">
+    <div className="lecture-page static w-full">
       <div className="fixed top-0 w-full z-50">
         <ScrollProgressBar className="sticky top-0" />
       </div>
 
-      <div className={`overflow-x-hidden p-4 ${borderClasses} ${proseClasses}`}>
+      <ScrollButton />
+
+      <div
+        className={`image-block overflow-x-hidden p-4 ${borderClasses} ${proseClasses}`}
+      >
         <div className={`relative`}>
           {/* <div
             style={{
@@ -108,13 +123,12 @@ export default async function Page({ params }: PageProps) {
 
       <DocxViewer
         data={data}
-        className={`${proseClasses} ${containerClasses} ${borderClasses}`}
+        asideClassName={`aside-nav`}
+        className={`content ${proseClasses} ${containerClasses} ${borderClasses}`}
       />
 
-      <div />
-
       <div
-        className={`grid grid-cols-2 grid-rows-[100] gap-4 w-full p-4 md:grid-rows-[150] ${borderClasses}`}
+        className={`back-nav grid grid-cols-2 grid-rows-[100] gap-4 w-full p-4 md:grid-rows-[150] ${borderClasses}`}
       >
         {outroLinks.map((link) => {
           if (link.href) {
@@ -124,6 +138,8 @@ export default async function Page({ params }: PageProps) {
           }
         })}
       </div>
+
+      <LessonViewObserver slug={slug} />
     </div>
   );
 }

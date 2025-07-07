@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import groupBy from "lodash/groupBy";
 
 import { getLessonList } from "@/api/pages-api";
-import { LessonPageData } from "@/entities/page-data";
+import { LessonCard } from "@/components/lesson/lesson-card";
 
 interface PageProps {
   params: Promise<object>;
@@ -14,7 +14,7 @@ export default async function Page({ params }: PageProps) {
   const groupedByChapter = groupBy(lessons, (x) => x.section);
 
   return (
-    <div className="w-full p-4 grid gap-4 md:border-l md:border-r md:border-(--border)">
+    <div className="prose dark:prose-invert w-full max-w-full p-4 grid gap-4">
       {Object.entries(groupedByChapter).map(([chapter, lections]) => (
         <Fragment key={chapter}>
           <div>
@@ -30,6 +30,7 @@ export default async function Page({ params }: PageProps) {
             style={{
               display: "grid",
               // gridTemplateRows: "masonry",
+              gridAutoRows: "200px",
               gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))",
             }}
           >
@@ -42,25 +43,3 @@ export default async function Page({ params }: PageProps) {
     </div>
   );
 }
-
-const LessonCard: React.FC<{ lesson: LessonPageData }> = ({ lesson }) => {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
-  return (
-    <a
-      href={`/lectures/${lesson.slug}`}
-      className="group relative rounded-xl border-4 border-(--border) overflow-hidden"
-    >
-      <img
-        src={`${basePath}${lesson.cover}`}
-        style={{ margin: 0 }}
-        className="object-cover transition-transform duration-500 scale-150 group-hover:scale-100 group-focus:scale-100"
-      />
-      <div className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)">
-        <h3 className="text-xl font-semibold">
-          {lesson.order}. {lesson.title}
-        </h3>
-      </div>
-    </a>
-  );
-};

@@ -12,7 +12,6 @@ type AsideMenuProps = {
   className?: string;
 };
 export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
-  const [atTop, setAtTop] = useState(true);
   const [intersected, setIntersected] = useState<string | null>();
 
   useLayoutEffect(() => {
@@ -21,8 +20,6 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
 
   useLayoutEffect(() => {
     function listen() {
-      setAtTop(window.scrollY === 0);
-
       const elements: { el: HTMLElement; id: string }[] = [];
 
       items.forEach(({ id }) => {
@@ -49,13 +46,12 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
 
   return (
     <nav
-      className={`w-full grid gap-4 content-start sticky ${className}`}
-      style={{ top: "calc(var(--header-height) + 10px)" }}
+      className={`w-full grid gap-2 top-(--header-height) content-start sticky ${className}`}
     >
-      <div className="grid gap-4">
+      <div className="grid gap-2 px-4 py-1 border-b border-(--border)">
         <h3 className="text-(--description) font-semibold">Содержание</h3>
       </div>
-      <ul className="grid gap-4">
+      <ul className="grid gap-2 px-4 py-1">
         {items.map((item) => (
           <AsideMenuItem
             key={item.id}
@@ -65,16 +61,6 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
           />
         ))}
       </ul>
-      <div>
-        <button
-          className={`text-(--description) transition-opacity ${
-            atTop ? "opacity-0" : "opacity-100"
-          }`}
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        >
-          Листать вверх ↑
-        </button>
-      </div>
     </nav>
   );
 };
@@ -95,7 +81,9 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
       <a
         key={item.id}
         href={`#${item.id}`}
-        className={`${isSelected ? "" : "text-(--description) font-light"}`}
+        className={`${
+          isSelected ? "" : "text-(--description) font-light"
+        } hover:underline`}
         style={{ paddingLeft: `${depth * 20}px` }}
       >
         {item.render({ isSelected, depth })}
