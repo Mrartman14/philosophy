@@ -48,7 +48,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
     <nav
       className={`w-full grid gap-2 top-(--header-height) content-start sticky ${className}`}
     >
-      <div className="grid gap-2 px-4 py-1 border-b border-(--border)">
+      <div className="grid gap-2 px-4 pb-1 pt-2 border-b border-(--border)">
         <h3 className="text-(--description) font-semibold">Содержание</h3>
       </div>
       <ul className="grid gap-2 px-4 py-1">

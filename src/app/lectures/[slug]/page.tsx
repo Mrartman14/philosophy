@@ -1,15 +1,16 @@
-import path from "path";
-import fs from "fs/promises";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { LessonPageData } from "@/entities/page-data";
 import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
-import { getLessonBySlug, getAdjacentLessonsBySlug } from "@/api/pages-api";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { LessonViewObserver } from "@/components/observers/lesson-view-observer";
+import {
+  getPageConfig,
+  getLessonBySlug,
+  getAdjacentLessonsBySlug,
+} from "@/api/pages-api";
 
 import "./lecture-page.css";
 
@@ -17,12 +18,9 @@ interface LecturePageParams {
   slug: string;
 }
 
-// TODO: когда-нибудь вынести файл page-data.json на бекенд и получать нормально по http
 const getLessonListFromFs = async () => {
-  const filePath = path.join(process.cwd(), "public", "page-data.json");
-  const fileContents = await fs.readFile(filePath, "utf-8");
-  const json = JSON.parse(fileContents);
-  return json.lectures as Promise<LessonPageData[]>;
+  const pageConfig = await getPageConfig();
+  return pageConfig.lectures;
 };
 
 export async function generateStaticParams(): Promise<LecturePageParams[]> {
@@ -79,11 +77,8 @@ export default async function Page({ params }: PageProps) {
   const imgSrc = `${basePath}${data.cover}`;
   return (
     <div className="lecture-page static w-full">
-      <div className="fixed top-0 w-full z-50">
-        <ScrollProgressBar className="sticky top-0" />
-      </div>
-
-      <ScrollButton />
+      <ScrollProgressBar className="fixed top-0 w-full z-50" />
+      <ScrollButton className="fixed z-10 bottom-4 right-4 md:bottom-10 md:right-10" />
 
       <div
         className={`image-block overflow-x-hidden p-4 ${borderClasses} ${proseClasses}`}
@@ -94,9 +89,9 @@ export default async function Page({ params }: PageProps) {
               background: `url(${imgSrc}) center/cover no-repeat`,
               filter: "blur(50px)",
               position: "absolute",
-              top: "20px",
-              left: "20px",
-              right: "20px",
+              top: "40px",
+              left: "40px",
+              right: "40px",
               bottom: "100px",
               zIndex: -1,
             }}

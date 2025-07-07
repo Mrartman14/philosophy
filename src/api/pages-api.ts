@@ -1,3 +1,5 @@
+import path from "path";
+import fs from "fs/promises";
 import { cache } from "react";
 
 import { PageConfig } from "@/entities/page-data";
@@ -41,9 +43,15 @@ export const getExamBySlug = cache(async (slug: string) => {
 });
 
 export const getPageConfig = cache(async () => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}${process.env.NEXT_PUBLIC_BASE_PATH}/page-data.json`
-  );
+  // const res = await fetch(
+  //   `${process.env.NEXT_PUBLIC_BASE_URL}${process.env.NEXT_PUBLIC_BASE_PATH}/page-data.json`
+  // );
 
-  return res.json() as Promise<PageConfig>;
+  // return res.json() as Promise<PageConfig>;
+
+  const filePath = path.join(process.cwd(), "public", "page-data.json");
+  const fileContents = await fs.readFile(filePath, "utf-8");
+  const pageConfig = JSON.parse(fileContents);
+
+  return pageConfig as PageConfig;
 });

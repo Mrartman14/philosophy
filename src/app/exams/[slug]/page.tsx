@@ -1,18 +1,12 @@
-import path from "path";
-import fs from "fs/promises";
 import { Metadata } from "next";
 
-import { getExamBySlug } from "@/api/pages-api";
-import { ExamPageData } from "@/entities/page-data";
+import { getExamBySlug, getPageConfig } from "@/api/pages-api";
 import { ExamViewer } from "@/components/docx/exam-viewer/exam-viewer";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
-// TODO: когда-нибудь вынести файл page-data.json на бекенд и получать нормально по http
 const getExamListFromFs = async () => {
-  const filePath = path.join(process.cwd(), "public", "page-data.json");
-  const fileContents = await fs.readFile(filePath, "utf-8");
-  const json = JSON.parse(fileContents);
-  return json.exams as Promise<ExamPageData[]>;
+  const pageConfig = await getPageConfig();
+  return pageConfig.exams;
 };
 
 export async function generateStaticParams() {

@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-export const ScrollButton: React.FC = () => {
+export const ScrollButton: React.FC<{ className: string }> = ({
+  className,
+}) => {
   const offset = 10;
   const [atTop, setAtTop] = useState(true);
   const [atBottom, setAtBottom] = useState(false);
@@ -24,7 +26,7 @@ export const ScrollButton: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 md:bottom-10 md:right-10 grid gap-1 items-end">
+    <div className={`${className} grid gap-1 items-end`}>
       <button
         aria-label="скролл вверх"
         className={`flex justify-end gap-2 bg-(--text-pane) rounded-full px-3 py-1 md:px-4 md:bg-transparent text-(--description) transition-opacity ${

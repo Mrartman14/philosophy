@@ -113,7 +113,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
                   key={v.id}
                   value={v.id}
                   render={<li style={{ margin: 0 }} />}
-                  className="flex p-2 items-center justify-center border-b border-b-(--border) data-[selected]:border-b-0 px-2 outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
+                  className="flex px-2 py-1 items-center justify-center border-b border-b-(--border) data-[selected]:border-b-0 outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit"
                 >
                   <h4
                     className="text-lg md:text-2xl"
