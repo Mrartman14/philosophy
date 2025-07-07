@@ -3,16 +3,16 @@ import { convertToHtml } from "mammoth";
 import JSZip from "jszip";
 // import createDOMPurify from "dompurify";
 
-import type { PageData } from "./structure";
-import { generateAnchorId } from "./generate-anchor-id";
 import {
-  parseDocxCreator,
-  parseDocxKeywords,
-  parseDocxLastModifiedBy,
-  parseDocxModifiedDate,
   parseDocxTitle,
   parseDocxVersion,
+  parseDocxCreator,
+  parseDocxKeywords,
+  parseDocxModifiedDate,
+  parseDocxLastModifiedBy,
 } from "./get-docx-metadata";
+import { PageData } from "@/entities/page-data";
+import { generateAnchorId } from "./generate-anchor-id";
 import { getFilenameFromContentDisposition } from "./files";
 import { calculateReadingTime } from "./calculateReadingTime";
 
@@ -157,7 +157,7 @@ export async function processSource(
   // }
 
   return {
-    id: data.version,
+    id: data.name,
     htmlString,
     headingsData,
     docxMeta: {

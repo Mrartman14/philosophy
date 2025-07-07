@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { structure } from "@/utils/structure";
+import {
+  getLessonList,
+  getLessonBySlug,
+  getAdjacentLessonsBySlug,
+} from "@/api/pages-api";
 import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
-export async function generateStaticParams() {
-  return structure.map((page) => ({ slug: page.slug }));
-}
-
 interface LecturePageParams {
   slug: string;
+}
+
+export async function generateStaticParams(): Promise<LecturePageParams[]> {
+  const lessons = await getLessonList();
+  return lessons.map((page) => ({ slug: page.slug }));
 }
 
 type GenerateMetadataProps = {
@@ -22,10 +27,10 @@ export async function generateMetadata({
   params,
 }: GenerateMetadataProps): Promise<Metadata> {
   const { slug } = await params;
-  const pageConfig = structure.find((p) => p.slug === slug);
+  const data = await getLessonBySlug(slug);
 
   const result: Metadata = {
-    title: pageConfig?.title,
+    title: data?.title,
   };
 
   return result;
@@ -36,25 +41,23 @@ interface PageProps {
 }
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  const data = structure.find((p) => p.slug === slug);
-  if (!data || data.sources.length === 0) return notFound();
 
-  const prevData = structure.find((p) => p.order === data.order - 1) ?? null;
-  const nextData = structure.find((p) => p.order === data.order + 1) ?? null;
+  const { curr: data, prev, next } = await getAdjacentLessonsBySlug(slug);
+  if (!data || data.sources.length === 0) return notFound();
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const outroLinks = [
     {
-      href: prevData ? `/lectures/${prevData?.slug}` : undefined,
+      href: prev ? `/lectures/${prev?.slug}` : undefined,
       title: "← Назад",
-      description: prevData?.title,
-      imageSrc: `${basePath}${prevData?.cover}`,
+      description: prev?.title,
+      imageSrc: `${basePath}${prev?.cover}`,
     },
     {
-      href: nextData ? `/lectures/${nextData?.slug}` : undefined,
+      href: next ? `/lectures/${next?.slug}` : undefined,
       title: "Вперёд →",
-      description: nextData?.title,
-      imageSrc: `${basePath}${nextData?.cover}`,
+      description: next?.title,
+      imageSrc: `${basePath}${next?.cover}`,
     },
   ];
 

@@ -6,16 +6,20 @@ import groupBy from "lodash/groupBy";
 import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
 
-import { structure } from "@/utils/structure";
-import { examsConfig } from "@/utils/exams-config";
+// import { examsConfig } from "@/utils/exams-config";
 import { Mention } from "@/components/shared/mention";
+import { LessonPageData, ExamPageData } from "@/entities/page-data";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 
-export const AppNav: React.FC = () => {
+type AppNavProps = {
+  exams: ExamPageData[];
+  lessons: LessonPageData[];
+};
+export const AppNav: React.FC<AppNavProps> = ({ lessons, exams }) => {
   const pathname = usePathname();
   const groupedByChapter = useMemo(
-    () => groupBy(structure, (x) => x.section),
-    []
+    () => groupBy(lessons, (x) => x.section),
+    [lessons]
   );
 
   return (
@@ -81,7 +85,7 @@ export const AppNav: React.FC = () => {
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={contentAnimationClassName}>
           <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll">
-            {examsConfig.map((item) => {
+            {exams.map((item) => {
               const href = `/exams/${item.slug}`;
               const isActive = pathname === href;
               const lClasses = `${

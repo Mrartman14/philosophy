@@ -6,7 +6,7 @@ import { scaleLinear, select, zoom as d3Zoom, zoomIdentity } from "d3";
 
 import { WidthSlider } from "./width-slider";
 import { PhilosopherView } from "./philosopher-view";
-import { LessonPageData, structure } from "@/utils/structure";
+import { LessonPageData } from "@/entities/page-data";
 import { getAverageX } from "@/utils/get-polyline-center";
 import { philosophers, Timeline } from "@/utils/philosophers";
 import { getColorFromStringWithPrefix } from "@/utils/get-color-from-str";
@@ -28,10 +28,11 @@ const PADDING = 0 as const; // 50
 const TIMELINE_BOTTOM_OFFSET = 150;
 
 type PhilosophersTimelineProps = {
-  height?: number;
-  width?: number;
+  lessons: LessonPageData[];
 };
-export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
+export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
+  lessons,
+}) => {
   const [{ height, width }, setSize] = useState({ width: 0, height: 0 });
   const [virtualWidthK, setVirtualWidthK] = useState(1);
 
@@ -69,7 +70,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
       })
     );
 
-    const groupedByChapter = groupBy(structure, (x) => x.section);
+    const groupedByChapter = groupBy(lessons, (x) => x.section);
 
     const chapterPaths = Object.entries(groupedByChapter).map(
       ([chapter, lessons], chapterIndex) => {
@@ -141,7 +142,7 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
     );
 
     return chapterPaths;
-  }, [height, xScale]);
+  }, [height, xScale, lessons]);
 
   const ticks = useMemo(() => {
     const zoomMap: Record<string, number> = {
@@ -288,15 +289,11 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = () => {
           ))}
         </g>
 
-        <g
-          data-id="philosophers"
-          // transform={`translate(${transform.x}, 0) scale(${transform.k}, 1)`}
-        >
+        <g data-id="philosophers">
           {philosophers.map((philosopher) => (
             <PhilosopherView
               key={philosopher.name}
               scale={transform.k}
-              // x={Math.trunc(xScale((philosopher.from + philosopher.to) / 2))}
               x={Math.trunc(newXScale((philosopher.from + philosopher.to) / 2))}
               y={Math.trunc(height - TIMELINE_BOTTOM_OFFSET)}
               philosopher={philosopher}

@@ -1,11 +1,12 @@
 import { Metadata } from "next";
 
-import { examsConfig } from "@/utils/exams-config";
+import { getExamBySlug, getExamList } from "@/api/pages-api";
 import { ExamViewer } from "@/components/docx/exam-viewer/exam-viewer";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
 export async function generateStaticParams() {
-  return examsConfig.map((data) => ({ slug: data.slug }));
+  const exams = await getExamList();
+  return exams.map((data) => ({ slug: data.slug }));
 }
 
 interface ExamPageParams {
@@ -24,10 +25,10 @@ export async function generateMetadata({
   params,
 }: GenerateMetadataProps): Promise<Metadata> {
   const { slug } = await params;
-  const examConfig = examsConfig.find((x) => x.slug === slug);
+  const data = await getExamBySlug(slug);
 
   const result: Metadata = {
-    title: examConfig?.title,
+    title: data?.title,
   };
 
   return result;
@@ -35,7 +36,7 @@ export async function generateMetadata({
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  const data = examsConfig.find((x) => x.slug === slug);
+  const data = await getExamBySlug(slug);
 
   if (!data) {
     return null;

@@ -5,13 +5,7 @@ export default function Home() {
 
   return (
     <div>
-      <Image
-        src={`${basePath}/logo.png`}
-        alt="Logo"
-        width={500}
-        height={500}
-        priority
-      />
+      <Image src={`${basePath}/logo.png`} alt="Logo" width={500} height={500} />
     </div>
   );
 }

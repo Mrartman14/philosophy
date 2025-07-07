@@ -1,10 +1,11 @@
 // import { getRelativeDate } from "@/utils/dates";
 // import { formatFileSize } from "@/utils/files";
 import { ParsedData } from "@/utils/parse-docx";
-import { LessonPageData } from "@/utils/structure";
+import { LessonPageData } from "@/entities/page-data";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
 import { ShareButton } from "@/components/shared/share-button/share-button";
+
 // import { DocUpdateIcon } from "@/assets/icons/doc-update-icon";
 
 type DocxViewerMetaInfoProps = {

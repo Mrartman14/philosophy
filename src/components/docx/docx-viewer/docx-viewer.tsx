@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Tabs } from "@base-ui-components/react/tabs";
 
 // import { DocxViewerToolbar } from "./docx-viewer-toolbar";
+import { LessonPageData } from "@/entities/page-data";
 import { ParsedData, parseDocx } from "@/utils/parse-docx";
 import { DocxViewerMetaInfo } from "./docx-viewer-meta-info";
-import { LessonPageData, SourceVersion } from "@/utils/structure";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 
 interface DocxViewerProps {
@@ -16,15 +16,15 @@ interface DocxViewerProps {
 const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
   const [textAlign] = useState<React.CSSProperties["textAlign"]>("justify");
 
-  const [selectedVersion, setSelectedVersion] = useState<SourceVersion>(
-    data.sources[0].version
+  const [selectedVersion, setSelectedVersion] = useState<string>(
+    data.sources[0].name
   );
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
   const [parsedData, setParsedData] = useState<ParsedData[]>([
     {
       headingsData: [],
       htmlString: "",
-      id: data.sources[0].version,
+      id: data.sources[0].name,
       docxMeta: {
         title: null,
         createdBy: null,
@@ -49,9 +49,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
 
   const selectedData = parsedData.find((x) => x.id === selectedVersion)!;
 
-  const selectedSource = data.sources.find(
-    (x) => x.version === selectedVersion
-  )!;
+  const selectedSource = data.sources.find((x) => x.name === selectedVersion)!;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const sourceUrl = `${baseUrl}${selectedSource.path}`;
 
@@ -77,7 +75,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data, className }) => {
 
   if (!selectedData.htmlString) return null;
 
-  const handleSetVersion = (value: SourceVersion) => {
+  const handleSetVersion = (value: string) => {
     setSelectedVersion(value);
   };
 

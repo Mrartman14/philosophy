@@ -1,11 +1,15 @@
-import { PhilosophersTimeline } from "@/components/lessons-timeline/timeline";
-import { Gradient } from "@/components/shared/gradient/gradient";
+import { getLessonList } from "@/api/pages-api";
 
-export default function Page() {
+import { Gradient } from "@/components/shared/gradient/gradient";
+import { PhilosophersTimeline } from "@/components/lessons-timeline/timeline";
+
+export default async function Page() {
+  const lessons = await getLessonList();
+
   return (
     <div>
       <Gradient />
-      <PhilosophersTimeline />
+      <PhilosophersTimeline lessons={lessons} />
     </div>
   );
 }

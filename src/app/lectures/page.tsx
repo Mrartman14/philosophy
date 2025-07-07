@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import groupBy from "lodash/groupBy";
 
-import { LessonPageData, structure } from "@/utils/structure";
+import { getLessonList } from "@/api/pages-api";
+import { LessonPageData } from "@/entities/page-data";
 
 interface PageProps {
   params: Promise<object>;
@@ -9,7 +10,8 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   await params;
-  const groupedByChapter = groupBy(structure, (x) => x.section);
+  const lessons = await getLessonList();
+  const groupedByChapter = groupBy(lessons, (x) => x.section);
 
   return (
     <div className="w-full p-4 grid gap-4 md:border-l md:border-r md:border-(--border)">

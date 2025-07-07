@@ -5,9 +5,12 @@ import { NavigationMenu } from "@base-ui-components/react";
 import { AppNav } from "./app-nav";
 // import { DnaIcon } from "@/assets/icons/dna-icon";
 import { NetworkIndicator } from "./network-indicator";
+import { getLessonList, getExamList } from "@/api/pages-api";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 
-export const AppHeader: React.FC = () => {
+export const AppHeader: React.FC = async () => {
+  const lessons = await getLessonList();
+  const exams = await getExamList();
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
@@ -25,6 +28,7 @@ export const AppHeader: React.FC = () => {
                 width={49}
                 height={49}
                 sizes="50px"
+                priority
               />
             </Link>
           </NavigationMenu.Item>
@@ -34,7 +38,7 @@ export const AppHeader: React.FC = () => {
             </Link>
           </NavigationMenu.Item> */}
           <div />
-          <AppNav />
+          <AppNav lessons={lessons} exams={exams} />
           <div />
         </NavigationMenu.List>
 
