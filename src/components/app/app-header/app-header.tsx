@@ -11,7 +11,7 @@ import "./app-header.css";
 
 export const AppHeader: React.FC = async () => {
   return (
-    <header className="app-header sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--background) border-b md:border-t border-(--border) h-(--header-height)">
+    <header className="app-header sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--background) border-t-0 border-b md:border-t border-(--border) h-(--header-height)">
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--border) bg-(--background) pl-4 pr-4">
         <NavigationMenu.List className="relative grid grid-cols-[auto_auto_auto_1fr] gap-4 w-full h-full items-stretch">
           <NavigationMenu.Item className="flex items-center">
