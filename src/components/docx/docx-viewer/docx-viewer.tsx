@@ -30,14 +30,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
       headingsData: [],
       htmlString: "",
       id: data.sources[0].name,
-      docxMeta: {
-        title: null,
-        createdBy: null,
-        lastModifiedBy: null,
-        version: null,
-        keywords: null,
-        lastModified: null,
-      },
       fileMeta: {
         fileName: null,
         fileSizeInBytes: null,

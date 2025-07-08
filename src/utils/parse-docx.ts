@@ -1,16 +1,16 @@
 // import { JSDOM } from "jsdom";
 import { convertToHtml } from "mammoth";
-import JSZip from "jszip";
-// import createDOMPurify from "dompurify";
+// import { loadAsync } from "jszip";
+import DOMPurify from "dompurify";
 
-import {
-  parseDocxTitle,
-  parseDocxVersion,
-  parseDocxCreator,
-  parseDocxKeywords,
-  parseDocxModifiedDate,
-  parseDocxLastModifiedBy,
-} from "./get-docx-metadata";
+// import {
+//   parseDocxTitle,
+//   parseDocxVersion,
+//   parseDocxCreator,
+//   parseDocxKeywords,
+//   parseDocxModifiedDate,
+//   parseDocxLastModifiedBy,
+// } from "./get-docx-metadata";
 import { PageData } from "@/entities/page-data";
 import { generateAnchorId } from "./generate-anchor-id";
 import { getFilenameFromContentDisposition } from "./files";
@@ -31,14 +31,14 @@ export type ParsedData = {
     fileName: string | null;
     fileSizeInBytes: number | null;
   };
-  docxMeta: {
-    title: string | null;
-    createdBy: string | null;
-    lastModifiedBy: string | null;
-    lastModified: Date | null;
-    version: string | null;
-    keywords: string | null;
-  };
+  // docxMeta?: {
+  //   title: string | null;
+  //   createdBy: string | null;
+  //   lastModifiedBy: string | null;
+  //   lastModified: Date | null;
+  //   version: string | null;
+  //   keywords: string | null;
+  // };
 };
 
 export async function parseDocx(pageConfig: PageData, onServer = false) {
@@ -64,16 +64,15 @@ export async function processSource(
 
   const docxArrayBuffer = await response.arrayBuffer();
   const fileSizeInBytes = docxArrayBuffer.byteLength;
-  // docxArrayBuffer.
 
-  const zip = await JSZip.loadAsync(docxArrayBuffer);
-  const coreXml = await zip.file("docProps/core.xml")?.async("text");
-  const lastModified = coreXml ? parseDocxModifiedDate(coreXml) : null;
-  const version = coreXml ? parseDocxVersion(coreXml) : null;
-  const keywords = coreXml ? parseDocxKeywords(coreXml) : null;
-  const title = coreXml ? parseDocxTitle(coreXml) : null;
-  const createdBy = coreXml ? parseDocxCreator(coreXml) : null;
-  const lastModifiedBy = coreXml ? parseDocxLastModifiedBy(coreXml) : null;
+  // const zip = await loadAsync(docxArrayBuffer);
+  // const coreXml = await zip.file("docProps/core.xml")?.async("text");
+  // const lastModified = coreXml ? parseDocxModifiedDate(coreXml) : null;
+  // const version = coreXml ? parseDocxVersion(coreXml) : null;
+  // const keywords = coreXml ? parseDocxKeywords(coreXml) : null;
+  // const title = coreXml ? parseDocxTitle(coreXml) : null;
+  // const createdBy = coreXml ? parseDocxCreator(coreXml) : null;
+  // const lastModifiedBy = coreXml ? parseDocxLastModifiedBy(coreXml) : null;
 
   const options: { buffer?: Buffer<ArrayBuffer>; arrayBuffer?: ArrayBuffer } =
     {};
@@ -93,8 +92,9 @@ export async function processSource(
     {
       includeEmbeddedStyleMap: false,
       ignoreEmptyParagraphs: true,
+      idPrefix: "parsed-docx-",
       styleMap: [
-        "comment-reference => sup",
+        `comment-reference => sup.${commentReferenceClassName}`,
         "u => span.underline.decoration-1",
         "p[style-name='Quote'] => blockquote:fresh",
         "highlight[color='yellow'] => span.bg-amber-700",
@@ -130,44 +130,27 @@ export async function processSource(
     // const DOMPurify = createDOMPurify(jsDom.window);
     // htmlString = DOMPurify.sanitize(modifiedHtml);
   } else {
+    const cleanHtmlString = DOMPurify.sanitize(dirtyHtmlString);
     const parser = new DOMParser();
-    const parsedDocument = parser.parseFromString(dirtyHtmlString, "text/html");
+    const parsedDocument = parser.parseFromString(cleanHtmlString, "text/html");
     headingsData = prepareHeadings(parsedDocument);
     htmlString = parsedDocument.body.innerHTML;
 
     readingTime = calculateReadingTime(htmlString, 200);
   }
 
-  // const headings = parsedDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
-  // const headingsData = Array.from(headings).map((h) => {
-  //   const text = h.textContent;
-  //   const id = generateAnchorId(text);
-  //   const level = parseInt(h.tagName[1], 10);
-  //   h.id = id;
-  //   return { id, text, level };
-  // });
-
-  // let htmlString: string;
-
-  // if (onServer) {
-  //   const modifiedHtml = parsedDocument.body.innerHTML;
-  //   const DOMPurify = createDOMPurify(jsDom.window);
-  //   htmlString = DOMPurify.sanitize(modifiedHtml);
-  // } else {
-  // }
-
   return {
     id: data.name,
     htmlString,
     headingsData,
-    docxMeta: {
-      title,
-      version,
-      keywords,
-      createdBy,
-      lastModified,
-      lastModifiedBy,
-    },
+    // docxMeta: {
+    //   title,
+    //   version,
+    //   keywords,
+    //   createdBy,
+    //   lastModified,
+    //   lastModifiedBy,
+    // },
     meta: {
       readingTime,
     },
@@ -190,3 +173,5 @@ function prepareHeadings(parsedDocument: Document) {
 
   return headingsData;
 }
+
+const commentReferenceClassName = "docx-comment-reference";

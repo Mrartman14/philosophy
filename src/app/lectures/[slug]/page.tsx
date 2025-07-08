@@ -70,7 +70,7 @@ export default async function Page({ params }: PageProps) {
     },
   ];
 
-  const proseClasses = "prose dark:prose-invert lg:prose-xl";
+  const proseClasses = "prose dark:prose-invert md:prose-xl";
   const borderClasses = "md:border-r md:border-(--border)";
   const containerClasses = "w-full grid gap-4";
 

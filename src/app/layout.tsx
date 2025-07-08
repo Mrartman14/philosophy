@@ -3,9 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import Theme from "./_providers/theme";
-import { AppHeader } from "@/components/app/app-header";
 import { SWProvider } from "@/app/_providers/sw-provider";
 import { AppPageProvider } from "./_providers/app-page-provider";
+import { AppHeader } from "@/components/app/app-header/app-header";
 import { NewLessonsProvider } from "./_providers/new-lessons-provider";
 
 const geistSans = Geist({
@@ -63,7 +63,7 @@ export default function RootLayout({
         <Theme>
           <AppPageProvider>
             <AppHeader />
-            <main className="w-full max-w-[100vw] lg:max-w-[992px] flex flex-col items-center md:border-l md:border-r md:border-(--border)">
+            <main className="w-full max-w-[100vw] lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--border)">
               {children}
             </main>
             <footer className="flex gap-[24px] flex-wrap items-center justify-center border-t border-(--border) h-0 w-full"></footer>

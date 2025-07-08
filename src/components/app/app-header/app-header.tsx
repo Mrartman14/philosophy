@@ -2,26 +2,28 @@ import Link from "next/link";
 import Image from "next/image";
 import { NavigationMenu } from "@base-ui-components/react";
 
-import { AppNav } from "./app-nav";
+import { AppNav } from "../app-nav";
 // import { DnaIcon } from "@/assets/icons/dna-icon";
-import { NetworkIndicator } from "./network-indicator";
+import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
+
+import "./app-header.css";
 
 export const AppHeader: React.FC = async () => {
   return (
     <header
-      className="app-header sticky top-0 z-50 w-full pl-4 pr-4 grid gap-4 grid-cols-[1fr_auto] items-center bg-(--background) border-b border-(--border)"
+      className="app-header sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--background) border-b border-t border-(--border)"
       style={{ height: "var(--header-height)" }}
     >
-      <NavigationMenu.Root className="flex justify-center min-w-max rounded-lg bg-(--background)">
-        <NavigationMenu.List className="relative grid grid-cols-[auto_1fr_auto_auto_1fr] gap-8 w-full h-full items-stretch">
-          <NavigationMenu.Item>
+      <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--border) bg-(--background) pl-4 pr-4">
+        <NavigationMenu.List className="relative grid grid-cols-[auto_auto_auto_1fr] gap-4 w-full h-full items-stretch">
+          <NavigationMenu.Item className="flex items-center">
             <Link href="/">
               <Image
                 src={`${process.env.NEXT_PUBLIC_BASE_PATH}/logo.png`}
                 alt="Logo image"
-                width={49}
-                height={49}
+                width={40}
+                height={40}
                 sizes="50px"
                 priority
                 className="grayscale hover:grayscale-0"
@@ -33,7 +35,6 @@ export const AppHeader: React.FC = async () => {
               <DnaIcon className="w-[30px] h-[30px] text-(--primary)" />
             </Link>
           </NavigationMenu.Item> */}
-          <div />
           <AppNav />
           <div />
         </NavigationMenu.List>
@@ -56,9 +57,11 @@ export const AppHeader: React.FC = async () => {
             </NavigationMenu.Popup>
           </NavigationMenu.Positioner>
         </NavigationMenu.Portal>
-      </NavigationMenu.Root>
 
-      <NetworkIndicator />
+        <NetworkIndicator
+        // className="text-xl"
+        />
+      </NavigationMenu.Root>
     </header>
   );
 };

@@ -26,11 +26,6 @@
   --text-pane: #00000092;
 }
 
-.prose blockquote {
-  font-weight: 300;
-  font-style: normal;
-}
-
 .spoiler {
   filter: blur(5px);
   cursor: pointer;
@@ -42,13 +37,28 @@
   filter: none;
 }
 
-/* для области шторы телефона в pwa */
-.app-header::before {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  width: 100%;
-  height: 300px;
-  backdrop-filter: blur(8px);
+/** PROSE STYLES OVERRIDE */
+.prose blockquote {
+  font-weight: 300;
+  font-style: normal;
+}
+
+.docx-comment-reference a {
+  color: var(--link);
+  margin-right: 8px;
+  text-decoration: none;
+}
+
+.prose dt::before {
+  content: "💬";
+  margin-right: 8px;
+}
+
+.prose dl dt {
+  border-bottom: 1px solid var(--border);
+}
+
+.prose dl dd a {
+  color: var(--link);
+  text-decoration: none;
 }

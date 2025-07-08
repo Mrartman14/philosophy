@@ -3,7 +3,7 @@ import { LastViewedLesson } from "@/components/last-viewed-lesson/last-viewed-le
 
 export default function Home() {
   return (
-    <div className="prose dark:prose-invert lg:prose-xl p-4 w-full max-w-full">
+    <div className="prose dark:prose-invert md:prose-xl p-4 w-full max-w-full">
       <LastViewedLesson />
       <LessonsSlider />
     </div>

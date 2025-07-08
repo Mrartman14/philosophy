@@ -14,7 +14,7 @@ export default async function Page({ params }: PageProps) {
   const groupedByChapter = groupBy(lessons, (x) => x.section);
 
   return (
-    <div className="prose dark:prose-invert w-full max-w-full p-4 grid gap-4">
+    <div className="prose md:prose-xl dark:prose-invert w-full max-w-full p-4 grid gap-4">
       {Object.entries(groupedByChapter).map(([chapter, lections]) => (
         <Fragment key={chapter}>
           <div>

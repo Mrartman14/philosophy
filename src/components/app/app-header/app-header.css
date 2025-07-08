@@ -1,0 +1,10 @@
+/* для области шторы телефона в pwa */
+.app-header::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 1px);
+  left: 0;
+  width: 100%;
+  height: 300px;
+  backdrop-filter: blur(8px);
+}

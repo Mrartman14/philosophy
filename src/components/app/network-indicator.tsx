@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 
 import { OfflineIcon } from "@/assets/icons/offline-icon";
 
-export const NetworkIndicator: React.FC = () => {
+export const NetworkIndicator: React.FC<{ className?: string }> = ({
+  className,
+}) => {
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
@@ -21,5 +23,7 @@ export const NetworkIndicator: React.FC = () => {
     };
   }, []);
 
-  return isOffline ? <OfflineIcon className="text-amber-600 text-xl" /> : null;
+  return isOffline ? (
+    <OfflineIcon className={`text-amber-600 ${className}`} />
+  ) : null;
 };

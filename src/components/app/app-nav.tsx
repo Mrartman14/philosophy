@@ -24,13 +24,13 @@ export const AppNav: React.FC<AppNavProps> = () => {
     <>
       <NavigationMenu.Item className="flex items-stretch justify-center">
         <NavigationMenu.Trigger className={triggerClassName}>
-          <span className="text-lg">Лекции</span>
-          <NavigationMenu.Icon className="transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180">
+          <span>Лекции</span>
+          <NavigationMenu.Icon className={chevronClassName}>
             <ChevronDownIcon />
           </NavigationMenu.Icon>
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={contentAnimationClassName}>
-          <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[70vh] overflow-y-scroll">
+          <ul className={contentListClassName}>
             {Object.entries(groupedByChapter).map(([chapter, data]) => {
               return (
                 <div key={chapter} className="static w-full grid grid-cols-1">
@@ -76,13 +76,13 @@ export const AppNav: React.FC<AppNavProps> = () => {
 
       <NavigationMenu.Item className="flex items-stretch justify-center">
         <NavigationMenu.Trigger className={triggerClassName}>
-          <span className="text-lg">Тесты</span>
-          <NavigationMenu.Icon className="transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180">
+          <span>Тесты</span>
+          <NavigationMenu.Icon className={chevronClassName}>
             <ChevronDownIcon />
           </NavigationMenu.Icon>
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={contentAnimationClassName}>
-          <ul className="grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[80vh] overflow-y-scroll">
+          <ul className={contentListClassName}>
             {exams.map((item) => {
               const href = `/exams/${item.slug}`;
               const isActive = pathname === href;
@@ -110,10 +110,17 @@ export const AppNav: React.FC<AppNavProps> = () => {
   );
 };
 
+const chevronClassName =
+  "transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180 ";
+
+const contentListClassName =
+  "grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[70vh] overflow-y-scroll ";
+
 const triggerClassName =
-  "box-border flex items-center justify-center gap-1.5 " +
+  "text-sm md:text-lg " +
+  "flex items-center justify-center gap-1 md:gap-2 " +
   "data-[popup-open]:text-inherit text-(--description) " +
-  "font-semibold leading-6 select-none ";
+  "font-semibold select-none ";
 
 const contentAnimationClassName =
   "transition-[opacity,transform,translate] duration-[var(--duration)] ease-[var(--easing)] " +
