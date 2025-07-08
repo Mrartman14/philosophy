@@ -15,8 +15,7 @@
 }
 
 .lecture-page .aside-nav {
-  max-height: calc(100vh - var(--header-height));
-  overflow-y: scroll;
+  height: 100%;
   grid-area: aside;
 }
 

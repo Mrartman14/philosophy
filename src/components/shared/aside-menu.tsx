@@ -45,13 +45,14 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   }, [items]);
 
   return (
-    <nav
-      className={`w-full grid gap-2 top-(--header-height) content-start sticky ${className}`}
-    >
-      <div className="grid gap-2 px-4 pb-1 pt-2 border-b border-(--border)">
+    <nav className={`w-full grid gap-2 content-start ${className}`}>
+      <div className="px-4 border-b border-(--border) h-[40px] flex items-center">
         <h3 className="text-(--description) font-semibold">Содержание</h3>
       </div>
-      <ul className="grid gap-2 px-4 py-1">
+      <ul
+        className="grid gap-2 px-4 py-1 sticky top-(--header-height) overflow-y-scroll"
+        style={{ maxHeight: "calc(100vh - var(--header-height)) - 41px" }}
+      >
         {items.map((item) => (
           <AsideMenuItem
             key={item.id}

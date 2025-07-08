@@ -10,7 +10,7 @@ export const LessonsSlider: React.FC = () => {
   const { lectures } = useAppPageConfig();
 
   return (
-    <>
+    <section>
       <h2 className="flex gap-2">
         <Link href="/lectures" className="font-bold">
           Все лекции
@@ -27,6 +27,6 @@ export const LessonsSlider: React.FC = () => {
           />
         ))}
       />
-    </>
+    </section>
   );
 };
