@@ -31,15 +31,12 @@ export const LastViewedLesson: React.FC = () => {
   return lastViewedLessons.length > 0 ? (
     <>
       <h2>История посещений</h2>
-      <div
-        className="width-full grid gap-4 auto-rows-[150px] md:auto-rows-[200px]"
-        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}
-      >
+      <div className="width-full gap-4 flex flex-nowrap overflow-scroll">
         {lastViewedLessons.map((x) => (
           <LessonCard
-            // className="aspect-video"
-            lesson={x}
             key={x.slug}
+            lesson={x}
+            className="grow-0 shrink-0 basis-[200px] md:basis-[300px] h-[150px] md:h-[200px]"
           />
         ))}
       </div>

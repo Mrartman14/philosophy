@@ -1,6 +1,7 @@
 .infinite-slider {
-  overflow: hidden;
+  overflow-y: hidden;
   width: 100%;
+  overflow-x: scroll;
 }
 
 .infinite-slider-track {
@@ -21,8 +22,4 @@
   100% {
     transform: translateX(-100%);
   }
-}
-
-.slider-item {
-  flex: 0 0 auto;
 }

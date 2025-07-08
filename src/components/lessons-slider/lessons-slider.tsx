@@ -18,6 +18,7 @@ export const LessonsSlider: React.FC = () => {
         →
       </h2>
       <Slider
+        itemClassName="shrink-0 grow-0 basis-[200px] md:basis-[300px]"
         items={lectures.map((l) => (
           <LessonCard
             key={l.slug}

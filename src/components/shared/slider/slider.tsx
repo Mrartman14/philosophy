@@ -3,9 +3,9 @@ import "./slider.css";
 
 export const Slider: React.FC<{
   items: React.ReactNode[];
-  itemWidth?: number;
+  itemClassName?: string;
   secondsPerItem?: number;
-}> = ({ items, secondsPerItem = 4, itemWidth = 300 }) => {
+}> = ({ items, itemClassName, secondsPerItem = 4 }) => {
   return (
     <div className="infinite-slider">
       <div
@@ -15,11 +15,7 @@ export const Slider: React.FC<{
         }}
       >
         {items.map((item, idx) => (
-          <div
-            key={idx}
-            className="slider-item"
-            style={{ flex: `0 0 ${itemWidth}px` }}
-          >
+          <div key={idx} className={`${itemClassName}`}>
             {item}
           </div>
         ))}
