@@ -1,0 +1,1 @@
+.infinite-slider{overflow-y:hidden;width:100%;overflow-x:scroll}.infinite-slider-track{display:flex;width:max-content;animation:slide-left linear infinite;animation-name:slide-left}.infinite-slider:hover .infinite-slider-track{animation-play-state:paused}@keyframes slide-left{0%{transform:translateX(0)}to{transform:translateX(-100%)}}
