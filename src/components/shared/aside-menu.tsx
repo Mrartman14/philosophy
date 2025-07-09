@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export type AsideNavItem = {
   render: (p: { isSelected: boolean; depth: number }) => React.ReactNode;
@@ -11,7 +11,11 @@ type AsideMenuProps = {
   items: AsideNavItem[];
   className?: string;
 };
+const ASIDE_HEADER_HEIGHT = 40;
 export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
+  const stickyRef = useRef(null);
+  const sentinelRef = useRef(null);
+  const [stuck, setStuck] = useState(false);
   const [intersected, setIntersected] = useState<string | null>();
 
   useLayoutEffect(() => {
@@ -44,14 +48,47 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
     };
   }, [items]);
 
+  useEffect(() => {
+    /**
+     * когда меню видно целиком с заголовком (h3), должна быть одна макисмальная высота (для скролла меню, если меню айтемов слишком много)
+     * когда заголовок при скролле скрылся, максимальная высота меню должна увеличиться на высоту этого заголовка
+     * */
+    const sticky = stickyRef.current;
+    const sentinel = sentinelRef.current;
+    if (!sticky || !sentinel) return;
+
+    const headerHeight = getComputedStyle(sticky).top || "0px";
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setStuck(!entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0,
+        rootMargin: `-${headerHeight} 0px 0px 0px`,
+      }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <aside className={`w-full grid gap-2 content-start ${className}`}>
-      <div className="px-4 border-b border-(--border) h-[40px] flex items-center">
+    <aside className={`w-full grid content-start ${className}`}>
+      <div
+        className={`px-4 border-b border-(--border) h-[${ASIDE_HEADER_HEIGHT}px] flex items-center`}
+      >
         <h3 className="text-(--description) font-semibold">Содержание</h3>
       </div>
+      <div ref={sentinelRef} style={{ height: 1, margin: 0, padding: 0 }} />
       <ul
-        className="grid gap-2 px-4 py-1 sticky top-(--header-height) overflow-y-scroll"
-        style={{ maxHeight: "calc(100vh - var(--header-height)) - 41px" }}
+        ref={stickyRef}
+        className="grid gap-2 p-4 sticky top-(--header-height) self-start overflow-y-scroll"
+        style={{
+          maxHeight: stuck
+            ? `calc(100vh - var(--header-height))`
+            : `calc(100vh - var(--header-height) - ${ASIDE_HEADER_HEIGHT}px)`,
+        }}
       >
         {items.map((item) => (
           <AsideMenuItem
@@ -82,6 +119,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
       <a
         key={item.id}
         href={`#${item.id}`}
+        id={getAnchorId(item.id)}
         className={`${
           isSelected ? "" : "text-(--description) font-light"
         } hover:underline`}
@@ -100,3 +138,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
     </li>
   );
 };
+
+function getAnchorId(id: string) {
+  return `${id}-anchor`;
+}
