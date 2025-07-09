@@ -29,7 +29,7 @@ export const ScrollButton: React.FC<{ className: string }> = ({
     <div className={`${className} grid gap-1 items-end`}>
       <button
         aria-label="скролл вверх"
-        className={`flex justify-end gap-2 bg-(--text-pane) rounded-full px-3 py-1 md:px-4 md:bg-transparent text-(--description) hover:text-inherit transition-opacity ${
+        className={`flex justify-end gap-2 bg-(--text-pane) rounded-full px-4 py-2 md:py-1 md:bg-transparent text-(--description) hover:text-inherit transition-opacity ${
           atTop ? "opacity-0" : "opacity-100"
         }`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -38,7 +38,7 @@ export const ScrollButton: React.FC<{ className: string }> = ({
       </button>
       <button
         aria-label="скролл вниз"
-        className={`flex justify-end gap-2 bg-(--text-pane) rounded-full px-3 py-1 md:px-4 md:bg-transparent text-(--description) hover:text-inherit transition-opacity ${
+        className={`flex justify-end gap-2 bg-(--text-pane) rounded-full px-4 py-2 md:py-1 md:bg-transparent text-(--description) hover:text-inherit transition-opacity ${
           atBottom ? "opacity-0" : "opacity-100"
         }`}
         onClick={() =>

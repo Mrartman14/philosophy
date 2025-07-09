@@ -76,10 +76,11 @@ export default async function Page({ params }: PageProps) {
 
   const imgSrc = `${basePath}${data.cover}`;
   return (
-    <div className="lecture-page static w-full">
-      <div className={`image-block p-4 ${borderClasses} ${proseClasses}`}>
-        <div className={`relative`}>
-          {/* <div
+    <>
+      <div className="lecture-page static w-full">
+        <div className={`image-block p-4 ${borderClasses} ${proseClasses}`}>
+          <div className={`relative`}>
+            {/* <div
             style={{
               background: `url(${imgSrc}) center/cover no-repeat`,
               filter: "blur(50px)",
@@ -91,47 +92,47 @@ export default async function Page({ params }: PageProps) {
               zIndex: -1,
             }}
           /> */}
-          <img
-            src={`${imgSrc}`}
-            alt={`${data.title} lesson preview`}
-            style={{
-              margin: 0,
-              width: "100vw",
-              // width: "65ch",
-            }}
-          />
-          <div
-            className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
-            style={{
-              textAlign: "right",
-            }}
-          >
-            <h1>{data.title}</h1>
+            <img
+              src={`${imgSrc}`}
+              alt={`${data.title} lesson preview`}
+              style={{
+                margin: 0,
+                width: "100vw",
+                // width: "65ch",
+              }}
+            />
+            <div
+              className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
+              style={{
+                textAlign: "right",
+              }}
+            >
+              <h1>{data.title}</h1>
+            </div>
           </div>
         </div>
+
+        <DocxViewer
+          data={data}
+          asideClassName={`aside-nav`}
+          className={`content ${proseClasses} ${containerClasses} ${borderClasses}`}
+        />
+
+        <div
+          className={`back-nav grid grid-cols-2 grid-rows-[100] gap-4 w-full p-4 md:grid-rows-[150] ${borderClasses}`}
+        >
+          {outroLinks.map((link) => {
+            if (link.href) {
+              return <DocxOutroLink key={link.title} {...link} />;
+            } else {
+              return <div key={link.title} />;
+            }
+          })}
+        </div>
       </div>
-
-      <DocxViewer
-        data={data}
-        asideClassName={`aside-nav`}
-        className={`content ${proseClasses} ${containerClasses} ${borderClasses}`}
-      />
-
-      <div
-        className={`back-nav grid grid-cols-2 grid-rows-[100] gap-4 w-full p-4 md:grid-rows-[150] ${borderClasses}`}
-      >
-        {outroLinks.map((link) => {
-          if (link.href) {
-            return <DocxOutroLink key={link.title} {...link} />;
-          } else {
-            return <div key={link.title} />;
-          }
-        })}
-      </div>
-
       <LessonViewObserver slug={slug} />
       <ScrollProgressBar className="fixed top-0 w-full z-50" />
       <ScrollButton className="fixed z-10 bottom-4 right-4 md:bottom-10 md:right-10" />
-    </div>
+    </>
   );
 }
