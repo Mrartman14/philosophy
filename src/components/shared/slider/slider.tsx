@@ -87,6 +87,10 @@ export const Slider: React.FC<SliderProps> = ({
       className="w-full overflow-x-auto whitespace-nowrap overscroll-x-contain grid grid-rows-1"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => {
+        setTimeout(() => setPaused(false), 200);
+      }}
       // style={{ scrollbarColor: "transparent transparent" }}
     >
       <div className={`flex w-max ${trackClassName}`}>
