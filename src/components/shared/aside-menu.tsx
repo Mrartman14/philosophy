@@ -1,5 +1,6 @@
 "use client";
 
+import throttle from "lodash/throttle";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export type AsideNavItem = {
@@ -23,7 +24,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   }, [items]);
 
   useLayoutEffect(() => {
-    function listen() {
+    const listen = throttle(() => {
       const elements: { el: HTMLElement; id: string }[] = [];
 
       items.forEach(({ id }) => {
@@ -58,7 +59,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
           break;
         }
       }
-    }
+    }, 100);
 
     listen();
     document?.addEventListener("scroll", listen);
