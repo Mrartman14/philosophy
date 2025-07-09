@@ -13,7 +13,7 @@ type AsideMenuProps = {
 };
 const ASIDE_HEADER_HEIGHT = 40;
 export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
-  const stickyRef = useRef(null);
+  const stickyRef = useRef<HTMLUListElement | null>(null);
   const sentinelRef = useRef(null);
   const [stuck, setStuck] = useState(false);
   const [intersected, setIntersected] = useState<string | null>();
@@ -36,6 +36,24 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
         const isIntersected = top >= 0 && left >= 0;
         if (isIntersected) {
           setIntersected(item.id);
+
+          if (stickyRef.current) {
+            const scrollContainerRect =
+              stickyRef.current.getBoundingClientRect();
+            const scrollTargetEl = document.getElementById(
+              getAnchorId(item.id)
+            )!;
+            const scrollTargetRect = scrollTargetEl.getBoundingClientRect();
+            const scrollTop =
+              stickyRef.current.scrollTop +
+              (scrollTargetRect.top - scrollContainerRect.top);
+
+            stickyRef.current.scrollTo({
+              top: scrollTop,
+              behavior: "smooth",
+            });
+          }
+
           break;
         }
       }
