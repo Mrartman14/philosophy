@@ -46,7 +46,8 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
             const scrollTargetRect = scrollTargetEl.getBoundingClientRect();
             const scrollTop =
               stickyRef.current.scrollTop +
-              (scrollTargetRect.top - scrollContainerRect.top);
+              (scrollTargetRect.top - scrollContainerRect.top) -
+              16; // 16px = 1rem = p-4 in tailwind
 
             stickyRef.current.scrollTo({
               top: scrollTop,
@@ -94,7 +95,12 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   return (
     <aside className={`w-full grid content-start ${className}`}>
       <div
-        className={`px-4 border-b border-(--border) h-[${ASIDE_HEADER_HEIGHT}px] flex items-center`}
+        className={`px-4 border-b border-(--border) flex items-center`}
+        style={{
+          height: ASIDE_HEADER_HEIGHT,
+          minHeight: ASIDE_HEADER_HEIGHT,
+          maxHeight: ASIDE_HEADER_HEIGHT,
+        }}
       >
         <h3 className="text-(--description) font-semibold">Содержание</h3>
       </div>
