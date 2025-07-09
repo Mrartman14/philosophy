@@ -3,19 +3,27 @@ import "./slider.css";
 
 export const Slider: React.FC<{
   items: React.ReactNode[];
-  itemClassName?: string;
+  itemClassName?: ((idx: number) => string) | string;
+  trackClassName?: string;
   secondsPerItem?: number;
-}> = ({ items, itemClassName, secondsPerItem = 4 }) => {
+}> = ({ items, itemClassName, trackClassName, secondsPerItem = 4 }) => {
   return (
     <div className="infinite-slider">
       <div
-        className="infinite-slider-track gap-4"
+        className={`infinite-slider-track ${trackClassName}`}
         style={{
           animationDuration: `${secondsPerItem * items.length}s`,
         }}
       >
         {items.map((item, idx) => (
-          <div key={idx} className={`${itemClassName}`}>
+          <div
+            key={idx}
+            className={`${
+              typeof itemClassName === "function"
+                ? itemClassName(idx)
+                : itemClassName
+            }`}
+          >
             {item}
           </div>
         ))}

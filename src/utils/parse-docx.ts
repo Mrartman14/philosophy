@@ -14,7 +14,7 @@ import DOMPurify from "dompurify";
 import { PageData } from "@/entities/page-data";
 import { generateAnchorId } from "./generate-anchor-id";
 import { getFilenameFromContentDisposition } from "./files";
-import { calculateReadingTime } from "./calculateReadingTime";
+import { calculateReadingTime } from "./calculate-reading-time";
 
 export type ParsedHeadingData = {
   id: string;

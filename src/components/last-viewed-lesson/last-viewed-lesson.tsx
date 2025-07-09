@@ -29,7 +29,7 @@ export const LastViewedLesson: React.FC = () => {
   }, [lectures]);
 
   return lastViewedLessons.length > 0 ? (
-    <section>
+    <>
       <h2>История посещений</h2>
       <div className="width-full gap-4 flex flex-nowrap overflow-scroll">
         {lastViewedLessons.map((x) => (
@@ -40,6 +40,6 @@ export const LastViewedLesson: React.FC = () => {
           />
         ))}
       </div>
-    </section>
+    </>
   ) : null;
 };
