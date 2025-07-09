@@ -108,7 +108,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
       <div ref={sentinelRef} style={{ height: 1, margin: 0, padding: 0 }} />
       <ul
         ref={stickyRef}
-        className="grid gap-2 p-4 sticky top-(--header-height) self-start overflow-y-scroll"
+        className="grid p-4 sticky top-(--header-height) self-start overflow-y-scroll"
         style={{
           maxHeight: stuck
             ? `calc(100vh - var(--header-height))`
@@ -146,9 +146,8 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
         href={`#${item.id}`}
         id={getAnchorId(item.id)}
         className={`${
-          isSelected ? "" : "text-(--description) font-light"
+          isSelected ? "" : "text-(--description)"
         } hover:underline`}
-        style={{ paddingLeft: `${depth * 20}px` }}
       >
         {item.render({ isSelected, depth })}
       </a>

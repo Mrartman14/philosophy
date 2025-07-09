@@ -16,14 +16,16 @@ import { generateAnchorId } from "./generate-anchor-id";
 import { getFilenameFromContentDisposition } from "./files";
 import { calculateReadingTime } from "./calculateReadingTime";
 
+export type ParsedHeadingData = {
+  id: string;
+  text: string | null;
+  level: number;
+  depth: number;
+};
 export type ParsedData = {
   id: string;
   htmlString: string;
-  headingsData: {
-    id: string;
-    text: string | null;
-    level: number;
-  }[];
+  headingsData: ParsedHeadingData[];
   meta: {
     readingTime: number;
   };
@@ -161,14 +163,23 @@ export async function processSource(
   };
 }
 
-function prepareHeadings(parsedDocument: Document) {
+function prepareHeadings(parsedDocument: Document): ParsedHeadingData[] {
   const headings = parsedDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
   const headingsData = Array.from(headings).map((h) => {
-    const text = h.textContent;
+    const text = h.textContent ?? "";
     const id = generateAnchorId(text);
     const level = parseInt(h.tagName[1], 10);
     h.id = id;
-    return { id, text, level };
+    return { id, text, level, depth: 0 };
+  });
+
+  const stack: number[] = [];
+  headingsData.forEach((heading) => {
+    while (stack.length && stack[stack.length - 1] >= heading.level) {
+      stack.pop();
+    }
+    stack.push(heading.level);
+    heading.depth = stack.length - 1;
   });
 
   return headingsData;

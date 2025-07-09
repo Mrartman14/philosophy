@@ -57,10 +57,17 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
           id: h.id,
           render: ({ isSelected }) => (
             <span
-              className={`${isSelected ? "" : "text-(--description)"}`}
-              style={{ paddingLeft: (h.level - 2) * 20 }}
+              className={`grid gap-4 grid-rows-1 ${
+                isSelected ? "" : "text-(--description)"
+              }`}
+              style={{
+                gridTemplateColumns: `repeat(${h.depth}, 1px) 1fr`,
+              }}
             >
-              {h.text}
+              {[...new Array(h.depth)].map((_, i) => (
+                <div key={i} className="bg-(--border)" />
+              ))}
+              <span className="py-1">{h.text}</span>
             </span>
           ),
         };
