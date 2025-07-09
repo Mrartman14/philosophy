@@ -63,7 +63,7 @@ export default function RootLayout({
         <Theme>
           <AppPageProvider>
             <AppHeader />
-            <main className="w-full max-w-[100vw] lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--border)">
+            <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--border)">
               {children}
             </main>
             <footer className="flex gap-[24px] flex-wrap items-center justify-center border-t border-(--border) h-0 w-full"></footer>

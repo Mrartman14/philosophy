@@ -77,12 +77,7 @@ export default async function Page({ params }: PageProps) {
   const imgSrc = `${basePath}${data.cover}`;
   return (
     <div className="lecture-page static w-full">
-      <ScrollProgressBar className="fixed top-0 w-full z-50" />
-      <ScrollButton className="fixed z-10 bottom-4 right-4 md:bottom-10 md:right-10" />
-
-      <div
-        className={`image-block overflow-x-hidden p-4 ${borderClasses} ${proseClasses}`}
-      >
+      <div className={`image-block p-4 ${borderClasses} ${proseClasses}`}>
         <div className={`relative`}>
           {/* <div
             style={{
@@ -135,6 +130,8 @@ export default async function Page({ params }: PageProps) {
       </div>
 
       <LessonViewObserver slug={slug} />
+      <ScrollProgressBar className="fixed top-0 w-full z-50" />
+      <ScrollButton className="fixed z-10 bottom-4 right-4 md:bottom-10 md:right-10" />
     </div>
   );
 }

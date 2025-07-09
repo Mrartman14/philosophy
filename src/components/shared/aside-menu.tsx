@@ -45,7 +45,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   }, [items]);
 
   return (
-    <nav className={`w-full grid gap-2 content-start ${className}`}>
+    <aside className={`w-full grid gap-2 content-start ${className}`}>
       <div className="px-4 border-b border-(--border) h-[40px] flex items-center">
         <h3 className="text-(--description) font-semibold">Содержание</h3>
       </div>
@@ -62,7 +62,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
           />
         ))}
       </ul>
-    </nav>
+    </aside>
   );
 };
 

@@ -89,17 +89,17 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
           value={selectedVersion}
           onValueChange={(x) => handleSetVersion(x)}
         >
-          <nav className="w-full">
+          <nav className="w-full grid grid-cols-1 overflow-x-auto pb-2">
             <Tabs.List
               className="flex items-end justify-center relative w-full z-0"
               render={
                 <ul
-                  className="flex items-center"
+                  className="flex items-center min-w-max whitespace-nowrap"
                   style={{ margin: 0, padding: 0 }}
                 />
               }
             >
-              <div className="w-full border-b border-b-(--border)" />
+              <div className="w-full border-b border-b-(--border) min-w-4" />
               {parsedData.map((v) => (
                 <Tabs.Tab
                   key={v.id}
@@ -115,7 +115,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
                   </h4>
                 </Tabs.Tab>
               ))}
-              <div className="w-full border-b border-b-(--border)" />
+              <div className="w-full border-b border-b-(--border) min-w-4" />
               <Tabs.Indicator className="border border-(--border) rounded-lg border-b-0 rounded-bl-[0px] rounded-br-[0px] h-full absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out" />
             </Tabs.List>
           </nav>

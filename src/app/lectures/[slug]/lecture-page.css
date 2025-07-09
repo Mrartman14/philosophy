@@ -5,9 +5,6 @@
     "image aside"
     "content aside"
     "back-nav aside";
-
-  align-items: flex-start;
-  justify-items: center;
 }
 
 .lecture-page .image-block {

@@ -111,14 +111,15 @@ export const AppNav: React.FC<AppNavProps> = () => {
 };
 
 const chevronClassName =
+  "text-xs " +
   "transition-transform duration-200 ease-in-out data-[popup-open]:rotate-180 ";
 
 const contentListClassName =
   "grid grid-cols-1 gap-2 w-[90vw] md:w-[500px] max-h-[70vh] overflow-y-scroll ";
 
 const triggerClassName =
-  "text-sm md:text-lg " +
-  "flex items-center justify-center gap-1 md:gap-2 " +
+  "md:text-base " +
+  "flex items-center justify-center gap-1 md:gap-1 " +
   "data-[popup-open]:text-inherit text-(--description) " +
   "font-semibold select-none ";
 
