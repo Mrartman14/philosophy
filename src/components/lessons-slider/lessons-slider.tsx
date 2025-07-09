@@ -9,7 +9,7 @@ export const LessonsSlider: React.FC = () => {
 
   return (
     <Slider
-      trackClassName="gap-4"
+      trackClassName="pl-4 gap-4"
       itemClassName="shrink-0 grow-0 basis-[200px] md:basis-[300px]"
       items={lectures.map((l) => (
         <LessonCard
