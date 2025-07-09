@@ -89,7 +89,7 @@ export const Slider: React.FC<SliderProps> = ({
       onMouseLeave={() => setPaused(false)}
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => {
-        setTimeout(() => setPaused(false), 200);
+        setTimeout(() => setPaused(false), 1000);
       }}
       // style={{ scrollbarColor: "transparent transparent" }}
     >
