@@ -11,7 +11,7 @@ export const ScrollButton: React.FC<{ className: string }> = ({
 
   useEffect(() => {
     const handleScroll = () => {
-      setAtTop(window.scrollY === 0);
+      setAtTop(window.scrollY <= 0);
 
       const offsetHeight = document.documentElement.offsetHeight;
       const innerHeight = window.innerHeight;
