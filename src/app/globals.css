@@ -10,10 +10,10 @@
   --header-height: 50px;
 
   --primary: rgba(213, 148, 82, 255);
-  --background: #f8f8f8;
-  --border: #c4cde071;
+  --background: #f7f8fc;
+  --border: #c4cde0c6;
   --link: rgb(14, 98, 182);
-  --description: #58637a;
+  --description: #6f798d;
   --text-pane: #d2d2d292;
 }
 
