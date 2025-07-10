@@ -17,8 +17,8 @@ export default async function Page({ params }: PageProps) {
     <div className="prose md:prose-xl dark:prose-invert w-full max-w-full grid gap-8">
       {Object.entries(groupedByChapter).map(([chapter, lections]) => {
         return (
-          <section className="w-full gap-4 grid static" key={chapter}>
-            <div className="border-b border-(--border) p-4 bg-(--background) sticky top-(--header-height) z-10">
+          <section className="w-full grid" key={chapter}>
+            <div className="border-b border-(--border) py-2 px-4 md:px-6">
               <h2 className="inline text-4xl font-semibold relative">
                 {chapter}
                 <span className="absolute left-full text-sm text-(--description)">
@@ -27,6 +27,7 @@ export default async function Page({ params }: PageProps) {
               </h2>
             </div>
             <CompactGrid
+              containerClassName={`md:gap-6 md:p-6`}
               data={lections.map((l) => ({ ...l, id: l.title }))}
               renderItem={(item) => (
                 <LessonCard key={item.title} lesson={item} />
@@ -38,10 +39,3 @@ export default async function Page({ params }: PageProps) {
     </div>
   );
 }
-
-// style={{
-//   gridColumnStart: item.columnStart,
-//   gridRowStart: item.rowStart,
-//   gridColumnEnd: `span ${item.colSpan}`,
-//   gridRowEnd: `span ${item.rowSpan}`,
-// }}

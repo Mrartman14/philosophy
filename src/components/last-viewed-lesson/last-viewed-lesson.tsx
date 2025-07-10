@@ -30,8 +30,10 @@ export const LastViewedLesson: React.FC = () => {
 
   return lastViewedLessons.length > 0 ? (
     <>
-      <h2>История посещений</h2>
-      <div className="width-full gap-4 flex flex-nowrap overflow-scroll">
+      <h2 className="pb-2 p-4 border-b border-(--border)" style={{ margin: 0 }}>
+        История посещений
+      </h2>
+      <div className="width-full p-4 gap-4 flex flex-nowrap overflow-scroll">
         {lastViewedLessons.map((x) => (
           <LessonCard
             key={x.slug}

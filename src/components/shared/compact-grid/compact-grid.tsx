@@ -3,17 +3,19 @@ import "./compact-grid.css";
 
 type CompactGridProps<T> = {
   data: T[];
+  containerClassName?: string;
   renderItem: (item: T, i: number) => React.ReactNode;
 };
 export const CompactGrid = <T extends { id: string }>({
   data,
+  containerClassName,
   renderItem,
 }: CompactGridProps<T>) => {
   const gridItems = createGridLayout(data, 4);
 
   return (
     <div
-      className={`w-full p-4 grid gap-4 grid-cols-1 md:grid-cols-4 auto-rows-[150px] md:auto-rows-[200px]`}
+      className={`w-full p-4 grid gap-4 grid-cols-1 md:grid-cols-4 auto-rows-[150px] md:auto-rows-[200px] ${containerClassName}`}
     >
       {gridItems.map((item, i) => {
         return (

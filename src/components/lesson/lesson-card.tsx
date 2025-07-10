@@ -15,6 +15,7 @@ export const LessonCard: React.FC<{
       href={`/lectures/${lesson.slug}`}
       className={`flex group relative rounded-xl overflow-hidden ${className} `}
       style={style}
+      title={lesson.title}
     >
       <Image
         fill
