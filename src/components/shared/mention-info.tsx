@@ -14,6 +14,7 @@ export const MentionInfo: React.FC<MentionInfoProps> = ({ data }) => {
       <Image
         src={`${basePath}${data.imageSrc}`}
         alt={`${data.name} image`}
+        className="sensitive-image"
         width={100}
         height={50}
         style={{

@@ -20,7 +20,7 @@
 .dark {
   --primary: rgba(213, 148, 82, 255);
   --background: #111a20;
-  --border: #41485671;
+  --border: #555c6a71;
   --link: rgb(91, 153, 216);
   --description: #8b98b2;
   --text-pane: #00000092;
@@ -49,6 +49,10 @@
 .fancy-link:hover::after,
 .fancy-link:focus::after {
   left: calc(100% + 15px);
+}
+
+.dark .sensitive-image {
+  filter: brightness(75%);
 }
 
 /** PROSE STYLES OVERRIDE */

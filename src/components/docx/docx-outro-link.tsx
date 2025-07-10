@@ -24,7 +24,7 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
           fill
           alt={`${title} image`}
           src={imageSrc}
-          className="absolute hidden w-full h-full object-cover transition-transform duration-500 opacity-0 scale-100 group-hover:scale-120 group-hover:opacity-100 md:block"
+          className="sensitive-image absolute hidden w-full h-full object-cover transition-transform duration-500 opacity-0 scale-100 group-hover:scale-120 group-hover:opacity-100 md:block"
           style={{
             margin: 0,
           }}

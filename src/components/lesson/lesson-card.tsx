@@ -22,7 +22,7 @@ export const LessonCard: React.FC<{
         alt={`Lecture cover`}
         src={`${basePath}${lesson.cover}`}
         style={{ margin: 0 }}
-        className="object-cover transition-transform duration-500 scale-150 group-hover:scale-100 group-focus:scale-100"
+        className="sensitive-image object-cover transition-transform duration-500 scale-150 group-hover:scale-100 group-focus:scale-100"
       />
       <div className="absolute py-0.5 px-2 bottom-2 right-0 w-full bg-(--text-pane)">
         <h3

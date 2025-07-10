@@ -12,7 +12,7 @@ export default function Home() {
       <section>
         <LastViewedLesson />
       </section>
-      <section>
+      <section className="pb-4">
         <h2 className="flex gap-2 px-4 pb-2 border-b border-b-(--border)">
           <Link href="/lectures" className="fancy-link font-bold">
             Все лекции

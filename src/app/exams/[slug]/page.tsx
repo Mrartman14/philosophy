@@ -62,6 +62,7 @@ export default async function Page({ params }: PageProps) {
           <div className={`relative`}>
             <img
               src={`${basePath}${data.cover}`}
+              className="sensitive-image"
               alt={`${data.title} lesson preview`}
               style={{ margin: 0 }}
             />

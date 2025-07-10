@@ -6,6 +6,7 @@ import Theme from "./_providers/theme";
 import { SWProvider } from "@/app/_providers/sw-provider";
 import { AppPageProvider } from "./_providers/app-page-provider";
 import { AppHeader } from "@/components/app/app-header/app-header";
+import { AppFooter } from "@/components/app/app-footer/app-footer";
 import { NewLessonsProvider } from "./_providers/new-lessons-provider";
 
 const geistSans = Geist({
@@ -54,7 +55,7 @@ export default function RootLayout({
         className={`
           root bg-(--background)
           ${geistSans.variable} ${geistMono.variable} antialiased
-          grid grid-rows-[auto_1fr_auto] items-stretch justify-items-center min-h-screen
+          grid grid-rows-[var(--header-height)_minmax(calc(100vh_-_var(--header-height)),_1fr)_auto] items-stretch justify-items-center min-h-screen
           ${finalClasses}
           `}
       >
@@ -66,7 +67,7 @@ export default function RootLayout({
             <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--border)">
               {children}
             </main>
-            <footer className="flex gap-[24px] flex-wrap items-center justify-center border-t border-(--border) h-0 w-full"></footer>
+            <AppFooter />
           </AppPageProvider>
         </Theme>
       </body>

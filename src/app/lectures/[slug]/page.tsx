@@ -95,6 +95,7 @@ export default async function Page({ params }: PageProps) {
             <img
               src={`${imgSrc}`}
               alt={`${data.title} lesson preview`}
+              className="sensitive-image"
               style={{
                 margin: 0,
                 width: "100vw",

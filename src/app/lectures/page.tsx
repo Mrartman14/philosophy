@@ -19,7 +19,7 @@ export default async function Page({ params }: PageProps) {
         return (
           <section className="w-full grid" key={chapter}>
             <div className="border-b border-(--border) py-2 px-4 md:px-6">
-              <h2 className="inline text-4xl font-semibold relative">
+              <h2 className="inline text-3xl font-semibold relative">
                 {chapter}
                 <span className="absolute left-full text-sm text-(--description)">
                   {lections.length}
