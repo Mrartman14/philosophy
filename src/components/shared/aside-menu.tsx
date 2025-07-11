@@ -94,7 +94,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   }, []);
 
   return (
-    <aside className={`w-full grid content-start ${className}`}>
+    <aside className={`w-full h-full grid content-start ${className}`}>
       <div
         className={`px-4 border-b border-(--border) flex items-center`}
         style={{

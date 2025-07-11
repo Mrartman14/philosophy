@@ -58,26 +58,22 @@ export default async function Page({ params }: PageProps) {
       </div>
 
       <div className={`p-4 width-full ${proseClasses}`}>
-        {data.cover ? (
-          <div className={`relative`}>
-            <img
-              src={`${basePath}${data.cover}`}
-              className="sensitive-image"
-              alt={`${data.title} lesson preview`}
-              style={{ margin: 0 }}
-            />
-            <div
-              className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
-              style={{
-                textAlign: "center",
-              }}
-            >
-              <h1>{data.title}</h1>
-            </div>
+        <div className={`relative`}>
+          <img
+            src={`${basePath}${data.cover}`}
+            className="sensitive-image"
+            alt={`Обложка теста "${data.title}"`}
+            style={{ margin: 0 }}
+          />
+          <div
+            className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <h1>{data.title}</h1>
           </div>
-        ) : (
-          <h1>{data.title}</h1>
-        )}
+        </div>
       </div>
 
       <ExamViewer className={`${proseClasses} ${containerClasses}`} />

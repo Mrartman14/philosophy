@@ -20,7 +20,7 @@ export const DocxViewerMetaInfo: React.FC<DocxViewerMetaInfoProps> = ({
   parsedData,
 }) => {
   return (
-    <div className="flex w-full items-center justify-between gap-2 pb-1 text-md px-4">
+    <div className={`flex items-center justify-between gap-2 text-md`}>
       <span className="flex items-center gap-2 text-(--description)">
         <HourglassIcon
           aria-label="Среднее время чтения"

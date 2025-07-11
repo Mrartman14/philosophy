@@ -6,7 +6,6 @@ import groupBy from "lodash/groupBy";
 import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
 
-import { Mention } from "@/components/shared/mention";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 import { useAppPageConfig } from "@/app/_providers/app-page-client-provider";
 
@@ -35,7 +34,7 @@ export const AppNav: React.FC<AppNavProps> = () => {
               return (
                 <div key={chapter} className="static w-full grid grid-cols-1">
                   <h6
-                    className={`sticky top-0 text-(--description) bg-(--background) text-lg p-2 border-b-1 border-b-(--border) rounded text-right`}
+                    className={`sticky top-0 text-(--description) bg-(--background) text-lg p-2 border-b-1 border-b-(--border) rounded text-right tracking-wider`}
                   >
                     {chapter}
                   </h6>
@@ -54,13 +53,13 @@ export const AppNav: React.FC<AppNavProps> = () => {
                           </span>
                           <div className="flex gap-1 items-center flex-wrap">
                             {item.mentions.map((m, i, arr) => (
-                              <div
+                              <span
                                 key={m}
-                                className="flex items-center text-xs"
+                                className="flex items-center text-xs text-(--description)"
                               >
-                                <Mention className="text-xs" name={m} />
-                                <span>{i < arr.length - 1 && ","}</span>
-                              </div>
+                                {m}
+                                {i < arr.length - 1 && ","}
+                              </span>
                             ))}
                           </div>
                         </Link>

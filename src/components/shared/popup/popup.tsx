@@ -9,7 +9,11 @@ type PopupProps = {
 export const Popup: React.FC<PopupProps> = ({ content, trigger }) => {
   return (
     <Popover.Root openOnHover>
-      <Popover.Trigger>{trigger}</Popover.Trigger>
+      <Popover.Trigger
+        className={`data-[popup-open]:text-inherit text-(--description)`}
+      >
+        {trigger}
+      </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
           <Popover.Popup className="bg-(--background) rounded-lg px-6 py-4 outline outline-(--border) origin-[var(--transform-origin)] transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0">

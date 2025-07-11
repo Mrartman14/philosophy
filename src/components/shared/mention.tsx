@@ -15,7 +15,7 @@ export const Mention: React.FC<MentionProps> = ({
   withPopover = false,
 }) => {
   const textNode = (
-    <span className={`text-(--description) ${className}`} style={style}>
+    <span className={`${className ?? ""}`} style={style}>
       {name}
     </span>
   );
