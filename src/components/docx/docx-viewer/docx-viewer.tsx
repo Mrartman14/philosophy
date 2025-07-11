@@ -77,6 +77,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
     setSelectedVersion(value);
   };
 
+  const roundedClasses = `rounded-lg rounded-bl-[0px] rounded-br-[0px]`;
   return (
     <>
       {/* <DocxViewerToolbar
@@ -102,13 +103,19 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
                 key={v.name}
                 value={v.name}
                 render={<li />}
-                className="flex px-2 py-1 items-center justify-center border-b border-b-(--border) data-[selected]:border-b-0 outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit hover:text-inherit"
+                className={`${roundedClasses} border-b border-b-(--border) p-[1px] data-[selected]:border-b-transparent outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit hover:text-inherit`}
               >
-                <h4 className="text-lg md:text-2xl font-semibold">{v.name}</h4>
+                <h4
+                  className={`${roundedClasses} text-lg md:text-2xl font-semibold px-2 py-1 backdrop-blur-md`}
+                >
+                  {v.name}
+                </h4>
               </Tabs.Tab>
             ))}
             <div className="w-full border-b border-b-(--border) min-w-4" />
-            <Tabs.Indicator className="border border-(--border) rounded-lg border-b-0 rounded-bl-[0px] rounded-br-[0px] h-full absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out" />
+            <Tabs.Indicator
+              className={`${roundedClasses} border border-(--border) border-b-0 h-full absolute top-1/2 left-0 z-[-1] w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] transition-all duration-200 ease-in-out`}
+            />
           </Tabs.List>
         </nav>
 

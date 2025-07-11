@@ -75,7 +75,7 @@ export default async function Page({ params }: PageProps) {
   return (
     <>
       <div
-        className={`w-full max-w-full grid grid-cols-1 md:grid-cols-2 relative`}
+        className={`w-full max-w-full grid grid-cols-1 md:grid-cols-2 relative overflow-hidden`}
       >
         <div className="p-4 order-2 md:order-2">
           <div className={`relative grid grid-cols-1 aspect-square`}>
@@ -89,26 +89,18 @@ export default async function Page({ params }: PageProps) {
         </div>
 
         <div className="grid content-start gap-4 order-1 md:order-1 md:p-4">
-          {/* <div
+          <div
             style={{
               background: `url(${imgSrc}) center/cover no-repeat`,
               filter: "blur(100px)",
               position: "absolute",
-              // top: "0px",
-              // left: "0px",
-              // right: "0px",
-              // bottom: "50%",
-              width: "20%",
-              height: "20%",
-              // bottom: "50%",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-
-              // opacity: 0.5,
+              width: "100px",
+              height: "100px",
+              top: "-50px",
+              left: "0px",
               zIndex: -1,
             }}
-          /> */}
+          />
           <div className="max-md:absolute p-0.5 max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
             <h4 className="text-(--description) text-lg tracking-wider">
               {data.section}
