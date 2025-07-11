@@ -95,7 +95,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
             </a>
             <ShareButton
               className="text-2xl text-(--description) hover:text-inherit"
-              shareData={{ title: parsedData.id, url: window.location.href }}
+              shareData={{ title: parsedData.id }}
             />
           </div>
         </div>

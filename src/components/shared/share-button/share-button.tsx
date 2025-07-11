@@ -11,9 +11,15 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   className,
 }) => {
   const handleShare = async () => {
+    const safeUrl = url ?? window.location.href;
+
     if (navigator.share) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share({
+          title,
+          text,
+          url: safeUrl,
+        });
       } catch (error) {
         // Пользователь отменил или возникла ошибка
         console.error(error);
@@ -21,7 +27,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     } else {
       // Фолбэк: копируем ссылку в буфер обмена
       try {
-        await navigator.clipboard.writeText(url ?? "");
+        await navigator.clipboard.writeText(safeUrl);
         // alert("Ссылка скопирована в буфер обмена!");
       } catch (error) {
         // alert("Не удалось скопировать ссылку");
