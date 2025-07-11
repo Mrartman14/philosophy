@@ -32,7 +32,7 @@
         },
         {
           "path": "/lectures/lecture-1/lesson-1-faq.docx",
-          "slug": "Q&A",
+          "slug": "questions",
           "name": "Вопросы"
         }
       ],
@@ -59,7 +59,7 @@
         },
         {
           "path": "/lectures/lecture-2/lesson-2-faq.docx",
-          "slug": "Q&A",
+          "slug": "questions",
           "name": "Вопросы"
         }
       ],
