@@ -6,7 +6,7 @@ export type PageData = {
   /** уникальный url сегмент страницы, исполняет роль id */
   slug: string;
   /** путь до docx файлов */
-  sources: { path: string; name: string }[];
+  sources: { path: string; name: string; slug: string }[];
   /** путь до обдожки лекции */
   cover: string;
 };

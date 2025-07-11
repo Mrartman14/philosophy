@@ -20,6 +20,18 @@ export default function Home() {
         </h2>
         <LessonsSlider />
       </section>
+      {/* <section className="pb-4">
+        <h2 className="flex gap-2 px-4 pb-2 border-b border-b-(--border)">
+          Видево
+        </h2>
+        <iframe
+          style={{ width: "100%", aspectRatio: "16/9", border: 0 }}
+          src="https://www.youtube.com/embed/N3TE4lOay30?si=iS7KMn8rdBZesAIU"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
+      </section> */}
     </div>
   );
 }

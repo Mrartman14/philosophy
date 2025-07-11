@@ -11,6 +11,12 @@ export const getLessonBySlug = cache(async (slug: string) => {
   return res;
 });
 
+export const getLessonSource = cache(async (slug: string, source: string) => {
+  const data = await getLessonBySlug(slug);
+  const result = data?.sources.find((s) => s.slug === source);
+  return result;
+});
+
 export const getAdjacentLessonsBySlug = cache(async (slug: string) => {
   const list = await getLessonList();
 
