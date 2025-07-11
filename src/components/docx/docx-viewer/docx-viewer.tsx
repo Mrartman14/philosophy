@@ -107,10 +107,10 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
               }
             >
               <div className="w-full border-b border-b-(--border) min-w-4" />
-              {parsedData.map((v) => (
+              {data.sources.map((v) => (
                 <Tabs.Tab
-                  key={v.id}
-                  value={v.id}
+                  key={v.name}
+                  value={v.name}
                   render={<li style={{ margin: 0 }} />}
                   className="flex px-2 py-1 items-center justify-center border-b border-b-(--border) data-[selected]:border-b-0 outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit hover:text-inherit"
                 >
@@ -118,7 +118,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({
                     className="text-lg md:text-2xl"
                     style={{ margin: 0, color: "inherit" }}
                   >
-                    {v.id}
+                    {v.name}
                   </h4>
                 </Tabs.Tab>
               ))}

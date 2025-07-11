@@ -24,7 +24,7 @@ export const AppNav: React.FC<AppNavProps> = () => {
     <>
       <NavigationMenu.Item className="flex items-stretch justify-center">
         <NavigationMenu.Trigger className={triggerClassName}>
-          <span>Лекции</span>
+          <span className="tracking-wide">Лекции</span>
           <NavigationMenu.Icon className={chevronClassName}>
             <ChevronDownIcon />
           </NavigationMenu.Icon>
@@ -76,7 +76,7 @@ export const AppNav: React.FC<AppNavProps> = () => {
 
       <NavigationMenu.Item className="flex items-stretch justify-center">
         <NavigationMenu.Trigger className={triggerClassName}>
-          <span>Тесты</span>
+          <span className="tracking-wide">Тесты</span>
           <NavigationMenu.Icon className={chevronClassName}>
             <ChevronDownIcon />
           </NavigationMenu.Icon>
