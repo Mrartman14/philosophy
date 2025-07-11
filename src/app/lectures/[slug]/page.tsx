@@ -135,9 +135,8 @@ export default async function Page({ params }: PageProps) {
               }
             })}
           </div>
+          <ScrollButton className="z-10 sticky bottom-2 right-4 justify-self-end md:fixed md:bottom-4 md:right-2" />
         </div>
-
-        <ScrollButton className="z-10 sticky bottom-2 right-4 justify-self-end md:fixed md:bottom-10 md:right-10" />
       </div>
       <LessonViewObserver slug={slug} />
       <ScrollProgressBar className="fixed top-0 w-full z-50" />
