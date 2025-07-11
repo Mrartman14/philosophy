@@ -43,16 +43,6 @@ export type ParsedData = {
   // };
 };
 
-export async function parseDocx(pageConfig: PageData, onServer = false) {
-  const results = await Promise.all(
-    pageConfig.sources.map((x) => {
-      return processSource(x, onServer);
-    })
-  );
-
-  return results;
-}
-
 export async function processSource(
   data: PageData["sources"][number],
   onServer = false

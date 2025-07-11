@@ -10,8 +10,8 @@ import {
 // import { Mention } from "@/components/shared/mention";
 import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
+import { LessonPage } from "@/components/lesson-page/lesson-page";
 // import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
-import DocxViewer from "@/components/docx/docx-viewer/docx-viewer";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { LessonViewObserver } from "@/components/observers/lesson-view-observer";
 
@@ -123,7 +123,7 @@ export default async function Page({ params }: PageProps) {
       </div>
 
       <div className="static w-full">
-        <DocxViewer data={data} />
+        <LessonPage data={data} />
 
         <div className={`grid grid-cols-1 md:grid-cols-[1fr_300px] w-full`}>
           <div className="grid grid-cols-2 grid-rows-[100] gap-4 p-4 md:grid-rows-[150]">
