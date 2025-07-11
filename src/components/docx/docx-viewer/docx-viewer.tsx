@@ -9,11 +9,14 @@ import { HourglassIcon } from "@/assets/icons/hourglass-icon";
 import { ParsedData, processSource } from "@/utils/parse-docx";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ShareButton } from "@/components/shared/share-button/share-button";
+import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
+import { withMinDelay } from "@/utils/with-min-delay";
 
 interface DocxViewerProps {
   data: PageData["sources"][number];
 }
 const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
+  const [loading, setLoading] = useState(false);
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
   const [parsedData, setParsedData] = useState<ParsedData>({
     headingsData: [],
@@ -29,7 +32,15 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
   });
 
   useEffect(() => {
-    processSource(data).then(setParsedData);
+    setLoading(true);
+
+    withMinDelay(processSource(data), 300)
+      .then((x) => {
+        setParsedData(x);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [data]);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -99,11 +110,15 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
             />
           </div>
         </div>
-        <article
-          id={data.name}
-          className="static w-full prose dark:prose-invert md:prose-xl"
-          dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
-        />
+        {loading ? (
+          <SkeletonTextBlock rows={50} />
+        ) : (
+          <article
+            id={data.name}
+            className="static w-full prose dark:prose-invert md:prose-xl"
+            dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
+          />
+        )}
       </div>
       <AsideMenu items={asideItems} className={`hidden md:grid`} />
     </div>

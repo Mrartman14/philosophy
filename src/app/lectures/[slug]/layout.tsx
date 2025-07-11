@@ -8,6 +8,7 @@ import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 // import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { LessonViewObserver } from "@/components/observers/lesson-view-observer";
+import { LectureTabs } from "./_components/lecture-tabs";
 
 interface LecturePageLayoutParams {
   slug: string;
@@ -57,16 +58,9 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
 
         <div className="grid content-start gap-4 order-1 md:order-1 md:p-4">
           <div
-            className="hidden dark:block"
+            className="hidden dark:block absolute w-[100px] h-[100px] top-[-50px] left-0 z-[-1] blur-[100px]"
             style={{
               background: `url(${imgSrc}) center/cover no-repeat`,
-              filter: "blur(100px)",
-              position: "absolute",
-              width: "100px",
-              height: "100px",
-              top: "-50px",
-              left: "0px",
-              zIndex: -1,
             }}
           />
           <div className="max-md:absolute p-0.5 max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
@@ -91,7 +85,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
       </div>
 
       <div className="static w-full">
-        {children}
+        <LectureTabs sources={data.sources}>{children}</LectureTabs>
 
         <div className={`grid grid-cols-1 md:grid-cols-[1fr_300px] w-full`}>
           <div className="grid grid-cols-2 grid-rows-[100] gap-4 p-4 md:grid-rows-[150]">
