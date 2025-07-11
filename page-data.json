@@ -17,18 +17,22 @@
       "sources": [
         {
           "path": "/lectures/lecture-1/lesson-1.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-1/lesson-1-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-1/lesson-1-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         },
         {
           "path": "/lectures/lecture-1/lesson-1-faq.docx",
+          "slug": "Q&A",
           "name": "Вопросы"
         }
       ],
@@ -45,14 +49,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-2/lesson-2.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-2/lesson-2-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         },
         {
           "path": "/lectures/lecture-2/lesson-2-faq.docx",
+          "slug": "Q&A",
           "name": "Вопросы"
         }
       ],
@@ -69,10 +76,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-3/lesson-3.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-3/lesson-3-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -90,10 +99,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-4/lesson-4.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-4/lesson-4-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -112,10 +123,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-5/lesson-5.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-5/lesson-5-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -132,10 +145,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-6/lesson-6.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-6/lesson-6-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -152,10 +167,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-7/lesson-7.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-7/lesson-7-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -174,10 +191,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-8/lesson-8.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-8/lesson-8-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -197,10 +216,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-9/lesson-9.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-9/lesson-9-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -218,10 +239,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-10/lesson-10.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-10/lesson-10-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -238,10 +261,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-11/lesson-11.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-11/lesson-11-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -258,10 +283,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-12/lesson-12.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-12/lesson-12-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -279,14 +306,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-13/lesson-13.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-13/lesson-13-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-13/lesson-13-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -303,14 +333,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-14/lesson-14.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-14/lesson-14-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-14/lesson-14-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -327,14 +360,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-15/lesson-15.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-15/lesson-15-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-15/lesson-15-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -352,10 +388,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-16/lesson-16.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-16/lesson-16-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -374,14 +412,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-17/lesson-17.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-17/lesson-17-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-17/lesson-17-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -398,14 +439,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-18/lesson-18.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-18/lesson-18-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-18/lesson-18-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -423,14 +467,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-19/lesson-19.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-19/lesson-19-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-19/lesson-19-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -447,14 +494,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-20/lesson-20.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-20/lesson-20-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-20/lesson-20-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -471,14 +521,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-21/lesson-21.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-21/lesson-21-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-21/lesson-21-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -495,14 +548,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-22/lesson-22.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-22/lesson-22-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-22/lesson-22-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -519,14 +575,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-23/lesson-23.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-23/lesson-23-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-23/lesson-23-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -544,14 +603,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-24/lesson-24.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-24/lesson-24-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-24/lesson-24-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -568,14 +630,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-25/lesson-25.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-25/lesson-25-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-25/lesson-25-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -593,14 +658,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-26/lesson-26.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-26/lesson-26-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-26/lesson-26-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -618,14 +686,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-27/lesson-27.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-27/lesson-27-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-27/lesson-27-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -649,14 +720,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-28/lesson-28.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-28/lesson-28-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-28/lesson-28-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -675,14 +749,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-29/lesson-29.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-29/lesson-29-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-29/lesson-29-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -700,14 +777,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-30/lesson-30.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-30/lesson-30-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-30/lesson-30-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -725,14 +805,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-31/lesson-31.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-31/lesson-31-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-31/lesson-31-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -750,14 +833,17 @@
       "sources": [
         {
           "path": "/lectures/lecture-32/lesson-32.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-32/lesson-32-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         },
         {
           "path": "/lectures/lecture-32/lesson-32-theses.docx",
+          "slug": "theses",
           "name": "Тезисы"
         }
       ],
@@ -774,10 +860,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-33/lesson-33.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-33/lesson-33-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         }
       ],
@@ -794,10 +882,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-34/lesson-34.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "/lectures/lecture-34/lesson-34-llm.docx",
+          "slug": "llm",
           "name": "LLM"
         }
       ],
@@ -817,10 +907,12 @@
       "sources": [
         {
           "path": "/lectures/lecture-35/lesson-35.docx",
+          "slug": "abstract",
           "name": "Конспект"
         },
         {
           "path": "",
+          "slug": "llm",
           "name": "LLM"
         }
       ],
