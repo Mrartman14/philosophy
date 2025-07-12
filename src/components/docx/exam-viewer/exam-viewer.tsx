@@ -172,6 +172,9 @@ const RuleView: React.FC<{ rule: ExamRule; onVote: (b: boolean) => void }> = ({
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
 
+  // <div className="fixed top-0 w-full z-50">
+  //   <ScrollProgressBar className="sticky top-0" />
+  // </div>;
   return (
     <div>
       <h3>

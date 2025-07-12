@@ -2,7 +2,6 @@ import { Metadata } from "next";
 
 import { getExamBySlug, getPageConfig } from "@/api/pages-api";
 import { ExamViewer } from "@/components/docx/exam-viewer/exam-viewer";
-import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 
 const getExamListFromFs = async () => {
   const pageConfig = await getPageConfig();
@@ -51,11 +50,7 @@ export default async function Page({ params }: PageProps) {
   const containerClasses = "w-full grid gap-4";
 
   return (
-    <div className="grid static w-full items-start justify-items-center grid-cols-1">
-      <div className="fixed top-0 w-full z-50">
-        <ScrollProgressBar className="sticky top-0" />
-      </div>
-
+    <div className="grid w-full items-start justify-items-center grid-cols-1">
       <div className={`p-4 width-full tractate`}>
         <div className={`relative`}>
           <img
