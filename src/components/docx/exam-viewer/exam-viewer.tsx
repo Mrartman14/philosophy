@@ -142,7 +142,7 @@ export const ExamViewer: React.FC<ExamViewerProps> = ({
   const voted = data.filter((x) => typeof x.isSuggestionCorrect === "boolean");
   const correctVoted = voted.filter((x) => x.isSuggestionCorrect);
   return (
-    <div className={`prose dark:prose-invert md:prose-xl px-4 ${className}`}>
+    <div className={`tractate px-4 ${className}`}>
       {data.map((rule) => (
         <RuleView
           key={rule.order}

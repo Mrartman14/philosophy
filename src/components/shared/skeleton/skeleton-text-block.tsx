@@ -14,7 +14,7 @@ export const SkeletonTextBlock: React.FC<{
 
   return (
     <div
-      className={`prose md:prose-xl grid grid-cols-${cols} gap-4 w-full min-h-full ${
+      className={`tractate grid grid-cols-${cols} gap-4 w-full min-h-full ${
         className ?? ""
       }`}
       style={{ gridTemplateColumns: `repeat(${cols},1fr)` }}

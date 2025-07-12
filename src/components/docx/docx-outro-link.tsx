@@ -30,7 +30,7 @@ export const DocxOutroLink: React.FC<DocxOutroLinkProps> = ({
           }}
         />
       )}
-      <div className="absolute top-1/2 left-1/2 w-full p-1 grid justify-items-center transform -translate-x-1/2 -translate-y-1/2 group-hover:bg-(--text-pane)">
+      <div className="absolute top-1/2 left-1/2 w-full p-1 grid justify-items-center transform -translate-x-1/2 -translate-y-1/2 md:group-hover:bg-(--text-pane)">
         <span className="text-xl md:text-4xl font-bold">{title}</span>
         <span className="text-sm md:text-lg text-(--description) text-center">
           {description}

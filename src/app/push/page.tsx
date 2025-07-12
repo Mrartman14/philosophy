@@ -142,7 +142,7 @@ function InstallPrompt() {
 
 export default function Page() {
   return (
-    <div className="prose dark:prose-invert md:prose-xl">
+    <div className="tractate">
       <SWProvider>
         {(state) => <PushNotificationManager {...state} />}
       </SWProvider>

@@ -31,7 +31,7 @@ export function LectureTabs({ sources, children }: PageProps) {
             >
               <Link href={`/lectures/${slug}/sources/${v.slug}`}>
                 <h4
-                  className={`${roundedClasses} text-lg md:text-2xl font-semibold px-2 py-1 backdrop-blur-md`}
+                  className={`${roundedClasses} text-lg md:text-2xl font-semibold px-2 py-1`}
                 >
                   {v.name}
                 </h4>

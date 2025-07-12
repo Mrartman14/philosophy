@@ -64,7 +64,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
             }}
           />
           <div className="max-md:absolute p-0.5 max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
-            <h4 className="text-(--description) text-lg tracking-wider">
+            <h4 className="md:text-(--description) text-lg tracking-wider">
               {data.section}
             </h4>
             <h1 className="text-3xl md:text-5xl font-bold">{data.title}</h1>
@@ -97,8 +97,8 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
               }
             })}
           </div>
-          <ScrollButton className="z-10 sticky bottom-2 right-4 justify-self-end md:fixed md:bottom-4 md:right-2" />
         </div>
+        <ScrollButton className="z-10 sticky bottom-2 right-4 justify-self-end md:fixed md:bottom-4 md:right-2" />
       </div>
       <LessonViewObserver slug={slug} />
       <ScrollProgressBar className="fixed top-0 w-full z-50" />

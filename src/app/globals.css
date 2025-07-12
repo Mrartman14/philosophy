@@ -36,7 +36,6 @@
 .spoiler.revealed {
   filter: none;
 }
-
 .fancy-link {
   position: relative;
 }
@@ -55,8 +54,12 @@
   filter: brightness(75%);
 }
 
-/** PROSE STYLES OVERRIDE */
-.prose blockquote {
+/** TAILWIND PROSE STYLES OVERRIDE */
+.tractate {
+  @apply prose prose-slate dark:prose-invert md:prose-xl max-w-full;
+}
+
+.tractate blockquote {
   font-weight: 300;
   font-style: normal;
 }
@@ -67,16 +70,16 @@
   text-decoration: none;
 }
 
-.prose dt::before {
+.tractate dt::before {
   content: "💬";
   margin-right: 8px;
 }
 
-.prose dl dt {
+.tractate dl dt {
   border-bottom: 1px solid var(--border);
 }
 
-.prose dl dd a {
+.tractate dl dd a {
   color: var(--link);
   text-decoration: none;
 }

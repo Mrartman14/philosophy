@@ -21,7 +21,9 @@ export const LastViewedLesson: React.FC = () => {
         return;
       }
 
-      const next = lectures.filter((l) => lastViewedLessonIds.includes(l.slug));
+      const next = lectures
+        .filter((l) => lastViewedLessonIds.includes(l.slug))
+        .toReversed();
       setLastViewedLessons(next);
     }
 
@@ -30,7 +32,10 @@ export const LastViewedLesson: React.FC = () => {
 
   return lastViewedLessons.length > 0 ? (
     <>
-      <h2 className="pb-2 p-4 border-b border-(--border)" style={{ margin: 0 }}>
+      <h2
+        className="pb-2 p-4 border-b border-(--border) underline"
+        style={{ margin: 0 }}
+      >
         История посещений
       </h2>
       <div className="width-full p-4 gap-4 flex flex-nowrap overflow-scroll">

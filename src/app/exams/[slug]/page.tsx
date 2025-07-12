@@ -48,7 +48,6 @@ export default async function Page({ params }: PageProps) {
   }
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-  const proseClasses = "prose dark:prose-invert md:prose-xl";
   const containerClasses = "w-full grid gap-4";
 
   return (
@@ -57,7 +56,7 @@ export default async function Page({ params }: PageProps) {
         <ScrollProgressBar className="sticky top-0" />
       </div>
 
-      <div className={`p-4 width-full ${proseClasses}`}>
+      <div className={`p-4 width-full tractate`}>
         <div className={`relative`}>
           <img
             src={`${basePath}${data.cover}`}
@@ -76,7 +75,7 @@ export default async function Page({ params }: PageProps) {
         </div>
       </div>
 
-      <ExamViewer className={`${proseClasses} ${containerClasses}`} />
+      <ExamViewer className={`tractate ${containerClasses}`} />
     </div>
   );
 }

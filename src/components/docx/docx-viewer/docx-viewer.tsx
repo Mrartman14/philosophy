@@ -115,7 +115,7 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
         ) : (
           <article
             id={data.name}
-            className="static w-full prose dark:prose-invert md:prose-xl"
+            className="static w-full tractate"
             dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
           />
         )}
