@@ -97,8 +97,8 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
             })}
           </div>
         </div>
+        <ScrollButton className="z-10 sticky bottom-2 px-4 right-4 justify-self-end" />
       </div>
-      <ScrollButton className="z-10 sticky bottom-4 left-4" />
       <LessonViewObserver slug={slug} />
     </>
   );

@@ -46,8 +46,6 @@ export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = ({
     };
   }, [targetElementId]);
 
-  console.log(progress);
-
   return (
     <div
       className={`${
