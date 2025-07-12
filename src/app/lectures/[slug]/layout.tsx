@@ -6,7 +6,6 @@ import { getAdjacentLessonsBySlug } from "@/api/pages-api";
 import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 // import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
-import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { LessonViewObserver } from "@/components/observers/lesson-view-observer";
 import { LectureTabs } from "./_components/lecture-tabs";
 
@@ -84,7 +83,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
         </div>
       </div>
 
-      <div className="static w-full">
+      <div className="w-full">
         <LectureTabs sources={data.sources}>{children}</LectureTabs>
 
         <div className={`grid grid-cols-1 md:grid-cols-[1fr_300px] w-full`}>
@@ -98,10 +97,9 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
             })}
           </div>
         </div>
-        <ScrollButton className="z-10 sticky bottom-2 right-4 justify-self-end md:fixed md:bottom-4 md:right-2" />
       </div>
+      <ScrollButton className="z-10 sticky bottom-4 left-4" />
       <LessonViewObserver slug={slug} />
-      <ScrollProgressBar className="fixed top-0 w-full z-50" />
     </>
   );
 }

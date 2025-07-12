@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from "react";
 
 import { PageData } from "@/entities/page-data";
-// import { DocxViewerToolbar } from "./docx-viewer-toolbar";
+import { withMinDelay } from "@/utils/with-min-delay";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
 import { ParsedData, processSource } from "@/utils/parse-docx";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ShareButton } from "@/components/shared/share-button/share-button";
+import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
-import { withMinDelay } from "@/utils/with-min-delay";
 
 interface DocxViewerProps {
   data: PageData["sources"][number];
@@ -71,57 +71,66 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
     setAsideItems(nextAsideItems);
   }, [parsedData.headingsData]);
 
+  const ARTICLE_ID = data.name;
+
   return (
-    <div className={`w-full grid grid-cols-1 md:grid-cols-[1fr_300px]`}>
-      {/* <DocxViewerToolbar
-          sourceUrl={sourceUrl}
-          selectedData={selectedData}
-          textAlign={textAlign}
-          onChangeTextAlign={setTextAlign}
-        /> */}
-      <div className="grid gap-4 p-4 border-(--border) border-b md:border-r">
-        <div className={`flex items-center justify-between gap-2 text-md`}>
-          <span className="flex items-center gap-2 text-(--description)">
-            <HourglassIcon
-              aria-label="Среднее время чтения"
-              className="text-(--description)"
-            />
-            {parsedData.meta.readingTime} мин.
-          </span>
-          <div className="flex items-center gap-4">
-            {/* {selectedData.meta.lastModified && (
+    <>
+      {!loading && (
+        <ScrollProgressBar
+          className={(perc) =>
+            `sticky top-(--header-height) z-50 md:col-span-2 ${
+              perc > 0 ? "h-1" : "h-0"
+            }`
+          }
+          targetElementId={ARTICLE_ID}
+        />
+      )}
+
+      <div className={`w-full grid grid-cols-1 md:grid-cols-[1fr_300px]`}>
+        <div className="grid gap-4 p-4 border-(--border) border-b md:border-r">
+          <div className={`flex items-center justify-between gap-2 text-md`}>
+            <span className="flex items-center gap-2 text-(--description)">
+              <HourglassIcon
+                aria-label="Среднее время чтения"
+                className="text-(--description)"
+              />
+              {parsedData.meta.readingTime} мин.
+            </span>
+            <div className="flex items-center gap-4">
+              {/* {selectedData.meta.lastModified && (
               <span className="flex items-center gap-2 text-(--description)">
                 <DocUpdateIcon />{" "}
                 {getRelativeDate(selectedData.meta.lastModified)}
               </span>
             )} */}
-            <a
-              download
-              href={sourceUrl}
-              aria-label="Скачать файл"
-              className="flex items-center gap-2 text-2xl text-(--description) hover:text-inherit"
-            >
-              <DownloadIcon />
-              {/* {formatFileSize(parsedData.fileMeta.fileSizeInBytes)} */}
-            </a>
-            <ShareButton
-              className="text-2xl text-(--description) hover:text-inherit"
-              shareData={{ title: parsedData.id }}
-            />
+              <a
+                download
+                href={sourceUrl}
+                aria-label="Скачать файл"
+                className="flex items-center gap-2 text-xl text-(--description) hover:text-inherit"
+              >
+                <DownloadIcon />
+                {/* {formatFileSize(parsedData.fileMeta.fileSizeInBytes)} */}
+              </a>
+              <ShareButton
+                className="text-xl text-(--description) hover:text-inherit"
+                shareData={{ title: parsedData.id }}
+              />
+            </div>
           </div>
+          {loading ? (
+            <SkeletonTextBlock rows={50} />
+          ) : (
+            <article
+              id={ARTICLE_ID}
+              className="static w-full tractate"
+              dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
+            />
+          )}
         </div>
-        {loading ? (
-          <SkeletonTextBlock rows={50} />
-        ) : (
-          <article
-            id={data.name}
-            className="static w-full tractate"
-            dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
-          />
-        )}
+        <AsideMenu items={asideItems} className={`hidden md:grid`} />
       </div>
-      <AsideMenu items={asideItems} className={`hidden md:grid`} />
-    </div>
+    </>
   );
 };
 

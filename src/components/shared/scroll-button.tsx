@@ -27,7 +27,7 @@ export const ScrollButton: React.FC<{ className: string }> = ({
 
   const btnClassName = `flex justify-end gap-2 bg-(--text-pane) rounded-full px-4 py-2 md:py-1 text-(--description) hover:text-inherit transition-opacity`;
   return (
-    <div className={`${className} grid gap-1 items-end`}>
+    <div className={`${className} gap-1 flex w-min`}>
       <button
         aria-label="скролл вверх"
         className={`${btnClassName} ${atTop ? "opacity-0" : "opacity-100"}`}
