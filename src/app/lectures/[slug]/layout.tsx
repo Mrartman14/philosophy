@@ -83,7 +83,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
         </div>
       </div>
 
-      <div className="w-full">
+      <div className="w-full grid justify-items-center">
         <LectureTabs sources={data.sources}>{children}</LectureTabs>
 
         <div className={`grid grid-cols-1 md:grid-cols-[1fr_300px] w-full`}>
@@ -97,7 +97,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
             })}
           </div>
         </div>
-        <ScrollButton className="z-10 sticky bottom-2 px-4 right-4 justify-self-end" />
+        <ScrollButton className="z-10 sticky bottom-2 p-4 flex" />
       </div>
       <LessonViewObserver slug={slug} />
     </>
