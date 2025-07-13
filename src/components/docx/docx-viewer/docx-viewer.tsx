@@ -10,14 +10,13 @@ import { ParsedData, processSource } from "@/utils/parse-docx";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ShareButton } from "@/components/shared/share-button/share-button";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
-import { TextSelectionObserver } from "@/components/shared/text-selection-observer";
 import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
 interface DocxViewerProps {
   data: PageData["sources"][number];
 }
 const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
   const [parsedData, setParsedData] = useState<ParsedData>({
     headingsData: [],
@@ -33,8 +32,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
   });
 
   useEffect(() => {
-    setLoading(true);
-
     withMinDelay(processSource(data), 300)
       .then((x) => {
         setParsedData(x);
@@ -129,7 +126,6 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
             />
           )}
         </div>
-        <TextSelectionObserver />
         <AsideMenu items={asideItems} className={`hidden md:grid`} />
       </div>
     </>
