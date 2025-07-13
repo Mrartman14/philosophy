@@ -1,26 +1,34 @@
 "use client";
-// import Link from "next/link";
 
+import {
+  flip,
+  shift,
+  offset,
+  autoUpdate,
+  useFloating,
+} from "@floating-ui/react";
+import Link from "next/link";
 import debounce from "lodash/debounce";
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-// import { CopyIcon } from "@/assets/icons/copy-icon";
+import { useEffect, useRef, useState } from "react";
+
+import { CopyIcon } from "@/assets/icons/copy-icon";
 import { ShareButton } from "./share-button/share-button";
 
 export const TextSelectionObserver: React.FC<{ enabled?: boolean }> = ({
   enabled = true,
 }) => {
   const [selectedText, setSelectedText] = useState("");
-  const [popoverPosition, setPopoverPosition] = useState<{
-    top: number;
-    left: number;
-  } | null>({
-    top: 0,
-    left: 0,
-  });
   const [showPopover, setShowPopover] = useState(false);
+  const highlightRef = useRef<HTMLElement | null>(null);
 
   const searchParams = useSearchParams();
+
+  const { refs, floatingStyles, update } = useFloating({
+    middleware: [offset(10), flip(), shift()],
+    whileElementsMounted: autoUpdate,
+    placement: "bottom-end",
+  });
 
   useEffect(() => {
     if (!enabled) return;
@@ -33,7 +41,7 @@ export const TextSelectionObserver: React.FC<{ enabled?: boolean }> = ({
         NodeFilter.SHOW_TEXT,
         {
           acceptNode(node) {
-            if (node.nodeValue && node.nodeValue.includes(text)) {
+            if (node.nodeValue?.includes(text)) {
               return NodeFilter.FILTER_ACCEPT;
             }
             return NodeFilter.FILTER_SKIP;
@@ -57,7 +65,13 @@ export const TextSelectionObserver: React.FC<{ enabled?: boolean }> = ({
           range.deleteContents();
           range.insertNode(span);
 
+          highlightRef.current = span;
+          refs.setReference(span);
+          update();
+
           span.scrollIntoView({ behavior: "smooth", block: "center" });
+          setShowPopover(true);
+          setSelectedText(text);
         }
       }
     }
@@ -67,7 +81,7 @@ export const TextSelectionObserver: React.FC<{ enabled?: boolean }> = ({
         highlightAndScroll(searchParams.get("selection")!);
       }, 500);
     }
-  }, [searchParams, enabled]);
+  }, [searchParams, enabled, refs, update]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -81,19 +95,21 @@ export const TextSelectionObserver: React.FC<{ enabled?: boolean }> = ({
         if (rects.length > 0) {
           const lastRect = rects[rects.length - 1];
 
-          setPopoverPosition({
-            top: lastRect.bottom + window.scrollY,
-            left: lastRect.right + window.scrollX,
-          });
+          const virtualEl = {
+            getBoundingClientRect: () => lastRect,
+            contextElement: document.body,
+          };
+
+          refs.setReference(virtualEl);
+          update();
 
           setShowPopover(true);
-          const nextSelectedText = selection.toString();
-          setSelectedText(nextSelectedText);
+          setSelectedText(selection.toString());
 
           return;
         }
       }
-      setPopoverPosition(null);
+
       setShowPopover(false);
       setSelectedText("");
     }, 200);
@@ -102,17 +118,14 @@ export const TextSelectionObserver: React.FC<{ enabled?: boolean }> = ({
     return () => {
       document.removeEventListener("selectionchange", selectionListener);
     };
-  }, [enabled]);
+  }, [enabled, refs, update]);
 
   return (
-    showPopover &&
-    popoverPosition && (
+    showPopover && (
       <div
-        className="absolute z-50 bg-(--background)  border-2 border-(--border) rounded-xl grid overflow-hidden"
-        style={{
-          top: popoverPosition.top,
-          left: popoverPosition.left,
-        }}
+        ref={refs.setFloating}
+        style={floatingStyles}
+        className="z-50 bg-(--background) border-2 border-(--border) rounded-xl grid overflow-hidden"
       >
         <ShareButton
           className="flex items-center justify-between gap-2 p-2 hover:bg-(--text-pane)"
@@ -124,12 +137,12 @@ export const TextSelectionObserver: React.FC<{ enabled?: boolean }> = ({
         >
           <span>Поделиться отрывком</span>
         </ShareButton>
-        {/* <button className="flex items-center justify-between gap-2 p-2 hover:bg-(--text-pane)">
+        <button className="flex items-center justify-between gap-2 p-2 hover:bg-(--text-pane)">
           <span>Ссылка на отрывок</span>
           <Link href={`${window.location.href}?selection=${selectedText}`}>
             <CopyIcon className="text-2xl" />
           </Link>
-        </button> */}
+        </button>
       </div>
     )
   );
