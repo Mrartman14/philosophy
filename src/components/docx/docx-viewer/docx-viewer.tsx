@@ -10,6 +10,7 @@ import { ParsedData, processSource } from "@/utils/parse-docx";
 import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ShareButton } from "@/components/shared/share-button/share-button";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
+import { TextSelectionObserver } from "@/components/shared/text-selection-observer";
 import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
 interface DocxViewerProps {
@@ -123,11 +124,12 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
           ) : (
             <article
               id={ARTICLE_ID}
-              className="static w-full tractate"
+              className="w-full tractate"
               dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
             />
           )}
         </div>
+        <TextSelectionObserver />
         <AsideMenu items={asideItems} className={`hidden md:grid`} />
       </div>
     </>
