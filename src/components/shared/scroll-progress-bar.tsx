@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 type ScrollProgressBarProps = {
-  className?: string | ((percentage: number) => string);
+  className?: string;
   targetElementId: string;
 };
 
@@ -22,7 +22,12 @@ export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = ({
       const windowHeight = window.innerHeight;
       const totalHeight = target.offsetHeight;
 
-      // расстояние от верхней границы экрана до верхней границы элемента
+      // Если элемент помещается в экран — прогресс всегда 0
+      if (totalHeight <= windowHeight) {
+        setProgress(0);
+        return;
+      }
+
       const distanceFromTop = window.scrollY + rect.top;
 
       const scrolled = Math.min(
@@ -47,11 +52,7 @@ export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = ({
   }, [targetElementId]);
 
   return (
-    <div
-      className={`${
-        typeof className === "function" ? className(progress) : className
-      }`}
-    >
+    <div className={`${progress > 0 ? "h-1" : "h-0"} ${className}`}>
       <div
         className="h-full bg-(--primary)"
         style={{ width: `${progress}%` }}
@@ -59,5 +60,3 @@ export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = ({
     </div>
   );
 };
-
-// bg-(--border)

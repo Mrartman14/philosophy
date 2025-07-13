@@ -7,7 +7,6 @@ import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 // import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { LessonViewObserver } from "@/components/observers/lesson-view-observer";
-import { LectureTabs } from "./_components/lecture-tabs";
 
 interface LecturePageLayoutParams {
   slug: string;
@@ -68,6 +67,19 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
             </h4>
             <h1 className="text-3xl md:text-5xl font-bold">{data.title}</h1>
           </div>
+          {data.videoSrc && (
+            <iframe
+              style={{
+                aspectRatio: "16/9",
+              }}
+              className="max-md:p-4"
+              src={data.videoSrc}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          )}
+
           {/* <div className="flex gap-x-4 gap-y-1 items-center flex-wrap">
             <PhilosopherIcon className="text-2xl text-(--description)" />
 
@@ -84,7 +96,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
       </div>
 
       <div className="w-full grid justify-items-center">
-        <LectureTabs sources={data.sources}>{children}</LectureTabs>
+        {children}
 
         <div className={`grid grid-cols-1 md:grid-cols-[1fr_300px] w-full`}>
           <div className="grid grid-cols-2 grid-rows-[100] gap-4 p-4 md:grid-rows-[150]">

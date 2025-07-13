@@ -1,3 +1,10 @@
+export type PageDataSource = {
+  path: string;
+  name: string;
+  slug: string;
+  type: "docx";
+};
+
 export type PageData = {
   /** заголовок лекции */
   title: string;
@@ -6,9 +13,10 @@ export type PageData = {
   /** уникальный url сегмент страницы, исполняет роль id */
   slug: string;
   /** путь до docx файлов */
-  sources: { path: string; name: string; slug: string }[];
+  sources: PageDataSource[];
   /** путь до обдожки лекции */
   cover: string;
+  videoSrc?: string;
 };
 
 export type LessonPageData = PageData & {

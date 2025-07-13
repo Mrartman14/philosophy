@@ -59,6 +59,11 @@
   @apply prose prose-slate dark:prose-invert md:prose-xl max-w-full prose-p:text-justify;
 }
 
+.tractate .subtitle {
+  color: var(--description);
+  @apply italic;
+}
+
 .tractate blockquote {
   font-weight: 300;
   font-style: normal;

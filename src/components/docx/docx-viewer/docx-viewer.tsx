@@ -1,88 +1,59 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-
+import {
+  ParsedData,
+  //  processSource
+} from "@/utils/parse-docx";
 import { PageData } from "@/entities/page-data";
-import { withMinDelay } from "@/utils/with-min-delay";
+// TODO: remove withMinDelay
+// import { withMinDelay } from "@/utils/with-min-delay";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
-import { ParsedData, processSource } from "@/utils/parse-docx";
-import { AsideMenu, AsideNavItem } from "@/components/shared/aside-menu";
 import { ShareButton } from "@/components/shared/share-button/share-button";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
-import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
+import { DocxViewerAside } from "./docx-viewer-aside";
+// import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
 interface DocxViewerProps {
   data: PageData["sources"][number];
+  parsedData: ParsedData;
 }
-const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
-  const [loading, setLoading] = useState(true);
-  const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
-  const [parsedData, setParsedData] = useState<ParsedData>({
-    headingsData: [],
-    htmlString: "",
-    id: data.name,
-    fileMeta: {
-      fileName: null,
-      fileSizeInBytes: null,
-    },
-    meta: {
-      readingTime: 0,
-    },
-  });
+export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
+  // const [loading, setLoading] = useState(true);
+  // const [parsedData, setParsedData] = useState<ParsedData>({
+  //   headingsData: [],
+  //   htmlString: "",
+  //   id: data.name,
+  //   fileMeta: {
+  //     fileName: null,
+  //     fileSizeInBytes: null,
+  //   },
+  //   meta: {
+  //     readingTime: 0,
+  //   },
+  // });
 
-  useEffect(() => {
-    withMinDelay(processSource(data), 300)
-      .then((x) => {
-        setParsedData(x);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [data]);
+  // useEffect(() => {
+  //   withMinDelay(processSource(data), 300)
+  //     .then((x) => {
+  //       setParsedData(x);
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+  // }, [data]);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const sourceUrl = `${baseUrl}${data.path}`;
-
-  useEffect(() => {
-    const nextAsideItems: AsideNavItem[] = parsedData.headingsData.map((h) => {
-      return {
-        id: h.id,
-        render: ({ isSelected }) => (
-          <span
-            className={`grid gap-4 grid-rows-1 ${
-              isSelected ? "" : "text-(--description)"
-            }`}
-            style={{
-              gridTemplateColumns: `repeat(${h.depth}, 1px) 1fr`,
-            }}
-          >
-            {[...new Array(h.depth)].map((_, i) => (
-              <div key={i} className="bg-(--border)" />
-            ))}
-            <span className="py-1">{h.text}</span>
-          </span>
-        ),
-      };
-    });
-
-    setAsideItems(nextAsideItems);
-  }, [parsedData.headingsData]);
 
   const ARTICLE_ID = data.name;
 
   return (
     <>
-      {!loading && (
-        <ScrollProgressBar
-          className={(perc) =>
-            `sticky top-(--header-height) z-50 md:col-span-2 ${
-              perc > 0 ? "h-1" : "h-0"
-            }`
-          }
-          targetElementId={ARTICLE_ID}
-        />
-      )}
+      {/* {!loading && ( */}
+      <ScrollProgressBar
+        targetElementId={ARTICLE_ID}
+        className={`sticky top-(--header-height) z-50 md:col-span-2`}
+      />
+      {/* )} */}
 
       <div className={`w-full grid grid-cols-1 md:grid-cols-[1fr_300px]`}>
         <div className="grid gap-4 p-4 border-(--border) border-b md:border-r">
@@ -116,20 +87,18 @@ const DocxViewer: React.FC<DocxViewerProps> = ({ data }) => {
               />
             </div>
           </div>
-          {loading ? (
+          {/* {loading ? (
             <SkeletonTextBlock rows={50} />
-          ) : (
-            <article
-              id={ARTICLE_ID}
-              className="w-full tractate"
-              dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
-            />
-          )}
+          ) : ( */}
+          <article
+            id={ARTICLE_ID}
+            className="w-full tractate"
+            dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
+          />
+          {/* )} */}
         </div>
-        <AsideMenu items={asideItems} className={`hidden md:grid`} />
+        <DocxViewerAside parsedData={parsedData} />
       </div>
     </>
   );
 };
-
-export default DocxViewer;

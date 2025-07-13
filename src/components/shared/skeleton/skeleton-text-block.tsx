@@ -14,10 +14,11 @@ export const SkeletonTextBlock: React.FC<{
 
   return (
     <div
-      className={`tractate grid grid-cols-${cols} gap-4 w-full min-h-full ${
-        className ?? ""
-      }`}
-      style={{ gridTemplateColumns: `repeat(${cols},1fr)` }}
+      className={`tractate grid gap-4 w-full min-h-full ${className ?? ""}`}
+      style={{
+        gridTemplateColumns: `repeat(${cols}, 1fr)`,
+        gridTemplateRows: `repeat(${rows}, auto)`,
+      }}
     >
       {generatedRows.map((row, rowIndex) => (
         <Fragment key={rowIndex}>

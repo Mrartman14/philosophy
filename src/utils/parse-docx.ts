@@ -1,7 +1,7 @@
-// import { JSDOM } from "jsdom";
+import { JSDOM } from "jsdom";
 import { convertToHtml } from "mammoth";
 // import { loadAsync } from "jszip";
-import DOMPurify from "dompurify";
+import createDOMPurify from "dompurify";
 
 // import {
 //   parseDocxTitle,
@@ -76,7 +76,7 @@ export async function processSource(
     options.arrayBuffer = docxArrayBuffer;
   }
 
-  const { value: dirtyHtmlString } = await convertToHtml(
+  const { value: dirtyHtmlString, messages } = await convertToHtml(
     {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(options as any),
@@ -88,6 +88,7 @@ export async function processSource(
       styleMap: [
         `comment-reference => sup.${commentReferenceClassName}`,
         "u => span.underline.decoration-1",
+        "p[style-name='Subtitle'] => p.subtitle",
         "p[style-name='Quote'] => blockquote:fresh",
         "highlight[color='yellow'] => span.bg-amber-700",
         "highlight[color='green'] => span.bg-green-700",
@@ -107,22 +108,29 @@ export async function processSource(
     }
   );
 
+  if (messages.length > 0) {
+    messages.forEach((msg) => {
+      console.log("parse docx messages: ", msg.type + " " + msg.message);
+    });
+  }
+
   let htmlString: string;
   let readingTime: number;
   let headingsData: ParsedData["headingsData"];
 
   if (onServer) {
-    throw new Error("not implemented yet!");
-    // const jsDom = new JSDOM(dirtyHtmlString);
-    // const parsedDocument = jsDom.window.document;
+    const jsDom = new JSDOM(dirtyHtmlString);
+    const parsedDocument = jsDom.window.document;
 
-    // headingsData = prepareHeadings(parsedDocument);
+    headingsData = prepareHeadings(parsedDocument);
 
-    // const modifiedHtml = parsedDocument.body.innerHTML;
-    // const DOMPurify = createDOMPurify(jsDom.window);
-    // htmlString = DOMPurify.sanitize(modifiedHtml);
+    const modifiedHtml = parsedDocument.body.innerHTML;
+    const DOMPurify = createDOMPurify(jsDom.window);
+    htmlString = DOMPurify.sanitize(modifiedHtml);
+
+    readingTime = calculateReadingTime(htmlString, 200);
   } else {
-    const cleanHtmlString = DOMPurify.sanitize(dirtyHtmlString);
+    const cleanHtmlString = createDOMPurify().sanitize(dirtyHtmlString);
     const parser = new DOMParser();
     const parsedDocument = parser.parseFromString(cleanHtmlString, "text/html");
     headingsData = prepareHeadings(parsedDocument);
