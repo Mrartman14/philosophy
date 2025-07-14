@@ -38,9 +38,10 @@
   transition: filter 0.5s ease;
 }
 
-.spoiler.revealed {
+.spoiler:focus {
   filter: none;
 }
+
 .fancy-link {
   position: relative;
 }

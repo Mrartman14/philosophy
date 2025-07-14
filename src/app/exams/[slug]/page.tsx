@@ -1,7 +1,10 @@
 import { Metadata } from "next";
+import Image from "next/image";
 
+import { processSource } from "@/utils/parse-docx";
 import { getExamBySlug, getPageConfig } from "@/api/pages-api";
-import { ExamViewer } from "@/components/docx/exam-viewer/exam-viewer";
+import { ScrollButton } from "@/components/shared/scroll-button";
+import { DocxViewer } from "@/components/docx/docx-viewer/docx-viewer";
 
 const getExamListFromFs = async () => {
   const pageConfig = await getPageConfig();
@@ -45,35 +48,37 @@ export default async function Page({ params }: PageProps) {
   if (!data) {
     return null;
   }
+  const parsedData = await processSource(data.sources[0], true);
+
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
-  const containerClasses = "w-full grid gap-4";
-
+  const imgSrc = `${basePath}${data.cover}`;
   return (
-    <div className="grid w-full items-start justify-items-center grid-cols-1">
-      <div className={`p-4 width-full tractate`}>
-        <div className={`relative`}>
-          <img
-            src={`${basePath}${data.cover}`}
-            className="sensitive-image"
-            alt={`Обложка теста "${data.title}"`}
-            style={{ margin: 0 }}
-          />
-          <div
-            className="absolute p-0.5 bottom-2 right-0 w-full bg-(--text-pane)"
-            style={{
-              textAlign: "center",
-            }}
-          >
-            <h1>{data.title}</h1>
+    <>
+      <div
+        className={`w-full grid grid-cols-1 md:grid-cols-2 relative border-b border-(--border)`}
+      >
+        <div className="p-4 order-2 md:order-1 md:border-r md:border-(--border)">
+          <div className={`relative grid grid-cols-1 aspect-square`}>
+            <Image
+              fill
+              src={`${imgSrc}`}
+              alt={`Обложка экзамена "${data.title}"`}
+              className="sensitive-image"
+            />
+          </div>
+        </div>
+        <div className="grid content-start gap-4 order-1 md:order-2">
+          <div className="md:border-b md:border-(--border) md:p-4 max-md:absolute p-0.5 max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
+            <h1 className="text-3xl md:text-5xl font-bold">{data.title}</h1>
           </div>
         </div>
       </div>
 
-      <ExamViewer className={`tractate ${containerClasses}`} />
-    </div>
+      <div className="w-full grid justify-items-center">
+        <DocxViewer data={data.sources[0]} parsedData={parsedData} />
+        <div />
+        <ScrollButton className="z-10 sticky bottom-2 p-4 flex" />
+      </div>
+    </>
   );
 }
-
-// Пуанкаре — потому что количество вычислений, которые необходимо совершить для познания истины в задаче N тел, бесконечна так же, как и лестница на картинке
-// Локк, потому что можно бесконечно перебирать качества субстанции (ходить по бесконечной лестнице), так никогда и не приблизившись к ее истине (волчку).

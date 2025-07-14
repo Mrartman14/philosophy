@@ -2,9 +2,7 @@ import {
   ParsedData,
   //  processSource
 } from "@/utils/parse-docx";
-import { PageData } from "@/entities/page-data";
-// TODO: remove withMinDelay
-// import { withMinDelay } from "@/utils/with-min-delay";
+import { PageDataSource } from "@/entities/page-data";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
@@ -12,7 +10,7 @@ import { DocxViewerAside } from "./docx-viewer-aside";
 // import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
 interface DocxViewerProps {
-  data: PageData["sources"][number];
+  data: PageDataSource;
   parsedData: ParsedData;
 }
 export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {

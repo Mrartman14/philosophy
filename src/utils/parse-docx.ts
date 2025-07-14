@@ -88,6 +88,7 @@ export async function processSource(
       styleMap: [
         `comment-reference => sup.${commentReferenceClassName}`,
         "u => span.underline.decoration-1",
+        "p[style-name='spoiler'] => button.spoiler",
         "p[style-name='Subtitle'] => p.subtitle",
         "p[style-name='Quote'] => blockquote:fresh",
         "highlight[color='yellow'] => span.bg-amber-700",
