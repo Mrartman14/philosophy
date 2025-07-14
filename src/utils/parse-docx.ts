@@ -110,7 +110,7 @@ export async function processSource(
 
   if (messages.length > 0) {
     messages.forEach((msg) => {
-      console.log("parse docx messages: ", msg.type + " " + msg.message);
+      console.log("parse docx message: ", msg.type + " " + msg.message);
     });
   }
 

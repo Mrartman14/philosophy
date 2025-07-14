@@ -12,7 +12,7 @@ type PlacedGridItem<T> = GridItem<T> & {
 };
 
 const possibleSizes: [number, number][] = [
-  [2, 2],
+  // [2, 2],
   [2, 1],
   [1, 2],
   [1, 1],
@@ -21,7 +21,7 @@ const possibleSizes: [number, number][] = [
 export function createGridLayout<T>(
   items: GridItem<T>[],
   maxCols = 4,
-  maxAttempts = 50
+  maxAttempts = 100
 ): PlacedGridItem<T>[] {
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const grid: boolean[][] = [];

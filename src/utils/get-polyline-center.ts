@@ -1,4 +1,4 @@
-import { Coordinate } from "@/components/lessons-timeline/timeline";
+import { Coordinate } from "@/components/timeline/timeline";
 
 // /**
 //  * Находит координаты середины ломаной линии по массиву точек.

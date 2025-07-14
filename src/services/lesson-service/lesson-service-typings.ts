@@ -4,4 +4,7 @@ export interface ILessonService {
 
   getLastViewedLessonIds(): Promise<string[]>;
   setLastViewedLessonId(id: string): Promise<void>;
+
+  getFavLessonIds(): Promise<string[]>;
+  setFavLessonId(id: string): Promise<void>;
 }

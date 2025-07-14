@@ -9,9 +9,11 @@ const DB_KEYS = {
   lastCount: "lastCount",
   viewed: "viewed",
   lastViewedLessonIds: "lastViewedLessonIds",
+  favLessonIds: "favLessonIds",
 } as const;
 
-const MAX_LAST_LESSONS = 3;
+const MAX_LAST_LESSONS = 10 as const;
+const MAX_FAV_LESSONS = 100 as const;
 
 const getDB = async () => {
   return openDB(DB_NAME, 1, {
@@ -72,6 +74,38 @@ class LessonService implements ILessonService {
     }
 
     await db.put(STORE_NAME, ids, DB_KEYS.lastViewedLessonIds);
+  }
+
+  async getFavLessonIds(): Promise<string[]> {
+    const db = await getDB();
+    const result = (await db.get(STORE_NAME, DB_KEYS.favLessonIds)) ?? [];
+    return result;
+  }
+
+  async checkIsLessonFav(lessonId: string): Promise<boolean> {
+    const db = await getDB();
+    const list: string[] =
+      (await db.get(STORE_NAME, DB_KEYS.favLessonIds)) ?? [];
+    const result = list.some((x) => x === lessonId);
+    return result;
+  }
+
+  async setFavLessonId(id: string) {
+    const db = await getDB();
+
+    let ids: string[] = (await db.get(STORE_NAME, DB_KEYS.favLessonIds)) ?? [];
+
+    if (ids.includes(id)) {
+      ids = ids.filter((item) => item !== id);
+    } else {
+      ids.push(id);
+    }
+
+    if (ids.length > MAX_FAV_LESSONS) {
+      ids = ids.slice(ids.length - MAX_FAV_LESSONS);
+    }
+
+    await db.put(STORE_NAME, ids, DB_KEYS.favLessonIds);
   }
 }
 

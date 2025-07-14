@@ -2,16 +2,15 @@
 
 import { ShareIcon } from "@/assets/icons/share-icon";
 
-type ShareButtonProps = React.PropsWithChildren<{
+type ShareButtonProps = {
   className?: string;
   iconClassName?: string;
   shareData: ShareData;
-}>;
+};
 export const ShareButton: React.FC<ShareButtonProps> = ({
   shareData: { title, url, text },
   className = "",
   iconClassName = "",
-  children,
 }) => {
   const handleShare = async () => {
     const safeUrl = url ?? window.location.href;
@@ -43,9 +42,8 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     <button
       onClick={handleShare}
       aria-label="Поделиться"
-      className={`flex items-center ${className}`}
+      className={`flex items-center justify-center w-8 h-8 rounded-full bg-(--text-pane) ${className}`}
     >
-      {children}
       <ShareIcon className={iconClassName} />
     </button>
   );

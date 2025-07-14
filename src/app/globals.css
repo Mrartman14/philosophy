@@ -4,6 +4,11 @@
 * {
   scroll-margin-top: var(--header-height);
   scrollbar-color: var(--border) transparent;
+
+  ::target-text {
+    background-color: var(--primary);
+    color: #fff;
+  }
 }
 
 :root {

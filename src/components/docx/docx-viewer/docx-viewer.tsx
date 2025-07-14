@@ -7,7 +7,6 @@ import { PageData } from "@/entities/page-data";
 // import { withMinDelay } from "@/utils/with-min-delay";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
-import { ShareButton } from "@/components/shared/share-button/share-button";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { DocxViewerAside } from "./docx-viewer-aside";
 // import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
@@ -81,10 +80,6 @@ export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
                 <DownloadIcon />
                 {/* {formatFileSize(parsedData.fileMeta.fileSizeInBytes)} */}
               </a>
-              <ShareButton
-                className="text-xl text-(--description) hover:text-inherit"
-                shareData={{ title: parsedData.id }}
-              />
             </div>
           </div>
           {/* {loading ? (

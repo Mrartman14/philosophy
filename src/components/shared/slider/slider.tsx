@@ -91,7 +91,6 @@ export const Slider: React.FC<SliderProps> = ({
       onTouchEnd={() => {
         setTimeout(() => setPaused(false), 1000);
       }}
-      // style={{ scrollbarColor: "transparent transparent" }}
     >
       <div className={`flex w-max ${trackClassName}`}>
         {dubbedItems.map((item, idx) => (
