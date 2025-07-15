@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-import { ParsedData } from "@/utils/parse-docx";
+import { ParsedData, ParsedHeadingData } from "@/utils/parse-docx";
 import { AsideNavItem, AsideMenu } from "@/components/shared/aside-menu";
 
 export const DocxViewerAside: React.FC<{ parsedData: ParsedData }> = ({
@@ -11,26 +11,23 @@ export const DocxViewerAside: React.FC<{ parsedData: ParsedData }> = ({
   const [asideItems, setAsideItems] = useState<AsideNavItem[]>([]);
 
   useEffect(() => {
-    const nextAsideItems: AsideNavItem[] = parsedData.headingsData.map((h) => {
-      return {
+    function mapper(h: ParsedHeadingData) {
+      const item: AsideNavItem = {
         id: h.id,
         render: ({ isSelected }) => (
           <span
-            className={`grid gap-4 grid-rows-1 ${
-              isSelected ? "" : "text-(--description)"
-            }`}
-            style={{
-              gridTemplateColumns: `repeat(${h.depth}, 1px) 1fr`,
-            }}
+            className={`flex py-1 ${isSelected ? "" : "text-(--description)"}`}
           >
-            {[...new Array(h.depth)].map((_, i) => (
-              <div key={i} className="bg-(--border)" />
-            ))}
-            <span className="py-1">{h.text}</span>
+            {h.text}
           </span>
         ),
+        children: h.children?.map(mapper) ?? [],
       };
-    });
+
+      return item;
+    }
+
+    const nextAsideItems: AsideNavItem[] = parsedData.headingsData.map(mapper);
 
     setAsideItems(nextAsideItems);
   }, [parsedData.headingsData]);

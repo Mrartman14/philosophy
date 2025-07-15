@@ -21,6 +21,7 @@ export type ParsedHeadingData = {
   text: string | null;
   level: number;
   depth: number;
+  children?: ParsedHeadingData[];
 };
 export type ParsedData = {
   id: string;
@@ -125,6 +126,8 @@ export async function processSource(
 
     headingsData = prepareHeadings(parsedDocument);
 
+    // console.log(headingsData);
+
     const modifiedHtml = parsedDocument.body.innerHTML;
     const DOMPurify = createDOMPurify(jsDom.window);
     htmlString = DOMPurify.sanitize(modifiedHtml);
@@ -164,24 +167,36 @@ export async function processSource(
 
 function prepareHeadings(parsedDocument: Document): ParsedHeadingData[] {
   const headings = parsedDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
-  const headingsData = Array.from(headings).map((h) => {
+
+  const headingsData: ParsedHeadingData[] = Array.from(headings).map((h) => {
     const text = h.textContent ?? "";
     const id = generateAnchorId(text);
     const level = parseInt(h.tagName[1], 10);
     h.id = id;
-    return { id, text, level, depth: 0 };
+    return { id, text, level, depth: 0, children: [] };
   });
 
-  const stack: number[] = [];
-  headingsData.forEach((heading) => {
-    while (stack.length && stack[stack.length - 1] >= heading.level) {
+  const stack: ParsedHeadingData[] = [];
+  const result: ParsedHeadingData[] = [];
+
+  for (const heading of headingsData) {
+    while (stack.length && stack[stack.length - 1].level >= heading.level) {
       stack.pop();
     }
-    stack.push(heading.level);
-    heading.depth = stack.length - 1;
-  });
 
-  return headingsData;
+    heading.depth = stack.length;
+
+    if (stack.length === 0) {
+      result.push(heading);
+    } else {
+      const parent = stack[stack.length - 1];
+      parent.children?.push(heading);
+    }
+
+    stack.push(heading);
+  }
+
+  return result;
 }
 
 const commentReferenceClassName = "docx-comment-reference";

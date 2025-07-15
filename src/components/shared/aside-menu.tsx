@@ -27,11 +27,19 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
     const listen = throttle(() => {
       const elements: { el: HTMLElement; id: string }[] = [];
 
-      items.forEach(({ id }) => {
-        const el = document.getElementById(id);
+      function itemMapper(item: AsideNavItem) {
+        const el = document.getElementById(item.id);
         if (!el) return;
-        elements.push({ el, id });
-      });
+        elements.push({ el, id: item.id });
+
+        if (item.children?.length === 0) {
+          return;
+        }
+
+        item.children?.forEach(itemMapper);
+      }
+      items.forEach(itemMapper);
+
       for (const item of elements) {
         const { top, left } = item.el.getBoundingClientRect();
         const isIntersected = top >= 0 && left >= 0;
@@ -140,7 +148,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
 }) => {
   const isSelected = intersected === item.id;
   return (
-    <li>
+    <li className="group">
       <a
         key={item.id}
         href={`#${item.id}`}
@@ -151,14 +159,20 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
       >
         {item.render({ isSelected, depth })}
       </a>
-      {item.children?.map((child) => (
-        <AsideMenuItem
-          key={child.id}
-          item={child}
-          depth={depth + 1}
-          intersected={intersected}
-        />
-      ))}
+      {(item.children ?? []).length > 0 && (
+        <ul
+          className={`pl-4 border-l border-(--border) group-hover:border-(--description)`}
+        >
+          {item.children?.map((child) => (
+            <AsideMenuItem
+              key={child.id}
+              item={child}
+              depth={depth + 1}
+              intersected={intersected}
+            />
+          ))}
+        </ul>
+      )}
     </li>
   );
 };

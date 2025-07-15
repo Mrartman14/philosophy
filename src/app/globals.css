@@ -67,11 +67,6 @@
   @apply italic;
 }
 
-.tractate blockquote {
-  font-weight: 300;
-  font-style: normal;
-}
-
 .docx-comment-reference a {
   color: var(--link);
   margin-right: 8px;
