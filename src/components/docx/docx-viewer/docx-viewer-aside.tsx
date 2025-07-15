@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from "react";
 
+import {
+  AsideMenu,
+  AsideNavItem,
+} from "@/components/shared/aside-menu/aside-menu";
 import { ParsedData, ParsedHeadingData } from "@/utils/parse-docx";
-import { AsideNavItem, AsideMenu } from "@/components/shared/aside-menu";
 
 export const DocxViewerAside: React.FC<{ parsedData: ParsedData }> = ({
   parsedData,

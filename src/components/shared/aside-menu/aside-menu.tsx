@@ -3,6 +3,8 @@
 import throttle from "lodash/throttle";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import "./aside-menu.css";
+
 export type AsideNavItem = {
   render: (p: { isSelected: boolean; depth: number }) => React.ReactNode;
   id: string;
@@ -150,7 +152,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
   const hasChildren = (item.children ?? []).length > 0;
 
   return (
-    <li className="group">
+    <li className="aside-menu-item">
       <a
         key={item.id}
         href={`#${item.id}`}
@@ -162,9 +164,7 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
         {item.render({ isSelected, depth })}
       </a>
       {hasChildren && (
-        <ul
-          className={`pl-4 border-l border-(--border) hover:border-(--description)`}
-        >
+        <ul className={`pl-4 border-l border-(--border)`}>
           {item.children?.map((child) => (
             <AsideMenuItem
               key={child.id}
