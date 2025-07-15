@@ -67,7 +67,7 @@ class LessonService implements ILessonService {
       (await db.get(STORE_NAME, DB_KEYS.lastViewedLessonIds)) ?? [];
 
     ids = ids.filter((item) => item !== id);
-    ids.push(id);
+    ids.unshift(id);
 
     if (ids.length > MAX_LAST_LESSONS) {
       ids = ids.slice(ids.length - MAX_LAST_LESSONS);
@@ -98,7 +98,7 @@ class LessonService implements ILessonService {
     if (ids.includes(id)) {
       ids = ids.filter((item) => item !== id);
     } else {
-      ids.push(id);
+      ids.unshift(id);
     }
 
     if (ids.length > MAX_FAV_LESSONS) {

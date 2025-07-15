@@ -34,13 +34,15 @@ export const LessonCard: React.FC<{
       <div className="absolute top-2 right-2 flex gap-2 transition-all">
         <ShareButton
           shareData={{ title: lesson.title }}
-          className="md:hidden group-hover:flex group-focus:flex"
+          className="md:hidden group-hover:flex group-focus:flex md:text-(--description) md:hover:text-inherit"
         />
         <FavButton
           isFav={isFav}
           onSelect={onSelectFav}
           className={`${
-            !isFav ? "md:hidden" : ""
+            !isFav
+              ? "md:hidden md:text-(--description) md:hover:text-inherit"
+              : "text-(--primary)"
           } group-hover:flex group-focus:flex`}
         />
       </div>

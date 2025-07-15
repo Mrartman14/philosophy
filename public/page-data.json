@@ -20,7 +20,7 @@
     {
       "title": "Не ассорти",
       "order": 1,
-      "slug": "lesson-1",
+      "slug": "lecture-1",
       "videoSrc": "",
       "sources": [
         {
@@ -57,7 +57,7 @@
     {
       "title": "Презумпция ненаивности",
       "order": 2,
-      "slug": "lesson-2",
+      "slug": "lecture-2",
       "sources": [
         {
           "path": "/lectures/lecture-2/lesson-2.docx",
@@ -87,7 +87,7 @@
     {
       "title": "Отцы философии",
       "order": 3,
-      "slug": "lesson-3",
+      "slug": "lecture-3",
       "sources": [
         {
           "path": "/lectures/lecture-3/lesson-3.docx",
@@ -112,7 +112,7 @@
     {
       "title": "Неразрешимые противоречия",
       "order": 4,
-      "slug": "lesson-4",
+      "slug": "lecture-4",
       "sources": [
         {
           "path": "/lectures/lecture-4/lesson-4.docx",
@@ -138,7 +138,7 @@
     {
       "title": "Предельное основание",
       "order": 5,
-      "slug": "lesson-5",
+      "slug": "lecture-5",
       "sources": [
         {
           "path": "/lectures/lecture-5/lesson-5.docx",
@@ -162,7 +162,7 @@
     {
       "title": "От суда к сотворению",
       "order": 6,
-      "slug": "lesson-6",
+      "slug": "lecture-6",
       "sources": [
         {
           "path": "/lectures/lecture-6/lesson-6.docx",
@@ -186,7 +186,7 @@
     {
       "title": "Свобода воли, грех и спасение",
       "order": 7,
-      "slug": "lesson-7",
+      "slug": "lecture-7",
       "sources": [
         {
           "path": "/lectures/lecture-7/lesson-7.docx",
@@ -212,7 +212,7 @@
     {
       "title": "Gracia",
       "order": 8,
-      "slug": "lesson-8",
+      "slug": "lecture-8",
       "sources": [
         {
           "path": "/lectures/lecture-8/lesson-8.docx",
@@ -239,7 +239,7 @@
     {
       "title": "Лоскутное одеяло",
       "order": 9,
-      "slug": "lesson-9",
+      "slug": "lecture-9",
       "sources": [
         {
           "path": "/lectures/lecture-9/lesson-9.docx",
@@ -264,7 +264,7 @@
     {
       "title": "Точка опоры",
       "order": 10,
-      "slug": "lesson-10",
+      "slug": "lecture-10",
       "sources": [
         {
           "path": "/lectures/lecture-10/lesson-10.docx",
@@ -288,7 +288,7 @@
     {
       "title": "Бог из логики",
       "order": 11,
-      "slug": "lesson-11",
+      "slug": "lecture-11",
       "sources": [
         {
           "path": "/lectures/lecture-11/lesson-11.docx",
@@ -312,7 +312,7 @@
     {
       "title": "Очень холодная ночь",
       "order": 12,
-      "slug": "lesson-12",
+      "slug": "lecture-12",
       "sources": [
         {
           "path": "/lectures/lecture-12/lesson-12.docx",
@@ -337,7 +337,7 @@
     {
       "title": "Непознаваемый стул",
       "order": 13,
-      "slug": "lesson-13",
+      "slug": "lecture-13",
       "sources": [
         {
           "path": "/lectures/lecture-13/lesson-13.docx",
@@ -367,7 +367,7 @@
     {
       "title": "Слепой бог",
       "order": 14,
-      "slug": "lesson-14",
+      "slug": "lecture-14",
       "sources": [
         {
           "path": "/lectures/lecture-14/lesson-14.docx",
@@ -397,7 +397,7 @@
     {
       "title": "Схоластика",
       "order": 15,
-      "slug": "lesson-15",
+      "slug": "lecture-15",
       "sources": [
         {
           "path": "/lectures/lecture-15/lesson-15.docx",
@@ -428,7 +428,7 @@
     {
       "title": "Порывая со здравым смыслом",
       "order": 16,
-      "slug": "lesson-16",
+      "slug": "lecture-16",
       "sources": [
         {
           "path": "/lectures/lecture-16/lesson-16.docx",
@@ -454,7 +454,7 @@
     {
       "title": "Единственный в своём роде",
       "order": 17,
-      "slug": "lesson-17",
+      "slug": "lecture-17",
       "sources": [
         {
           "path": "/lectures/lecture-17/lesson-17.docx",
@@ -484,7 +484,7 @@
     {
       "title": "Одно мгновение",
       "order": 18,
-      "slug": "lesson-18",
+      "slug": "lecture-18",
       "sources": [
         {
           "path": "/lectures/lecture-18/lesson-18.docx",
@@ -515,7 +515,7 @@
     {
       "title": "Сходство с пылью",
       "order": 19,
-      "slug": "lesson-19",
+      "slug": "lecture-19",
       "sources": [
         {
           "path": "/lectures/lecture-19/lesson-19.docx",
@@ -545,7 +545,7 @@
     {
       "title": "Сорта удовольствий",
       "order": 20,
-      "slug": "lesson-20",
+      "slug": "lecture-20",
       "sources": [
         {
           "path": "/lectures/lecture-20/lesson-20.docx",
@@ -575,7 +575,7 @@
     {
       "title": "Второй шанс",
       "order": 21,
-      "slug": "lesson-21",
+      "slug": "lecture-21",
       "sources": [
         {
           "path": "/lectures/lecture-21/lesson-21.docx",
@@ -605,7 +605,7 @@
     {
       "title": "Четыре варианта смерти",
       "order": 22,
-      "slug": "lesson-22",
+      "slug": "lecture-22",
       "sources": [
         {
           "path": "/lectures/lecture-22/lesson-22.docx",
@@ -635,7 +635,7 @@
     {
       "title": "Секст и пустота",
       "order": 23,
-      "slug": "lesson-23",
+      "slug": "lecture-23",
       "sources": [
         {
           "path": "/lectures/lecture-23/lesson-23.docx",
@@ -666,7 +666,7 @@
     {
       "title": "Что со мной не так",
       "order": 24,
-      "slug": "lesson-24",
+      "slug": "lecture-24",
       "sources": [
         {
           "path": "/lectures/lecture-24/lesson-24.docx",
@@ -696,7 +696,7 @@
     {
       "title": "Бесконечное падение",
       "order": 25,
-      "slug": "lesson-25",
+      "slug": "lecture-25",
       "sources": [
         {
           "path": "/lectures/lecture-25/lesson-25.docx",
@@ -727,7 +727,7 @@
     {
       "title": "Фокусы со временем",
       "order": 26,
-      "slug": "lesson-26",
+      "slug": "lecture-26",
       "sources": [
         {
           "path": "/lectures/lecture-26/lesson-26.docx",
@@ -758,7 +758,7 @@
     {
       "title": "Потеряли счёт",
       "order": 27,
-      "slug": "lesson-27",
+      "slug": "lecture-27",
       "sources": [
         {
           "path": "/lectures/lecture-27/lesson-27.docx",
@@ -795,7 +795,7 @@
     {
       "title": "И от сына тоже",
       "order": 28,
-      "slug": "lesson-28",
+      "slug": "lecture-28",
       "sources": [
         {
           "path": "/lectures/lecture-28/lesson-28.docx",
@@ -827,7 +827,7 @@
     {
       "title": "Si fallor, sum",
       "order": 29,
-      "slug": "lesson-29",
+      "slug": "lecture-29",
       "sources": [
         {
           "path": "/lectures/lecture-29/lesson-29.docx",
@@ -858,7 +858,7 @@
     {
       "title": "Esse est percepi",
       "order": 30,
-      "slug": "lesson-30",
+      "slug": "lecture-30",
       "sources": [
         {
           "path": "/lectures/lecture-30/lesson-30.docx",
@@ -889,7 +889,7 @@
     {
       "title": "Быть",
       "order": 31,
-      "slug": "lesson-31",
+      "slug": "lecture-31",
       "sources": [
         {
           "path": "/lectures/lecture-31/lesson-31.docx",
@@ -920,7 +920,7 @@
     {
       "title": "Никаких больше субстанций",
       "order": 32,
-      "slug": "lesson-32",
+      "slug": "lecture-32",
       "sources": [
         {
           "path": "/lectures/lecture-32/lesson-32.docx",
@@ -950,7 +950,7 @@
     {
       "title": "Случайность",
       "order": 33,
-      "slug": "lesson-33",
+      "slug": "lecture-33",
       "sources": [
         {
           "path": "/lectures/lecture-33/lesson-33.docx",
@@ -974,7 +974,7 @@
     {
       "title": "В поисках дна",
       "order": 34,
-      "slug": "lesson-34",
+      "slug": "lecture-34",
       "sources": [
         {
           "path": "/lectures/lecture-34/lesson-34.docx",
@@ -1001,7 +1001,7 @@
     {
       "title": "Последние десять страниц",
       "order": 35,
-      "slug": "lesson-35",
+      "slug": "lecture-35",
       "sources": [
         {
           "path": "/lectures/lecture-35/lesson-35.docx",

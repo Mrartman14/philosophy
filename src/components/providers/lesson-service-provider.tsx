@@ -27,43 +27,47 @@ export const LessonServiceProvider: React.FC<LessonServiceProviderProps> = ({
     []
   );
 
-  const checkLastViews = useCallback(async () => {
+  const handleFetchLastViews = useCallback(async () => {
     const lastViewedLessonIds = await lessonService.getLastViewedLessonIds();
     if (lastViewedLessonIds.length === 0) {
       return;
     }
 
-    const next = lectures
-      .filter((l) => lastViewedLessonIds.includes(l.slug))
-      .toReversed();
+    const next = lastViewedLessonIds
+      .map((id) => lectures.find((l) => l.slug === id))
+      .filter((x) => !!x);
+
     setLastViewedLessons(next);
   }, [lectures]);
 
-  const checkFav = useCallback(async () => {
+  const handleFetchFav = useCallback(async () => {
     const favLessonIds = await lessonService.getFavLessonIds();
 
     if (favLessonIds.length === 0) {
-      return;
+      return setFavLessons([]);
     }
 
-    const next = lectures.filter((l) => favLessonIds.includes(l.slug));
+    const next = favLessonIds
+      .map((id) => lectures.find((l) => l.slug === id))
+      .filter((x) => !!x);
+
     setFavLessons(next);
   }, [lectures]);
 
   const onSelectFav = useCallback(
     (id: string) => {
-      return lessonService.setFavLessonId(id).then(checkFav);
+      return lessonService.setFavLessonId(id).then(handleFetchFav);
     },
-    [checkFav]
+    [handleFetchFav]
   );
 
   useEffect(() => {
-    checkLastViews();
-  }, [checkLastViews]);
+    handleFetchLastViews();
+  }, [handleFetchLastViews]);
 
   useEffect(() => {
-    checkFav();
-  }, [checkFav]);
+    handleFetchFav();
+  }, [handleFetchFav]);
 
   const state: LessonServiceProviderState = {
     favLessons,
