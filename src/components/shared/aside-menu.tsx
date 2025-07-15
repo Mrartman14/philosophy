@@ -147,6 +147,8 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
   intersected,
 }) => {
   const isSelected = intersected === item.id;
+  const hasChildren = (item.children ?? []).length > 0;
+
   return (
     <li className="group">
       <a
@@ -159,9 +161,9 @@ const AsideMenuItem: React.FC<AsideMenuItemProps> = ({
       >
         {item.render({ isSelected, depth })}
       </a>
-      {(item.children ?? []).length > 0 && (
+      {hasChildren && (
         <ul
-          className={`pl-4 border-l border-(--border) group-hover:border-(--description)`}
+          className={`pl-4 border-l border-(--border) hover:border-(--description)`}
         >
           {item.children?.map((child) => (
             <AsideMenuItem
