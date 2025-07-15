@@ -5,7 +5,7 @@
       "slug": "exam-1",
       "order": 1,
       "cover": "/exams/exam-1/exam-1-cover.jpeg",
-      "description": "Уроки 1-35",
+      "description": "Лекции 1-35",
       "sources": [
         {
           "path": "/exams/exam-1/exam-1.docx",

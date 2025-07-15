@@ -5,20 +5,20 @@ import { cache } from "react";
 import { PageConfig } from "@/entities/page-data";
 
 /** LECTURES */
-export const getLessonBySlug = cache(async (slug: string) => {
-  const list = await getLessonList();
+export const getLectureBySlug = cache(async (slug: string) => {
+  const list = await getLectureList();
   const res = list.find((x) => x.slug === slug);
   return res;
 });
 
-export const getLessonSource = cache(async (slug: string, source: string) => {
-  const data = await getLessonBySlug(slug);
+export const getLectureSource = cache(async (slug: string, source: string) => {
+  const data = await getLectureBySlug(slug);
   const result = data?.sources.find((s) => s.slug === source);
   return result;
 });
 
-export const getAdjacentLessonsBySlug = cache(async (slug: string) => {
-  const list = await getLessonList();
+export const getAdjacentLecturesBySlug = cache(async (slug: string) => {
+  const list = await getLectureList();
 
   const curr = list.find((x) => x.slug === slug) ?? null;
   const prev = curr
@@ -31,7 +31,7 @@ export const getAdjacentLessonsBySlug = cache(async (slug: string) => {
   return { curr, prev, next };
 });
 
-export const getLessonList = cache(async () => {
+export const getLectureList = cache(async () => {
   const res = await getPageConfig();
   return res.lectures;
 });

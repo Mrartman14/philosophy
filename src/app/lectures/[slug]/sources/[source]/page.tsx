@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import { Tabs } from "@base-ui-components/react/tabs";
 
 import {
-  getLessonList,
-  getLessonBySlug,
-  getLessonSource,
+  getLectureList,
+  getLectureBySlug,
+  getLectureSource,
 } from "@/api/pages-api";
 import { processSource } from "@/utils/parse-docx";
 import { DocxViewer } from "@/components/docx/docx-viewer/docx-viewer";
@@ -17,8 +17,8 @@ interface SourcePageParams {
 }
 
 export async function generateStaticParams(): Promise<SourcePageParams[]> {
-  const lessons = await getLessonList();
-  const result = lessons.flatMap((page) =>
+  const lectures = await getLectureList();
+  const result = lectures.flatMap((page) =>
     page.sources.map((source) => ({ slug: page.slug, source: source.slug }))
   );
   return result;
@@ -32,7 +32,7 @@ export async function generateMetadata({
   params,
 }: GenerateMetadataProps): Promise<Metadata> {
   const { slug, source } = await params;
-  const data = await getLessonSource(slug, source);
+  const data = await getLectureSource(slug, source);
 
   const result: Metadata = {
     title: data?.name,
@@ -47,10 +47,10 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   const { slug, source } = await params;
-  const lesson = await getLessonBySlug(slug);
-  const data = await getLessonSource(slug, source);
+  const lecture = await getLectureBySlug(slug);
+  const data = await getLectureSource(slug, source);
 
-  if (!data || !lesson) return notFound();
+  if (!data || !lecture) return notFound();
 
   const parsedData = await processSource(data, true);
 
@@ -64,7 +64,7 @@ export default async function Page({ params }: PageProps) {
           }
         >
           <div className="border-b border-b-(--border) min-w-4 w-full md:w-4" />
-          {lesson.sources.map((v) => (
+          {lecture.sources.map((v) => (
             <Tabs.Tab
               key={v.slug}
               value={v.slug}

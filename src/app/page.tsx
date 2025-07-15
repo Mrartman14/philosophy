@@ -1,4 +1,4 @@
-import { LessonsDashboard } from "@/components/dashboard/lessons-dashboard";
+import { LecturesDashboard } from "@/components/dashboard/lectures-dashboard";
 
 export default function Home() {
   return (
@@ -6,7 +6,7 @@ export default function Home() {
       <h1 className="text-5xl font-bold p-4" style={{ margin: 0 }}>
         Главная
       </h1>
-      <LessonsDashboard />
+      <LecturesDashboard />
     </div>
   );
 }

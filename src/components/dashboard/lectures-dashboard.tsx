@@ -3,26 +3,26 @@
 import Link from "next/link";
 
 import { Slider } from "../shared/slider/slider";
-import { LessonCard } from "../lesson/lesson-card";
-import { LessonServiceProvider } from "../providers/lesson-service-provider";
+import { LectureCard } from "../lecture/lecture-card";
+import { LectureServiceProvider } from "../providers/lecture-service-provider";
 
-export const LessonsDashboard: React.FC = () => {
+export const LecturesDashboard: React.FC = () => {
   return (
-    <LessonServiceProvider>
-      {({ favLessons, lastViewedLessons, lectures, onSelectFav }) => (
+    <LectureServiceProvider>
+      {({ favLectures, lastViewedLectures, lectures, onSelectFav }) => (
         <>
-          {favLessons.length > 0 && (
+          {favLectures.length > 0 && (
             <>
               <h2 className="text-3xl font-bold pb-2 p-4 border-b border-(--border) underline">
                 Избранное
               </h2>
               <div className="width-full p-4 gap-4 flex flex-nowrap overflow-scroll">
-                {favLessons.map((x) => (
-                  <LessonCard
+                {favLectures.map((x) => (
+                  <LectureCard
                     key={x.slug}
-                    lesson={x}
+                    lecture={x}
                     onSelectFav={() => onSelectFav(x.slug)}
-                    isFav={favLessons.some((y) => y.slug === x.slug)}
+                    isFav={favLectures.some((y) => y.slug === x.slug)}
                     className="grow-0 shrink-0 basis-[200px] md:basis-[300px] h-[150px] md:h-[200px]"
                   />
                 ))}
@@ -30,18 +30,18 @@ export const LessonsDashboard: React.FC = () => {
             </>
           )}
 
-          {lastViewedLessons.length > 0 && (
+          {lastViewedLectures.length > 0 && (
             <>
               <h2 className="text-3xl font-bold pb-2 p-4 border-b border-(--border) underline">
                 История посещений
               </h2>
               <div className="width-full p-4 gap-4 flex flex-nowrap overflow-scroll">
-                {lastViewedLessons.map((x) => (
-                  <LessonCard
+                {lastViewedLectures.map((x) => (
+                  <LectureCard
                     key={x.slug}
-                    lesson={x}
+                    lecture={x}
                     onSelectFav={() => onSelectFav(x.slug)}
-                    isFav={favLessons.some((y) => y.slug === x.slug)}
+                    isFav={favLectures.some((y) => y.slug === x.slug)}
                     className="grow-0 shrink-0 basis-[200px] md:basis-[300px] h-[150px] md:h-[200px]"
                   />
                 ))}
@@ -58,11 +58,11 @@ export const LessonsDashboard: React.FC = () => {
               trackClassName="pl-4 gap-4"
               itemClassName="shrink-0 grow-0 basis-[200px] md:basis-[300px]"
               items={lectures.map((x) => (
-                <LessonCard
+                <LectureCard
                   key={x.slug}
-                  lesson={x}
+                  lecture={x}
                   onSelectFav={() => onSelectFav(x.slug)}
-                  isFav={favLessons.some((y) => y.slug === x.slug)}
+                  isFav={favLectures.some((y) => y.slug === x.slug)}
                   className="h-[150px] md:h-[200px]"
                 />
               ))}
@@ -70,6 +70,6 @@ export const LessonsDashboard: React.FC = () => {
           </section>
         </>
       )}
-    </LessonServiceProvider>
+    </LectureServiceProvider>
   );
 };

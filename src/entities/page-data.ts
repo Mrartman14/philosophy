@@ -19,7 +19,7 @@ export type PageData = {
   videoSrc?: string;
 };
 
-export type LessonPageData = PageData & {
+export type LecturePageData = PageData & {
   /** упомянутые в лекции личности */
   mentions: string[];
   /** раздел лекций */
@@ -29,6 +29,6 @@ export type LessonPageData = PageData & {
 export type ExamPageData = PageData & { description: string };
 
 export type PageConfig = {
-  lectures: LessonPageData[];
+  lectures: LecturePageData[];
   exams: ExamPageData[];
 };

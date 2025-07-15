@@ -7,7 +7,7 @@ import { SWProvider } from "@/app/_providers/sw-provider";
 import { AppPageProvider } from "./_providers/app-page-provider";
 import { AppHeader } from "@/components/app/app-header/app-header";
 import { AppFooter } from "@/components/app/app-footer/app-footer";
-import { NewLessonsProvider } from "./_providers/new-lessons-provider";
+import { NewLecturesProvider } from "./_providers/new-lectures-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,7 +60,7 @@ export default function RootLayout({
           `}
       >
         <SWProvider />
-        <NewLessonsProvider />
+        <NewLecturesProvider />
         <Theme>
           <AppPageProvider>
             <AppHeader />

@@ -6,7 +6,7 @@ import { scaleLinear, select, zoom as d3Zoom, zoomIdentity } from "d3";
 
 import { WidthSlider } from "./width-slider";
 import { PhilosopherView } from "./philosopher-view";
-import { LessonPageData } from "@/entities/page-data";
+import { LecturePageData } from "@/entities/page-data";
 import { getAverageX } from "@/utils/get-polyline-center";
 import { philosophers, Timeline } from "@/utils/philosophers";
 import { getColorFromStringWithPrefix } from "@/utils/get-color-from-str";
@@ -14,24 +14,24 @@ import { getColorFromStringWithPrefix } from "@/utils/get-color-from-str";
 export type Coordinate = { x: number; y: number };
 const getLinePath = (point: Coordinate, i: number) =>
   i === 0 ? `M${point.x} ${point.y}` : `L${point.x} ${point.y}`;
-type LessonPoint = {
+type LecturePoint = {
   point: { x: number; y: number };
-  lesson: LessonPageData;
+  lecture: LecturePageData;
   chapter: string;
   mention: string;
 };
 const CHAPTER_GAP = 100 as const;
-const LESSON_LINE_WIDTH = 5 as const;
-const LESSON_GAP = LESSON_LINE_WIDTH + 1;
-const LESSON_SKEW = 0 as const;
+const LECTURE_LINE_WIDTH = 5 as const;
+const LECTURE_GAP = LECTURE_LINE_WIDTH + 1;
+const LECTURE_SKEW = 0 as const;
 const PADDING = 0 as const; // 50
 const TIMELINE_BOTTOM_OFFSET = 150;
 
 type PhilosophersTimelineProps = {
-  lessons: LessonPageData[];
+  lectures: LecturePageData[];
 };
 export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
-  lessons,
+  lectures,
 }) => {
   const [{ height, width }, setSize] = useState({ width: 0, height: 0 });
   const [virtualWidthK, setVirtualWidthK] = useState(1);
@@ -70,57 +70,57 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
       })
     );
 
-    const groupedByChapter = groupBy(lessons, (x) => x.section);
+    const groupedByChapter = groupBy(lectures, (x) => x.section);
 
     const chapterPaths = Object.entries(groupedByChapter).map(
-      ([chapter, lessons], chapterIndex) => {
-        const xGap = chapterIndex * LESSON_SKEW;
-        const orderedLessons = lessons.toSorted((a, b) => a.order - b.order);
+      ([chapter, lectures], chapterIndex) => {
+        const xGap = chapterIndex * LECTURE_SKEW;
+        const orderedLectures = lectures.toSorted((a, b) => a.order - b.order);
 
-        const lessonsPoints: {
+        const lecturesPoints: {
           chapter: string;
-          lesson: string;
-          lessonPoints: LessonPoint[];
-          connectionPoints: LessonPoint[];
+          lecture: string;
+          lecturePoints: LecturePoint[];
+          connectionPoints: LecturePoint[];
         }[] = [];
 
-        orderedLessons
+        orderedLectures
           .toSorted((a, b) => a.order - b.order)
-          .forEach((lesson, lessonIndex) => {
+          .forEach((lecture, lectureIndex) => {
             const yGap =
-              (chapterIndex + 1) * CHAPTER_GAP + lessonIndex * LESSON_GAP;
+              (chapterIndex + 1) * CHAPTER_GAP + lectureIndex * LECTURE_GAP;
 
             // все кого упомянули на уроке
-            const mentions: (Timeline & Coordinate)[] = lesson.mentions
+            const mentions: (Timeline & Coordinate)[] = lecture.mentions
               .map((m) => coords.find((x) => x.name === m) ?? null)
               .filter((x) => x !== null);
 
-            const lessonPoints: LessonPoint[] = [];
-            const connectionPoints: LessonPoint[] = [];
+            const lecturePoints: LecturePoint[] = [];
+            const connectionPoints: LecturePoint[] = [];
 
             mentions.forEach(({ x, y, name }) => {
               // точка урока, лежащая параллельно стреле времени и перпендикулярно философу на стреле времени
-              const point: LessonPoint = {
+              const point: LecturePoint = {
                 point: {
                   x: x + xGap,
                   y: y - yGap,
                 },
-                lesson,
+                lecture: lecture,
                 chapter,
                 mention: name,
               };
-              lessonPoints.push(point);
+              lecturePoints.push(point);
 
               // перпендикуляр соединения этой точки с точкой философа на стреле времени [1]
-              const connectionPoint1: LessonPoint = {
+              const connectionPoint1: LecturePoint = {
                 chapter,
-                lesson,
+                lecture: lecture,
                 point: { x, y },
                 mention: name,
               };
-              const connectionPoint2: LessonPoint = {
+              const connectionPoint2: LecturePoint = {
                 chapter,
-                lesson,
+                lecture: lecture,
                 point: { x: x + xGap, y: y - yGap },
                 mention: name,
               };
@@ -128,21 +128,21 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
               connectionPoints.push(connectionPoint2);
             });
 
-            const lessonPoint = {
+            const lecturePoint = {
               chapter,
-              lessonPoints,
-              lesson: lesson.title,
+              lecturePoints,
+              lecture: lecture.title,
               connectionPoints,
             };
-            lessonsPoints.push(lessonPoint);
+            lecturesPoints.push(lecturePoint);
           });
 
-        return lessonsPoints;
+        return lecturesPoints;
       }
     );
 
     return chapterPaths;
-  }, [height, xScale, lessons]);
+  }, [height, xScale, lectures]);
 
   const ticks = useMemo(() => {
     const zoomMap: Record<string, number> = {
@@ -185,39 +185,39 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
         className="absolute top-2 right-2"
       />
       <svg className="fill-current" ref={svgRef} width={width} height={height}>
-        <g transform={transform.toString()} data-id="lessons">
+        <g transform={transform.toString()} data-id="lectures">
           {chaptersLines.map((chapterPoints, index) => {
             return (
               <g key={index}>
                 {chapterPoints.map(
                   ({
-                    lesson,
+                    lecture,
                     chapter,
-                    lessonPoints,
+                    lecturePoints,
                     // connectionPoints
                   }) => {
-                    const isOnePath = lessonPoints.length === 1;
+                    const isOnePath = lecturePoints.length === 1;
                     const prefixLength = chapter.length + 1;
                     const color = getColorFromStringWithPrefix(
-                      `${chapter}-${lesson}`,
+                      `${chapter}-${lecture}`,
                       prefixLength
                     );
 
                     const node = isOnePath ? (
                       <circle
-                        cx={lessonPoints[0]!.point.x}
-                        cy={lessonPoints[0]!.point.y}
-                        r={LESSON_LINE_WIDTH / 2}
+                        cx={lecturePoints[0]!.point.x}
+                        cy={lecturePoints[0]!.point.y}
+                        r={LECTURE_LINE_WIDTH / 2}
                         fill={color}
                       />
                     ) : (
                       <path
-                        key={`${lesson}`}
-                        d={lessonPoints
+                        key={`${lecture}`}
+                        d={lecturePoints
                           .map(({ point }, i) => getLinePath(point, i))
                           .join(" ")}
                         stroke={color}
-                        strokeWidth={LESSON_LINE_WIDTH}
+                        strokeWidth={LECTURE_LINE_WIDTH}
                         fill="none"
                       />
                     );
@@ -228,13 +228,14 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
 
                     const center = {
                       x:
-                        getAverageX(lessonPoints.map((point) => point.point)) ??
-                        0,
-                      y: lessonPoints[0].point.y ?? 0,
+                        getAverageX(
+                          lecturePoints.map((point) => point.point)
+                        ) ?? 0,
+                      y: lecturePoints[0].point.y ?? 0,
                     };
 
                     return (
-                      <g key={lesson}>
+                      <g key={lecture}>
                         {node}
                         {transform.k >= 1 && (
                           <>
@@ -246,10 +247,10 @@ export const PhilosophersTimeline: React.FC<PhilosophersTimelineProps> = ({
                               dominantBaseline="middle"
                               fontSize={12 / transform.k}
                             >
-                              {lesson}
+                              {lecture}
                             </text>
                             {/* <path
-                              key={`${lesson}-connector`}
+                              key={`${lecture}-connector`}
                               d={connectionsD}
                               stroke={color}
                               strokeWidth={0.1}

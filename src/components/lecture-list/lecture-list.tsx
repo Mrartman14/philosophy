@@ -2,14 +2,14 @@
 
 import groupBy from "lodash/groupBy";
 
-import { LessonCard } from "../lesson/lesson-card";
+import { LectureCard } from "../lecture/lecture-card";
 // import { CompactGrid } from "../shared/compact-grid/compact-grid";
-import { LessonServiceProvider } from "../providers/lesson-service-provider";
+import { LectureServiceProvider } from "../providers/lecture-service-provider";
 
-export const LessonList: React.FC = () => {
+export const LectureList: React.FC = () => {
   return (
-    <LessonServiceProvider>
-      {({ lectures, favLessons, onSelectFav }) => {
+    <LectureServiceProvider>
+      {({ lectures, favLectures, onSelectFav }) => {
         const groupedByChapter = groupBy(lectures, (x) => x.section);
         return Object.entries(groupedByChapter).map(([chapter, lections]) => {
           return (
@@ -29,30 +29,18 @@ export const LessonList: React.FC = () => {
                 }}
               >
                 {lections.map((x) => (
-                  <LessonCard
+                  <LectureCard
                     key={x.title}
-                    lesson={x}
+                    lecture={x}
                     onSelectFav={() => onSelectFav(x.slug)}
-                    isFav={favLessons.some((y) => y.slug === x.slug)}
+                    isFav={favLectures.some((y) => y.slug === x.slug)}
                   />
                 ))}
               </div>
-              {/* <CompactGrid
-                containerClassName={`auto-rows-[300px] md:auto-rows-[200px] md:gap-6 md:p-6`}
-                data={lections.map((x) => ({ ...x, id: x.title }))}
-                renderItem={(x) => (
-                  <LessonCard
-                    key={x.title}
-                    lesson={x}
-                    onSelectFav={() => onSelectFav(x.slug)}
-                    isFav={favLessons.some((y) => y.slug === x.slug)}
-                  />
-                )}
-              /> */}
             </section>
           );
         });
       }}
-    </LessonServiceProvider>
+    </LectureServiceProvider>
   );
 };

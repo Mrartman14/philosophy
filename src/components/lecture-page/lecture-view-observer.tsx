@@ -2,25 +2,25 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { LessonPageData } from "@/entities/page-data";
+import { LecturePageData } from "@/entities/page-data";
 import { FavButton } from "@/components/shared/fav-button/fav-button";
-import { lessonService } from "@/services/lesson-service/lesson-service";
+import { lectureService } from "@/services/lecture-service/lecture-service";
 
-export const LectureViewObserver: React.FC<{ lecture: LessonPageData }> = ({
+export const LectureViewObserver: React.FC<{ lecture: LecturePageData }> = ({
   lecture,
 }) => {
   const [isFav, setIsFav] = useState(false);
 
   const handleFetchFav = useCallback(() => {
-    return lessonService.checkIsLessonFav(lecture.slug).then(setIsFav);
+    return lectureService.checkIsLectureFav(lecture.slug).then(setIsFav);
   }, [lecture.slug]);
 
   const onSelectFav = useCallback(() => {
-    return lessonService.setFavLessonId(lecture.slug).then(handleFetchFav);
+    return lectureService.setFavLectureId(lecture.slug).then(handleFetchFav);
   }, [lecture.slug, handleFetchFav]);
 
   useEffect(() => {
-    lessonService.setLastViewedLessonId(lecture.slug);
+    lectureService.setLastViewedLectureId(lecture.slug);
   }, [lecture.slug]);
 
   useEffect(() => {

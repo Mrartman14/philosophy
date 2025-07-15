@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { getAdjacentLessonsBySlug } from "@/api/pages-api";
+import { getAdjacentLecturesBySlug } from "@/api/pages-api";
 // import { Mention } from "@/components/shared/mention";
 import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
@@ -18,7 +18,7 @@ type LayoutProps = React.PropsWithChildren<{
 export default async function LectureLayout({ params, children }: LayoutProps) {
   const { slug } = await params;
 
-  const { curr: data, prev, next } = await getAdjacentLessonsBySlug(slug);
+  const { curr: data, prev, next } = await getAdjacentLecturesBySlug(slug);
   if (!data || data.sources.length === 0) return notFound();
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";

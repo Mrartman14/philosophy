@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
-import { getLessonList, getLessonBySlug } from "@/api/pages-api";
+import { getLectureList, getLectureBySlug } from "@/api/pages-api";
 
 interface LecturePageParams {
   slug: string;
 }
 
 export async function generateStaticParams(): Promise<LecturePageParams[]> {
-  const lessons = await getLessonList();
-  const result = lessons.flatMap((page) => ({
+  const lectures = await getLectureList();
+  const result = lectures.flatMap((page) => ({
     slug: page.slug,
   }));
   return result;
@@ -23,7 +23,7 @@ export async function generateMetadata({
   params,
 }: GenerateMetadataProps): Promise<Metadata> {
   const { slug } = await params;
-  const data = await getLessonBySlug(slug);
+  const data = await getLectureBySlug(slug);
 
   const result: Metadata = {
     title: data?.title,
@@ -37,9 +37,9 @@ interface PageProps {
 }
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  const lesson = await getLessonBySlug(slug);
-  const firstSource = lesson?.sources[0];
+  const lecture = await getLectureBySlug(slug);
+  const firstSource = lecture?.sources[0];
 
-  if (!lesson || !firstSource) return notFound();
+  if (!lecture || !firstSource) return notFound();
   redirect(`/lectures/${slug}/sources/${firstSource.slug}`);
 }
