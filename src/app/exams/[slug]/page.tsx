@@ -69,7 +69,7 @@ export default async function Page({ params }: PageProps) {
         </div>
         <div className="grid content-start gap-4 order-1 md:order-2">
           <div className="md:border-b md:border-(--border) md:p-4 max-md:absolute p-0.5 max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
-            <h1 className="text-3xl md:text-5xl font-bold">{data.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-black">{data.title}</h1>
           </div>
         </div>
       </div>

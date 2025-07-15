@@ -31,10 +31,6 @@
   --text-pane: #00000092;
 }
 
-.spoiler {
-  @apply select-none cursor-help blur-sm transition-all duration-300 active:cursor-default active:blur-none;
-}
-
 .fancy-link {
   position: relative;
 }
@@ -56,6 +52,14 @@
 /** TAILWIND PROSE STYLES OVERRIDE */
 .tractate {
   @apply prose prose-slate dark:prose-invert md:prose-xl max-w-full prose-p:text-justify;
+}
+
+.tractate > :first-child {
+  margin-top: 0;
+}
+
+.tractate .spoiler {
+  @apply select-none cursor-help blur-sm transition-all duration-300 active:cursor-default active:blur-none;
 }
 
 .tractate .subtitle {

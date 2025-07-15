@@ -68,7 +68,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
             <h4 className="md:text-(--description) text-lg tracking-wider">
               {data.section}
             </h4>
-            <h1 className="text-3xl md:text-5xl font-bold">{data.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-black">{data.title}</h1>
           </div>
           {data.videoSrc && (
             <iframe

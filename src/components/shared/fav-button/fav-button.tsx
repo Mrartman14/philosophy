@@ -15,7 +15,7 @@ export const FavButton: React.FC<FavButtonProps> = ({
 }) => {
   return (
     <button
-      className={`flex items-center justify-center w-8 h-8 rounded-full bg-(--text-pane) ${className}`}
+      className={`flex items-center justify-center px-2 py-2 rounded-full bg-(--text-pane) ${className}`}
       onClick={onSelect}
     >
       {isFav ? <BookmarkFilledIcon /> : <BookmarkIcon />}

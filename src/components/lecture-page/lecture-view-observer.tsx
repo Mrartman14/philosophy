@@ -31,7 +31,7 @@ export const LectureViewObserver: React.FC<{ lecture: LecturePageData }> = ({
     <FavButton
       isFav={isFav}
       onSelect={onSelectFav}
-      className={`${isFav ? "" : ""}`}
+      className={`px-3 py-3 ${isFav ? "" : ""}`}
     />
   );
 };

@@ -13,7 +13,7 @@ export const LecturesDashboard: React.FC = () => {
       {({ favLectures, lastViewedLectures, lectures, onSelectFav }) => (
         <>
           <section className="flex flex-col gap-4">
-            <h2 className="text-3xl font-bold pb-2 p-4 border-b border-(--border) underline">
+            <h2 className="text-3xl font-extrabold pb-2 p-4 border-b border-(--border) underline">
               Избранное
             </h2>
             <motion.div
@@ -55,7 +55,7 @@ export const LecturesDashboard: React.FC = () => {
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="text-3xl font-bold pb-2 p-4 border-b border-(--border) underline">
+            <h2 className="text-3xl font-extrabold pb-2 p-4 border-b border-(--border) underline">
               История посещений
             </h2>
             <div className="width-full p-4 gap-4 flex flex-nowrap overflow-scroll">
@@ -72,8 +72,8 @@ export const LecturesDashboard: React.FC = () => {
           </section>
 
           <section className="flex flex-col gap-4">
-            <Link href="/lectures" className="font-bold underline">
-              <h2 className="text-3xl font-bold flex gap-2 px-4 pb-2 border-b border-b-(--border)">
+            <Link href="/lectures" className="font-extrabold underline">
+              <h2 className="text-3xl flex gap-2 px-4 pb-2 border-b border-b-(--border)">
                 <span className="fancy-link">Все лекции</span>
               </h2>
             </Link>
