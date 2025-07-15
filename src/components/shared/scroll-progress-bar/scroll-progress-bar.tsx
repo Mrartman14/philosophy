@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import "./scroll-progress-bar.css";
+
 type ScrollProgressBarProps = {
   className?: string;
   targetElementId: string;
@@ -52,11 +54,13 @@ export const ScrollProgressBar: React.FC<ScrollProgressBarProps> = ({
   }, [targetElementId]);
 
   return (
-    <div className={`${progress > 0 ? "h-1" : "h-0"} ${className}`}>
-      <div
-        className="h-full bg-(--primary)"
-        style={{ width: `${progress}%` }}
-      />
-    </div>
+    <progress
+      max={100}
+      value={progress}
+      aria-label="reading progress"
+      className={`scroll-progress-bar w-full bg-transparent overflow-hidden ${
+        progress > 0 ? "h-1" : "h-0"
+      } ${className}`}
+    />
   );
 };

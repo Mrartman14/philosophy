@@ -15,7 +15,7 @@ export const LectureCard: React.FC<{
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
-    <div
+    <article
       className={`relative group grid grid-rows-[1fr_auto] bg-(--background) ${className}`}
     >
       <Link
@@ -31,26 +31,30 @@ export const LectureCard: React.FC<{
           className="sensitive-image object-cover transition-transform duration-500 scale-150 group-hover:scale-100 group-focus:scale-100"
         />
       </Link>
-      <div className="absolute top-2 right-2 flex gap-2 transition-all">
-        <ShareButton
-          shareData={{ title: lecture.title }}
-          className="md:hidden group-hover:flex group-focus:flex md:text-(--description) md:hover:text-inherit"
-        />
-        <FavButton
-          isFav={isFav}
-          onSelect={onSelectFav}
-          className={`${
-            !isFav
-              ? "md:hidden md:text-(--description) md:hover:text-inherit"
-              : "text-(--primary)"
-          } group-hover:flex group-focus:flex`}
-        />
-      </div>
+      <menu className="absolute top-2 right-2 flex gap-2 transition-all">
+        <li>
+          <ShareButton
+            shareData={{ title: lecture.title }}
+            className="md:hidden group-hover:flex group-focus:flex md:text-(--description) md:hover:text-inherit"
+          />
+        </li>
+        <li>
+          <FavButton
+            isFav={isFav}
+            onSelect={onSelectFav}
+            className={`${
+              !isFav
+                ? "md:hidden md:text-(--description) md:hover:text-inherit"
+                : "text-(--primary)"
+            } group-hover:flex group-focus:flex`}
+          />
+        </li>
+      </menu>
       <div className="text-xl pt-2 px-0 overflow-hidden flex items-center gap-1 justify-between">
         <h3 className="font-semibold text-ellipsis overflow-hidden whitespace-nowrap">
           {lecture.title}
         </h3>
       </div>
-    </div>
+    </article>
   );
 };

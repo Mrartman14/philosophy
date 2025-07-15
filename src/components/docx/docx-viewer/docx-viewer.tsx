@@ -5,8 +5,8 @@ import {
 import { PageDataSource } from "@/entities/page-data";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
-import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { DocxViewerAside } from "./docx-viewer-aside";
+import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar/scroll-progress-bar";
 // import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
 interface DocxViewerProps {
@@ -83,7 +83,7 @@ export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
           {/* {loading ? (
             <SkeletonTextBlock rows={50} />
           ) : ( */}
-          <article
+          <section
             id={ARTICLE_ID}
             className="w-full tractate"
             dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}

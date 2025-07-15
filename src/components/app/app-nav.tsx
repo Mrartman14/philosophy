@@ -32,41 +32,43 @@ export const AppNav: React.FC<AppNavProps> = () => {
           <ul className={contentListClassName}>
             {Object.entries(groupedByChapter).map(([chapter, data]) => {
               return (
-                <div key={chapter} className="static w-full grid grid-cols-1">
+                <li key={chapter} className="static w-full grid grid-cols-1">
                   <h6
                     className={`sticky top-0 text-(--description) bg-(--background) text-lg p-2 border-b-1 border-b-(--border) rounded text-right tracking-wider`}
                   >
                     {chapter}
                   </h6>
-                  {data.map((item) => {
-                    const href = `/lectures/${item.slug}`;
-                    const isActive = pathname === href;
-                    const lClasses = `${
-                      isActive ? "text-(--primary)" : ""
-                    } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
+                  <ol>
+                    {data.map((item) => {
+                      const href = `/lectures/${item.slug}`;
+                      const isActive = pathname === href;
+                      const lClasses = `${
+                        isActive ? "text-(--primary)" : ""
+                      } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
 
-                    return (
-                      <li key={href}>
-                        <Link href={href} className={lClasses}>
-                          <span className="group-hover:underline group-focus:underline">
-                            {item.order}. {item.title}
-                          </span>
-                          <div className="flex gap-1 items-center flex-wrap">
-                            {item.mentions.map((m, i, arr) => (
-                              <span
-                                key={m}
-                                className="flex items-center text-xs text-(--description)"
-                              >
-                                {m}
-                                {i < arr.length - 1 && ","}
-                              </span>
-                            ))}
-                          </div>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </div>
+                      return (
+                        <li key={href}>
+                          <Link href={href} className={lClasses}>
+                            <span className="group-hover:underline group-focus:underline">
+                              {item.order}. {item.title}
+                            </span>
+                            <div className="flex gap-1 items-center flex-wrap">
+                              {item.mentions.map((m, i, arr) => (
+                                <span
+                                  key={m}
+                                  className="flex items-center text-xs text-(--description)"
+                                >
+                                  {m}
+                                  {i < arr.length - 1 && ","}
+                                </span>
+                              ))}
+                            </div>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </li>
               );
             })}
           </ul>
@@ -81,7 +83,7 @@ export const AppNav: React.FC<AppNavProps> = () => {
           </NavigationMenu.Icon>
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={contentAnimationClassName}>
-          <ul className={contentListClassName}>
+          <ol className={contentListClassName}>
             {exams.map((item) => {
               const href = `/exams/${item.slug}`;
               const isActive = pathname === href;
@@ -102,7 +104,7 @@ export const AppNav: React.FC<AppNavProps> = () => {
                 </li>
               );
             })}
-          </ul>
+          </ol>
         </NavigationMenu.Content>
       </NavigationMenu.Item>
     </>

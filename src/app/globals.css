@@ -11,6 +11,16 @@
   }
 }
 
+/* TODO:
+ попробовать заменить какой-то поповер на нативный https://doka.guide/html/popover/
+ и тултип https://doka.guide/a11y/role-tooltip/
+*/
+
+/* вместо модалок использовать нативный dialog https://doka.guide/html/dialog/ */
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
 :root {
   --header-height: 50px;
 

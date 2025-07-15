@@ -28,10 +28,14 @@ export const LectureViewObserver: React.FC<{ lecture: LecturePageData }> = ({
   }, [handleFetchFav]);
 
   return (
-    <FavButton
-      isFav={isFav}
-      onSelect={onSelectFav}
-      className={`px-3 py-3 ${isFav ? "" : ""}`}
-    />
+    <menu>
+      <li>
+        <FavButton
+          isFav={isFav}
+          onSelect={onSelectFav}
+          className={`px-3 py-3 ${isFav ? "" : ""}`}
+        />
+      </li>
+    </menu>
   );
 };
