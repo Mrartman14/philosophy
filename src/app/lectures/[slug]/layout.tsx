@@ -6,7 +6,7 @@ import { getAdjacentLessonsBySlug } from "@/api/pages-api";
 import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 // import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
-import { LessonViewObserver } from "@/components/observers/lesson-view-observer";
+import { LectureViewObserver } from "@/components/lecture-page/lecture-view-observer";
 
 interface LecturePageLayoutParams {
   slug: string;
@@ -43,7 +43,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
       <div
         className={`w-full max-w-full grid grid-cols-1 md:grid-cols-2 relative overflow-hidden`}
       >
-        <div className="p-4 order-2 md:order-2">
+        <div className="p-4 order-2 md:order-2 md:border-l md:border-(--border)">
           <div className={`relative grid grid-cols-1 aspect-square`}>
             <Image
               fill
@@ -51,17 +51,20 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
               alt={`Обложка урока "${data.title}"`}
               className="sensitive-image"
             />
+            <div className="absolute top-2 right-2">
+              <LectureViewObserver lecture={data} />
+            </div>
           </div>
         </div>
 
         <div className="grid content-start gap-4 order-1 md:order-1 md:p-4">
           <div
-            className="hidden dark:block absolute w-[100px] h-[100px] top-[-50px] left-0 z-[-1] blur-[100px]"
+            className="hidden dark:block absolute h-[100px] z-[-1] blur-[100px] top-0 md:top-[-50px] left-1/2 md:left-0 w-full md:w-[100px] max-md:-translate-x-1/2"
             style={{
               background: `url(${imgSrc}) center/cover no-repeat`,
             }}
           />
-          <div className="max-md:absolute p-0.5 max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
+          <div className="max-md:absolute max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
             <h4 className="md:text-(--description) text-lg tracking-wider">
               {data.section}
             </h4>
@@ -111,7 +114,6 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
         </div>
         <ScrollButton className="z-10 sticky bottom-2 p-4 flex" />
       </div>
-      <LessonViewObserver slug={slug} />
     </>
   );
 }

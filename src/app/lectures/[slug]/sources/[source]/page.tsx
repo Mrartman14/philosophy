@@ -56,7 +56,7 @@ export default async function Page({ params }: PageProps) {
 
   const roundedClasses = `rounded-lg rounded-bl-[0px] rounded-br-[0px]`;
   return (
-    <Tabs.Root value={source} className={`w-full md:mt-[-40px]`}>
+    <Tabs.Root value={source} className={`w-full md:mt-[-42px]`}>
       <nav className="w-full grid grid-cols-1 overflow-x-auto">
         <Tabs.List
           render={
