@@ -19,6 +19,11 @@ export const AppNav: React.FC<AppNavProps> = () => {
     [lectures]
   );
 
+  function checkActivePath(path: string) {
+    if (path === "/" && pathname !== path) return false;
+    return pathname === path || pathname.startsWith(path + "/");
+  }
+
   return (
     <>
       <NavigationMenu.Item className="flex items-stretch justify-center">
@@ -41,7 +46,8 @@ export const AppNav: React.FC<AppNavProps> = () => {
                   <ol>
                     {data.map((item) => {
                       const href = `/lectures/${item.slug}`;
-                      const isActive = pathname === href;
+                      // const isActive = pathname === href;
+                      const isActive = checkActivePath(href);
                       const lClasses = `${
                         isActive ? "text-(--primary)" : ""
                       } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
