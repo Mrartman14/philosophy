@@ -1,1 +1,0 @@
-.compact-grid-item{display:grid;align-content:stretch}@media (min-width:768px){.compact-grid-item{grid-column-start:var(--col-start);grid-row-start:var(--row-start);grid-column-end:span var(--col-span);grid-row-end:span var(--row-span)}}
