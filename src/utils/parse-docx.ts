@@ -95,6 +95,8 @@ export async function processSource(
         "p[style-name='spoiler'] => button.spoiler",
         // "p[style-name='Quote'] => q:fresh",
         "p[style-name='Quote'] => blockquote:fresh",
+        "r[style-name='InlineCode'] => code",
+        "p[style-name='FencedCode'] => pre > code:fresh",
         // "p[style-name='Intense Quote'] => blockquote:fresh",
         "highlight[color='yellow'] => mark.bg-amber-700",
         "highlight[color='green'] => mark.bg-green-700",
