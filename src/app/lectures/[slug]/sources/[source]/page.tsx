@@ -32,10 +32,11 @@ export async function generateMetadata({
   params,
 }: GenerateMetadataProps): Promise<Metadata> {
   const { slug, source } = await params;
+  const lectureData = await getLectureBySlug(slug);
   const data = await getLectureSource(slug, source);
 
   const result: Metadata = {
-    title: data?.name,
+    title: `${lectureData?.title} • ${data?.name}`,
   };
 
   return result;

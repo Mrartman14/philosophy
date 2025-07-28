@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState, useMemo } from "react";
 
-type SliderProps = {
+type MarqueeProps = {
   trackClassName?: string;
   itemClassName?: string;
   pxPerSeconds?: number;
   items: React.ReactNode[];
 };
-export const Slider: React.FC<SliderProps> = ({
+export const Marquee: React.FC<MarqueeProps> = ({
   items,
   pxPerSeconds = 1,
   trackClassName,
@@ -58,7 +58,13 @@ export const Slider: React.FC<SliderProps> = ({
       }
     };
 
-    el.addEventListener("scroll", onScroll);
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+
+    if (!prefersReducedMotion) {
+      el.addEventListener("scroll", onScroll);
+    }
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
 

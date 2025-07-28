@@ -30,7 +30,7 @@ export const LectureList: React.FC = () => {
               >
                 {lections.map((x) => (
                   <LectureCard
-                    key={x.title}
+                    key={x.slug}
                     lecture={x}
                     onSelectFav={() => onSelectFav(x.slug)}
                     isFav={favLectures.some((y) => y.slug === x.slug)}

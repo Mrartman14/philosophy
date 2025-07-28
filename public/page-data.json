@@ -437,6 +437,12 @@
           "name": "Конспект"
         },
         {
+          "path": "/lectures/lecture-16/lesson-16-llm.docx",
+          "type": "docx",
+          "slug": "llm",
+          "name": "LLM"
+        },
+        {
           "path": "/lectures/lecture-16/lesson-16-theses.docx",
           "type": "docx",
           "slug": "theses",
@@ -688,7 +694,7 @@
         }
       ],
       "cover": "/lectures/lecture-24/lesson-24-preview.jpeg",
-      "section": "Античная этика",
+      "section": "Христианская этика",
       "mentions": [
         "Секст Эмпирик"
       ]
@@ -718,7 +724,7 @@
         }
       ],
       "cover": "/lectures/lecture-25/lesson-25-preview.jpeg",
-      "section": "Античная этика",
+      "section": "Христианская этика",
       "mentions": [
         "Иисус Христос",
         "Апостол Павел"
@@ -749,7 +755,7 @@
         }
       ],
       "cover": "/lectures/lecture-26/lesson-26-preview.jpeg",
-      "section": "Античная этика",
+      "section": "Христианская этика",
       "mentions": [
         "Апостол Павел",
         "Джордж Агамбен"
@@ -780,7 +786,7 @@
         }
       ],
       "cover": "/lectures/lecture-27/lesson-27-preview.jpeg",
-      "section": "Античная этика",
+      "section": "Христианская этика",
       "mentions": [
         "Савеллий",
         "Тертуллиан",
@@ -817,7 +823,7 @@
         }
       ],
       "cover": "/lectures/lecture-28/lesson-28-preview.jpeg",
-      "section": "Античная этика",
+      "section": "Христианская этика",
       "mentions": [
         "Василий Великий",
         "Григорий Богослов",
@@ -849,7 +855,7 @@
         }
       ],
       "cover": "/lectures/lecture-29/lesson-29-preview.jpeg",
-      "section": "Античная этика",
+      "section": "Христианская этика",
       "mentions": [
         "Августин Аврелий",
         "Рене Декарт"
@@ -1011,6 +1017,35 @@
         }
       ],
       "cover": "/lectures/lecture-35/lesson-35-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": [
+        "Юм"
+      ]
+    },
+    {
+      "title": "Другие",
+      "order": 36,
+      "slug": "lecture-36",
+      "sources": [
+        {
+          "path": "/lectures/lecture-36/lesson-36.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-36/lesson-36-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": [
+        "Юм"
+      ]
+    },
+    {
+      "title": "???",
+      "order": 37,
+      "slug": "lecture-37",
+      "sources": [],
+      "cover": "/lectures/lecture-37/lesson-37-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": [
         "Юм"

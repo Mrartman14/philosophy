@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { Slider } from "../shared/slider/slider";
+import { Marquee } from "../shared/marquee";
 import { LectureCard } from "../lecture/lecture-card";
 import { LectureServiceProvider } from "../providers/lecture-service-provider";
 
@@ -77,7 +77,7 @@ export const LecturesDashboard: React.FC = () => {
                 <span className="fancy-link">Все лекции</span>
               </h2>
             </Link>
-            <Slider
+            <Marquee
               trackClassName="pl-4 gap-4"
               itemClassName="shrink-0 grow-0 basis-[200px] md:basis-[300px]"
               items={lectures.map((x) => (
