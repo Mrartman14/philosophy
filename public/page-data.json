@@ -1041,10 +1041,17 @@
       ]
     },
     {
-      "title": "???",
+      "title": "Киноклуб",
       "order": 37,
       "slug": "lecture-37",
-      "sources": [],
+      "sources": [
+        {
+          "path": "/lectures/lecture-37/lesson-37.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
       "cover": "/lectures/lecture-37/lesson-37-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": [

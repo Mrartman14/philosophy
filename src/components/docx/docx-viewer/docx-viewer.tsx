@@ -1,11 +1,8 @@
-import {
-  ParsedData,
-  //  processSource
-} from "@/utils/parse-docx";
+import { ParsedData } from "@/utils/parse-docx";
 import { PageDataSource } from "@/entities/page-data";
+import { DocxViewerAside } from "./docx-viewer-aside";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
-import { DocxViewerAside } from "./docx-viewer-aside";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar/scroll-progress-bar";
 // import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
@@ -14,30 +11,6 @@ interface DocxViewerProps {
   parsedData: ParsedData;
 }
 export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
-  // const [loading, setLoading] = useState(true);
-  // const [parsedData, setParsedData] = useState<ParsedData>({
-  //   headingsData: [],
-  //   htmlString: "",
-  //   id: data.name,
-  //   fileMeta: {
-  //     fileName: null,
-  //     fileSizeInBytes: null,
-  //   },
-  //   meta: {
-  //     readingTime: 0,
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   withMinDelay(processSource(data), 300)
-  //     .then((x) => {
-  //       setParsedData(x);
-  //     })
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  // }, [data]);
-
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const sourceUrl = `${baseUrl}${data.path}`;
 
@@ -63,12 +36,6 @@ export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
               {parsedData.meta.readingTime} мин.
             </span>
             <div className="flex items-center gap-4">
-              {/* {selectedData.meta.lastModified && (
-              <span className="flex items-center gap-2 text-(--description)">
-                <DocUpdateIcon />{" "}
-                {getRelativeDate(selectedData.meta.lastModified)}
-              </span>
-            )} */}
               <a
                 download
                 href={sourceUrl}
@@ -80,15 +47,11 @@ export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
               </a>
             </div>
           </div>
-          {/* {loading ? (
-            <SkeletonTextBlock rows={50} />
-          ) : ( */}
           <section
             id={ARTICLE_ID}
             className="w-full tractate"
             dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
           />
-          {/* )} */}
         </div>
         <DocxViewerAside parsedData={parsedData} />
       </div>

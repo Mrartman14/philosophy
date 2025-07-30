@@ -1,19 +1,11 @@
+import path from "path";
+import fs from "fs/promises";
 import { JSDOM } from "jsdom";
 import { convertToHtml } from "mammoth";
-// import { loadAsync } from "jszip";
 import createDOMPurify from "dompurify";
 
-// import {
-//   parseDocxTitle,
-//   parseDocxVersion,
-//   parseDocxCreator,
-//   parseDocxKeywords,
-//   parseDocxModifiedDate,
-//   parseDocxLastModifiedBy,
-// } from "./get-docx-metadata";
 import { PageData } from "@/entities/page-data";
 import { generateAnchorId } from "./generate-anchor-id";
-import { getFilenameFromContentDisposition } from "./files";
 import { calculateReadingTime } from "./calculate-reading-time";
 
 export type ParsedHeadingData = {
@@ -31,56 +23,22 @@ export type ParsedData = {
     readingTime: number;
   };
   fileMeta: {
-    fileName: string | null;
     fileSizeInBytes: number | null;
   };
-  // docxMeta?: {
-  //   title: string | null;
-  //   createdBy: string | null;
-  //   lastModifiedBy: string | null;
-  //   lastModified: Date | null;
-  //   version: string | null;
-  //   keywords: string | null;
-  // };
 };
 
 export async function processSource(
-  data: PageData["sources"][number],
-  onServer = false
+  data: PageData["sources"][number]
 ): Promise<ParsedData> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const localPath = path.join(process.cwd(), "public", data.path);
+  const bufferLike = await fs.readFile(localPath);
 
-  const url = `${baseUrl}${data.path}`;
-  const response = await fetch(url);
-  const contentDisposition = response.headers.get("Content-Disposition");
-  const fileName = getFilenameFromContentDisposition(contentDisposition);
-
-  const docxArrayBuffer = await response.arrayBuffer();
-  const fileSizeInBytes = docxArrayBuffer.byteLength;
-
-  // const zip = await loadAsync(docxArrayBuffer);
-  // const coreXml = await zip.file("docProps/core.xml")?.async("text");
-  // const lastModified = coreXml ? parseDocxModifiedDate(coreXml) : null;
-  // const version = coreXml ? parseDocxVersion(coreXml) : null;
-  // const keywords = coreXml ? parseDocxKeywords(coreXml) : null;
-  // const title = coreXml ? parseDocxTitle(coreXml) : null;
-  // const createdBy = coreXml ? parseDocxCreator(coreXml) : null;
-  // const lastModifiedBy = coreXml ? parseDocxLastModifiedBy(coreXml) : null;
-
-  const options: { buffer?: Buffer<ArrayBuffer>; arrayBuffer?: ArrayBuffer } =
-    {};
-
-  if (onServer) {
-    const docxBuffer = Buffer.from(docxArrayBuffer);
-    options.buffer = docxBuffer;
-  } else {
-    options.arrayBuffer = docxArrayBuffer;
-  }
+  const buffer = Buffer.from(bufferLike);
+  const fileSizeInBytes = buffer.byteLength;
 
   const { value: dirtyHtmlString, messages } = await convertToHtml(
     {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...(options as any),
+      buffer,
     },
     {
       includeEmbeddedStyleMap: false,
@@ -122,50 +80,25 @@ export async function processSource(
     });
   }
 
-  let htmlString: string;
-  let readingTime: number;
-  let headingsData: ParsedData["headingsData"];
+  const jsDom = new JSDOM(dirtyHtmlString);
+  const parsedDocument = jsDom.window.document;
 
-  if (onServer) {
-    const jsDom = new JSDOM(dirtyHtmlString);
-    const parsedDocument = jsDom.window.document;
+  const headingsData: ParsedData["headingsData"] =
+    prepareHeadings(parsedDocument);
 
-    headingsData = prepareHeadings(parsedDocument);
-
-    // console.log(headingsData);
-
-    const modifiedHtml = parsedDocument.body.innerHTML;
-    const DOMPurify = createDOMPurify(jsDom.window);
-    htmlString = DOMPurify.sanitize(modifiedHtml);
-
-    readingTime = calculateReadingTime(htmlString, 200);
-  } else {
-    const cleanHtmlString = createDOMPurify().sanitize(dirtyHtmlString);
-    const parser = new DOMParser();
-    const parsedDocument = parser.parseFromString(cleanHtmlString, "text/html");
-    headingsData = prepareHeadings(parsedDocument);
-    htmlString = parsedDocument.body.innerHTML;
-
-    readingTime = calculateReadingTime(htmlString, 200);
-  }
+  const modifiedHtml = parsedDocument.body.innerHTML;
+  const DOMPurify = createDOMPurify(jsDom.window);
+  const htmlString = DOMPurify.sanitize(modifiedHtml);
+  const readingTime = calculateReadingTime(htmlString, 200);
 
   return {
     id: data.name,
     htmlString,
     headingsData,
-    // docxMeta: {
-    //   title,
-    //   version,
-    //   keywords,
-    //   createdBy,
-    //   lastModified,
-    //   lastModifiedBy,
-    // },
     meta: {
       readingTime,
     },
     fileMeta: {
-      fileName,
       fileSizeInBytes,
     },
   };
@@ -205,4 +138,4 @@ function prepareHeadings(parsedDocument: Document): ParsedHeadingData[] {
   return result;
 }
 
-const commentReferenceClassName = "docx-comment-reference";
+const commentReferenceClassName = "docx-comment-reference" as const;

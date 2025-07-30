@@ -53,7 +53,7 @@ export default async function Page({ params }: PageProps) {
 
   if (!data || !lecture) return notFound();
 
-  const parsedData = await processSource(data, true);
+  const parsedData = await processSource(data);
 
   const roundedClasses = `rounded-lg rounded-bl-[0px] rounded-br-[0px]`;
   return (

@@ -48,7 +48,7 @@ export default async function Page({ params }: PageProps) {
   if (!data) {
     return null;
   }
-  const parsedData = await processSource(data.sources[0], true);
+  const parsedData = await processSource(data.sources[0]);
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const imgSrc = `${basePath}${data.cover}`;

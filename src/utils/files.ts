@@ -6,18 +6,3 @@ export function formatFileSize(bytes: number) {
   const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
   return `${size} ${units[i]}`;
 }
-
-export function getFilenameFromContentDisposition(
-  contentDisposition: string | null
-) {
-  if (contentDisposition && contentDisposition.includes("filename=")) {
-    const filename = contentDisposition
-      .split("filename=")[1]
-      .replace(/['"]/g, "")
-      .trim();
-
-    return filename;
-  }
-
-  return null;
-}

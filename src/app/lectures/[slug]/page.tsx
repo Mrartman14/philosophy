@@ -38,8 +38,13 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const lecture = await getLectureBySlug(slug);
-  const firstSource = lecture?.sources[0];
 
-  if (!lecture || !firstSource) return notFound();
-  redirect(`/lectures/${slug}/sources/${firstSource.slug}`);
+  if (!lecture) {
+    return notFound();
+  }
+
+  const firstSource = lecture?.sources[0];
+  if (firstSource) {
+    redirect(`/lectures/${slug}/sources/${firstSource.slug}`);
+  }
 }
