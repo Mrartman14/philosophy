@@ -88,8 +88,9 @@ export async function processSource(
 
   const modifiedHtml = parsedDocument.body.innerHTML;
   const DOMPurify = createDOMPurify(jsDom.window);
-  const htmlString = DOMPurify.sanitize(modifiedHtml);
+  let htmlString = DOMPurify.sanitize(modifiedHtml);
   const readingTime = calculateReadingTime(htmlString, 200);
+  htmlString = prepareVideo(htmlString);
 
   return {
     id: data.name,
@@ -134,6 +135,20 @@ function prepareHeadings(parsedDocument: Document): ParsedHeadingData[] {
 
     stack.push(heading);
   }
+
+  return result;
+}
+
+function prepareVideo(htmlStr: string) {
+  const localPath = process.env.NEXT_PUBLIC_BASE_PATH;
+
+  const result = htmlStr.replace(
+    /\[\[VIDEO:\s*(.*?)\s*\]\]/g,
+    (_match, filename) => {
+      const videoTag = `<video controls src="${localPath}${filename}"></video>`;
+      return videoTag;
+    }
+  );
 
   return result;
 }
