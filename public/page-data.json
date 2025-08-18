@@ -1057,6 +1057,53 @@
       "mentions": [
         "Юм"
       ]
+    },
+    {
+      "title": "Мотив к действию",
+      "order": 38,
+      "slug": "lecture-38",
+      "sources": [
+        {
+          "path": "/lectures/lecture-38/lesson-38.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-38/lesson-38-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": [
+        "Юм"
+      ]
+    },
+    {
+      "title": "Проблема-641",
+      "order": 39,
+      "slug": "lecture-39",
+      "sources": [
+        {
+          "path": "/lectures/lecture-39/lesson-39.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-39/lesson-39-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": [
+        "Юм"
+      ]
+    },
+    {
+      "title": "???",
+      "order": 40,
+      "slug": "lecture-40",
+      "sources": [],
+      "cover": "/lectures/lecture-40/lesson-40-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": [
+        "Юм"
+      ]
     }
   ]
 }
