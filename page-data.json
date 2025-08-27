@@ -1095,11 +1095,29 @@
       ]
     },
     {
-      "title": "???",
+      "title": "5 причин",
       "order": 40,
       "slug": "lecture-40",
-      "sources": [],
+      "sources": [
+        {
+          "path": "/lectures/lecture-40/lesson-40.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
       "cover": "/lectures/lecture-40/lesson-40-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": [
+        "Юм", "Локк", "Гоббс", "Жан-Жак Руссо"
+      ]
+    },
+     {
+      "title": "???",
+      "order": 41,
+      "slug": "lecture-41",
+      "sources": [],
+      "cover": "/lectures/lecture-41/lesson-41-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": [
         "Юм"
