@@ -1112,16 +1112,38 @@
         "Юм", "Локк", "Гоббс", "Жан-Жак Руссо"
       ]
     },
-     {
-      "title": "???",
+    {
+      "title": "Социальное",
       "order": 41,
       "slug": "lecture-41",
-      "sources": [],
+      "sources": [
+        {
+          "path": "/lectures/lecture-41/lesson-41.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-41/lesson-41-llm.docx",
+          "type": "docx",
+          "slug": "llm",
+          "name": "LLM"
+        }
+      ],
       "cover": "/lectures/lecture-41/lesson-41-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": [
         "Юм"
       ]
+    },
+    {
+      "title": "???",
+      "order": 42,
+      "slug": "lecture-42",
+      "sources": [],
+      "cover": "/lectures/lecture-42/lesson-42-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": []
     }
   ]
 }
