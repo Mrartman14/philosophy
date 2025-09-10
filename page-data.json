@@ -1146,6 +1146,12 @@
           "type": "docx",
           "slug": "abstract",
           "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-42/lesson-42-llm.docx",
+          "type": "docx",
+          "slug": "llm",
+          "name": "LLM"
         }
       ],
       "cover": "/lectures/lecture-42/lesson-42-preview.jpeg",
