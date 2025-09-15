@@ -26,8 +26,8 @@
         {
           "path": "/lectures/lecture-1/lesson-1.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-1/lesson-1-llm.docx",
@@ -62,8 +62,8 @@
         {
           "path": "/lectures/lecture-2/lesson-2.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-2/lesson-2-theses.docx",
@@ -92,8 +92,8 @@
         {
           "path": "/lectures/lecture-3/lesson-3.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-3/lesson-3-theses.docx",
@@ -117,8 +117,8 @@
         {
           "path": "/lectures/lecture-4/lesson-4.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-4/lesson-4-theses.docx",
@@ -143,8 +143,8 @@
         {
           "path": "/lectures/lecture-5/lesson-5.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-5/lesson-5-theses.docx",
@@ -167,8 +167,8 @@
         {
           "path": "/lectures/lecture-6/lesson-6.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-6/lesson-6-theses.docx",
@@ -191,8 +191,8 @@
         {
           "path": "/lectures/lecture-7/lesson-7.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-7/lesson-7-theses.docx",
@@ -217,8 +217,8 @@
         {
           "path": "/lectures/lecture-8/lesson-8.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-8/lesson-8-theses.docx",
@@ -244,8 +244,8 @@
         {
           "path": "/lectures/lecture-9/lesson-9.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-9/lesson-9-theses.docx",
@@ -269,8 +269,8 @@
         {
           "path": "/lectures/lecture-10/lesson-10.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-10/lesson-10-theses.docx",
@@ -293,8 +293,8 @@
         {
           "path": "/lectures/lecture-11/lesson-11.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-11/lesson-11-theses.docx",
@@ -317,8 +317,8 @@
         {
           "path": "/lectures/lecture-12/lesson-12.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-12/lesson-12-theses.docx",
@@ -342,8 +342,8 @@
         {
           "path": "/lectures/lecture-13/lesson-13.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-13/lesson-13-llm.docx",
@@ -372,8 +372,8 @@
         {
           "path": "/lectures/lecture-14/lesson-14.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-14/lesson-14-llm.docx",
@@ -402,8 +402,8 @@
         {
           "path": "/lectures/lecture-15/lesson-15.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-15/lesson-15-llm.docx",
@@ -433,8 +433,8 @@
         {
           "path": "/lectures/lecture-16/lesson-16.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-16/lesson-16-llm.docx",
@@ -465,8 +465,8 @@
         {
           "path": "/lectures/lecture-17/lesson-17.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-17/lesson-17-llm.docx",
@@ -495,8 +495,8 @@
         {
           "path": "/lectures/lecture-18/lesson-18.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-18/lesson-18-llm.docx",
@@ -526,8 +526,8 @@
         {
           "path": "/lectures/lecture-19/lesson-19.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-19/lesson-19-llm.docx",
@@ -556,8 +556,8 @@
         {
           "path": "/lectures/lecture-20/lesson-20.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-20/lesson-20-llm.docx",
@@ -586,8 +586,8 @@
         {
           "path": "/lectures/lecture-21/lesson-21.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-21/lesson-21-llm.docx",
@@ -616,8 +616,8 @@
         {
           "path": "/lectures/lecture-22/lesson-22.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-22/lesson-22-llm.docx",
@@ -646,8 +646,8 @@
         {
           "path": "/lectures/lecture-23/lesson-23.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-23/lesson-23-llm.docx",
@@ -677,8 +677,8 @@
         {
           "path": "/lectures/lecture-24/lesson-24.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-24/lesson-24-llm.docx",
@@ -707,8 +707,8 @@
         {
           "path": "/lectures/lecture-25/lesson-25.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-25/lesson-25-llm.docx",
@@ -738,8 +738,8 @@
         {
           "path": "/lectures/lecture-26/lesson-26.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-26/lesson-26-llm.docx",
@@ -769,8 +769,8 @@
         {
           "path": "/lectures/lecture-27/lesson-27.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-27/lesson-27-llm.docx",
@@ -806,8 +806,8 @@
         {
           "path": "/lectures/lecture-28/lesson-28.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-28/lesson-28-llm.docx",
@@ -838,8 +838,8 @@
         {
           "path": "/lectures/lecture-29/lesson-29.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-29/lesson-29-llm.docx",
@@ -869,8 +869,8 @@
         {
           "path": "/lectures/lecture-30/lesson-30.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-30/lesson-30-llm.docx",
@@ -900,8 +900,8 @@
         {
           "path": "/lectures/lecture-31/lesson-31.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-31/lesson-31-llm.docx",
@@ -931,8 +931,8 @@
         {
           "path": "/lectures/lecture-32/lesson-32.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-32/lesson-32-llm.docx",
@@ -961,8 +961,8 @@
         {
           "path": "/lectures/lecture-33/lesson-33.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-33/lesson-33-llm.docx",
@@ -985,8 +985,8 @@
         {
           "path": "/lectures/lecture-34/lesson-34.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-34/lesson-34-llm.docx",
@@ -1012,8 +1012,8 @@
         {
           "path": "/lectures/lecture-35/lesson-35.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-35/lesson-35-preview.jpeg",
@@ -1030,8 +1030,8 @@
         {
           "path": "/lectures/lecture-36/lesson-36.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-36/lesson-36-preview.jpeg",
@@ -1048,8 +1048,8 @@
         {
           "path": "/lectures/lecture-37/lesson-37.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-37/lesson-37-preview.jpeg",
@@ -1066,8 +1066,8 @@
         {
           "path": "/lectures/lecture-38/lesson-38.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-38/lesson-38-preview.jpeg",
@@ -1084,8 +1084,8 @@
         {
           "path": "/lectures/lecture-39/lesson-39.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-39/lesson-39-preview.jpeg",
@@ -1102,8 +1102,8 @@
         {
           "path": "/lectures/lecture-40/lesson-40.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-40/lesson-40-preview.jpeg",
@@ -1120,8 +1120,8 @@
         {
           "path": "/lectures/lecture-41/lesson-41.docx",
           "type": "docx",
-          "slug": "abstract",
-          "name": "Конспект"
+          "slug": "notes",
+          "name": "Заметки"
         },
         {
           "path": "/lectures/lecture-41/lesson-41-llm.docx",
@@ -1142,16 +1142,16 @@
       "slug": "lecture-42",
       "sources": [
         {
-          "path": "/lectures/lecture-42/lesson-42.docx",
+          "path": "/lectures/lecture-42/lesson-42-abstract.docx",
           "type": "docx",
           "slug": "abstract",
           "name": "Конспект"
         },
         {
-          "path": "/lectures/lecture-42/lesson-42-llm.docx",
+          "path": "/lectures/lecture-42/lesson-42.docx",
           "type": "docx",
-          "slug": "llm",
-          "name": "LLM"
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-42/lesson-42-preview.jpeg",
@@ -1166,16 +1166,22 @@
       "slug": "lecture-43",
       "sources": [
         {
-          "path": "/lectures/lecture-43/lesson-43.docx",
+          "path": "/lectures/lecture-43/lesson-43-abstract.docx",
           "type": "docx",
           "slug": "abstract",
           "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-43/lesson-43.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-43/lesson-43-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": [
-        "Лейбниц", "Эпикур"
+        "Лейбниц", "Эпикур", "Аристотель"
       ]
     },
     {
@@ -1183,6 +1189,7 @@
       "order": 44,
       "slug": "lecture-44",
       "sources": [],
+      "unique_content": ["pattern"],
       "cover": "/lectures/lecture-44/lesson-44-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": ["???"]

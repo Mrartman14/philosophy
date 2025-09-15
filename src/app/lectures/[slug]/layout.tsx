@@ -7,6 +7,7 @@ import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 // import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { LectureViewObserver } from "@/components/lecture-page/lecture-view-observer";
+import { UniqueContentRenderer } from "@/components/unique-content/unique-content-renderer";
 
 interface LecturePageLayoutParams {
   slug: string;
@@ -47,6 +48,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
           <div className={`relative grid grid-cols-1 aspect-square`}>
             <Image
               fill
+              priority
               src={`${imgSrc}`}
               alt={`Обложка урока "${data.title}"`}
               className="sensitive-image"
@@ -82,6 +84,14 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
               allowFullScreen
             />
           )}
+
+          {(data.unique_content?.length ?? 0) > 0 &&
+            data.unique_content?.map((ComponentName) => (
+              <UniqueContentRenderer
+                key={ComponentName}
+                componentName={ComponentName}
+              />
+            ))}
 
           {/* <div className="flex gap-x-4 gap-y-1 items-center flex-wrap">
             <PhilosopherIcon className="text-2xl text-(--description)" />

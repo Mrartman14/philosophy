@@ -17,6 +17,7 @@ export type PageData = {
   /** путь до обдожки лекции */
   cover: string;
   videoSrc?: string;
+  unique_content?: string[];
 };
 
 export type LecturePageData = PageData & {
