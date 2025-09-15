@@ -1161,13 +1161,31 @@
       ]
     },
     {
-      "title": "???",
+      "title": "Бомба замедленного действия",
       "order": 43,
       "slug": "lecture-43",
-      "sources": [],
+      "sources": [
+        {
+          "path": "/lectures/lecture-43/lesson-43.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
       "cover": "/lectures/lecture-43/lesson-43-preview.jpeg",
       "section": "Новоевропейская теория познания",
-      "mentions": []
+      "mentions": [
+        "Лейбниц", "Эпикур"
+      ]
+    },
+    {
+      "title": "???",
+      "order": 44,
+      "slug": "lecture-44",
+      "sources": [],
+      "cover": "/lectures/lecture-44/lesson-44-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["???"]
     }
   ]
 }
