@@ -1185,14 +1185,30 @@
       ]
     },
     {
-      "title": "???",
+      "title": "Мыслить позитивно",
       "order": 44,
       "slug": "lecture-44",
-      "sources": [],
-      "unique_content": ["pattern"],
+      "sources": [
+        {
+          "path": "/lectures/lecture-44/lesson-44.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
       "cover": "/lectures/lecture-44/lesson-44-preview.jpeg",
       "section": "Новоевропейская теория познания",
-      "mentions": ["???"]
+      "mentions": ["Лейбниц", "Юм"]
+    },
+    {
+      "title": "???",
+      "order": 45,
+      "slug": "lecture-45",
+      "sources": [],
+      "unique_content": ["pattern"],
+      "cover": "",
+      "section": "Новоевропейская теория познания",
+      "mentions": []
     }
   ]
 }
