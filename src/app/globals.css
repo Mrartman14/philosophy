@@ -61,7 +61,7 @@ body:has(dialog[open]) {
 
 /** TAILWIND PROSE STYLES OVERRIDE */
 .tractate {
-  @apply prose prose-slate dark:prose-invert md:prose-xl max-w-full prose-p:text-justify;
+  @apply prose prose-slate dark:prose-invert md:prose-xl max-w-full prose-p:text-justify prose-a:text-(--primary);
 }
 
 .tractate > :first-child {
