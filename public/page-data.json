@@ -1190,9 +1190,15 @@
       "slug": "lecture-44",
       "sources": [
         {
-          "path": "/lectures/lecture-44/lesson-44.docx",
+          "path": "/lectures/lecture-44/lesson-44-abstract.docx",
           "type": "docx",
           "slug": "notes",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-44/lesson-44.docx",
+          "type": "docx",
+          "slug": "abstract",
           "name": "Заметки"
         }
       ],
@@ -1206,7 +1212,7 @@
       "slug": "lecture-45",
       "sources": [],
       "unique_content": ["pattern"],
-      "cover": "",
+      "cover": "/lectures/lecture-45/lesson-45-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": []
     }
