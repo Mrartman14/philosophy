@@ -1207,12 +1207,34 @@
       "mentions": ["Лейбниц", "Юм"]
     },
     {
-      "title": "???",
+      "title": "Лучший из возможных",
       "order": 45,
       "slug": "lecture-45",
+      "sources": [
+        {
+          "path": "/lectures/lecture-45/lesson-45-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-45/lesson-45.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
+      "cover": "/lectures/lecture-45/lesson-45-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Лейбниц"]
+    },
+    {
+      "title": "???",
+      "order": 46,
+      "slug": "lecture-46",
       "sources": [],
       "unique_content": ["pattern"],
-      "cover": "/lectures/lecture-45/lesson-45-preview.jpeg",
+      "cover": "/lectures/lecture-46/lesson-46-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": []
     }
