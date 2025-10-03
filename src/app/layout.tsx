@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -8,6 +9,7 @@ import { AppPageProvider } from "./_providers/app-page-provider";
 import { AppHeader } from "@/components/app/app-header/app-header";
 import { AppFooter } from "@/components/app/app-footer/app-footer";
 import { NewLecturesProvider } from "./_providers/new-lectures-provider";
+import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,6 +72,9 @@ export default function RootLayout({
             <AppFooter />
           </AppPageProvider>
         </Theme>
+        <Suspense>
+          <YandexMetrika />
+        </Suspense>
       </body>
     </html>
   );
