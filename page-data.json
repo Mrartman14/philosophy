@@ -1226,15 +1226,37 @@
       ],
       "cover": "/lectures/lecture-45/lesson-45-preview.jpeg",
       "section": "Новоевропейская теория познания",
-      "mentions": ["Лейбниц"]
+      "mentions": ["Лейбниц", "Ферма", "Ричард Фейнман", "Пелагий", "Августин", "Дэвид Хоффман"]
+    },
+    {
+      "title": "Пирог возможностей",
+      "order": 46,
+      "slug": "lecture-46",
+      "sources": [
+        {
+          "path": "/lectures/lecture-46/lesson-46-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-46/lesson-46.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
+      "cover": "/lectures/lecture-46/lesson-46-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Лейбниц", "Парменид"]
     },
     {
       "title": "???",
-      "order": 46,
-      "slug": "lecture-46",
+      "order": 47,
+      "slug": "lecture-47",
       "sources": [],
       "unique_content": ["pattern"],
-      "cover": "/lectures/lecture-46/lesson-46-preview.jpeg",
+      "cover": "/lectures/lecture-47/lesson-47-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": []
     }
