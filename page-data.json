@@ -1251,12 +1251,34 @@
       "mentions": ["Лейбниц", "Парменид"]
     },
     {
-      "title": "???",
+      "title": "Kind of fun",
       "order": 47,
       "slug": "lecture-47",
+      "sources": [
+        {
+          "path": "/lectures/lecture-47/lesson-47-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-47/lesson-47.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
+      "cover": "/lectures/lecture-47/lesson-47-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Лейбниц"]
+    },
+    {
+      "title": "???",
+      "order": 48,
+      "slug": "lecture-48",
       "sources": [],
       "unique_content": ["pattern"],
-      "cover": "/lectures/lecture-47/lesson-47-preview.jpeg",
+      "cover": "/lectures/lecture-48/lesson-48-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": []
     }
