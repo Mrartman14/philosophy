@@ -6,12 +6,17 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 // import ym, { YMInitializer } from "react-yandex-metrika";
 
+function isProd() {
+  const result = window.location.hostname === "localhost";
+  return result;
+}
+
 const YM_COUNTER_ID = 104376496 as const;
 export const YandexMetrika: React.FC = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!window.ym) {
+    if (!window.ym && isProd()) {
       (function (m: any, e, t, r, i, k, a) {
         m[i] =
           m[i] ||
@@ -41,7 +46,7 @@ export const YandexMetrika: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (window.ym && pathname) {
+    if (window.ym && pathname && isProd()) {
       window.ym(YM_COUNTER_ID, "hit", pathname);
     }
   }, [pathname]);
