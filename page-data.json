@@ -1295,12 +1295,34 @@
       "mentions": ["Лейбниц", "Диоген Синопский"]
     },
     {
-      "title": "???",
+      "title": "Вежливое приглашение",
       "order": 49,
       "slug": "lecture-49",
+      "sources": [
+        {
+          "path": "/lectures/lecture-49/lesson-49-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-49/lesson-49.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
+      "cover": "/lectures/lecture-49/lesson-49-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Лейбниц", "Антуан Арно"]
+    },
+    {
+      "title": "???",
+      "order": 50,
+      "slug": "lecture-50",
       "sources": [],
       "unique_content": ["pattern"],
-      "cover": "/lectures/lecture-49/lesson-49-preview.jpeg",
+      "cover": "/lectures/lecture-50/lesson-50-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": []
     }
