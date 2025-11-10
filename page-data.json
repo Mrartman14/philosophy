@@ -1317,12 +1317,56 @@
       "mentions": ["Лейбниц", "Антуан Арно"]
     },
     {
-      "title": "???",
+      "title": "«А, я понял!»",
       "order": 50,
       "slug": "lecture-50",
+      "sources": [
+        {
+          "path": "/lectures/lecture-50/lesson-50-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-50/lesson-50.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
+      "cover": "/lectures/lecture-50/lesson-50-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Спиноза", "Рене Декарт", "Гоббс"]
+    },
+    {
+      "title": "Спиноза и Пригожин",
+      "order": 51,
+      "slug": "lecture-51",
+      "sources": [
+        {
+          "path": "/lectures/lecture-51/lesson-51-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-51/lesson-51.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
+      "cover": "/lectures/lecture-51/lesson-51-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Спиноза", "Рене Декарт", "Гоббс", "Илья Пригожин"]
+    },
+    {
+      "title": "???",
+      "order": 52,
+      "slug": "lecture-52",
       "sources": [],
       "unique_content": ["pattern"],
-      "cover": "/lectures/lecture-50/lesson-50-preview.jpeg",
+      "cover": "/lectures/lecture-52/lesson-52-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": []
     }
