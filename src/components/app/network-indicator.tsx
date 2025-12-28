@@ -7,6 +7,8 @@ import { OfflineIcon } from "@/assets/icons/offline-icon";
 export const NetworkIndicator: React.FC<{ className?: string }> = ({
   className,
 }) => {
+  // TODO: useSyncExternalStore
+  // https://react.dev/reference/react/useSyncExternalStore#subscribing-to-a-browser-api
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
