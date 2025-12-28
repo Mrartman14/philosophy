@@ -4,6 +4,7 @@
       "title": "Тест первый",
       "slug": "exam-1",
       "order": 1,
+      "unique_content": ["pattern"],
       "cover": "/exams/exam-1/exam-1-cover.jpeg",
       "description": "Лекции 1-35",
       "sources": [
@@ -1361,14 +1362,100 @@
       "mentions": ["Спиноза", "Рене Декарт", "Гоббс", "Илья Пригожин"]
     },
     {
-      "title": "???",
+      "title": "Видеорегистратор",
       "order": 52,
       "slug": "lecture-52",
-      "sources": [],
-      "unique_content": ["pattern"],
+      "sources": [
+        {
+          "path": "/lectures/lecture-52/lesson-52-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
       "cover": "/lectures/lecture-52/lesson-52-preview.jpeg",
       "section": "Новоевропейская теория познания",
-      "mentions": []
+      "mentions": ["Спиноза"]
+    },
+    {
+      "title": "Скользкая этика",
+      "order": 53,
+      "slug": "lecture-53",
+      "sources": [
+        {
+          "path": "/lectures/lecture-53/lesson-53-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-53/lesson-53-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Спиноза"]
+    },
+    {
+      "title": "Реконструкция избиения",
+      "order": 54,
+      "slug": "lecture-54",
+      "sources": [
+        {
+          "path": "/lectures/lecture-54/lesson-54-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-54/lesson-54-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Спиноза"]
+    },
+    {
+      "title": "Разрушение сада",
+      "order": 55,
+      "slug": "lecture-55",
+      "sources": [
+        {
+          "path": "/lectures/lecture-55/lesson-55-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-55/lesson-55-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Спиноза", "Аристотель"]
+    },
+    {
+      "title": "Иллюзия убежища",
+      "order": 56,
+      "slug": "lecture-56",
+      "sources": [
+        {
+          "path": "/lectures/lecture-56/lesson-56-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-56/lesson-56-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Спиноза"]
+    },
+    {
+      "title": "Романтическая комедия",
+      "order": 57,
+      "slug": "lecture-57",
+      "sources": [
+        {
+          "path": "/lectures/lecture-57/lesson-57-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-57/lesson-57-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Спиноза"]
     }
   ]
 }
