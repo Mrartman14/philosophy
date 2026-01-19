@@ -258,7 +258,7 @@
       "cover": "/lectures/lecture-9/lesson-9-preview.jpeg",
       "section": "Интро",
       "mentions": [
-        "Рене Декарт",
+        "Декарт",
         "Галилей"
       ]
     },
@@ -283,7 +283,7 @@
       "cover": "/lectures/lecture-10/lesson-10-preview.jpeg",
       "section": "Интро",
       "mentions": [
-        "Рене Декарт"
+        "Декарт"
       ]
     },
     {
@@ -307,7 +307,7 @@
       "cover": "/lectures/lecture-11/lesson-11-preview.jpeg",
       "section": "Интро",
       "mentions": [
-        "Рене Декарт"
+        "Декарт"
       ]
     },
     {
@@ -331,7 +331,7 @@
       "cover": "/lectures/lecture-12/lesson-12-preview.jpeg",
       "section": "Интро",
       "mentions": [
-        "Рене Декарт",
+        "Декарт",
         "Гоббс"
       ]
     },
@@ -859,7 +859,7 @@
       "section": "Христианская этика",
       "mentions": [
         "Августин Аврелий",
-        "Рене Декарт"
+        "Декарт"
       ]
     },
     {
@@ -1337,7 +1337,7 @@
       ],
       "cover": "/lectures/lecture-50/lesson-50-preview.jpeg",
       "section": "Новоевропейская теория познания",
-      "mentions": ["Спиноза", "Рене Декарт", "Гоббс"]
+      "mentions": ["Спиноза", "Декарт", "Гоббс"]
     },
     {
       "title": "Спиноза и Пригожин",
@@ -1359,7 +1359,7 @@
       ],
       "cover": "/lectures/lecture-51/lesson-51-preview.jpeg",
       "section": "Новоевропейская теория познания",
-      "mentions": ["Спиноза", "Рене Декарт", "Гоббс", "Илья Пригожин"]
+      "mentions": ["Спиноза", "Декарт", "Гоббс", "Илья Пригожин"]
     },
     {
       "title": "Видеорегистратор",
@@ -1456,6 +1456,44 @@
       "cover": "/lectures/lecture-57/lesson-57-preview.jpeg",
       "section": "Новоевропейская теория познания",
       "mentions": ["Спиноза"]
+    },
+    {
+      "title": "Кантракт",
+      "order": 58,
+      "slug": "lecture-58",
+      "sources": [
+        {
+          "path": "/lectures/lecture-58/lesson-58-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-58/lesson-58.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        }
+      ],
+      "cover": "/lectures/lecture-58/lesson-58-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Кант", "Иоанн Дунс Скот", "Аристотель", "Декарт", "Гоббс"]
+    },
+    {
+      "title": "Кант",
+      "order": 59,
+      "slug": "lecture-59",
+      "sources": [
+        {
+          "path": "/lectures/lecture-59/lesson-59-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        }
+      ],
+      "cover": "/lectures/lecture-59/lesson-59-preview.jpeg",
+      "section": "Новоевропейская теория познания",
+      "mentions": ["Кант", "Лейбниц", "Декарт", "Юм"]
     }
   ]
 }
