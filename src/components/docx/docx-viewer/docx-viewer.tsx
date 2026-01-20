@@ -3,6 +3,7 @@ import { PageDataSource } from "@/entities/page-data";
 import { DocxViewerAside } from "./docx-viewer-aside";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
+import { Tractate } from "@/components/shared/tractate/tractate";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar/scroll-progress-bar";
 // import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
@@ -43,13 +44,13 @@ export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
                 className="flex items-center gap-2 text-xl text-(--description) hover:text-inherit"
               >
                 <DownloadIcon />
-                {/* {formatFileSize(parsedData.fileMeta.fileSizeInBytes)} */}
               </a>
             </div>
           </div>
-          <section
+          <Tractate
+            as="section"
             id={ARTICLE_ID}
-            className="w-full tractate"
+            className="w-full"
             dangerouslySetInnerHTML={{ __html: parsedData.htmlString }}
           />
         </div>

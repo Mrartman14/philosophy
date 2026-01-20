@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import Theme from "./_providers/theme";
 import { SWProvider } from "@/app/_providers/sw-provider";
 import { AppPageProvider } from "./_providers/app-page-provider";
 import { AppHeader } from "@/components/app/app-header/app-header";
@@ -40,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru">
       <head>
         <meta
           name="theme-color"
@@ -63,15 +62,13 @@ export default function RootLayout({
       >
         <SWProvider />
         <NewLecturesProvider />
-        <Theme>
-          <AppPageProvider>
-            <AppHeader />
-            <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--border)">
-              {children}
-            </main>
-            <AppFooter />
-          </AppPageProvider>
-        </Theme>
+        <AppPageProvider>
+          <AppHeader />
+          <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--border)">
+            {children}
+          </main>
+          <AppFooter />
+        </AppPageProvider>
         <Suspense>
           <YandexMetrika />
         </Suspense>

@@ -27,6 +27,8 @@ export type ParsedData = {
   };
 };
 
+const commentReferenceClassName = "docx-comment-reference" as const;
+
 export async function processSource(
   data: PageData["sources"][number]
 ): Promise<ParsedData> {
@@ -47,6 +49,8 @@ export async function processSource(
       styleMap: [
         `comment-reference => sup.${commentReferenceClassName}`,
         "u => u",
+        "i => em",
+        "b => strong",
         "r[style-name='Emphasis'] => em",
         "p[style-name='Normal (Web)'] => p",
         "p[style-name='Subtitle'] => p.subtitle",
@@ -86,11 +90,10 @@ export async function processSource(
   const headingsData: ParsedData["headingsData"] =
     prepareHeadings(parsedDocument);
 
-  const modifiedHtml = parsedDocument.body.innerHTML;
+  const modifiedHtml = prepareVideo(parsedDocument.body.innerHTML);
   const DOMPurify = createDOMPurify(jsDom.window);
-  let htmlString = DOMPurify.sanitize(modifiedHtml);
+  const htmlString = DOMPurify.sanitize(modifiedHtml);
   const readingTime = calculateReadingTime(htmlString, 200);
-  htmlString = prepareVideo(htmlString);
 
   return {
     id: data.name,
@@ -152,5 +155,3 @@ function prepareVideo(htmlStr: string) {
 
   return result;
 }
-
-const commentReferenceClassName = "docx-comment-reference" as const;

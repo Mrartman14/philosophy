@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 
 import { getRandomSumParts } from "@/utils/get-random-sum-parts";
+import { Tractate } from "@/components/shared/tractate/tractate";
 import { SkeletonTextLine } from "@/components/shared/skeleton/skeleton-text-line";
 
 export const SkeletonTextBlock: React.FC<{
@@ -13,8 +14,8 @@ export const SkeletonTextBlock: React.FC<{
   );
 
   return (
-    <div
-      className={`tractate grid gap-4 w-full min-h-full ${className ?? ""}`}
+    <Tractate
+      className={`grid gap-4 w-full min-h-full ${className ?? ""}`}
       style={{
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         gridTemplateRows: `repeat(${rows}, auto)`,
@@ -27,9 +28,9 @@ export const SkeletonTextBlock: React.FC<{
               key={`${rowIndex}-${colIndex}`}
               className={`col-span-${col}`}
             />
-          ))}
-        </Fragment>
+        ))}
+      </Fragment>
       ))}
-    </div>
+    </Tractate>
   );
 };

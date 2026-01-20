@@ -30,6 +30,7 @@ export const ScrollButton: React.FC<{ className?: string }> = ({
     <div className={`${className} gap-1 flex select-none`}>
       <button
         aria-label="скролл вверх"
+        aria-hidden={atTop}
         className={`${btnClassName} ${atTop ? "opacity-0" : "opacity-100"}`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       >
@@ -37,6 +38,7 @@ export const ScrollButton: React.FC<{ className?: string }> = ({
       </button>
       <button
         aria-label="скролл вниз"
+        aria-hidden={atBottom}
         className={`${btnClassName} ${atBottom ? "opacity-0" : "opacity-100"}`}
         onClick={() =>
           window.scrollTo({

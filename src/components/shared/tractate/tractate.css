@@ -1,0 +1,38 @@
+@reference "tailwindcss";
+
+/* Кастомные стили для контента внутри Tractate (prose) */
+
+.prose {
+  & .spoiler {
+    @apply select-none cursor-help blur-sm transition-all duration-300;
+
+    &:active {
+      @apply cursor-default blur-none;
+    }
+  }
+
+  & .subtitle {
+    color: var(--color-description);
+    @apply italic;
+  }
+
+  & dt::before {
+    content: "💬";
+    margin-right: 8px;
+  }
+
+  & dl dt {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  & dl dd a {
+    color: var(--color-link);
+    text-decoration: none;
+  }
+}
+
+.docx-comment-reference a {
+  color: var(--color-link);
+  margin-right: 8px;
+  text-decoration: none;
+}

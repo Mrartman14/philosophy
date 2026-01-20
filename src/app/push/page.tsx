@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 // import { subscribeUser, unsubscribeUser, sendNotification } from "../actions";
+import { Tractate } from "@/components/shared/tractate/tractate";
 import { SWProvider, SWProviderState } from "@/app/_providers/sw-provider";
 
 // for more detailed guide see https://nextjs.org/docs/app/guides/progressive-web-apps
@@ -142,11 +143,11 @@ function InstallPrompt() {
 
 export default function Page() {
   return (
-    <div className="tractate">
+    <Tractate>
       <SWProvider>
         {(state) => <PushNotificationManager {...state} />}
       </SWProvider>
       <InstallPrompt />
-    </div>
+    </Tractate>
   );
 }

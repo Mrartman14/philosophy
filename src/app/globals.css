@@ -1,98 +1,124 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-* {
-  scroll-margin-top: var(--header-height);
-  scrollbar-color: var(--border) transparent;
+/* ═══════════════════════════════════════════════════════════════
+   TAILWIND V4 CONFIGURATION
+   ═══════════════════════════════════════════════════════════════ */
 
-  ::target-text {
-    background-color: var(--primary);
+/* Кастомные цвета и переменные проекта (Tailwind v4 @theme) */
+@theme {
+  --color-primary: oklch(72% 0.14 55);
+  --color-background: #f7f8fc;
+  --color-border: #c4cde0c6;
+  --color-link: oklch(50% 0.15 250);
+  --color-description: #6f798d;
+  --color-text-pane: #c8cdd6ae;
+
+  --spacing-header: 50px;
+}
+
+/* Алиасы для обратной совместимости (var(--primary) и т.д.) */
+:root {
+  color-scheme: light dark;
+
+  --primary: var(--color-primary);
+  --background: var(--color-background);
+  --border: var(--color-border);
+  --link: var(--color-link);
+  --description: var(--color-description);
+  --text-pane: var(--color-text-pane);
+  --header-height: var(--spacing-header);
+}
+
+/* Dark theme переопределения */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #111a20;
+    --color-border: #555c6a71;
+    --color-link: oklch(70% 0.12 250);
+    --color-description: #8b98b2;
+    --color-text-pane: #00000092;
+  }
+}
+
+@media (forced-colors: active) {
+  /*
+    AccentColor          Background of accented user interface controls.	
+    AccentColorText      Text of accented user interface controls.	
+    ActiveText           Text of active links.	
+    ButtonBorder         Base border color of controls.	
+    ButtonFace	         Background color of controls.	
+    ButtonText           Text color of controls.	
+    Canvas               Background of application content or documents.	
+    CanvasText           Text color in application content or documents.	
+    Field                Background of input fields.	
+    FieldText            Text in input fields.	
+    GrayText             Text color for disabled items (for example, a disabled control).	
+    Highlight            Background of selected items.	
+    HighlightText        Text color of selected items.	
+    LinkText             Text of non-active, non-visited links.	
+    Mark                 Background of text that has been specially marked (such as by the HTML mark element).	
+    MarkText             Text that has been specially marked (such as by the HTML mark element).	
+    SelectedItem         Background of selected items, for example, a selected checkbox.	
+    SelectedItemText     Text of selected items.	
+    VisitedText          Text of visited links.
+  */
+
+  :root {
+    --color-primary: AccentColor;
+    --color-background: Canvas;
+    --color-border: ButtonBorder;
+    --color-link: LinkText;
+    /* --color-text-pane: CanvasText; */
+    --color-description: GrayText;
+  }
+
+  *::target-text {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+* {
+  scroll-margin-top: var(--spacing-header);
+  scrollbar-color: var(--color-border) transparent;
+
+  &::target-text {
+    background-color: var(--color-primary);
     color: #fff;
   }
 }
 
-/* TODO:
- попробовать заменить какой-то поповер на нативный https://doka.guide/html/popover/
- и тултип https://doka.guide/a11y/role-tooltip/
-*/
-
-/* вместо модалок использовать нативный dialog https://doka.guide/html/dialog/ */
 body:has(dialog[open]) {
   overflow: hidden;
 }
 
-:root {
-  --header-height: 50px;
-
-  --primary: rgba(213, 148, 82, 255);
-  --background: #f7f8fc;
-  --border: #c4cde0c6;
-  --link: rgb(14, 98, 182);
-  --description: #6f798d;
-  --text-pane: #c8cdd6ae;
-}
-
-.dark {
-  --primary: rgba(213, 148, 82, 255);
-  --background: #111a20;
-  --border: #555c6a71;
-  --link: rgb(91, 153, 216);
-  --description: #8b98b2;
-  --text-pane: #00000092;
-}
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM COMPONENTS
+   ═══════════════════════════════════════════════════════════════ */
 
 .fancy-link {
   position: relative;
-}
-.fancy-link::after {
-  content: "→";
-  position: absolute;
-  left: calc(100% + 5px);
-  transition: left 200ms ease-in-out;
-}
-.fancy-link:hover::after,
-.fancy-link:focus::after {
-  left: calc(100% + 15px);
+
+  &::after {
+    content: "→";
+    position: absolute;
+    left: calc(100% + 5px);
+    transition: left 200ms ease-in-out;
+  }
+
+  &:hover::after,
+  &:focus::after {
+    left: calc(100% + 15px);
+  }
 }
 
-.dark .sensitive-image {
-  filter: brightness(75%);
-}
-
-/** TAILWIND PROSE STYLES OVERRIDE */
-.tractate {
-  @apply prose prose-slate dark:prose-invert md:prose-xl max-w-full prose-p:text-justify prose-a:text-(--primary);
-}
-
-.tractate > :first-child {
-  margin-top: 0;
-}
-
-.tractate .spoiler {
-  @apply select-none cursor-help blur-sm transition-all duration-300 active:cursor-default active:blur-none;
-}
-
-.tractate .subtitle {
-  color: var(--description);
-  @apply italic;
-}
-
-.docx-comment-reference a {
-  color: var(--link);
-  margin-right: 8px;
-  text-decoration: none;
-}
-
-.tractate dt::before {
-  content: "💬";
-  margin-right: 8px;
-}
-
-.tractate dl dt {
-  border-bottom: 1px solid var(--border);
-}
-
-.tractate dl dd a {
-  color: var(--link);
-  text-decoration: none;
+@media (prefers-color-scheme: dark) {
+  .sensitive-image {
+    filter: brightness(75%);
+  }
 }
