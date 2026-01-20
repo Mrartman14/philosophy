@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Tabs } from "@base-ui-components/react/tabs";
+import { Tabs } from "@base-ui/react/tabs";
 
 import {
   getLectureList,
@@ -70,7 +70,7 @@ export default async function Page({ params }: PageProps) {
               key={v.slug}
               value={v.slug}
               render={<li />}
-              className={`${roundedClasses} border-b border-b-(--border) p-[1px] data-[selected]:border-b-transparent outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[selected]:text-inherit hover:text-inherit`}
+              className={`${roundedClasses} border-b border-b-(--border) p-[1px] data-[active]:border-b-transparent outline-none select-none before:inset-x-0 focus-visible:relative focus-visible:before:absolute focus-visible:before:outline text-(--description) data-[active]:text-inherit hover:text-inherit`}
             >
               <Link href={`/lectures/${slug}/sources/${v.slug}`}>
                 <h4

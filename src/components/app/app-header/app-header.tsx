@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { NavigationMenu } from "@base-ui-components/react";
+import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
 import { AppNav } from "../app-nav";
 // import { DnaIcon } from "@/assets/icons/dna-icon";

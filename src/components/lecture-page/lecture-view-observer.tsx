@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { LecturePageData } from "@/entities/page-data";
 import { FavButton } from "@/components/shared/fav-button/fav-button";
@@ -11,21 +11,16 @@ export const LectureViewObserver: React.FC<{ lecture: LecturePageData }> = ({
 }) => {
   const [isFav, setIsFav] = useState(false);
 
-  const handleFetchFav = useCallback(() => {
-    return lectureService.checkIsLectureFav(lecture.slug).then(setIsFav);
-  }, [lecture.slug]);
+  const fetchFav = () =>
+    lectureService.checkIsLectureFav(lecture.slug).then(setIsFav);
 
-  const onSelectFav = useCallback(() => {
-    return lectureService.setFavLectureId(lecture.slug).then(handleFetchFav);
-  }, [lecture.slug, handleFetchFav]);
+  const onSelectFav = () =>
+    lectureService.setFavLectureId(lecture.slug).then(fetchFav);
 
   useEffect(() => {
     lectureService.setLastViewedLectureId(lecture.slug);
+    lectureService.checkIsLectureFav(lecture.slug).then(setIsFav);
   }, [lecture.slug]);
-
-  useEffect(() => {
-    handleFetchFav();
-  }, [handleFetchFav]);
 
   return (
     <menu>

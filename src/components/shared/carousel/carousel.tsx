@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
 import "./carousel.css";
 
@@ -14,14 +14,6 @@ export const Carousel: React.FC<CarouselProps> = ({
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  }, [slides.length]);
-
-  // const prevSlide = () => {
-  //   setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-  // };
-
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
   };
@@ -29,9 +21,11 @@ export const Carousel: React.FC<CarouselProps> = ({
   useEffect(() => {
     if (typeof interval !== "number") return;
 
-    const timer = setInterval(nextSlide, interval);
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    }, interval);
     return () => clearInterval(timer);
-  }, [currentSlide, interval, nextSlide]);
+  }, [interval, slides.length]);
 
   return (
     <div className={"carousel"}>

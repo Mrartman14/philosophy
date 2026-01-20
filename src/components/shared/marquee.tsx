@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 type MarqueeProps = {
   trackClassName?: string;
@@ -15,7 +15,7 @@ export const Marquee: React.FC<MarqueeProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setPaused] = useState(false);
 
-  const dubbedItems = useMemo(() => [...items, ...items], [items]);
+  const dubbedItems = [...items, ...items];
 
   useEffect(() => {
     const el = containerRef.current;

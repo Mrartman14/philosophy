@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { LecturePageData } from "@/entities/page-data";
 import { lectureService } from "@/services/lecture-service/lecture-service";
@@ -27,47 +27,42 @@ export const LectureServiceProvider: React.FC<LectureServiceProviderProps> = ({
     LecturePageData[]
   >([]);
 
-  const handleFetchLastViews = useCallback(async () => {
-    const lastViewedLectureIds = await lectureService.getLastViewedLectureIds();
-    if (lastViewedLectureIds.length === 0) {
-      return;
-    }
-
-    const next = lastViewedLectureIds
-      .map((id) => lectures.find((l) => l.slug === id))
-      .filter((x) => !!x);
-
-    setLastViewedLectures(next);
-  }, [lectures]);
-
-  const handleFetchFav = useCallback(async () => {
+  const fetchFav = async () => {
     const favLectureIds = await lectureService.getFavLectureIds();
-
     if (favLectureIds.length === 0) {
       return setFavLectures([]);
     }
-
     const next = favLectureIds
       .map((id) => lectures.find((l) => l.slug === id))
       .filter((x) => !!x);
-
     setFavLectures(next);
+  };
+
+  const onSelectFav = (id: string) =>
+    lectureService.setFavLectureId(id).then(fetchFav);
+
+  useEffect(() => {
+    const fetchLastViews = async () => {
+      const ids = await lectureService.getLastViewedLectureIds();
+      if (ids.length === 0) return;
+      const next = ids
+        .map((id) => lectures.find((l) => l.slug === id))
+        .filter((x) => !!x);
+      setLastViewedLectures(next);
+    };
+
+    const fetchFavLectures = async () => {
+      const ids = await lectureService.getFavLectureIds();
+      if (ids.length === 0) return setFavLectures([]);
+      const next = ids
+        .map((id) => lectures.find((l) => l.slug === id))
+        .filter((x) => !!x);
+      setFavLectures(next);
+    };
+
+    fetchLastViews();
+    fetchFavLectures();
   }, [lectures]);
-
-  const onSelectFav = useCallback(
-    (id: string) => {
-      return lectureService.setFavLectureId(id).then(handleFetchFav);
-    },
-    [handleFetchFav]
-  );
-
-  useEffect(() => {
-    handleFetchLastViews();
-  }, [handleFetchLastViews]);
-
-  useEffect(() => {
-    handleFetchFav();
-  }, [handleFetchFav]);
 
   const state: LectureServiceProviderState = {
     favLectures,

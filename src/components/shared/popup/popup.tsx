@@ -1,5 +1,5 @@
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
-import { Popover } from "@base-ui-components/react/popover";
+import { Popover } from "@base-ui/react/popover";
 
 type PopupProps = {
   trigger: React.ReactNode;
@@ -8,8 +8,9 @@ type PopupProps = {
 };
 export const Popup: React.FC<PopupProps> = ({ content, trigger }) => {
   return (
-    <Popover.Root openOnHover>
+    <Popover.Root>
       <Popover.Trigger
+        openOnHover
         className={`data-[popup-open]:text-inherit text-(--description)`}
       >
         {trigger}

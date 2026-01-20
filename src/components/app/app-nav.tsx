@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
 import groupBy from "lodash/groupBy";
 import { usePathname } from "next/navigation";
-import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
+import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 import { useAppPageConfig } from "@/app/_providers/app-page-client-provider";
@@ -14,10 +13,7 @@ export const AppNav: React.FC<AppNavProps> = () => {
   const pathname = usePathname();
   const { exams, lectures } = useAppPageConfig();
 
-  const groupedByChapter = useMemo(
-    () => groupBy(lectures, (x) => x.section),
-    [lectures]
-  );
+  const groupedByChapter = groupBy(lectures, (x) => x.section);
 
   function checkActivePath(path: string) {
     if (path === "/" && pathname !== path) return false;

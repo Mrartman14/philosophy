@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 
 import { createGridLayout } from "@/utils/create-grid-layout";
 import "./compact-grid.css";
@@ -16,9 +15,7 @@ export const CompactGrid = <T extends { id: string }>({
   containerClassName,
   renderItem,
 }: CompactGridProps<T>) => {
-  const gridItems = useMemo(() => {
-    return createGridLayout(data, 4);
-  }, [data]);
+  const gridItems = createGridLayout(data, 4);
 
   return (
     <div

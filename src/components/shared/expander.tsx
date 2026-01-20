@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
-import { Collapsible } from "@base-ui-components/react/collapsible";
+import { Collapsible } from "@base-ui/react/collapsible";
 
 type ExpanderProps = {
   trigger: React.ReactNode;
