@@ -27,11 +27,6 @@ export const AppHeader: React.FC = async () => {
               />
             </Link>
           </NavigationMenu.Item>
-          {/* <NavigationMenu.Item className="flex items-center">
-            <Link href="/graph">
-              <DnaIcon className="w-[30px] h-[30px] text-(--primary)" />
-            </Link>
-          </NavigationMenu.Item> */}
           <AppNav />
           <div />
           <div className="flex gap-2 items-center">
