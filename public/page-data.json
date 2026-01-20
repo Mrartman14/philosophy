@@ -1480,7 +1480,7 @@
       "mentions": ["Кант", "Иоанн Дунс Скот", "Аристотель", "Декарт", "Гоббс"]
     },
     {
-      "title": "Кант",
+      "title": "Синтетическое a priori",
       "order": 59,
       "slug": "lecture-59",
       "sources": [
@@ -1489,11 +1489,17 @@
           "type": "docx",
           "slug": "abstract",
           "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-59/lesson-59.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
         }
       ],
       "cover": "/lectures/lecture-59/lesson-59-preview.jpeg",
       "section": "Новоевропейская теория познания",
-      "mentions": ["Кант", "Лейбниц", "Декарт", "Юм"]
+      "mentions": ["Кант", "Лейбниц", "Декарт", "Юм", "Спиноза"]
     }
   ]
 }
