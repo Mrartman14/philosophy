@@ -5,7 +5,6 @@
    TAILWIND V4 CONFIGURATION
    ═══════════════════════════════════════════════════════════════ */
 
-/* Кастомные цвета и переменные проекта (Tailwind v4 @theme) */
 @theme {
   --color-primary: oklch(72% 0.14 55);
   --color-background: #f7f8fc;
@@ -17,7 +16,6 @@
   --spacing-header: 50px;
 }
 
-/* Алиасы для обратной совместимости (var(--primary) и т.д.) */
 :root {
   color-scheme: light dark;
 

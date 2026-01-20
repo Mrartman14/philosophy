@@ -87,7 +87,10 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
     const sentinel = sentinelRef.current;
     if (!sticky || !sentinel) return;
 
-    const headerHeight = getComputedStyle(sticky).top || "0px";
+    const headerHeight =
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--header-height"
+      ) || "0px";
     const observer = new IntersectionObserver(
       ([entry]) => {
         setStuck(!entry.isIntersecting);
@@ -118,11 +121,11 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
       <div ref={sentinelRef} style={{ height: 1, margin: 0, padding: 0 }} />
       <ul
         ref={stickyRef}
-        className="grid p-4 sticky top-(--header-height) self-start overflow-y-scroll"
+        className="grid p-4 sticky top-(--spacing-header) self-start overflow-y-scroll"
         style={{
           maxHeight: stuck
-            ? `calc(100vh - var(--header-height))`
-            : `calc(100vh - var(--header-height) - ${ASIDE_HEADER_HEIGHT}px)`,
+            ? `calc(100vh - var(--spacing-header))`
+            : `calc(100vh - var(--spacing-header) - ${ASIDE_HEADER_HEIGHT}px)`,
         }}
       >
         {items.map((item) => (
