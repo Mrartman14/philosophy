@@ -23,14 +23,10 @@ export const LectureViewObserver: React.FC<{ lecture: LecturePageData }> = ({
   }, [lecture.slug]);
 
   return (
-    <menu>
-      <li>
-        <FavButton
-          isFav={isFav}
-          onSelect={onSelectFav}
-          className={`px-3 py-3 ${isFav ? "" : ""}`}
-        />
-      </li>
-    </menu>
+    <FavButton
+      isFav={isFav}
+      onSelect={onSelectFav}
+      className={`px-3 py-3`}
+    />
   );
 };

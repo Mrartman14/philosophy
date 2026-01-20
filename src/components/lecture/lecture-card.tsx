@@ -35,7 +35,7 @@ export const LectureCard: React.FC<{
         <li>
           <ShareButton
             shareData={{ title: lecture.title }}
-            className="md:hidden group-hover:flex group-focus:flex md:text-(--description) md:hover:text-inherit"
+            className="md:hidden group-hover:flex group-focus:flex"
           />
         </li>
         <li>

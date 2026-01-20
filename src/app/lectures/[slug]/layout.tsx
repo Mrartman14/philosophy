@@ -53,9 +53,11 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
               alt={`Обложка урока "${data.title}"`}
               className="sensitive-image"
             />
-            <div className="absolute top-2 right-2">
-              <LectureViewObserver lecture={data} />
-            </div>
+            <menu className="absolute top-2 right-2">
+              <li>
+                <LectureViewObserver lecture={data} />
+              </li>
+            </menu>
           </div>
         </div>
 

@@ -15,7 +15,8 @@ export const FavButton: React.FC<FavButtonProps> = ({
 }) => {
   return (
     <button
-      className={`flex items-center justify-center px-2 py-2 rounded-full bg-(--text-pane) ${className}`}
+      className={`flex items-center justify-center px-2 py-2 rounded-full bg-(--text-pane) text-(--description) hover:text-inherit ${className}`}
+      aria-label="Добавить в избранное"
       onClick={onSelect}
     >
       {isFav ? <BookmarkFilledIcon /> : <BookmarkIcon />}
