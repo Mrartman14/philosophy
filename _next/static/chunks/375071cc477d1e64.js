@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,41381,e=>{"use strict";var t=e.i(43476),o=e.i(18566);e.s(["GoBack",0,({children:e,className:r})=>{let c=(0,o.useRouter)();return(0,t.jsx)("button",{onClick:()=>c.back(),className:`underline text-2xl cursor-pointer ${r}`,children:e||"Назад"})}])}]);
