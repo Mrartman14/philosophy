@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import groupBy from "lodash/groupBy";
 import { usePathname } from "next/navigation";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
+import {
+  groupByNestedSection,
+  type SectionNode,
+} from "@/utils/group-by-nested-section";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 import { useAppPageConfig } from "@/app/_providers/app-page-client-provider";
 
@@ -13,12 +16,65 @@ export const AppNav: React.FC<AppNavProps> = () => {
   const pathname = usePathname();
   const { exams, lectures } = useAppPageConfig();
 
-  const groupedByChapter = groupBy(lectures, (x) => x.section);
+  const sectionTree = groupByNestedSection(lectures);
 
   function checkActivePath(path: string) {
     if (path === "/" && pathname !== path) return false;
     return pathname === path || pathname.startsWith(path + "/");
   }
+
+  // TODO: сделать это еще и collapsible, а также сделать захват фокуса и скролла при открытом меню
+  const renderSectionNode = (node: SectionNode, depth: number = 0) => {
+    return (
+      <li key={node.name} className="w-full grid grid-cols-1">
+        <h6
+          className="sticky text-(--description) bg-(--background) p-2 border-b border-b-(--border) text-right tracking-wider"
+          style={{
+            top: `calc(${depth} * (1lh + 1rem))`,
+            zIndex: 10 - depth,
+          }}
+        >
+          {node.name}
+        </h6>
+        <ol>
+          {node.lectures.map((item) => {
+            const href = `/lectures/${item.slug}`;
+            const isActive = checkActivePath(href);
+            const lClasses = `${
+              isActive ? "text-(--primary)" : ""
+            } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
+
+            return (
+              <li key={href}>
+                <Link href={href} className={lClasses}>
+                  <span className="group-hover:underline group-focus:underline">
+                    {item.order}. {item.title}
+                  </span>
+                  <div className="flex gap-1 items-center flex-wrap">
+                    {item.mentions.map((m, i, arr) => (
+                      <span
+                        key={m}
+                        className="flex items-center text-xs text-(--description)"
+                      >
+                        {m}
+                        {i < arr.length - 1 && ","}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+        {/* Вложенные подразделы */}
+        {node.children.length > 0 && (
+          <ul>
+            {node.children.map((child) => renderSectionNode(child, depth + 1))}
+          </ul>
+        )}
+      </li>
+    );
+  };
 
   return (
     <>
@@ -31,48 +87,7 @@ export const AppNav: React.FC<AppNavProps> = () => {
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={contentAnimationClassName}>
           <ul className={contentListClassName}>
-            {Object.entries(groupedByChapter).map(([chapter, data]) => {
-              return (
-                <li key={chapter} className="static w-full grid grid-cols-1">
-                  <h6
-                    className={`sticky top-0 text-(--description) bg-(--background) text-lg p-2 border-b-1 border-b-(--border) rounded text-right tracking-wider`}
-                  >
-                    {chapter}
-                  </h6>
-                  <ol>
-                    {data.map((item) => {
-                      const href = `/lectures/${item.slug}`;
-                      // const isActive = pathname === href;
-                      const isActive = checkActivePath(href);
-                      const lClasses = `${
-                        isActive ? "text-(--primary)" : ""
-                      } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
-
-                      return (
-                        <li key={href}>
-                          <Link href={href} className={lClasses}>
-                            <span className="group-hover:underline group-focus:underline">
-                              {item.order}. {item.title}
-                            </span>
-                            <div className="flex gap-1 items-center flex-wrap">
-                              {item.mentions.map((m, i, arr) => (
-                                <span
-                                  key={m}
-                                  className="flex items-center text-xs text-(--description)"
-                                >
-                                  {m}
-                                  {i < arr.length - 1 && ","}
-                                </span>
-                              ))}
-                            </div>
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </li>
-              );
-            })}
+            {sectionTree.map((node) => renderSectionNode(node, 0))}
           </ul>
         </NavigationMenu.Content>
       </NavigationMenu.Item>

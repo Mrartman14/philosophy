@@ -8,6 +8,7 @@ import { DocxOutroLink } from "@/components/docx/docx-outro-link";
 // import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { LectureViewObserver } from "@/components/lecture-page/lecture-view-observer";
 import { UniqueContentRenderer } from "@/components/unique-content/unique-content-renderer";
+import { getSectionPath } from "@/utils/group-by-nested-section";
 
 interface LecturePageLayoutParams {
   slug: string;
@@ -70,7 +71,7 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
           />
           <div className="max-md:absolute max-md:bottom-4 max-md:right-4 max-md:left-4 max-md:bg-(--text-pane) max-md:text-right max-md:p-2">
             <h4 className="md:text-(--description) text-lg tracking-wider">
-              {data.section}
+              {getSectionPath(data.section)}
             </h4>
             <h1 className="text-3xl md:text-5xl font-black">{data.title}</h1>
           </div>

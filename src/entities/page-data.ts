@@ -23,8 +23,8 @@ export type PageData = {
 export type LecturePageData = PageData & {
   /** упомянутые в лекции личности */
   mentions: string[];
-  /** раздел лекций */
-  section: string;
+  /** раздел лекций (массив для вложенности: ["НТП", "Кант", "КЧР"]) */
+  section: string | string[];
 };
 
 export type ExamPageData = PageData & { description: string };

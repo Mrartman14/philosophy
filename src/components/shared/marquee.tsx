@@ -68,25 +68,6 @@ export const Marquee: React.FC<MarqueeProps> = ({
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
-  // useEffect(() => {
-  //   const el = containerRef.current;
-  //   if (!el) return;
-
-  //   let timeout: NodeJS.Timeout;
-
-  //   const handleScroll = () => {
-  //     setPaused(true);
-  //     clearTimeout(timeout);
-  //     timeout = setTimeout(() => setPaused(false), 2000);
-  //   };
-
-  //   el.addEventListener("scroll", handleScroll);
-  //   return () => {
-  //     el.removeEventListener("scroll", handleScroll);
-  //     clearTimeout(timeout);
-  //   };
-  // }, []);
-
   return (
     <div
       ref={containerRef}
