@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import { useEffect } from "react";
+import { usePathname, useParams } from "next/navigation";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
 import {
@@ -13,15 +14,20 @@ import { useAppPageConfig } from "@/app/_providers/app-page-client-provider";
 
 type AppNavProps = object;
 export const AppNav: React.FC<AppNavProps> = () => {
+  const params = useParams();
   const pathname = usePathname();
   const { exams, lectures } = useAppPageConfig();
+  const activeSlug = params?.slug as string | undefined;
+
+  // useEffect(() => {
+  //   if (!activeSlug) return;
+  //   const element = document.getElementById(`${activeSlug}`);
+  //   if (element) {
+  //     element.scrollIntoView({ block: "center" });
+  //   }
+  // }, [activeSlug]);
 
   const sectionTree = groupByNestedSection(lectures);
-
-  function checkActivePath(path: string) {
-    if (path === "/" && pathname !== path) return false;
-    return pathname === path || pathname.startsWith(path + "/");
-  }
 
   // TODO: сделать это еще и collapsible, а также сделать захват фокуса и скролла при открытом меню
   const renderSectionNode = (node: SectionNode, depth: number = 0) => {
@@ -39,13 +45,13 @@ export const AppNav: React.FC<AppNavProps> = () => {
         <ol>
           {node.lectures.map((item) => {
             const href = `/lectures/${item.slug}`;
-            const isActive = checkActivePath(href);
+            const isActive = item.slug === activeSlug;
             const lClasses = `${
               isActive ? "text-(--primary)" : ""
             } group block p-2 hover:bg-(--text-pane) font-semibold focus:outline-0`;
 
             return (
-              <li key={href}>
+              <li key={href} id={item.slug}>
                 <Link href={href} className={lClasses}>
                   <span className="group-hover:underline group-focus:underline">
                     {item.order}. {item.title}
