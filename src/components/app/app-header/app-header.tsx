@@ -35,6 +35,7 @@ export const AppHeader: React.FC = async () => {
         </NavigationMenu.List>
 
         <NavigationMenu.Portal>
+          {/* <NavigationMenu.Backdrop /> */}
           <NavigationMenu.Positioner
             sideOffset={10}
             collisionPadding={{ top: 5, bottom: 5, left: 20, right: 20 }}
