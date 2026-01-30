@@ -1473,6 +1473,12 @@
           "type": "docx",
           "slug": "notes",
           "name": "Заметки"
+        },
+        {
+          "path": "/lectures/lecture-58/lesson-58-transcription.docx",
+          "type": "docx",
+          "slug": "transcription",
+          "name": "Транскрипция"
         }
       ],
       "cover": "/lectures/lecture-58/lesson-58-preview.jpeg",
@@ -1495,6 +1501,12 @@
           "type": "docx",
           "slug": "notes",
           "name": "Заметки"
+        },
+        {
+          "path": "/lectures/lecture-59/lesson-59-transcription.docx",
+          "type": "docx",
+          "slug": "transcription",
+          "name": "Транскрипция"
         }
       ],
       "cover": "/lectures/lecture-59/lesson-59-preview.jpeg",
@@ -1511,6 +1523,12 @@
           "type": "docx",
           "slug": "abstract",
           "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-60/lesson-60-transcription.docx",
+          "type": "docx",
+          "slug": "transcription",
+          "name": "Транскрипция"
         }
       ],
       "cover": "/lectures/lecture-60/lesson-60-preview.jpeg",
