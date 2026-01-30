@@ -1514,7 +1514,7 @@
       "mentions": ["Кант", "Лейбниц", "Декарт", "Юм", "Спиноза"]
     },
     {
-      "title": "?????",
+      "title": "Интуитивная математика",
       "order": 60,
       "slug": "lecture-60",
       "sources": [
@@ -1525,6 +1525,12 @@
           "name": "Конспект"
         },
         {
+          "path": "/lectures/lecture-60/lesson-60.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        },
+        {
           "path": "/lectures/lecture-60/lesson-60-transcription.docx",
           "type": "docx",
           "slug": "transcription",
@@ -1533,7 +1539,7 @@
       ],
       "cover": "/lectures/lecture-60/lesson-60-preview.jpeg",
       "section": ["Новоевропейская теория познания", "Кант"],
-      "mentions": ["Кант","Декарт", "Гаусс"]
+      "mentions": ["Кант", "Лейбниц", "Декарт", "Гаусс"]
     },
     {
       "title": "Время",
