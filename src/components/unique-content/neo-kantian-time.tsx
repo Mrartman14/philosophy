@@ -1,20 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
-// --- КОНСТАНТЫ И НАСТРОЙКИ ---
-
-const TIMELINE_LENGTH = 20;
-
-// Настройки хаоса (в миллисекундах)
-const FUTURE_BASE_INTERVAL = 1000; // Базовая скорость мерцания будущего (рядом с наблюдателем)
-const PAST_BASE_INTERVAL = 8000; // Базовая стабильность памяти (рядом с наблюдателем)
-
-// Коэффициенты ускорения энтропии от расстояния
-// Чем выше число, тем быстрее ускоряется мерцание при удалении от ползунка
-const FUTURE_ENTROPY_FACTOR = 100;
-const PAST_DECAY_FACTOR = 500;
+// --- КОНСТАНТЫ ---
+const TIMELINE_LENGTH = 16;
+// Стартовая позиция, которая считается "Истинным Настоящим" при загрузке.
+// Всё, что слева от неё — фундаментальная история. Всё, что справа — зыбкое будущее.
+const INITIAL_ANCHOR = 6;
 
 const REALITY_ICONS = [
   "👶",
@@ -61,222 +54,204 @@ const REALITY_ICONS = [
 const getRandomIcon = () =>
   REALITY_ICONS[Math.floor(Math.random() * REALITY_ICONS.length)];
 
-// --- ПОДКОМПОНЕНТЫ ---
+// --- КОМПОНЕНТЫ ---
 
-// 1. СЛОТ БУДУЩЕГО (FLUX)
-// Чем больше distance, тем меньше интервал (чаще мерцание)
+// Компонент Хаоса (Мерцание)
 const FluxSlot = ({ distance }: { distance: number }) => {
   const [icon, setIcon] = useState(getRandomIcon());
 
   useEffect(() => {
-    // Формула хаоса: Интервал уменьшается с расстоянием.
-    // Math.max(50, ...) ставит лимит скорости, чтобы не завис браузер (не чаще 50мс)
-    const speed = Math.max(
-      50,
-      FUTURE_BASE_INTERVAL - distance * FUTURE_ENTROPY_FACTOR,
-    );
-
-    const interval = setInterval(() => {
-      setIcon(getRandomIcon());
-    }, speed);
-
+    // Чем дальше от наблюдателя, тем быстрее хаос
+    const speed = Math.max(50, 1000 - distance * 120);
+    const interval = setInterval(() => setIcon(getRandomIcon()), speed);
     return () => clearInterval(interval);
   }, [distance]);
 
   return (
-    <span className="text-2xl opacity-40 blur-[1px] scale-90 transition-all duration-300">
-      {icon}
-    </span>
-  );
-};
-
-// 2. СЛОТ ПРОШЛОГО (MEMORY)
-// Хранит свое состояние, но иногда "глючит" (меняется) в зависимости от давности
-const MemorySlot = ({
-  initialIcon,
-  distance,
-  onCorrupt,
-}: {
-  initialIcon: string;
-  distance: number;
-  onCorrupt: (newIcon: string) => void;
-}) => {
-  // Мы используем useRef для таймера, чтобы перезапускать его при изменении distance
-
-  useEffect(() => {
-    // Формула распада: Чем дальше в прошлое, тем чаще подмена.
-    const stability = Math.max(
-      1000,
-      PAST_BASE_INTERVAL - distance * PAST_DECAY_FACTOR,
-    );
-
-    const interval = setInterval(() => {
-      // С некоторой вероятностью (чтобы не было строго ритмично) меняем иконку
-      if (Math.random() > 0.3) {
-        onCorrupt(getRandomIcon());
-      }
-    }, stability);
-
-    return () => clearInterval(interval);
-  }, [distance, onCorrupt]);
-
-  return (
-    <motion.div
-      key={initialIcon} // Анимация при подмене
-      initial={{ opacity: 0.5, filter: "blur(2px)" }}
-      animate={{ opacity: 1, filter: "blur(0px)" }}
-      transition={{ duration: 1.5 }}
-      className="text-2xl opacity-70 grayscale hover:grayscale-0 transition-all duration-500"
+    <motion.span
+      key={icon}
+      initial={{ opacity: 0, filter: "blur(4px)" }}
+      animate={{ opacity: 0.5, filter: "blur(1px)" }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
+      className="text-3xl select-none cursor-default"
     >
-      {initialIcon}
-    </motion.div>
+      {icon}
+    </motion.span>
   );
 };
 
-// --- ОСНОВНОЙ КОМПОНЕНТ ---
+// Компонент Памяти (Стабильность с редким распадом)
+const MemorySlot = ({
+  icon,
+  isSimulated,
+}: {
+  icon: string;
+  isSimulated: boolean;
+}) => {
+  return (
+    <motion.span
+      layoutId={`memory-${icon}`} // Помогает плавно морфить при смене типа
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{
+        opacity: isSimulated ? 0.8 : 1, // Симулированное будущее чуть прозрачнее
+        scale: 1,
+        filter: isSimulated ? "sepia(0.5)" : "none", // Визуальный намек на симуляцию
+      }}
+      className="text-3xl select-none cursor-default"
+    >
+      {icon}
+    </motion.span>
+  );
+};
 
-export default function PhenomenologyOfTimeSphere() {
-  const [presentIndex, setPresentIndex] = useState(10);
+// Сфера (Наблюдатель)
+const VoidSphere = () => (
+  <motion.div
+    layoutId="void-sphere"
+    className="relative w-10 h-10 flex items-center justify-center z-50 pointer-events-none"
+    // transition={{ type: "spring", stiffness: 350, damping: 30 }}
+  >
+    <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/5 to-black/90 backdrop-blur-md shadow-[0_10px_30px_-5px_rgba(0,0,0,1)] border border-white/10" />
+    <div className="absolute inset-0 rounded-full shadow-[inset_0_4px_20px_rgba(255,255,255,0.1)]" />
+    <div className="relative w-3 h-3 bg-indigo-500 rounded-full shadow-[0_0_20px_2px_rgba(99,102,241,0.5)] animate-pulse" />
+  </motion.div>
+);
 
-  // Хранилище "фактов" прошлого.
-  // Мы храним массив целиком, чтобы при перемещении ползунка сохранять историю.
-  const [timelineMap, setTimelineMap] = useState<string[]>(
+// --- ОСНОВНАЯ ЛОГИКА ---
+
+export default function KantianTimeMachine() {
+  const [sliderIndex, setSliderIndex] = useState(INITIAL_ANCHOR);
+
+  // "Карта Реальности". Мы храним её всю, но рендерим только стабильные части.
+  const [realityMap, setRealityMap] = useState<string[]>(
     Array.from({ length: TIMELINE_LENGTH }, () => getRandomIcon()),
   );
 
-  // Обработчик перемещения (Коллапс волновой функции)
-  const handleTimeTravel = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Якорь Реальности. Для этой демо-версии он фиксирован,
+  // но в игре его можно было бы сдвигать кнопкой "Commit" (Совершить выбор).
+  const REALITY_ANCHOR = INITIAL_ANCHOR;
+
+  const handleDrag = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newIndex = parseInt(e.target.value);
 
-    if (newIndex > presentIndex) {
-      // Движение в будущее: "Фиксируем" пройденные слоты
-      setTimelineMap((prev) => {
-        const copy = [...prev];
-        // Все слоты между старым и новым индексом должны обрести форму
-        for (let i = presentIndex; i < newIndex; i++) {
-          // Если там еще не было зафиксированного значения (хотя у нас массив предзаполнен), меняем его на новое "открытие"
-          copy[i] = getRandomIcon();
+    // ЛОГИКА КОЛЛАПСА ВОЛНЫ
+    // Если мы вторгаемся в зону Хаоса (правее Якоря), мы должны сгенерировать
+    // для неё временную реальность.
+    if (newIndex > REALITY_ANCHOR) {
+      setRealityMap((prev) => {
+        const next = [...prev];
+        // Проходим от старого индекса до нового
+        const start = Math.min(sliderIndex, newIndex);
+        const end = Math.max(sliderIndex, newIndex);
+
+        for (let i = start; i <= end; i++) {
+          // Если мы в зоне будущего (правее якоря), мы "роллим" вероятность.
+          // Важно: мы переписываем значение, чтобы каждый новый заход в будущее
+          // создавал НОВЫЙ вариант (как ты просил: "will flicker as before/change").
+          if (i > REALITY_ANCHOR) {
+            next[i] = getRandomIcon();
+          }
         }
-        return copy;
+        return next;
       });
     }
-    setPresentIndex(newIndex);
-  };
 
-  // Функция для обновления конкретного слота памяти (вызывается из MemorySlot)
-  const corruptMemory = (index: number, newIcon: string) => {
-    setTimelineMap((prev) => {
-      const copy = [...prev];
-      copy[index] = newIcon;
-      return copy;
-    });
+    setSliderIndex(newIndex);
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-200 flex flex-col items-center justify-center p-8 font-sans overflow-hidden">
-      {/* Заголовок */}
-      <div className="mb-20 text-center space-y-2 select-none">
-        <h2 className="text-xs font-bold tracking-[0.5em] text-indigo-500 uppercase glow-text">
-          Temporality Engine
-        </h2>
-        <h1 className="text-4xl md:text-5xl font-thin tracking-wider text-white opacity-90">
-          Kantian Manifold
+    <div className="min-h-screen bg-[#050505] text-neutral-300 flex flex-col items-center justify-center font-sans overflow-hidden">
+      <div className="absolute top-12 text-center opacity-70 px-4">
+        <h1 className="text-xl font-light tracking-[0.3em] text-white mb-2">
+          TIME MANIFOLD
         </h1>
-        <p className="text-neutral-600 text-sm max-w-md mx-auto pt-4 leading-relaxed">
-          Перетаскивайте сферу. <br />
-          Слева — <span className="text-neutral-400">память</span>,
-          разлагающаяся со временем.
-          <br />
-          Справа — <span className="text-neutral-400">будущее</span>, хаотичное
-          вдали, но обретающее форму при приближении.
+        <p className="text-xs text-neutral-500 max-w-lg leading-relaxed">
+          <span className="text-indigo-400">Anchor Point:</span> Слот{" "}
+          {REALITY_ANCHOR + 1}. <br />
+          Движение <b>влево</b> — Память (события остаются стабильными). <br />
+          Движение <b>вправо</b> — Прогноз (временная фиксация хаоса).
         </p>
       </div>
 
-      {/* Контейнер таймлайна */}
-      <div className="relative w-full max-w-5xl h-32 flex items-center justify-center select-none">
-        {/* 1. Дорожка слотов */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 z-0">
-          {timelineMap.map((fixedIcon, i) => {
-            const distance = Math.abs(presentIndex - i);
-            const isPast = i < presentIndex;
-            const isFuture = i > presentIndex;
-            const isPresent = i === presentIndex;
+      <div className="relative w-full max-w-7xl h-64 flex items-center justify-center">
+        <LayoutGroup>
+          <div className="flex items-center justify-center px-4 w-full gap-1 sm:gap-2">
+            {realityMap.map((icon, i) => {
+              const isVoid = i === sliderIndex;
+              const distance = Math.abs(sliderIndex - i);
 
-            return (
-              <div
-                key={i}
-                className="relative flex items-center justify-center w-8 h-8 md:w-12 md:h-12"
-              >
-                {/* ПРОШЛОЕ */}
-                {isPast && (
-                  <MemorySlot
-                    initialIcon={fixedIcon}
-                    distance={distance}
-                    onCorrupt={(newIcon) => corruptMemory(i, newIcon)}
-                  />
-                )}
+              // --- ГЛАВНАЯ ФИЛОСОФСКАЯ ФОРМУЛА ---
+              // Событие считается СТАБИЛЬНЫМ (не мерцает), если:
+              // 1. Оно уже случилось в Истинной Истории (i <= Anchor)
+              // 2. ИЛИ мы сейчас наблюдаем его в процессе Симуляции (i < sliderIndex),
+              //    даже если оно правее Якоря.
+              const isStable = i <= REALITY_ANCHOR || i < sliderIndex;
 
-                {/* НАСТОЯЩЕЕ (ПУСТОТА) */}
-                {isPresent && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="w-1 h-1 bg-black rounded-full shadow-[0_0_10px_#000]"
-                  />
-                )}
+              // Является ли это событие "Симуляцией" (воображаемым будущим)?
+              // Это нужно для легкого визуального отличия (сепия).
+              const isSimulated = i > REALITY_ANCHOR && i < sliderIndex;
 
-                {/* БУДУЩЕЕ */}
-                {isFuture && <FluxSlot distance={distance} />}
+              return (
+                <motion.div
+                  layout
+                  key={i}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className={`
+                    relative flex flex-col items-center justify-center rounded-lg transition-all duration-300
+                    ${isVoid ? "w-24 h-32 z-20" : "w-10 h-16 sm:w-14 sm:h-20 bg-neutral-900/40 border border-white/5"}
+                  `}
+                >
+                  {/* Маркер "Истинного Настоящего" (Якоря) */}
+                  {i === REALITY_ANCHOR && !isVoid && (
+                    <div className="absolute -top-3 w-1 h-1 bg-white/50 rounded-full shadow-[0_0_10px_white]" />
+                  )}
 
-                {/* Маркер позиции на дорожке */}
-                <div
-                  className={`absolute -bottom-8 w-px h-3 transition-colors duration-500 ${isPast ? "bg-neutral-800" : "bg-neutral-900"}`}
-                />
-              </div>
-            );
-          })}
-        </div>
+                  <AnimatePresence mode="popLayout">
+                    {/* 1. СФЕРА (ПУСТОТА) */}
+                    {isVoid && <VoidSphere />}
 
-        {/* 2. Инпут (Невидимый контроллер) */}
+                    {/* 2. СОДЕРЖИМОЕ СЛОТА */}
+                    {!isVoid && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5, filter: "blur(10px)" }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        {isStable ? (
+                          <MemorySlot icon={icon} isSimulated={isSimulated} />
+                        ) : (
+                          <FluxSlot distance={distance} />
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Подсветка статуса */}
+                  {!isVoid && (
+                    <div
+                      className={`
+                      absolute bottom-1 w-full h-[2px] transition-colors duration-500
+                      ${i <= REALITY_ANCHOR ? "bg-neutral-600" : isSimulated ? "bg-indigo-500/50" : "bg-transparent"}
+                    `}
+                    />
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </LayoutGroup>
+
+        {/* Слайдер управления */}
         <input
           type="range"
           min={0}
           max={TIMELINE_LENGTH - 1}
-          value={presentIndex}
-          onChange={handleTimeTravel}
-          className="absolute inset-0 w-full h-32 opacity-0 z-50 cursor-grab active:cursor-grabbing"
+          value={sliderIndex}
+          onChange={handleDrag}
+          className="absolute inset-x-0 h-40 opacity-0 z-50 cursor-ew-resize"
         />
-
-        {/* 3. СФЕРА ВОСПРИЯТИЯ (Визуальный ползунок) */}
-        <motion.div
-          className="absolute top-1/2 left-0 pointer-events-none z-20"
-          // Смещаем на половину ширины трека для центровки
-          style={{ x: "-50%", y: "-50%" }}
-          animate={{
-            left: `${(presentIndex / (TIMELINE_LENGTH - 1)) * 100}%`,
-          }}
-          transition={{ type: "spring", stiffness: 250, damping: 25 }}
-        >
-          {/* Шар */}
-          <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-xs border border-white/10 group">
-            {/* Внутреннее свечение/Градиент (Glassmorphism) */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-900/40 opacity-80" />
-
-            {/* Блик */}
-            <div className="absolute top-3 left-4 w-6 h-3 bg-white/20 rounded-full blur-[2px] transform -rotate-45" />
-
-            {/* Ядро (Наблюдатель) */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full shadow-[0_0_15px_2px_rgba(255,255,255,0.8)] animate-pulse" />
-            </div>
-
-            {/* Эффект линзы (искажение под шаром - имитация) */}
-            <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]" />
-          </div>
-
-          {/* Вертикальный луч, указывающий на "Ничто" */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 h-12 w-px bg-gradient-to-b from-indigo-500/50 to-transparent" />
-        </motion.div>
       </div>
     </div>
   );
