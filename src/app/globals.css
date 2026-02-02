@@ -7,7 +7,7 @@
 
 @theme {
   --color-primary: oklch(72% 0.14 55);
-  --color-background: #f7f8fc;
+  --color-background: #f6f2eb;
   --color-border: #c4cde0c6;
   --color-link: oklch(50% 0.15 250);
   --color-description: #6f798d;
@@ -28,7 +28,6 @@
   --header-height: var(--spacing-header);
 }
 
-/* Dark theme переопределения */
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: #111a20;
@@ -38,6 +37,41 @@
     --color-text-pane: #00000092;
   }
 }
+
+/* TODO: theme switch */
+
+/* @theme {
+  --color-primary: #775fa4;
+  --color-background: #f7f8fc;
+  --color-border: #d4cdc8;
+  --color-link: #639fa9;
+  --color-description: #817f91;
+  --color-text-pane: #d4cdc8aa;
+
+  --spacing-header: 50px;
+}
+
+:root {
+  color-scheme: light dark;
+
+  --primary: var(--color-primary);
+  --background: var(--color-background);
+  --border: var(--color-border);
+  --link: var(--color-link);
+  --description: var(--color-description);
+  --text-pane: var(--color-text-pane);
+  --header-height: var(--spacing-header);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #1e1c2e;
+    --color-border: #3e3b55;
+    --color-link: #a88cce;
+    --color-description: #b0aed0;
+    --color-text-pane: #0b0b2292;
+  }
+} */
 
 @media (forced-colors: active) {
   /*

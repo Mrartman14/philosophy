@@ -1542,10 +1542,22 @@
       "mentions": ["Кант", "Лейбниц", "Декарт", "Гаусс"]
     },
     {
-      "title": "Время",
+      "title": "Чистое время",
       "order": 61,
       "slug": "lecture-61",
       "sources": [
+        {
+          "path": "/lectures/lecture-61/lesson-61-abstract.docx",
+          "type": "docx",
+          "slug": "abstract",
+          "name": "Конспект"
+        },
+        {
+          "path": "/lectures/lecture-61/lesson-61.docx",
+          "type": "docx",
+          "slug": "notes",
+          "name": "Заметки"
+        },
         {
           "path": "/lectures/lecture-61/lesson-61-transcription.docx",
           "type": "docx",
