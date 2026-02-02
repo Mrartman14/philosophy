@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
+// import Image from "next/image";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
 import { AppNav } from "../app-nav";
-// import { DnaIcon } from "@/assets/icons/dna-icon";
+import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 
@@ -16,7 +16,8 @@ export const AppHeader: React.FC = async () => {
         <NavigationMenu.List className="relative grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 w-full h-full items-stretch">
           <NavigationMenu.Item className="flex items-stretch">
             <Link href="/" className="flex group">
-              <Image
+              <LogoIcon className="text-3xl text-(--description) group-hover:text-(--primary) self-center" />
+              {/* <Image
                 src={`${process.env.NEXT_PUBLIC_BASE_PATH}/logo.png`}
                 alt="Logo image"
                 width={40}
@@ -24,7 +25,7 @@ export const AppHeader: React.FC = async () => {
                 sizes="50px"
                 priority
                 className="grayscale group-hover:grayscale-0 self-center"
-              />
+              /> */}
             </Link>
           </NavigationMenu.Item>
           <AppNav />

@@ -7,13 +7,13 @@ export const LogoIcon = (props: SVGProps<SVGSVGElement>) => (
     width="1em"
     height="1em"
     viewBox="0 0 512 512"
+    stroke="none"
     enableBackground="new 0 0 512 512"
     xmlSpace="preserve"
+    fill="currentColor"
     {...props}
   >
     <path
-      fill="var(--color-primary)"
-      stroke="none"
       d="
 M441.059479,279.770142 
 	C440.895508,279.800018 440.732727,279.844360 440.567444,279.857697 
@@ -110,8 +110,6 @@ M441.059479,279.770142
 z"
     />
     <path
-      fill="var(--color-primary)"
-      stroke="none"
       d="
 M432.372498,434.146423 
 	C427.895660,441.065216 420.189056,444.503235 413.506104,442.786591 
@@ -123,8 +121,6 @@ M432.372498,434.146423
 z"
     />
     <path
-      fill="var(--color-primary)"
-      stroke="none"
       d="
 M92.560997,105.166885 
 	C100.665657,102.533768 107.487801,104.177803 112.676872,110.329697 
@@ -136,8 +132,6 @@ M92.560997,105.166885
 z"
     />
     <path
-      fill="var(--color-primary)"
-      stroke="none"
       d="
 M424.330933,105.329025 
 	C439.623444,113.549309 436.752960,128.872513 426.797089,135.476685 
@@ -148,8 +142,6 @@ M424.330933,105.329025
 z"
     />
     <path
-      fill="var(--color-primary)"
-      stroke="none"
       d="
 M81.973862,429.376617 
 	C82.110329,415.610962 84.689354,411.425629 94.933350,407.931519 
