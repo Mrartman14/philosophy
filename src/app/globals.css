@@ -5,7 +5,7 @@
    TAILWIND V4 CONFIGURATION
    ═══════════════════════════════════════════════════════════════ */
 
-@theme {
+/* @theme {
   --color-primary: oklch(72% 0.14 55);
   --color-background: #f6f2eb;
   --color-border: #c4cde0c6;
@@ -36,13 +36,14 @@
     --color-description: #8b98b2;
     --color-text-pane: #00000092;
   }
-}
+} */
 
 /* TODO: theme switch */
 
-/* @theme {
+@theme {
   --color-primary: #775fa4;
-  --color-background: #f7f8fc;
+  --color-background: #f6f2eb;
+  /* --color-background: #f7f8fc; */
   --color-border: #d4cdc8;
   --color-link: #639fa9;
   --color-description: #817f91;
@@ -71,7 +72,7 @@
     --color-description: #b0aed0;
     --color-text-pane: #0b0b2292;
   }
-} */
+}
 
 @media (forced-colors: active) {
   /*
