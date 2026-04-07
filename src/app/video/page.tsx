@@ -7,12 +7,14 @@ import { useSyncedPlayer } from "@/components/app/video/use-synced-player";
 import { TranscriptPanel } from "@/components/app/video/transcript-panel";
 import { BoardPanel } from "@/components/app/video/board-panel";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export default function VideoPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [data, setData] = useState<VideoLectureData | null>(null);
 
   useEffect(() => {
-    fetch("/cutted.json")
+    fetch(`${basePath}/cutted.json`)
       .then((res) => res.json())
       .then(setData);
   }, []);
@@ -43,7 +45,7 @@ export default function VideoPage() {
           ref={videoRef}
           controls
           className="w-full aspect-video"
-          src="/cutted.mp4"
+          src={`${basePath}/cutted.mp4`}
           preload="metadata"
         />
         <BoardPanel boardState={currentBoardState} />
