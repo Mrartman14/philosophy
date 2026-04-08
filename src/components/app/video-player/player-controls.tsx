@@ -79,14 +79,14 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
     >
       <Toolbar.Button
         onClick={() => seekToSegment(-1)}
-        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        className="hidden md:inline-flex p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
         aria-label="Предыдущий сегмент"
       >
         <PrevSegmentIcon />
       </Toolbar.Button>
       <Toolbar.Button
         onClick={() => onSkipBy(-10)}
-        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        className="hidden md:inline-flex p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
         aria-label="Назад на 10 секунд"
       >
         <SkipBackIcon />
@@ -100,14 +100,14 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
       </Toolbar.Button>
       <Toolbar.Button
         onClick={() => onSkipBy(10)}
-        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        className="hidden md:inline-flex p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
         aria-label="Вперёд на 10 секунд"
       >
         <SkipForwardIcon />
       </Toolbar.Button>
       <Toolbar.Button
         onClick={() => seekToSegment(1)}
-        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        className="hidden md:inline-flex p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
         aria-label="Следующий сегмент"
       >
         <NextSegmentIcon />
@@ -140,11 +140,11 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
         onToggleMute={onToggleMute}
       />
 
-      <Toolbar.Separator className="w-px h-4 bg-(--color-border) mx-1" />
+      <Toolbar.Separator className="hidden md:block w-px h-4 bg-(--color-border) mx-1" />
 
       <Toolbar.Button
         onClick={onTogglePip}
-        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        className="hidden md:inline-flex p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
         aria-label={isPip ? "Выйти из картинки в картинке" : "Картинка в картинке"}
       >
         <PipIcon />
@@ -160,7 +160,7 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
 
       <Toolbar.Button
         onClick={onToggleCollapse}
-        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        className="hidden md:inline-flex p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
         aria-label="Свернуть контролы"
       >
         <CollapseIcon />

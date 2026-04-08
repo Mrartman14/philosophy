@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Slider } from "@base-ui/react/slider";
+import { Popover } from "@base-ui/react/popover";
 
 const SNAP_POINTS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const SNAP_THRESHOLD = 0.05;
@@ -16,7 +17,7 @@ interface SpeedSliderProps {
   onChangePlaybackRate: (rate: number) => void;
 }
 
-export const SpeedSlider: React.FC<SpeedSliderProps> = ({
+const SpeedSliderInner: React.FC<SpeedSliderProps> = ({
   playbackRate,
   onChangePlaybackRate,
 }) => {
@@ -57,5 +58,36 @@ export const SpeedSlider: React.FC<SpeedSliderProps> = ({
         {(dragRate ?? playbackRate).toFixed(2).replace(/\.?0+$/, "")}x
       </button>
     </div>
+  );
+};
+
+export const SpeedSlider: React.FC<SpeedSliderProps> = (props) => {
+  return (
+    <>
+      {/* Desktop: inline slider */}
+      <div className="hidden md:flex">
+        <SpeedSliderInner {...props} />
+      </div>
+
+      {/* Mobile: popover with slider */}
+      <div className="flex md:hidden">
+        <Popover.Root>
+          <Popover.Trigger
+            className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-xs tabular-nums select-none"
+            aria-label="Скорость воспроизведения"
+          >
+            {props.playbackRate.toFixed(2).replace(/\.?0+$/, "")}x
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Positioner sideOffset={8}>
+              <Popover.Popup className="bg-(--color-background) border border-(--color-border) rounded p-3 shadow-lg">
+                <Popover.Arrow className="fill-(--color-background) stroke-(--color-border)" />
+                <SpeedSliderInner {...props} />
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        </Popover.Root>
+      </div>
+    </>
   );
 };
