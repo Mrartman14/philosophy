@@ -1,5 +1,4 @@
 import Link from "next/link";
-// import Image from "next/image";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
 import { AppNav } from "../app-nav";
@@ -7,25 +6,14 @@ import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 
-import "./app-header.css";
-
 export const AppHeader: React.FC = async () => {
   return (
-    <header className="app-header sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--background) border-t-0 border-b md:border-t border-(--border) h-(--header-height)">
+    <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--background) border-t-0 border-b md:border-t border-(--border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:left-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--border) bg-(--background) pl-4 pr-4">
         <NavigationMenu.List className="relative grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 w-full h-full items-stretch">
           <NavigationMenu.Item className="flex items-stretch">
             <Link href="/" className="flex group">
               <LogoIcon className="text-3xl text-(--description) group-hover:text-(--primary) self-center" />
-              {/* <Image
-                src={`${process.env.NEXT_PUBLIC_BASE_PATH}/logo.png`}
-                alt="Logo image"
-                width={40}
-                height={40}
-                sizes="50px"
-                priority
-                className="grayscale group-hover:grayscale-0 self-center"
-              /> */}
             </Link>
           </NavigationMenu.Item>
           <AppNav />
@@ -36,7 +24,6 @@ export const AppHeader: React.FC = async () => {
         </NavigationMenu.List>
 
         <NavigationMenu.Portal>
-          {/* <NavigationMenu.Backdrop /> */}
           <NavigationMenu.Positioner
             sideOffset={10}
             collisionPadding={{ top: 5, bottom: 5, left: 20, right: 20 }}
