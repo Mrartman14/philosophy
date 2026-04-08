@@ -31,7 +31,7 @@ interface VideoPlayerProps {
 export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
   src,
   chapters = [],
-  markers: _markers = [],
+  markers = [],
   onTimeUpdate,
   className,
 }, ref) => {
@@ -54,7 +54,9 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
         playing={player.playing}
         currentTime={player.currentTime}
         duration={player.duration}
+        buffered={player.buffered}
         chapters={chapters}
+        markers={markers}
         onTogglePlay={player.togglePlay}
         onSkipBy={player.skipBy}
         onSeek={player.seek}

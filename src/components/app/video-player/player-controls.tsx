@@ -6,13 +6,16 @@ import { SkipBackIcon } from "@/assets/icons/skip-back-icon";
 import { SkipForwardIcon } from "@/assets/icons/skip-forward-icon";
 import { PrevSegmentIcon } from "@/assets/icons/prev-segment-icon";
 import { NextSegmentIcon } from "@/assets/icons/next-segment-icon";
-import type { Chapter } from "./video-player";
+import { Timeline } from "./timeline";
+import type { Chapter, Marker } from "./video-player";
 
 interface PlayerControlsProps {
   playing: boolean;
   currentTime: number;
   duration: number;
+  buffered: number;
   chapters: Chapter[];
+  markers: Marker[];
   onTogglePlay: () => void;
   onSkipBy: (seconds: number) => void;
   onSeek: (time: number) => void;
@@ -22,7 +25,9 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
   playing,
   currentTime,
   duration,
+  buffered,
   chapters,
+  markers,
   onTogglePlay,
   onSkipBy,
   onSeek,
@@ -85,6 +90,15 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
       <span className="text-xs tabular-nums text-(--color-description) select-none whitespace-nowrap">
         {formatTime(currentTime)} / {formatTime(duration)}
       </span>
+
+      <Timeline
+        currentTime={currentTime}
+        duration={duration}
+        buffered={buffered}
+        chapters={chapters}
+        markers={markers}
+        onSeek={onSeek}
+      />
     </Toolbar.Root>
   );
 };
