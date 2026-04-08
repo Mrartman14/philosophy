@@ -54,7 +54,7 @@ export const Timeline: React.FC<TimelineProps> = ({
       {hoverTime != null && (
         <div
           className="absolute bottom-full mb-2 -translate-x-1/2 pointer-events-none bg-(--color-background) border border-(--color-border) rounded px-2 py-1 text-xs whitespace-nowrap z-10"
-          style={{ left: `${(hoverTime / duration) * 100}%` }}
+          style={{ left: `${duration > 0 ? (hoverTime / duration) * 100 : 0}%` }}
         >
           <span className="tabular-nums">{formatTime(hoverTime)}</span>
           {hoverChapter && (
@@ -89,8 +89,8 @@ export const Timeline: React.FC<TimelineProps> = ({
                   key={i}
                   className="absolute h-full bg-(--color-primary)/20"
                   style={{
-                    left: `${(ch.startTime / duration) * 100}%`,
-                    width: `${((ch.endTime - ch.startTime) / duration) * 100}%`,
+                    left: `${duration > 0 ? (ch.startTime / duration) * 100 : 0}%`,
+                    width: `${duration > 0 ? ((ch.endTime - ch.startTime) / duration) * 100 : 0}%`,
                   }}
                 />
               ))}
@@ -100,7 +100,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                 <div
                   key={`div-${i}`}
                   className="absolute h-full w-0.5 bg-(--color-border)"
-                  style={{ left: `${(ch.startTime / duration) * 100}%` }}
+                  style={{ left: `${duration > 0 ? (ch.startTime / duration) * 100 : 0}%` }}
                 />
               ))}
             <Slider.Indicator className="absolute h-full rounded bg-(--color-primary)" />
@@ -125,7 +125,7 @@ const TimelineMarker: React.FC<{ marker: Marker; duration: number }> = ({ marker
       delay={200}
       closeDelay={300}
       className="absolute top-1/2 -translate-y-1/2 w-1 h-4 bg-(--color-primary) rounded-sm cursor-pointer z-10"
-      style={{ left: `${(marker.time / duration) * 100}%` }}
+      style={{ left: `${duration > 0 ? (marker.time / duration) * 100 : 0}%` }}
       aria-label={marker.label}
     />
     <Popover.Portal>

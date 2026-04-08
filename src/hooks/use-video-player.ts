@@ -75,7 +75,7 @@ export function useVideoPlayer(
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (video.paused) video.play();
+    if (video.paused) video.play().catch(() => {});
     else video.pause();
   }, [videoRef]);
 
@@ -119,23 +119,23 @@ export function useVideoPlayer(
     [videoRef]
   );
 
-  const toggleFullscreen = useCallback(async () => {
+  const toggleFullscreen = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      document.exitFullscreen().catch(() => {});
     } else {
-      await el.requestFullscreen();
+      el.requestFullscreen().catch(() => {});
     }
   }, [containerRef]);
 
-  const togglePip = useCallback(async () => {
+  const togglePip = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     if (document.pictureInPictureElement) {
-      await document.exitPictureInPicture();
+      document.exitPictureInPicture().catch(() => {});
     } else {
-      await video.requestPictureInPicture();
+      video.requestPictureInPicture().catch(() => {});
     }
   }, [videoRef]);
 
