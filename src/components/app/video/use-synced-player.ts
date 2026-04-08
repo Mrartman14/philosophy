@@ -1,29 +1,19 @@
 "use client";
 
 import { useEffect, useState, useCallback, RefObject } from "react";
-import {
-  VideoLectureData,
-  TranscriptItem,
-  BoardState,
-} from "@/entities/video-lecture";
+import type { components } from "@/api/schema";
 
-function findByTime<T extends { start: number; end: number }>(
-  items: T[],
-  time: number
-): T | null {
+type Segment = components["schemas"]["transcript.Segment"];
+
+function findByTime(items: Segment[], time: number): Segment | null {
   return items.find((item) => time >= item.start && time <= item.end) ?? null;
 }
 
 export function useSyncedPlayer(
   videoRef: RefObject<HTMLVideoElement | null>,
-  data: VideoLectureData | null
+  segments: Segment[]
 ) {
-  const [currentTranscriptId, setCurrentTranscriptId] = useState<number | null>(
-    null
-  );
-  const [currentBoardState, setCurrentBoardState] = useState<BoardState | null>(
-    null
-  );
+  const [currentSegmentId, setCurrentSegmentId] = useState<number | null>(null);
 
   const seekTo = useCallback(
     (time: number) => {
@@ -37,21 +27,17 @@ export function useSyncedPlayer(
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !data) return;
+    if (!video || segments.length === 0) return;
 
     const handleTimeUpdate = () => {
       const time = video.currentTime;
-
-      const transcript = findByTime(data.transcript, time);
-      setCurrentTranscriptId(transcript?.id ?? null);
-
-      const board = findByTime(data.board_states, time);
-      setCurrentBoardState(board);
+      const segment = findByTime(segments, time);
+      setCurrentSegmentId(segment?.id ?? null);
     };
 
     video.addEventListener("timeupdate", handleTimeUpdate);
     return () => video.removeEventListener("timeupdate", handleTimeUpdate);
-  }, [videoRef, data]);
+  }, [videoRef, segments]);
 
-  return { currentTranscriptId, currentBoardState, seekTo };
+  return { currentSegmentId, seekTo };
 }

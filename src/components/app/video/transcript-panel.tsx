@@ -1,18 +1,19 @@
-// src/components/app/video/transcript-panel.tsx
 "use client";
 
 import { useEffect, useRef } from "react";
-import { TranscriptItem } from "@/entities/video-lecture";
+import type { components } from "@/api/schema";
+
+type Segment = components["schemas"]["transcript.Segment"];
 
 interface TranscriptPanelProps {
-  transcript: TranscriptItem[];
-  currentTranscriptId: number | null;
+  segments: Segment[];
+  currentSegmentId: number | null;
   onSeek: (time: number) => void;
 }
 
 export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({
-  transcript,
-  currentTranscriptId,
+  segments,
+  currentSegmentId,
   onSeek,
 }) => {
   const activeRef = useRef<HTMLButtonElement>(null);
@@ -21,12 +22,12 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({
     if (activeRef.current) {
       activeRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [currentTranscriptId]);
+  }, [currentSegmentId]);
 
   return (
     <div className="flex flex-col gap-1 p-4">
-      {transcript.map((item) => {
-        const isActive = item.id === currentTranscriptId;
+      {segments.map((item) => {
+        const isActive = item.id === currentSegmentId;
         return (
           <button
             key={item.id}
