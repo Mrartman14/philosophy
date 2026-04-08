@@ -1,5 +1,3 @@
-"use client";
-
 import { GoBack } from "@/components/shared/go-back";
 import { OfflineIcon } from "@/assets/icons/offline-icon";
 
