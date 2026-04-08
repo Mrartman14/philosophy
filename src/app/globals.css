@@ -1,9 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@import "../styles/themes/rebus.css";
-@import "../styles/themes/kantian.css";
-
 @theme {
   --color-primary: var(--color-primary);
   --color-background: var(--color-background);
@@ -84,17 +81,4 @@ body:has(dialog[open]) {
   .sensitive-image {
     filter: brightness(75%);
   }
-}
-
-.scroll-progress-bar {
-  appearance: none;
-}
-.scroll-progress-bar::-webkit-progress-bar {
-  background-color: transparent;
-}
-.scroll-progress-bar::-webkit-progress-value {
-  background-color: var(--primary);
-}
-.scroll-progress-bar::-moz-progress-bar {
-  background-color: var(--primary);
 }
