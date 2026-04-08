@@ -1,31 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
+import { useSyncExternalStore } from "react";
 import { OfflineIcon } from "@/assets/icons/offline-icon";
+
+function subscribeToOnlineStatus(callback: () => void) {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+}
+
+function getSnapshot() {
+  return navigator.onLine;
+}
+
+function getServerSnapshot() {
+  return true;
+}
 
 export const NetworkIndicator: React.FC<{ className?: string }> = ({
   className,
 }) => {
-  // TODO: useSyncExternalStore
-  // https://react.dev/reference/react/useSyncExternalStore#subscribing-to-a-browser-api
-  const [isOffline, setIsOffline] = useState(false);
+  const isOnline = useSyncExternalStore(
+    subscribeToOnlineStatus,
+    getSnapshot,
+    getServerSnapshot,
+  );
 
-  useEffect(() => {
-    const updateOnlineStatus = () => {
-      setIsOffline(!navigator.onLine);
-    };
-
-    window.addEventListener("online", updateOnlineStatus);
-    window.addEventListener("offline", updateOnlineStatus);
-
-    return () => {
-      window.removeEventListener("online", updateOnlineStatus);
-      window.removeEventListener("offline", updateOnlineStatus);
-    };
-  }, []);
-
-  return isOffline ? (
+  return !isOnline ? (
     <OfflineIcon className={`text-amber-600 ${className}`} />
   ) : null;
 };
