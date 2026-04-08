@@ -5,7 +5,6 @@ import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HourglassIcon } from "@/assets/icons/hourglass-icon";
 import { Tractate } from "@/components/shared/tractate/tractate";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar/scroll-progress-bar";
-// import { SkeletonTextBlock } from "@/components/shared/skeleton/skeleton-text-block";
 
 interface DocxViewerProps {
   data: PageDataSource;
@@ -19,12 +18,10 @@ export const DocxViewer: React.FC<DocxViewerProps> = ({ data, parsedData }) => {
 
   return (
     <>
-      {/* {!loading && ( */}
       <ScrollProgressBar
         targetElementId={ARTICLE_ID}
         className={`sticky top-(--header-height) z-50 md:col-span-2`}
       />
-      {/* )} */}
 
       <div className={`w-full grid grid-cols-1 md:grid-cols-[1fr_300px]`}>
         <div className="grid gap-4 p-4 border-(--border) border-b md:border-r">

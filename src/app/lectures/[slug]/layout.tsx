@@ -2,10 +2,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { getAdjacentLecturesBySlug } from "@/api/pages-api";
-// import { Mention } from "@/components/shared/mention";
 import { ScrollButton } from "@/components/shared/scroll-button";
 import { DocxOutroLink } from "@/components/docx/docx-outro-link";
-// import { PhilosopherIcon } from "@/assets/icons/philosopher-icon";
 import { LectureViewObserver } from "@/components/lecture-page/lecture-view-observer";
 import { UniqueContentRenderer } from "@/components/unique-content/unique-content-renderer";
 import { getSectionPath } from "@/utils/group-by-nested-section";
@@ -96,18 +94,6 @@ export default async function LectureLayout({ params, children }: LayoutProps) {
               />
             ))}
 
-          {/* <div className="flex gap-x-4 gap-y-1 items-center flex-wrap">
-            <PhilosopherIcon className="text-2xl text-(--description)" />
-
-            {data.mentions.map((philosopher) => (
-              <Mention
-                key={philosopher}
-                withPopover
-                name={philosopher}
-                className="md:text-xl"
-              />
-            ))}
-          </div> */}
         </div>
       </div>
 

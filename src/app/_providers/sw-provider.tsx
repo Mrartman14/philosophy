@@ -44,21 +44,6 @@ export const SWProvider: React.FC<SWProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // useLayoutEffect(() => {
-  //   let deferredPrompt;
-  //   window.addEventListener("beforeinstallprompt", (e) => {
-  //     e.preventDefault();
-  //     deferredPrompt = e;
-  //     alert("qwe");
-  //     // показать кнопку
-  //     installBtn.style.display = "block";
-  //     installBtn.addEventListener("click", () => {
-  //       deferredPrompt.prompt();
-  //       deferredPrompt = null;
-  //     });
-  //   });
-  // }, []);
-
   const state: SWProviderState = {
     isSupported,
     setIsSupported,
