@@ -4,10 +4,11 @@ import Link from "next/link";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
-import { useAppPageConfig } from "@/app/_providers/app-page-client-provider";
+import type { components } from "@/api/schema";
 
-export const AppNav: React.FC = () => {
-  const { lectures } = useAppPageConfig();
+type Lecture = components["schemas"]["lecture.Lecture"];
+
+export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
 
   return (
     <NavigationMenu.Item className="flex items-stretch justify-center">

@@ -5,8 +5,11 @@ import { AppNav } from "../app-nav";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
+import type { components } from "@/api/schema";
 
-export const AppHeader: React.FC = async () => {
+type Lecture = components["schemas"]["lecture.Lecture"];
+
+export const AppHeader: React.FC<{ lectures: Lecture[] }> = async ({ lectures }) => {
   return (
     <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--background) border-t-0 border-b md:border-t border-(--border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:left-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--border) bg-(--background) pl-4 pr-4">
@@ -16,7 +19,7 @@ export const AppHeader: React.FC = async () => {
               <LogoIcon className="text-3xl text-(--description) group-hover:text-(--primary) self-center" />
             </Link>
           </NavigationMenu.Item>
-          <AppNav />
+          <AppNav lectures={lectures} />
           <div />
           <div className="flex gap-2 items-center">
             <NetworkIndicator className="text-xl" />
