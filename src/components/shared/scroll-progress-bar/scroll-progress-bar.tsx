@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import "./scroll-progress-bar.css";
 
 type ScrollProgressBarProps = {
   className?: string;
