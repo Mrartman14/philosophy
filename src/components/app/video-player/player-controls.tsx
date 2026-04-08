@@ -9,6 +9,10 @@ import { NextSegmentIcon } from "@/assets/icons/next-segment-icon";
 import { Timeline } from "./timeline";
 import { SpeedSlider } from "./speed-slider";
 import { VolumeControl } from "./volume-control";
+import { FullscreenIcon } from "@/assets/icons/fullscreen-icon";
+import { FullscreenExitIcon } from "@/assets/icons/fullscreen-exit-icon";
+import { PipIcon } from "@/assets/icons/pip-icon";
+import { CollapseIcon } from "@/assets/icons/collapse-icon";
 import type { Chapter, Marker } from "./video-player";
 
 interface PlayerControlsProps {
@@ -25,8 +29,13 @@ interface PlayerControlsProps {
   volume: number;
   muted: boolean;
   onChangePlaybackRate: (rate: number) => void;
+  isFullscreen: boolean;
+  isPip: boolean;
   onChangeVolume: (v: number) => void;
   onToggleMute: () => void;
+  onToggleFullscreen: () => void;
+  onTogglePip: () => void;
+  onToggleCollapse: () => void;
 }
 
 export const PlayerControls: React.FC<PlayerControlsProps> = ({
@@ -43,8 +52,13 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
   muted,
   onSeek,
   onChangePlaybackRate,
+  isFullscreen,
+  isPip,
   onChangeVolume,
   onToggleMute,
+  onToggleFullscreen,
+  onTogglePip,
+  onToggleCollapse,
 }) => {
   const seekToSegment = (direction: -1 | 1) => {
     if (chapters.length === 0) return;
@@ -125,6 +139,32 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
         onChangeVolume={onChangeVolume}
         onToggleMute={onToggleMute}
       />
+
+      <Toolbar.Separator className="w-px h-4 bg-(--color-border) mx-1" />
+
+      <Toolbar.Button
+        onClick={onTogglePip}
+        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        aria-label={isPip ? "Выйти из картинки в картинке" : "Картинка в картинке"}
+      >
+        <PipIcon />
+      </Toolbar.Button>
+
+      <Toolbar.Button
+        onClick={onToggleFullscreen}
+        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        aria-label={isFullscreen ? "Выйти из полноэкранного режима" : "Полноэкранный режим"}
+      >
+        {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+      </Toolbar.Button>
+
+      <Toolbar.Button
+        onClick={onToggleCollapse}
+        className="p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg"
+        aria-label="Свернуть контролы"
+      >
+        <CollapseIcon />
+      </Toolbar.Button>
     </Toolbar.Root>
   );
 };
