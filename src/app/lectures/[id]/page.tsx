@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLectureById, getLectures, getTranscript } from "@/api/lecture-api";
-import { LecturePlayer } from "./lecture-player";
+import { LectureSync } from "./lecture-sync";
+import { TranscriptPanel } from "@/components/app/video/transcript-panel";
 
 interface LecturePageParams {
   id: string;
@@ -41,10 +42,23 @@ export default async function LecturePage({ params }: PageProps) {
     return notFound();
   }
 
+  const segments = transcript.segments ?? [];
+
   return (
-    <LecturePlayer
-      lecture={lecture}
-      segments={transcript.segments ?? []}
+    <LectureSync
+      videoUrl={lecture.video_url}
+      segments={segments}
+      transcriptContent={<TranscriptPanel segments={segments} />}
+      infoContent={
+        <div className="p-4">
+          <h1 className="text-xl font-bold">{lecture.title}</h1>
+          {lecture.description && (
+            <p className="text-sm text-(--color-description) mt-2">
+              {lecture.description}
+            </p>
+          )}
+        </div>
+      }
     />
   );
 }
