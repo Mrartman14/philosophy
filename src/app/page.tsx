@@ -10,7 +10,7 @@ export default async function Home() {
         Лекции
       </h1>
       <ul className="grid grid-cols-1 gap-2 px-4">
-        {result.data.map((lecture) => (
+        {(result.data ?? []).map((lecture) => (
           <li key={lecture.id}>
             <Link
               href={`/lectures/${lecture.id}`}

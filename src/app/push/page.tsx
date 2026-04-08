@@ -1,6 +1,5 @@
 "use client";
 
-import { Tractate } from "@/components/shared/tractate/tractate";
 import { usePushSubscription } from "@/hooks/use-push-subscription";
 
 function PushNotificationManager() {
@@ -51,9 +50,9 @@ function PushNotificationManager() {
 
 export default function Page() {
   return (
-    <Tractate>
+    <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Уведомления</h1>
       <PushNotificationManager />
-    </Tractate>
+    </div>
   );
 }

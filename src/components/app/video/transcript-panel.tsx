@@ -32,7 +32,7 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({
           <button
             key={item.id}
             ref={isActive ? activeRef : null}
-            onClick={() => onSeek(item.start)}
+            onClick={() => onSeek(item.start ?? 0)}
             className={`text-left p-2 rounded-lg transition-colors cursor-pointer ${
               isActive
                 ? "bg-(--color-primary)/10 border-l-2 border-(--color-primary)"

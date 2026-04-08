@@ -9,7 +9,9 @@ interface LecturePageParams {
 
 export async function generateStaticParams(): Promise<LecturePageParams[]> {
   const result = await getLectures(1, 100);
-  return result.data.map((lecture) => ({ id: lecture.id }));
+  return (result.data ?? [])
+    .filter((lecture): lecture is typeof lecture & { id: string } => !!lecture.id)
+    .map((lecture) => ({ id: lecture.id }));
 }
 
 type GenerateMetadataProps = {
@@ -42,7 +44,7 @@ export default async function LecturePage({ params }: PageProps) {
   return (
     <LecturePlayer
       lecture={lecture}
-      segments={transcript.segments}
+      segments={transcript.segments ?? []}
     />
   );
 }

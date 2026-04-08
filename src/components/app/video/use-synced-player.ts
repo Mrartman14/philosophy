@@ -6,7 +6,7 @@ import type { components } from "@/api/schema";
 type Segment = components["schemas"]["transcript.Segment"];
 
 function findByTime(items: Segment[], time: number): Segment | null {
-  return items.find((item) => time >= item.start && time <= item.end) ?? null;
+  return items.find((item) => time >= (item.start ?? 0) && time <= (item.end ?? 0)) ?? null;
 }
 
 export function useSyncedPlayer(

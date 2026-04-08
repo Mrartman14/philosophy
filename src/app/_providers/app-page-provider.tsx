@@ -7,7 +7,7 @@ export const AppPageProvider: React.FC<React.PropsWithChildren> = async ({
   const result = await getLectures(1, 100);
 
   return (
-    <AppPageClientProvider lectures={result.data}>
+    <AppPageClientProvider lectures={result.data ?? []}>
       {children}
     </AppPageClientProvider>
   );
