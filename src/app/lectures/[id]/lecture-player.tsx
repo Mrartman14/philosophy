@@ -29,7 +29,7 @@ export const LecturePlayer: React.FC<LecturePlayerProps> = ({
           onSeek={seekTo}
         />
       </div>
-      <div className="order-1 md:order-2 md:sticky md:top-0 md:h-screen md:overflow-y-auto border-l border-(--border)">
+      <div className="order-1 md:order-2 md:sticky md:top-(--header-height) md:h-[calc(100vh-var(--header-height))] md:overflow-y-auto border-l border-(--border)">
         {lecture.video_url ? (
           <video
             ref={videoRef}

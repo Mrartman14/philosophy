@@ -1,5 +1,5 @@
 const BASE_PATH = '';
-const SW_VERSION = 'mnq2lqq6';
+const SW_VERSION = 'mnq3mvm6';
 
 const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;
@@ -12,7 +12,6 @@ const ALL_CACHES = [STATIC_CACHE, NEXT_ASSETS_CACHE, API_CACHE, IMAGE_CACHE];
 const STATIC_ASSETS = [
   `${BASE_PATH}/`,
   `${BASE_PATH}/logo.png`,
-  `${BASE_PATH}/favicon.ico`,
   `${BASE_PATH}/offline.html`,
   `${BASE_PATH}/manifest.webmanifest`,
 ];
