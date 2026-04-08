@@ -26,10 +26,8 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
   const HeadingTag = depth === 0 ? "h2" : depth === 1 ? "h3" : "h4";
   const headingSize =
     depth === 0 ? "text-3xl" : depth === 1 ? "text-2xl" : "text-xl";
-  const paddingLeft = depth > 0 ? `pl-${Math.min(depth * 4, 12)}` : "";
-
   return (
-    <section className={`w-full grid ${paddingLeft}`} key={node.name}>
+    <section className="w-full grid" style={depth > 0 ? { paddingLeft: `${Math.min(depth, 3) * 1}rem` } : undefined} key={node.name}>
       <div
         className={`border-b border-(--border) py-2 px-4 md:px-6 ${depth > 0 ? "border-l-2 border-l-(--primary)" : ""}`}
       >
