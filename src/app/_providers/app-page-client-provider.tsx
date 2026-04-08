@@ -1,14 +1,20 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import type { components } from "@/api/schema";
 
-import { PageConfig } from "@/entities/page-data";
+type Lecture = components["schemas"]["lecture.Lecture"];
 
-const AppPageContext = createContext<PageConfig>({ exams: [], lectures: [] });
+type AppContext = {
+  lectures: Lecture[];
+};
+
+const AppPageContext = createContext<AppContext>({ lectures: [] });
+
 export const AppPageClientProvider: React.FC<
-  React.PropsWithChildren<{ pageConfig: PageConfig }>
-> = ({ children, pageConfig }) => {
-  return <AppPageContext value={pageConfig}>{children}</AppPageContext>;
+  React.PropsWithChildren<{ lectures: Lecture[] }>
+> = ({ children, lectures }) => {
+  return <AppPageContext value={{ lectures }}>{children}</AppPageContext>;
 };
 
 export const useAppPageConfig = () => useContext(AppPageContext);

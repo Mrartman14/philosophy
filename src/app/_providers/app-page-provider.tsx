@@ -1,13 +1,13 @@
-import { getPageConfig } from "@/api/pages-api";
+import { getLectures } from "@/api/lecture-api";
 import { AppPageClientProvider } from "./app-page-client-provider";
 
 export const AppPageProvider: React.FC<React.PropsWithChildren> = async ({
   children,
 }) => {
-  const pageConfig = await getPageConfig();
+  const result = await getLectures(1, 100);
 
   return (
-    <AppPageClientProvider pageConfig={pageConfig}>
+    <AppPageClientProvider lectures={result.data}>
       {children}
     </AppPageClientProvider>
   );
