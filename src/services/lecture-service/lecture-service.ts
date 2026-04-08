@@ -1,4 +1,5 @@
 import { openDB } from "idb";
+import { syncQueue } from "@/services/sync-queue/sync-queue";
 
 const DB_NAME = "lectureDB";
 const STORE_NAME = "lectures";
@@ -68,10 +69,11 @@ class LectureService {
     ids.unshift(id);
 
     if (ids.length > MAX_LAST_LECTURES) {
-      ids = ids.slice(ids.length - MAX_LAST_LECTURES);
+      ids = ids.slice(0, MAX_LAST_LECTURES);
     }
 
     await db.put(STORE_NAME, ids, DB_KEYS.lastViewedLectureIds);
+    await syncQueue.push({ action: "mark_viewed", lectureId: id });
   }
 
   async getFavLectureIds(): Promise<string[]> {
@@ -100,10 +102,11 @@ class LectureService {
     }
 
     if (ids.length > MAX_FAV_LECTURES) {
-      ids = ids.slice(ids.length - MAX_FAV_LECTURES);
+      ids = ids.slice(0, MAX_FAV_LECTURES);
     }
 
     await db.put(STORE_NAME, ids, DB_KEYS.favLectureIds);
+    await syncQueue.push({ action: "fav_toggle", lectureId: id });
   }
 }
 

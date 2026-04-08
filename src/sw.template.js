@@ -1,5 +1,5 @@
-const BASE_PATH = '/philosophy';
-const SW_VERSION = 'mnpvyn4t';
+const BASE_PATH = '__BASE_PATH__';
+const SW_VERSION = '__SW_VERSION__';
 
 /** Cache names */
 const CACHE_PREFIX = 'flbz';
