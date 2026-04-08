@@ -1,4 +1,5 @@
 import { openDB } from "idb";
+import { syncQueue } from "@/services/sync-queue/sync-queue";
 
 const DB_NAME = "lectureDB";
 const STORE_NAME = "lectures";
@@ -72,6 +73,7 @@ class LectureService {
     }
 
     await db.put(STORE_NAME, ids, DB_KEYS.lastViewedLectureIds);
+    await syncQueue.push({ action: "mark_viewed", lectureId: id });
   }
 
   async getFavLectureIds(): Promise<string[]> {
@@ -104,6 +106,7 @@ class LectureService {
     }
 
     await db.put(STORE_NAME, ids, DB_KEYS.favLectureIds);
+    await syncQueue.push({ action: "fav_toggle", lectureId: id });
   }
 }
 
