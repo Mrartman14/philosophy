@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import type { components } from "@/api/schema";
-import { useSyncedPlayer } from "@/components/app/video/use-synced-player";
+import { useSyncedPlayer } from "@/hooks/use-synced-player";
 import { TranscriptPanel } from "@/components/app/video/transcript-panel";
 
 type Lecture = components["schemas"]["lecture.Lecture"];
