@@ -4,7 +4,6 @@ import { Popover } from "@base-ui/react/popover";
 type PopupProps = {
   trigger: React.ReactNode;
   content: React.ReactNode;
-  triggerProps?: React.ComponentProps<typeof Popover.Trigger>;
 };
 export const Popup: React.FC<PopupProps> = ({ content, trigger }) => {
   return (

@@ -9,27 +9,20 @@ type UseInstallPromptReturn = {
   promptInstall: () => Promise<void>;
 };
 
-function getIsStandalone() {
-  return typeof window !== "undefined"
-    ? window.matchMedia("(display-mode: standalone)").matches
-    : false;
-}
-
-function getIsIOS() {
-  if (typeof navigator === "undefined") return false;
-  return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-  );
-}
-
 export function useInstallPrompt(): UseInstallPromptReturn {
   const [canInstall, setCanInstall] = useState(false);
-  const [isIOS] = useState(getIsIOS);
-  const [isStandalone] = useState(getIsStandalone);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of static browser API on mount
+    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+    setIsIOS(
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
+    );
+
     const handler = (e: Event) => {
       e.preventDefault();
       deferredPromptRef.current = e as BeforeInstallPromptEvent;
