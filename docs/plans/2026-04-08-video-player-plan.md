@@ -24,13 +24,10 @@
 
 import { useEffect, useState, useCallback, useRef, type RefObject } from "react";
 
-interface UseVideoPlayerOptions {
-  onTimeUpdate?: (time: number) => void;
-}
-
 export function useVideoPlayer(
   videoRef: RefObject<HTMLVideoElement | null>,
-  options: UseVideoPlayerOptions = {}
+  containerRef: RefObject<HTMLElement | null>,
+  onTimeUpdate?: (time: number) => void
 ) {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -40,16 +37,20 @@ export function useVideoPlayer(
   const [muted, setMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
 
+  // Stable ref for onTimeUpdate to avoid re-subscribing listeners on every render
+  const onTimeUpdateRef = useRef(onTimeUpdate);
+  onTimeUpdateRef.current = onTimeUpdate;
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
-    const onTimeUpdate = () => {
+    const handleTimeUpdate = () => {
       const t = video.currentTime;
       setCurrentTime(t);
-      options.onTimeUpdate?.(t);
+      onTimeUpdateRef.current?.(t);
     };
     const onDurationChange = () => setDuration(video.duration || 0);
     const onProgress = () => {
@@ -65,7 +66,7 @@ export function useVideoPlayer(
 
     video.addEventListener("play", onPlay);
     video.addEventListener("pause", onPause);
-    video.addEventListener("timeupdate", onTimeUpdate);
+    video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("durationchange", onDurationChange);
     video.addEventListener("progress", onProgress);
     video.addEventListener("volumechange", onVolumeChange);
@@ -74,13 +75,13 @@ export function useVideoPlayer(
     return () => {
       video.removeEventListener("play", onPlay);
       video.removeEventListener("pause", onPause);
-      video.removeEventListener("timeupdate", onTimeUpdate);
+      video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("durationchange", onDurationChange);
       video.removeEventListener("progress", onProgress);
       video.removeEventListener("volumechange", onVolumeChange);
       video.removeEventListener("ratechange", onRateChange);
     };
-  }, [videoRef, options.onTimeUpdate]);
+  }, [videoRef]);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -172,7 +173,6 @@ Add to the hook:
 
 ```typescript
 const [isFullscreen, setIsFullscreen] = useState(false);
-const containerRef = useRef<HTMLDivElement>(null);
 
 const toggleFullscreen = useCallback(async () => {
   const el = containerRef.current;
@@ -229,7 +229,7 @@ useEffect(() => {
 
 **Step 4: Update hook signature**
 
-The hook now accepts `containerRef` and returns additional state/actions: `isFullscreen`, `isPip`, `containerRef`, `toggleFullscreen`, `togglePip`.
+The hook now returns additional state/actions: `isFullscreen`, `isPip`, `toggleFullscreen`, `togglePip`. Note: `containerRef` is accepted as a parameter (set up in Task 1), not created internally.
 
 **Step 5: Verify TypeScript compiles**
 
@@ -290,7 +290,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
 }, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const player = useVideoPlayer(videoRef, { onTimeUpdate });
+  const player = useVideoPlayer(videoRef, containerRef, onTimeUpdate);
 
   useImperativeHandle(ref, () => ({ seekTo: player.seek }), [player.seek]);
 
@@ -325,6 +325,7 @@ git commit -m "feat(video-player): add VideoPlayer shell component"
 ### Task 4: PlayerControls — play, skip, time display
 
 **Files:**
+- Create: `src/utils/format-time.ts`
 - Create: `src/components/app/video-player/player-controls.tsx`
 - Create: `src/assets/icons/play-icon.tsx`
 - Create: `src/assets/icons/pause-icon.tsx`
@@ -384,11 +385,25 @@ export const NextSegmentIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 ```
 
-**Step 2: Create PlayerControls component**
+**Step 2: Create shared formatTime utility**
+
+```typescript
+// src/utils/format-time.ts
+export function formatTime(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+```
+
+**Step 3: Create PlayerControls component**
 
 ```typescript
 // player-controls.tsx
 import { Toolbar } from "@base-ui/react/toolbar";
+import { formatTime } from "@/utils/format-time";
 import { PlayIcon } from "@/assets/icons/play-icon";
 import { PauseIcon } from "@/assets/icons/pause-icon";
 import { SkipBackIcon } from "@/assets/icons/skip-back-icon";
@@ -396,12 +411,6 @@ import { SkipForwardIcon } from "@/assets/icons/skip-forward-icon";
 import { PrevSegmentIcon } from "@/assets/icons/prev-segment-icon";
 import { NextSegmentIcon } from "@/assets/icons/next-segment-icon";
 import type { Chapter } from "./video-player";
-
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
 
 interface PlayerControlsProps {
   playing: boolean;
@@ -496,7 +505,7 @@ Run: `npx tsc --noEmit`
 **Step 5: Commit**
 
 ```bash
-git add src/assets/icons/play-icon.tsx src/assets/icons/pause-icon.tsx src/assets/icons/skip-back-icon.tsx src/assets/icons/skip-forward-icon.tsx src/assets/icons/prev-segment-icon.tsx src/assets/icons/next-segment-icon.tsx src/components/app/video-player/player-controls.tsx src/components/app/video-player/video-player.tsx
+git add src/utils/format-time.ts src/assets/icons/play-icon.tsx src/assets/icons/pause-icon.tsx src/assets/icons/skip-back-icon.tsx src/assets/icons/skip-forward-icon.tsx src/assets/icons/prev-segment-icon.tsx src/assets/icons/next-segment-icon.tsx src/components/app/video-player/player-controls.tsx src/components/app/video-player/video-player.tsx
 git commit -m "feat(video-player): add PlayerControls with play, skip, segment nav"
 ```
 
@@ -517,13 +526,8 @@ The timeline uses Base UI `Slider` for the interactive thumb/track. Chapters are
 import { useState, useCallback } from "react";
 import { Slider } from "@base-ui/react/slider";
 import { Popover } from "@base-ui/react/popover";
+import { formatTime } from "@/utils/format-time";
 import type { Chapter, Marker } from "./video-player";
-
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
 
 function getChapterAtTime(chapters: Chapter[], time: number): Chapter | undefined {
   return chapters.find((c) => time >= c.startTime && time < c.endTime);
@@ -547,6 +551,8 @@ export const Timeline: React.FC<TimelineProps> = ({
   onSeek,
 }) => {
   const [hoverTime, setHoverTime] = useState<number | null>(null);
+  const [scrubTime, setScrubTime] = useState<number | null>(null);
+  const isScrubbing = scrubTime != null;
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -586,8 +592,12 @@ export const Timeline: React.FC<TimelineProps> = ({
         min={0}
         max={duration || 1}
         step={0.1}
-        value={currentTime}
-        onValueChange={(value) => onSeek(value as number)}
+        value={isScrubbing ? scrubTime : currentTime}
+        onValueChange={(value) => setScrubTime(value as number)}
+        onValueCommitted={(value) => {
+          onSeek(value as number);
+          setScrubTime(null);
+        }}
         className="relative flex items-center h-6 cursor-pointer touch-none"
       >
         <Slider.Control className="relative flex items-center w-full h-full">
@@ -634,8 +644,11 @@ export const Timeline: React.FC<TimelineProps> = ({
 
 // --- Marker with hover popover ---
 const TimelineMarker: React.FC<{ marker: Marker; duration: number }> = ({ marker, duration }) => (
-  <Popover.Root openOnHover delay={200} closeDelay={300}>
+  <Popover.Root>
     <Popover.Trigger
+      openOnHover
+      delay={200}
+      closeDelay={300}
       className="absolute top-1/2 -translate-y-1/2 w-1 h-4 bg-(--color-primary) rounded-sm cursor-pointer z-10"
       style={{ left: `${(marker.time / duration) * 100}%` }}
       aria-label={marker.label}
@@ -653,7 +666,7 @@ const TimelineMarker: React.FC<{ marker: Marker; duration: number }> = ({ marker
 );
 ```
 
-**Note:** The Popover `openOnHover` is on the Trigger, not Root — verify this during implementation. If Base UI puts `openOnHover` on Trigger, adjust accordingly. Check: `import { Popover } from "@base-ui/react/popover"` → read the actual types.
+**Note:** `openOnHover`, `delay`, and `closeDelay` are props of `Popover.Trigger`, not `Popover.Root`. Verified against Base UI docs.
 
 **Step 2: Add Timeline to PlayerControls**
 
@@ -687,7 +700,7 @@ git commit -m "feat(video-player): add Timeline with chapters, markers, and tool
 
 ```typescript
 // speed-slider.tsx
-import { useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Slider } from "@base-ui/react/slider";
 
 const SNAP_POINTS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
@@ -709,12 +722,7 @@ export const SpeedSlider: React.FC<SpeedSliderProps> = ({
   playbackRate,
   onChangePlaybackRate,
 }) => {
-  const handleChange = useCallback(
-    (value: number) => {
-      onChangePlaybackRate(snapToNearest(value));
-    },
-    [onChangePlaybackRate]
-  );
+  const [dragRate, setDragRate] = useState<number | null>(null);
 
   const resetSpeed = useCallback(() => {
     onChangePlaybackRate(1);
@@ -726,8 +734,12 @@ export const SpeedSlider: React.FC<SpeedSliderProps> = ({
         min={0.5}
         max={2}
         step={0.05}
-        value={playbackRate}
-        onValueChange={(value) => handleChange(value as number)}
+        value={dragRate ?? playbackRate}
+        onValueChange={(value) => setDragRate(value as number)}
+        onValueCommitted={(value) => {
+          onChangePlaybackRate(snapToNearest(value as number));
+          setDragRate(null);
+        }}
         className="relative flex items-center w-16 cursor-pointer touch-none"
         aria-label="Скорость воспроизведения"
       >
@@ -744,7 +756,7 @@ export const SpeedSlider: React.FC<SpeedSliderProps> = ({
         className="text-xs tabular-nums text-(--color-description) hover:text-(--color-primary) min-w-[2.5rem] text-center select-none"
         title="Сбросить скорость на 1x"
       >
-        {playbackRate.toFixed(2).replace(/\.?0+$/, "")}x
+        {(dragRate ?? playbackRate).toFixed(2).replace(/\.?0+$/, "")}x
       </button>
     </div>
   );
@@ -882,10 +894,9 @@ Follow existing SVG pattern. Simple Material-style icons for fullscreen, PiP, an
 // Additional props in PlayerControlsProps:
 isFullscreen: boolean;
 isPip: boolean;
-collapsed: boolean;
 onToggleFullscreen: () => void;
 onTogglePip: () => void;
-onToggleCollapse: () => void;
+onToggleCollapse: () => void; // collapse state lives in VideoPlayer, not PlayerControls
 
 // Render after VolumeControl:
 <Toolbar.Separator className="w-px h-4 bg-(--color-border) mx-1" />
@@ -951,11 +962,14 @@ git commit -m "feat(video-player): add fullscreen, PiP, collapse buttons with an
 
 ```typescript
 const handleKeyDown = useCallback(
-  (e: KeyboardEvent) => {
+  (e: React.KeyboardEvent) => {
     const video = videoRef.current;
     if (!video) return;
+    const target = e.target as HTMLElement;
     // Don't handle if typing in an input
-    if ((e.target as HTMLElement).tagName === "INPUT") return;
+    if (target.tagName === "INPUT") return;
+    // Don't intercept arrow keys when focus is inside a slider (Base UI handles them)
+    if (target.closest('[role="slider"]') && e.key.startsWith("Arrow")) return;
 
     switch (e.key) {
       case " ":
@@ -1009,7 +1023,7 @@ Return `handleKeyDown` from the hook.
 <div
   ref={containerRef}
   tabIndex={0}
-  onKeyDown={player.handleKeyDown as unknown as React.KeyboardEventHandler}
+  onKeyDown={player.handleKeyDown}
   className={`relative outline-none ${className ?? ""}`}
 >
 ```
