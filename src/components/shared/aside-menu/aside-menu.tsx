@@ -1,7 +1,7 @@
 "use client";
 
-import throttle from "lodash/throttle";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useActiveSection } from "./use-active-section";
 
 
 export type AsideNavItem = {
@@ -18,64 +18,7 @@ export const AsideMenu: React.FC<AsideMenuProps> = ({ items, className }) => {
   const stickyRef = useRef<HTMLUListElement | null>(null);
   const sentinelRef = useRef(null);
   const [stuck, setStuck] = useState(false);
-  const [intersected, setIntersected] = useState<string | null>();
-
-  useLayoutEffect(() => {
-    setIntersected(items[0]?.id);
-  }, [items]);
-
-  useLayoutEffect(() => {
-    const listen = throttle(() => {
-      const elements: { el: HTMLElement; id: string }[] = [];
-
-      function itemMapper(item: AsideNavItem) {
-        const el = document.getElementById(item.id);
-        if (!el) return;
-        elements.push({ el, id: item.id });
-
-        if (item.children?.length === 0) {
-          return;
-        }
-
-        item.children?.forEach(itemMapper);
-      }
-      items.forEach(itemMapper);
-
-      for (const item of elements) {
-        const { top, left } = item.el.getBoundingClientRect();
-        const isIntersected = top >= 0 && left >= 0;
-        if (isIntersected) {
-          setIntersected(item.id);
-
-          if (stickyRef.current) {
-            const scrollContainerRect =
-              stickyRef.current.getBoundingClientRect();
-            const scrollTargetEl = document.getElementById(
-              getAnchorId(item.id)
-            )!;
-            const scrollTargetRect = scrollTargetEl.getBoundingClientRect();
-            const scrollTop =
-              stickyRef.current.scrollTop +
-              (scrollTargetRect.top - scrollContainerRect.top) -
-              16; // 16px = 1rem = p-4 in tailwind
-
-            stickyRef.current.scrollTo({
-              top: scrollTop,
-              behavior: "smooth",
-            });
-          }
-
-          break;
-        }
-      }
-    }, 100);
-
-    listen();
-    document?.addEventListener("scroll", listen);
-    return () => {
-      document?.removeEventListener("scroll", listen);
-    };
-  }, [items]);
+  const intersected = useActiveSection(items, stickyRef);
 
   useEffect(() => {
     /**
