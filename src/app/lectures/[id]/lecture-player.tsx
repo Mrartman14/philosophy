@@ -29,7 +29,7 @@ export const LecturePlayer: React.FC<LecturePlayerProps> = ({
           onSeek={seekTo}
         />
       </div>
-      <div className="order-1 md:order-2 md:sticky md:top-(--header-height) md:h-[calc(100vh-var(--header-height))] md:overflow-y-auto border-l border-(--border)">
+      <div className="order-1 md:order-2 md:sticky md:top-(--header-height) md:h-[calc(100vh-var(--header-height))] md:overflow-y-auto border-l border-(--color-border)">
         {lecture.video_url ? (
           <video
             ref={videoRef}
@@ -39,14 +39,14 @@ export const LecturePlayer: React.FC<LecturePlayerProps> = ({
             preload="metadata"
           />
         ) : (
-          <div className="w-full aspect-video flex items-center justify-center bg-(--text-pane) text-(--description)">
+          <div className="w-full aspect-video flex items-center justify-center bg-(--color-text-pane) text-(--color-description)">
             Видео недоступно
           </div>
         )}
         <div className="p-4">
           <h1 className="text-xl font-bold">{lecture.title}</h1>
           {lecture.description && (
-            <p className="text-sm text-(--description) mt-2">
+            <p className="text-sm text-(--color-description) mt-2">
               {lecture.description}
             </p>
           )}

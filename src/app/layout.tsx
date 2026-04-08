@@ -54,7 +54,7 @@ export default async function RootLayout({
       </head>
       <body
         className={`
-          root bg-(--background)
+          root bg-(--color-background)
           ${geistSans.variable} ${geistMono.variable} antialiased
           grid grid-rows-[var(--header-height)_1fr] items-stretch justify-items-center min-h-screen
           ${geistClasses}
@@ -62,7 +62,7 @@ export default async function RootLayout({
       >
         <AppHeader lectures={lectures} />
         <InstallBanner />
-        <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--border)">
+        <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
           {children}
         </main>
         <UpdatePrompt />

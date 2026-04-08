@@ -8,7 +8,7 @@ function PushNotificationManager() {
 
   if (!isSupported) {
     return (
-      <p className="text-(--description)">
+      <p className="text-(--color-description)">
         Push-уведомления не поддерживаются в этом браузере.
       </p>
     );
@@ -16,7 +16,7 @@ function PushNotificationManager() {
 
   if (permission === "denied") {
     return (
-      <p className="text-(--description)">
+      <p className="text-(--color-description)">
         Уведомления заблокированы. Разрешите их в настройках браузера.
       </p>
     );
@@ -31,14 +31,14 @@ function PushNotificationManager() {
       </p>
       {subscription ? (
         <button
-          className="self-start px-4 py-2 rounded border border-(--border) hover:bg-(--text-pane)"
+          className="self-start px-4 py-2 rounded border border-(--color-border) hover:bg-(--color-text-pane)"
           onClick={unsubscribe}
         >
           Отписаться
         </button>
       ) : (
         <button
-          className="self-start px-4 py-2 rounded border border-(--border) hover:bg-(--text-pane)"
+          className="self-start px-4 py-2 rounded border border-(--color-border) hover:bg-(--color-text-pane)"
           onClick={subscribe}
         >
           Подписаться

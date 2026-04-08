@@ -25,7 +25,7 @@ export const ScrollButton: React.FC<{ className?: string }> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const btnClassName = `flex justify-end gap-2 bg-(--text-pane) rounded-full px-4 py-2 md:py-1 text-(--description) hover:text-inherit transition-opacity`;
+  const btnClassName = `flex justify-end gap-2 bg-(--color-text-pane) rounded-full px-4 py-2 md:py-1 text-(--color-description) hover:text-inherit transition-opacity`;
   return (
     <div className={`${className} gap-1 flex select-none`}>
       <button

@@ -11,13 +11,13 @@ export const Popup: React.FC<PopupProps> = ({ content, trigger }) => {
     <Popover.Root>
       <Popover.Trigger
         openOnHover
-        className={`data-[popup-open]:text-inherit text-(--description)`}
+        className={`data-[popup-open]:text-inherit text-(--color-description)`}
       >
         {trigger}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
-          <Popover.Popup className="bg-(--background) rounded-lg px-6 py-4 outline outline-(--border) origin-[var(--transform-origin)] transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0">
+          <Popover.Popup className="bg-(--color-background) rounded-lg px-6 py-4 outline outline-(--color-border) origin-[var(--transform-origin)] transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0">
             <Popover.Arrow className="data-[side=bottom]:top-[-8px] data-[side=left]:right-[-13px] data-[side=left]:rotate-90 data-[side=right]:left-[-13px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-8px] data-[side=top]:rotate-180">
               <DropdownArrowIcon />
             </Popover.Arrow>

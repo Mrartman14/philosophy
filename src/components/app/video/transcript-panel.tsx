@@ -39,7 +39,7 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({
                 : "hover:bg-(--color-border)/30"
             }`}
           >
-            <span className="text-xs text-(--description) block">
+            <span className="text-xs text-(--color-description) block">
               {item.speaker}
             </span>
             <span className="text-sm">{item.text}</span>

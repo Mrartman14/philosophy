@@ -14,16 +14,16 @@ export default async function Home() {
           <li key={lecture.id}>
             <Link
               href={`/lectures/${lecture.id}`}
-              className="block p-4 rounded-lg border border-(--border) hover:bg-(--text-pane) transition-colors"
+              className="block p-4 rounded-lg border border-(--color-border) hover:bg-(--color-text-pane) transition-colors"
             >
               <h2 className="text-lg font-semibold">{lecture.title}</h2>
               {lecture.description && (
-                <p className="text-sm text-(--description) mt-1">
+                <p className="text-sm text-(--color-description) mt-1">
                   {lecture.description}
                 </p>
               )}
               {lecture.date && (
-                <time className="text-xs text-(--description) mt-2 block">
+                <time className="text-xs text-(--color-description) mt-2 block">
                   {new Date(lecture.date).toLocaleDateString("ru-RU")}
                 </time>
               )}

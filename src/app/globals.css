@@ -14,13 +14,6 @@
 
 :root {
   color-scheme: light dark;
-
-  --primary: var(--color-primary);
-  --background: var(--color-background);
-  --border: var(--color-border);
-  --link: var(--color-link);
-  --description: var(--color-description);
-  --text-pane: var(--color-text-pane);
   --header-height: var(--spacing-header);
 }
 

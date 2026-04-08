@@ -9,7 +9,7 @@ export default function Page() {
       <h1 className="text-5xl font-bold flex items-center gap-4">
         Нет сети <OfflineIcon />
       </h1>
-      <p className="text-(--description) text-sm">
+      <p className="text-(--color-description) text-sm">
         Проверьте подключение к интернету и попробуйте снова.
       </p>
       <GoBack />
