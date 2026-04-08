@@ -254,7 +254,7 @@ git commit -m "feat(video-player): add fullscreen, PiP, and MediaSession to hook
 ```typescript
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef, useImperativeHandle, forwardRef, type ReactNode } from "react";
 import { useVideoPlayer } from "@/hooks/use-video-player";
 
 export interface Chapter {
@@ -269,6 +269,10 @@ export interface Marker {
   content?: ReactNode;
 }
 
+export interface VideoPlayerHandle {
+  seekTo: (time: number) => void;
+}
+
 interface VideoPlayerProps {
   src: string;
   chapters?: Chapter[];
@@ -277,16 +281,18 @@ interface VideoPlayerProps {
   className?: string;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({
+export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
   src,
   chapters = [],
   markers = [],
   onTimeUpdate,
   className,
-}) => {
+}, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const player = useVideoPlayer(videoRef, { onTimeUpdate });
+
+  useImperativeHandle(ref, () => ({ seekTo: player.seek }), [player.seek]);
 
   return (
     <div ref={containerRef} className={`relative ${className ?? ""}`}>
@@ -1037,15 +1043,25 @@ git commit -m "feat(video-player): add keyboard shortcuts"
 Replace the bare `<video>` element with `<VideoPlayer>`:
 
 ```typescript
-import { VideoPlayer } from "@/components/app/video-player/video-player";
+import { useRef, useState } from "react";
+import { VideoPlayer, type VideoPlayerHandle } from "@/components/app/video-player/video-player";
 
 // In the component:
+const playerRef = useRef<VideoPlayerHandle>(null);
+const [currentSegmentId, setCurrentSegmentId] = useState<number | null>(null);
+
+const seekTo = (time: number) => {
+  playerRef.current?.seekTo(time);
+};
+
+// JSX:
 {videoUrl ? (
   <VideoPlayer
+    ref={playerRef}
     src={videoUrl}
     onTimeUpdate={(time) => {
       const segment = segments.find((s) => time >= (s.start ?? 0) && time <= (s.end ?? 0));
-      // update currentSegmentId based on segment
+      setCurrentSegmentId(segment?.id ?? null);
     }}
   />
 ) : (
@@ -1053,11 +1069,7 @@ import { VideoPlayer } from "@/components/app/video-player/video-player";
 )}
 ```
 
-The `useSyncedPlayer` hook's `currentTime` tracking is now handled by `VideoPlayer`'s `onTimeUpdate` prop. The `seekTo` functionality for clicking transcript segments needs to be wired through a ref or a new approach:
-- Option A: expose `seekTo` via `useImperativeHandle` on VideoPlayer
-- Option B: pass `seekTime` prop that triggers seek when changed
-
-Choose the simpler option during implementation. `useImperativeHandle` with `forwardRef` is cleaner since it doesn't require effect-based syncing.
+`VideoPlayer` exposes `seekTo` via `forwardRef` + `useImperativeHandle` (see Task 3). `useSyncedPlayer` can be removed — its logic is replaced by `onTimeUpdate` + `playerRef.current?.seekTo()`.
 
 **Step 2: Verify TypeScript compiles**
 

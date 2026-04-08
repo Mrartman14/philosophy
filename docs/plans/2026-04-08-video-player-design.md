@@ -38,12 +38,18 @@ Base UI даёт `Slider`, `Toolbar`, `Toggle`, `Popover` с accessibility (ARIA
 ## Props API
 
 ```typescript
+// Props
 interface VideoPlayerProps {
   src: string;
   chapters?: Chapter[];
   markers?: Marker[];
   onTimeUpdate?: (time: number) => void;
   className?: string;
+}
+
+// Imperative handle (через forwardRef + useImperativeHandle)
+interface VideoPlayerHandle {
+  seekTo: (time: number) => void;
 }
 
 interface Chapter {
@@ -62,7 +68,7 @@ interface Marker {
 ### Интеграция с текущим кодом
 
 - `LectureSync` заменит `<video controls>` на `<VideoPlayer>`, передаст `onTimeUpdate` для синхронизации с `TranscriptHighlighter`
-- `seekTo` из `useSyncedPlayer` вызывается через ref или prop
+- `seekTo` вызывается через ref: `playerRef.current?.seekTo(time)` — для перемотки из транскрипта
 - `chapters` и `markers` — из Go API (когда будут готовы), пока пустые массивы
 
 ## Таймлайн
