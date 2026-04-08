@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { LecturePageData } from "@/entities/page-data";
 import { lectureService } from "@/services/lecture-service/lecture-service";
@@ -22,47 +22,37 @@ export const LectureServiceProvider: React.FC<LectureServiceProviderProps> = ({
 }) => {
   const { lectures } = useAppPageConfig();
 
+  const lectureMap = useMemo(
+    () => new Map(lectures.map((l) => [l.slug, l])),
+    [lectures]
+  );
+
   const [favLectures, setFavLectures] = useState<LecturePageData[]>([]);
   const [lastViewedLectures, setLastViewedLectures] = useState<
     LecturePageData[]
   >([]);
 
-  const fetchFav = async () => {
-    const favLectureIds = await lectureService.getFavLectureIds();
-    if (favLectureIds.length === 0) {
-      return setFavLectures([]);
-    }
-    const next = favLectureIds
-      .map((id) => lectures.find((l) => l.slug === id))
-      .filter((x) => !!x);
-    setFavLectures(next);
-  };
+  const fetchFav = useCallback(async () => {
+    const ids = await lectureService.getFavLectureIds();
+    if (ids.length === 0) return setFavLectures([]);
+    setFavLectures(ids.map((id) => lectureMap.get(id)).filter((x) => !!x));
+  }, [lectureMap]);
 
-  const onSelectFav = (id: string) =>
-    lectureService.setFavLectureId(id).then(fetchFav);
+  const onSelectFav = useCallback(
+    (id: string) => lectureService.setFavLectureId(id).then(fetchFav),
+    [fetchFav]
+  );
 
   useEffect(() => {
     const fetchLastViews = async () => {
       const ids = await lectureService.getLastViewedLectureIds();
       if (ids.length === 0) return;
-      const next = ids
-        .map((id) => lectures.find((l) => l.slug === id))
-        .filter((x) => !!x);
-      setLastViewedLectures(next);
-    };
-
-    const fetchFavLectures = async () => {
-      const ids = await lectureService.getFavLectureIds();
-      if (ids.length === 0) return setFavLectures([]);
-      const next = ids
-        .map((id) => lectures.find((l) => l.slug === id))
-        .filter((x) => !!x);
-      setFavLectures(next);
+      setLastViewedLectures(ids.map((id) => lectureMap.get(id)).filter((x) => !!x));
     };
 
     fetchLastViews();
-    fetchFavLectures();
-  }, [lectures]);
+    fetchFav();
+  }, [lectureMap, fetchFav]);
 
   const state: LectureServiceProviderState = {
     favLectures,
