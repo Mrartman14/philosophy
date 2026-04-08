@@ -1,5 +1,5 @@
 const BASE_PATH = '/philosophy';
-const SW_VERSION = 'mnpvn50d';
+const SW_VERSION = 'mnpvyn4t';
 
 /** Cache names */
 const CACHE_PREFIX = 'flbz';
@@ -69,13 +69,17 @@ self.addEventListener('fetch', (event) => {
 
   // page-data.json — stale-while-revalidate
   if (url.pathname.endsWith('page-data.json')) {
-    event.respondWith(staleWhileRevalidate(request, PAGE_DATA_CACHE));
+    const networkFetch = staleWhileRevalidate(request, PAGE_DATA_CACHE);
+    event.waitUntil(networkFetch.backgroundUpdate);
+    event.respondWith(networkFetch.response);
     return;
   }
 
   // Lecture page HTML — stale-while-revalidate
   if (url.pathname.includes('/lectures') && (url.pathname.endsWith('.html') || url.pathname.endsWith('.txt'))) {
-    event.respondWith(staleWhileRevalidate(request, LECTURES_PAGE_CACHE));
+    const networkFetch = staleWhileRevalidate(request, LECTURES_PAGE_CACHE);
+    event.waitUntil(networkFetch.backgroundUpdate);
+    event.respondWith(networkFetch.response);
     return;
   }
 
@@ -85,15 +89,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Preview images — cache-first with LRU
-  if (url.pathname.match(/\.(jpeg|jpg|png|webp)$/)) {
-    event.respondWith(cacheFirstWithLimit(request, IMAGE_CACHE, IMAGE_CACHE_LIMIT));
+  // Precached static assets — cache-first (checked before images so logo.png uses STATIC_CACHE)
+  if (STATIC_ASSETS.some((asset) => url.pathname === asset || url.pathname + '/' === asset)) {
+    event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
   }
 
-  // Precached static assets — cache-first
-  if (STATIC_ASSETS.some((asset) => url.pathname === asset || url.pathname + '/' === asset)) {
-    event.respondWith(cacheFirst(request, STATIC_CACHE));
+  // Preview images — cache-first with LRU
+  if (url.pathname.match(/\.(jpeg|jpg|png|webp)$/)) {
+    event.respondWith(cacheFirstWithLimit(request, IMAGE_CACHE, IMAGE_CACHE_LIMIT));
     return;
   }
 
@@ -105,13 +109,13 @@ self.addEventListener('fetch', (event) => {
 
 /** Cache-first strategy */
 async function cacheFirst(request, cacheName) {
-  const cached = await caches.match(request);
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
   if (cached) return cached;
 
   try {
     const response = await fetch(request);
     if (response && response.status === 200) {
-      const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
     }
     return response;
@@ -138,36 +142,39 @@ async function cacheFirstWithLimit(request, cacheName, limit) {
   }
 }
 
-/** Stale-while-revalidate strategy */
-async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
+/** Stale-while-revalidate strategy — returns {response, backgroundUpdate} */
+function staleWhileRevalidate(request, cacheName) {
+  const cachePromise = caches.open(cacheName);
 
-  const networkFetch = fetch(request)
-    .then((response) => {
-      if (response && response.status === 200) {
-        cache.put(request, response.clone());
-      }
-      return response;
-    })
-    .catch(() => null);
+  const backgroundUpdate = cachePromise.then((cache) =>
+    fetch(request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          cache.put(request, response.clone());
+        }
+        return response;
+      })
+      .catch(() => null)
+  );
 
-  if (cached) {
-    networkFetch; // fire and forget
-    return cached;
-  }
+  const response = cachePromise.then(async (cache) => {
+    const cached = await cache.match(request);
+    if (cached) return cached;
 
-  const networkResponse = await networkFetch;
-  return networkResponse || caches.match(OFFLINE_URL);
+    const networkResponse = await backgroundUpdate;
+    return networkResponse || caches.match(OFFLINE_URL);
+  });
+
+  return { response, backgroundUpdate };
 }
 
 /** LRU cache trimming */
 async function trimCache(cacheName, limit) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
-  if (keys.length > limit) {
-    await cache.delete(keys[0]);
-    trimCache(cacheName, limit);
+  const excess = keys.length - limit;
+  for (let i = 0; i < excess; i++) {
+    await cache.delete(keys[i]);
   }
 }
 
