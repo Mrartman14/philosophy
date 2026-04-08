@@ -2,6 +2,7 @@
 
 import { useRef, useImperativeHandle, forwardRef, type ReactNode } from "react";
 import { useVideoPlayer } from "@/hooks/use-video-player";
+import { PlayerControls } from "./player-controls";
 
 export interface Chapter {
   title: string;
@@ -29,7 +30,7 @@ interface VideoPlayerProps {
 
 export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
   src,
-  chapters: _chapters = [],
+  chapters = [],
   markers: _markers = [],
   onTimeUpdate,
   className,
@@ -49,7 +50,15 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
         className="w-full aspect-video bg-black"
         onClick={player.togglePlay}
       />
-      {/* PlayerControls — Task 4 */}
+      <PlayerControls
+        playing={player.playing}
+        currentTime={player.currentTime}
+        duration={player.duration}
+        chapters={chapters}
+        onTogglePlay={player.togglePlay}
+        onSkipBy={player.skipBy}
+        onSeek={player.seek}
+      />
     </div>
   );
 });
