@@ -8,38 +8,9 @@
 
 **Tech Stack:** Next.js 16 (App Router), React 19, TypeScript 5 (strict), openapi-fetch, Tailwind CSS 4, Framer Motion.
 
-**Worktree Strategy:** Task 0 (Swagger) делается на бэкенде. Task 1 (Foundation) делается на main. Затем Tasks 2-5 запускаются параллельно в отдельных worktrees. Task 6 (Admin) запускается после мержа Task 2 (Auth).
+**Worktree Strategy:** Task 1 (Foundation) делается на main. Затем Tasks 2-5 запускаются параллельно в отдельных worktrees. Task 6 (Admin) запускается после мержа Task 2 (Auth).
 
 **Стратегия мержа worktrees:** Tasks 3 и 4 оба модифицируют `lectures/[id]/page.tsx` — мержить последовательно (сначала один, потом rebase второго). Tasks 2 и 5 оба модифицируют `app-header.tsx` — аналогично. Порядок мержа: Task 2 → Task 5 → Task 3 → Task 4 (или 4 → 3).
-
----
-
-## Task 0: Дополнить Swagger-спеку на бэкенде (блокирует Task 1)
-
-### Цель
-Текущая Swagger-спека покрывает только 8 из ~30 эндпоинтов. Отсутствуют: auth (public), comments, annotations, files, search, push, admin users/moderation/segments. Без полной спеки `openapi-fetch` не может предоставить типизированный клиент для этих эндпоинтов.
-
-### Что нужно сделать
-В репозитории `philosophy-api` добавить Swagger-аннотации (swaggo/swag) к handler-функциям:
-
-**Отсутствующие эндпоинты (сгруппированы по модулю):**
-
-- **auth**: `POST /api/auth/register`, `POST /api/auth/login`
-- **comments**: `GET /api/lectures/{id}/comments`, `POST /api/lectures/{id}/comments`, `PUT /api/comments/{id}`, `DELETE /api/comments/{id}`, `POST /api/comments/{id}/reactions`, `DELETE /api/comments/{id}/reactions`
-- **annotations**: `GET /api/lectures/{id}/annotations`, `GET /api/annotations/{id}`, `POST /api/lectures/{id}/annotations`, `PUT /api/annotations/{id}`, `DELETE /api/annotations/{id}`
-- **lecture files**: `GET /api/lectures/{id}/files`, `POST /api/admin/lectures/{id}/files`, `DELETE /api/admin/lectures/{id}/files/{fileId}`
-- **search**: `GET /api/search`
-- **push**: `GET /api/push/vapid-key`, `POST /api/push/subscribe`, `DELETE /api/push/subscribe`, `POST /api/admin/push/send`
-- **admin users**: `PUT /api/admin/users/{id}/status`
-- **admin moderation**: `DELETE /api/admin/comments/{id}`, `PUT /api/admin/comments/{id}/status`, `DELETE /api/admin/annotations/{id}`, `PUT /api/admin/annotations/{id}/status`
-- **admin segments**: `POST /api/admin/lectures/{id}/transcript/segments`, `PUT /api/admin/lectures/{id}/transcript/segments/{segmentId}`, `DELETE /api/admin/lectures/{id}/transcript/segments/{segmentId}`
-
-### Step 1: Добавить аннотации ко всем handler-функциям
-### Step 2: Перегенерировать `docs/swagger/swagger.json` (`swag init`)
-### Step 3: Проверить что Swagger UI отображает все эндпоинты
-### Step 4: Коммит на бэкенде
-
-После этого — на фронте запустить `npm run generate:api` чтобы обновить `schema.ts`.
 
 ---
 
@@ -49,7 +20,7 @@
 Установить openapi-fetch, создать типизированный API-клиент, утилиту `createAction`, хелпер `getUser()`, реорганизовать существующий код в `features/`.
 
 ### Dependencies
-- Task 0 (Swagger) завершён, спека обновлена
+- Swagger-спека бэкенда актуальна (все 38 эндпоинтов задокументированы)
 
 ### Files
 - Create: `src/api/client.ts`
@@ -892,7 +863,6 @@ git commit -m "feat(admin): full admin panel with CRUD, moderation, push"
                                         └──────────┘
 ```
 
-- **Task 0** — на бэкенде, блокирует Task 1
 - **Task 1** — на main фронта, блокирует все остальные
 - **Tasks 2, 3, 4, 5** — параллельно в отдельных worktrees после мержа Task 1
 - **Task 6** — после мержа Task 1 + Task 2 (нужен middleware и auth)
