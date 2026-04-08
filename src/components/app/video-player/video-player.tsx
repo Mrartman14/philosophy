@@ -58,10 +58,14 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
         chapters={chapters}
         markers={markers}
         playbackRate={player.playbackRate}
+        volume={player.volume}
+        muted={player.muted}
         onTogglePlay={player.togglePlay}
         onSkipBy={player.skipBy}
         onSeek={player.seek}
         onChangePlaybackRate={player.changePlaybackRate}
+        onChangeVolume={player.changeVolume}
+        onToggleMute={player.toggleMute}
       />
     </div>
   );
