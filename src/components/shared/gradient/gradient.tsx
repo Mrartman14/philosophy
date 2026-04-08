@@ -54,10 +54,9 @@ export const Gradient: React.FC = () => {
         }
       }
       time += 0.0025;
-      // time += 0.03;
-      requestAnimationFrame(draw);
+      animationFrameId = requestAnimationFrame(draw);
     }
-    draw();
+    let animationFrameId = requestAnimationFrame(draw);
 
     function resizeCanvas() {
       if (!ctx) {
@@ -77,6 +76,7 @@ export const Gradient: React.FC = () => {
     window.addEventListener("resize", resizeCanvas);
 
     return () => {
+      cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resizeCanvas);
     };
   }, []);
