@@ -8,7 +8,38 @@
 
 **Tech Stack:** Next.js 16 (App Router), React 19, TypeScript 5 (strict), openapi-fetch, Tailwind CSS 4, Framer Motion.
 
-**Worktree Strategy:** Foundation (Task 1) делается на main. Затем Tasks 2-5 запускаются параллельно в отдельных worktrees. Task 6 (Admin) запускается после мержа Task 2 (Auth).
+**Worktree Strategy:** Task 0 (Swagger) делается на бэкенде. Task 1 (Foundation) делается на main. Затем Tasks 2-5 запускаются параллельно в отдельных worktrees. Task 6 (Admin) запускается после мержа Task 2 (Auth).
+
+**Стратегия мержа worktrees:** Tasks 3 и 4 оба модифицируют `lectures/[id]/page.tsx` — мержить последовательно (сначала один, потом rebase второго). Tasks 2 и 5 оба модифицируют `app-header.tsx` — аналогично. Порядок мержа: Task 2 → Task 5 → Task 3 → Task 4 (или 4 → 3).
+
+---
+
+## Task 0: Дополнить Swagger-спеку на бэкенде (блокирует Task 1)
+
+### Цель
+Текущая Swagger-спека покрывает только 8 из ~30 эндпоинтов. Отсутствуют: auth (public), comments, annotations, files, search, push, admin users/moderation/segments. Без полной спеки `openapi-fetch` не может предоставить типизированный клиент для этих эндпоинтов.
+
+### Что нужно сделать
+В репозитории `philosophy-api` добавить Swagger-аннотации (swaggo/swag) к handler-функциям:
+
+**Отсутствующие эндпоинты (сгруппированы по модулю):**
+
+- **auth**: `POST /api/auth/register`, `POST /api/auth/login`
+- **comments**: `GET /api/lectures/{id}/comments`, `POST /api/lectures/{id}/comments`, `PUT /api/comments/{id}`, `DELETE /api/comments/{id}`, `POST /api/comments/{id}/reactions`, `DELETE /api/comments/{id}/reactions`
+- **annotations**: `GET /api/lectures/{id}/annotations`, `GET /api/annotations/{id}`, `POST /api/lectures/{id}/annotations`, `PUT /api/annotations/{id}`, `DELETE /api/annotations/{id}`
+- **lecture files**: `GET /api/lectures/{id}/files`, `POST /api/admin/lectures/{id}/files`, `DELETE /api/admin/lectures/{id}/files/{fileId}`
+- **search**: `GET /api/search`
+- **push**: `GET /api/push/vapid-key`, `POST /api/push/subscribe`, `DELETE /api/push/subscribe`, `POST /api/admin/push/send`
+- **admin users**: `PUT /api/admin/users/{id}/status`
+- **admin moderation**: `DELETE /api/admin/comments/{id}`, `PUT /api/admin/comments/{id}/status`, `DELETE /api/admin/annotations/{id}`, `PUT /api/admin/annotations/{id}/status`
+- **admin segments**: `POST /api/admin/lectures/{id}/transcript/segments`, `PUT /api/admin/lectures/{id}/transcript/segments/{segmentId}`, `DELETE /api/admin/lectures/{id}/transcript/segments/{segmentId}`
+
+### Step 1: Добавить аннотации ко всем handler-функциям
+### Step 2: Перегенерировать `docs/swagger/swagger.json` (`swag init`)
+### Step 3: Проверить что Swagger UI отображает все эндпоинты
+### Step 4: Коммит на бэкенде
+
+После этого — на фронте запустить `npm run generate:api` чтобы обновить `schema.ts`.
 
 ---
 
@@ -17,25 +48,36 @@
 ### Цель
 Установить openapi-fetch, создать типизированный API-клиент, утилиту `createAction`, хелпер `getUser()`, реорганизовать существующий код в `features/`.
 
+### Dependencies
+- Task 0 (Swagger) завершён, спека обновлена
+
 ### Files
 - Create: `src/api/client.ts`
 - Create: `src/utils/create-action.ts`
 - Create: `src/utils/get-user.ts`
 - Modify: `package.json` (добавить openapi-fetch)
-- Modify: `src/api/lecture-api.ts` → переместить в `src/features/lectures/api.ts`
+- Modify: `src/api/lecture-api.ts` → переместить в `src/features/lectures/api.ts` и переписать на openapi-fetch
 - Move: `src/components/app/video-player/*` → `src/features/player/*`
 - Move: `src/components/app/video/*` → `src/features/transcript/*`
 - Move: `src/hooks/use-video-player.ts` → `src/features/player/use-video-player.ts`
 - Move: `src/hooks/use-synced-player.ts` → `src/features/player/use-synced-player.ts`
 - Update: все импорты в затронутых файлах
 
-### Step 1: Установить openapi-fetch
+### Step 1: Обновить schema.ts из свежей Swagger-спеки
+
+```bash
+npm run generate:api
+```
+
+Проверить что в `schema.ts` появились все пути (comments, annotations, search, push, etc.).
+
+### Step 2: Установить openapi-fetch
 
 ```bash
 npm install openapi-fetch
 ```
 
-### Step 2: Создать типизированный API-клиент
+### Step 3: Создать типизированный API-клиент
 
 `src/api/client.ts`:
 ```typescript
@@ -64,33 +106,45 @@ export function createPublicApiClient() {
 }
 ```
 
-### Step 3: Обновить скрипт generate-types
+### Step 4: Обновить скрипт generate-types
 
 В `package.json` заменить скрипт `generate-types`:
 ```json
 "generate:api": "npx swagger2openapi ${SWAGGER_URL:-../philosophy-api/docs/swagger/swagger.json} -o /tmp/openapi3.json && openapi-typescript /tmp/openapi3.json -o src/api/schema.ts"
 ```
 
-### Step 4: Создать обёртку createAction
+### Step 5: Создать обёртку createAction
+
+**ВАЖНО:** Файл НЕ содержит `"use server"` — это обычная утилита-фабрика. `"use server"` ставится только в файлах, экспортирующих конкретные server actions.
+
+**ВАЖНО:** Поддерживает два варианта — для прямых вызовов и для `useActionState` (принимает `prevState`).
+
+**ВАЖНО:** Пробрасывает Next.js-специфичные ошибки (`redirect()`, `notFound()`), а не перехватывает их.
 
 `src/utils/create-action.ts`:
 ```typescript
-"use server";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { isNotFoundError } from "next/dist/client/components/not-found-error";
 
-type ActionResult<T> =
+export type ActionResult<T = void> =
   | { success: true; data: T }
   | { success: false; error: string };
 
-type ActionFn<TInput, TOutput> = (input: TInput) => Promise<TOutput>;
-
+/**
+ * Обёртка для server actions.
+ * Для прямых вызовов: createAction(fn) — принимает один аргумент.
+ * Для useActionState: createFormAction(fn) — принимает (prevState, formData).
+ */
 export function createAction<TInput, TOutput>(
-  fn: ActionFn<TInput, TOutput>
+  fn: (input: TInput) => Promise<TOutput>
 ): (input: TInput) => Promise<ActionResult<TOutput>> {
   return async (input: TInput) => {
     try {
       const data = await fn(input);
       return { success: true, data };
     } catch (error) {
+      if (isRedirectError(error)) throw error;
+      if (isNotFoundError(error)) throw error;
       const message =
         error instanceof Error ? error.message : "Неизвестная ошибка";
       // TODO: логирование
@@ -98,9 +152,27 @@ export function createAction<TInput, TOutput>(
     }
   };
 }
+
+/** Вариант для form actions, совместимый с useActionState */
+export function createFormAction<TOutput>(
+  fn: (formData: FormData) => Promise<TOutput>
+): (prevState: ActionResult<TOutput>, formData: FormData) => Promise<ActionResult<TOutput>> {
+  return async (_prevState: ActionResult<TOutput>, formData: FormData) => {
+    try {
+      const data = await fn(formData);
+      return { success: true, data };
+    } catch (error) {
+      if (isRedirectError(error)) throw error;
+      if (isNotFoundError(error)) throw error;
+      const message =
+        error instanceof Error ? error.message : "Неизвестная ошибка";
+      return { success: false, error: message };
+    }
+  };
+}
 ```
 
-### Step 5: Создать хелпер getUser
+### Step 7: Создать хелпер getUser
 
 `src/utils/get-user.ts`:
 ```typescript
@@ -143,7 +215,9 @@ export async function getUser(): Promise<AuthUser | null> {
 }
 ```
 
-### Step 6: Реорганизовать файлы в feature-based структуру
+**Замечание по безопасности:** `getUser()` декодирует JWT без проверки подписи. Это допустимо для server components (рендеринг UI), т.к. все мутации идут через бэкенд, который верифицирует подпись. Middleware тоже декодирует без верификации — это значит что кто-то может сформировать фейковый JWT и увидеть пустую админку, но не сможет выполнить ни одного API-вызова. Если это неприемлемо — добавить верификацию подписи через `jose` или `jsonwebtoken` в middleware, передавая `JWT_SECRET` через env.
+
+### Step 8: Реорганизовать файлы в feature-based структуру
 
 Переместить существующие файлы:
 
@@ -156,13 +230,55 @@ src/api/lecture-api.ts             → src/features/lectures/api.ts
 src/app/lectures/[id]/lecture-sync.tsx → src/features/lectures/lecture-sync.tsx
 ```
 
-Обновить ВСЕ импорты во всех затронутых файлах:
+### Step 9: Переписать `src/features/lectures/api.ts` на openapi-fetch
+
+Заменить raw `fetch()` на типизированный клиент:
+
+```typescript
+import { createPublicApiClient } from "@/api/client";
+
+export async function getLectures(page = 1, limit = 20, q?: string) {
+  const client = createPublicApiClient();
+  const { data, error } = await client.GET("/api/lectures", {
+    params: { query: { page, limit, q } },
+    next: { revalidate: 3600 },
+  });
+  if (error) throw new Error("Failed to fetch lectures");
+  return data!;
+}
+
+export async function getLectureById(id: string) {
+  const client = createPublicApiClient();
+  const { data, error } = await client.GET("/api/lectures/{id}", {
+    params: { path: { id } },
+    next: { revalidate: 3600 },
+  });
+  if (error) throw new Error(`Failed to fetch lecture ${id}`);
+  return data!;
+}
+
+export async function getTranscript(lectureId: string) {
+  const client = createPublicApiClient();
+  const { data, error } = await client.GET("/api/lectures/{id}/transcript", {
+    params: { path: { id: lectureId } },
+    next: { revalidate: 3600 },
+  });
+  if (error) throw new Error(`Failed to fetch transcript for ${lectureId}`);
+  return data!;
+}
+```
+
+**Замечание:** Проверить что `openapi-fetch` поддерживает `next` опцию для revalidation. Если нет — передавать через `fetch` options или использовать Next.js `unstable_cache`.
+
+### Step 10: Обновить ВСЕ импорты
+
+Обновить все файлы, ссылающиеся на перемещённые модули:
 - `src/app/layout.tsx`
 - `src/app/page.tsx`
 - `src/app/lectures/[id]/page.tsx`
 - Все файлы внутри перемещённых папок (внутренние импорты)
 
-### Step 7: Проверить сборку
+### Step 11: Проверить сборку
 
 ```bash
 npm run build
@@ -170,7 +286,7 @@ npm run build
 
 Ожидание: сборка проходит без ошибок.
 
-### Step 8: Коммит
+### Step 12: Коммит
 
 ```bash
 git add src/api/client.ts src/utils/create-action.ts src/utils/get-user.ts src/features/ package.json package-lock.json
@@ -241,28 +357,22 @@ export const config = {
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createAction } from "@/utils/create-action";
+import { createFormAction, type ActionResult } from "@/utils/create-action";
+import { createPublicApiClient } from "@/api/client";
 
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
-
-export const login = createAction(async (formData: FormData) => {
+export const login = createFormAction(async (formData: FormData) => {
   const username = formData.get("username") as string;
   const password = formData.get("password") as string;
 
-  const res = await fetch(`${API_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
+  const client = createPublicApiClient();
+  const { data, error } = await client.POST("/api/auth/login", {
+    body: { username, password },
   });
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.error ?? "Ошибка входа");
-  }
+  if (error) throw new Error("Неверное имя пользователя или пароль");
 
-  const { token } = await res.json();
   const cookieStore = await cookies();
-  cookieStore.set("token", token, {
+  cookieStore.set("token", data.token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -273,36 +383,38 @@ export const login = createAction(async (formData: FormData) => {
   redirect("/");
 });
 
-export const register = createAction(async (formData: FormData) => {
+export const register = createFormAction(async (formData: FormData) => {
   const username = formData.get("username") as string;
   const password = formData.get("password") as string;
 
-  const res = await fetch(`${API_URL}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
+  const client = createPublicApiClient();
+  const { error } = await client.POST("/api/auth/register", {
+    body: { username, password },
   });
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.error ?? "Ошибка регистрации");
-  }
+  if (error) throw new Error("Ошибка регистрации");
 
   redirect("/login");
 });
 
 export async function logout() {
+  "use server";
   const cookieStore = await cookies();
   cookieStore.delete("token");
   redirect("/");
 }
 ```
 
+**Замечания:**
+- `login` и `register` используют `createFormAction` (не `createAction`), т.к. они вызываются через `useActionState` и получают `(prevState, formData)`.
+- `logout` не оборачивается в `createFormAction` — он просто удаляет cookie и редиректит, ошибок обрабатывать не нужно.
+- Используется `createPublicApiClient()` (без токена) — логин/регистрация не требуют авторизации.
+
 ### Step 3: Создать формы логина и регистрации
 
-`src/features/auth/login-form.tsx` — клиентский компонент с `useActionState` для отображения ошибок. Форма: username, password, кнопка "Войти".
+`src/features/auth/login-form.tsx` — клиентский компонент с `useActionState(login, initialState)` для отображения ошибок. Форма: username, password, кнопка "Войти". `initialState: ActionResult<void> = { success: true, data: undefined }`.
 
-`src/features/auth/register-form.tsx` — аналогично. Форма: username, password, кнопка "Зарегистрироваться".
+`src/features/auth/register-form.tsx` — аналогично с `useActionState(register, initialState)`. Форма: username, password, кнопка "Зарегистрироваться".
 
 ### Step 4: Создать страницы
 
@@ -368,13 +480,15 @@ export async function getComments(lectureId: string, page = 1, limit = 20) {
 ### Step 2: Создать server actions
 
 `src/features/comments/actions.ts`:
-- `createComment` — POST `/api/lectures/{id}/comments` (body, is_anonymous)
-- `editComment` — PUT `/api/comments/{id}` (body)
-- `deleteComment` — DELETE `/api/comments/{id}`
-- `addReaction` — POST `/api/comments/{id}/reactions`
-- `removeReaction` — DELETE `/api/comments/{id}/reactions`
+- `createComment` — `createFormAction`, POST `/api/lectures/{id}/comments` (body, is_anonymous). Используется через `useActionState`.
+- `editComment` — `createFormAction`, PUT `/api/comments/{id}` (body). Используется через `useActionState`.
+- `deleteComment` — `createAction`, DELETE `/api/comments/{id}`. Прямой вызов.
+- `addReaction` — `createAction`, POST `/api/comments/{id}/reactions`. Прямой вызов.
+- `removeReaction` — `createAction`, DELETE `/api/comments/{id}/reactions`. Прямой вызов.
 
-Все через `createAction`, все используют `createApiClient()` для авторизованных запросов.
+**Правило:** `createFormAction` — для форм с `useActionState` (принимает `prevState, formData`). `createAction` — для прямых вызовов (принимает один аргумент).
+
+Все используют `createApiClient()` для авторизованных запросов.
 После мутации — `revalidatePath(\`/lectures/${lectureId}\`)`.
 
 ### Step 3: Создать компоненты
@@ -455,11 +569,11 @@ export async function getAnnotations(lectureId: string, page = 1, limit = 100) {
 ### Step 2: Создать server actions
 
 `src/features/annotations/actions.ts`:
-- `createAnnotation` — POST `/api/lectures/{id}/annotations` (body, segment_ids, is_anonymous, is_private)
-- `editAnnotation` — PUT `/api/annotations/{id}`
-- `deleteAnnotation` — DELETE `/api/annotations/{id}`
+- `createAnnotation` — `createFormAction`, POST `/api/lectures/{id}/annotations` (body, segment_ids, is_anonymous, is_private). Используется через `useActionState`.
+- `editAnnotation` — `createFormAction`, PUT `/api/annotations/{id}`. Используется через `useActionState`.
+- `deleteAnnotation` — `createAction`, DELETE `/api/annotations/{id}`. Прямой вызов.
 
-Все через `createAction` + `createApiClient()`.
+Все через `createApiClient()`.
 После мутации — `revalidatePath`.
 
 ### Step 3: Создать компоненты
@@ -778,6 +892,30 @@ git commit -m "feat(admin): full admin panel with CRUD, moderation, push"
                                         └──────────┘
 ```
 
-- **Task 1** — на main, блокирует все остальные
+- **Task 0** — на бэкенде, блокирует Task 1
+- **Task 1** — на main фронта, блокирует все остальные
 - **Tasks 2, 3, 4, 5** — параллельно в отдельных worktrees после мержа Task 1
 - **Task 6** — после мержа Task 1 + Task 2 (нужен middleware и auth)
+- **Порядок мержа:** Task 2 → Task 5 → Task 3 → Task 4 (минимизация merge-конфликтов)
+
+---
+
+## Общие требования ко всем Tasks 2-6
+
+### Loading и Error states
+
+Каждый новый роут должен иметь:
+- `loading.tsx` — скелетон загрузки (можно использовать существующие компоненты из `components/shared/skeleton/`)
+- `error.tsx` — обработка ошибок с кнопкой "Попробовать снова" (по образцу существующего `src/app/error.tsx`)
+
+Роуты, которым нужны loading/error:
+- `/login`, `/register` (Task 2)
+- `/search` (Task 5)
+- `/admin`, `/admin/lectures`, `/admin/lectures/[id]`, `/admin/users`, `/admin/comments`, `/admin/annotations`, `/admin/push` (Task 6)
+
+### createAction vs createFormAction
+
+- `createFormAction` — для form actions, вызываемых через `useActionState`. Сигнатура: `(prevState, formData) => Promise<ActionResult>`.
+- `createAction` — для прямых вызовов (delete, toggle, reaction). Сигнатура: `(input) => Promise<ActionResult>`.
+- Оба пробрасывают `redirect()` и `notFound()` ошибки Next.js.
+- НЕ ставить `"use server"` на `create-action.ts` — только на файлы с конкретными actions.

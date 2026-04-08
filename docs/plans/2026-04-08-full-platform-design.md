@@ -38,10 +38,13 @@
 
 ```
 src/
+├── middleware.ts                        # защита /admin/* по роли из JWT cookie
 ├── app/
 │   ├── layout.tsx
 │   ├── page.tsx                        # главная (список лекций)
 │   ├── lectures/[id]/page.tsx          # страница лекции
+│   ├── login/page.tsx                  # страница логина
+│   ├── register/page.tsx               # страница регистрации
 │   ├── search/page.tsx                 # страница поиска
 │   ├── admin/
 │   │   ├── layout.tsx                  # layout с боковым меню, проверка роли
@@ -54,11 +57,9 @@ src/
 │
 ├── features/
 │   ├── auth/
-│   │   ├── api.ts                      # login, register, token storage
-│   │   ├── auth-context.tsx            # AuthProvider, useAuth()
-│   │   ├── login-form.tsx
-│   │   ├── register-form.tsx
-│   │   └── auth-guard.tsx              # защита роутов по роли
+│   │   ├── actions.ts                  # server actions: login, register, logout
+│   │   ├── login-form.tsx              # client component — форма логина
+│   │   └── register-form.tsx           # client component — форма регистрации
 │   │
 │   ├── lectures/
 │   │   ├── api.ts
@@ -113,7 +114,8 @@ src/
 │   ├── client.ts                       # типизированный openapi-fetch клиент
 │   └── schema.ts                       # сгенерированные типы
 └── utils/
-    └── create-action.ts                # обёртка для server actions
+    ├── create-action.ts                # createAction (прямые вызовы) + createFormAction (useActionState)
+    └── get-user.ts                     # getUser() — декодирует JWT из cookie, возвращает AuthUser | null
 ```
 
 ## Фичи
