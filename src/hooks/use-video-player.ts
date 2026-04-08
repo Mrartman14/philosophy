@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef, type RefObject } from "react"
 
 export function useVideoPlayer(
   videoRef: RefObject<HTMLVideoElement | null>,
-  _containerRef: RefObject<HTMLElement | null>,
+  containerRef: RefObject<HTMLElement | null>,
   onTimeUpdate?: (time: number) => void
 ) {
   const [playing, setPlaying] = useState(false);
@@ -14,6 +14,8 @@ export function useVideoPlayer(
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPip, setIsPip] = useState(false);
 
   // Stable ref for onTimeUpdate to avoid re-subscribing listeners on every render
   const onTimeUpdateRef = useRef(onTimeUpdate);
@@ -41,6 +43,9 @@ export function useVideoPlayer(
       setMuted(video.muted);
     };
     const onRateChange = () => setPlaybackRate(video.playbackRate);
+    const onFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+    const onPipEnter = () => setIsPip(true);
+    const onPipLeave = () => setIsPip(false);
 
     video.addEventListener("play", onPlay);
     video.addEventListener("pause", onPause);
@@ -49,6 +54,9 @@ export function useVideoPlayer(
     video.addEventListener("progress", onProgress);
     video.addEventListener("volumechange", onVolumeChange);
     video.addEventListener("ratechange", onRateChange);
+    video.addEventListener("enterpictureinpicture", onPipEnter);
+    video.addEventListener("leavepictureinpicture", onPipLeave);
+    document.addEventListener("fullscreenchange", onFullscreenChange);
 
     return () => {
       video.removeEventListener("play", onPlay);
@@ -58,6 +66,9 @@ export function useVideoPlayer(
       video.removeEventListener("progress", onProgress);
       video.removeEventListener("volumechange", onVolumeChange);
       video.removeEventListener("ratechange", onRateChange);
+      video.removeEventListener("enterpictureinpicture", onPipEnter);
+      video.removeEventListener("leavepictureinpicture", onPipLeave);
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
     };
   }, [videoRef]);
 
@@ -108,6 +119,35 @@ export function useVideoPlayer(
     [videoRef]
   );
 
+  const toggleFullscreen = useCallback(async () => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await el.requestFullscreen();
+    }
+  }, [containerRef]);
+
+  const togglePip = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else {
+      await video.requestPictureInPicture();
+    }
+  }, [videoRef]);
+
+  // MediaSession integration
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) return;
+    navigator.mediaSession.setActionHandler("play", () => videoRef.current?.play());
+    navigator.mediaSession.setActionHandler("pause", () => videoRef.current?.pause());
+    navigator.mediaSession.setActionHandler("seekforward", () => skipBy(10));
+    navigator.mediaSession.setActionHandler("seekbackward", () => skipBy(-10));
+  }, [videoRef, skipBy]);
+
   return {
     playing,
     currentTime,
@@ -122,5 +162,9 @@ export function useVideoPlayer(
     changeVolume,
     toggleMute,
     changePlaybackRate,
+    isFullscreen,
+    isPip,
+    toggleFullscreen,
+    togglePip,
   };
 }
