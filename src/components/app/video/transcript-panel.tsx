@@ -11,9 +11,9 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({
 }) => {
   return (
     <>
-      {segments.map((item) => (
+      {segments.map((item, index) => (
         <button
-          key={item.id}
+          key={item.id ?? index}
           data-segment-id={item.id}
           data-start={item.start ?? 0}
           className="text-left p-2 rounded-lg transition-colors cursor-pointer hover:bg-(--color-border)/30 data-[active]:bg-(--color-primary)/10 data-[active]:border-l-2 data-[active]:border-(--color-primary) data-[active]:hover:bg-(--color-primary)/10"

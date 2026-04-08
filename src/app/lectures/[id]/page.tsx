@@ -43,11 +43,12 @@ export default async function LecturePage({ params }: PageProps) {
   }
 
   const segments = transcript.segments ?? [];
+  const timings = segments.map((s) => ({ id: s.id, start: s.start, end: s.end }));
 
   return (
     <LectureSync
       videoUrl={lecture.video_url}
-      segments={segments}
+      segments={timings}
       transcriptContent={<TranscriptPanel segments={segments} />}
       infoContent={
         <div className="p-4">

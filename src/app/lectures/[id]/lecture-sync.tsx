@@ -1,15 +1,14 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import type { components } from "@/api/schema";
 import { useSyncedPlayer } from "@/hooks/use-synced-player";
 import { TranscriptHighlighter } from "@/components/app/video/transcript-highlighter";
 
-type Segment = components["schemas"]["transcript.Segment"];
+type SegmentTiming = { id?: number | undefined; start?: number | undefined; end?: number | undefined };
 
 interface LectureSyncProps {
   videoUrl: string | undefined;
-  segments: Segment[];
+  segments: SegmentTiming[];
   transcriptContent: ReactNode;
   infoContent: ReactNode;
 }

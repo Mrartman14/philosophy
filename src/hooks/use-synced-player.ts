@@ -1,17 +1,16 @@
 "use client";
 
 import { useEffect, useState, useCallback, RefObject } from "react";
-import type { components } from "@/api/schema";
 
-type Segment = components["schemas"]["transcript.Segment"];
+type SegmentTiming = { id?: number | undefined; start?: number | undefined; end?: number | undefined };
 
-function findByTime(items: Segment[], time: number): Segment | null {
+function findByTime(items: SegmentTiming[], time: number): SegmentTiming | null {
   return items.find((item) => time >= (item.start ?? 0) && time <= (item.end ?? 0)) ?? null;
 }
 
 export function useSyncedPlayer(
   videoRef: RefObject<HTMLVideoElement | null>,
-  segments: Segment[]
+  segments: SegmentTiming[]
 ) {
   const [currentSegmentId, setCurrentSegmentId] = useState<number | null>(null);
 
