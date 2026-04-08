@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
-import { useSyncedPlayer } from "@/hooks/use-synced-player";
+import { useRef, useState, type ReactNode } from "react";
+import { VideoPlayer, type VideoPlayerHandle } from "@/components/app/video-player/video-player";
 import { TranscriptHighlighter } from "@/components/app/video/transcript-highlighter";
 
 type SegmentTiming = { id?: number | undefined; start?: number | undefined; end?: number | undefined };
@@ -19,8 +19,12 @@ export const LectureSync: React.FC<LectureSyncProps> = ({
   transcriptContent,
   infoContent,
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { currentSegmentId, seekTo } = useSyncedPlayer(videoRef, segments);
+  const playerRef = useRef<VideoPlayerHandle>(null);
+  const [currentSegmentId, setCurrentSegmentId] = useState<number | null>(null);
+
+  const seekTo = (time: number) => {
+    playerRef.current?.seekTo(time);
+  };
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-[1fr_1fr] min-h-screen">
@@ -34,12 +38,13 @@ export const LectureSync: React.FC<LectureSyncProps> = ({
       </div>
       <div className="order-1 md:order-2 md:sticky md:top-(--header-height) md:h-[calc(100vh-var(--header-height))] md:overflow-y-auto border-l border-(--color-border)">
         {videoUrl ? (
-          <video
-            ref={videoRef}
-            controls
-            className="w-full aspect-video"
+          <VideoPlayer
+            ref={playerRef}
             src={videoUrl}
-            preload="metadata"
+            onTimeUpdate={(time) => {
+              const segment = segments.find((s) => time >= (s.start ?? 0) && time <= (s.end ?? 0));
+              setCurrentSegmentId(segment?.id ?? null);
+            }}
           />
         ) : (
           <div className="w-full aspect-video flex items-center justify-center bg-(--color-text-pane) text-(--color-description)">
