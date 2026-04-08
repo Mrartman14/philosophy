@@ -7,6 +7,7 @@ import { SkipForwardIcon } from "@/assets/icons/skip-forward-icon";
 import { PrevSegmentIcon } from "@/assets/icons/prev-segment-icon";
 import { NextSegmentIcon } from "@/assets/icons/next-segment-icon";
 import { Timeline } from "./timeline";
+import { SpeedSlider } from "./speed-slider";
 import type { Chapter, Marker } from "./video-player";
 
 interface PlayerControlsProps {
@@ -16,9 +17,11 @@ interface PlayerControlsProps {
   buffered: number;
   chapters: Chapter[];
   markers: Marker[];
+  playbackRate: number;
   onTogglePlay: () => void;
   onSkipBy: (seconds: number) => void;
   onSeek: (time: number) => void;
+  onChangePlaybackRate: (rate: number) => void;
 }
 
 export const PlayerControls: React.FC<PlayerControlsProps> = ({
@@ -28,9 +31,11 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
   buffered,
   chapters,
   markers,
+  playbackRate,
   onTogglePlay,
   onSkipBy,
   onSeek,
+  onChangePlaybackRate,
 }) => {
   const seekToSegment = (direction: -1 | 1) => {
     if (chapters.length === 0) return;
@@ -98,6 +103,11 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
         chapters={chapters}
         markers={markers}
         onSeek={onSeek}
+      />
+
+      <SpeedSlider
+        playbackRate={playbackRate}
+        onChangePlaybackRate={onChangePlaybackRate}
       />
     </Toolbar.Root>
   );

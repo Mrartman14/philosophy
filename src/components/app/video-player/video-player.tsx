@@ -57,9 +57,11 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
         buffered={player.buffered}
         chapters={chapters}
         markers={markers}
+        playbackRate={player.playbackRate}
         onTogglePlay={player.togglePlay}
         onSkipBy={player.skipBy}
         onSeek={player.seek}
+        onChangePlaybackRate={player.changePlaybackRate}
       />
     </div>
   );
