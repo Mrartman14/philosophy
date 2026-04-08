@@ -1,21 +1,13 @@
-const BASE_PATH = '/philosophy';
-const SW_VERSION = 'mnpvyn4t';
+const BASE_PATH = '';
+const SW_VERSION = 'mnq2lqq6';
 
-/** Cache names */
 const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;
 const NEXT_ASSETS_CACHE = `${CACHE_PREFIX}-next-${SW_VERSION}`;
-const PAGE_DATA_CACHE = `${CACHE_PREFIX}-pagedata-${SW_VERSION}`;
-const LECTURES_PAGE_CACHE = `${CACHE_PREFIX}-lectures-${SW_VERSION}`;
+const API_CACHE = `${CACHE_PREFIX}-api-${SW_VERSION}`;
 const IMAGE_CACHE = `${CACHE_PREFIX}-images-${SW_VERSION}`;
 
-const ALL_CACHES = [
-  STATIC_CACHE,
-  NEXT_ASSETS_CACHE,
-  PAGE_DATA_CACHE,
-  LECTURES_PAGE_CACHE,
-  IMAGE_CACHE,
-];
+const ALL_CACHES = [STATIC_CACHE, NEXT_ASSETS_CACHE, API_CACHE, IMAGE_CACHE];
 
 const STATIC_ASSETS = [
   `${BASE_PATH}/`,
@@ -28,7 +20,6 @@ const STATIC_ASSETS = [
 const OFFLINE_URL = `${BASE_PATH}/offline.html`;
 const IMAGE_CACHE_LIMIT = 100;
 
-/** Install — precache static assets */
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
@@ -39,7 +30,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-/** Activate — clean old caches */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
@@ -56,46 +46,32 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/** Fetch — route to cache strategies */
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only handle GET requests
   if (request.method !== 'GET') return;
-
-  // Skip cross-origin requests
   if (url.origin !== self.location.origin) return;
 
-  // page-data.json — stale-while-revalidate
-  if (url.pathname.endsWith('page-data.json')) {
-    const networkFetch = staleWhileRevalidate(request, PAGE_DATA_CACHE);
-    event.waitUntil(networkFetch.backgroundUpdate);
-    event.respondWith(networkFetch.response);
+  // API requests — network-first
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(networkFirst(request, API_CACHE));
     return;
   }
 
-  // Lecture page HTML — stale-while-revalidate
-  if (url.pathname.includes('/lectures') && (url.pathname.endsWith('.html') || url.pathname.endsWith('.txt'))) {
-    const networkFetch = staleWhileRevalidate(request, LECTURES_PAGE_CACHE);
-    event.waitUntil(networkFetch.backgroundUpdate);
-    event.respondWith(networkFetch.response);
-    return;
-  }
-
-  // Next.js static chunks — cache-first (content-hashed)
+  // Next.js static chunks — cache-first
   if (url.pathname.includes('/_next/static/')) {
     event.respondWith(cacheFirst(request, NEXT_ASSETS_CACHE));
     return;
   }
 
-  // Precached static assets — cache-first (checked before images so logo.png uses STATIC_CACHE)
+  // Precached static assets — cache-first
   if (STATIC_ASSETS.some((asset) => url.pathname === asset || url.pathname + '/' === asset)) {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
   }
 
-  // Preview images — cache-first with LRU
+  // Images — cache-first with LRU
   if (url.pathname.match(/\.(jpeg|jpg|png|webp)$/)) {
     event.respondWith(cacheFirstWithLimit(request, IMAGE_CACHE, IMAGE_CACHE_LIMIT));
     return;
@@ -107,7 +83,20 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-/** Cache-first strategy */
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetch(request);
+    if (response && response.status === 200) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    const cached = await cache.match(request);
+    return cached || caches.match(OFFLINE_URL);
+  }
+}
+
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
@@ -124,7 +113,6 @@ async function cacheFirst(request, cacheName) {
   }
 }
 
-/** Cache-first with LRU eviction */
 async function cacheFirstWithLimit(request, cacheName, limit) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
@@ -142,33 +130,6 @@ async function cacheFirstWithLimit(request, cacheName, limit) {
   }
 }
 
-/** Stale-while-revalidate strategy — returns {response, backgroundUpdate} */
-function staleWhileRevalidate(request, cacheName) {
-  const cachePromise = caches.open(cacheName);
-
-  const backgroundUpdate = cachePromise.then((cache) =>
-    fetch(request)
-      .then((response) => {
-        if (response && response.status === 200) {
-          cache.put(request, response.clone());
-        }
-        return response;
-      })
-      .catch(() => null)
-  );
-
-  const response = cachePromise.then(async (cache) => {
-    const cached = await cache.match(request);
-    if (cached) return cached;
-
-    const networkResponse = await backgroundUpdate;
-    return networkResponse || caches.match(OFFLINE_URL);
-  });
-
-  return { response, backgroundUpdate };
-}
-
-/** LRU cache trimming */
 async function trimCache(cacheName, limit) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
@@ -178,14 +139,12 @@ async function trimCache(cacheName, limit) {
   }
 }
 
-/** SKIP_WAITING message from client */
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-/** Push notification */
 self.addEventListener('push', (event) => {
   if (!event.data) return;
 
@@ -201,7 +160,6 @@ self.addEventListener('push', (event) => {
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
-/** Notification click — open app */
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const url = event.notification.data?.url || `${self.location.origin}${BASE_PATH}/`;
