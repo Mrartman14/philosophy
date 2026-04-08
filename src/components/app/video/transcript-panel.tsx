@@ -1,51 +1,29 @@
-"use client";
-
-import { useEffect, useRef } from "react";
 import type { components } from "@/api/schema";
 
 type Segment = components["schemas"]["transcript.Segment"];
 
 interface TranscriptPanelProps {
   segments: Segment[];
-  currentSegmentId: number | null;
-  onSeek: (time: number) => void;
 }
 
 export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({
   segments,
-  currentSegmentId,
-  onSeek,
 }) => {
-  const activeRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (activeRef.current) {
-      activeRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [currentSegmentId]);
-
   return (
-    <div className="flex flex-col gap-1 p-4">
-      {segments.map((item) => {
-        const isActive = item.id === currentSegmentId;
-        return (
-          <button
-            key={item.id}
-            ref={isActive ? activeRef : null}
-            onClick={() => onSeek(item.start ?? 0)}
-            className={`text-left p-2 rounded-lg transition-colors cursor-pointer ${
-              isActive
-                ? "bg-(--color-primary)/10 border-l-2 border-(--color-primary)"
-                : "hover:bg-(--color-border)/30"
-            }`}
-          >
-            <span className="text-xs text-(--color-description) block">
-              {item.speaker}
-            </span>
-            <span className="text-sm">{item.text}</span>
-          </button>
-        );
-      })}
-    </div>
+    <>
+      {segments.map((item) => (
+        <button
+          key={item.id}
+          data-segment-id={item.id}
+          data-start={item.start ?? 0}
+          className="text-left p-2 rounded-lg transition-colors cursor-pointer hover:bg-(--color-border)/30 data-[active]:bg-(--color-primary)/10 data-[active]:border-l-2 data-[active]:border-(--color-primary) data-[active]:hover:bg-(--color-primary)/10"
+        >
+          <span className="text-xs text-(--color-description) block">
+            {item.speaker}
+          </span>
+          <span className="text-sm">{item.text}</span>
+        </button>
+      ))}
+    </>
   );
 };
