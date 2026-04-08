@@ -43,7 +43,6 @@ class PushService {
   }
 
   /** TODO: implement when backend is ready */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async sendSubscriptionToServer(_sub: PushSubscription): Promise<void> {
     // Will POST subscription to backend endpoint
   }

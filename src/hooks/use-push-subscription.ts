@@ -26,7 +26,7 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
 
     if (supported) {
       setPermission(Notification.permission);
-      pushService.getSubscription().then(setSubscription);
+      void pushService.getSubscription().then(setSubscription);
     }
   }, []);
 
