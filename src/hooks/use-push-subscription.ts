@@ -31,14 +31,23 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
   }, []);
 
   const subscribe = async () => {
-    const sub = await pushService.subscribe();
-    setSubscription(sub);
-    setPermission(Notification.permission);
+    try {
+      const sub = await pushService.subscribe();
+      setSubscription(sub);
+    } catch (err) {
+      console.error("[Push] subscribe failed:", err);
+    } finally {
+      setPermission(Notification.permission);
+    }
   };
 
   const unsubscribe = async () => {
-    await pushService.unsubscribe();
-    setSubscription(null);
+    try {
+      await pushService.unsubscribe();
+      setSubscription(null);
+    } catch (err) {
+      console.error("[Push] unsubscribe failed:", err);
+    }
   };
 
   return { isSupported, permission, subscription, subscribe, unsubscribe };

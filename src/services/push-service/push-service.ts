@@ -18,6 +18,9 @@ class PushService {
   }
 
   async subscribe(): Promise<PushSubscription> {
+    if (!VAPID_PUBLIC_KEY) {
+      throw new Error("[PushService] NEXT_PUBLIC_VAPID_PUBLIC_KEY is not configured");
+    }
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,

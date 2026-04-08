@@ -17,7 +17,10 @@ export function useInstallPrompt(): UseInstallPromptReturn {
 
   useEffect(() => {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
+    setIsIOS(
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+    );
 
     const handler = (e: Event) => {
       e.preventDefault();

@@ -69,7 +69,7 @@ class LectureService {
     ids.unshift(id);
 
     if (ids.length > MAX_LAST_LECTURES) {
-      ids = ids.slice(ids.length - MAX_LAST_LECTURES);
+      ids = ids.slice(0, MAX_LAST_LECTURES);
     }
 
     await db.put(STORE_NAME, ids, DB_KEYS.lastViewedLectureIds);
@@ -102,7 +102,7 @@ class LectureService {
     }
 
     if (ids.length > MAX_FAV_LECTURES) {
-      ids = ids.slice(ids.length - MAX_FAV_LECTURES);
+      ids = ids.slice(0, MAX_FAV_LECTURES);
     }
 
     await db.put(STORE_NAME, ids, DB_KEYS.favLectureIds);

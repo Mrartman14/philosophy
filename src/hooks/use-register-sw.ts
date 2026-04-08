@@ -48,11 +48,16 @@ export function useRegisterSW(): UseRegisterSWReturn {
 
     // Reload on controller change (after SKIP_WAITING)
     let refreshing = false;
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
+    const onControllerChange = () => {
       if (refreshing) return;
       refreshing = true;
       window.location.reload();
-    });
+    };
+    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+
+    return () => {
+      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+    };
   }, []);
 
   const applyUpdate = () => {
