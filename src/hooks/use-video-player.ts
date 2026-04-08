@@ -148,6 +148,58 @@ export function useVideoPlayer(
     navigator.mediaSession.setActionHandler("seekbackward", () => skipBy(-10));
   }, [videoRef, skipBy]);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const video = videoRef.current;
+      if (!video) return;
+      const target = e.target as HTMLElement;
+      // Don't handle if typing in an input
+      if (target.tagName === "INPUT") return;
+      // Don't intercept arrow keys when focus is inside a slider (Base UI handles them)
+      if (target.closest('[role="slider"]') && e.key.startsWith("Arrow")) return;
+
+      switch (e.key) {
+        case " ":
+        case "k":
+          e.preventDefault();
+          togglePlay();
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          skipBy(-10);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          skipBy(10);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          changeVolume(video.volume + 0.05);
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          changeVolume(video.volume - 0.05);
+          break;
+        case "m":
+          toggleMute();
+          break;
+        case "f":
+          toggleFullscreen();
+          break;
+        case "p":
+          togglePip();
+          break;
+        case "<":
+          changePlaybackRate(video.playbackRate - 0.25);
+          break;
+        case ">":
+          changePlaybackRate(video.playbackRate + 0.25);
+          break;
+      }
+    },
+    [videoRef, togglePlay, skipBy, changeVolume, toggleMute, toggleFullscreen, togglePip, changePlaybackRate]
+  );
+
   return {
     playing,
     currentTime,
@@ -166,5 +218,6 @@ export function useVideoPlayer(
     isPip,
     toggleFullscreen,
     togglePip,
+    handleKeyDown,
   };
 }

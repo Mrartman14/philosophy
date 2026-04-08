@@ -46,7 +46,12 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
   useImperativeHandle(ref, () => ({ seekTo: player.seek }), [player.seek]);
 
   return (
-    <div ref={containerRef} className={`relative ${className ?? ""}`}>
+    <div
+      ref={containerRef}
+      tabIndex={0}
+      onKeyDown={player.handleKeyDown}
+      className={`relative outline-none ${className ?? ""}`}
+    >
       <video
         ref={videoRef}
         src={src}
