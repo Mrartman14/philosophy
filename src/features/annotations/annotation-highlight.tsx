@@ -23,9 +23,7 @@ interface AnnotationHighlightProps {
   lectureId: string;
   annotations: Annotation[];
   annotationListContent: ReactNode;
-  /** Может ли пользователь создавать аннотации (вычислено на сервере). */
-  canCreate: boolean;
-  /** Если `false` — причина для tooltip'а. */
+  /** `null` — пользователь может создавать аннотации; иначе — причина отказа. */
   createDeny: DenyReason | null;
 }
 
@@ -35,10 +33,10 @@ export const AnnotationHighlight: React.FC<
   lectureId,
   annotations,
   annotationListContent,
-  canCreate,
   createDeny,
   children,
 }) => {
+  const canCreate = createDeny === null;
   const containerRef = useRef<HTMLDivElement>(null);
   const listWrapperRef = useRef<HTMLDivElement>(null);
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
@@ -304,10 +302,10 @@ interface AnnotationItemActionsProps {
   canDelete: boolean;
 }
 
-const editInitialState: ActionResult<Annotation> = {
-  success: false,
-  error: "",
-};
+type EditAnnotationAction = (
+  prevState: ActionResult<Annotation> | null,
+  formData: FormData,
+) => Promise<ActionResult<Annotation>>;
 
 /**
  * Inline edit/delete controls for a single annotation item.
@@ -327,10 +325,10 @@ export const AnnotationItemActions: React.FC<AnnotationItemActionsProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [state, formAction, isSaving] = useActionState(
-    editAnnotation,
-    editInitialState
-  );
+  const [state, formAction, isSaving] = useActionState<
+    ActionResult<Annotation> | null,
+    FormData
+  >(editAnnotation as EditAnnotationAction, null);
 
   // Close the edit form after a successful save. We use the "storing
   // information from previous renders" pattern so we only react to a fresh
@@ -339,7 +337,7 @@ export const AnnotationItemActions: React.FC<AnnotationItemActionsProps> = ({
   const [previousState, setPreviousState] = useState(state);
   if (state !== previousState) {
     setPreviousState(state);
-    if (state.success && isEditing) {
+    if (state?.success && isEditing) {
       setIsEditing(false);
     }
   }
@@ -355,7 +353,11 @@ export const AnnotationItemActions: React.FC<AnnotationItemActionsProps> = ({
         lectureId,
       });
       if (!result.success) {
-        setDeleteError(result.error);
+        setDeleteError(
+          result.code === "forbidden"
+            ? "У вас нет прав на удаление аннотации."
+            : result.error
+        );
       }
     });
   };
@@ -383,9 +385,11 @@ export const AnnotationItemActions: React.FC<AnnotationItemActionsProps> = ({
           className="w-full p-2 rounded border border-(--color-border) bg-transparent text-sm resize-y"
           disabled={isSaving}
         />
-        {!state.success && state.error && (
+        {state && !state.success && state.error && (
           <p role="alert" className="text-xs text-red-500">
-            {state.error}
+            {state.code === "forbidden"
+              ? "У вас нет прав на редактирование аннотации."
+              : state.error}
           </p>
         )}
         <div className="flex items-center justify-end gap-2">

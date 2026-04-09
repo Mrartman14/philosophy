@@ -11,10 +11,7 @@ import { TranscriptPanel } from "@/features/transcript/transcript-panel";
 import { getAnnotations } from "@/features/annotations/api";
 import { AnnotationList } from "@/features/annotations/annotation-list";
 import { AnnotationHighlight } from "@/features/annotations/annotation-highlight";
-import {
-  canCreateAnnotation,
-  whyCannotCreateAnnotation,
-} from "@/features/annotations/permissions";
+import { whyCannotCreateAnnotation } from "@/features/annotations/permissions";
 import { CommentList } from "@/features/comments/comment-list";
 import type { Annotation } from "@/api/types";
 import { getMe } from "@/utils/me";
@@ -70,7 +67,6 @@ export default async function LecturePage({ params }: PageProps) {
   }
 
   const me = await getMe();
-  const canCreate = canCreateAnnotation(me);
   const createDeny = whyCannotCreateAnnotation(me);
 
   const segments = transcript.segments ?? [];
@@ -90,7 +86,6 @@ export default async function LecturePage({ params }: PageProps) {
         <AnnotationHighlight
           lectureId={id}
           annotations={annotations}
-          canCreate={canCreate}
           createDeny={createDeny}
           annotationListContent={
             <AnnotationList annotations={annotations} lectureId={id} />

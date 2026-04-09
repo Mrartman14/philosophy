@@ -12,10 +12,13 @@ interface AnnotationFormProps {
   onCancel?: () => void;
 }
 
-const initialState: ActionResult<Annotation> = {
-  success: false,
-  error: "",
-};
+// `createAnnotation` по сигнатуре принимает `prevState: ActionResult<Annotation>`,
+// но по соглашению проекта `initialState` у useActionState — null (см. 1.3).
+// Runtime safe: action не читает _prevState.
+type CreateAnnotationAction = (
+  prevState: ActionResult<Annotation> | null,
+  formData: FormData,
+) => Promise<ActionResult<Annotation>>;
 
 export const AnnotationForm: React.FC<AnnotationFormProps> = ({
   lectureId,
@@ -23,13 +26,13 @@ export const AnnotationForm: React.FC<AnnotationFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const [state, formAction, isPending] = useActionState(
-    createAnnotation,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState<
+    ActionResult<Annotation> | null,
+    FormData
+  >(createAnnotation as CreateAnnotationAction, null);
 
   useEffect(() => {
-    if (state.success) {
+    if (state?.success) {
       onSuccess?.();
     }
   }, [state, onSuccess]);
@@ -75,8 +78,12 @@ export const AnnotationForm: React.FC<AnnotationFormProps> = ({
         </label>
       </div>
 
-      {!state.success && state.error && (
-        <p className="text-xs text-red-500">{state.error}</p>
+      {state && !state.success && state.error && (
+        <p role="alert" className="text-xs text-red-500">
+          {state.code === "forbidden"
+            ? "У вас нет прав на создание аннотации."
+            : state.error}
+        </p>
       )}
 
       <div className="flex gap-2 justify-end">
