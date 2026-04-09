@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import type { UserStatus } from "@/api/types";
 import { updateUserStatus } from "@/features/admin/actions";
 
@@ -17,6 +17,12 @@ export const UserStatusInline: React.FC<UserStatusInlineProps> = ({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  // Синхронизируем локальный state с пропсом после revalidatePath
+  // (родитель перерисовывается, но компонент не перемонтируется).
+  useEffect(() => {
+    setStatus(currentStatus);
+  }, [currentStatus]);
+
   const handleChange = (next: UserStatus) => {
     setStatus(next);
     setError(null);
@@ -25,7 +31,7 @@ export const UserStatusInline: React.FC<UserStatusInlineProps> = ({
       if (!result.success) {
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на это действие. Обновите страницу."
+            ? "У вас нет прав на изменение статуса пользователя."
             : result.error
         );
         setStatus(currentStatus);
@@ -46,8 +52,8 @@ export const UserStatusInline: React.FC<UserStatusInlineProps> = ({
         <option value="banned">banned</option>
       </select>
       {error && (
-        <span className="text-xs text-red-500" title={error}>
-          !
+        <span role="alert" className="text-xs text-red-500">
+          {error}
         </span>
       )}
     </div>
