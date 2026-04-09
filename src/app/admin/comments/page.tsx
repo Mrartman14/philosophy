@@ -1,20 +1,35 @@
 import Link from "next/link";
 import { getLectures } from "@/features/lectures/api";
-import { getComments } from "@/features/comments/api";
+import { getCommentsAdmin } from "@/features/admin/comments/api";
 import { CommentModeration } from "@/features/admin/comments/comment-moderation";
 import { LectureSelector } from "@/features/admin/moderation/lecture-selector";
+import {
+  StatusTabs,
+  parseStatusParam,
+  statusToTab,
+} from "@/features/admin/moderation/status-tabs";
 import type { Comment, Lecture } from "@/api/types";
 
 export const metadata = { title: "Модерация комментариев — Админ" };
 
 interface PageProps {
-  searchParams: Promise<{ lecture_id?: string; offset?: string }>;
+  searchParams: Promise<{
+    lecture_id?: string;
+    offset?: string;
+    status?: string;
+  }>;
 }
 
 export default async function AdminCommentsPage({ searchParams }: PageProps) {
-  const { lecture_id: lectureId, offset: offsetStr } = await searchParams;
+  const {
+    lecture_id: lectureId,
+    offset: offsetStr,
+    status: statusStr,
+  } = await searchParams;
   const offset = Number(offsetStr ?? 0) || 0;
   const limit = 20;
+  const statuses = parseStatusParam(statusStr);
+  const currentTab = statusToTab(statuses);
 
   let lectures: Lecture[] = [];
   try {
@@ -29,7 +44,7 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
   let loadError = false;
   if (lectureId) {
     try {
-      const result = await getComments(lectureId, offset, limit);
+      const result = await getCommentsAdmin(lectureId, statuses, offset, limit);
       comments = result.data;
       total = result.total;
     } catch {
@@ -47,6 +62,7 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
   const buildHref = (nextOffset: number) => {
     const params = new URLSearchParams();
     if (lectureId) params.set("lecture_id", lectureId);
+    if (statusStr) params.set("status", statusStr);
     if (nextOffset > 0) params.set("offset", String(nextOffset));
     const qs = params.toString();
     return qs ? `/admin/comments?${qs}` : "/admin/comments";
@@ -62,6 +78,14 @@ export default async function AdminCommentsPage({ searchParams }: PageProps) {
         baseHref="/admin/comments"
         paramName="lecture_id"
       />
+
+      {lectureId && (
+        <StatusTabs
+          baseHref="/admin/comments"
+          lectureId={lectureId}
+          current={currentTab}
+        />
+      )}
 
       {!lectureId && (
         <p className="text-sm text-(--color-description)">

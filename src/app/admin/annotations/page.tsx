@@ -1,20 +1,35 @@
 import Link from "next/link";
 import { getLectures } from "@/features/lectures/api";
-import { getAnnotations } from "@/features/annotations/api";
+import { getAnnotationsAdmin } from "@/features/admin/annotations/api";
 import { AnnotationModeration } from "@/features/admin/annotations/annotation-moderation";
 import { LectureSelector } from "@/features/admin/moderation/lecture-selector";
+import {
+  StatusTabs,
+  parseStatusParam,
+  statusToTab,
+} from "@/features/admin/moderation/status-tabs";
 import type { Annotation, Lecture } from "@/api/types";
 
 export const metadata = { title: "Модерация аннотаций — Админ" };
 
 interface PageProps {
-  searchParams: Promise<{ lecture_id?: string; offset?: string }>;
+  searchParams: Promise<{
+    lecture_id?: string;
+    offset?: string;
+    status?: string;
+  }>;
 }
 
 export default async function AdminAnnotationsPage({ searchParams }: PageProps) {
-  const { lecture_id: lectureId, offset: offsetStr } = await searchParams;
+  const {
+    lecture_id: lectureId,
+    offset: offsetStr,
+    status: statusStr,
+  } = await searchParams;
   const offset = Number(offsetStr ?? 0) || 0;
   const limit = 20;
+  const statuses = parseStatusParam(statusStr);
+  const currentTab = statusToTab(statuses);
 
   let lectures: Lecture[] = [];
   try {
@@ -29,7 +44,12 @@ export default async function AdminAnnotationsPage({ searchParams }: PageProps) 
   let loadError = false;
   if (lectureId) {
     try {
-      const result = await getAnnotations(lectureId, offset, limit);
+      const result = await getAnnotationsAdmin(
+        lectureId,
+        statuses,
+        offset,
+        limit
+      );
       annotations = result.data;
       total = result.total;
     } catch {
@@ -47,6 +67,7 @@ export default async function AdminAnnotationsPage({ searchParams }: PageProps) 
   const buildHref = (nextOffset: number) => {
     const params = new URLSearchParams();
     if (lectureId) params.set("lecture_id", lectureId);
+    if (statusStr) params.set("status", statusStr);
     if (nextOffset > 0) params.set("offset", String(nextOffset));
     const qs = params.toString();
     return qs ? `/admin/annotations?${qs}` : "/admin/annotations";
@@ -62,6 +83,14 @@ export default async function AdminAnnotationsPage({ searchParams }: PageProps) 
         baseHref="/admin/annotations"
         paramName="lecture_id"
       />
+
+      {lectureId && (
+        <StatusTabs
+          baseHref="/admin/annotations"
+          lectureId={lectureId}
+          current={currentTab}
+        />
+      )}
 
       {!lectureId && (
         <p className="text-sm text-(--color-description)">
