@@ -2,19 +2,34 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 import { createPublicApiClient } from "@/api/client";
 import { createFormAction } from "@/utils/create-action";
+
+/** Безопасный относительный путь — без host, начинается с одного `/`. */
+function safeNext(next: string | null): string {
+  if (!next) return "/";
+  if (!next.startsWith("/") || next.startsWith("//")) return "/";
+  return next;
+}
 
 /**
  * Server action для логина.
  *
  * Вызывается через `useActionState(login, initialState)` из клиентской формы.
- * Сохраняет JWT в httpOnly cookie `token` и редиректит на главную.
+ * Сохраняет JWT в httpOnly cookie `token`, перечитывает layout (чтобы
+ * `getMe()` вернул свежего юзера в header / banner) и редиректит на `next`
+ * (безопасный относительный путь) или `/`.
  */
 export const login = createFormAction<void>(async (formData: FormData) => {
   const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
+  const next = safeNext(
+    typeof formData.get("next") === "string"
+      ? (formData.get("next") as string)
+      : null
+  );
 
   if (!username || !password) {
     throw new Error("Введите имя пользователя и пароль");
@@ -38,7 +53,9 @@ export const login = createFormAction<void>(async (formData: FormData) => {
     path: "/",
   });
 
-  redirect("/");
+  // Перечитываем layout (он зовёт getMe() и рендерит StatusBanner / header).
+  revalidatePath("/", "layout");
+  redirect(next);
 });
 
 /**
@@ -65,7 +82,8 @@ export const register = createFormAction<void>(async (formData: FormData) => {
 });
 
 /**
- * Logout — удаляет cookie с токеном и возвращает пользователя на главную.
+ * Logout — удаляет cookie с токеном, перечитывает layout (чтобы header и
+ * баннер обновились под гостя) и возвращает пользователя на главную.
  *
  * Не оборачивается в `createFormAction`: ошибок обрабатывать не нужно,
  * форма в хедере просто сабмитит эту функцию.
@@ -73,5 +91,6 @@ export const register = createFormAction<void>(async (formData: FormData) => {
 export async function logout() {
   const cookieStore = await cookies();
   cookieStore.delete("token");
+  revalidatePath("/", "layout");
   redirect("/");
 }

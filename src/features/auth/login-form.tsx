@@ -6,23 +6,21 @@ import { useActionState } from "react";
 import { login } from "./actions";
 import type { ActionResult } from "@/utils/create-action";
 
-// `login` по сигнатуре принимает `prevState: ActionResult<void>`, но по
-// общему соглашению проекта `initialState` у `useActionState` — `null`
-// (см. P1-#19). Runtime safe: server action не читает `_prevState`.
-type LoginAction = (
-  prevState: ActionResult<void> | null,
-  formData: FormData,
-) => Promise<ActionResult<void>>;
+interface LoginFormProps {
+  /** Куда вернуть пользователя после успешного логина. */
+  next?: string;
+}
 
-export const LoginForm: React.FC = () => {
-  const [state, formAction, pending] = useActionState<
-    ActionResult<void> | null,
-    FormData
-  >(login as LoginAction, null);
+const initialState: ActionResult<void> = { success: false, error: "" };
+
+export const LoginForm: React.FC<LoginFormProps> = ({ next }) => {
+  const [state, formAction, pending] = useActionState(login, initialState);
 
   return (
     <form action={formAction} className="flex flex-col gap-4 w-full max-w-sm">
       <h1 className="text-2xl font-bold">Вход</h1>
+
+      {next && <input type="hidden" name="next" value={next} />}
 
       <label className="flex flex-col gap-1">
         <span className="text-sm text-(--color-description)">Имя пользователя</span>
@@ -46,7 +44,7 @@ export const LoginForm: React.FC = () => {
         />
       </label>
 
-      {state?.success === false && (
+      {state.success === false && state.error && (
         <p className="text-sm text-red-500" role="alert">
           {state.error}
         </p>
