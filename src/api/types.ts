@@ -46,6 +46,7 @@ export type AnnotationUpdateRequest = Schemas["internal_annotation.UpdateRequest
 export type User = Schemas["internal_user.User"];
 export type UserRegisterRequest = Schemas["internal_user.RegisterRequest"];
 export type UserUpdateStatusRequest = Schemas["internal_user.UpdateStatusRequest"];
+export type UserStatus = UserUpdateStatusRequest["status"];
 
 // --- Push ---
 export type PushSubscribeRequest = Schemas["internal_push.SubscribeRequest"];
@@ -56,3 +57,7 @@ export type PushSubscribeKeys = Schemas["internal_push.SubscribeKeys"];
 // --- Search ---
 export type SearchLectureHit = Schemas["internal_search.LectureHit"];
 export type SearchMatch = Schemas["internal_search.Match"];
+
+// --- Moderation ---
+export type ModerationStatus =
+  Schemas["github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus"];
