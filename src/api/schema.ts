@@ -152,6 +152,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список записей admin audit log */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description ID актора */
+                    actor?: string;
+                    /** @description Тип цели */
+                    target_type?: string;
+                    /** @description ID цели */
+                    target_id?: string;
+                    /** @description Действие */
+                    action?: string;
+                    /** @description RFC3339 */
+                    from?: string;
+                    /** @description RFC3339 */
+                    to?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["audit.Record"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/comments": {
         parameters: {
             query?: never;
@@ -835,82 +890,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/upload": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Загрузить файл */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/x-www-form-urlencoded": {
-                        /**
-                         * @description Тип файла
-                         * @enum {string}
-                         */
-                        type: "videos" | "notes" | "transcripts";
-                        /** @description ID лекции */
-                        lecture_id: string;
-                        /**
-                         * Format: binary
-                         * @description Файл
-                         */
-                        file: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["httputil.Response"] & {
-                            data?: {
-                                key?: string;
-                                url?: string;
-                            };
-                        };
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/users": {
         parameters: {
             query?: never;
@@ -963,6 +942,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/users/{id}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Изменить роль пользователя (admin) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID пользователя */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Новая роль */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["user.UpdateRoleRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["user.User"];
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/users/{id}/status": {
         parameters: {
             query?: never;
@@ -971,7 +1023,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Изменить статус пользователя (модератор+) */
+        /** Изменить статус пользователя (admin) */
         put: {
             parameters: {
                 query?: never;
@@ -989,12 +1041,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["user.User"];
+                        };
+                    };
                 };
                 /** @description Forbidden */
                 403: {
@@ -1007,6 +1063,15 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1780,6 +1845,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Текущий пользователь и его права
+         * @description Возвращает профиль авторизованного юзера + плоский список его
+         *     capabilities — единственный авторитативный источник прав для
+         *     клиента. Клиент НЕ должен выводить права из роли локально.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["user.MeResponse"];
+                        };
+                    };
+                };
+                /** @description no token / invalid / expired */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description account is banned */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description user from token no longer exists */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/push/subscribe": {
         parameters: {
             query?: never;
@@ -1813,6 +1957,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1855,6 +2008,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2015,6 +2177,19 @@ export interface components {
             body: string;
             segment_ids: number[];
         };
+        "audit.Record": {
+            action?: string;
+            actor_user_id?: string;
+            actor_username?: string;
+            created_at?: string;
+            details?: {
+                [key: string]: unknown;
+            };
+            id?: string;
+            request_id?: string;
+            target_id?: string;
+            target_type?: string;
+        };
         "comment.AddReactionRequest": {
             /** @enum {unknown} */
             reaction: "like";
@@ -2130,7 +2305,9 @@ export interface components {
             endpoint: string;
         };
         /** @enum {string} */
-        "rbac.Role": "user" | "moderator" | "admin";
+        "rbac.Capability": "lecture.create" | "lecture.update" | "lecture.delete" | "lecture.upload_files" | "comment.moderate" | "comment.delete_any" | "annotation.moderate" | "annotation.delete_any" | "transcript.edit" | "user.list" | "user.moderate" | "push.send" | "admin.access";
+        /** @enum {string} */
+        "rbac.Role": "user" | "admin";
         /** @enum {string} */
         "rbac.Status": "active" | "suspended" | "banned";
         "search.LectureHit": {
@@ -2176,9 +2353,20 @@ export interface components {
         "transcript.upsertRequest": {
             segments?: components["schemas"]["transcript.Segment"][];
         };
+        "user.MeResponse": {
+            capabilities?: components["schemas"]["rbac.Capability"][];
+            id?: string;
+            role?: components["schemas"]["rbac.Role"];
+            status?: components["schemas"]["rbac.Status"];
+            username?: string;
+        };
         "user.RegisterRequest": {
             password: string;
             username: string;
+        };
+        "user.UpdateRoleRequest": {
+            /** @enum {unknown} */
+            role: "user" | "admin";
         };
         "user.UpdateStatusRequest": {
             /** @enum {unknown} */
