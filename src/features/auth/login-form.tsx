@@ -6,10 +6,19 @@ import { useActionState } from "react";
 import { login } from "./actions";
 import type { ActionResult } from "@/utils/create-action";
 
-const initialState: ActionResult<void> = { success: true, data: undefined };
+// `login` по сигнатуре принимает `prevState: ActionResult<void>`, но по
+// общему соглашению проекта `initialState` у `useActionState` — `null`
+// (см. P1-#19). Runtime safe: server action не читает `_prevState`.
+type LoginAction = (
+  prevState: ActionResult<void> | null,
+  formData: FormData,
+) => Promise<ActionResult<void>>;
 
 export const LoginForm: React.FC = () => {
-  const [state, formAction, pending] = useActionState(login, initialState);
+  const [state, formAction, pending] = useActionState<
+    ActionResult<void> | null,
+    FormData
+  >(login as LoginAction, null);
 
   return (
     <form action={formAction} className="flex flex-col gap-4 w-full max-w-sm">
@@ -37,7 +46,7 @@ export const LoginForm: React.FC = () => {
         />
       </label>
 
-      {!state.success && (
+      {state?.success === false && (
         <p className="text-sm text-red-500" role="alert">
           {state.error}
         </p>
