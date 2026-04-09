@@ -1,4 +1,4 @@
-import { UserStatusForm } from "@/features/admin/users/user-table";
+import { UserStatusForm } from "@/features/admin/users/user-status-form";
 
 export const metadata = { title: "Пользователи — Админ" };
 

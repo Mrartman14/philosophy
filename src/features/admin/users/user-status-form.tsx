@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { updateUserStatus } from "@/features/admin/actions";
-
-type UserStatus = "active" | "suspended" | "banned";
+import type { UserStatus } from "@/api/types";
 
 export const UserStatusForm: React.FC = () => {
   const [userId, setUserId] = useState("");
