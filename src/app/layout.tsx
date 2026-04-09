@@ -8,6 +8,8 @@ import { AppHeader } from "@/components/app/app-header/app-header";
 import { InstallBanner } from "@/components/app/install-banner";
 import { UpdatePrompt } from "@/components/app/update-prompt";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
+import { getMe, type MaybeMe } from "@/utils/me";
+import { StatusBanner } from "@/components/permission/status-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,11 +38,26 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   let lectures: Awaited<ReturnType<typeof getLectures>>["data"] = [];
+  let me: MaybeMe = null;
   try {
-    const result = await getLectures(0, 100);
-    lectures = result.data;
+    // Параллельно: getMe и getLectures независимы, нет смысла сериализовать.
+    // Promise.allSettled, чтобы падение getLectures не уронило getMe и наоборот:
+    // лекции опциональны для рендера, me — тоже.
+    const [lecturesResult, meResult] = await Promise.allSettled([
+      getLectures(0, 100),
+      getMe(),
+    ]);
+    if (lecturesResult.status === "fulfilled") {
+      lectures = lecturesResult.value.data;
+    }
+    if (meResult.status === "fulfilled") {
+      me = meResult.value;
+    }
+    // Если getMe бросил (5xx) — me останется null. Это допустимая
+    // деградация для root layout: header покажет «Войти», глобальный
+    // StatusBanner ничего не нарисует.
   } catch {
-    // API недоступен — хедер отрендерится без списка лекций
+    // unreachable: allSettled не бросает
   }
 
   return (
@@ -65,7 +82,8 @@ export default async function RootLayout({
           ${geistClasses}
           `}
       >
-        <AppHeader lectures={lectures} />
+        <AppHeader lectures={lectures} me={me} />
+        <StatusBanner me={me} />
         <InstallBanner />
         <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
           {children}
