@@ -1,35 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Proxy (ранее middleware) для защиты админских роутов.
+ * Грубый гейт для админских роутов.
  *
- * Проверка подписи JWT не выполняется — это задача API. Здесь мы только
- * декодируем payload, чтобы быстро отсечь явные случаи (нет токена,
- * нет роли admin, некорректный формат).
+ * НЕ декодирует JWT и НЕ проверяет роль — это делает `app/admin/layout.tsx`
+ * через `getMe()` (вызывает реальный `/api/me` с авторитетной информацией
+ * о role/status/capabilities). Здесь только отсекаем гостей, чтобы не
+ * расходовать рендер на тех, кому в `/admin` явно нечего ловить.
+ *
+ * Полная история «почему так» — см. дизайн-док rbac-unification.
  */
 export function proxy(request: NextRequest) {
+  if (!request.nextUrl.pathname.startsWith("/admin")) {
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get("token")?.value;
-
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    try {
-      const parts = token.split(".");
-      const payloadPart = parts[1];
-      if (!payloadPart) {
-        return NextResponse.redirect(new URL("/login", request.url));
-      }
-      const payload = JSON.parse(
-        Buffer.from(payloadPart, "base64").toString()
-      ) as { role?: string };
-      if (payload.role !== "admin") {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
-    } catch {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+  if (!token) {
+    const next = encodeURIComponent(
+      request.nextUrl.pathname + request.nextUrl.search
+    );
+    return NextResponse.redirect(
+      new URL(`/login?next=${next}`, request.url)
+    );
   }
 
   return NextResponse.next();
