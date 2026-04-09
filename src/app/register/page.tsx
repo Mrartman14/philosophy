@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
 
 import { RegisterForm } from "@/features/auth/register-form";
-import { getUser } from "@/utils/get-user";
+import { getMe } from "@/utils/me";
 
 export const metadata = {
   title: "Регистрация — Философия-ликбез",
 };
 
 export default async function RegisterPage() {
-  const user = await getUser();
-  if (user) {
+  const me = await getMe();
+  if (me) {
     redirect("/");
   }
 

@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/features/auth/login-form";
-import { getUser } from "@/utils/get-user";
+import { getMe } from "@/utils/me";
 
 export const metadata = {
   title: "Вход — Философия-ликбез",
 };
 
 export default async function LoginPage() {
-  const user = await getUser();
-  if (user) {
+  const me = await getMe();
+  if (me) {
     redirect("/");
   }
 
