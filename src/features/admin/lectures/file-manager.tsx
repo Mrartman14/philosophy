@@ -10,13 +10,22 @@ interface FileManagerProps {
   files: LectureFile[];
 }
 
-const initialState: ActionResult<void> = { success: true, data: undefined };
+// По соглашению проекта (см. 1.3) initialState у useActionState — null.
+// Сигнатура uploadFile (prevState: ActionResult<void>) → (… | null)
+// через type-alias, runtime safe: action не читает _prevState.
+type UploadAction = (
+  prevState: ActionResult<void> | null,
+  formData: FormData,
+) => Promise<ActionResult<void>>;
 
 export const FileManager: React.FC<FileManagerProps> = ({
   lectureId,
   files,
 }) => {
-  const [state, action, pending] = useActionState(uploadFile, initialState);
+  const [state, action, pending] = useActionState<
+    ActionResult<void> | null,
+    FormData
+  >(uploadFile as UploadAction, null);
 
   return (
     <div className="border border-(--color-border) rounded-lg p-4 flex flex-col gap-3">
@@ -47,10 +56,10 @@ export const FileManager: React.FC<FileManagerProps> = ({
             {pending ? "Загрузка…" : "Загрузить"}
           </button>
         </div>
-        {state.success === false && (
+        {state && !state.success && (
           <p className="text-xs text-red-500" role="alert">
             {state.code === "forbidden"
-              ? "У вас нет прав на загрузку/удаление файлов."
+              ? "У вас нет прав на загрузку или удаление файлов."
               : state.error}
           </p>
         )}
@@ -107,7 +116,7 @@ const FileDeleteButton: React.FC<FileDeleteButtonProps> = ({
       if (!result.success) {
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на загрузку/удаление файлов."
+            ? "У вас нет прав на загрузку или удаление файлов."
             : result.error
         );
       }
