@@ -13,6 +13,9 @@ import {
 } from "react";
 import type { ActionResult } from "@/utils/create-action";
 import type { Annotation } from "@/api/types";
+import type { DenyReason } from "@/utils/permissions";
+import { ActionTooltip } from "@/components/permission/action-tooltip";
+import { LoginCta } from "@/components/permission/login-cta";
 import { AnnotationForm } from "./annotation-form";
 import { deleteAnnotation, editAnnotation } from "./actions";
 
@@ -20,11 +23,22 @@ interface AnnotationHighlightProps {
   lectureId: string;
   annotations: Annotation[];
   annotationListContent: ReactNode;
+  /** Может ли пользователь создавать аннотации (вычислено на сервере). */
+  canCreate: boolean;
+  /** Если `false` — причина для tooltip'а. */
+  createDeny: DenyReason | null;
 }
 
 export const AnnotationHighlight: React.FC<
   PropsWithChildren<AnnotationHighlightProps>
-> = ({ lectureId, annotations, annotationListContent, children }) => {
+> = ({
+  lectureId,
+  annotations,
+  annotationListContent,
+  canCreate,
+  createDeny,
+  children,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const listWrapperRef = useRef<HTMLDivElement>(null);
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
@@ -174,13 +188,23 @@ export const AnnotationHighlight: React.FC<
             : "Alt+клик — выбрать сегмент, Alt+Shift+клик — диапазон"}
         </div>
         {!selectionMode && !hasSelection && !showForm && (
-          <button
-            type="button"
-            onClick={() => setSelectionMode(true)}
-            className="text-xs px-2 py-1 rounded border border-(--color-border) hover:bg-(--color-border)/30"
-          >
-            Создать аннотацию
-          </button>
+          createDeny === "guest" ? (
+            <LoginCta
+              message="Войдите, чтобы создавать аннотации"
+              redirectTo={`/lectures/${lectureId}`}
+            />
+          ) : (
+            <ActionTooltip reason={createDeny} action="создать аннотацию">
+              <button
+                type="button"
+                disabled={!canCreate}
+                onClick={() => setSelectionMode(true)}
+                className="text-xs px-2 py-1 rounded border border-(--color-border) hover:bg-(--color-border)/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Создать аннотацию
+              </button>
+            </ActionTooltip>
+          )
         )}
       </div>
       <div

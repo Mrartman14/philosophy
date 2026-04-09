@@ -1,5 +1,9 @@
 import type { Annotation } from "@/api/types";
-import { getUser } from "@/utils/get-user";
+import { getMe } from "@/utils/me";
+import {
+  canDeleteAnnotation,
+  canEditAnnotation,
+} from "./permissions";
 import { AnnotationItemActions } from "./annotation-highlight";
 
 interface AnnotationListProps {
@@ -50,9 +54,7 @@ export async function AnnotationList({
   lectureId,
   filterSegmentId,
 }: AnnotationListProps) {
-  const user = await getUser();
-  const canModerate =
-    user?.role === "moderator" || user?.role === "admin";
+  const me = await getMe();
 
   const visibleAnnotations =
     filterSegmentId == null
@@ -73,8 +75,8 @@ export async function AnnotationList({
     <ul className="flex flex-col gap-3 p-4">
       {visibleAnnotations.map((a) => {
         const segments = a.segment_ids ?? [];
-        const canEdit = canModerate || (user != null && a.user_id === user.id);
-        const canDelete = canEdit;
+        const canEdit = canEditAnnotation(me, a);
+        const canDelete = canDeleteAnnotation(me, a);
         const statusLabel = getStatusLabel(a.status);
 
         return (
