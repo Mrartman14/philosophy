@@ -1,17 +1,23 @@
 /**
  * Обёртка для server actions.
  *
- * Пробрасывает специальные ошибки Next.js (redirect(), notFound(), forbidden(), unauthorized()),
- * чтобы Next.js смог их обработать. Остальные ошибки превращаются в ActionResult с `success: false`.
- *
- * Проверка идёт по `digest`-строке — чтобы не зависеть от непубличных модулей Next.js.
+ * Пробрасывает специальные ошибки Next.js (redirect(), notFound(), forbidden(),
+ * unauthorized()), чтобы Next.js смог их обработать. Для ForbiddenError из
+ * `src/utils/permissions.ts` возвращает `{ success: false, code: "forbidden" }`.
+ * Остальные ошибки превращаются в ActionResult с `success: false`.
  */
+
+import { ForbiddenError } from "./permissions";
 
 export type ActionResult<T = void> =
   | { success: true; data: T }
-  | { success: false; error: string };
+  | {
+      success: false;
+      error: string;
+      code?: "forbidden" | "validation" | "network";
+    };
 
-/** Проверяет, является ли ошибка специальной ошибкой Next.js (redirect / notFound / forbidden / unauthorized). */
+/** Проверяет, является ли ошибка специальной ошибкой Next.js. */
 function isNextInternalError(error: unknown): boolean {
   if (
     typeof error !== "object" ||
@@ -28,10 +34,15 @@ function isNextInternalError(error: unknown): boolean {
   );
 }
 
-/**
- * Обёртка для прямых вызовов server actions.
- * Принимает один аргумент, возвращает `ActionResult<T>`.
- */
+function toResult<T>(error: unknown): ActionResult<T> {
+  if (error instanceof ForbiddenError) {
+    return { success: false, error: error.message, code: "forbidden" };
+  }
+  const message =
+    error instanceof Error ? error.message : "Неизвестная ошибка";
+  return { success: false, error: message };
+}
+
 export function createAction<TInput, TOutput>(
   fn: (input: TInput) => Promise<TOutput>
 ): (input: TInput) => Promise<ActionResult<TOutput>> {
@@ -41,18 +52,11 @@ export function createAction<TInput, TOutput>(
       return { success: true, data };
     } catch (error) {
       if (isNextInternalError(error)) throw error;
-      const message =
-        error instanceof Error ? error.message : "Неизвестная ошибка";
-      // TODO: логирование
-      return { success: false, error: message };
+      return toResult<TOutput>(error);
     }
   };
 }
 
-/**
- * Вариант для form actions, совместимый с `useActionState`.
- * Принимает `(prevState, formData)`, возвращает `ActionResult<T>`.
- */
 export function createFormAction<TOutput>(
   fn: (formData: FormData) => Promise<TOutput>
 ): (
@@ -65,9 +69,7 @@ export function createFormAction<TOutput>(
       return { success: true, data };
     } catch (error) {
       if (isNextInternalError(error)) throw error;
-      const message =
-        error instanceof Error ? error.message : "Неизвестная ошибка";
-      return { success: false, error: message };
+      return toResult<TOutput>(error);
     }
   };
 }
