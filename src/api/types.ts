@@ -13,51 +13,50 @@ import type { components } from "./schema";
 type Schemas = components["schemas"];
 
 // --- Lectures ---
-export type Lecture = Schemas["internal_lecture.Lecture"];
-export type LectureCreateRequest = Schemas["internal_lecture.CreateRequest"];
-export type LectureUpdateRequest = Schemas["internal_lecture.UpdateRequest"];
+export type Lecture = Schemas["lecture.Lecture"];
+export type LectureCreateRequest = Schemas["lecture.CreateRequest"];
+export type LectureUpdateRequest = Schemas["lecture.UpdateRequest"];
 
 // --- Transcript ---
-export type Transcript = Schemas["internal_transcript.Transcript"];
-export type Segment = Schemas["internal_transcript.Segment"];
-export type SegmentCreateRequest = Schemas["internal_transcript.CreateSegmentRequest"];
-export type SegmentUpdateRequest = Schemas["internal_transcript.UpdateSegmentRequest"];
+export type Transcript = Schemas["transcript.Transcript"];
+export type Segment = Schemas["transcript.Segment"];
+export type SegmentCreateRequest = Schemas["transcript.CreateSegmentRequest"];
+export type SegmentUpdateRequest = Schemas["transcript.UpdateSegmentRequest"];
 
 // --- Files ---
-export type LectureFile = Schemas["internal_lecturefile.LectureFile"];
-export type FileType = Schemas["internal_lecturefile.FileType"];
+export type LectureFile = Schemas["lecturefile.LectureFile"];
+export type FileType = Schemas["lecturefile.FileType"];
 
 // --- Comments ---
-export type Comment = Schemas["internal_comment.Comment"];
-export type CommentAuthor = Schemas["internal_comment.Author"];
-export type CommentCreateRequest = Schemas["internal_comment.CreateRequest"];
-export type CommentUpdateRequest = Schemas["internal_comment.UpdateRequest"];
-export type CommentReactionSummary = Schemas["internal_comment.ReactionSummary"];
-export type CommentReactionType = Schemas["internal_comment.ReactionType"];
-export type CommentAddReactionRequest = Schemas["internal_comment.AddReactionRequest"];
+export type Comment = Schemas["comment.Comment"];
+export type CommentAuthor = Schemas["comment.Author"];
+export type CommentCreateRequest = Schemas["comment.CreateRequest"];
+export type CommentUpdateRequest = Schemas["comment.UpdateRequest"];
+export type CommentReactionSummary = Schemas["comment.ReactionSummary"];
+export type CommentReactionType = Schemas["comment.ReactionType"];
+export type CommentAddReactionRequest = Schemas["comment.AddReactionRequest"];
 
 // --- Annotations ---
-export type Annotation = Schemas["internal_annotation.Annotation"];
-export type AnnotationAuthor = Schemas["internal_annotation.Author"];
-export type AnnotationCreateRequest = Schemas["internal_annotation.CreateRequest"];
-export type AnnotationUpdateRequest = Schemas["internal_annotation.UpdateRequest"];
+export type Annotation = Schemas["annotation.Annotation"];
+export type AnnotationAuthor = Schemas["annotation.Author"];
+export type AnnotationCreateRequest = Schemas["annotation.CreateRequest"];
+export type AnnotationUpdateRequest = Schemas["annotation.UpdateRequest"];
 
 // --- Users ---
-export type User = Schemas["internal_user.User"];
-export type UserRegisterRequest = Schemas["internal_user.RegisterRequest"];
-export type UserUpdateStatusRequest = Schemas["internal_user.UpdateStatusRequest"];
+export type User = Schemas["user.User"];
+export type UserRegisterRequest = Schemas["user.RegisterRequest"];
+export type UserUpdateStatusRequest = Schemas["user.UpdateStatusRequest"];
 export type UserStatus = UserUpdateStatusRequest["status"];
 
 // --- Push ---
-export type PushSubscribeRequest = Schemas["internal_push.SubscribeRequest"];
-export type PushUnsubscribeRequest = Schemas["internal_push.UnsubscribeRequest"];
-export type PushSendRequest = Schemas["internal_push.SendRequest"];
-export type PushSubscribeKeys = Schemas["internal_push.SubscribeKeys"];
+export type PushSubscribeRequest = Schemas["push.SubscribeRequest"];
+export type PushUnsubscribeRequest = Schemas["push.UnsubscribeRequest"];
+export type PushSendRequest = Schemas["push.SendRequest"];
+export type PushSubscribeKeys = Schemas["push.SubscribeKeys"];
 
 // --- Search ---
-export type SearchLectureHit = Schemas["internal_search.LectureHit"];
-export type SearchMatch = Schemas["internal_search.Match"];
+export type SearchLectureHit = Schemas["search.LectureHit"];
+export type SearchMatch = Schemas["search.Match"];
 
 // --- Moderation ---
-export type ModerationStatus =
-  Schemas["github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus"];
+export type ModerationStatus = Schemas["moderation.ModerationStatus"];

@@ -4,6 +4,62 @@
  */
 
 export interface paths {
+    "/api/admin/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список пометок лекции (админ, без фильтра по статусу) */
+        get: {
+            parameters: {
+                query: {
+                    /** @description ID лекции */
+                    lecture_id: string;
+                    /** @description Фильтр статусов через запятую: published,hidden,pending */
+                    status?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/annotations/{id}": {
         parameters: {
             query?: never;
@@ -40,7 +96,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -69,7 +125,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: components["requestBodies"]["github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest"];
+            requestBody: components["requestBodies"]["moderation.UpdateStatusRequest"];
             responses: {
                 /** @description No Content */
                 204: {
@@ -84,11 +140,67 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
         };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список комментариев лекции (админ, без фильтра по статусу) */
+        get: {
+            parameters: {
+                query: {
+                    /** @description ID лекции */
+                    lecture_id: string;
+                    /** @description Фильтр статусов через запятую: published,hidden,pending */
+                    status?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["comment.Comment"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -132,7 +244,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -161,7 +273,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody: components["requestBodies"]["github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest"];
+            requestBody: components["requestBodies"]["moderation.UpdateStatusRequest"];
             responses: {
                 /** @description No Content */
                 204: {
@@ -176,7 +288,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -208,7 +320,7 @@ export interface paths {
             /** @description Данные лекции */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_lecture.CreateRequest"];
+                    "application/json": components["schemas"]["lecture.CreateRequest"];
                 };
             };
             responses: {
@@ -218,8 +330,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_lecture.Lecture"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["lecture.Lecture"];
                         };
                     };
                 };
@@ -229,7 +341,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -238,7 +350,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -271,7 +383,7 @@ export interface paths {
             /** @description Данные для обновления */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_lecture.UpdateRequest"];
+                    "application/json": components["schemas"]["lecture.UpdateRequest"];
                 };
             };
             responses: {
@@ -281,8 +393,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_lecture.Lecture"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["lecture.Lecture"];
                         };
                     };
                 };
@@ -292,7 +404,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -301,7 +413,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -333,7 +445,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -383,8 +495,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_lecturefile.LectureFile"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["lecturefile.LectureFile"];
                         };
                     };
                 };
@@ -394,7 +506,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -403,7 +515,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -452,7 +564,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -461,7 +573,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -494,7 +606,7 @@ export interface paths {
             /** @description Сегменты транскрипта */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_transcript.upsertRequest"];
+                    "application/json": components["schemas"]["transcript.upsertRequest"];
                 };
             };
             responses: {
@@ -511,7 +623,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -545,7 +657,7 @@ export interface paths {
             /** @description Данные сегмента */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_transcript.CreateSegmentRequest"];
+                    "application/json": components["schemas"]["transcript.CreateSegmentRequest"];
                 };
             };
             responses: {
@@ -555,8 +667,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_transcript.Segment"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["transcript.Segment"];
                         };
                     };
                 };
@@ -566,7 +678,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -601,7 +713,7 @@ export interface paths {
             /** @description Поля для обновления */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_transcript.UpdateSegmentRequest"];
+                    "application/json": components["schemas"]["transcript.UpdateSegmentRequest"];
                 };
             };
             responses: {
@@ -611,8 +723,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_transcript.Segment"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["transcript.Segment"];
                         };
                     };
                 };
@@ -622,7 +734,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -656,7 +768,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -686,7 +798,7 @@ export interface paths {
             /** @description Данные уведомления */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_push.SendRequest"];
+                    "application/json": components["schemas"]["push.SendRequest"];
                 };
             };
             responses: {
@@ -703,7 +815,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Service Unavailable */
@@ -712,7 +824,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -765,7 +877,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                        "*/*": components["schemas"]["httputil.Response"] & {
                             data?: {
                                 key?: string;
                                 url?: string;
@@ -779,7 +891,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -788,11 +900,63 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список пользователей (модератор+) */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["user.User"][];
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -821,7 +985,7 @@ export interface paths {
             /** @description Новый статус */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_user.UpdateStatusRequest"];
+                    "application/json": components["schemas"]["user.UpdateStatusRequest"];
                 };
             };
             responses: {
@@ -838,7 +1002,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -847,7 +1011,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -885,8 +1049,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_annotation.Annotation"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
                         };
                     };
                 };
@@ -896,7 +1060,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -915,7 +1079,7 @@ export interface paths {
             /** @description Обновлённые данные */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_annotation.UpdateRequest"];
+                    "application/json": components["schemas"]["annotation.UpdateRequest"];
                 };
             };
             responses: {
@@ -925,8 +1089,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_annotation.Annotation"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
                         };
                     };
                 };
@@ -936,7 +1100,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -968,7 +1132,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -995,7 +1159,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody: components["requestBodies"]["internal_user.RegisterRequest"];
+            requestBody: components["requestBodies"]["user.RegisterRequest"];
             responses: {
                 /** @description OK */
                 200: {
@@ -1003,7 +1167,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                        "*/*": components["schemas"]["httputil.Response"] & {
                             data?: {
                                 token?: string;
                             };
@@ -1016,7 +1180,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1044,7 +1208,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody: components["requestBodies"]["internal_user.RegisterRequest"];
+            requestBody: components["requestBodies"]["user.RegisterRequest"];
             responses: {
                 /** @description Created */
                 201: {
@@ -1052,8 +1216,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_user.User"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["user.User"];
                         };
                     };
                 };
@@ -1063,7 +1227,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
@@ -1072,7 +1236,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1105,7 +1269,7 @@ export interface paths {
             /** @description Новый текст */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_comment.UpdateRequest"];
+                    "application/json": components["schemas"]["comment.UpdateRequest"];
                 };
             };
             responses: {
@@ -1115,8 +1279,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_comment.Comment"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["comment.Comment"];
                         };
                     };
                 };
@@ -1126,7 +1290,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1158,7 +1322,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1191,7 +1355,7 @@ export interface paths {
             /** @description Реакция */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_comment.AddReactionRequest"];
+                    "application/json": components["schemas"]["comment.AddReactionRequest"];
                 };
             };
             responses: {
@@ -1208,7 +1372,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1239,7 +1403,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1279,8 +1443,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
-                            data?: components["schemas"]["internal_lecture.Lecture"][];
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["lecture.Lecture"][];
                         };
                     };
                 };
@@ -1320,8 +1484,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_lecture.Lecture"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["lecture.Lecture"];
                         };
                     };
                 };
@@ -1331,7 +1495,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1377,8 +1541,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
-                            data?: components["schemas"]["internal_annotation.Annotation"][];
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
                         };
                     };
                 };
@@ -1399,7 +1563,7 @@ export interface paths {
             /** @description Пометка */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_annotation.CreateRequest"];
+                    "application/json": components["schemas"]["annotation.CreateRequest"];
                 };
             };
             responses: {
@@ -1409,8 +1573,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_annotation.Annotation"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
                         };
                     };
                 };
@@ -1420,7 +1584,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1462,8 +1626,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
-                            data?: components["schemas"]["internal_comment.Comment"][];
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["comment.Comment"][];
                         };
                     };
                 };
@@ -1484,7 +1648,7 @@ export interface paths {
             /** @description Комментарий */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_comment.CreateRequest"];
+                    "application/json": components["schemas"]["comment.CreateRequest"];
                 };
             };
             responses: {
@@ -1494,8 +1658,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_comment.Comment"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["comment.Comment"];
                         };
                     };
                 };
@@ -1505,7 +1669,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1542,8 +1706,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_lecturefile.LectureFile"][];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["lecturefile.LectureFile"][];
                         };
                     };
                 };
@@ -1553,7 +1717,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1592,8 +1756,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
-                            data?: components["schemas"]["internal_transcript.Transcript"];
+                        "*/*": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["transcript.Transcript"];
                         };
                     };
                 };
@@ -1603,7 +1767,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1636,7 +1800,7 @@ export interface paths {
             /** @description Данные подписки */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_push.SubscribeRequest"];
+                    "application/json": components["schemas"]["push.SubscribeRequest"];
                 };
             };
             responses: {
@@ -1653,7 +1817,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Service Unavailable */
@@ -1662,7 +1826,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1678,7 +1842,7 @@ export interface paths {
             /** @description Endpoint подписки */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["internal_push.UnsubscribeRequest"];
+                    "application/json": components["schemas"]["push.UnsubscribeRequest"];
                 };
             };
             responses: {
@@ -1695,7 +1859,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Service Unavailable */
@@ -1704,7 +1868,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1737,7 +1901,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                        "*/*": components["schemas"]["httputil.Response"] & {
                             data?: {
                                 publicKey?: string;
                             };
@@ -1750,7 +1914,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1793,8 +1957,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
-                            data?: components["schemas"]["internal_search.LectureHit"][];
+                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["search.LectureHit"][];
                         };
                     };
                 };
@@ -1804,7 +1968,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ValidationErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -1821,41 +1985,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        "github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse": {
-            code?: string;
-            error?: string;
-        };
-        "github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse": {
-            data?: unknown;
-            pagination?: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Pagination"];
-        };
-        "github_com_Mrartman14_philosophy-api_internal_httputil.Pagination": {
-            limit?: number;
-            offset?: number;
-            total?: number;
-        };
-        "github_com_Mrartman14_philosophy-api_internal_httputil.Response": {
-            data?: unknown;
-        };
-        "github_com_Mrartman14_philosophy-api_internal_httputil.ValidationErrorResponse": {
-            code?: string;
-            error?: string;
-            fields?: {
-                [key: string]: string;
-            };
-        };
-        /** @enum {string} */
-        "github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus": "published" | "hidden" | "pending";
-        "github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest": {
-            /** @enum {unknown} */
-            status: "published" | "hidden" | "pending";
-        };
-        /** @enum {string} */
-        "github_com_Mrartman14_philosophy-api_internal_rbac.Role": "user" | "moderator" | "admin";
-        /** @enum {string} */
-        "github_com_Mrartman14_philosophy-api_internal_rbac.Status": "active" | "suspended" | "banned";
-        "internal_annotation.Annotation": {
-            author?: components["schemas"]["internal_annotation.Author"];
+        "annotation.Annotation": {
+            author?: components["schemas"]["annotation.Author"];
             body: string;
             comment_count?: number;
             created_at: string;
@@ -1866,68 +1997,93 @@ export interface components {
             lecture_id: string;
             /** @description Populated by service */
             segment_ids?: number[];
-            status: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus"];
+            status: components["schemas"]["moderation.ModerationStatus"];
             updated_at: string;
+            user_id?: string;
         };
-        "internal_annotation.Author": {
+        "annotation.Author": {
             username?: string;
         };
-        "internal_annotation.CreateRequest": {
+        "annotation.CreateRequest": {
             body: string;
             is_anonymous?: boolean;
             is_private?: boolean;
             lecture_id?: string;
             segment_ids: number[];
         };
-        "internal_annotation.UpdateRequest": {
+        "annotation.UpdateRequest": {
             body: string;
             segment_ids: number[];
         };
-        "internal_comment.AddReactionRequest": {
+        "comment.AddReactionRequest": {
             /** @enum {unknown} */
             reaction: "like";
         };
-        "internal_comment.Author": {
+        "comment.Author": {
             username?: string;
         };
-        "internal_comment.Comment": {
+        "comment.Comment": {
             annotation_id?: string;
             /** @description Populated by service */
-            author?: components["schemas"]["internal_comment.Author"];
+            author?: components["schemas"]["comment.Author"];
             body: string;
             created_at: string;
             id: string;
             is_anonymous?: boolean;
             is_edited?: boolean;
             lecture_id: string;
-            my_reaction?: components["schemas"]["internal_comment.ReactionType"];
+            my_reaction?: components["schemas"]["comment.ReactionType"];
             parent_id?: string;
-            reactions?: components["schemas"]["internal_comment.ReactionSummary"];
-            replies?: components["schemas"]["internal_comment.Comment"][];
-            status: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus"];
+            reactions?: components["schemas"]["comment.ReactionSummary"];
+            replies?: components["schemas"]["comment.Comment"][];
+            status: components["schemas"]["moderation.ModerationStatus"];
             updated_at: string;
+            user_id?: string;
         };
-        "internal_comment.CreateRequest": {
+        "comment.CreateRequest": {
             annotation_id?: string;
             body: string;
             is_anonymous?: boolean;
             lecture_id?: string;
             parent_id?: string;
         };
-        "internal_comment.ReactionSummary": {
+        "comment.ReactionSummary": {
             like?: number;
         };
         /** @enum {string} */
-        "internal_comment.ReactionType": "like";
-        "internal_comment.UpdateRequest": {
+        "comment.ReactionType": "like";
+        "comment.UpdateRequest": {
             body: string;
         };
-        "internal_lecture.CreateRequest": {
+        "httputil.ErrorResponse": {
+            code?: string;
+            error?: string;
+        };
+        "httputil.ListResponse": {
+            data?: unknown;
+            pagination?: components["schemas"]["httputil.Pagination"];
+        };
+        "httputil.Pagination": {
+            limit?: number;
+            offset?: number;
+            total?: number;
+        };
+        "httputil.Response": {
+            data?: unknown;
+        };
+        "httputil.ValidationErrorResponse": {
+            code?: string;
+            error?: string;
+            fields?: {
+                [key: string]: string;
+            };
+        };
+        "lecture.CreateRequest": {
             date: string;
             description?: string;
             title: string;
         };
-        "internal_lecture.Lecture": {
+        "lecture.Lecture": {
             created_at: string;
             date: string;
             description: string;
@@ -1935,57 +2091,67 @@ export interface components {
             title: string;
             updated_at: string;
         };
-        "internal_lecture.UpdateRequest": {
+        "lecture.UpdateRequest": {
             date?: string;
             description?: string;
             title?: string;
         };
         /** @enum {string} */
-        "internal_lecturefile.FileType": "video" | "notes" | "image";
-        "internal_lecturefile.LectureFile": {
+        "lecturefile.FileType": "video" | "notes" | "image";
+        "lecturefile.LectureFile": {
             created_at: string;
             filename: string;
             id: string;
             lecture_id: string;
             sort_order?: number;
-            type: components["schemas"]["internal_lecturefile.FileType"];
+            type: components["schemas"]["lecturefile.FileType"];
             url?: string;
         };
-        "internal_push.SendRequest": {
+        /** @enum {string} */
+        "moderation.ModerationStatus": "published" | "hidden" | "pending";
+        "moderation.UpdateStatusRequest": {
+            /** @enum {unknown} */
+            status: "published" | "hidden" | "pending";
+        };
+        "push.SendRequest": {
             body?: string;
             title: string;
             url?: string;
         };
-        "internal_push.SubscribeKeys": {
+        "push.SubscribeKeys": {
             auth: string;
             p256dh: string;
         };
-        "internal_push.SubscribeRequest": {
+        "push.SubscribeRequest": {
             endpoint: string;
-            keys: components["schemas"]["internal_push.SubscribeKeys"];
+            keys: components["schemas"]["push.SubscribeKeys"];
         };
-        "internal_push.UnsubscribeRequest": {
+        "push.UnsubscribeRequest": {
             endpoint: string;
         };
-        "internal_search.LectureHit": {
+        /** @enum {string} */
+        "rbac.Role": "user" | "moderator" | "admin";
+        /** @enum {string} */
+        "rbac.Status": "active" | "suspended" | "banned";
+        "search.LectureHit": {
             date: string;
             lecture_id: string;
-            matches?: components["schemas"]["internal_search.Match"][];
+            matches?: components["schemas"]["search.Match"][];
             title: string;
         };
-        "internal_search.Match": {
+        "search.Match": {
             segment_id?: string;
             source: string;
             text: string;
         };
-        "internal_transcript.CreateSegmentRequest": {
+        "transcript.CreateSegmentRequest": {
             end?: number;
             position?: number;
             speaker: string;
             start?: number;
             text: string;
         };
-        "internal_transcript.Segment": {
+        "transcript.Segment": {
             end?: number;
             id: string;
             position?: number;
@@ -1993,36 +2159,36 @@ export interface components {
             start?: number;
             text: string;
         };
-        "internal_transcript.Transcript": {
+        "transcript.Transcript": {
             created_at: string;
             id: string;
             lecture_id: string;
-            segments?: components["schemas"]["internal_transcript.Segment"][];
+            segments?: components["schemas"]["transcript.Segment"][];
             updated_at: string;
         };
-        "internal_transcript.UpdateSegmentRequest": {
+        "transcript.UpdateSegmentRequest": {
             end?: number;
             position?: number;
             speaker?: string;
             start?: number;
             text?: string;
         };
-        "internal_transcript.upsertRequest": {
-            segments?: components["schemas"]["internal_transcript.Segment"][];
+        "transcript.upsertRequest": {
+            segments?: components["schemas"]["transcript.Segment"][];
         };
-        "internal_user.RegisterRequest": {
+        "user.RegisterRequest": {
             password: string;
             username: string;
         };
-        "internal_user.UpdateStatusRequest": {
+        "user.UpdateStatusRequest": {
             /** @enum {unknown} */
             status: "active" | "suspended" | "banned";
         };
-        "internal_user.User": {
+        "user.User": {
             created_at: string;
             id: string;
-            role: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_rbac.Role"];
-            status: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_rbac.Status"];
+            role: components["schemas"]["rbac.Role"];
+            status: components["schemas"]["rbac.Status"];
             updated_at: string;
             username: string;
         };
@@ -2030,16 +2196,16 @@ export interface components {
     responses: never;
     parameters: never;
     requestBodies: {
-        /** @description Username и пароль */
-        "internal_user.RegisterRequest": {
+        /** @description Новый статус */
+        "moderation.UpdateStatusRequest": {
             content: {
-                "application/json": components["schemas"]["internal_user.RegisterRequest"];
+                "application/json": components["schemas"]["moderation.UpdateStatusRequest"];
             };
         };
-        /** @description Новый статус */
-        "github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest": {
+        /** @description Username и пароль */
+        "user.RegisterRequest": {
             content: {
-                "application/json": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest"];
+                "application/json": components["schemas"]["user.RegisterRequest"];
             };
         };
     };
