@@ -7,10 +7,16 @@ import { revalidatePath } from "next/cache";
 import { createPublicApiClient } from "@/api/client";
 import { createFormAction } from "@/utils/create-action";
 
-/** Безопасный относительный путь — без host, начинается с одного `/`. */
+/**
+ * Безопасный относительный путь — без host, начинается с одного `/`,
+ * без второго слэша или бэкслэша. Защита от open-redirect через нормализацию
+ * `\` → `/` в Location-заголовке у Chrome/Firefox.
+ */
 function safeNext(next: string | null): string {
   if (!next) return "/";
-  if (!next.startsWith("/") || next.startsWith("//")) return "/";
+  // Требуем один `/` + не-слэш/не-бэкслэш во второй позиции.
+  // Отбрасывает "", "/", "//x", "/\\x", "http://...", "javascript:".
+  if (!/^\/[^/\\]/.test(next)) return "/";
   return next;
 }
 
