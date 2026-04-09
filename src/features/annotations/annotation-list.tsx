@@ -1,9 +1,18 @@
 import type { Annotation } from "@/api/types";
 import { getUser } from "@/utils/get-user";
+import { AnnotationItemActions } from "./annotation-highlight";
 
 interface AnnotationListProps {
   annotations: Annotation[];
   lectureId: string;
+  /**
+   * Optional single-segment filter. Currently unused at the server level —
+   * `AnnotationHighlight` toggles the `hidden` attribute on list items client
+   * side via the `data-segment-ids` attribute (see P0-#3 in the
+   * platform-bugfix plan). Kept here so the prop can be wired through once
+   * `annotation-highlight.tsx` is refactored to render the list inline.
+   */
+  filterSegmentId?: number;
 }
 
 function formatDate(value: string): string {
@@ -23,15 +32,36 @@ function getAuthorName(a: Annotation): string {
   return a.author?.username ?? "Аноним";
 }
 
+function getStatusLabel(status: Annotation["status"]): string | null {
+  switch (status) {
+    case "pending":
+      return "На модерации";
+    case "hidden":
+      return "Скрыто";
+    case "published":
+      return null;
+    default:
+      return null;
+  }
+}
+
 export async function AnnotationList({
   annotations,
   lectureId,
+  filterSegmentId,
 }: AnnotationListProps) {
   const user = await getUser();
   const canModerate =
     user?.role === "moderator" || user?.role === "admin";
 
-  if (annotations.length === 0) {
+  const visibleAnnotations =
+    filterSegmentId == null
+      ? annotations
+      : annotations.filter((a) =>
+          (a.segment_ids ?? []).includes(filterSegmentId)
+        );
+
+  if (visibleAnnotations.length === 0) {
     return (
       <p className="text-sm text-(--color-description) p-4">
         Аннотаций пока нет.
@@ -41,16 +71,18 @@ export async function AnnotationList({
 
   return (
     <ul className="flex flex-col gap-3 p-4">
-      {annotations.map((a) => {
+      {visibleAnnotations.map((a) => {
         const segments = a.segment_ids ?? [];
         const canEdit = canModerate || (user != null && !a.is_anonymous);
         const canDelete = canEdit;
+        const statusLabel = getStatusLabel(a.status);
 
         return (
           <li
             key={a.id}
             data-annotation-id={a.id}
             data-lecture-id={lectureId}
+            data-segment-ids={segments.join(",")}
             className="border border-(--color-border) rounded-lg p-3 flex flex-col gap-2"
           >
             <div className="flex items-center justify-between gap-2">
@@ -61,7 +93,13 @@ export async function AnnotationList({
             </div>
             <p className="text-sm whitespace-pre-wrap break-words">{a.body}</p>
             <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-description)">
+              {statusLabel && (
+                <span className="px-1.5 py-0.5 rounded border border-(--color-border)">
+                  {statusLabel}
+                </span>
+              )}
               {a.is_private && <span>Приватная</span>}
+              {a.is_edited && <span>изменено</span>}
               {segments.length > 0 && (
                 <span>
                   Сегменты: {segments.map((s) => `#${s + 1}`).join(", ")}
@@ -76,7 +114,16 @@ export async function AnnotationList({
                 className="flex gap-2"
                 data-can-edit={canEdit ? "" : undefined}
                 data-can-delete={canDelete ? "" : undefined}
-              />
+              >
+                <AnnotationItemActions
+                  annotationId={a.id}
+                  lectureId={lectureId}
+                  initialBody={a.body}
+                  initialSegmentIds={segments}
+                  canEdit={canEdit}
+                  canDelete={canDelete}
+                />
+              </div>
             )}
           </li>
         );
