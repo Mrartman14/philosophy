@@ -79,7 +79,7 @@ const CommentModerationItem: React.FC<ItemProps> = ({
       if (!result.success) {
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на это действие. Обновите страницу."
+            ? "У вас нет прав на модерацию комментариев."
             : result.error
         );
       }
@@ -99,7 +99,7 @@ const CommentModerationItem: React.FC<ItemProps> = ({
       } else {
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на это действие. Обновите страницу."
+            ? "У вас нет прав на модерацию комментариев."
             : result.error
         );
       }

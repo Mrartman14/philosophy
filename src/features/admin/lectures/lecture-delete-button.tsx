@@ -23,7 +23,7 @@ export const LectureDeleteButton: React.FC<LectureDeleteButtonProps> = ({
       if (!result.success) {
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на это действие. Обновите страницу."
+            ? "У вас нет прав на удаление лекции."
             : result.error
         );
       }

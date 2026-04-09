@@ -80,7 +80,7 @@ const AnnotationModerationItem: React.FC<ItemProps> = ({
       if (!result.success) {
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на это действие. Обновите страницу."
+            ? "У вас нет прав на модерацию аннотаций."
             : result.error
         );
       }
@@ -100,7 +100,7 @@ const AnnotationModerationItem: React.FC<ItemProps> = ({
       } else {
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на это действие. Обновите страницу."
+            ? "У вас нет прав на модерацию аннотаций."
             : result.error
         );
       }
