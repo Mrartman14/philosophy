@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { forbidden } from "next/navigation";
+import { getMe } from "@/utils/me";
+import { canModerateAnnotations } from "@/features/admin/permissions";
 import { getLectures } from "@/features/lectures/api";
 import { getAnnotationsAdmin } from "@/features/admin/annotations/api";
 import { AnnotationModeration } from "@/features/admin/annotations/annotation-moderation";
@@ -21,6 +24,9 @@ interface PageProps {
 }
 
 export default async function AdminAnnotationsPage({ searchParams }: PageProps) {
+  const me = await getMe();
+  if (!canModerateAnnotations(me)) forbidden();
+
   const {
     lecture_id: lectureId,
     offset: offsetStr,

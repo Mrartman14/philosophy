@@ -1,4 +1,11 @@
 import Link from "next/link";
+import { forbidden } from "next/navigation";
+import { getMe } from "@/utils/me";
+import {
+  canCreateLecture,
+  canDeleteLecture,
+  canUpdateLecture,
+} from "@/features/lectures/permissions";
 import { getLectures } from "@/features/lectures/api";
 import { LectureTable } from "@/features/admin/lectures/lecture-table";
 import { LectureCreateForm } from "@/features/admin/lectures/lecture-create-form";
@@ -10,6 +17,18 @@ interface PageProps {
 }
 
 export default async function AdminLecturesPage({ searchParams }: PageProps) {
+  const me = await getMe();
+  if (
+    !canCreateLecture(me) &&
+    !canUpdateLecture(me) &&
+    !canDeleteLecture(me)
+  ) {
+    forbidden();
+  }
+  const canUpdate = canUpdateLecture(me);
+  const canDelete = canDeleteLecture(me);
+  const canCreate = canCreateLecture(me);
+
   const { offset: offsetStr } = await searchParams;
   const offset = Number(offsetStr ?? 0) || 0;
   const limit = 20;
@@ -39,7 +58,7 @@ export default async function AdminLecturesPage({ searchParams }: PageProps) {
         </span>
       </div>
 
-      <LectureCreateForm />
+      {canCreate && <LectureCreateForm />}
 
       {loadError && (
         <p className="text-sm text-red-500" role="alert">
@@ -47,7 +66,11 @@ export default async function AdminLecturesPage({ searchParams }: PageProps) {
         </p>
       )}
 
-      <LectureTable lectures={lectures.data} />
+      <LectureTable
+        lectures={lectures.data}
+        canUpdate={canUpdate}
+        canDelete={canDelete}
+      />
 
       <div className="flex items-center gap-2">
         {hasPrev && (

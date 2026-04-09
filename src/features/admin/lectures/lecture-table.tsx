@@ -4,6 +4,8 @@ import { LectureDeleteButton } from "./lecture-delete-button";
 
 interface LectureTableProps {
   lectures: Lecture[];
+  canUpdate: boolean;
+  canDelete: boolean;
 }
 
 function formatDate(iso: string): string {
@@ -14,7 +16,11 @@ function formatDate(iso: string): string {
   }
 }
 
-export const LectureTable: React.FC<LectureTableProps> = ({ lectures }) => {
+export const LectureTable: React.FC<LectureTableProps> = ({
+  lectures,
+  canUpdate,
+  canDelete,
+}) => {
   if (lectures.length === 0) {
     return (
       <p className="text-sm text-(--color-description)">Лекций пока нет.</p>
@@ -52,16 +58,20 @@ export const LectureTable: React.FC<LectureTableProps> = ({ lectures }) => {
               </td>
               <td className="px-3 py-2">
                 <div className="flex items-center justify-end gap-2">
-                  <Link
-                    href={`/admin/lectures/${lecture.id}`}
-                    className="px-2 py-1 text-xs border border-(--color-border) rounded"
-                  >
-                    Редактировать
-                  </Link>
-                  <LectureDeleteButton
-                    lectureId={lecture.id}
-                    lectureTitle={lecture.title}
-                  />
+                  {canUpdate && (
+                    <Link
+                      href={`/admin/lectures/${lecture.id}`}
+                      className="px-2 py-1 text-xs border border-(--color-border) rounded"
+                    >
+                      Редактировать
+                    </Link>
+                  )}
+                  {canDelete && (
+                    <LectureDeleteButton
+                      lectureId={lecture.id}
+                      lectureTitle={lecture.title}
+                    />
+                  )}
                 </div>
               </td>
             </tr>

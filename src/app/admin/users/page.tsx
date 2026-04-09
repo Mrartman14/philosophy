@@ -1,4 +1,10 @@
 import Link from "next/link";
+import { forbidden } from "next/navigation";
+import { getMe } from "@/utils/me";
+import {
+  canListUsers,
+  canModerateUsers,
+} from "@/features/admin/permissions";
 import { getUsers } from "@/features/admin/users/api";
 import { UserTable } from "@/features/admin/users/user-table";
 import type { User } from "@/api/types";
@@ -10,6 +16,10 @@ interface PageProps {
 }
 
 export default async function AdminUsersPage({ searchParams }: PageProps) {
+  const me = await getMe();
+  if (!canListUsers(me)) forbidden();
+  const canModerate = canModerateUsers(me);
+
   const { offset: offsetStr } = await searchParams;
   const offset = Number(offsetStr ?? 0) || 0;
   const limit = 20;
@@ -47,7 +57,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
               Показано {users.length} из {total}
             </p>
           )}
-          <UserTable users={users} />
+          <UserTable users={users} canModerate={canModerate} />
           <div className="flex items-center gap-2">
             {hasPrev && (
               <Link

@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { forbidden } from "next/navigation";
+import { getMe } from "@/utils/me";
+import { canModerateComments } from "@/features/admin/permissions";
 import { getLectures } from "@/features/lectures/api";
 import { getCommentsAdmin } from "@/features/admin/comments/api";
 import { CommentModeration } from "@/features/admin/comments/comment-moderation";
@@ -21,6 +24,9 @@ interface PageProps {
 }
 
 export default async function AdminCommentsPage({ searchParams }: PageProps) {
+  const me = await getMe();
+  if (!canModerateComments(me)) forbidden();
+
   const {
     lecture_id: lectureId,
     offset: offsetStr,

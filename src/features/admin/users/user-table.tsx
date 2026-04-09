@@ -3,6 +3,7 @@ import { UserStatusInline } from "./user-status-inline";
 
 interface UserTableProps {
   users: User[];
+  canModerate: boolean;
 }
 
 function formatDate(iso: string): string {
@@ -17,7 +18,7 @@ function formatDate(iso: string): string {
   }
 }
 
-export function UserTable({ users }: UserTableProps) {
+export function UserTable({ users, canModerate }: UserTableProps) {
   if (users.length === 0) {
     return (
       <p className="text-sm text-(--color-description)">Пользователей нет.</p>
@@ -41,7 +42,11 @@ export function UserTable({ users }: UserTableProps) {
               <td className="py-2 pr-3 font-medium">{u.username}</td>
               <td className="py-2 pr-3">{u.role}</td>
               <td className="py-2 pr-3">
-                <UserStatusInline userId={u.id} currentStatus={u.status} />
+                {canModerate ? (
+                  <UserStatusInline userId={u.id} currentStatus={u.status} />
+                ) : (
+                  <span className="text-xs">{u.status}</span>
+                )}
               </td>
               <td className="py-2 pr-3 text-(--color-description)">
                 {formatDate(u.created_at)}

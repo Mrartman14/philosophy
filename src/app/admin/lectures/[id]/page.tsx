@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { forbidden, notFound } from "next/navigation";
+import { getMe } from "@/utils/me";
+import { canUpdateLecture } from "@/features/lectures/permissions";
 import {
   getLectureById,
   getLectureFiles,
@@ -17,6 +19,9 @@ interface PageProps {
 }
 
 export default async function AdminLectureEditPage({ params }: PageProps) {
+  const me = await getMe();
+  if (!canUpdateLecture(me)) forbidden();
+
   const { id } = await params;
 
   let lecture, files;
