@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { createApiClient } from "@/api/client";
 import { createAction, createFormAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError } from "@/utils/permissions";
+import {
+  ForbiddenError,
+  isMutationAllowed,
+  requireCapability,
+} from "@/utils/permissions";
 import type {
   AnnotationCreateRequest,
   AnnotationUpdateRequest,
@@ -58,6 +62,14 @@ export const createAnnotation = createFormAction(async (formData: FormData) => {
 });
 
 export const editAnnotation = createFormAction(async (formData: FormData) => {
+  const me = await getMe();
+  requireCapability(me, isMutationAllowed);
+  // Ownership: можно сделать pre-check через GET /api/annotations/{id}
+  // (эндпоинт есть в схеме, см. src/api/schema.ts:1026), но это лишний
+  // network round-trip ради защиты от race-condition. UI уже скрывает
+  // кнопку для не-owner'а; в крайнем случае backend вернёт 403,
+  // который мы пробросим как ActionResult.error.
+
   const annotationId = String(formData.get("annotation_id") ?? "");
   const lectureId = String(formData.get("lecture_id") ?? "");
   const body = String(formData.get("body") ?? "").trim();
@@ -67,15 +79,6 @@ export const editAnnotation = createFormAction(async (formData: FormData) => {
   if (!body) throw new Error("Текст аннотации не может быть пустым");
   if (segmentIds.length === 0)
     throw new Error("Нужно выбрать хотя бы один сегмент");
-
-  const me = await getMe();
-  if (!me) throw new ForbiddenError("guest");
-  if (me.status !== "active") throw new ForbiddenError("status");
-  // Ownership: можно сделать pre-check через GET /api/annotations/{id}
-  // (эндпоинт есть в схеме, см. src/api/schema.ts:1026), но это лишний
-  // network round-trip ради защиты от race-condition. UI уже скрывает
-  // кнопку для не-owner'а; в крайнем случае backend вернёт 403,
-  // который мы пробросим как ActionResult.error.
 
   const client = await createApiClient();
   const requestBody: AnnotationUpdateRequest = {
@@ -96,8 +99,7 @@ export const editAnnotation = createFormAction(async (formData: FormData) => {
 export const deleteAnnotation = createAction(
   async (input: { annotationId: string; lectureId?: string }) => {
     const me = await getMe();
-    if (!me) throw new ForbiddenError("guest");
-    if (me.status !== "active") throw new ForbiddenError("status");
+    requireCapability(me, isMutationAllowed);
     // Ownership: можно сделать pre-check через GET /api/annotations/{id}
     // (эндпоинт есть в схеме, см. src/api/schema.ts:1026), но это лишний
     // network round-trip ради защиты от race-condition. UI уже скрывает

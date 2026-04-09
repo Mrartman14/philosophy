@@ -9,7 +9,11 @@ import type {
 } from "@/api/types";
 import { createAction, createFormAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError } from "@/utils/permissions";
+import {
+  ForbiddenError,
+  isMutationAllowed,
+  requireCapability,
+} from "@/utils/permissions";
 import {
   canCreateComment,
   canReactToComment,
@@ -59,6 +63,10 @@ export const createComment = createFormAction<Comment>(async (formData) => {
  * FormData ожидает поля: `commentId`, `lectureId`, `body`.
  */
 export const editComment = createFormAction<Comment>(async (formData) => {
+  const me = await getMe();
+  requireCapability(me, isMutationAllowed);
+  // Ownership проверится бэком (см. блок «Зачем» в начале Task 8).
+
   const commentId = formData.get("commentId");
   const lectureId = formData.get("lectureId");
   const body = formData.get("body");
@@ -72,11 +80,6 @@ export const editComment = createFormAction<Comment>(async (formData) => {
   if (typeof body !== "string" || body.trim().length === 0) {
     throw new Error("Комментарий не может быть пустым");
   }
-
-  const me = await getMe();
-  if (!me) throw new ForbiddenError("guest");
-  if (me.status !== "active") throw new ForbiddenError("status");
-  // Ownership проверится бэком (см. блок «Зачем» в начале Task 8).
 
   const client = await createApiClient();
   const { data, error } = await client.PUT("/api/comments/{id}", {
@@ -97,8 +100,7 @@ export const deleteComment = createAction<
   void
 >(async ({ commentId, lectureId }) => {
   const me = await getMe();
-  if (!me) throw new ForbiddenError("guest");
-  if (me.status !== "active") throw new ForbiddenError("status");
+  requireCapability(me, isMutationAllowed);
   // Ownership проверится бэком (см. блок «Зачем» в начале Task 8).
 
   const client = await createApiClient();
