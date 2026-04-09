@@ -213,6 +213,9 @@ export const deleteSegment = createAction<
 
 export const uploadFile = createFormAction<void>(
   async (formData: FormData) => {
+    const me = await getMe();
+    requireCapability(me, canUploadLectureFiles);
+
     const lectureId = String(formData.get("lectureId") ?? "");
     if (!lectureId) throw new Error("ID лекции не указан");
 
@@ -226,9 +229,6 @@ export const uploadFile = createFormAction<void>(
     }
     upload.set("type", type);
     upload.set("file", file);
-
-    const me = await getMe();
-    requireCapability(me, canUploadLectureFiles);
 
     // createApiClient() обычно ставит Content-Type: application/json;
     // для multipart используем FormData напрямую, а токен добавляем сами.
