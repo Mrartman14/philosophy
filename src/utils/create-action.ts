@@ -14,7 +14,7 @@ export type ActionResult<T = void> =
   | {
       success: false;
       error: string;
-      code?: "forbidden" | "validation" | "network";
+      code?: "forbidden";
     };
 
 /** Проверяет, является ли ошибка специальной ошибкой Next.js. */
