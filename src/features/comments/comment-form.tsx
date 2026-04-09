@@ -17,8 +17,14 @@ interface CommentFormProps {
   };
 }
 
-// Начальное состояние формы: ошибка с пустым сообщением не отображается (см. ниже).
-const initialState: ActionResult<Comment> = { success: false, error: "" };
+// `createComment` / `editComment` по сигнатуре принимают
+// `prevState: ActionResult<Comment>`, но по общему соглашению проекта
+// `initialState` у `useActionState` — `null` (см. P1-#19, P2-#11).
+// Runtime safe: обе server action внутри не читают `_prevState`.
+type CommentAction = (
+  prevState: ActionResult<Comment> | null,
+  formData: FormData,
+) => Promise<ActionResult<Comment>>;
 
 export const CommentForm: React.FC<CommentFormProps> = ({
   lectureId,
@@ -26,28 +32,45 @@ export const CommentForm: React.FC<CommentFormProps> = ({
   editing,
 }) => {
   const isEditing = Boolean(editing);
-  const action = isEditing ? editComment : createComment;
-  const [state, formAction, isPending] = useActionState(action, initialState);
+  const action: CommentAction = isEditing
+    ? (editComment as CommentAction)
+    : (createComment as CommentAction);
+  const [state, formAction, isPending] = useActionState<
+    ActionResult<Comment> | null,
+    FormData
+  >(action, null);
   const formRef = useRef<HTMLFormElement>(null);
   const bodyId = useId();
   const anonId = useId();
 
+  // Всегда свежая ссылка на `editing.onCancel` — чтобы не добавлять
+  // `editing` в deps effect'а ниже (пропс-объект пересоздаётся родителем
+  // на каждый рендер, эффект нужно запускать только по смене `state`).
+  const onCancelRef = useRef(editing?.onCancel);
+  useEffect(() => {
+    onCancelRef.current = editing?.onCancel;
+  }, [editing?.onCancel]);
+
   // После успешного создания — очищаем форму
   useEffect(() => {
-    if (!isEditing && state.success && formRef.current) {
+    if (!isEditing && state?.success && formRef.current) {
       formRef.current.reset();
     }
   }, [state, isEditing]);
 
-  // После успешного редактирования — закрываем форму
+  // После успешного редактирования — закрываем форму.
+  // Зависимости намеренно ограничены `[state, isEditing]`: `editing` —
+  // пропс-объект, который родитель может пересоздавать на каждый рендер,
+  // и добавление его в deps приведёт к повторным вызовам `onCancel`.
+  // Актуальный колбэк читаем через `onCancelRef`.
   useEffect(() => {
-    if (isEditing && state.success && editing?.onCancel) {
-      editing.onCancel();
+    if (isEditing && state?.success) {
+      onCancelRef.current?.();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  }, [state, isEditing]);
 
-  const errorMessage = !state.success && state.error ? state.error : null;
+  const errorMessage =
+    state && !state.success && state.error ? state.error : null;
 
   return (
     <form

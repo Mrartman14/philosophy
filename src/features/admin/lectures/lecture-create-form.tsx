@@ -4,13 +4,20 @@ import { useActionState } from "react";
 import { createLecture } from "@/features/admin/actions";
 import type { ActionResult } from "@/utils/create-action";
 
-const initialState: ActionResult<{ id: string }> = {
-  success: true,
-  data: { id: "" },
-};
+// `createLecture` при успехе делает redirect — состояние успеха в клиенте
+// не наблюдается. `null` как initialState явно обозначает «ничего ещё не
+// происходило» и соответствует соглашению проекта (см. P1-#19, P2-#25).
+// Runtime safe: server action не читает `_prevState`.
+type CreateLectureAction = (
+  prevState: ActionResult<{ id: string }> | null,
+  formData: FormData,
+) => Promise<ActionResult<{ id: string }>>;
 
 export const LectureCreateForm: React.FC = () => {
-  const [state, action, pending] = useActionState(createLecture, initialState);
+  const [state, action, pending] = useActionState<
+    ActionResult<{ id: string }> | null,
+    FormData
+  >(createLecture as CreateLectureAction, null);
 
   return (
     <form
@@ -46,7 +53,7 @@ export const LectureCreateForm: React.FC = () => {
         rows={2}
         className="px-3 py-2 border border-(--color-border) rounded bg-transparent text-sm resize-none"
       />
-      {!state.success && (
+      {state?.success === false && (
         <p className="text-xs text-red-500" role="alert">
           {state.error}
         </p>
