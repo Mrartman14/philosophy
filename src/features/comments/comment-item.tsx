@@ -1,4 +1,6 @@
 import type { Comment } from "@/api/types";
+import type { DenyReason } from "@/utils/permissions";
+import { ActionTooltip } from "@/components/permission/action-tooltip";
 import { CommentItemActions } from "./comment-item-actions";
 import { ReactionButton } from "./reaction-button";
 
@@ -8,6 +10,7 @@ interface CommentItemProps {
   canEdit: boolean;
   canDelete: boolean;
   canReact: boolean;
+  reactionDeny: DenyReason | null;
 }
 
 function formatDate(iso: string): string {
@@ -35,6 +38,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   canEdit,
   canDelete,
   canReact,
+  reactionDeny,
 }) => {
   const likeCount = comment.reactions?.like ?? 0;
   const mine = comment.my_reaction === "like";
@@ -54,13 +58,19 @@ export const CommentItem: React.FC<CommentItemProps> = ({
       <p className="text-sm whitespace-pre-wrap break-words">{comment.body}</p>
 
       <footer className="flex items-center gap-3 mt-2">
-        <ReactionButton
-          commentId={comment.id}
-          lectureId={lectureId}
-          initialCount={likeCount}
-          initialMine={mine}
-          disabled={!canReact}
-        />
+        {/*
+          ActionTooltip оборачивает в <span title=...>; за реальный disabled-вид
+          отвечает ReactionButton через свой проп `disabled={!canReact}`.
+        */}
+        <ActionTooltip reason={reactionDeny} action="поставить лайк">
+          <ReactionButton
+            commentId={comment.id}
+            lectureId={lectureId}
+            initialCount={likeCount}
+            initialMine={mine}
+            disabled={!canReact}
+          />
+        </ActionTooltip>
       </footer>
 
       <CommentItemActions

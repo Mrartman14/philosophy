@@ -1,4 +1,12 @@
-import { getUser } from "@/utils/get-user";
+import { getMe } from "@/utils/me";
+import {
+  canCreateComment,
+  canDeleteComment,
+  canEditComment,
+  canReactToComment,
+  whyCannotReactToComment,
+} from "./permissions";
+import { LoginCta } from "@/components/permission/login-cta";
 import { getComments } from "./api";
 import { CommentForm } from "./comment-form";
 import { CommentItem } from "./comment-item";
@@ -10,7 +18,7 @@ interface CommentListProps {
 export const CommentList: React.FC<CommentListProps> = async ({
   lectureId,
 }) => {
-  const user = await getUser();
+  const me = await getMe();
 
   let comments: Awaited<ReturnType<typeof getComments>>["data"] = [];
   let loadError = false;
@@ -21,21 +29,18 @@ export const CommentList: React.FC<CommentListProps> = async ({
     loadError = true;
   }
 
-  const isAuthorized = user !== null && user.status === "active";
-  const isPrivileged =
-    user !== null && (user.role === "moderator" || user.role === "admin");
-
   return (
     <section className="flex flex-col gap-4 p-4 border-t border-(--color-border)">
       <h2 className="text-lg font-semibold">Комментарии</h2>
 
-      {isAuthorized ? (
+      {canCreateComment(me) ? (
         <CommentForm lectureId={lectureId} allowAnonymous={true} />
-      ) : (
-        <p className="text-sm text-(--color-description)">
-          Войдите, чтобы оставить комментарий.
-        </p>
-      )}
+      ) : !me ? (
+        <LoginCta
+          message="Войдите, чтобы оставить комментарий"
+          redirectTo={`/lectures/${lectureId}`}
+        />
+      ) : null /* suspended/banned: глобальный StatusBanner уже показан */}
 
       {loadError && (
         <p className="text-sm text-red-500" role="alert">
@@ -44,13 +49,16 @@ export const CommentList: React.FC<CommentListProps> = async ({
       )}
 
       {!loadError && comments.length === 0 && (
-        <p className="text-sm text-(--color-description)">Пока нет комментариев.</p>
+        <p className="text-sm text-(--color-description)">
+          Пока нет комментариев.
+        </p>
       )}
 
       <ul className="flex flex-col gap-3">
         {comments.map((comment) => {
-          const canEdit = user !== null && comment.user_id === user.id;
-          const canDelete = canEdit || isPrivileged;
+          const canEdit = canEditComment(me, comment);
+          const canDelete = canDeleteComment(me, comment);
+          const reactionDeny = whyCannotReactToComment(me);
           return (
             <li key={comment.id}>
               <CommentItem
@@ -58,7 +66,8 @@ export const CommentList: React.FC<CommentListProps> = async ({
                 lectureId={lectureId}
                 canEdit={canEdit}
                 canDelete={canDelete}
-                canReact={isAuthorized}
+                canReact={canReactToComment(me)}
+                reactionDeny={reactionDeny}
               />
             </li>
           );
