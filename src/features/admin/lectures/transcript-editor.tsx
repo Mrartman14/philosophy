@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import type { Segment } from "@/api/types";
 import {
   addSegment,
@@ -38,7 +37,6 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
   lectureId,
   initialSegments,
 }) => {
-  const router = useRouter();
   const [draft, setDraft] = useState<NewSegmentDraft>(emptyDraft);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +76,6 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
       }
       setDraft(emptyDraft);
       setSuccessMessage("Сегмент добавлен");
-      router.refresh();
     });
   };
 
@@ -104,7 +101,6 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
           resolve(false);
           return;
         }
-        router.refresh();
         resolve(true);
       });
     });
@@ -126,7 +122,6 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
         );
         return;
       }
-      router.refresh();
     });
   };
 
@@ -274,8 +269,8 @@ const SegmentRow: React.FC<SegmentRowProps> = ({
           <input
             type="number"
             // key завязан на значение из props, чтобы при обновлении
-            // props (после router.refresh) инпут смонтировался заново
-            // и подхватил новое defaultValue.
+            // props (после revalidatePath на сервере) инпут смонтировался
+            // заново и подхватил новое defaultValue.
             key={segment.position ?? 0}
             defaultValue={segment.position ?? 0}
             onBlur={(e) => {
