@@ -8,6 +8,8 @@ import {
 } from "@/features/lectures/api";
 import { LectureSync } from "@/features/lectures/lecture-sync";
 import { TranscriptPanel } from "@/features/transcript/transcript-panel";
+// Comments (Task 3)
+import { CommentList } from "@/features/comments/comment-list";
 
 interface LecturePageParams {
   id: string;
@@ -68,6 +70,8 @@ export default async function LecturePage({ params }: PageProps) {
               {lecture.description}
             </p>
           )}
+          {/* Comments (Task 3) */}
+          <CommentList lectureId={id} />
         </div>
       }
     />
