@@ -8,6 +8,12 @@ import type {
   CommentReactionType,
 } from "@/api/types";
 import { createAction, createFormAction } from "@/utils/create-action";
+import { getMe } from "@/utils/me";
+import { ForbiddenError } from "@/utils/permissions";
+import {
+  canCreateComment,
+  canReactToComment,
+} from "./permissions";
 
 /**
  * Создание комментария через форму. Используется с `useActionState`.
@@ -28,6 +34,11 @@ export const createComment = createFormAction<Comment>(async (formData) => {
   const requestBody: CommentCreateRequest = { body: body.trim() };
   if (isAnonymousRaw === "on" || isAnonymousRaw === "true") {
     requestBody.is_anonymous = true;
+  }
+
+  const me = await getMe();
+  if (!canCreateComment(me)) {
+    throw new ForbiddenError(me ? "status" : "guest");
   }
 
   const client = await createApiClient();
@@ -62,6 +73,11 @@ export const editComment = createFormAction<Comment>(async (formData) => {
     throw new Error("Комментарий не может быть пустым");
   }
 
+  const me = await getMe();
+  if (!me) throw new ForbiddenError("guest");
+  if (me.status !== "active") throw new ForbiddenError("status");
+  // Ownership проверится бэком (см. блок «Зачем» в начале Task 8).
+
   const client = await createApiClient();
   const { data, error } = await client.PUT("/api/comments/{id}", {
     params: { path: { id: commentId } },
@@ -80,6 +96,11 @@ export const deleteComment = createAction<
   { commentId: string; lectureId: string },
   void
 >(async ({ commentId, lectureId }) => {
+  const me = await getMe();
+  if (!me) throw new ForbiddenError("guest");
+  if (me.status !== "active") throw new ForbiddenError("status");
+  // Ownership проверится бэком (см. блок «Зачем» в начале Task 8).
+
   const client = await createApiClient();
   const { error } = await client.DELETE("/api/comments/{id}", {
     params: { path: { id: commentId } },
@@ -95,6 +116,11 @@ export const addReaction = createAction<
   { commentId: string; lectureId: string; reaction: CommentReactionType },
   void
 >(async ({ commentId, lectureId, reaction }) => {
+  const me = await getMe();
+  if (!canReactToComment(me)) {
+    throw new ForbiddenError(me ? "status" : "guest");
+  }
+
   const client = await createApiClient();
   const { error } = await client.POST("/api/comments/{id}/reactions", {
     params: { path: { id: commentId } },
@@ -111,6 +137,11 @@ export const removeReaction = createAction<
   { commentId: string; lectureId: string },
   void
 >(async ({ commentId, lectureId }) => {
+  const me = await getMe();
+  if (!canReactToComment(me)) {
+    throw new ForbiddenError(me ? "status" : "guest");
+  }
+
   const client = await createApiClient();
   const { error } = await client.DELETE("/api/comments/{id}/reactions", {
     params: { path: { id: commentId } },
