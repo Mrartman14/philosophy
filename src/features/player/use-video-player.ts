@@ -19,7 +19,9 @@ export function useVideoPlayer(
 
   // Stable ref for onTimeUpdate to avoid re-subscribing listeners on every render
   const onTimeUpdateRef = useRef(onTimeUpdate);
-  onTimeUpdateRef.current = onTimeUpdate;
+  useEffect(() => {
+    onTimeUpdateRef.current = onTimeUpdate;
+  }, [onTimeUpdate]);
 
   useEffect(() => {
     const video = videoRef.current;

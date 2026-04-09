@@ -23,7 +23,7 @@ export const RegisterForm: React.FC = () => {
           required
           minLength={3}
           autoComplete="username"
-          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
+          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) focus:outline-none focus:border-(--color-primary)"
         />
       </label>
 
@@ -35,7 +35,7 @@ export const RegisterForm: React.FC = () => {
           required
           minLength={6}
           autoComplete="new-password"
-          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
+          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) focus:outline-none focus:border-(--color-primary)"
         />
       </label>
 

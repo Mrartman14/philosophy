@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Middleware для защиты админских роутов.
+ * Proxy (ранее middleware) для защиты админских роутов.
  *
  * Проверка подписи JWT не выполняется — это задача API. Здесь мы только
  * декодируем payload, чтобы быстро отсечь явные случаи (нет токена,
  * нет роли admin, некорректный формат).
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   if (request.nextUrl.pathname.startsWith("/admin")) {

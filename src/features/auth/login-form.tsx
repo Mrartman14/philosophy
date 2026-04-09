@@ -22,7 +22,7 @@ export const LoginForm: React.FC = () => {
           name="username"
           required
           autoComplete="username"
-          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
+          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) focus:outline-none focus:border-(--color-primary)"
         />
       </label>
 
@@ -33,7 +33,7 @@ export const LoginForm: React.FC = () => {
           name="password"
           required
           autoComplete="current-password"
-          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
+          className="px-3 py-2 rounded border border-(--color-border) bg-(--color-background) focus:outline-none focus:border-(--color-primary)"
         />
       </label>
 

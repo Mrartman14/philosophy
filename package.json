@@ -7,7 +7,7 @@
     "dev:https": "next dev --experimental-https",
     "build": "node scripts/generate-sw-assets.mjs && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src/",
     "generate:api": "npx swagger2openapi ${SWAGGER_URL:-../philosophy-api/docs/swagger/swagger.json} -o /tmp/openapi3.json && npx openapi-typescript /tmp/openapi3.json -o src/api/schema.ts"
   },
   "dependencies": {

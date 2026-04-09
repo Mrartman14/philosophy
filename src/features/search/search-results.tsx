@@ -65,7 +65,7 @@ const LectureHitCard: React.FC<{ hit: SearchLectureHit }> = ({ hit }) => {
                   <li key={`${source}-${idx}`}>
                     <Link
                       href={buildMatchHref(hit.lecture_id, match)}
-                      className="block text-sm text-(--color-text) hover:bg-(--color-text-pane) rounded px-2 py-1"
+                      className="block text-sm hover:bg-(--color-text-pane) rounded px-2 py-1"
                     >
                       {match.text}
                     </Link>
