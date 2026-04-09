@@ -2,22 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { AdminNavItem } from "@/features/admin/permissions";
 
-const NAV_ITEMS = [
-  { href: "/admin", label: "Дашборд", exact: true },
-  { href: "/admin/lectures", label: "Лекции", exact: false },
-  { href: "/admin/users", label: "Пользователи", exact: false },
-  { href: "/admin/comments", label: "Комментарии", exact: false },
-  { href: "/admin/annotations", label: "Аннотации", exact: false },
-  { href: "/admin/push", label: "Push", exact: false },
-];
+interface AdminSidebarProps {
+  items: AdminNavItem[];
+}
 
-export const AdminSidebar: React.FC = () => {
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ items }) => {
   const pathname = usePathname();
 
   return (
     <nav className="flex flex-col gap-1">
-      {NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const isActive = item.exact
           ? pathname === item.href
           : pathname === item.href || pathname.startsWith(`${item.href}/`);

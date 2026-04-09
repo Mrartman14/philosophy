@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { getUser } from "@/utils/get-user";
+import { forbidden } from "next/navigation";
+import { getMe } from "@/utils/me";
+import {
+  canAccessAdmin,
+  getAdminNavItems,
+} from "@/features/admin/permissions";
 import { AdminSidebar } from "@/features/admin/admin-sidebar";
 
 interface AdminLayoutProps {
@@ -7,9 +12,12 @@ interface AdminLayoutProps {
 }
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
-  const user = await getUser();
-  // Middleware уже гарантирует, что сюда попадают только admin,
-  // но getUser нужен для отображения id в шапке.
+  const me = await getMe();
+  if (!canAccessAdmin(me)) {
+    forbidden(); // Next.js рендерит 403 (forbidden.tsx или дефолт).
+  }
+
+  const navItems = getAdminNavItems(me);
 
   return (
     <div className="flex min-h-screen">
@@ -22,13 +30,13 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             ← На сайт
           </Link>
           <h2 className="text-lg font-bold">Админ-панель</h2>
-          {user && (
+          {me && (
             <span className="text-xs text-(--color-description) break-all">
-              {user.id}
+              {me.username}
             </span>
           )}
         </div>
-        <AdminSidebar />
+        <AdminSidebar items={navItems} />
       </aside>
       <main className="flex-1 min-w-0 p-6">{children}</main>
     </div>
