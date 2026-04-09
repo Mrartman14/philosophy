@@ -2,7 +2,7 @@
 
 import { useRef, useState, useImperativeHandle, forwardRef, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useVideoPlayer } from "@/hooks/use-video-player";
+import { useVideoPlayer } from "./use-video-player";
 import { PlayerControls } from "./player-controls";
 import { PlayIcon } from "@/assets/icons/play-icon";
 import { formatTime } from "@/utils/format-time";

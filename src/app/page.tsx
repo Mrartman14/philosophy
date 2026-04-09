@@ -1,8 +1,14 @@
 import Link from "next/link";
-import { getLectures } from "@/api/lecture-api";
+import { getLectures } from "@/features/lectures/api";
 
 export default async function Home() {
-  const result = await getLectures(1, 100);
+  let lectures: Awaited<ReturnType<typeof getLectures>>["data"] = [];
+  try {
+    const result = await getLectures(0, 100);
+    lectures = result.data;
+  } catch {
+    // API недоступен — покажем пустой список
+  }
 
   return (
     <div className="w-full flex flex-col gap-6 pb-4">
@@ -10,7 +16,7 @@ export default async function Home() {
         Лекции
       </h1>
       <ul className="grid grid-cols-1 gap-2 px-4">
-        {(result.data ?? []).map((lecture) => (
+        {lectures.map((lecture) => (
           <li key={lecture.id}>
             <Link
               href={`/lectures/${lecture.id}`}

@@ -5,9 +5,7 @@ import { AppNav } from "../app-nav";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
-import type { components } from "@/api/schema";
-
-type Lecture = components["schemas"]["lecture.Lecture"];
+import type { Lecture } from "@/api/types";
 
 export const AppHeader: React.FC<{ lectures: Lecture[] }> = async ({ lectures }) => {
   return (

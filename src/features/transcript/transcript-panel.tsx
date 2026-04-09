@@ -1,6 +1,4 @@
-import type { components } from "@/api/schema";
-
-type Segment = components["schemas"]["transcript.Segment"];
+import type { Segment } from "@/api/types";
 
 interface TranscriptPanelProps {
   segments: Segment[];

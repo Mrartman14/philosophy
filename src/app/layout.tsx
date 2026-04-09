@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { getLectures } from "@/api/lecture-api";
+import { getLectures } from "@/features/lectures/api";
 import { AppHeader } from "@/components/app/app-header/app-header";
 import { InstallBanner } from "@/components/app/install-banner";
 import { UpdatePrompt } from "@/components/app/update-prompt";
@@ -35,8 +35,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const result = await getLectures(1, 100);
-  const lectures = result.data ?? [];
+  let lectures: Awaited<ReturnType<typeof getLectures>>["data"] = [];
+  try {
+    const result = await getLectures(0, 100);
+    lectures = result.data;
+  } catch {
+    // API недоступен — хедер отрендерится без списка лекций
+  }
 
   return (
     <html lang="ru">

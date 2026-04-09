@@ -3,7 +3,7 @@
 import { useEffect, useRef, type PropsWithChildren } from "react";
 
 interface TranscriptHighlighterProps {
-  currentSegmentId: number | null;
+  currentSegmentId: string | null;
   onSeek: (time: number) => void;
 }
 

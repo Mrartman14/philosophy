@@ -4,9 +4,7 @@ import Link from "next/link";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
-import type { components } from "@/api/schema";
-
-type Lecture = components["schemas"]["lecture.Lecture"];
+import type { Lecture } from "@/api/types";
 
 export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
 

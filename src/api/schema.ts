@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/admin/auth/login": {
+    "/api/admin/annotations/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -13,45 +13,175 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Авторизация */
-        post: {
+        post?: never;
+        /** Удалить пометку (админ) */
+        delete: {
             parameters: {
                 query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    /** @description ID пометки */
+                    id: string;
+                };
                 cookie?: never;
             };
-            /** @description Логин и пароль */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["auth.loginRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": {
-                            [key: string]: string;
-                        };
-                    };
+                    content?: never;
                 };
-                /** @description Unauthorized */
-                401: {
+                /** @description Internal Server Error */
+                500: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": {
-                            [key: string]: string;
-                        };
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
                     };
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/annotations/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Изменить статус пометки (админ) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID пометки */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest"];
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удалить комментарий (админ) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID комментария */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/comments/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Изменить статус комментария (админ) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID комментария */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest"];
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -78,7 +208,7 @@ export interface paths {
             /** @description Данные лекции */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["lecture.CreateRequest"];
+                    "application/json": components["schemas"]["internal_lecture.CreateRequest"];
                 };
             };
             responses: {
@@ -88,7 +218,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["lecture.Lecture"];
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_lecture.Lecture"];
+                        };
                     };
                 };
                 /** @description Bad Request */
@@ -97,9 +229,16 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": {
-                            [key: string]: string;
-                        };
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
                     };
                 };
             };
@@ -132,7 +271,7 @@ export interface paths {
             /** @description Данные для обновления */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["lecture.UpdateRequest"];
+                    "application/json": components["schemas"]["internal_lecture.UpdateRequest"];
                 };
             };
             responses: {
@@ -142,7 +281,27 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["lecture.Lecture"];
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_lecture.Lecture"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
                     };
                 };
             };
@@ -168,6 +327,143 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/lectures/{id}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Загрузить файл лекции */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        /** @description Тип файла (video|notes|image) */
+                        type: string;
+                        /**
+                         * Format: binary
+                         * @description Файл
+                         */
+                        file: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_lecturefile.LectureFile"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/lectures/{id}/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удалить файл лекции */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                    /** @description ID файла */
+                    fileId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
             };
         };
         options?: never;
@@ -184,7 +480,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Создать/обновить транскрипт */
+        /** Создать/обновить транскрипт (полная замена) */
         post: {
             parameters: {
                 query?: never;
@@ -198,7 +494,7 @@ export interface paths {
             /** @description Сегменты транскрипта */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["transcript.upsertRequest"];
+                    "application/json": components["schemas"]["internal_transcript.upsertRequest"];
                 };
             };
             responses: {
@@ -208,6 +504,216 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/lectures/{id}/transcript/segments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Добавить сегмент */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Данные сегмента */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_transcript.CreateSegmentRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_transcript.Segment"];
+                        };
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/lectures/{id}/transcript/segments/{segmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Обновить сегмент */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                    /** @description ID сегмента */
+                    segmentId: string;
+                };
+                cookie?: never;
+            };
+            /** @description Поля для обновления */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_transcript.UpdateSegmentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_transcript.Segment"];
+                        };
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Удалить сегмент */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                    /** @description ID сегмента */
+                    segmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/push/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Отправить push-уведомление */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Данные уведомления */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_push.SendRequest"];
+                };
+            };
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
                 };
             };
         };
@@ -237,8 +743,11 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/x-www-form-urlencoded": {
-                        /** @description Тип файла (videos|notes|transcripts) */
-                        type: string;
+                        /**
+                         * @description Тип файла
+                         * @enum {string}
+                         */
+                        type: "videos" | "notes" | "transcripts";
                         /** @description ID лекции */
                         lecture_id: string;
                         /**
@@ -256,14 +765,485 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": {
-                            [key: string]: string;
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: {
+                                key?: string;
+                                url?: string;
+                            };
                         };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
                     };
                 };
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Изменить статус пользователя (модератор+) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID пользователя */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Новый статус */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_user.UpdateStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/annotations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить пометку по ID */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID пометки */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /** Редактировать пометку */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID пометки */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Обновлённые данные */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_annotation.UpdateRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Удалить свою пометку */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID пометки */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Логин пользователя */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["internal_user.RegisterRequest"];
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: {
+                                token?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Регистрация пользователя */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["internal_user.RegisterRequest"];
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_user.User"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Редактировать комментарий */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID комментария */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Новый текст */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_comment.UpdateRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_comment.Comment"];
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Удалить свой комментарий */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID комментария */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/comments/{id}/reactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Поставить реакцию */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID комментария */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Реакция */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_comment.AddReactionRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /** Убрать реакцию */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID комментария */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -280,8 +1260,8 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Номер страницы */
-                    page?: number;
+                    /** @description Смещение */
+                    offset?: number;
                     /** @description Записей на странице */
                     limit?: number;
                     /** @description Поиск по названию/описанию */
@@ -299,7 +1279,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["lecture.ListResult"];
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
+                            data?: components["schemas"]["internal_lecture.Lecture"][];
+                        };
                     };
                 };
             };
@@ -338,7 +1320,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["lecture.Lecture"];
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_lecture.Lecture"];
+                        };
                     };
                 };
                 /** @description Not Found */
@@ -347,9 +1331,229 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": {
-                            [key: string]: string;
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/lectures/{id}/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список пометок к лекции */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                    /** @description Фильтр по сегменту */
+                    segment_id?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
+                            data?: components["schemas"]["internal_annotation.Annotation"][];
                         };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Создать пометку */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Пометка */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_annotation.CreateRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/lectures/{id}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список комментариев к лекции */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
+                            data?: components["schemas"]["internal_comment.Comment"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Создать комментарий */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Комментарий */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_comment.CreateRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_comment.Comment"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/lectures/{id}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список файлов лекции */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_lecturefile.LectureFile"][];
+                        };
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
                     };
                 };
             };
@@ -388,7 +1592,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["transcript.Transcript"];
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: components["schemas"]["internal_transcript.Transcript"];
+                        };
                     };
                 };
                 /** @description Not Found */
@@ -397,9 +1603,208 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": {
-                            [key: string]: string;
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/push/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Подписаться на push-уведомления */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Данные подписки */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_push.SubscribeRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /** Отписаться от push-уведомлений */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Endpoint подписки */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_push.UnsubscribeRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/push/vapid-key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить VAPID public key */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Response"] & {
+                            data?: {
+                                publicKey?: string;
+                            };
                         };
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Глобальный поиск */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Поисковый запрос */
+                    q: string;
+                    /** @description Лимит результатов */
+                    limit?: number;
+                    /** @description Смещение */
+                    offset?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse"] & {
+                            data?: components["schemas"]["internal_search.LectureHit"][];
+                        };
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -416,60 +1821,228 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        "auth.loginRequest": {
-            password?: string;
-            username?: string;
+        "github_com_Mrartman14_philosophy-api_internal_httputil.ErrorResponse": {
+            code?: string;
+            error?: string;
         };
-        "lecture.CreateRequest": {
-            date?: string;
-            description?: string;
-            title?: string;
+        "github_com_Mrartman14_philosophy-api_internal_httputil.ListResponse": {
+            data?: unknown;
+            pagination?: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_httputil.Pagination"];
         };
-        "lecture.Lecture": {
-            created_at?: string;
-            date?: string;
-            description?: string;
-            id?: string;
-            notes_url?: string;
-            title?: string;
-            updated_at?: string;
-            video_url?: string;
-        };
-        "lecture.ListResult": {
-            data?: components["schemas"]["lecture.Lecture"][];
-            pagination?: components["schemas"]["lecture.PaginationMeta"];
-        };
-        "lecture.PaginationMeta": {
+        "github_com_Mrartman14_philosophy-api_internal_httputil.Pagination": {
             limit?: number;
-            page?: number;
+            offset?: number;
             total?: number;
         };
-        "lecture.UpdateRequest": {
+        "github_com_Mrartman14_philosophy-api_internal_httputil.Response": {
+            data?: unknown;
+        };
+        "github_com_Mrartman14_philosophy-api_internal_httputil.ValidationErrorResponse": {
+            code?: string;
+            error?: string;
+            fields?: {
+                [key: string]: string;
+            };
+        };
+        /** @enum {string} */
+        "github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus": "published" | "hidden" | "pending";
+        "github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest": {
+            /** @enum {unknown} */
+            status: "published" | "hidden" | "pending";
+        };
+        /** @enum {string} */
+        "github_com_Mrartman14_philosophy-api_internal_rbac.Role": "user" | "moderator" | "admin";
+        /** @enum {string} */
+        "github_com_Mrartman14_philosophy-api_internal_rbac.Status": "active" | "suspended" | "banned";
+        "internal_annotation.Annotation": {
+            author?: components["schemas"]["internal_annotation.Author"];
+            body: string;
+            comment_count?: number;
+            created_at: string;
+            id: string;
+            is_anonymous?: boolean;
+            is_edited?: boolean;
+            is_private?: boolean;
+            lecture_id: string;
+            /** @description Populated by service */
+            segment_ids?: number[];
+            status: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus"];
+            updated_at: string;
+        };
+        "internal_annotation.Author": {
+            username?: string;
+        };
+        "internal_annotation.CreateRequest": {
+            body: string;
+            is_anonymous?: boolean;
+            is_private?: boolean;
+            lecture_id?: string;
+            segment_ids: number[];
+        };
+        "internal_annotation.UpdateRequest": {
+            body: string;
+            segment_ids: number[];
+        };
+        "internal_comment.AddReactionRequest": {
+            /** @enum {unknown} */
+            reaction: "like";
+        };
+        "internal_comment.Author": {
+            username?: string;
+        };
+        "internal_comment.Comment": {
+            annotation_id?: string;
+            /** @description Populated by service */
+            author?: components["schemas"]["internal_comment.Author"];
+            body: string;
+            created_at: string;
+            id: string;
+            is_anonymous?: boolean;
+            is_edited?: boolean;
+            lecture_id: string;
+            my_reaction?: components["schemas"]["internal_comment.ReactionType"];
+            parent_id?: string;
+            reactions?: components["schemas"]["internal_comment.ReactionSummary"];
+            replies?: components["schemas"]["internal_comment.Comment"][];
+            status: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_moderation.ModerationStatus"];
+            updated_at: string;
+        };
+        "internal_comment.CreateRequest": {
+            annotation_id?: string;
+            body: string;
+            is_anonymous?: boolean;
+            lecture_id?: string;
+            parent_id?: string;
+        };
+        "internal_comment.ReactionSummary": {
+            like?: number;
+        };
+        /** @enum {string} */
+        "internal_comment.ReactionType": "like";
+        "internal_comment.UpdateRequest": {
+            body: string;
+        };
+        "internal_lecture.CreateRequest": {
+            date: string;
+            description?: string;
+            title: string;
+        };
+        "internal_lecture.Lecture": {
+            created_at: string;
+            date: string;
+            description: string;
+            id: string;
+            title: string;
+            updated_at: string;
+        };
+        "internal_lecture.UpdateRequest": {
             date?: string;
             description?: string;
             title?: string;
         };
-        "transcript.Segment": {
+        /** @enum {string} */
+        "internal_lecturefile.FileType": "video" | "notes" | "image";
+        "internal_lecturefile.LectureFile": {
+            created_at: string;
+            filename: string;
+            id: string;
+            lecture_id: string;
+            sort_order?: number;
+            type: components["schemas"]["internal_lecturefile.FileType"];
+            url?: string;
+        };
+        "internal_push.SendRequest": {
+            body?: string;
+            title: string;
+            url?: string;
+        };
+        "internal_push.SubscribeKeys": {
+            auth: string;
+            p256dh: string;
+        };
+        "internal_push.SubscribeRequest": {
+            endpoint: string;
+            keys: components["schemas"]["internal_push.SubscribeKeys"];
+        };
+        "internal_push.UnsubscribeRequest": {
+            endpoint: string;
+        };
+        "internal_search.LectureHit": {
+            date: string;
+            lecture_id: string;
+            matches?: components["schemas"]["internal_search.Match"][];
+            title: string;
+        };
+        "internal_search.Match": {
+            segment_id?: string;
+            source: string;
+            text: string;
+        };
+        "internal_transcript.CreateSegmentRequest": {
             end?: number;
-            id?: number;
+            position?: number;
+            speaker: string;
+            start?: number;
+            text: string;
+        };
+        "internal_transcript.Segment": {
+            end?: number;
+            id: string;
+            position?: number;
+            speaker: string;
+            start?: number;
+            text: string;
+        };
+        "internal_transcript.Transcript": {
+            created_at: string;
+            id: string;
+            lecture_id: string;
+            segments?: components["schemas"]["internal_transcript.Segment"][];
+            updated_at: string;
+        };
+        "internal_transcript.UpdateSegmentRequest": {
+            end?: number;
+            position?: number;
             speaker?: string;
             start?: number;
             text?: string;
         };
-        "transcript.Transcript": {
-            created_at?: string;
-            id?: string;
-            lecture_id?: string;
-            segments?: components["schemas"]["transcript.Segment"][];
-            updated_at?: string;
+        "internal_transcript.upsertRequest": {
+            segments?: components["schemas"]["internal_transcript.Segment"][];
         };
-        "transcript.upsertRequest": {
-            segments?: components["schemas"]["transcript.Segment"][];
+        "internal_user.RegisterRequest": {
+            password: string;
+            username: string;
+        };
+        "internal_user.UpdateStatusRequest": {
+            /** @enum {unknown} */
+            status: "active" | "suspended" | "banned";
+        };
+        "internal_user.User": {
+            created_at: string;
+            id: string;
+            role: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_rbac.Role"];
+            status: components["schemas"]["github_com_Mrartman14_philosophy-api_internal_rbac.Status"];
+            updated_at: string;
+            username: string;
         };
     };
     responses: never;
     parameters: never;
-    requestBodies: never;
+    requestBodies: {
+        /** @description Username и пароль */
+        "internal_user.RegisterRequest": {
+            content: {
+                "application/json": components["schemas"]["internal_user.RegisterRequest"];
+            };
+        };
+        /** @description Новый статус */
+        "github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest": {
+            content: {
+                "application/json": components["schemas"]["github_com_Mrartman14_philosophy-api_internal_moderation.UpdateStatusRequest"];
+            };
+        };
+    };
     headers: never;
     pathItems: never;
 }

@@ -1,18 +1,26 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLectureById, getLectures, getTranscript } from "@/api/lecture-api";
-import { LectureSync } from "./lecture-sync";
-import { TranscriptPanel } from "@/components/app/video/transcript-panel";
+import {
+  getLectureById,
+  getLectureFiles,
+  getLectures,
+  getTranscript,
+} from "@/features/lectures/api";
+import { LectureSync } from "@/features/lectures/lecture-sync";
+import { TranscriptPanel } from "@/features/transcript/transcript-panel";
 
 interface LecturePageParams {
   id: string;
 }
 
 export async function generateStaticParams(): Promise<LecturePageParams[]> {
-  const result = await getLectures(1, 100);
-  return (result.data ?? [])
-    .filter((lecture): lecture is typeof lecture & { id: string } => !!lecture.id)
-    .map((lecture) => ({ id: lecture.id }));
+  try {
+    const result = await getLectures(0, 100);
+    return result.data.map((lecture) => ({ id: lecture.id }));
+  } catch {
+    // API недоступен на этапе сборки — страницы будут рендериться on-demand
+    return [];
+  }
 }
 
 type GenerateMetadataProps = {
@@ -32,11 +40,12 @@ interface PageProps {
 export default async function LecturePage({ params }: PageProps) {
   const { id } = await params;
 
-  let lecture, transcript;
+  let lecture, transcript, files;
   try {
-    [lecture, transcript] = await Promise.all([
+    [lecture, transcript, files] = await Promise.all([
       getLectureById(id),
       getTranscript(id),
+      getLectureFiles(id),
     ]);
   } catch {
     return notFound();
@@ -44,10 +53,11 @@ export default async function LecturePage({ params }: PageProps) {
 
   const segments = transcript.segments ?? [];
   const timings = segments.map((s) => ({ id: s.id, start: s.start, end: s.end }));
+  const videoFile = files.find((f) => f.type === "video");
 
   return (
     <LectureSync
-      videoUrl={lecture.video_url}
+      videoUrl={videoFile?.url}
       segments={timings}
       transcriptContent={<TranscriptPanel segments={segments} />}
       infoContent={

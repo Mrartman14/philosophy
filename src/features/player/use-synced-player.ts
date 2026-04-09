@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, RefObject } from "react";
 
-type SegmentTiming = { id?: number | undefined; start?: number | undefined; end?: number | undefined };
+type SegmentTiming = { id: string; start?: number | undefined; end?: number | undefined };
 
 function findByTime(items: SegmentTiming[], time: number): SegmentTiming | null {
   return items.find((item) => time >= (item.start ?? 0) && time <= (item.end ?? 0)) ?? null;
@@ -12,7 +12,7 @@ export function useSyncedPlayer(
   videoRef: RefObject<HTMLVideoElement | null>,
   segments: SegmentTiming[]
 ) {
-  const [currentSegmentId, setCurrentSegmentId] = useState<number | null>(null);
+  const [currentSegmentId, setCurrentSegmentId] = useState<string | null>(null);
 
   const seekTo = useCallback(
     (time: number) => {

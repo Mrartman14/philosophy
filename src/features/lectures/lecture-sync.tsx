@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
-import { VideoPlayer, type VideoPlayerHandle } from "@/components/app/video-player/video-player";
-import { TranscriptHighlighter } from "@/components/app/video/transcript-highlighter";
+import { VideoPlayer, type VideoPlayerHandle } from "@/features/player/video-player";
+import { TranscriptHighlighter } from "@/features/transcript/transcript-highlighter";
 
-type SegmentTiming = { id?: number | undefined; start?: number | undefined; end?: number | undefined };
+type SegmentTiming = { id: string; start?: number | undefined; end?: number | undefined };
 
 interface LectureSyncProps {
   videoUrl: string | undefined;
@@ -20,7 +20,7 @@ export const LectureSync: React.FC<LectureSyncProps> = ({
   infoContent,
 }) => {
   const playerRef = useRef<VideoPlayerHandle>(null);
-  const [currentSegmentId, setCurrentSegmentId] = useState<number | null>(null);
+  const [currentSegmentId, setCurrentSegmentId] = useState<string | null>(null);
 
   const seekTo = (time: number) => {
     playerRef.current?.seekTo(time);
