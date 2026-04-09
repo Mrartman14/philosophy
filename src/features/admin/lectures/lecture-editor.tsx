@@ -107,7 +107,9 @@ export const LectureEditor: React.FC<LectureEditorProps> = ({ lecture }) => {
         )}
         {state?.success === false && (
           <span className="text-xs text-red-500" role="alert">
-            {state.error}
+            {state.code === "forbidden"
+              ? "У вас нет прав на редактирование лекции."
+              : state.error}
           </span>
         )}
       </div>

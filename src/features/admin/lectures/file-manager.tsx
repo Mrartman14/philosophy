@@ -49,7 +49,9 @@ export const FileManager: React.FC<FileManagerProps> = ({
         </div>
         {state.success === false && (
           <p className="text-xs text-red-500" role="alert">
-            {state.error}
+            {state.code === "forbidden"
+              ? "У вас нет прав на загрузку/удаление файлов."
+              : state.error}
           </p>
         )}
       </form>
@@ -102,7 +104,13 @@ const FileDeleteButton: React.FC<FileDeleteButtonProps> = ({
     setError(null);
     startTransition(async () => {
       const result = await deleteFile({ lectureId, fileId });
-      if (!result.success) setError(result.error);
+      if (!result.success) {
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на загрузку/удаление файлов."
+            : result.error
+        );
+      }
     });
   };
 

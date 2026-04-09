@@ -20,7 +20,13 @@ export const LectureDeleteButton: React.FC<LectureDeleteButtonProps> = ({
     setError(null);
     startTransition(async () => {
       const result = await deleteLecture({ id: lectureId });
-      if (!result.success) setError(result.error);
+      if (!result.success) {
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на это действие. Обновите страницу."
+            : result.error
+        );
+      }
     });
   };
 

@@ -76,7 +76,13 @@ const CommentModerationItem: React.FC<ItemProps> = ({
         status,
         lectureId,
       });
-      if (!result.success) setError(result.error);
+      if (!result.success) {
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на это действие. Обновите страницу."
+            : result.error
+        );
+      }
     });
   };
 
@@ -88,8 +94,15 @@ const CommentModerationItem: React.FC<ItemProps> = ({
         commentId: comment.id,
         lectureId,
       });
-      if (result.success) setDeleted(true);
-      else setError(result.error);
+      if (result.success) {
+        setDeleted(true);
+      } else {
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на это действие. Обновите страницу."
+            : result.error
+        );
+      }
     });
   };
 

@@ -23,7 +23,11 @@ export const UserStatusInline: React.FC<UserStatusInlineProps> = ({
     startTransition(async () => {
       const result = await updateUserStatus({ userId, status: next });
       if (!result.success) {
-        setError(result.error);
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на это действие. Обновите страницу."
+            : result.error
+        );
         setStatus(currentStatus);
       }
     });

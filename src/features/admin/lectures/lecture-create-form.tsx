@@ -55,7 +55,9 @@ export const LectureCreateForm: React.FC = () => {
       />
       {state?.success === false && (
         <p className="text-xs text-red-500" role="alert">
-          {state.error}
+          {state.code === "forbidden"
+            ? "У вас нет прав на создание лекций."
+            : state.error}
         </p>
       )}
     </form>

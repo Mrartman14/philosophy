@@ -69,7 +69,11 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
         text: draft.text,
       });
       if (!result.success) {
-        setError(result.error);
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на редактирование транскрипта."
+            : result.error
+        );
         return;
       }
       setDraft(emptyDraft);
@@ -92,7 +96,11 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
           ...patch,
         });
         if (!result.success) {
-          setError(result.error);
+          setError(
+            result.code === "forbidden"
+              ? "У вас нет прав на редактирование транскрипта."
+              : result.error
+          );
           resolve(false);
           return;
         }
@@ -111,7 +119,11 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
         segmentId: segment.id,
       });
       if (!result.success) {
-        setError(result.error);
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на редактирование транскрипта."
+            : result.error
+        );
         return;
       }
       router.refresh();
