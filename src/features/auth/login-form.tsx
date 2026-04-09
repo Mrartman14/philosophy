@@ -60,7 +60,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ next }) => {
 
       <p className="text-sm text-(--color-description) text-center">
         Нет аккаунта?{" "}
-        <Link href="/register" className="text-(--color-primary) hover:underline">
+        <Link
+          href={
+            next
+              ? `/register?next=${encodeURIComponent(next)}`
+              : "/register"
+          }
+          className="text-(--color-primary) hover:underline"
+        >
           Зарегистрироваться
         </Link>
       </p>

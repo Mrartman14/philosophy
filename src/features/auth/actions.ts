@@ -65,11 +65,17 @@ export const login = createFormAction<void>(async (formData: FormData) => {
 });
 
 /**
- * Server action для регистрации. После успеха редиректит на /login.
+ * Server action для регистрации. После успеха редиректит на /login,
+ * сохраняя `next` если он был прокинут из /login?next=.
  */
 export const register = createFormAction<void>(async (formData: FormData) => {
   const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
+  const next = safeNext(
+    typeof formData.get("next") === "string"
+      ? (formData.get("next") as string)
+      : null
+  );
 
   if (!username || !password) {
     throw new Error("Введите имя пользователя и пароль");
@@ -84,7 +90,7 @@ export const register = createFormAction<void>(async (formData: FormData) => {
     throw new Error("Не удалось зарегистрировать пользователя");
   }
 
-  redirect("/login");
+  redirect(next === "/" ? "/login" : `/login?next=${encodeURIComponent(next)}`);
 });
 
 /**

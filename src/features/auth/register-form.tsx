@@ -14,7 +14,12 @@ type RegisterAction = (
   formData: FormData,
 ) => Promise<ActionResult<void>>;
 
-export const RegisterForm: React.FC = () => {
+interface RegisterFormProps {
+  /** Куда вернуть пользователя после регистрации + логина. */
+  next?: string;
+}
+
+export const RegisterForm: React.FC<RegisterFormProps> = ({ next }) => {
   const [state, formAction, pending] = useActionState<
     ActionResult<void> | null,
     FormData
@@ -23,6 +28,8 @@ export const RegisterForm: React.FC = () => {
   return (
     <form action={formAction} className="flex flex-col gap-4 w-full max-w-sm">
       <h1 className="text-2xl font-bold">Регистрация</h1>
+
+      {next && <input type="hidden" name="next" value={next} />}
 
       <label className="flex flex-col gap-1">
         <span className="text-sm text-(--color-description)">Имя пользователя</span>
@@ -64,7 +71,10 @@ export const RegisterForm: React.FC = () => {
 
       <p className="text-sm text-(--color-description) text-center">
         Уже есть аккаунт?{" "}
-        <Link href="/login" className="text-(--color-primary) hover:underline">
+        <Link
+          href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
+          className="text-(--color-primary) hover:underline"
+        >
           Войти
         </Link>
       </p>
