@@ -73,7 +73,7 @@ export async function AnnotationList({
     <ul className="flex flex-col gap-3 p-4">
       {visibleAnnotations.map((a) => {
         const segments = a.segment_ids ?? [];
-        const canEdit = canModerate || (user != null && !a.is_anonymous);
+        const canEdit = canModerate || (user != null && a.user_id === user.id);
         const canDelete = canEdit;
         const statusLabel = getStatusLabel(a.status);
 

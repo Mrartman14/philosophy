@@ -49,17 +49,8 @@ export const CommentList: React.FC<CommentListProps> = async ({
 
       <ul className="flex flex-col gap-3">
         {comments.map((comment) => {
-          const isAuthor =
-            user !== null &&
-            !comment.is_anonymous &&
-            comment.author?.username !== undefined &&
-            // username в JWT отсутствует — сравнение невозможно, полагаемся на роль.
-            // Редактирование: только свой комментарий (бэкенд проверит автора).
-            // Для упрощения UI — показываем кнопку edit только авторизованным;
-            // неавторских комментариев по факту не отредактируешь.
-            isAuthorized;
-          const canEdit = isAuthor;
-          const canDelete = isAuthor || isPrivileged;
+          const canEdit = user !== null && comment.user_id === user.id;
+          const canDelete = canEdit || isPrivileged;
           return (
             <li key={comment.id}>
               <CommentItem
