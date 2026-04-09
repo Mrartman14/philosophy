@@ -8,8 +8,11 @@ import {
 } from "@/features/lectures/api";
 import { LectureSync } from "@/features/lectures/lecture-sync";
 import { TranscriptPanel } from "@/features/transcript/transcript-panel";
-// Comments (Task 3)
+import { getAnnotations } from "@/features/annotations/api";
+import { AnnotationList } from "@/features/annotations/annotation-list";
+import { AnnotationHighlight } from "@/features/annotations/annotation-highlight";
 import { CommentList } from "@/features/comments/comment-list";
+import type { Annotation } from "@/api/types";
 
 interface LecturePageParams {
   id: string;
@@ -53,15 +56,41 @@ export default async function LecturePage({ params }: PageProps) {
     return notFound();
   }
 
+  let annotations: Annotation[] = [];
+  try {
+    const result = await getAnnotations(id);
+    annotations = result.data;
+  } catch {
+    // API недоступен — покажем пустой список аннотаций
+  }
+
   const segments = transcript.segments ?? [];
   const timings = segments.map((s) => ({ id: s.id, start: s.start, end: s.end }));
   const videoFile = files.find((f) => f.type === "video");
+
+  const annotatedPositions = new Set<number>();
+  for (const a of annotations) {
+    for (const pos of a.segment_ids ?? []) annotatedPositions.add(pos);
+  }
 
   return (
     <LectureSync
       videoUrl={videoFile?.url}
       segments={timings}
-      transcriptContent={<TranscriptPanel segments={segments} />}
+      transcriptContent={
+        <AnnotationHighlight
+          lectureId={id}
+          annotations={annotations}
+          annotationListContent={
+            <AnnotationList annotations={annotations} lectureId={id} />
+          }
+        >
+          <TranscriptPanel
+            segments={segments}
+            annotatedPositions={annotatedPositions}
+          />
+        </AnnotationHighlight>
+      }
       infoContent={
         <div className="p-4">
           <h1 className="text-xl font-bold">{lecture.title}</h1>
