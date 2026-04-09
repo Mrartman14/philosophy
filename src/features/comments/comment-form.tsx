@@ -70,7 +70,13 @@ export const CommentForm: React.FC<CommentFormProps> = ({
   }, [state, isEditing]);
 
   const errorMessage =
-    state && !state.success && state.error ? state.error : null;
+    state && !state.success && state.error
+      ? state.code === "forbidden"
+        ? isEditing
+          ? "У вас нет прав на редактирование комментария."
+          : "У вас нет прав на отправку комментария."
+        : state.error
+      : null;
 
   return (
     <form

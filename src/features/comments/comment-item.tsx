@@ -9,7 +9,6 @@ interface CommentItemProps {
   lectureId: string;
   canEdit: boolean;
   canDelete: boolean;
-  canReact: boolean;
   reactionDeny: DenyReason | null;
 }
 
@@ -37,9 +36,9 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   lectureId,
   canEdit,
   canDelete,
-  canReact,
   reactionDeny,
 }) => {
+  const canReact = reactionDeny === null;
   const likeCount = comment.reactions?.like ?? 0;
   const mine = comment.my_reaction === "like";
 

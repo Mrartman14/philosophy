@@ -29,7 +29,11 @@ export const CommentItemActions: React.FC<CommentItemActionsProps> = ({
       setError(null);
       const result = await deleteComment({ commentId, lectureId });
       if (!result.success) {
-        setError(result.error);
+        setError(
+          result.code === "forbidden"
+            ? "У вас нет прав на удаление комментария."
+            : result.error
+        );
       }
     });
   };

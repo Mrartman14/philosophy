@@ -1,9 +1,8 @@
 import { getMe } from "@/utils/me";
 import {
-  canCreateComment,
   canDeleteComment,
   canEditComment,
-  canReactToComment,
+  whyCannotCreateComment,
   whyCannotReactToComment,
 } from "./permissions";
 import { LoginCta } from "@/components/permission/login-cta";
@@ -19,6 +18,7 @@ export const CommentList: React.FC<CommentListProps> = async ({
   lectureId,
 }) => {
   const me = await getMe();
+  const createDeny = whyCannotCreateComment(me);
 
   let comments: Awaited<ReturnType<typeof getComments>>["data"] = [];
   let loadError = false;
@@ -33,14 +33,25 @@ export const CommentList: React.FC<CommentListProps> = async ({
     <section className="flex flex-col gap-4 p-4 border-t border-(--color-border)">
       <h2 className="text-lg font-semibold">Комментарии</h2>
 
-      {canCreateComment(me) ? (
+      {createDeny === null ? (
         <CommentForm lectureId={lectureId} allowAnonymous={true} />
-      ) : !me ? (
+      ) : createDeny === "guest" ? (
         <LoginCta
           message="Войдите, чтобы оставить комментарий"
           redirectTo={`/lectures/${lectureId}`}
         />
-      ) : null /* suspended/banned: глобальный StatusBanner уже показан */}
+      ) : (
+        <p
+          role="status"
+          className="text-sm text-(--color-description) p-3 border border-(--color-border) rounded-lg"
+        >
+          Комментировать нельзя — аккаунт ограничен.
+          {" "}
+          <span className="text-xs">
+            (см. баннер сверху страницы)
+          </span>
+        </p>
+      )}
 
       {loadError && (
         <p className="text-sm text-red-500" role="alert">
@@ -66,7 +77,6 @@ export const CommentList: React.FC<CommentListProps> = async ({
                 lectureId={lectureId}
                 canEdit={canEdit}
                 canDelete={canDelete}
-                canReact={canReactToComment(me)}
                 reactionDeny={reactionDeny}
               />
             </li>
