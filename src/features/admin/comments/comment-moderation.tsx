@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Comment } from "@/api/types";
+import type { Comment, ModerationStatus } from "@/api/types";
 import {
   deleteCommentAdmin,
   updateCommentStatus,
@@ -12,7 +12,17 @@ interface CommentModerationProps {
   lectureId: string;
 }
 
-type ModerationStatus = "published" | "hidden" | "pending";
+const STATUS_BADGE_CLASS: Record<ModerationStatus, string> = {
+  published: "text-green-700 bg-green-100",
+  pending: "text-amber-700 bg-amber-100",
+  hidden: "text-gray-700 bg-gray-100",
+};
+
+const STATUS_LABEL: Record<ModerationStatus, string> = {
+  published: "Опубликовано",
+  pending: "Pending",
+  hidden: "Скрыто",
+};
 
 function formatDate(iso: string): string {
   try {
@@ -95,9 +105,21 @@ const CommentModerationItem: React.FC<ItemProps> = ({
     ? "Аноним"
     : comment.author?.username ?? "Аноним";
 
+  const currentStatus = comment.status;
+
+  const statusButtonClass = (status: ModerationStatus) =>
+    [
+      "px-2 py-1 text-xs border border-(--color-border) rounded disabled:opacity-50",
+      currentStatus === status
+        ? "bg-(--color-primary)/10 font-semibold"
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
   return (
     <article className="p-3 border border-(--color-border) rounded flex flex-col gap-2">
-      <header className="flex items-baseline gap-2 text-xs">
+      <header className="flex flex-wrap items-baseline gap-2 text-xs">
         <span className="font-semibold text-sm">{authorLabel}</span>
         <time className="text-(--color-description)">
           {formatDate(comment.created_at)}
@@ -105,6 +127,11 @@ const CommentModerationItem: React.FC<ItemProps> = ({
         {comment.is_edited && (
           <span className="text-(--color-description)">(изменено)</span>
         )}
+        <span
+          className={`px-2 py-0.5 rounded text-xs ${STATUS_BADGE_CLASS[currentStatus]}`}
+        >
+          {STATUS_LABEL[currentStatus]}
+        </span>
       </header>
       <p className="text-sm whitespace-pre-wrap break-words">{comment.body}</p>
       <div className="flex flex-wrap items-center gap-2">
@@ -112,7 +139,8 @@ const CommentModerationItem: React.FC<ItemProps> = ({
           type="button"
           onClick={() => handleStatus("published")}
           disabled={pending}
-          className="px-2 py-1 text-xs border border-(--color-border) rounded disabled:opacity-50"
+          aria-pressed={currentStatus === "published"}
+          className={statusButtonClass("published")}
         >
           Опубликовать
         </button>
@@ -120,7 +148,8 @@ const CommentModerationItem: React.FC<ItemProps> = ({
           type="button"
           onClick={() => handleStatus("hidden")}
           disabled={pending}
-          className="px-2 py-1 text-xs border border-(--color-border) rounded disabled:opacity-50"
+          aria-pressed={currentStatus === "hidden"}
+          className={statusButtonClass("hidden")}
         >
           Скрыть
         </button>
@@ -128,7 +157,8 @@ const CommentModerationItem: React.FC<ItemProps> = ({
           type="button"
           onClick={() => handleStatus("pending")}
           disabled={pending}
-          className="px-2 py-1 text-xs border border-(--color-border) rounded disabled:opacity-50"
+          aria-pressed={currentStatus === "pending"}
+          className={statusButtonClass("pending")}
         >
           Pending
         </button>

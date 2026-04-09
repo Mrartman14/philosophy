@@ -8,6 +8,7 @@ import { createApiClient } from "@/api/client";
 import type {
   LectureCreateRequest,
   LectureUpdateRequest,
+  ModerationStatus,
   SegmentCreateRequest,
   SegmentUpdateRequest,
   UserUpdateStatusRequest,
@@ -15,7 +16,6 @@ import type {
 } from "@/api/types";
 import { createAction, createFormAction } from "@/utils/create-action";
 
-type ModerationStatus = "published" | "hidden" | "pending";
 type UserStatus = UserUpdateStatusRequest["status"];
 
 /* -------------------------------------------------------------------------- */
