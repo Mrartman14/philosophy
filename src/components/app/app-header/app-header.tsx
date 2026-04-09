@@ -5,6 +5,7 @@ import { AppNav } from "../app-nav";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
+import { SearchInput } from "@/features/search/search-input";
 import type { Lecture } from "@/api/types";
 import { getUser } from "@/utils/get-user";
 import { logout } from "@/features/auth/actions";
@@ -24,6 +25,7 @@ export const AppHeader: React.FC<{ lectures: Lecture[] }> = async ({ lectures })
           <AppNav lectures={lectures} />
           <div />
           <div className="flex gap-2 items-center">
+            <SearchInput />
             <NetworkIndicator className="text-xl" />
             {user ? (
               <form action={logout} className="flex items-center gap-2">
