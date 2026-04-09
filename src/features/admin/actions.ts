@@ -15,6 +15,21 @@ import type {
   PushSendRequest,
 } from "@/api/types";
 import { createAction, createFormAction } from "@/utils/create-action";
+import { getMe } from "@/utils/me";
+import { requireCapability } from "@/utils/permissions";
+import {
+  canModerateAnnotations,
+  canModerateComments,
+  canModerateUsers,
+  canSendPush,
+} from "./permissions";
+import {
+  canCreateLecture,
+  canDeleteLecture,
+  canUpdateLecture,
+  canUploadLectureFiles,
+} from "@/features/lectures/permissions";
+import { canEditTranscript } from "@/features/transcript/permissions";
 
 type UserStatus = UserUpdateStatusRequest["status"];
 
@@ -31,6 +46,9 @@ export const createLecture = createFormAction<{ id: string }>(
     if (!title || !date) {
       throw new Error("Укажите название и дату");
     }
+
+    const me = await getMe();
+    requireCapability(me, canCreateLecture);
 
     const body: LectureCreateRequest = { title, date };
     if (description) body.description = description;
@@ -56,6 +74,9 @@ export const updateLecture = createFormAction<void>(
 
     if (!id) throw new Error("ID лекции не указан");
 
+    const me = await getMe();
+    requireCapability(me, canUpdateLecture);
+
     const body: LectureUpdateRequest = {};
     if (title) body.title = title;
     if (description) body.description = description;
@@ -76,6 +97,9 @@ export const updateLecture = createFormAction<void>(
 
 export const deleteLecture = createAction<{ id: string }, void>(
   async ({ id }) => {
+    const me = await getMe();
+    requireCapability(me, canDeleteLecture);
+
     const client = await createApiClient();
     const { error } = await client.DELETE("/api/admin/lectures/{id}", {
       params: { path: { id } },
@@ -102,6 +126,9 @@ export const addSegment = createAction<
   },
   void
 >(async ({ lectureId, position, start, end, speaker, text }) => {
+  const me = await getMe();
+  requireCapability(me, canEditTranscript);
+
   const body: SegmentCreateRequest = {
     position,
     start,
@@ -136,6 +163,9 @@ export const updateSegment = createAction<
   },
   void
 >(async ({ lectureId, segmentId, position, start, end, speaker, text }) => {
+  const me = await getMe();
+  requireCapability(me, canEditTranscript);
+
   const body: SegmentUpdateRequest = {};
   if (position !== undefined) body.position = position;
   if (start !== undefined) body.start = start;
@@ -161,6 +191,9 @@ export const deleteSegment = createAction<
   { lectureId: string; segmentId: string },
   void
 >(async ({ lectureId, segmentId }) => {
+  const me = await getMe();
+  requireCapability(me, canEditTranscript);
+
   const client = await createApiClient();
   const { error } = await client.DELETE(
     "/api/admin/lectures/{id}/transcript/segments/{segmentId}",
@@ -183,12 +216,6 @@ export const uploadFile = createFormAction<void>(
     const lectureId = String(formData.get("lectureId") ?? "");
     if (!lectureId) throw new Error("ID лекции не указан");
 
-    // createApiClient() обычно ставит Content-Type: application/json;
-    // для multipart используем FormData напрямую, а токен добавляем сами.
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    const API_URL = process.env.API_URL ?? "http://localhost:8080";
-
     // Оставляем в форме только type и file — бэк ждёт именно их.
     const upload = new FormData();
     const type = String(formData.get("type") ?? "");
@@ -199,6 +226,15 @@ export const uploadFile = createFormAction<void>(
     }
     upload.set("type", type);
     upload.set("file", file);
+
+    const me = await getMe();
+    requireCapability(me, canUploadLectureFiles);
+
+    // createApiClient() обычно ставит Content-Type: application/json;
+    // для multipart используем FormData напрямую, а токен добавляем сами.
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
     const response = await fetch(
       `${API_URL}/api/admin/lectures/${encodeURIComponent(lectureId)}/files`,
@@ -222,6 +258,9 @@ export const deleteFile = createAction<
   { lectureId: string; fileId: string },
   void
 >(async ({ lectureId, fileId }) => {
+  const me = await getMe();
+  requireCapability(me, canUploadLectureFiles);
+
   const client = await createApiClient();
   const { error } = await client.DELETE(
     "/api/admin/lectures/{id}/files/{fileId}",
@@ -243,6 +282,9 @@ export const updateUserStatus = createAction<
   { userId: string; status: UserStatus },
   void
 >(async ({ userId, status }) => {
+  const me = await getMe();
+  requireCapability(me, canModerateUsers);
+
   const client = await createApiClient();
   const { error } = await client.PUT("/api/admin/users/{id}/status", {
     params: { path: { id: userId } },
@@ -261,6 +303,9 @@ export const deleteCommentAdmin = createAction<
   { commentId: string; lectureId?: string },
   void
 >(async ({ commentId, lectureId }) => {
+  const me = await getMe();
+  requireCapability(me, canModerateComments);
+
   const client = await createApiClient();
   const { error } = await client.DELETE("/api/admin/comments/{id}", {
     params: { path: { id: commentId } },
@@ -275,6 +320,9 @@ export const updateCommentStatus = createAction<
   { commentId: string; status: ModerationStatus; lectureId?: string },
   void
 >(async ({ commentId, status, lectureId }) => {
+  const me = await getMe();
+  requireCapability(me, canModerateComments);
+
   const client = await createApiClient();
   const { error } = await client.PUT("/api/admin/comments/{id}/status", {
     params: { path: { id: commentId } },
@@ -294,6 +342,9 @@ export const deleteAnnotationAdmin = createAction<
   { annotationId: string; lectureId?: string },
   void
 >(async ({ annotationId, lectureId }) => {
+  const me = await getMe();
+  requireCapability(me, canModerateAnnotations);
+
   const client = await createApiClient();
   const { error } = await client.DELETE("/api/admin/annotations/{id}", {
     params: { path: { id: annotationId } },
@@ -308,6 +359,9 @@ export const updateAnnotationStatus = createAction<
   { annotationId: string; status: ModerationStatus; lectureId?: string },
   void
 >(async ({ annotationId, status, lectureId }) => {
+  const me = await getMe();
+  requireCapability(me, canModerateAnnotations);
+
   const client = await createApiClient();
   const { error } = await client.PUT("/api/admin/annotations/{id}/status", {
     params: { path: { id: annotationId } },
@@ -329,6 +383,9 @@ export const sendPush = createFormAction<void>(async (formData: FormData) => {
   const url = String(formData.get("url") ?? "").trim();
 
   if (!title) throw new Error("Укажите заголовок уведомления");
+
+  const me = await getMe();
+  requireCapability(me, canSendPush);
 
   const payload: PushSendRequest = { title };
   if (body) payload.body = body;
