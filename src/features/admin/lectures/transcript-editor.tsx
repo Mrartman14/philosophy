@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { Segment } from "@/api/types";
 import {
   addSegment,
@@ -21,6 +22,10 @@ interface NewSegmentDraft {
   text: string;
 }
 
+type SegmentPatch = Partial<
+  Pick<Segment, "speaker" | "text" | "start" | "end" | "position">
+>;
+
 const emptyDraft: NewSegmentDraft = {
   position: "",
   start: "",
@@ -33,13 +38,15 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
   lectureId,
   initialSegments,
 }) => {
-  const [segments, setSegments] = useState<Segment[]>(initialSegments);
+  const router = useRouter();
   const [draft, setDraft] = useState<NewSegmentDraft>(emptyDraft);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleAdd = () => {
     setError(null);
+    setSuccessMessage(null);
     const position = Number(draft.position);
     const start = Number(draft.start);
     const end = Number(draft.end);
@@ -65,41 +72,49 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
         setError(result.error);
         return;
       }
-      // Оптимистично добавляем в UI (без id — пользователь увидит после reload)
-      // Проще сказать пользователю перезагрузить.
       setDraft(emptyDraft);
-      setError("Сегмент добавлен. Обновите страницу, чтобы увидеть его.");
+      setSuccessMessage("Сегмент добавлен");
+      router.refresh();
     });
   };
 
   const handleUpdate = (
     segment: Segment,
-    patch: Partial<Pick<Segment, "speaker" | "text" | "start" | "end" | "position">>
-  ) => {
-    setError(null);
-    setSegments((prev) =>
-      prev.map((s) => (s.id === segment.id ? { ...s, ...patch } : s))
-    );
-    startTransition(async () => {
-      const result = await updateSegment({
-        lectureId,
-        segmentId: segment.id,
-        ...patch,
+    patch: SegmentPatch
+  ): Promise<boolean> =>
+    new Promise((resolve) => {
+      setError(null);
+      setSuccessMessage(null);
+      startTransition(async () => {
+        const result = await updateSegment({
+          lectureId,
+          segmentId: segment.id,
+          ...patch,
+        });
+        if (!result.success) {
+          setError(result.error);
+          resolve(false);
+          return;
+        }
+        router.refresh();
+        resolve(true);
       });
-      if (!result.success) setError(result.error);
     });
-  };
 
   const handleDelete = (segment: Segment) => {
     if (!confirm("Удалить сегмент?")) return;
     setError(null);
-    setSegments((prev) => prev.filter((s) => s.id !== segment.id));
+    setSuccessMessage(null);
     startTransition(async () => {
       const result = await deleteSegment({
         lectureId,
         segmentId: segment.id,
       });
-      if (!result.success) setError(result.error);
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
+      router.refresh();
     });
   };
 
@@ -110,8 +125,13 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
           {error}
         </p>
       )}
+      {successMessage && (
+        <p className="text-xs text-green-600" role="status">
+          {successMessage}
+        </p>
+      )}
 
-      {segments.length === 0 ? (
+      {initialSegments.length === 0 ? (
         <p className="text-sm text-(--color-description)">Транскрипт пуст.</p>
       ) : (
         <div className="overflow-x-auto">
@@ -127,7 +147,7 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
               </tr>
             </thead>
             <tbody>
-              {segments.map((segment) => (
+              {initialSegments.map((segment) => (
                 <SegmentRow
                   key={segment.id}
                   segment={segment}
@@ -198,11 +218,11 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
 interface SegmentRowProps {
   segment: Segment;
   pending: boolean;
-  onUpdate: (
-    patch: Partial<Pick<Segment, "speaker" | "text" | "start" | "end" | "position">>
-  ) => void;
+  onUpdate: (patch: SegmentPatch) => Promise<boolean>;
   onDelete: () => void;
 }
+
+type FieldKey = "position" | "start" | "end" | "speaker" | "text";
 
 const SegmentRow: React.FC<SegmentRowProps> = ({
   segment,
@@ -210,64 +230,122 @@ const SegmentRow: React.FC<SegmentRowProps> = ({
   onUpdate,
   onDelete,
 }) => {
+  const [savedField, setSavedField] = useState<FieldKey | null>(null);
+
+  const markSaved = (field: FieldKey) => {
+    setSavedField(field);
+    setTimeout(() => {
+      setSavedField((current) => (current === field ? null : current));
+    }, 2000);
+  };
+
+  const handleFieldSave = async (field: FieldKey, patch: SegmentPatch) => {
+    const ok = await onUpdate(patch);
+    if (ok) markSaved(field);
+  };
+
+  const renderSavedMark = (field: FieldKey) =>
+    savedField === field ? (
+      <span
+        className="ml-1 text-xs text-green-600"
+        aria-label="Сохранено"
+        role="status"
+      >
+        ✓
+      </span>
+    ) : null;
+
   return (
     <tr className="border-t border-(--color-border) align-top">
       <td className="px-2 py-1">
-        <input
-          type="number"
-          defaultValue={segment.position ?? 0}
-          onBlur={(e) => {
-            const position = Number(e.target.value);
-            if (position !== segment.position) onUpdate({ position });
-          }}
-          className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
-        />
+        <div className="flex items-center">
+          <input
+            type="number"
+            // key завязан на значение из props, чтобы при обновлении
+            // props (после router.refresh) инпут смонтировался заново
+            // и подхватил новое defaultValue.
+            key={segment.position ?? 0}
+            defaultValue={segment.position ?? 0}
+            onBlur={(e) => {
+              const position = Number(e.target.value);
+              if (position !== segment.position) {
+                void handleFieldSave("position", { position });
+              }
+            }}
+            className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
+          />
+          {renderSavedMark("position")}
+        </div>
       </td>
       <td className="px-2 py-1">
-        <input
-          type="number"
-          step="0.01"
-          defaultValue={segment.start ?? 0}
-          onBlur={(e) => {
-            const start = Number(e.target.value);
-            if (start !== segment.start) onUpdate({ start });
-          }}
-          className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
-        />
+        <div className="flex items-center">
+          <input
+            type="number"
+            step="0.01"
+            key={segment.start ?? 0}
+            defaultValue={segment.start ?? 0}
+            onBlur={(e) => {
+              const start = Number(e.target.value);
+              if (start !== segment.start) {
+                void handleFieldSave("start", { start });
+              }
+            }}
+            className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
+          />
+          {renderSavedMark("start")}
+        </div>
       </td>
       <td className="px-2 py-1">
-        <input
-          type="number"
-          step="0.01"
-          defaultValue={segment.end ?? 0}
-          onBlur={(e) => {
-            const end = Number(e.target.value);
-            if (end !== segment.end) onUpdate({ end });
-          }}
-          className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
-        />
+        <div className="flex items-center">
+          <input
+            type="number"
+            step="0.01"
+            key={segment.end ?? 0}
+            defaultValue={segment.end ?? 0}
+            onBlur={(e) => {
+              const end = Number(e.target.value);
+              if (end !== segment.end) {
+                void handleFieldSave("end", { end });
+              }
+            }}
+            className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
+          />
+          {renderSavedMark("end")}
+        </div>
       </td>
       <td className="px-2 py-1">
-        <input
-          type="text"
-          defaultValue={segment.speaker}
-          onBlur={(e) => {
-            const speaker = e.target.value;
-            if (speaker !== segment.speaker) onUpdate({ speaker });
-          }}
-          className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
-        />
+        <div className="flex items-center">
+          <input
+            type="text"
+            key={segment.speaker}
+            defaultValue={segment.speaker}
+            onBlur={(e) => {
+              const speaker = e.target.value;
+              if (speaker !== segment.speaker) {
+                void handleFieldSave("speaker", { speaker });
+              }
+            }}
+            className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm"
+          />
+          {renderSavedMark("speaker")}
+        </div>
       </td>
       <td className="px-2 py-1">
-        <textarea
-          defaultValue={segment.text}
-          rows={2}
-          onBlur={(e) => {
-            const text = e.target.value;
-            if (text !== segment.text) onUpdate({ text });
-          }}
-          className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm resize-none"
-        />
+        <div className="flex items-start gap-1">
+          <textarea
+            key={segment.text}
+            defaultValue={segment.text}
+            rows={2}
+            onBlur={(e) => {
+              const text = e.target.value;
+              if (text !== segment.text) {
+                void handleFieldSave("text", { text });
+              }
+            }}
+            className="w-full px-1 py-0.5 border border-transparent hover:border-(--color-border) rounded bg-transparent text-sm resize-none"
+          />
+          {renderSavedMark("text")}
+        </div>
       </td>
       <td className="px-2 py-1">
         <button
