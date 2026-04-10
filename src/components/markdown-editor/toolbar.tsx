@@ -13,9 +13,9 @@ import { CodeBlockIcon } from "@/assets/icons/code-block-icon";
 import { HorizontalRuleIcon } from "@/assets/icons/horizontal-rule-icon";
 import { ListBulletIcon } from "@/assets/icons/list-bullet-icon";
 import { ListOrderedIcon } from "@/assets/icons/list-ordered-icon";
-import { LinkIcon } from "@/assets/icons/link-icon";
-import { ImageIcon } from "@/assets/icons/image-icon";
 import { TableIcon } from "@/assets/icons/table-icon";
+import { LinkPopover } from "./link-popover";
+import { ImagePopover } from "./image-popover";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 
 interface EditorToolbarProps {
@@ -229,26 +229,11 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
 
         <Toolbar.Separator className="w-px h-5 bg-(--color-border) mx-1" />
 
-        {/* Link button */}
-        <ToolbarTooltipButton
-          label="Ссылка"
-          active={editor.isActive("link")}
-          onClick={() => {
-            /* popover in Task 5 */
-          }}
-        >
-          <LinkIcon />
-        </ToolbarTooltipButton>
+        {/* Link popover */}
+        <LinkPopover editor={editor} />
 
-        {/* Image button */}
-        <ToolbarTooltipButton
-          label="Изображение"
-          onClick={() => {
-            /* popover in Task 5 */
-          }}
-        >
-          <ImageIcon />
-        </ToolbarTooltipButton>
+        {/* Image popover */}
+        <ImagePopover editor={editor} />
 
         <Toolbar.Separator className="w-px h-5 bg-(--color-border) mx-1" />
 
