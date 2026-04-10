@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@import "../components/markdown-editor/editor-styles.css";
+
 @theme {
   --color-primary: var(--color-primary);
   --color-background: var(--color-background);
