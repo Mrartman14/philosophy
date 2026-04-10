@@ -11,7 +11,7 @@ import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Markdown, type MarkdownStorage } from "tiptap-markdown";
 
-interface UseMarkdownEditorOptions {
+export interface UseMarkdownEditorOptions {
   defaultValue?: string;
   placeholder?: string;
   onValueChange?: (md: string) => void;
@@ -36,6 +36,7 @@ export function useMarkdownEditor({
     ],
     content: defaultValue ?? "",
     onUpdate: ({ editor }) => {
+      // Tiptap types editor.storage as empty Storage; tiptap-markdown registers its storage at runtime
       const storage = editor.storage as unknown as { markdown: MarkdownStorage };
       const md = storage.markdown.getMarkdown();
       onValueChange?.(md);
