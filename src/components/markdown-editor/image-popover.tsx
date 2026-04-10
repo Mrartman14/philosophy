@@ -3,17 +3,13 @@
 import { useState } from "react";
 import type { Editor } from "@tiptap/react";
 import { Popover } from "@base-ui/react/popover";
+import { Toolbar } from "@base-ui/react/toolbar";
 import { ImageIcon } from "@/assets/icons/image-icon";
+import { btnBase, inputClass } from "./styles";
 
 interface ImagePopoverProps {
   editor: Editor;
 }
-
-const btnBase =
-  "p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg";
-
-const inputClass =
-  "border border-(--color-border) rounded px-2 py-1 text-sm bg-transparent outline-none focus:ring-1 focus:ring-(--color-primary) w-full";
 
 export const ImagePopover: React.FC<ImagePopoverProps> = ({ editor }) => {
   const [open, setOpen] = useState(false);
@@ -29,13 +25,14 @@ export const ImagePopover: React.FC<ImagePopoverProps> = ({ editor }) => {
   };
 
   const handleInsert = () => {
-    if (src.trim()) {
-      const opts: { src: string; alt?: string } = { src: src.trim() };
-      if (alt.trim()) {
-        opts.alt = alt.trim();
-      }
-      editor.chain().focus().setImage(opts).run();
+    const url = src.trim();
+    if (!url) return;
+
+    const opts: { src: string; alt?: string } = { src: url };
+    if (alt.trim()) {
+      opts.alt = alt.trim();
     }
+    editor.chain().focus().setImage(opts).run();
     setOpen(false);
   };
 
@@ -48,7 +45,14 @@ export const ImagePopover: React.FC<ImagePopoverProps> = ({ editor }) => {
 
   return (
     <Popover.Root open={open} onOpenChange={handleOpen}>
-      <Popover.Trigger className={btnBase} aria-label="Изображение">
+      <Popover.Trigger
+        render={
+          <Toolbar.Button
+            aria-label="Изображение"
+            className={btnBase}
+          />
+        }
+      >
         <ImageIcon />
       </Popover.Trigger>
       <Popover.Portal>
@@ -59,6 +63,7 @@ export const ImagePopover: React.FC<ImagePopoverProps> = ({ editor }) => {
               <input
                 type="url"
                 placeholder="https://example.com/image.png"
+                aria-label="URL изображения"
                 value={src}
                 onChange={(e) => setSrc(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -68,6 +73,7 @@ export const ImagePopover: React.FC<ImagePopoverProps> = ({ editor }) => {
               <input
                 type="text"
                 placeholder="Alt-текст (необязательно)"
+                aria-label="Alt-текст"
                 value={alt}
                 onChange={(e) => setAlt(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -77,7 +83,8 @@ export const ImagePopover: React.FC<ImagePopoverProps> = ({ editor }) => {
                 <button
                   type="button"
                   onClick={handleInsert}
-                  className="bg-(--color-primary) text-white rounded px-3 py-1 text-sm hover:opacity-90"
+                  disabled={!src.trim()}
+                  className="bg-(--color-primary) text-white rounded px-3 py-1 text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Вставить
                 </button>

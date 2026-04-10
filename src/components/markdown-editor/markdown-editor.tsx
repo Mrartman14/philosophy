@@ -11,6 +11,7 @@ interface MarkdownEditorProps {
   name?: string;
   placeholder?: string;
   disabled?: boolean;
+  ariaLabel?: string;
 }
 
 export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
@@ -19,13 +20,15 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   name,
   placeholder,
   disabled,
+  ariaLabel,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const editor = useMarkdownEditor({
-    ...(defaultValue !== undefined && { defaultValue }),
-    ...(placeholder !== undefined && { placeholder }),
+    defaultValue,
+    placeholder,
     editable: !disabled,
+    ariaLabel,
     onValueChange: (md) => {
       onValueChange?.(md);
       if (inputRef.current) inputRef.current.value = md;

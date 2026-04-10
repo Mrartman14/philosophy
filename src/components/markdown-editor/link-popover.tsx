@@ -3,18 +3,13 @@
 import { useState } from "react";
 import type { Editor } from "@tiptap/react";
 import { Popover } from "@base-ui/react/popover";
+import { Toolbar } from "@base-ui/react/toolbar";
 import { LinkIcon } from "@/assets/icons/link-icon";
+import { btnBase, btnActive, inputClass } from "./styles";
 
 interface LinkPopoverProps {
   editor: Editor;
 }
-
-const btnBase =
-  "p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg";
-const btnActive = "bg-(--color-text-pane) text-(--color-primary)";
-
-const inputClass =
-  "border border-(--color-border) rounded px-2 py-1 text-sm bg-transparent outline-none focus:ring-1 focus:ring-(--color-primary) w-full";
 
 export const LinkPopover: React.FC<LinkPopoverProps> = ({ editor }) => {
   const [open, setOpen] = useState(false);
@@ -32,8 +27,22 @@ export const LinkPopover: React.FC<LinkPopoverProps> = ({ editor }) => {
   };
 
   const handleInsert = () => {
-    if (href.trim()) {
-      editor.chain().focus().setLink({ href: href.trim() }).run();
+    const url = href.trim();
+    if (!url) return;
+
+    if (editor.state.selection.empty && !isActive) {
+      // No text selected — insert URL as linked text
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "text",
+          text: url,
+          marks: [{ type: "link", attrs: { href: url } }],
+        })
+        .run();
+    } else {
+      editor.chain().focus().setLink({ href: url }).run();
     }
     setOpen(false);
   };
@@ -53,8 +62,12 @@ export const LinkPopover: React.FC<LinkPopoverProps> = ({ editor }) => {
   return (
     <Popover.Root open={open} onOpenChange={handleOpen}>
       <Popover.Trigger
-        className={`${btnBase} ${isActive ? btnActive : ""}`}
-        aria-label="Ссылка"
+        render={
+          <Toolbar.Button
+            aria-label="Ссылка"
+            className={`${btnBase} ${isActive ? btnActive : ""}`}
+          />
+        }
       >
         <LinkIcon />
       </Popover.Trigger>
@@ -66,6 +79,7 @@ export const LinkPopover: React.FC<LinkPopoverProps> = ({ editor }) => {
               <input
                 type="url"
                 placeholder="https://example.com"
+                aria-label="URL ссылки"
                 value={href}
                 onChange={(e) => setHref(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -85,7 +99,8 @@ export const LinkPopover: React.FC<LinkPopoverProps> = ({ editor }) => {
                 <button
                   type="button"
                   onClick={handleInsert}
-                  className="bg-(--color-primary) text-white rounded px-3 py-1 text-sm hover:opacity-90"
+                  disabled={!href.trim()}
+                  className="bg-(--color-primary) text-white rounded px-3 py-1 text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Вставить
                 </button>

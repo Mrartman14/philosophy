@@ -17,14 +17,11 @@ import { TableIcon } from "@/assets/icons/table-icon";
 import { LinkPopover } from "./link-popover";
 import { ImagePopover } from "./image-popover";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
+import { btnBase, btnActive } from "./styles";
 
 interface EditorToolbarProps {
   editor: Editor;
 }
-
-const btnBase =
-  "p-1.5 rounded hover:bg-(--color-text-pane) text-(--color-description) text-lg";
-const btnActive = "bg-(--color-text-pane) text-(--color-primary)";
 
 function ToolbarTooltipButton({
   label,
@@ -151,6 +148,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
           onValueChange={handleHeadingChange}
         >
           <Select.Trigger
+            aria-label="Тип блока"
             className={`${btnBase} flex items-center gap-1 text-sm min-w-[120px]`}
           >
             <Select.Value placeholder="Параграф">
@@ -212,6 +210,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
         <Toolbar.Group className="flex items-center gap-0.5">
           <ToolbarTooltipButton
             label="Маркированный список"
+            shortcut="⌘⇧8"
             active={editor.isActive("bulletList")}
             onClick={() => editor.chain().focus().toggleBulletList().run()}
           >
@@ -220,6 +219,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
 
           <ToolbarTooltipButton
             label="Нумерованный список"
+            shortcut="⌘⇧7"
             active={editor.isActive("orderedList")}
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
           >
