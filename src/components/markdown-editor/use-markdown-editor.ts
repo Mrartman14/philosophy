@@ -14,15 +14,18 @@ import { Markdown, type MarkdownStorage } from "tiptap-markdown";
 export interface UseMarkdownEditorOptions {
   defaultValue?: string;
   placeholder?: string;
+  editable?: boolean;
   onValueChange?: (md: string) => void;
 }
 
 export function useMarkdownEditor({
   defaultValue,
   placeholder,
+  editable = true,
   onValueChange,
 }: UseMarkdownEditorOptions) {
   const editor = useEditor({
+    editable,
     extensions: [
       StarterKit,
       Table.configure({ resizable: false }),

@@ -25,6 +25,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   const editor = useMarkdownEditor({
     ...(defaultValue !== undefined && { defaultValue }),
     ...(placeholder !== undefined && { placeholder }),
+    editable: !disabled,
     onValueChange: (md) => {
       onValueChange?.(md);
       if (inputRef.current) inputRef.current.value = md;
@@ -43,11 +44,11 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
       <EditorContent
         editor={editor}
         className="prose prose-sm max-w-none
-          prose-headings:text-(--color-foreground)
-          prose-p:text-(--color-foreground)
+          prose-headings:text-(--foreground)
+          prose-p:text-(--foreground)
           prose-a:text-(--color-link)
-          prose-strong:text-(--color-foreground)
-          prose-code:text-(--color-foreground)
+          prose-strong:text-(--foreground)
+          prose-code:text-(--foreground)
           prose-blockquote:border-(--color-border)"
       />
       {name && (
