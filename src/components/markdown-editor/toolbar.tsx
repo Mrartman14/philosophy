@@ -28,11 +28,13 @@ const btnActive = "bg-(--color-text-pane) text-(--color-primary)";
 
 function ToolbarTooltipButton({
   label,
+  shortcut,
   active,
   onClick,
   children,
 }: {
   label: string;
+  shortcut?: string;
   active?: boolean;
   onClick: () => void;
   children: React.ReactNode;
@@ -43,8 +45,8 @@ function ToolbarTooltipButton({
         render={
           <Toolbar.Button
             aria-label={label}
+            aria-pressed={active}
             className={`${btnBase} ${active ? btnActive : ""}`}
-            data-active={active ? "" : undefined}
             onClick={onClick}
           />
         }
@@ -55,6 +57,9 @@ function ToolbarTooltipButton({
         <Tooltip.Positioner sideOffset={6}>
           <Tooltip.Popup className="bg-(--color-background) border border-(--color-border) rounded px-2 py-1 shadow-lg text-xs text-(--color-description)">
             {label}
+            {shortcut && (
+              <kbd className="ml-1.5 opacity-60">{shortcut}</kbd>
+            )}
           </Tooltip.Popup>
         </Tooltip.Positioner>
       </Tooltip.Portal>
@@ -92,7 +97,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
       editor.chain().focus().setParagraph().run();
     } else {
       const level = Number(value.replace("h", "")) as 1 | 2 | 3;
-      editor.chain().focus().toggleHeading({ level }).run();
+      editor.chain().focus().setHeading({ level }).run();
     }
   };
 
@@ -103,6 +108,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
         <Toolbar.Group className="flex items-center gap-0.5">
           <ToolbarTooltipButton
             label="Жирный"
+            shortcut="⌘B"
             active={editor.isActive("bold")}
             onClick={() => editor.chain().focus().toggleBold().run()}
           >
@@ -111,6 +117,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
 
           <ToolbarTooltipButton
             label="Курсив"
+            shortcut="⌘I"
             active={editor.isActive("italic")}
             onClick={() => editor.chain().focus().toggleItalic().run()}
           >
@@ -119,6 +126,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
 
           <ToolbarTooltipButton
             label="Зачёркнутый"
+            shortcut="⌘⇧S"
             active={editor.isActive("strike")}
             onClick={() => editor.chain().focus().toggleStrike().run()}
           >
@@ -127,6 +135,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
 
           <ToolbarTooltipButton
             label="Код"
+            shortcut="⌘E"
             active={editor.isActive("code")}
             onClick={() => editor.chain().focus().toggleCode().run()}
           >
@@ -182,6 +191,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor }) => {
 
           <ToolbarTooltipButton
             label="Блок кода"
+            shortcut="⌘⌥C"
             active={editor.isActive("codeBlock")}
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           >
