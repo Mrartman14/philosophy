@@ -7,6 +7,8 @@
  * Остальные ошибки превращаются в ActionResult с `success: false`.
  */
 
+import { z, type ZodType } from "zod";
+
 import { ForbiddenError } from "./permissions";
 
 export type ActionResult<T = void> =
@@ -72,4 +74,48 @@ export function createFormAction<TOutput>(
       return toResult<TOutput>(error);
     }
   };
+}
+
+/**
+ * Бросается из `parseFormData`, когда `FormData` не прошла Zod-валидацию.
+ * `createFormAction` ловит её и возвращает
+ * `{ success: false, code: "validation", error, fieldErrors }`.
+ */
+export class ZodValidationError extends Error {
+  readonly code = "validation" as const;
+  constructor(
+    public readonly fieldErrors: Record<string, string>,
+    message?: string
+  ) {
+    super(message ?? "Validation failed");
+    this.name = "ZodValidationError";
+  }
+}
+
+/**
+ * Парсит `FormData` через Zod-схему. При успехе — возвращает типизированный
+ * объект. При неуспехе — бросает `ZodValidationError`, у которого
+ * `fieldErrors[name]` = первое сообщение об ошибке для каждого поля.
+ *
+ * Преобразует `FormData` в plain-object через `Object.fromEntries(fd.entries())`.
+ * Для multi-value полей (множественный select, checkbox-group) используйте
+ * `z.array(z.string())` в схеме и кастомное преобразование, не покрывается этим
+ * хелпером.
+ */
+export function parseFormData<T extends ZodType>(
+  schema: T,
+  formData: FormData
+): z.infer<T> {
+  const raw = Object.fromEntries(formData.entries());
+  const parsed = schema.safeParse(raw);
+  if (parsed.success) return parsed.data;
+
+  const fieldErrors: Record<string, string> = {};
+  for (const issue of parsed.error.issues) {
+    const key = issue.path.join(".");
+    if (!fieldErrors[key]) {
+      fieldErrors[key] = issue.message;
+    }
+  }
+  throw new ZodValidationError(fieldErrors);
 }
