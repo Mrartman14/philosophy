@@ -4,11 +4,8 @@ import { NavigationMenu } from "@base-ui/react/navigation-menu";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
-import type { MaybeMe } from "@/utils/me";
 
-export const AppHeader: React.FC<{
-  me: MaybeMe;
-}> = () => {
+export const AppHeader: React.FC = () => {
   return (
     <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--color-background) border-t-0 border-b md:border-t border-(--color-border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:left-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--color-border) bg-(--color-background) pl-4 pr-4">

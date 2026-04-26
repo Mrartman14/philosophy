@@ -65,7 +65,7 @@ export default async function RootLayout({
           ${geistClasses}
           `}
       >
-        <AppHeader me={me} />
+        <AppHeader />
         <StatusBanner me={me} />
         <InstallBanner />
         <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
