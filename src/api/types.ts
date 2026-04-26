@@ -17,28 +17,15 @@ export type Lecture = Schemas["lecture.Lecture"];
 export type LectureCreateRequest = Schemas["lecture.CreateRequest"];
 export type LectureUpdateRequest = Schemas["lecture.UpdateRequest"];
 
-// --- Transcript ---
-export type Transcript = Schemas["transcript.Transcript"];
-export type Segment = Schemas["transcript.Segment"];
-export type SegmentCreateRequest = Schemas["transcript.CreateSegmentRequest"];
-export type SegmentUpdateRequest = Schemas["transcript.UpdateSegmentRequest"];
-
-// --- Files ---
-export type LectureFile = Schemas["lecturefile.LectureFile"];
-export type FileType = Schemas["lecturefile.FileType"];
-
 // --- Comments ---
 export type Comment = Schemas["comment.Comment"];
 export type CommentAuthor = Schemas["comment.Author"];
 export type CommentCreateRequest = Schemas["comment.CreateRequest"];
 export type CommentUpdateRequest = Schemas["comment.UpdateRequest"];
 export type CommentReactionSummary = Schemas["comment.ReactionSummary"];
-export type CommentReactionType = Schemas["comment.ReactionType"];
-export type CommentAddReactionRequest = Schemas["comment.AddReactionRequest"];
 
 // --- Annotations ---
 export type Annotation = Schemas["annotation.Annotation"];
-export type AnnotationAuthor = Schemas["annotation.Author"];
 export type AnnotationCreateRequest = Schemas["annotation.CreateRequest"];
 export type AnnotationUpdateRequest = Schemas["annotation.UpdateRequest"];
 
@@ -55,8 +42,4 @@ export type PushSendRequest = Schemas["push.SendRequest"];
 export type PushSubscribeKeys = Schemas["push.SubscribeKeys"];
 
 // --- Search ---
-export type SearchLectureHit = Schemas["search.LectureHit"];
 export type SearchMatch = Schemas["search.Match"];
-
-// --- Moderation ---
-export type ModerationStatus = Schemas["moderation.ModerationStatus"];
