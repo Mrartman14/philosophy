@@ -38,16 +38,35 @@ describe("parseFormData", () => {
     }
   });
 
-  it("only reports first error per field", () => {
+  it("only reports first error per field (first issue's message wins)", () => {
     const schema = z.object({ pwd: z.string().min(8).regex(/[A-Z]/) });
     const fd = new FormData();
     fd.set("pwd", "ab");
+    // Compute the expected "first" message directly from Zod.
+    const expectedFirstMessage = schema.safeParse({ pwd: "ab" }).error?.issues[0]?.message;
+    expect(expectedFirstMessage).toBeDefined();
     try {
       parseFormData(schema, fd);
       expect.fail("should have thrown");
     } catch (e) {
       const err = e as ZodValidationError;
-      expect(err.fieldErrors.pwd).toBeDefined();
+      expect(err.fieldErrors.pwd).toBe(expectedFirstMessage);
+    }
+  });
+
+  it("routes cross-field errors (empty path) to _form key", () => {
+    const schema = z
+      .object({ a: z.string(), b: z.string() })
+      .refine((v) => v.a === v.b, { message: "a and b must match" });
+    const fd = new FormData();
+    fd.set("a", "x");
+    fd.set("b", "y");
+    try {
+      parseFormData(schema, fd);
+      expect.fail("should have thrown");
+    } catch (e) {
+      const err = e as ZodValidationError;
+      expect(err.fieldErrors._form).toBe("a and b must match");
     }
   });
 });

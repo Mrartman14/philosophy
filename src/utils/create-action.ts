@@ -13,12 +13,14 @@ import { ForbiddenError } from "./permissions";
 
 export type ActionResult<T = void> =
   | { success: true; data: T }
+  | { success: false; error: string; code: "forbidden" }
   | {
       success: false;
       error: string;
-      code?: "forbidden" | "validation";
-      fieldErrors?: Record<string, string>;
-    };
+      code: "validation";
+      fieldErrors: Record<string, string>;
+    }
+  | { success: false; error: string; code?: undefined };
 
 /** Проверяет, является ли ошибка специальной ошибкой Next.js. */
 function isNextInternalError(error: unknown): boolean {
@@ -92,11 +94,8 @@ export function createFormAction<TOutput>(
  */
 export class ZodValidationError extends Error {
   readonly code = "validation" as const;
-  constructor(
-    public readonly fieldErrors: Record<string, string>,
-    message?: string
-  ) {
-    super(message ?? "Validation failed");
+  constructor(public readonly fieldErrors: Record<string, string>) {
+    super("Ошибка валидации");
     this.name = "ZodValidationError";
   }
 }
@@ -110,6 +109,9 @@ export class ZodValidationError extends Error {
  * Для multi-value полей (множественный select, checkbox-group) используйте
  * `z.array(z.string())` в схеме и кастомное преобразование, не покрывается этим
  * хелпером.
+ *
+ * Cross-field ошибки (из `.refine()` / `.superRefine()` с пустым `path`)
+ * попадают под ключ `"_form"`.
  */
 export function parseFormData<T extends ZodType>(
   schema: T,
@@ -121,7 +123,7 @@ export function parseFormData<T extends ZodType>(
 
   const fieldErrors: Record<string, string> = {};
   for (const issue of parsed.error.issues) {
-    const key = issue.path.join(".");
+    const key = issue.path.length === 0 ? "_form" : issue.path.join(".");
     if (!fieldErrors[key]) {
       fieldErrors[key] = issue.message;
     }
