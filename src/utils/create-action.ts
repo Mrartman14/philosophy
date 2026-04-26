@@ -16,7 +16,8 @@ export type ActionResult<T = void> =
   | {
       success: false;
       error: string;
-      code?: "forbidden";
+      code?: "forbidden" | "validation";
+      fieldErrors?: Record<string, string>;
     };
 
 /** Проверяет, является ли ошибка специальной ошибкой Next.js. */
@@ -39,6 +40,14 @@ function isNextInternalError(error: unknown): boolean {
 function toResult<T>(error: unknown): ActionResult<T> {
   if (error instanceof ForbiddenError) {
     return { success: false, error: error.message, code: "forbidden" };
+  }
+  if (error instanceof ZodValidationError) {
+    return {
+      success: false,
+      error: error.message,
+      code: "validation",
+      fieldErrors: error.fieldErrors,
+    };
   }
   const message =
     error instanceof Error ? error.message : "Неизвестная ошибка";

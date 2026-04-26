@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { z } from "zod";
-import { parseFormData, ZodValidationError } from "./create-action";
+import {
+  createFormAction,
+  parseFormData,
+  ZodValidationError,
+} from "./create-action";
+import { ForbiddenError } from "./permissions";
 
 describe("parseFormData", () => {
   it("returns parsed object on valid FormData", () => {
@@ -44,5 +49,62 @@ describe("parseFormData", () => {
       const err = e as ZodValidationError;
       expect(err.fieldErrors.pwd).toBeDefined();
     }
+  });
+});
+
+describe("createFormAction", () => {
+  it("returns success on happy path", async () => {
+    const action = createFormAction(async (fd: FormData) => fd.get("x") as string);
+    const fd = new FormData();
+    fd.set("x", "ok");
+    const result = await action({ success: true, data: undefined }, fd);
+    expect(result).toEqual({ success: true, data: "ok" });
+  });
+
+  it("returns code='forbidden' on ForbiddenError", async () => {
+    const action = createFormAction(async () => {
+      throw new ForbiddenError("role");
+    });
+    const result = await action({ success: true, data: undefined }, new FormData());
+    expect(result).toMatchObject({ success: false, code: "forbidden" });
+  });
+
+  it("returns code='validation' with fieldErrors on ZodValidationError", async () => {
+    const schema = z.object({ email: z.string().email() });
+    const action = createFormAction(async (fd: FormData) => {
+      parseFormData(schema, fd);
+      return null;
+    });
+    const fd = new FormData();
+    fd.set("email", "bad");
+    const result = await action({ success: true, data: undefined }, fd);
+    expect(result).toMatchObject({
+      success: false,
+      code: "validation",
+      fieldErrors: expect.objectContaining({ email: expect.any(String) }),
+    });
+  });
+
+  it("returns generic error for unknown errors", async () => {
+    const action = createFormAction(async () => {
+      throw new Error("boom");
+    });
+    const result = await action({ success: true, data: undefined }, new FormData());
+    expect(result).toEqual({ success: false, error: "boom" });
+    expect((result as { code?: string }).code).toBeUndefined();
+  });
+});
+
+describe("ZodValidationError", () => {
+  it("is also caught directly by createFormAction (without parseFormData wrapping)", async () => {
+    const action = createFormAction(async () => {
+      throw new ZodValidationError({ x: "must be set" });
+    });
+    const result = await action({ success: true, data: undefined }, new FormData());
+    expect(result).toMatchObject({
+      success: false,
+      code: "validation",
+      fieldErrors: { x: "must be set" },
+    });
   });
 });
