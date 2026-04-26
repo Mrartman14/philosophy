@@ -1,42 +1,12 @@
-import Link from "next/link";
-import { getLectures } from "@/features/lectures/api";
+export const metadata = { title: "Философия-ликбез" };
 
-export default async function Home() {
-  let lectures: Awaited<ReturnType<typeof getLectures>>["data"] = [];
-  try {
-    const result = await getLectures(0, 100);
-    lectures = result.data;
-  } catch {
-    // API недоступен — покажем пустой список
-  }
-
+export default function HomePage() {
   return (
-    <div className="w-full flex flex-col gap-6 pb-4">
-      <h1 className="text-5xl font-black p-4" style={{ margin: 0 }}>
-        Лекции
-      </h1>
-      <ul className="grid grid-cols-1 gap-2 px-4">
-        {lectures.map((lecture) => (
-          <li key={lecture.id}>
-            <Link
-              href={`/lectures/${lecture.id}`}
-              className="block p-4 rounded-lg border border-(--color-border) hover:bg-(--color-text-pane) transition-colors"
-            >
-              <h2 className="text-lg font-semibold">{lecture.title}</h2>
-              {lecture.description && (
-                <p className="text-sm text-(--color-description) mt-1">
-                  {lecture.description}
-                </p>
-              )}
-              {lecture.date && (
-                <time className="text-xs text-(--color-description) mt-2 block">
-                  {new Date(lecture.date).toLocaleDateString("ru-RU")}
-                </time>
-              )}
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <div className="flex flex-col items-center justify-center gap-4 py-12">
+      <h1 className="text-3xl font-bold">Философия-ликбез</h1>
+      <p className="text-(--color-description)">
+        Контент готовится. Вернитесь позже.
+      </p>
     </div>
   );
 }

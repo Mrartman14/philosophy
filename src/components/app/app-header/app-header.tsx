@@ -5,10 +5,8 @@ import { AppNav } from "../app-nav";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
-import { SearchInput } from "@/features/search/search-input";
 import type { Lecture } from "@/api/types";
 import type { MaybeMe } from "@/utils/me";
-import { logout } from "@/features/auth/actions";
 
 export const AppHeader: React.FC<{
   lectures: Lecture[];
@@ -26,28 +24,14 @@ export const AppHeader: React.FC<{
           <AppNav lectures={lectures} />
           <div />
           <div className="flex gap-2 items-center">
-            <SearchInput />
+            {/* TODO: вернуть SearchInput после восстановления фичи `search` */}
             <NetworkIndicator className="text-xl" />
+            {/* TODO: вернуть logout/login UI после восстановления фичи `auth` */}
             {me ? (
-              <form action={logout} className="flex items-center gap-2">
-                <span className="text-sm text-(--color-description) hidden sm:inline">
-                  {me.role}
-                </span>
-                <button
-                  type="submit"
-                  className="text-sm text-(--color-description) hover:text-(--color-primary) transition-colors"
-                >
-                  Выйти
-                </button>
-              </form>
-            ) : (
-              <Link
-                href="/login"
-                className="text-sm text-(--color-description) hover:text-(--color-primary) transition-colors"
-              >
-                Войти
-              </Link>
-            )}
+              <span className="text-sm text-(--color-description) hidden sm:inline">
+                {me.role}
+              </span>
+            ) : null}
           </div>
         </NavigationMenu.List>
 
