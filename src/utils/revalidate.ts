@@ -11,6 +11,8 @@ import { revalidateTag } from "next/cache";
  * `unstable_cache(..., { tags: ["<entity>"] })` или `["<entity>:<id>"]`.
  */
 export function revalidateEntity(entity: string, id?: string): void {
-  revalidateTag(entity);
-  if (id) revalidateTag(`${entity}:${id}`);
+  // Next 16: revalidateTag требует profile (string | CacheLifeConfig).
+  // "default" — стандартный cacheLife profile для немедленной инвалидации.
+  revalidateTag(entity, "default");
+  if (id) revalidateTag(`${entity}:${id}`, "default");
 }
