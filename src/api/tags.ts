@@ -12,9 +12,7 @@
  */
 
 export const Tags = {
-  // example — каждая фича дополняет:
-  // LECTURES: "lectures",
-  // COMMENTS: "comments",
+  LECTURES: "lectures",
 } as const;
 
 export type EntityTag = (typeof Tags)[keyof typeof Tags];
