@@ -1,20 +1,57 @@
-// src/features/_template/api.ts
+// src/features/lectures/api.ts
 import "server-only";
 import { cache } from "react";
-// import { unstable_cache } from "next/cache";
-// import { createApiClient } from "@/api/client";
+import { createApiClient } from "@/api/client";
+import type { Lecture } from "./types";
 
-/**
- * Серверные fetchers сущности. Дедуплицируются через React.cache внутри одного
- * запроса. Для cross-request кеширования — обернуть в unstable_cache с тегом
- * `entity` (для list) или `entity:<id>` (для item).
- */
+export interface LectureListFilter {
+  q?: string;
+  tag?: string;
+  offset?: number;
+  limit?: number;
+}
 
-// export const getEntities = cache(async () => {
-//   const api = await createApiClient();
-//   const { data, error } = await api.GET("/...");
-//   if (error) throw new Error(error.message);
-//   return data;
-// });
+export interface LectureListResult {
+  items: Lecture[];
+  total: number;
+  offset: number;
+  limit: number;
+}
 
-export const _placeholder = cache(async () => null);
+export const getLectures = cache(
+  async (filter: LectureListFilter = {}): Promise<LectureListResult> => {
+    const api = await createApiClient();
+    const offset = filter.offset ?? 0;
+    const limit = filter.limit ?? 20;
+    const query: { offset: number; limit: number; q?: string; tag?: string } = {
+      offset,
+      limit,
+    };
+    if (filter.q) query.q = filter.q;
+    if (filter.tag) query.tag = filter.tag;
+
+    const { data, error } = await api.GET("/api/lectures", { params: { query } });
+    if (error) {
+      throw new Error(error.error ?? "Не удалось загрузить лекции");
+    }
+    return {
+      items: (data?.data ?? []) as Lecture[],
+      total: data?.pagination?.total ?? 0,
+      offset: data?.pagination?.offset ?? offset,
+      limit: data?.pagination?.limit ?? limit,
+    };
+  },
+);
+
+export const getLectureById = cache(async (id: string): Promise<Lecture | null> => {
+  const api = await createApiClient();
+  const { data, error, response } = await api.GET("/api/lectures/{id}", {
+    params: { path: { id } },
+  });
+  if (response.status === 404) return null;
+  if (error) {
+    throw new Error(error.error ?? "Не удалось загрузить лекцию");
+  }
+  const lecture = data?.data;
+  return (lecture ?? null) as Lecture | null;
+});
