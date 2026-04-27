@@ -9,6 +9,11 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   "aria-label": string;
 }
 
+/**
+ * Намеренно отличается от `Button.variantClasses`: иконочная кнопка не должна
+ * визуально конкурировать с основной (filled) кнопкой формы. `secondary` —
+ * без resting-фона; `danger` — текстом, без заливки.
+ */
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-(--color-foreground) text-(--color-background) hover:opacity-90 disabled:opacity-50",

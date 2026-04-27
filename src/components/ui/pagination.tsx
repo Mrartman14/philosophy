@@ -35,7 +35,7 @@ export function Pagination({
 
   return (
     <nav
-      aria-label="Pagination"
+      aria-label="Пагинация"
       className={cn("flex items-center gap-2 text-sm", className)}
     >
       {hasPrev ? (

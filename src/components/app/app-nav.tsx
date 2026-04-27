@@ -1,5 +1,8 @@
 "use client";
 
+// Не используется в текущем root-layout (см. cleanup в d146bbd7).
+// Будет восстановлен фичей `features/lectures` — не удалять при cleanup.
+
 import Link from "next/link";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 

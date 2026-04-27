@@ -164,6 +164,30 @@ export function CreateCommentForm() {
 `errors: Record<string, string>` (Base UI допускает `string | string[]`,
 наш wrapper упрощает до `string`).
 
+**Cross-field ошибки.** Если Zod-схема использует `.refine()` / `.superRefine()`
+без явного `path`, ошибка приходит с пустым путём. `parseFormData` маршрутит
+такие ошибки в ключ `_form`. Рендерь их отдельным баннером:
+
+```tsx
+{state.success === false && state.code === "validation" && state.fieldErrors._form && (
+  <p role="alert">{state.fieldErrors._form}</p>
+)}
+```
+
+**`<ConfirmDialog>` не surface'ит ошибки `onConfirm`.** Если action может
+упасть — оборачивай в try/catch и показывай тост сам:
+
+```tsx
+<ConfirmDialog
+  trigger={<Button variant="danger">Удалить</Button>}
+  title="Удалить?"
+  onConfirm={async () => {
+    const result = await deleteEntity(formData);
+    if (!result.success) toast.add({ title: "Ошибка", description: result.error });
+  }}
+/>
+```
+
 ### 3.5. Filter / search через `searchParams`
 
 Для списков используем server-side фильтрацию через URL. Page получает
@@ -182,6 +206,8 @@ revalidation бесплатна, fetcher запускается заново.
   `ForbiddenError`, ловится `createAction`/`createFormAction`.
 - **В server-components:** вызывай доменные `canX(me, …)` из
   `features/<entity>/permissions.ts`, пробрасывай boolean пропами в client.
+  `Me` и `MaybeMe` (из `@/utils/me`) — server-only типы; в client-компоненты
+  передавай только готовые булевы / примитивы, не сам объект `me`.
 - **В client UI:** показывай `result.code === "forbidden"` бренд-текстом
   «У вас нет прав на <действие>», не raw `result.error`.
 - **Layer-3 гейт** на `src/app/admin/*/page.tsx`:

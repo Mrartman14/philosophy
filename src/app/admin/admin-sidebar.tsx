@@ -12,7 +12,7 @@ export interface NavItem {
 export function AdminSidebar({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Admin navigation" className="flex flex-col gap-1">
+    <nav aria-label="Навигация админ-панели" className="flex flex-col gap-1">
       {items.map((item) => {
         const active =
           pathname === item.href || pathname.startsWith(`${item.href}/`);

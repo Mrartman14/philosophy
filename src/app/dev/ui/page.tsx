@@ -1,4 +1,4 @@
-// src/app/_dev/ui/page.tsx
+// src/app/dev/ui/page.tsx
 import { Field } from "@base-ui/react/field";
 import {
   Button,
@@ -81,9 +81,19 @@ export default function UiKitSmokePage() {
         <Skeleton className="h-4 w-3/4" />
       </section>
 
+      <section className="flex flex-col gap-2 max-w-md">
+        <h2 className="text-lg font-bold">Form (invalid state)</h2>
+        <Form errors={{ email: "Неверный формат email" }}>
+          <FormField name="email" label="Email" required>
+            <Field.Control render={<TextInput />} />
+          </FormField>
+          <SubmitButton>Отправить</SubmitButton>
+        </Form>
+      </section>
+
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-bold">Pagination</h2>
-        <Pagination basePath="/_dev/ui" offset={20} limit={20} total={100} />
+        <Pagination basePath="/dev/ui" offset={20} limit={20} total={100} />
       </section>
     </div>
   );
