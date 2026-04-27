@@ -9,6 +9,7 @@ import { UpdatePrompt } from "@/components/app/update-prompt";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { getMe, type MaybeMe } from "@/utils/me";
 import { StatusBanner } from "@/components/permission/status-banner";
+import { ToastProvider, Toaster } from "@/components/ui";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,16 +66,19 @@ export default async function RootLayout({
           ${geistClasses}
           `}
       >
-        <AppHeader />
-        <StatusBanner me={me} />
-        <InstallBanner />
-        <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
-          {children}
-        </main>
-        <UpdatePrompt />
-        <Suspense>
-          <YandexMetrika />
-        </Suspense>
+        <ToastProvider>
+          <AppHeader />
+          <StatusBanner me={me} />
+          <InstallBanner />
+          <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
+            {children}
+          </main>
+          <UpdatePrompt />
+          <Suspense>
+            <YandexMetrika />
+          </Suspense>
+          <Toaster />
+        </ToastProvider>
       </body>
     </html>
   );
