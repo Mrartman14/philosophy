@@ -1,20 +1,33 @@
-// src/features/_template/schemas.ts
+// src/features/lectures/schemas.ts
 import "server-only";
 import { z } from "zod";
 
-/**
- * Zod-схемы для валидации FormData в server actions. Используются через
- * `parseFormData(Schema, formData)`.
- *
- * Хранятся отдельно от actions.ts, чтобы при необходимости их можно было
- * импортировать в client-форму для preview-валидации (через "use client"
- * границу).
- */
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-// export const EntityCreateSchema = z.object({
-//   title: z.string().min(1).max(200),
-//   description: z.string().max(1000).optional(),
-// });
-// export type EntityCreateInput = z.infer<typeof EntityCreateSchema>;
+export const LectureCreateSchema = z.object({
+  title: z.string().trim().min(1, "Введите название").max(200, "До 200 символов"),
+  description: z.string().max(5000, "До 5000 символов").optional().default(""),
+  date: z.string().regex(ISO_DATE, "Дата должна быть в формате ГГГГ-ММ-ДД"),
+  visibility: z.enum(["private", "public"]).optional(),
+});
 
-export const PlaceholderSchema = z.object({});
+export const LectureUpdateSchema = z.object({
+  id: z.string().uuid("Некорректный id лекции"),
+  title: z.string().trim().min(1, "Введите название").max(200, "До 200 символов"),
+  description: z.string().max(5000, "До 5000 символов").default(""),
+  date: z.string().regex(ISO_DATE, "Дата должна быть в формате ГГГГ-ММ-ДД"),
+});
+
+export const LectureVisibilitySchema = z.object({
+  id: z.string().uuid("Некорректный id лекции"),
+  visibility: z.enum(["private", "public"]),
+});
+
+export const LectureIdSchema = z.object({
+  id: z.string().uuid("Некорректный id лекции"),
+});
+
+export type LectureCreateInput = z.infer<typeof LectureCreateSchema>;
+export type LectureUpdateInput = z.infer<typeof LectureUpdateSchema>;
+export type LectureVisibilityInput = z.infer<typeof LectureVisibilitySchema>;
+export type LectureIdInput = z.infer<typeof LectureIdSchema>;
