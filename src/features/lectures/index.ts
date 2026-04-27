@@ -1,15 +1,24 @@
-// src/features/_template/index.ts
+// src/features/lectures/index.ts
 // Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
-
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
-
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+export { getLectures, getLectureById } from "./api";
+export type { LectureListFilter, LectureListResult } from "./api";
+export {
+  createLecture,
+  updateLecture,
+  deleteLecture,
+  setLectureVisibility,
+} from "./actions";
+export {
+  canCreateLecture,
+  canUpdateLecture,
+  canDeleteLecture,
+  canSetLectureVisibility,
+} from "./permissions";
+export { LectureList } from "./ui/lecture-list";
+export { LectureCard } from "./ui/lecture-card";
+export { LectureDetail } from "./ui/lecture-detail";
+export { LectureSearchForm } from "./ui/lecture-search-form";
+export { LectureCreateForm } from "./ui/lecture-create-form";
+export { LectureEditForm } from "./ui/lecture-edit-form";
+export { LectureAdminRow } from "./ui/lecture-admin-row";
+export type { Lecture, LectureListItem, LectureVisibility } from "./types";
