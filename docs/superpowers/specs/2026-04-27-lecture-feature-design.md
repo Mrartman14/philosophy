@@ -23,8 +23,7 @@
 - **Server actions:** `createLecture`, `updateLecture`, `deleteLecture`, `setLectureVisibility`.
 - **Permissions (доменные):** `canCreateLecture`, `canUpdateLecture`, `canDeleteLecture`, `canSetLectureVisibility`.
 - **Schemas (Zod, для FormData):** `LectureCreateSchema`, `LectureUpdateSchema`, `LectureVisibilitySchema`, `LectureIdSchema`.
-- **UI-компоненты:** список (server + client filters), карточка-превью, детальная, формы create/edit, кнопка «Удалить» с `<ConfirmDialog>`, переключатель visibility.
-- **Cover (read-only):** если у лекции есть `cover_image_key` — отрисовать `<img>` со ссылкой `${API_URL}/api/files/${cover_image_key}` (или аналогичной — уточнить в plan-стадии). Управление cover'ом не входит.
+- **UI-компоненты:** список (server + client filters), карточка-превью, детальная (без обложки), формы create/edit, кнопка «Удалить» с `<ConfirmDialog>`, переключатель visibility.
 - **Тесты:** `permissions.test.ts` + `schemas.test.ts` по чеклисту шаблона.
 
 ### 2.2. Вне скоупа (флаг)
@@ -32,6 +31,7 @@
 | Фича | Почему вне | Кому отдать |
 |------|------------|-------------|
 | Загрузка обложки (`SetCover`/`ClearCover`) | Требует `image_uploads` инфры, которой на FE нет | Отдельный слайс `media` |
+| Отображение обложки | Бэк отдаёт только `cover_image_key` без URL. Файлы доступны на `/static/files/{key}` **только в local-storage режиме**; в S3-режиме внешний URL не публикуется. До того, как бэк начнёт отдавать `cover_url` в payload (или появится прокси-эндпоинт), отрисовать обложку безопасно нельзя | Foundation/backend задача; затем `media` слайс |
 | Tags (`/api/admin/lectures/{id}/tags`) | Сущность Tag — отдельная | Слайс `tags` |
 | Attachments (`/api/lectures/{lectureID}/attachments`) | Сложная подсистема (documents, media, ordering) | Отдельный слайс / эпик |
 | Документы / annotations / comments / transcripts | Самостоятельные фичи | Соответствующие слайсы |
@@ -71,7 +71,7 @@ src/features/lectures/
   types.ts                           # сужения из @/api/schema (Lecture, LectureListItem, Visibility)
   ui/
     lecture-list.tsx                 # server: рендер списка по filter (используется в /lectures и /admin/lectures)
-    lecture-card.tsx                 # server: карточка-превью (заголовок, дата, превью описания, обложка)
+    lecture-card.tsx                 # server: карточка-превью (заголовок, дата, превью описания)
     lecture-detail.tsx               # server: детальная (без CRUD-кнопок)
     lecture-search-form.tsx          # client: input + button → URL update
     lecture-create-form.tsx          # client: useActionState вокруг createLecture
@@ -135,6 +135,7 @@ export const LectureCreateSchema = z.object({
 });
 
 export const LectureUpdateSchema = z.object({
+  id: z.string().uuid(),
   title: z.string().trim().min(1).max(200),
   description: z.string().max(5000).default(""),
   date: z.string().regex(ISO_DATE, "Дата должна быть в формате ГГГГ-ММ-ДД"),
@@ -178,7 +179,9 @@ export const Tags = {
 
 ## 8. Server actions — поток
 
-Все actions через `createFormAction` (для FormData) или `createAction` (для JSON-входа, типа `setLectureVisibility` при программном вызове). Базовый flow по конвенциям §3.3.
+Все actions через `createFormAction` — единый стиль слайса (FormData + Zod). Базовый flow по конвенциям §3.3.
+
+`createLecture`:
 
 ```ts
 export const createLecture = createFormAction(async (formData) => {
@@ -194,17 +197,36 @@ export const createLecture = createFormAction(async (formData) => {
 ```
 
 `updateLecture`:
-- читаем `id` из formData (hidden input);
-- грузим текущую лекцию через `getLectureById(id)` для owner-чека;
-- `requireCapability(me, (m) => canUpdateLecture(m, lecture))`;
-- PUT `/api/lectures/{id}`;
-- revalidate.
 
-`setLectureVisibility` — двухаргументный `createAction(({ id, visibility }) => …)`, вызывается из `<LectureVisibilityToggle>`.
+- `parseFormData(LectureUpdateSchema, formData)` — читает `id`, `title`, `description`, `date` (id — hidden input).
+- **Не делаем pre-fetch для owner-чека.** Бэк сам enforce'ит owner: возвращает 403 (или 404 для private). Маппим:
+  - `error.code === "forbidden"` → `throw new ForbiddenError("role")` → action отдаст `{ success: false, code: "forbidden" }`.
+  - 404 → `throw new Error("Лекция не найдена")` → generic error в UI.
+- На успехе: `revalidateEntity("lectures", id)` + `revalidateEntity("lectures")` (на случай, если изменился title — он влияет на список).
+- Page-уровневый guard через `canUpdateLecture(me, lecture)` остаётся (defense-in-depth — UI не показывает форму чужому). Действие на бэке тоже проверяется.
 
-`deleteLecture` — `createFormAction` с hidden `id`, вызывается из `<LectureDeleteButton>`.
+`setLectureVisibility` — `createFormAction` (id + visibility из FormData):
 
-**После создания** action возвращает `data` (созданную лекцию). Страница `/admin/lectures/new` использует `useActionState` и **сама делает `redirect`** на `/admin/lectures/${data.id}/edit` после `state.success === true` (через `useEffect` или server-action redirect — уточнить в plan).
+- Hidden `<input name="id">` + `<select name="visibility" onChange={(e) => e.target.form.requestSubmit()}>`.
+- Pre-check на бэке (owner-only); маппинг 403 → `ForbiddenError("role")`.
+- `revalidateEntity("lectures", id)` + `revalidateEntity("lectures")`.
+
+`deleteLecture` — `createFormAction` с hidden `id` (вызывается из `<LectureDeleteButton>` через `<form action={deleteLecture}>` внутри `ConfirmDialog.onConfirm`):
+
+- `requireCapability(me, canDeleteLecture)` — это admin-cap, не owner-аware.
+- DELETE `/api/admin/lectures/{id}`.
+- На успехе: `revalidateEntity("lectures")` (список) + `redirect("/admin/lectures")` (если delete вызван со страницы редактирования).
+
+**Маппинг ошибок API → ActionResult.** Бэк возвращает `httputil.ErrorResponse { code?, error? }`. Хелпер слайса (или inline-логика):
+
+```ts
+function rethrowApiError(err: { code?: string; error?: string } | undefined): never {
+  if (err?.code === "forbidden") throw new ForbiddenError("role", err.error);
+  throw new Error(err?.error ?? "Ошибка сервера");
+}
+```
+
+**После создания.** `createLecture` возвращает `data` (созданную лекцию). Страница `/admin/lectures/new` использует `useActionState` + клиент-side `useEffect` на `state.success === true` → `router.push("/admin/lectures/" + state.data.id + "/edit")`. Альтернатива: `redirect()` внутри action — но это ломает `useActionState`-цикл (state не успевает обновиться, форма не показывает success-state). Идём через `useEffect` + `router.push`.
 
 ## 9. Routes
 
@@ -249,7 +271,12 @@ export const createLecture = createFormAction(async (formData) => {
 ## 11. Error handling
 
 - Server fetchers: `error → throw new Error(error.message)`. Дальше Next.js `error.tsx`.
-- Server actions: всё через `createAction*` → `ActionResult`. На стороне UI:
+  - **404 для `getLectureById`** возвращает `{ error: "lecture not found", … }` — fetcher проверяет статус и **возвращает `null`**, чтобы page-уровень мог сделать `notFound()`. Соответствует поведению бэка: private-лекции отдают 404 для не-owner (см. `internal/lecture/service.go:213`).
+- Server actions: всё через `createFormAction` → `ActionResult`. Маппинг ошибок API:
+  - `error.code === "forbidden"` → `throw new ForbiddenError("role", error.error)` → `{ success: false, code: "forbidden" }`.
+  - 404 (delete/update удалённого) → generic `Error` → `{ success: false, error }`.
+  - generic → `Error(error.error ?? "Ошибка сервера")`.
+- На стороне UI:
   - `result.code === "validation"` → `<Form errors={result.fieldErrors}>`, плюс `_form` баннер если есть.
   - `result.code === "forbidden"` → текст «У вас нет прав на это действие».
   - generic error → `state.error` в красном баннере.
@@ -275,7 +302,7 @@ export const createLecture = createFormAction(async (formData) => {
 
 ## 14. Риски и допущения
 
-- **`/api/files/{key}` URL** — допущение, что прямой serving существует. Подтвердить в первой имплементации; иначе cover скрывается.
-- **`updateLecture` requires fetch+check** — лишний round-trip на бэк. Альтернатива (бэк сам бросит 403/404). Идём с pre-check ради корректного UX (`<ForbiddenError>` маршрутизация).
-- **`setVisibility` через JSON-action**, не form — потому что вызывается из `<Select onValueChange>`. Если хочется — можно завернуть в hidden form, но это усложняет UX.
+- **Cover отключён в этой итерации.** Бэк не отдаёт URL для `cover_image_key`, а `/static/files/{key}` доступен только в local-storage режиме. Включается, когда бэк начнёт отдавать `cover_url` в payload (или появится прокси-эндпоинт). До тех пор поле в `lecture.Lecture` присутствует в типе, но игнорируется в UI.
+- **Action не делает pre-check ownership через fetch** — полагаемся на бэк, маппим 403/404 в `ForbiddenError`/generic. Page-уровневый guard (через `canUpdateLecture(me, lecture)` в `/admin/lectures/[id]/edit`) обеспечивает корректный UX (форма не показывается чужому).
+- **`Select` родом из Base UI рендерит hidden input** — это обеспечивает совместимость с FormData в `setLectureVisibility`. Подтверждено в `src/components/ui/select.tsx` (свойство `name` + Base UI Select).
 - **Конкурентные правки** — оптимистичная стратегия, без version-check. Бэк не возвращает `If-Match`/etag, конфликт «last write wins».
