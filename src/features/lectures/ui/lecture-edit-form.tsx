@@ -23,8 +23,8 @@ interface Props {
 
 export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props) {
   const [state, action] = useActionState(updateLecture, initial);
-  const fieldErrors =
-    state.success === false && state.code === "validation" ? state.fieldErrors : undefined;
+  const fieldErrors: Record<string, string> =
+    state.success === false && state.code === "validation" ? state.fieldErrors : {};
 
   return (
     <div className="flex flex-col gap-6">

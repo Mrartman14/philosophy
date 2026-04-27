@@ -18,8 +18,8 @@ const initial: ActionResult<Lecture | null> = { success: true, data: null };
 export function LectureCreateForm() {
   const router = useRouter();
   const [state, action] = useActionState(createLecture, initial);
-  const fieldErrors =
-    state.success === false && state.code === "validation" ? state.fieldErrors : undefined;
+  const fieldErrors: Record<string, string> =
+    state.success === false && state.code === "validation" ? state.fieldErrors : {};
 
   useEffect(() => {
     if (state.success && state.data) {
