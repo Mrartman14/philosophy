@@ -14,6 +14,27 @@
 - Общаться с пользователем на русском
 - Именование файлов и папок в `src/` — kebab-case
 
+## Frontend feature work
+
+Перед стартом любой фичи (`src/features/<entity>/`):
+
+- Прочитай [docs/frontend-conventions.md](docs/frontend-conventions.md) — единый референс по слайс-структуре, SSR-паттернам (server components + server actions), формам (Base UI Form + Zod через `parseFormData`), RBAC, инвалидации кеша через `revalidateEntity`, тестам.
+- Скопируй [src/features/_template/](src/features/_template/) в `src/features/<entity>/` как стартовую точку. Чеклист готовности фичи — в [src/features/_template/README.md](src/features/_template/README.md).
+- Дизайн-обоснование: [docs/superpowers/specs/2026-04-26-frontend-foundation-design.md](docs/superpowers/specs/2026-04-26-frontend-foundation-design.md).
+
+**Запретные зоны** (любое касание = отдельный foundation-update PR, не в фиче):
+
+- `src/api/schema.ts` — регенерация только координированно.
+- `src/app/layout.tsx`, `src/app/admin/layout.tsx`, `src/app/admin/admin-sidebar.tsx`, `src/app/globals.css` — root/admin shell.
+- `src/components/ui/*` — UI-kit (новые примитивы — отдельным PR с обсуждением).
+- `src/components/{shared, app, permission, …}` — заморожены.
+- `src/utils/*`, `src/hooks/*`, `src/services/*` — общая инфраструктура.
+- `package.json`, `package-lock.json`, `eslint.config.mjs`, `vitest.config.ts`.
+
+ESLint-гарды форсят: запрет cross-feature импортов, deep-импортов в чужие фичи мимо `index.ts`, `react-dom/client` в server-only файлах слайса.
+
+Перед PR должны быть зелёными: `npm run lint && npm test && npm run build`.
+
 ## RBAC
 
 Проект использует единый server-side RBAC. Правило простое: **в server actions — `requireCapability`, в UI — `canX()`**.
