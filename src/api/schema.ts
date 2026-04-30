@@ -4178,10 +4178,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Список канвасов (свои + публичные) */
+        /** Список канвасов с поиском (свои + публичные) */
         get: {
             parameters: {
                 query?: {
+                    /** @description Поиск по title */
+                    q?: string;
                     /** @description Offset (default 0) */
                     offset?: number;
                     /** @description Limit (default 20, max 100) */
@@ -4200,12 +4202,30 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["canvas.Canvas"][];
+                            data?: components["schemas"]["canvas.CanvasSummary"][];
                         };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5590,7 +5610,68 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Поиск документов (picker)
+         * @description Lightweight summary list of documents visible to the actor,
+         *     filtered by ?q= LIKE on filename. Used by the AST editor's
+         *     document_ref picker.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Поиск по filename */
+                    q?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Лимит */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["document.DocumentSummary"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         put?: never;
         /** Создать документ (top-level) */
         post: {
@@ -8367,6 +8448,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/lectures/{id}/comments/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Поиск комментариев в лекции (picker)
+         * @description Lectured-scoped lightweight search over comment block text.
+         *     Returns CommentSummary rows (snippet + author + id) suitable
+         *     for the AST editor's comment_ref picker.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Поиск по тексту комментария */
+                    q?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Лимит */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["comment.CommentSummary"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/lectures/{id}/cover": {
         parameters: {
             query?: never;
@@ -9587,7 +9757,78 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Поиск медиа (picker)
+         * @description Lightweight summary list of media visible to the actor,
+         *     filtered by ?q= LIKE on filename and optional ?type=video|audio.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Поиск по filename */
+                    q?: string;
+                    /** @description video|audio */
+                    type?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Лимит */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["media.MediaSummary"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description INVALID_FILE_TYPE */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         put?: never;
         /** Создать медиа (top-level) */
         post: {
@@ -11857,6 +12098,13 @@ export interface components {
             updated_at?: string;
             visibility?: components["schemas"]["access.Visibility"];
         };
+        "canvas.CanvasSummary": {
+            id?: string;
+            owner_id?: string;
+            title?: string;
+            updated_at?: string;
+            visibility?: components["schemas"]["access.Visibility"];
+        };
         "canvas.CreateRequest": {
             data?: components["schemas"]["canvas.Data"];
             title: string;
@@ -11964,6 +12212,15 @@ export interface components {
             updated_at: string;
             user_id?: string;
         };
+        "comment.CommentSummary": {
+            author?: components["schemas"]["comment.Author"];
+            created_at?: string;
+            id?: string;
+            lecture_id?: string;
+            snippet?: string;
+            type?: components["schemas"]["comment.CommentType"];
+            user_id?: string;
+        };
         /** @enum {string} */
         "comment.CommentType": "claim" | "grounds" | "rebuttal" | "qualifier" | "question" | "answer" | "offtop" | "summary";
         "comment.CreateRequest": {
@@ -12019,6 +12276,13 @@ export interface components {
         "document.Document": {
             blocks?: components["schemas"]["ast.Block"][];
             created_at?: string;
+            filename?: string;
+            id?: string;
+            owner_id?: string;
+            updated_at?: string;
+            visibility?: components["schemas"]["access.Visibility"];
+        };
+        "document.DocumentSummary": {
             filename?: string;
             id?: string;
             owner_id?: string;
@@ -12280,6 +12544,14 @@ export interface components {
             owner_id?: string;
             type: components["schemas"]["media.FileType"];
             url?: string;
+            visibility?: components["schemas"]["access.Visibility"];
+        };
+        "media.MediaSummary": {
+            created_at?: string;
+            filename?: string;
+            id?: string;
+            owner_id?: string;
+            type?: components["schemas"]["media.FileType"];
             visibility?: components["schemas"]["access.Visibility"];
         };
         "media.SetVisibilityRequest": {
