@@ -1,40 +1,91 @@
-import { Table } from "@tiptap/extension-table";
-import { TableRow } from "@tiptap/extension-table-row";
-import { TableCell } from "@tiptap/extension-table-cell";
+import { Node, mergeAttributes } from "@tiptap/core";
 
-export const TableExt = Table.configure({ resizable: false });
+/**
+ * AST table tree: table > table_row+ > table_cell > (text | hard_break)*.
+ * Authored from scratch (instead of extending @tiptap/extension-table*) because:
+ *  - Tiptap defaults register as camelCase (tableRow / tableCell), but AST
+ *    canonicals are snake_case — round-trip via PM would emit invalid types.
+ *  - Tiptap's default table_cell content is "block+" (paragraph nesting), but
+ *    AST table_cell holds inline text directly.
+ * blockId lives only on top-level Block (table); rows/cells are AST Nodes
+ * without their own id.
+ */
 
-export const TableRowExt = TableRow.extend({
+export const TableExt = Node.create({
+  name: "table",
+  group: "block",
+  content: "table_row+",
+  isolating: true,
+  tableRole: "table",
+
   addAttributes() {
     return {
-      ...this.parent?.(),
-      header: { default: false },
-      blockId: { default: "" },
+      blockId: {
+        default: "",
+        parseHTML: (el) => el.getAttribute("data-block-id") ?? "",
+        renderHTML: (attrs: { blockId?: string }) =>
+          attrs.blockId ? { "data-block-id": attrs.blockId } : {},
+      },
     };
   },
-  renderHTML({ HTMLAttributes, node }) {
-    const attrs = {
-      ...HTMLAttributes,
-      ...(node.attrs.header ? { "data-header": "true" } : {}),
-      ...(node.attrs.blockId ? { "data-block-id": node.attrs.blockId } : {}),
+
+  parseHTML() {
+    return [{ tag: "table" }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["table", mergeAttributes(HTMLAttributes), ["tbody", 0]];
+  },
+});
+
+export const TableRowExt = Node.create({
+  name: "table_row",
+  content: "table_cell+",
+  tableRole: "row",
+
+  addAttributes() {
+    // default: null (not false) — AST treats absent and `false` as the same;
+    // declaring null as default lets the serializer drop the attr entirely
+    // when unset, keeping AST output minimal.
+    return {
+      header: { default: null },
     };
+  },
+
+  parseHTML() {
+    return [{ tag: "tr" }];
+  },
+
+  renderHTML({ HTMLAttributes, node }) {
+    const attrs = mergeAttributes(HTMLAttributes, {
+      ...(node.attrs.header ? { "data-header": "true" } : {}),
+    });
     return ["tr", attrs, 0];
   },
 });
 
-export const TableCellExt = TableCell.extend({
+export const TableCellExt = Node.create({
+  name: "table_cell",
+  content: "(text | hard_break)*",
+  isolating: true,
+  tableRole: "cell",
+
   addAttributes() {
     return {
-      ...this.parent?.(),
-      align: { default: null },
+      align: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-align"),
+        renderHTML: (attrs: { align?: string | null }) =>
+          attrs.align ? { "data-align": attrs.align } : {},
+      },
     };
   },
-  renderHTML({ HTMLAttributes, node }) {
-    const tag = "td";
-    const attrs = {
-      ...HTMLAttributes,
-      ...(node.attrs.align ? { "data-align": node.attrs.align } : {}),
-    };
-    return [tag, attrs, 0];
+
+  parseHTML() {
+    return [{ tag: "td" }, { tag: "th" }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["td", mergeAttributes(HTMLAttributes), 0];
   },
 });

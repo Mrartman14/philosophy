@@ -5,6 +5,7 @@ import type { Extensions } from "@tiptap/core";
 import type { EntityContext, SchemaSnapshot } from "../types";
 import { createLimitsPlugin } from "../validation/limits-plugin";
 import { createAttrPlugin } from "../validation/attr-plugin";
+import { createDedupBlockIdPlugin } from "./dedup-block-id-plugin";
 import { ParagraphExt } from "./nodes/paragraph";
 import { BlockquoteExt } from "./nodes/blockquote";
 import { ThematicBreakExt } from "./nodes/thematic-break";
@@ -13,6 +14,7 @@ import { CodeBlockExt } from "./nodes/code-block";
 import { ListExt, ListItemExt } from "./nodes/list";
 import { ImageExt } from "./nodes/image";
 import { TableExt, TableRowExt, TableCellExt } from "./nodes/table";
+import { HardBreakExt } from "./nodes/hard-break";
 import { LinkExt } from "./marks/link";
 import { navRefMarks } from "./marks/nav-ref";
 
@@ -28,8 +30,13 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
 
   // StarterKit: we replace every block-level node with a custom version that
   // carries blockId attr — PM-schema must declare blockId or it gets dropped
-  // on parse, breaking AST round-trip. Keep StarterKit only for: text,
-  // hard_break, history, dropcursor, gapcursor, bold/italic/code marks.
+  // on parse, breaking AST round-trip. Several Tiptap defaults also use
+  // camelCase names (hardBreak, codeBlock) where AST canonicals are snake_case
+  // — those are re-registered under the right names by our extensions. We
+  // also disable StarterKit's bundled Link (we ship our own LinkExt that
+  // doesn't leak rel/target/class into AST attrs).
+  // Keep StarterKit only for: text, history, dropcursor, gapcursor,
+  // bold/italic/code marks.
   const starter = StarterKit.configure({
     paragraph: false,
     blockquote: false,
@@ -39,12 +46,20 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
     orderedList: false,
     listItem: false,
     horizontalRule: false,
+    hardBreak: false,
+    link: false,
   });
 
   // ParagraphExt is always required (it's the default block + appears inside
   // blockquote/list_item/table_cell content models). Even contexts that
   // declare a strict block_levels list rely on paragraph for inline text.
-  const exts: Extensions = [starter, ParagraphExt, Placeholder.configure({ placeholder: placeholder ?? "" })];
+  // HardBreakExt is also universal (allowed in paragraph/heading/table_cell).
+  const exts: Extensions = [
+    starter,
+    ParagraphExt,
+    HardBreakExt,
+    Placeholder.configure({ placeholder: placeholder ?? "" }),
+  ];
 
   if (allowedBlocks.has("heading")) exts.push(HeadingExt);
   if (allowedBlocks.has("blockquote")) exts.push(BlockquoteExt);
@@ -60,7 +75,11 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
   const validation = Extension.create({
     name: "ast-validation",
     addProseMirrorPlugins() {
-      return [createLimitsPlugin(snapshot, level), createAttrPlugin(snapshot)];
+      return [
+        createLimitsPlugin(snapshot, level),
+        createAttrPlugin(snapshot),
+        createDedupBlockIdPlugin(),
+      ];
     },
   });
   exts.push(validation);

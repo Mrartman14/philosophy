@@ -9,8 +9,12 @@ import type { ProseMirrorJSON } from "./serializer";
 import type { AstBlock, EntityContext } from "./types";
 
 export interface AstEditorProps {
+  /**
+   * Initial document. Editor is uncontrolled: Tiptap owns the live content,
+   * read it back via onChange or imperative ref.getBlocks(). Re-pass with
+   * a different `key` to remount and reset.
+   */
   defaultValue?: AstBlock[];
-  value?: AstBlock[];
   onChange?: (blocks: AstBlock[]) => void;
   entityContext: EntityContext;
   defaultLectureId?: string;
@@ -40,7 +44,7 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
   };
 
   const editor = useAstEditor({
-    defaultValue: props.defaultValue ?? props.value ?? [],
+    defaultValue: props.defaultValue ?? [],
     entityContext: props.entityContext,
     editable: props.editable !== false,
     placeholder: props.placeholder,
@@ -76,7 +80,7 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
           ref={hiddenInputRef}
           type="hidden"
           name={props.name}
-          defaultValue={JSON.stringify(props.defaultValue ?? props.value ?? [])}
+          defaultValue={JSON.stringify(props.defaultValue ?? [])}
         />
       ) : null}
     </div>
