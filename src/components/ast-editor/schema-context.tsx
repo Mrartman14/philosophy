@@ -9,8 +9,8 @@ const SchemaContext = createContext<SchemaSnapshot | null>(null);
 
 async function defaultFetcher(): Promise<SchemaResponse> {
   const api = await createApiClient();
-  const { data } = await api.GET("/api/ast/schema");
-  if (!data) throw new Error("schema fetch failed");
+  const { data, error } = await api.GET("/api/ast/schema");
+  if (error || !data) throw new Error((error as any)?.message ?? "schema fetch failed");
   return data;
 }
 
