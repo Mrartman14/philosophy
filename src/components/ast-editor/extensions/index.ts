@@ -1,7 +1,10 @@
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import { Extension } from "@tiptap/core";
 import type { Extensions } from "@tiptap/core";
 import type { EntityContext, SchemaSnapshot } from "../types";
+import { createLimitsPlugin } from "../validation/limits-plugin";
+import { createAttrPlugin } from "../validation/attr-plugin";
 import { HeadingExt } from "./nodes/heading";
 import { CodeBlockExt } from "./nodes/code-block";
 import { ListExt, ListItemExt } from "./nodes/list";
@@ -42,6 +45,14 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
 
   // Marks are universally available (per-context filtering for marks lives in toolbar gating, Phase 2).
   exts.push(LinkExt, ...navRefMarks);
+
+  const validation = Extension.create({
+    name: "ast-validation",
+    addProseMirrorPlugins() {
+      return [createLimitsPlugin(snapshot, level), createAttrPlugin(snapshot)];
+    },
+  });
+  exts.push(validation);
 
   return exts;
 }
