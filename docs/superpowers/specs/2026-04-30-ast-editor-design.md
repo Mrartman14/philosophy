@@ -1,6 +1,6 @@
 # AST Editor — Design
 
-**Status**: Draft
+**Status**: Foundation implemented (2026-04-30). Phase 2 (pickers, image flow, toolbar UX, drift-warn, integration tests via RTL) — отдельный план.
 **Date**: 2026-04-30
 **Owner**: frontend
 **Related**:
