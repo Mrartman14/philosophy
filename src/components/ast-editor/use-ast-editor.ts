@@ -5,6 +5,8 @@ import type { Editor } from "@tiptap/react";
 import type { AstBlock, EntityContext, SchemaSnapshot } from "./types";
 import { buildExtensions } from "./extensions";
 import { deserialize } from "./deserializer";
+import { serialize } from "./serializer";
+import type { ProseMirrorJSON } from "./serializer";
 
 export interface UseAstEditorOptions {
   defaultValue?: AstBlock[] | undefined;
@@ -17,7 +19,7 @@ export interface UseAstEditorOptions {
 }
 
 export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
-  const { defaultValue, entityContext, editable = true, placeholder, ariaLabel, schema } = opts;
+  const { defaultValue, entityContext, editable = true, placeholder, ariaLabel, schema, onChange } = opts;
   return useEditor(
     {
       immediatelyRender: false,
@@ -32,6 +34,11 @@ export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
       },
       extensions: buildExtensions({ snapshot: schema, context: entityContext, placeholder }),
       content: deserialize(defaultValue ?? [], schema),
+      onUpdate({ editor }) {
+        if (!onChange) return;
+        const json = editor.getJSON() as ProseMirrorJSON;
+        onChange(serialize(json));
+      },
     },
     [editable, entityContext],
   );
