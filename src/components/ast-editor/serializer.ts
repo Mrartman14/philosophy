@@ -1,5 +1,9 @@
 import type { AstBlock, AstNode, AstMark } from "./types";
 
+type BlockType = NonNullable<AstBlock["type"]>;
+type NodeType = NonNullable<AstNode["type"]>;
+type MarkType = NonNullable<AstMark["type"]>;
+
 export interface ProseMirrorJSON {
   type: string;
   attrs?: Record<string, unknown>;
@@ -23,7 +27,7 @@ function serializeBlock(node: ProseMirrorJSON, position: number): AstBlock {
     const text = (node.content ?? []).map((c) => c.text ?? "").join("");
     return {
       id,
-      type: node.type,
+      type: node.type as BlockType,
       position,
       ...(attrs && Object.keys(attrs).length > 0 ? { attrs } : {}),
       text,
@@ -33,7 +37,7 @@ function serializeBlock(node: ProseMirrorJSON, position: number): AstBlock {
   if (LEAF_BLOCK_TYPES.has(node.type)) {
     return {
       id,
-      type: node.type,
+      type: node.type as BlockType,
       position,
       ...(attrs && Object.keys(attrs).length > 0 ? { attrs } : {}),
       text: "",
@@ -43,7 +47,7 @@ function serializeBlock(node: ProseMirrorJSON, position: number): AstBlock {
   const content = (node.content ?? []).map(serializeNode);
   return {
     id,
-    type: node.type,
+    type: node.type as BlockType,
     position,
     ...(attrs && Object.keys(attrs).length > 0 ? { attrs } : {}),
     ...(content.length > 0 ? { content } : {}),
@@ -52,7 +56,7 @@ function serializeBlock(node: ProseMirrorJSON, position: number): AstBlock {
 }
 
 function serializeNode(node: ProseMirrorJSON): AstNode {
-  const result: AstNode = { type: node.type };
+  const result: AstNode = { type: node.type as NodeType };
   if (node.attrs) {
     const attrs = stripBlockId(node.attrs);
     if (attrs && Object.keys(attrs).length > 0) result.attrs = attrs;
@@ -64,7 +68,7 @@ function serializeNode(node: ProseMirrorJSON): AstNode {
 }
 
 function serializeMark(mark: { type: string; attrs?: Record<string, unknown> }): AstMark {
-  const out: AstMark = { type: mark.type };
+  const out: AstMark = { type: mark.type as MarkType };
   if (mark.attrs) {
     const cleaned: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(mark.attrs)) {

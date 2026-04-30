@@ -1,10 +1,10 @@
 "use client";
 
 import { useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
 import type { Editor } from "@tiptap/react";
 import type { AstBlock, EntityContext, SchemaSnapshot } from "./types";
+import { buildExtensions } from "./extensions";
+import { deserialize } from "./deserializer";
 
 export interface UseAstEditorOptions {
   defaultValue?: AstBlock[] | undefined;
@@ -17,7 +17,7 @@ export interface UseAstEditorOptions {
 }
 
 export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
-  const { defaultValue, editable = true, placeholder, ariaLabel } = opts;
+  const { defaultValue, entityContext, editable = true, placeholder, ariaLabel, schema } = opts;
   return useEditor(
     {
       immediatelyRender: false,
@@ -30,17 +30,9 @@ export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
           "aria-multiline": "true",
         },
       },
-      extensions: [
-        StarterKit,
-        Placeholder.configure({ placeholder: placeholder ?? "" }),
-      ],
-      content: { type: "doc", content: deserializePlaceholder(defaultValue) },
+      extensions: buildExtensions({ snapshot: schema, context: entityContext, placeholder }),
+      content: deserialize(defaultValue ?? [], schema),
     },
-    [editable],
+    [editable, entityContext],
   );
-}
-
-// Stub — implemented in Task 17 (deserializer).
-function deserializePlaceholder(_blocks?: AstBlock[]) {
-  return [{ type: "paragraph" }];
 }
