@@ -2,11 +2,23 @@
 
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { EditorContent } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import { useAstEditor } from "./use-ast-editor";
 import { useSchema } from "./schema-context";
 import { serialize } from "./serializer";
 import type { ProseMirrorJSON } from "./serializer";
 import type { AstBlock, EntityContext } from "./types";
+import { EditorToolbar } from "./toolbar/toolbar";
+import { SlashMenu } from "./toolbar/slash-menu";
+import { createSlashMenuPlugin } from "./toolbar/slash-menu-plugin";
+import { useDriftWarn } from "./drift-warn";
+
+const slashHost = Extension.create({
+  name: "slash-menu-host",
+  addProseMirrorPlugins() {
+    return [createSlashMenuPlugin()];
+  },
+});
 
 export interface AstEditorProps {
   /**
@@ -51,6 +63,7 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
     ariaLabel: props.ariaLabel,
     schema,
     onChange: handleChange,
+    extraExtensions: [slashHost],
   });
 
   useImperativeHandle(
@@ -67,6 +80,8 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
     [editor],
   );
 
+  useDriftWarn(schema);
+
   if (!editor) return null;
 
   return (
@@ -74,7 +89,13 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
       className={`ast-editor border border-(--color-border) rounded-lg overflow-hidden
         ${props.editable === false ? "opacity-50 pointer-events-none" : ""}`}
     >
+      {props.editable !== false && (
+        <EditorToolbar editor={editor} schema={schema} context={props.entityContext} />
+      )}
       <EditorContent editor={editor} className="prose prose-sm max-w-none" />
+      {props.editable !== false && (
+        <SlashMenu editor={editor} schema={schema} context={props.entityContext} />
+      )}
       {props.name ? (
         <input
           ref={hiddenInputRef}
