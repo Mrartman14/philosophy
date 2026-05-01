@@ -1,0 +1,202 @@
+"use client";
+import { useEffect, useState } from "react";
+import type { Editor } from "@tiptap/core";
+import { slashMenuKey, consumeSlashMarker, closeSlashMenu } from "./slash-menu-plugin";
+import type { SchemaSnapshot, EntityContext } from "../types";
+
+interface Cmd {
+  id: string;
+  label: string;
+  run: (editor: Editor) => void;
+}
+
+function buildCommands(schema: SchemaSnapshot, context: EntityContext): Cmd[] {
+  const level = schema.entityContexts[context] ?? "";
+  const allowed = new Set(schema.blockLevels[level] ?? []);
+  const cmds: Cmd[] = [];
+
+  if (allowed.has("heading")) {
+    for (const l of [1, 2, 3] as const) {
+      cmds.push({
+        id: `h${l}`,
+        label: `Заголовок ${l}`,
+        run: (e) => e.chain().focus().setHeading({ level: l }).run(),
+      });
+    }
+  }
+  if (allowed.has("blockquote")) {
+    cmds.push({
+      id: "bq",
+      label: "Цитата",
+      run: (e) => e.chain().focus().wrapIn("blockquote").run(),
+    });
+  }
+  if (allowed.has("code_block")) {
+    cmds.push({
+      id: "cb",
+      label: "Блок кода",
+      run: (e) => e.chain().focus().toggleNode("code_block", "paragraph").run(),
+    });
+  }
+  if (allowed.has("list")) {
+    cmds.push({
+      id: "ul",
+      label: "Маркированный список",
+      run: (e) => e.chain().focus().wrapIn("list", { ordered: false }).run(),
+    });
+    cmds.push({
+      id: "ol",
+      label: "Нумерованный список",
+      run: (e) => e.chain().focus().wrapIn("list", { ordered: true }).run(),
+    });
+  }
+  if (allowed.has("thematic_break")) {
+    cmds.push({
+      id: "hr",
+      label: "Линия",
+      run: (e) => e.chain().focus().insertContent({ type: "thematic_break" }).run(),
+    });
+  }
+  if (allowed.has("table")) {
+    cmds.push({
+      id: "table",
+      label: "Таблица 3×3",
+      run: (e) =>
+        e
+          .chain()
+          .focus()
+          .insertContent({
+            type: "table",
+            content: [
+              {
+                type: "table_row",
+                content: [
+                  { type: "table_cell" },
+                  { type: "table_cell" },
+                  { type: "table_cell" },
+                ],
+              },
+              {
+                type: "table_row",
+                content: [
+                  { type: "table_cell" },
+                  { type: "table_cell" },
+                  { type: "table_cell" },
+                ],
+              },
+              {
+                type: "table_row",
+                content: [
+                  { type: "table_cell" },
+                  { type: "table_cell" },
+                  { type: "table_cell" },
+                ],
+              },
+            ],
+          })
+          .run(),
+    });
+  }
+  return cmds;
+}
+
+interface Props {
+  editor: Editor;
+  schema: SchemaSnapshot;
+  context: EntityContext;
+}
+
+export function SlashMenu({ editor, schema, context }: Props) {
+  const [state, setState] = useState({ open: false, from: -1, query: "" });
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const upd = () => {
+      const s = slashMenuKey.getState(editor.view.state);
+      if (s) setState(s);
+    };
+    editor.on("transaction", upd);
+    return () => {
+      editor.off("transaction", upd);
+    };
+  }, [editor]);
+
+  const allCmds = buildCommands(schema, context);
+  const cmds = state.query
+    ? allCmds.filter((c) => c.label.toLowerCase().includes(state.query.toLowerCase()))
+    : allCmds;
+
+  // Reset active to 0 whenever menu opens or query changes.
+  useEffect(() => {
+    setActive(0);
+  }, [state.open, state.query]);
+
+  // Clamp active in case cmds list shrinks below the current index.
+  const safeActive = cmds.length > 0 ? Math.min(active, cmds.length - 1) : 0;
+
+  const apply = (cmd: Cmd) => {
+    consumeSlashMarker(editor.view, state.from);
+    cmd.run(editor);
+  };
+
+  // Document-level capture-phase listener: intercepts ArrowUp/ArrowDown/Enter
+  // before ProseMirror's bubble-phase handler so the editor caret doesn't move.
+  // Esc is handled inside the plugin itself.
+  useEffect(() => {
+    if (!state.open || cmds.length === 0) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        e.stopPropagation();
+        setActive((a) => (a + 1) % cmds.length);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        setActive((a) => (a - 1 + cmds.length) % cmds.length);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = Math.min(active, cmds.length - 1);
+        const cmd = cmds[idx];
+        if (cmd) apply(cmd);
+      }
+    };
+    document.addEventListener("keydown", handler, true);
+    return () => document.removeEventListener("keydown", handler, true);
+    // `apply` and `cmds` are derived per render and intentionally not in deps
+    // — handler closure captures the latest at attach time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.open, state.from, state.query, active]);
+
+  if (!state.open) return null;
+  if (cmds.length === 0) {
+    return (
+      <div role="status" className="ast-slash-menu ast-slash-menu--empty">
+        Нет совпадений
+      </div>
+    );
+  }
+
+  return (
+    <div role="listbox" aria-label="Команды блока" className="ast-slash-menu">
+      {cmds.map((c, i) => (
+        <button
+          key={c.id}
+          type="button"
+          role="option"
+          aria-selected={safeActive === i}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            apply(c);
+          }}
+          onMouseEnter={() => setActive(i)}
+        >
+          {c.label}
+        </button>
+      ))}
+      <button type="button" onClick={() => closeSlashMenu(editor.view)}>
+        Esc — закрыть
+      </button>
+    </div>
+  );
+}

@@ -2,6 +2,7 @@
 
 import { useEditor } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
+import type { Extensions } from "@tiptap/core";
 import type { AstBlock, EntityContext, SchemaSnapshot } from "./types";
 import { buildExtensions } from "./extensions";
 import { deserialize } from "./deserializer";
@@ -16,10 +17,11 @@ export interface UseAstEditorOptions {
   ariaLabel?: string | undefined;
   schema: SchemaSnapshot;
   onChange?: ((blocks: AstBlock[]) => void) | undefined;
+  extraExtensions?: Extensions | undefined;
 }
 
 export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
-  const { defaultValue, entityContext, editable = true, placeholder, ariaLabel, schema, onChange } = opts;
+  const { defaultValue, entityContext, editable = true, placeholder, ariaLabel, schema, onChange, extraExtensions } = opts;
   return useEditor(
     {
       immediatelyRender: false,
@@ -32,7 +34,7 @@ export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
           "aria-multiline": "true",
         },
       },
-      extensions: buildExtensions({ snapshot: schema, context: entityContext, placeholder }),
+      extensions: [...buildExtensions({ snapshot: schema, context: entityContext, placeholder }), ...(extraExtensions ?? [])],
       content: deserialize(defaultValue ?? [], schema),
       onUpdate({ editor }) {
         if (!onChange) return;
