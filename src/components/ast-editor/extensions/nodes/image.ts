@@ -1,6 +1,8 @@
 import { Node, mergeAttributes } from "@tiptap/core";
+import type { DOMOutputSpec } from "@tiptap/pm/model";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { ImageNodeView } from "./image-node-view";
+import { resolveStorageUrl } from "../../upload/storage-url";
 
 /**
  * AST `image` block. Atomic (no inline content). attrs:
@@ -53,8 +55,25 @@ export const ImageExt = Node.create({
     return [{ tag: "figure[data-ast-image]" }];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["figure", mergeAttributes(HTMLAttributes, { "data-ast-image": "" })];
+  // Used for SSR / read-only `editor.getHTML()` / any consumer rendering AST
+  // without a live editor (NodeView replaces this output inside the editor
+  // view). Emit `<img>` + optional `<figcaption>` so static HTML is visually
+  // meaningful; data-attrs on the figure preserve attrs for parseHTML
+  // round-trip.
+  renderHTML({ node, HTMLAttributes }) {
+    const figureAttrs = mergeAttributes(HTMLAttributes, { "data-ast-image": "" });
+    const storageKey = (node.attrs["storage_key"] as string) ?? "";
+    const alt = (node.attrs["alt"] as string) ?? "";
+    const caption = (node.attrs["caption"] as string) ?? "";
+
+    const children: DOMOutputSpec[] = [];
+    if (storageKey) {
+      children.push(["img", { src: resolveStorageUrl(storageKey), alt }]);
+    }
+    if (caption) {
+      children.push(["figcaption", caption]);
+    }
+    return ["figure", figureAttrs, ...children];
   },
 
   addNodeView() {

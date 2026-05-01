@@ -42,6 +42,39 @@ describe("ImageExt parseHTML/renderHTML", () => {
     expect(fig.getAttribute("data-block-id")).toBe("b-1");
   });
 
+  it("renderHTML emits <img> and <figcaption> children for SSR / getHTML", () => {
+    const node = schema.nodes["image"]!.create({
+      storage_key: "abc",
+      alt: "alpha",
+      caption: "look",
+      blockId: "b-1",
+    });
+    const dom = DOMSerializer.fromSchema(schema).serializeNode(node);
+    const wrap = document.createElement("div");
+    wrap.appendChild(dom);
+    const img = wrap.querySelector("figure[data-ast-image] > img");
+    expect(img).not.toBeNull();
+    expect(img!.getAttribute("src")).toContain("/static/files/abc");
+    expect(img!.getAttribute("alt")).toBe("alpha");
+    const figcap = wrap.querySelector("figure[data-ast-image] > figcaption");
+    expect(figcap).not.toBeNull();
+    expect(figcap!.textContent).toBe("look");
+  });
+
+  it("renderHTML omits children when storage_key/caption are empty", () => {
+    const node = schema.nodes["image"]!.create({
+      storage_key: "",
+      alt: "",
+      caption: "",
+      blockId: "",
+    });
+    const dom = DOMSerializer.fromSchema(schema).serializeNode(node);
+    const wrap = document.createElement("div");
+    wrap.appendChild(dom);
+    expect(wrap.querySelector("figure[data-ast-image] > img")).toBeNull();
+    expect(wrap.querySelector("figure[data-ast-image] > figcaption")).toBeNull();
+  });
+
   it("renderHTML omits attrs when empty (no noisy attributes in serialized HTML)", () => {
     const node = schema.nodes["image"]!.create({
       storage_key: "",
