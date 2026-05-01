@@ -1,4 +1,3 @@
-// src/components/ast-editor/toolbar/slash-menu.tsx
 "use client";
 import { useEffect, useState } from "react";
 import type { Editor } from "@tiptap/core";
@@ -127,12 +126,56 @@ export function SlashMenu({ editor, schema, context }: Props) {
     ? allCmds.filter((c) => c.label.toLowerCase().includes(state.query.toLowerCase()))
     : allCmds;
 
-  if (!state.open || cmds.length === 0) return null;
+  // Reset active to 0 whenever menu opens or query changes.
+  useEffect(() => {
+    setActive(0);
+  }, [state.open, state.query]);
+
+  // Clamp active in case cmds list shrinks below the current index.
+  const safeActive = cmds.length > 0 ? Math.min(active, cmds.length - 1) : 0;
 
   const apply = (cmd: Cmd) => {
     consumeSlashMarker(editor.view, state.from);
     cmd.run(editor);
   };
+
+  // Document-level capture-phase listener: intercepts ArrowUp/ArrowDown/Enter
+  // before ProseMirror's bubble-phase handler so the editor caret doesn't move.
+  // Esc is handled inside the plugin itself.
+  useEffect(() => {
+    if (!state.open || cmds.length === 0) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        e.stopPropagation();
+        setActive((a) => (a + 1) % cmds.length);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        setActive((a) => (a - 1 + cmds.length) % cmds.length);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = Math.min(active, cmds.length - 1);
+        const cmd = cmds[idx];
+        if (cmd) apply(cmd);
+      }
+    };
+    document.addEventListener("keydown", handler, true);
+    return () => document.removeEventListener("keydown", handler, true);
+    // `apply` and `cmds` are derived per render and intentionally not in deps
+    // — handler closure captures the latest at attach time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.open, state.from, state.query, active]);
+
+  if (!state.open) return null;
+  if (cmds.length === 0) {
+    return (
+      <div role="status" className="ast-slash-menu ast-slash-menu--empty">
+        Нет совпадений
+      </div>
+    );
+  }
 
   return (
     <div role="listbox" aria-label="Команды блока" className="ast-slash-menu">
@@ -141,7 +184,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
           key={c.id}
           type="button"
           role="option"
-          aria-selected={active === i}
+          aria-selected={safeActive === i}
           onMouseDown={(e) => {
             e.preventDefault();
             apply(c);

@@ -12,6 +12,13 @@ interface Props {
 }
 
 export function InlineMarksGroup({ editor, schema }: Props) {
+  if (
+    !schema.marks.has("bold") &&
+    !schema.marks.has("italic") &&
+    !schema.marks.has("code")
+  ) {
+    return null;
+  }
   return (
     <Toolbar.Group>
       {schema.marks.has("bold") && (

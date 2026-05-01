@@ -16,6 +16,14 @@ interface Props {
 export function BlockButtonsGroup({ editor, schema, context }: Props) {
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
+  if (
+    !allowed.has("blockquote") &&
+    !allowed.has("code_block") &&
+    !allowed.has("thematic_break") &&
+    !allowed.has("table")
+  ) {
+    return null;
+  }
 
   return (
     <Toolbar.Group>
@@ -63,6 +71,14 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
               .insertContent({
                 type: "table",
                 content: [
+                  {
+                    type: "table_row",
+                    content: [
+                      { type: "table_cell" },
+                      { type: "table_cell" },
+                      { type: "table_cell" },
+                    ],
+                  },
                   {
                     type: "table_row",
                     content: [
