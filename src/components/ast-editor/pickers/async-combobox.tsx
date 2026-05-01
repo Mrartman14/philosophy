@@ -1,11 +1,18 @@
 "use client";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 export interface AsyncComboboxProps<T> {
+  /**
+   * Stable reference recommended (`useCallback`). Component refetches when
+   * the fetcher identity changes — useful for filter-driven closures, but
+   * a fresh closure on every render will trigger a fetch loop.
+   */
   fetcher: (q: string, offset: number, limit: number) => Promise<{ data: T[]; total: number | null }>;
   renderItem: (item: T, isActive: boolean) => React.ReactNode;
   getKey: (item: T) => string;
   onSelect: (item: T) => void;
+  /** Called when the user presses Esc inside the combobox. */
+  onClose?: () => void;
   placeholder?: string;
   pageSize?: number;
   copy?: { empty?: string; error?: string; loading?: string };
@@ -30,28 +37,39 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
   const [s, setS] = useState<State<T>>({ items: [], total: null, loading: false, error: null });
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Sequence token: each load() bumps the counter; only the latest result
+  // is allowed to commit. Drops stale responses when q-debounce, fetcher
+  // identity or pagination overlap.
+  const seqRef = useRef(0);
+
   const debouncedQ = useDebounced(q, 200);
 
-  const load = async (qNow: string, offset: number) => {
-    setS((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      const { data, total } = await props.fetcher(qNow, offset, pageSize);
-      setS((prev) => ({
-        items: offset === 0 ? data : prev.items.concat(data),
-        total,
-        loading: false,
-        error: null,
-      }));
-    } catch (e) {
-      setS((prev) => ({ ...prev, loading: false, error: e instanceof Error ? e.message : errorCopy }));
-    }
-  };
+  const fetcher = props.fetcher;
+  const load = useCallback(
+    async (qNow: string, offset: number) => {
+      const seq = ++seqRef.current;
+      setS((prev) => ({ ...prev, loading: true, error: null }));
+      try {
+        const { data, total } = await fetcher(qNow, offset, pageSize);
+        if (seq !== seqRef.current) return;
+        setS((prev) => ({
+          items: offset === 0 ? data : prev.items.concat(data),
+          total,
+          loading: false,
+          error: null,
+        }));
+      } catch (e) {
+        if (seq !== seqRef.current) return;
+        setS((prev) => ({ ...prev, loading: false, error: e instanceof Error ? e.message : errorCopy }));
+      }
+    },
+    [fetcher, pageSize, errorCopy],
+  );
 
   useEffect(() => {
     setActive(0);
     void load(debouncedQ, 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedQ]);
+  }, [debouncedQ, load]);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
@@ -62,6 +80,9 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
       e.preventDefault();
       const item = s.items[active];
       if (item) props.onSelect(item);
+    } else if (e.key === "Escape" && props.onClose) {
+      e.preventDefault();
+      props.onClose();
     }
   };
 

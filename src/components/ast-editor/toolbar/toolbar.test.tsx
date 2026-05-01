@@ -39,6 +39,28 @@ describe("EditorToolbar gating", () => {
     editor.destroy();
   });
 
+  it("shows RefPopover when nav-ref marks are registered", () => {
+    const navSchema: SchemaSnapshot = {
+      ...fullSchema,
+      marks: new Map([
+        ["bold", { attrs: {} }],
+        ["link", { attrs: {} }],
+        ["lecture_ref", { attrs: {} }],
+      ]),
+    };
+    const editor = makeEditor("document");
+    render(<EditorToolbar editor={editor} schema={navSchema} context="document" />);
+    expect(screen.getByLabelText(/вставить ссылку на сущность/i)).toBeInTheDocument();
+    editor.destroy();
+  });
+
+  it("hides RefPopover when nav-ref marks are not registered", () => {
+    const editor = makeEditor("document");
+    render(<EditorToolbar editor={editor} schema={fullSchema} context="document" />);
+    expect(screen.queryByLabelText(/вставить ссылку на сущность/i)).toBeNull();
+    editor.destroy();
+  });
+
   it("comment context (basic): hides everything except inline marks + link", () => {
     const editor = makeEditor("comment");
     render(<EditorToolbar editor={editor} schema={fullSchema} context="comment" />);

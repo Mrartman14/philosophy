@@ -7,6 +7,7 @@ import { HeadingSelect } from "./buttons/heading-select";
 import { BlockButtonsGroup } from "./buttons/block-buttons";
 import { ListButtonsGroup } from "./buttons/list-buttons";
 import { LinkPopover } from "./buttons/link-popover";
+import { RefPopover } from "./buttons/ref-popover";
 import type { SchemaSnapshot, EntityContext } from "../types";
 
 export interface EditorToolbarProps {
@@ -46,6 +47,10 @@ export function EditorToolbar({ editor, schema, context }: EditorToolbarProps) {
     {
       visible: schema.marks.has("link"),
       node: <LinkPopover editor={editor} schema={schema} />,
+    },
+    {
+      visible: schema.marks.has("lecture_ref"),
+      node: <RefPopover editor={editor} schema={schema} />,
     },
   ].filter((g) => g.visible);
 
