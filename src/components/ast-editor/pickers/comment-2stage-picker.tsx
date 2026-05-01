@@ -5,7 +5,7 @@ import { CommentPicker } from "./comment-picker";
 
 export interface Comment2StagePickerProps {
   defaultLectureId?: string | undefined;
-  onSelect: (commentId: string) => void;
+  onSelect: (commentId: string, label: string) => void;
 }
 
 export function Comment2StagePicker({ defaultLectureId, onSelect }: Comment2StagePickerProps) {

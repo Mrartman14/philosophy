@@ -2,7 +2,7 @@
 import { AsyncCombobox } from "./async-combobox";
 import { searchDocuments, type DocumentSummary } from "./actions";
 
-export interface DocumentPickerProps { onSelect: (id: string) => void }
+export interface DocumentPickerProps { onSelect: (id: string, label: string) => void }
 
 export function DocumentPicker({ onSelect }: DocumentPickerProps) {
   return (
@@ -10,7 +10,7 @@ export function DocumentPicker({ onSelect }: DocumentPickerProps) {
       fetcher={searchDocuments}
       renderItem={(d) => <span>{d.filename ?? "—"}</span>}
       getKey={(d) => d.id ?? ""}
-      onSelect={(d) => d.id && onSelect(d.id)}
+      onSelect={(d) => d.id && onSelect(d.id, d.filename ?? d.id)}
       placeholder="Поиск документа…"
     />
   );
