@@ -19,6 +19,10 @@ export function ImageNodeView({
       data-selected={selected || undefined}
     >
       {storageKey ? (
+        // next/image не подходит для editor NodeView: требует width/height
+        // upfront, а размеры известны только после load; AST хранит лишь
+        // storage_key. Нативный <img> здесь обоснован.
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={resolveStorageUrl(storageKey)} alt={alt} />
       ) : (
         <div role="presentation" aria-label="Загрузка изображения" />
