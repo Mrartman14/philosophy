@@ -2,7 +2,7 @@
 import { AsyncCombobox } from "./async-combobox";
 import { searchGlossary, type GlossaryTerm } from "./actions";
 
-export interface GlossaryPickerProps { onSelect: (id: string) => void }
+export interface GlossaryPickerProps { onSelect: (id: string, label: string) => void }
 
 export function GlossaryPicker({ onSelect }: GlossaryPickerProps) {
   return (
@@ -10,7 +10,7 @@ export function GlossaryPicker({ onSelect }: GlossaryPickerProps) {
       fetcher={searchGlossary}
       renderItem={(g) => <span>{g.title ?? "—"}</span>}
       getKey={(g) => g.id ?? ""}
-      onSelect={(g) => g.id && onSelect(g.id)}
+      onSelect={(g) => g.id && onSelect(g.id, g.title ?? g.id)}
       placeholder="Поиск термина…"
     />
   );
