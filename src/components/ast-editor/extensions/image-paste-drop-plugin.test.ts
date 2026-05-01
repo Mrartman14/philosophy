@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Editor, Extension } from "@tiptap/core";
+import { Editor } from "@tiptap/core";
 import { buildExtensions } from "./index";
-import { createImagePasteDropPlugin } from "./image-paste-drop-plugin";
 import { makePngFile } from "../upload/__fixtures__/png-1x1";
 import type { SchemaSnapshot } from "../types";
 
@@ -30,19 +29,9 @@ const fullSnapshot: SchemaSnapshot = {
   exclusiveCategories: [],
 };
 
-const wrap = Extension.create({
-  name: "wrap",
-  addProseMirrorPlugins() {
-    return [createImagePasteDropPlugin()];
-  },
-});
-
 function makeEditor(): Editor {
   return new Editor({
-    extensions: [
-      ...buildExtensions({ snapshot: fullSnapshot, context: "document" }),
-      wrap,
-    ],
+    extensions: buildExtensions({ snapshot: fullSnapshot, context: "document" }),
   });
 }
 
