@@ -17,6 +17,7 @@ export function MediaPicker({ onSelect }: MediaPickerProps) {
         <label><input type="radio" name="media-type" checked={type === "audio"} onChange={() => setType("audio")} /> аудио</label>
       </fieldset>
       <AsyncCombobox<MediaSummary>
+        key={type ?? "all"}
         fetcher={fetcher}
         renderItem={(m) => <span>{m.filename ?? "—"}</span>}
         getKey={(m) => m.id ?? ""}
