@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 export interface AsyncComboboxProps<T> {
   fetcher: (q: string, offset: number, limit: number) => Promise<{ data: T[]; total: number | null }>;
@@ -24,6 +24,7 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
   const errorCopy = props.copy?.error ?? "Ошибка загрузки";
   const loadingCopy = props.copy?.loading ?? "Загрузка…";
 
+  const listboxId = useId();
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const [s, setS] = useState<State<T>>({ items: [], total: null, loading: false, error: null });
@@ -72,14 +73,14 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
         ref={inputRef}
         role="combobox"
         aria-expanded
-        aria-controls="async-combobox-list"
+        aria-controls={listboxId}
         type="text"
         value={q}
         placeholder={props.placeholder}
         onChange={(e) => setQ(e.target.value)}
         onKeyDown={onKey}
       />
-      <ul id="async-combobox-list" role="listbox">
+      <ul id={listboxId} role="listbox">
         {s.items.map((item, i) => (
           <li
             key={props.getKey(item)}

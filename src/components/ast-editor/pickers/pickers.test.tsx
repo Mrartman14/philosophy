@@ -13,11 +13,18 @@ vi.mock("./actions", () => ({
 
 import * as actions from "./actions";
 import { LecturePicker } from "./lecture-picker";
+import { GlossaryPicker } from "./glossary-picker";
+import { DocumentPicker } from "./document-picker";
+import { CanvasPicker } from "./canvas-picker";
 import { MediaPicker } from "./media-picker";
+import { CommentPicker } from "./comment-picker";
 import { Comment2StagePicker } from "./comment-2stage-picker";
 
 const mocked = actions as unknown as {
   searchLectures: ReturnType<typeof vi.fn>;
+  searchGlossary: ReturnType<typeof vi.fn>;
+  searchDocuments: ReturnType<typeof vi.fn>;
+  searchCanvases: ReturnType<typeof vi.fn>;
   searchMedia: ReturnType<typeof vi.fn>;
   searchCommentsByLecture: ReturnType<typeof vi.fn>;
 };
@@ -43,6 +50,65 @@ describe("LecturePicker", () => {
       { timeout: 600 },
     );
     expect(await screen.findByText("Античность")).toBeInTheDocument();
+  });
+});
+
+describe("GlossaryPicker", () => {
+  it("calls searchGlossary and renders titles, propagates id on select", async () => {
+    mocked.searchGlossary.mockResolvedValue({
+      data: [{ id: "g1", title: "Эйдос" }],
+      total: 1,
+    });
+    const onSelect = vi.fn();
+    render(<GlossaryPicker onSelect={onSelect} />);
+    await screen.findByText("Эйдос");
+    expect(mocked.searchGlossary).toHaveBeenCalled();
+    fireEvent.mouseDown(screen.getByText("Эйдос"));
+    expect(onSelect).toHaveBeenCalledWith("g1");
+  });
+});
+
+describe("DocumentPicker", () => {
+  it("calls searchDocuments and renders filenames, propagates id on select", async () => {
+    mocked.searchDocuments.mockResolvedValue({
+      data: [{ id: "d1", filename: "essay.pdf" }],
+      total: 1,
+    });
+    const onSelect = vi.fn();
+    render(<DocumentPicker onSelect={onSelect} />);
+    await screen.findByText("essay.pdf");
+    fireEvent.mouseDown(screen.getByText("essay.pdf"));
+    expect(onSelect).toHaveBeenCalledWith("d1");
+  });
+});
+
+describe("CanvasPicker", () => {
+  it("calls searchCanvases and renders titles, propagates id on select", async () => {
+    mocked.searchCanvases.mockResolvedValue({
+      data: [{ id: "cv1", title: "Дерево понятий" }],
+      total: 1,
+    });
+    const onSelect = vi.fn();
+    render(<CanvasPicker onSelect={onSelect} />);
+    await screen.findByText("Дерево понятий");
+    fireEvent.mouseDown(screen.getByText("Дерево понятий"));
+    expect(onSelect).toHaveBeenCalledWith("cv1");
+  });
+});
+
+describe("CommentPicker", () => {
+  it("calls searchCommentsByLecture with lectureId and renders snippets", async () => {
+    mocked.searchCommentsByLecture.mockResolvedValue({
+      data: [{ id: "c1", snippet: "интересная мысль" }],
+      total: 1,
+    });
+    const onSelect = vi.fn();
+    render(<CommentPicker lectureId="L42" onSelect={onSelect} />);
+    await screen.findByText("интересная мысль");
+    expect(mocked.searchCommentsByLecture).toHaveBeenCalled();
+    expect(mocked.searchCommentsByLecture.mock.calls[0]![0]).toBe("L42");
+    fireEvent.mouseDown(screen.getByText("интересная мысль"));
+    expect(onSelect).toHaveBeenCalledWith("c1");
   });
 });
 

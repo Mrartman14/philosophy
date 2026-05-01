@@ -8,7 +8,7 @@ export function LecturePicker({ onSelect }: LecturePickerProps) {
   return (
     <AsyncCombobox<Lecture>
       fetcher={searchLectures}
-      renderItem={(l) => <span>{l.title}</span>}
+      renderItem={(l) => <span>{l.title || "—"}</span>}
       getKey={(l) => l.id}
       onSelect={(l) => onSelect(l.id)}
       placeholder="Поиск лекции…"
