@@ -1,4 +1,5 @@
 "use client";
+import { useCallback } from "react";
 import { AsyncCombobox } from "./async-combobox";
 import { searchCommentsByLecture, type CommentSummary } from "./actions";
 
@@ -8,8 +9,10 @@ export interface CommentPickerProps {
 }
 
 export function CommentPicker({ lectureId, onSelect }: CommentPickerProps) {
-  const fetcher = (q: string, offset: number, limit: number) =>
-    searchCommentsByLecture(lectureId, q, offset, limit);
+  const fetcher = useCallback(
+    (q: string, offset: number, limit: number) => searchCommentsByLecture(lectureId, q, offset, limit),
+    [lectureId],
+  );
   return (
     <AsyncCombobox<CommentSummary>
       fetcher={fetcher}

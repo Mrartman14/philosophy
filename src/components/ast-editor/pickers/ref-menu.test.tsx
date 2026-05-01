@@ -61,4 +61,28 @@ describe("RefMenu", () => {
     expect(onClose).toHaveBeenCalledOnce();
     editor.destroy();
   });
+
+  it("inserts text+mark on collapsed selection (id rendered as visible text)", async () => {
+    mocked.searchLectures.mockResolvedValue({
+      data: [{ id: "l1", title: "L1" }],
+      total: 1,
+    });
+    const editor = new Editor({
+      extensions: buildExtensions({ snapshot: fullSnapshot, context: "document" }),
+      content: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "hello" }] }] },
+    });
+    // collapsed cursor at end of "hello" (offset 6)
+    editor.commands.setTextSelection(6);
+
+    render(<RefMenu editor={editor} onClose={() => undefined} />);
+    fireEvent.click(screen.getByRole("button", { name: /лекция/i }));
+    fireEvent.mouseDown(await screen.findByText("L1"));
+
+    // Document text now includes the inserted "l1" plus original "hello"
+    expect(editor.getText()).toContain("l1");
+    const json = JSON.stringify(editor.getJSON());
+    expect(json).toContain('"type":"lecture_ref"');
+    expect(json).toContain('"id":"l1"');
+    editor.destroy();
+  });
 });

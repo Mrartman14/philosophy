@@ -91,4 +91,78 @@ describe("AsyncCombobox", () => {
     await screen.findByText("2A");
     expect(fetcher.mock.calls[1]![1]).toBe(2);
   });
+
+  it("Esc calls onClose when provided", async () => {
+    const onClose = vi.fn();
+    const fetcher = vi.fn(async () => ({ data: [] as Item[], total: 0 as number | null }));
+    render(
+      <AsyncCombobox<Item>
+        fetcher={fetcher}
+        renderItem={() => null}
+        getKey={() => "k"}
+        onSelect={() => undefined}
+        onClose={onClose}
+      />,
+    );
+    fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("refetches when fetcher identity changes (filter-driven closures)", async () => {
+    const fetcherA = vi.fn(async () => ({ data: [{ id: "a", name: "A" }], total: 1 as number | null }));
+    const fetcherB = vi.fn(async () => ({ data: [{ id: "b", name: "B" }], total: 1 as number | null }));
+    const { rerender } = render(
+      <AsyncCombobox<Item>
+        fetcher={fetcherA}
+        renderItem={(it) => <span>{it.name}</span>}
+        getKey={(it) => it.id}
+        onSelect={() => undefined}
+      />,
+    );
+    await screen.findByText("A");
+    rerender(
+      <AsyncCombobox<Item>
+        fetcher={fetcherB}
+        renderItem={(it) => <span>{it.name}</span>}
+        getKey={(it) => it.id}
+        onSelect={() => undefined}
+      />,
+    );
+    await screen.findByText("B");
+    expect(fetcherB).toHaveBeenCalled();
+  });
+
+  it("drops stale responses when fetcher resolves out of order", async () => {
+    // Two pending fetches; resolve the OLDER one LATER. The component
+    // should ignore the late stale response and keep the latest items.
+    let resolveOld!: (v: { data: Item[]; total: number | null }) => void;
+    let resolveNew!: (v: { data: Item[]; total: number | null }) => void;
+    const fetcherOld = vi.fn(() => new Promise<{ data: Item[]; total: number | null }>((r) => { resolveOld = r; }));
+    const fetcherNew = vi.fn(() => new Promise<{ data: Item[]; total: number | null }>((r) => { resolveNew = r; }));
+
+    const { rerender } = render(
+      <AsyncCombobox<Item>
+        fetcher={fetcherOld}
+        renderItem={(it) => <span>{it.name}</span>}
+        getKey={(it) => it.id}
+        onSelect={() => undefined}
+      />,
+    );
+    rerender(
+      <AsyncCombobox<Item>
+        fetcher={fetcherNew}
+        renderItem={(it) => <span>{it.name}</span>}
+        getKey={(it) => it.id}
+        onSelect={() => undefined}
+      />,
+    );
+    // Resolve NEW first, then OLD. Stale OLD should be ignored.
+    resolveNew({ data: [{ id: "n", name: "NEW" }], total: 1 });
+    await screen.findByText("NEW");
+    resolveOld({ data: [{ id: "o", name: "OLD" }], total: 1 });
+    // Give the microtask queue a tick
+    await new Promise((r) => setTimeout(r, 30));
+    expect(screen.queryByText("OLD")).not.toBeInTheDocument();
+    expect(screen.getByText("NEW")).toBeInTheDocument();
+  });
 });
