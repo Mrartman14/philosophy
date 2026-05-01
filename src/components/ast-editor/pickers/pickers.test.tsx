@@ -54,7 +54,7 @@ describe("LecturePicker", () => {
 });
 
 describe("GlossaryPicker", () => {
-  it("calls searchGlossary and renders titles, propagates id on select", async () => {
+  it("calls searchGlossary and renders titles, propagates id+label on select", async () => {
     mocked.searchGlossary.mockResolvedValue({
       data: [{ id: "g1", title: "Эйдос" }],
       total: 1,
@@ -64,12 +64,12 @@ describe("GlossaryPicker", () => {
     await screen.findByText("Эйдос");
     expect(mocked.searchGlossary).toHaveBeenCalled();
     fireEvent.mouseDown(screen.getByText("Эйдос"));
-    expect(onSelect).toHaveBeenCalledWith("g1");
+    expect(onSelect).toHaveBeenCalledWith("g1", "Эйдос");
   });
 });
 
 describe("DocumentPicker", () => {
-  it("calls searchDocuments and renders filenames, propagates id on select", async () => {
+  it("calls searchDocuments and renders filenames, propagates id+label on select", async () => {
     mocked.searchDocuments.mockResolvedValue({
       data: [{ id: "d1", filename: "essay.pdf" }],
       total: 1,
@@ -78,12 +78,12 @@ describe("DocumentPicker", () => {
     render(<DocumentPicker onSelect={onSelect} />);
     await screen.findByText("essay.pdf");
     fireEvent.mouseDown(screen.getByText("essay.pdf"));
-    expect(onSelect).toHaveBeenCalledWith("d1");
+    expect(onSelect).toHaveBeenCalledWith("d1", "essay.pdf");
   });
 });
 
 describe("CanvasPicker", () => {
-  it("calls searchCanvases and renders titles, propagates id on select", async () => {
+  it("calls searchCanvases and renders titles, propagates id+label on select", async () => {
     mocked.searchCanvases.mockResolvedValue({
       data: [{ id: "cv1", title: "Дерево понятий" }],
       total: 1,
@@ -92,7 +92,7 @@ describe("CanvasPicker", () => {
     render(<CanvasPicker onSelect={onSelect} />);
     await screen.findByText("Дерево понятий");
     fireEvent.mouseDown(screen.getByText("Дерево понятий"));
-    expect(onSelect).toHaveBeenCalledWith("cv1");
+    expect(onSelect).toHaveBeenCalledWith("cv1", "Дерево понятий");
   });
 });
 
@@ -108,7 +108,7 @@ describe("CommentPicker", () => {
     expect(mocked.searchCommentsByLecture).toHaveBeenCalled();
     expect(mocked.searchCommentsByLecture.mock.calls[0]![0]).toBe("L42");
     fireEvent.mouseDown(screen.getByText("интересная мысль"));
-    expect(onSelect).toHaveBeenCalledWith("c1");
+    expect(onSelect).toHaveBeenCalledWith("c1", "интересная мысль");
   });
 });
 
@@ -146,7 +146,7 @@ describe("Comment2StagePicker", () => {
     fireEvent.mouseDown(await screen.findByText("L1"));
     await screen.findByText(/шаг 2/i);
     fireEvent.mouseDown(await screen.findByText("hi"));
-    expect(onSelect).toHaveBeenCalledWith("c1");
+    expect(onSelect).toHaveBeenCalledWith("c1", "hi");
   });
 
   it("starts at step 2 with defaultLectureId, back returns to step 1", async () => {

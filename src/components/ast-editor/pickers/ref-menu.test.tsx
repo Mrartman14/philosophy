@@ -62,7 +62,7 @@ describe("RefMenu", () => {
     editor.destroy();
   });
 
-  it("inserts text+mark on collapsed selection (id rendered as visible text)", async () => {
+  it("inserts text+mark on collapsed selection (label rendered as visible text)", async () => {
     mocked.searchLectures.mockResolvedValue({
       data: [{ id: "l1", title: "L1" }],
       total: 1,
@@ -78,8 +78,8 @@ describe("RefMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /лекция/i }));
     fireEvent.mouseDown(await screen.findByText("L1"));
 
-    // Document text now includes the inserted "l1" plus original "hello"
-    expect(editor.getText()).toContain("l1");
+    // Visible text uses the human-readable title ("L1"), mark still carries id "l1".
+    expect(editor.getText()).toContain("L1");
     const json = JSON.stringify(editor.getJSON());
     expect(json).toContain('"type":"lecture_ref"');
     expect(json).toContain('"id":"l1"');

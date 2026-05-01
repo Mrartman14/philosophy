@@ -5,7 +5,7 @@ import { searchCommentsByLecture, type CommentSummary } from "./actions";
 
 export interface CommentPickerProps {
   lectureId: string;
-  onSelect: (id: string) => void;
+  onSelect: (id: string, label: string) => void;
 }
 
 export function CommentPicker({ lectureId, onSelect }: CommentPickerProps) {
@@ -18,7 +18,7 @@ export function CommentPicker({ lectureId, onSelect }: CommentPickerProps) {
       fetcher={fetcher}
       renderItem={(c) => <span>{c.snippet ?? "—"}</span>}
       getKey={(c) => c.id ?? ""}
-      onSelect={(c) => c.id && onSelect(c.id)}
+      onSelect={(c) => c.id && onSelect(c.id, c.snippet ?? c.id)}
       placeholder="Поиск комментария в выбранной лекции…"
     />
   );

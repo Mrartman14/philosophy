@@ -37,18 +37,18 @@ export interface RefMenuProps {
 export function RefMenu({ editor, defaultLectureId, onClose }: RefMenuProps) {
   const [cat, setCat] = useState<Category | null>(null);
 
-  const apply = (markName: string, id: string) => {
+  const apply = (markName: string, id: string, label: string) => {
     const empty = editor.state.selection.empty;
     if (empty) {
-      // Collapsed selection — insert label as text carrying the mark; otherwise
-      // setMark only goes into storedMarks and the user sees no visible nav-ref.
-      // Same pattern as LinkPopover (toolbar).
+      // Collapsed selection — insert the human-readable label as text carrying
+      // the mark; otherwise setMark only goes into storedMarks and the user
+      // sees no visible nav-ref. Same pattern as LinkPopover (toolbar).
       editor
         .chain()
         .focus()
         .insertContent({
           type: "text",
-          text: id,
+          text: label,
           marks: [{ type: markName, attrs: { id } }],
         })
         .run();
@@ -58,8 +58,8 @@ export function RefMenu({ editor, defaultLectureId, onClose }: RefMenuProps) {
     onClose?.();
   };
 
-  const onSelect = (id: string) => {
-    if (cat) apply(MARK_FOR[cat], id);
+  const onSelect = (id: string, label: string) => {
+    if (cat) apply(MARK_FOR[cat], id, label);
   };
 
   return (

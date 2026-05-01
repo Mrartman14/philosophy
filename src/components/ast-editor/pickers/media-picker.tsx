@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { AsyncCombobox } from "./async-combobox";
 import { searchMedia, type MediaSummary } from "./actions";
 
-export interface MediaPickerProps { onSelect: (id: string) => void }
+export interface MediaPickerProps { onSelect: (id: string, label: string) => void }
 
 export function MediaPicker({ onSelect }: MediaPickerProps) {
   const [type, setType] = useState<"video" | "audio" | undefined>(undefined);
@@ -23,7 +23,7 @@ export function MediaPicker({ onSelect }: MediaPickerProps) {
         fetcher={fetcher}
         renderItem={(m) => <span>{m.filename ?? "—"}</span>}
         getKey={(m) => m.id ?? ""}
-        onSelect={(m) => m.id && onSelect(m.id)}
+        onSelect={(m) => m.id && onSelect(m.id, m.filename ?? m.id)}
         placeholder="Поиск медиа…"
       />
     </div>
