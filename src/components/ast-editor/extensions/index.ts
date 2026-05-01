@@ -6,6 +6,7 @@ import type { EntityContext, SchemaSnapshot } from "../types";
 import { createLimitsPlugin } from "../validation/limits-plugin";
 import { createAttrPlugin } from "../validation/attr-plugin";
 import { createDedupBlockIdPlugin } from "./dedup-block-id-plugin";
+import { createImagePasteDropPlugin } from "./image-paste-drop-plugin";
 import { ParagraphExt } from "./nodes/paragraph";
 import { BlockquoteExt } from "./nodes/blockquote";
 import { ThematicBreakExt } from "./nodes/thematic-break";
@@ -75,11 +76,15 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
   const validation = Extension.create({
     name: "ast-validation",
     addProseMirrorPlugins() {
-      return [
+      const plugins = [
         createLimitsPlugin(snapshot, level),
         createAttrPlugin(snapshot),
         createDedupBlockIdPlugin(),
       ];
+      if (allowedBlocks.has("image")) {
+        plugins.push(createImagePasteDropPlugin());
+      }
+      return plugins;
     },
   });
   exts.push(validation);
