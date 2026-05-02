@@ -17,6 +17,20 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       const Tag = (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
       return <Tag><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
     }
+    case "list": {
+      const kind = (block.attrs as { kind?: unknown } | undefined)?.kind;
+      const Tag = kind === "ordered" ? "ol" : "ul";
+      const items = (block.content ?? []) as unknown as AstBlock[];
+      return (
+        <Tag>
+          {items.map((child, i) => (
+            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
+          ))}
+        </Tag>
+      );
+    }
+    case "list_item":
+      return <li><InlineRenderer nodes={block.content} ctx={ctx} /></li>;
     default:
       return (
         <div data-unsupported={block.type ?? "unknown"}>

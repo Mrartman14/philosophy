@@ -47,3 +47,35 @@ export const HEADING_NO_LEVEL: AstBlock = {
   attrs: {},
   content: [{ type: "text", text: "Заголовок без уровня" }],
 };
+
+export const BULLET_LIST: AstBlock = {
+  id: "ul1",
+  type: "list",
+  attrs: { kind: "bullet" },
+  content: [
+    {
+      type: "list_item",
+      content: [
+        { type: "text", text: "Первый" },
+      ],
+    } as unknown as AstBlock["content"][number],
+    {
+      type: "list_item",
+      content: [
+        { type: "text", text: "Второй" },
+      ],
+    } as unknown as AstBlock["content"][number],
+  ],
+};
+
+export const ORDERED_LIST: AstBlock = {
+  id: "ol1",
+  type: "list",
+  attrs: { kind: "ordered" },
+  content: [
+    {
+      type: "list_item",
+      content: [{ type: "text", text: "Один" }],
+    } as unknown as AstBlock["content"][number],
+  ],
+};

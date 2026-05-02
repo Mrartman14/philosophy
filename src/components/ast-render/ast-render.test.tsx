@@ -9,6 +9,8 @@ import {
   HEADING_LEVEL_1,
   HEADING_LEVEL_3,
   HEADING_NO_LEVEL,
+  BULLET_LIST,
+  ORDERED_LIST,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -42,5 +44,20 @@ describe("AstRender — heading", () => {
   it("без level или с невалидным level рендерит <h2>", () => {
     const { container } = render(<AstRender blocks={[HEADING_NO_LEVEL]} />);
     expect(container.querySelector("h2")?.textContent).toBe("Заголовок без уровня");
+  });
+});
+
+describe("AstRender — list", () => {
+  it("рендерит bullet-list как <ul>", () => {
+    const { container } = render(<AstRender blocks={[BULLET_LIST]} />);
+    expect(container.querySelector("ul")).not.toBeNull();
+    expect(container.querySelectorAll("ul > li")).toHaveLength(2);
+    expect(container.querySelector("ul > li")?.textContent).toBe("Первый");
+  });
+
+  it("рендерит ordered-list как <ol>", () => {
+    const { container } = render(<AstRender blocks={[ORDERED_LIST]} />);
+    expect(container.querySelector("ol")).not.toBeNull();
+    expect(container.querySelectorAll("ol > li")).toHaveLength(1);
   });
 });
