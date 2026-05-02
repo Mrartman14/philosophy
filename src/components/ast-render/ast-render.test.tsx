@@ -158,3 +158,22 @@ describe("AstRender — ref-marks", () => {
     expect(container.querySelector("p")?.textContent).toBe("пустой");
   });
 });
+
+describe("AstRender — unsupported marks fallback", () => {
+  it("неизвестный mark рендерится как plain text с data-unsupported-mark", () => {
+    const block: import("./types").AstBlock = {
+      id: "p-unk",
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "media-ref",
+          marks: [{ type: "media_ref", attrs: { id: "x" } }],
+        },
+      ],
+    };
+    const { container } = render(<AstRender blocks={[block]} />);
+    expect(container.querySelector("[data-unsupported-mark='media_ref']")).not.toBeNull();
+    expect(container.querySelector("p")?.textContent).toBe("media-ref");
+  });
+});

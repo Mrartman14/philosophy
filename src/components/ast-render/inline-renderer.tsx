@@ -56,8 +56,13 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
       return renderRefMark(mark, children, ctx.renderLectureRef ?? defaultLectureRef);
     case "document_ref":
       return renderRefMark(mark, children, ctx.renderDocumentRef ?? defaultDocumentRef);
-    default:
+    default: {
+      if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.warn(`AstRender: unsupported mark type "${mark.type}"`);
+      }
       return <span data-unsupported-mark={mark.type ?? "unknown"}>{children}</span>;
+    }
   }
 }
 

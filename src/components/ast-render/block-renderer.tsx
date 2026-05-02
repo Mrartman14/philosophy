@@ -46,12 +46,17 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
     }
     case "image":
       return <ImageNode attrs={block.attrs} />;
-    default:
+    default: {
+      if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.warn(`AstRender: unsupported block type "${block.type}"`);
+      }
       return (
         <div data-unsupported={block.type ?? "unknown"}>
           <InlineRenderer nodes={block.content} ctx={ctx} />
         </div>
       );
+    }
   }
 }
 
