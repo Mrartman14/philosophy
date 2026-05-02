@@ -1,21 +1,43 @@
 // src/components/ast-render/inline-renderer.tsx
 import type { ReactNode } from "react";
-import type { AstNode, AstRenderContext } from "./types";
+import type { AstMark, AstNode, AstRenderContext } from "./types";
 
 interface Props {
   nodes: AstNode[] | undefined;
   ctx: AstRenderContext;
 }
 
-/**
- * Рендерит массив инлайн-узлов (text / hard_break) с применёнными marks.
- * Marks применяются от внутренней к внешней (порядок в массиве `marks`).
- */
-export function InlineRenderer({ nodes, ctx: _ctx }: Props): ReactNode {
+export function InlineRenderer({ nodes, ctx }: Props): ReactNode {
   if (!nodes) return null;
   return nodes.map((node, i) => {
-    if (node.type === "text") return <span key={i}>{node.text ?? ""}</span>;
     if (node.type === "hard_break") return <br key={i} />;
+    if (node.type === "text") {
+      return <TextWithMarks key={i} text={node.text ?? ""} marks={node.marks} ctx={ctx} />;
+    }
     return <span key={i} data-unsupported={node.type ?? "unknown"}>{node.text ?? ""}</span>;
   });
+}
+
+interface TextWithMarksProps {
+  text: string;
+  marks: AstMark[] | undefined;
+  ctx: AstRenderContext;
+}
+
+function TextWithMarks({ text, marks, ctx: _ctx }: TextWithMarksProps): ReactNode {
+  if (!marks || marks.length === 0) return text;
+  return marks.reduce<ReactNode>((children, mark) => applyMark(mark, children), text);
+}
+
+function applyMark(mark: AstMark, children: ReactNode): ReactNode {
+  switch (mark.type) {
+    case "bold":
+      return <strong>{children}</strong>;
+    case "italic":
+      return <em>{children}</em>;
+    case "code":
+      return <code>{children}</code>;
+    default:
+      return <span data-unsupported-mark={mark.type ?? "unknown"}>{children}</span>;
+  }
 }
