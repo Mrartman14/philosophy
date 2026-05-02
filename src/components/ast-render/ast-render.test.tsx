@@ -17,6 +17,9 @@ import {
   PARAGRAPH_WITH_DANGEROUS_LINK,
   IMAGE_BLOCK,
   IMAGE_BLOCK_NO_SRC,
+  PARAGRAPH_WITH_GLOSSARY_REF,
+  PARAGRAPH_WITH_LECTURE_REF,
+  PARAGRAPH_WITH_EMPTY_REF,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -116,5 +119,42 @@ describe("AstRender — image node", () => {
     const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_SRC]} />);
     expect(container.querySelector("img")).toBeNull();
     expect(container.querySelector("[data-unsupported]")).not.toBeNull();
+  });
+});
+
+describe("AstRender — ref-marks", () => {
+  it("default: glossary_ref → <a href='/glossary/{id}'>", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_GLOSSARY_REF]} />);
+    const a = container.querySelector("a");
+    expect(a?.getAttribute("href")).toBe("/glossary/term-uuid-123");
+    expect(a?.textContent).toBe("термин");
+  });
+
+  it("default: lecture_ref → <a href='/lectures/{id}'>", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_LECTURE_REF]} />);
+    expect(container.querySelector("a")?.getAttribute("href")).toBe("/lectures/lec-uuid-456");
+  });
+
+  it("ctx.renderGlossaryRef переопределяет рендер", () => {
+    const { container } = render(
+      <AstRender
+        blocks={[PARAGRAPH_WITH_GLOSSARY_REF]}
+        ctx={{
+          renderGlossaryRef: ({ id, label }) => (
+            <span data-custom-glossary-ref={id}>{label}</span>
+          ),
+        }}
+      />
+    );
+    expect(container.querySelector("a")).toBeNull();
+    expect(
+      container.querySelector("[data-custom-glossary-ref='term-uuid-123']")?.textContent
+    ).toBe("термин");
+  });
+
+  it("ref с пустым id рендерится как plain text", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_EMPTY_REF]} />);
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.querySelector("p")?.textContent).toBe("пустой");
   });
 });

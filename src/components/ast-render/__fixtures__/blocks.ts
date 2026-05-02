@@ -137,3 +137,40 @@ export const IMAGE_BLOCK_NO_SRC: AstBlock = {
   attrs: { alt: "Без src" },
   content: [],
 };
+
+export const PARAGRAPH_WITH_GLOSSARY_REF: AstBlock = {
+  id: "p-gref",
+  type: "paragraph",
+  content: [
+    { type: "text", text: "См. " },
+    {
+      type: "text",
+      text: "термин",
+      marks: [{ type: "glossary_ref", attrs: { id: "term-uuid-123" } }],
+    },
+  ],
+};
+
+export const PARAGRAPH_WITH_LECTURE_REF: AstBlock = {
+  id: "p-lref",
+  type: "paragraph",
+  content: [
+    {
+      type: "text",
+      text: "лекция",
+      marks: [{ type: "lecture_ref", attrs: { id: "lec-uuid-456" } }],
+    },
+  ],
+};
+
+export const PARAGRAPH_WITH_EMPTY_REF: AstBlock = {
+  id: "p-empty-ref",
+  type: "paragraph",
+  content: [
+    {
+      type: "text",
+      text: "пустой",
+      marks: [{ type: "glossary_ref", attrs: { id: "" } }],
+    },
+  ],
+};
