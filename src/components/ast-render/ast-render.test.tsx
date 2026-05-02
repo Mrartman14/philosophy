@@ -177,3 +177,23 @@ describe("AstRender — unsupported marks fallback", () => {
     expect(container.querySelector("p")?.textContent).toBe("media-ref");
   });
 });
+
+describe("AstRender — combo snapshot", () => {
+  it("рендерит all-supported AST стабильно", () => {
+    const { container } = render(
+      <AstRender
+        blocks={[
+          HEADING_LEVEL_1,
+          PARAGRAPH_PLAIN,
+          PARAGRAPH_WITH_BOLD,
+          PARAGRAPH_WITH_LINK,
+          PARAGRAPH_WITH_GLOSSARY_REF,
+          BULLET_LIST,
+          CODE_BLOCK,
+          IMAGE_BLOCK,
+        ]}
+      />
+    );
+    expect(container.innerHTML).toMatchSnapshot();
+  });
+});
