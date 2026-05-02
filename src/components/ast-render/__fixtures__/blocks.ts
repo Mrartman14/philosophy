@@ -123,3 +123,17 @@ export const PARAGRAPH_WITH_DANGEROUS_LINK: AstBlock = {
     },
   ],
 };
+
+export const IMAGE_BLOCK: AstBlock = {
+  id: "img1",
+  type: "image",
+  attrs: { src: "/uploads/foo.png", alt: "Описание" },
+  content: [],
+};
+
+export const IMAGE_BLOCK_NO_SRC: AstBlock = {
+  id: "img2",
+  type: "image",
+  attrs: { alt: "Без src" },
+  content: [],
+};

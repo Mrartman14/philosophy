@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import type { AstBlock, AstRenderContext } from "./types";
 import { InlineRenderer } from "./inline-renderer";
+import { ImageNode } from "./nodes/image";
 
 interface Props {
   block: AstBlock;
@@ -43,6 +44,8 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
         </pre>
       );
     }
+    case "image":
+      return <ImageNode attrs={block.attrs} />;
     default:
       return (
         <div data-unsupported={block.type ?? "unknown"}>

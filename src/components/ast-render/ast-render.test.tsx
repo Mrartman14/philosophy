@@ -15,6 +15,8 @@ import {
   PARAGRAPH_WITH_LINK,
   PARAGRAPH_WITH_RELATIVE_LINK,
   PARAGRAPH_WITH_DANGEROUS_LINK,
+  IMAGE_BLOCK,
+  IMAGE_BLOCK_NO_SRC,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -98,5 +100,21 @@ describe("AstRender — link mark + safety", () => {
     const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_DANGEROUS_LINK]} />);
     expect(container.querySelector("a")).toBeNull();
     expect(container.querySelector("p")?.textContent).toBe("Опасная");
+  });
+});
+
+describe("AstRender — image node", () => {
+  it("рендерит <img> с src и alt", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK]} />);
+    const img = container.querySelector("img");
+    expect(img?.getAttribute("src")).toBe("/uploads/foo.png");
+    expect(img?.getAttribute("alt")).toBe("Описание");
+    expect(img?.getAttribute("loading")).toBe("lazy");
+  });
+
+  it("без src рендерит data-unsupported (без <img>)", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_SRC]} />);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("[data-unsupported]")).not.toBeNull();
   });
 });
