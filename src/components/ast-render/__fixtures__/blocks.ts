@@ -163,6 +163,13 @@ export const PARAGRAPH_WITH_LECTURE_REF: AstBlock = {
   ],
 };
 
+export const IMAGE_BLOCK_DANGEROUS_SRC: AstBlock = {
+  id: "img-bad",
+  type: "image",
+  attrs: { src: "javascript:alert(1)", alt: "bad" },
+  content: [],
+};
+
 export const PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK: AstBlock = {
   id: "p-link-pr",
   type: "paragraph",

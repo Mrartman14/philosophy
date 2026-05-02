@@ -21,6 +21,7 @@ import {
   PARAGRAPH_WITH_LECTURE_REF,
   PARAGRAPH_WITH_EMPTY_REF,
   PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK,
+  IMAGE_BLOCK_DANGEROUS_SRC,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -126,6 +127,12 @@ describe("AstRender — image node", () => {
     const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_SRC]} />);
     expect(container.querySelector("img")).toBeNull();
     expect(container.querySelector("[data-unsupported]")).not.toBeNull();
+  });
+
+  it("javascript: src отклоняется как unsupported", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_DANGEROUS_SRC]} />);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("[data-unsupported='image']")).not.toBeNull();
   });
 });
 
