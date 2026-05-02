@@ -22,14 +22,18 @@ export function GlossaryList({ items, total }: Props) {
     <div className="flex flex-col gap-2">
       <p className="text-sm text-(--color-description)">Всего: {total}</p>
       <ul className="flex flex-col divide-y divide-(--color-border)">
-        {sorted.map((term) => (
-          <li key={term.id} className="py-2">
-            <Link
-              href={`/glossary/${term.id}`}
-              className="text-base hover:underline"
-            >
-              {term.title}
-            </Link>
+        {sorted.map((term, i) => (
+          <li key={term.id ?? `idx-${i}`} className="py-2">
+            {term.id ? (
+              <Link
+                href={`/glossary/${term.id}`}
+                className="text-base hover:underline"
+              >
+                {term.title}
+              </Link>
+            ) : (
+              <span className="text-base">{term.title}</span>
+            )}
           </li>
         ))}
       </ul>
