@@ -83,10 +83,15 @@ export const updateTermBlocks = createFormAction(async (formData) => {
   return (data?.data ?? null) as Term | null;
 });
 
-// deleteTerm — Task 19
-
-// Заглушки, чтобы TS не жаловался на unused imports пока другие actions не дописаны
-// (удаляются в Task 19):
-void canDeleteTerm;
-void TermIdSchema;
-void createAction;
+export const deleteTerm = createAction(async (rawId: string) => {
+  const me = await getMe();
+  const { id } = TermIdSchema.parse({ id: rawId });
+  requireCapability(me, canDeleteTerm);
+  const api = await createApiClient();
+  const { error } = await api.DELETE("/api/admin/glossary/{id}", {
+    params: { path: { id } },
+  });
+  if (error) rethrowApiError(error);
+  revalidateEntity(Tags.GLOSSARY);
+  return undefined;
+});
