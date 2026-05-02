@@ -48,8 +48,8 @@ function rethrowApiError(err: ApiError | undefined): never {
 
 export const createTerm = createFormAction(async (formData) => {
   const me = await getMe();
-  const input = parseFormData(TermCreateSchema, formData);
   requireCapability(me, canCreateTerm);
+  const input = parseFormData(TermCreateSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/glossary", {
     body: {
@@ -70,8 +70,8 @@ export const createTerm = createFormAction(async (formData) => {
 
 export const updateTermBlocks = createFormAction(async (formData) => {
   const me = await getMe();
-  const input = parseFormData(TermBlocksUpdateSchema, formData);
   requireCapability(me, canUpdateTerm);
+  const input = parseFormData(TermBlocksUpdateSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/glossary/{id}/blocks", {
     params: { path: { id: input.id } },
@@ -85,8 +85,8 @@ export const updateTermBlocks = createFormAction(async (formData) => {
 
 export const deleteTerm = createAction(async (rawId: string) => {
   const me = await getMe();
-  const { id } = TermIdSchema.parse({ id: rawId });
   requireCapability(me, canDeleteTerm);
+  const { id } = TermIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/glossary/{id}", {
     params: { path: { id } },
