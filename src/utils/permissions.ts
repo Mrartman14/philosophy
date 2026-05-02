@@ -22,6 +22,9 @@ export type Capability =
   | "user.moderate"
   | "user.list"
   | "push.send"
+  | "glossary.create"
+  | "glossary.update"
+  | "glossary.delete"
   | "admin.access";
 
 /**

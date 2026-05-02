@@ -25,6 +25,13 @@ function buildNavItems(me: MaybeMe): NavItem[] {
   ) {
     items.push({ href: "/admin/lectures", label: "Лекции" });
   }
+  if (
+    can(me, "glossary.create") ||
+    can(me, "glossary.update") ||
+    can(me, "glossary.delete")
+  ) {
+    items.push({ href: "/admin/glossary", label: "Глоссарий" });
+  }
   if (can(me, "comment.moderate")) {
     items.push({ href: "/admin/comments", label: "Комментарии" });
   }
