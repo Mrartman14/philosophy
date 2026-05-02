@@ -1,5 +1,5 @@
 // src/components/ast-render/__fixtures__/blocks.ts
-import type { AstBlock } from "../types";
+import type { AstBlock, AstNode } from "../types";
 
 export const PARAGRAPH_PLAIN: AstBlock = {
   id: "p1",
@@ -58,13 +58,13 @@ export const BULLET_LIST: AstBlock = {
       content: [
         { type: "text", text: "Первый" },
       ],
-    } as unknown as AstBlock["content"][number],
+    } as unknown as AstNode,
     {
       type: "list_item",
       content: [
         { type: "text", text: "Второй" },
       ],
-    } as unknown as AstBlock["content"][number],
+    } as unknown as AstNode,
   ],
 };
 
@@ -76,7 +76,7 @@ export const ORDERED_LIST: AstBlock = {
     {
       type: "list_item",
       content: [{ type: "text", text: "Один" }],
-    } as unknown as AstBlock["content"][number],
+    } as unknown as AstNode,
   ],
 };
 
