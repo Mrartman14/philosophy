@@ -1,14 +1,14 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { createApiClient } from "@/api/client";
+import { createPublicApiClient } from "@/api/client";
 import { loadSchema } from "./schema-cache";
 import type { SchemaSnapshot, SchemaResponse } from "./types";
 
 const SchemaContext = createContext<SchemaSnapshot | null>(null);
 
 async function defaultFetcher(): Promise<SchemaResponse> {
-  const api = await createApiClient();
+  const api = createPublicApiClient();
   // /api/ast/schema only declares 200 in the OpenAPI schema,
   // so openapi-fetch's typed `error` is `never` here.
   const { data } = await api.GET("/api/ast/schema");

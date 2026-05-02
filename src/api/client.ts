@@ -1,11 +1,11 @@
 import createClient from "openapi-fetch";
-import { cookies } from "next/headers";
 import type { paths } from "./schema";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 /** Серверный клиент — автоматически прикладывает JWT из cookie */
 export async function createApiClient() {
+  const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
