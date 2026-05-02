@@ -7,6 +7,7 @@ import {
   GlossaryEditForm,
   GlossaryDeleteButton,
 } from "@/features/glossary";
+import { SchemaContextProvider } from "@/components/ast-editor";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -31,7 +32,11 @@ export default async function AdminGlossaryEditPage({ params }: Props) {
         </p>
       </header>
 
-      {canUpdate && <GlossaryEditForm term={term} />}
+      {canUpdate && (
+        <SchemaContextProvider>
+          <GlossaryEditForm term={term} />
+        </SchemaContextProvider>
+      )}
 
       {canDelete && term.id && (
         <div>
