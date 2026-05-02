@@ -11,6 +11,7 @@ import {
   HEADING_NO_LEVEL,
   BULLET_LIST,
   ORDERED_LIST,
+  CODE_BLOCK,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -59,5 +60,19 @@ describe("AstRender — list", () => {
     const { container } = render(<AstRender blocks={[ORDERED_LIST]} />);
     expect(container.querySelector("ol")).not.toBeNull();
     expect(container.querySelectorAll("ol > li")).toHaveLength(1);
+  });
+});
+
+describe("AstRender — code_block", () => {
+  it("рендерит code_block как <pre><code>", () => {
+    const { container } = render(<AstRender blocks={[CODE_BLOCK]} />);
+    const code = container.querySelector("pre > code");
+    expect(code).not.toBeNull();
+    expect(code?.textContent).toBe("const x = 1;\nconst y = 2;");
+  });
+
+  it("проставляет data-language из attrs", () => {
+    const { container } = render(<AstRender blocks={[CODE_BLOCK]} />);
+    expect(container.querySelector("pre")?.getAttribute("data-language")).toBe("ts");
   });
 });

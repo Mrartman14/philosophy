@@ -79,3 +79,10 @@ export const ORDERED_LIST: AstBlock = {
     } as unknown as AstBlock["content"][number],
   ],
 };
+
+export const CODE_BLOCK: AstBlock = {
+  id: "code1",
+  type: "code_block",
+  attrs: { language: "ts" },
+  content: [{ type: "text", text: "const x = 1;\nconst y = 2;" }],
+};

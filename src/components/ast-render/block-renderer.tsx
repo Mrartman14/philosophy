@@ -31,6 +31,18 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
     }
     case "list_item":
       return <li><InlineRenderer nodes={block.content} ctx={ctx} /></li>;
+    case "code_block": {
+      const lang = (block.attrs as { language?: unknown } | undefined)?.language;
+      const langStr = typeof lang === "string" ? lang : undefined;
+      const text = (block.content ?? [])
+        .map((n) => (n.type === "text" ? n.text ?? "" : ""))
+        .join("");
+      return (
+        <pre data-language={langStr}>
+          <code>{text}</code>
+        </pre>
+      );
+    }
     default:
       return (
         <div data-unsupported={block.type ?? "unknown"}>
