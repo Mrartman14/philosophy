@@ -12,6 +12,9 @@ import {
   BULLET_LIST,
   ORDERED_LIST,
   CODE_BLOCK,
+  PARAGRAPH_WITH_LINK,
+  PARAGRAPH_WITH_RELATIVE_LINK,
+  PARAGRAPH_WITH_DANGEROUS_LINK,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -74,5 +77,26 @@ describe("AstRender — code_block", () => {
   it("проставляет data-language из attrs", () => {
     const { container } = render(<AstRender blocks={[CODE_BLOCK]} />);
     expect(container.querySelector("pre")?.getAttribute("data-language")).toBe("ts");
+  });
+});
+
+describe("AstRender — link mark + safety", () => {
+  it("рендерит mark link как <a> с rel=noopener", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_LINK]} />);
+    const a = container.querySelector("a");
+    expect(a?.getAttribute("href")).toBe("https://anthropic.com");
+    expect(a?.getAttribute("rel")).toContain("noopener");
+    expect(a?.textContent).toBe("Anthropic");
+  });
+
+  it("разрешает относительные href", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_RELATIVE_LINK]} />);
+    expect(container.querySelector("a")?.getAttribute("href")).toBe("/about");
+  });
+
+  it("javascript: URL рендерится как plain text без <a>", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_DANGEROUS_LINK]} />);
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.querySelector("p")?.textContent).toBe("Опасная");
   });
 });

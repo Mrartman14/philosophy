@@ -1,6 +1,7 @@
 // src/components/ast-render/inline-renderer.tsx
 import type { ReactNode } from "react";
 import type { AstMark, AstNode, AstRenderContext } from "./types";
+import { LinkMark } from "./marks/link";
 
 interface Props {
   nodes: AstNode[] | undefined;
@@ -37,6 +38,10 @@ function applyMark(mark: AstMark, children: ReactNode): ReactNode {
       return <em>{children}</em>;
     case "code":
       return <code>{children}</code>;
+    case "link": {
+      const href = (mark.attrs as { href?: unknown } | undefined)?.href;
+      return <LinkMark href={typeof href === "string" ? href : undefined}>{children}</LinkMark>;
+    }
     default:
       return <span data-unsupported-mark={mark.type ?? "unknown"}>{children}</span>;
   }

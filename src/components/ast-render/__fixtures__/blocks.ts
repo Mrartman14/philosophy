@@ -86,3 +86,40 @@ export const CODE_BLOCK: AstBlock = {
   attrs: { language: "ts" },
   content: [{ type: "text", text: "const x = 1;\nconst y = 2;" }],
 };
+
+export const PARAGRAPH_WITH_LINK: AstBlock = {
+  id: "p-link",
+  type: "paragraph",
+  content: [
+    { type: "text", text: "Ссылка: " },
+    {
+      type: "text",
+      text: "Anthropic",
+      marks: [{ type: "link", attrs: { href: "https://anthropic.com" } }],
+    },
+  ],
+};
+
+export const PARAGRAPH_WITH_RELATIVE_LINK: AstBlock = {
+  id: "p-link-rel",
+  type: "paragraph",
+  content: [
+    {
+      type: "text",
+      text: "На главную",
+      marks: [{ type: "link", attrs: { href: "/about" } }],
+    },
+  ],
+};
+
+export const PARAGRAPH_WITH_DANGEROUS_LINK: AstBlock = {
+  id: "p-link-bad",
+  type: "paragraph",
+  content: [
+    {
+      type: "text",
+      text: "Опасная",
+      marks: [{ type: "link", attrs: { href: "javascript:alert(1)" } }],
+    },
+  ],
+};
