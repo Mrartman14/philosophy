@@ -57,8 +57,11 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
     case "document_ref":
       return renderRefMark(mark, children, ctx.renderDocumentRef ?? defaultDocumentRef);
     default: {
+      // @ts-expect-error — drift-detector: при добавлении нового mark.type в схему,
+      // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
+      const _exhaustive: never = mark.type;
       if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
-        console.warn(`AstRender: unsupported mark type "${mark.type}"`);
+        console.warn(`AstRender: unsupported mark type "${_exhaustive ?? "unknown"}"`);
       }
       return <span data-unsupported-mark={mark.type ?? "unknown"}>{children}</span>;
     }
