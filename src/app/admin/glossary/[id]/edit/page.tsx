@@ -9,6 +9,8 @@ import {
 } from "@/features/glossary";
 import { SchemaContextProvider } from "@/components/ast-editor";
 
+export const metadata = { title: "Глоссарий — редактирование термина" };
+
 interface Props {
   params: Promise<{ id: string }>;
 }
