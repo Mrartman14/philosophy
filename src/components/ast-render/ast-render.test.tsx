@@ -20,6 +20,7 @@ import {
   PARAGRAPH_WITH_GLOSSARY_REF,
   PARAGRAPH_WITH_LECTURE_REF,
   PARAGRAPH_WITH_EMPTY_REF,
+  PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -103,6 +104,12 @@ describe("AstRender — link mark + safety", () => {
     const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_DANGEROUS_LINK]} />);
     expect(container.querySelector("a")).toBeNull();
     expect(container.querySelector("p")?.textContent).toBe("Опасная");
+  });
+
+  it("protocol-relative URL (//evil.com) рендерится как plain text", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK]} />);
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.querySelector("p")?.textContent).toBe("Phishing");
   });
 });
 

@@ -12,6 +12,8 @@ interface Props {
  */
 export function isSafeHref(href: unknown): href is string {
   if (typeof href !== "string" || href.length === 0) return false;
+  // Reject protocol-relative URLs ("//evil.com" resolves to https://evil.com).
+  if (href.startsWith("//")) return false;
   if (href.startsWith("/") || href.startsWith("#")) return true;
   if (href.startsWith("mailto:")) return true;
   if (href.startsWith("http://") || href.startsWith("https://")) return true;

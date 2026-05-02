@@ -163,6 +163,18 @@ export const PARAGRAPH_WITH_LECTURE_REF: AstBlock = {
   ],
 };
 
+export const PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK: AstBlock = {
+  id: "p-link-pr",
+  type: "paragraph",
+  content: [
+    {
+      type: "text",
+      text: "Phishing",
+      marks: [{ type: "link", attrs: { href: "//evil.com" } }],
+    },
+  ],
+};
+
 export const PARAGRAPH_WITH_EMPTY_REF: AstBlock = {
   id: "p-empty-ref",
   type: "paragraph",
