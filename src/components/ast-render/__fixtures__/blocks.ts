@@ -26,3 +26,24 @@ export const PARAGRAPH_WITH_HARD_BREAK: AstBlock = {
     { type: "text", text: "Вторая строка" },
   ],
 };
+
+export const HEADING_LEVEL_1: AstBlock = {
+  id: "h1",
+  type: "heading",
+  attrs: { level: 1 },
+  content: [{ type: "text", text: "Главный заголовок" }],
+};
+
+export const HEADING_LEVEL_3: AstBlock = {
+  id: "h3",
+  type: "heading",
+  attrs: { level: 3 },
+  content: [{ type: "text", text: "Подзаголовок" }],
+};
+
+export const HEADING_NO_LEVEL: AstBlock = {
+  id: "h0",
+  type: "heading",
+  attrs: {},
+  content: [{ type: "text", text: "Заголовок без уровня" }],
+};

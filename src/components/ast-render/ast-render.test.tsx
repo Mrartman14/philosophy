@@ -6,6 +6,9 @@ import {
   PARAGRAPH_PLAIN,
   PARAGRAPH_WITH_BOLD,
   PARAGRAPH_WITH_HARD_BREAK,
+  HEADING_LEVEL_1,
+  HEADING_LEVEL_3,
+  HEADING_NO_LEVEL,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -22,5 +25,22 @@ describe("AstRender — paragraph + inline marks", () => {
   it("рендерит hard_break как <br>", () => {
     const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_HARD_BREAK]} />);
     expect(container.querySelectorAll("p br")).toHaveLength(1);
+  });
+});
+
+describe("AstRender — heading", () => {
+  it("рендерит heading level=1 как <h1>", () => {
+    const { container } = render(<AstRender blocks={[HEADING_LEVEL_1]} />);
+    expect(container.querySelector("h1")?.textContent).toBe("Главный заголовок");
+  });
+
+  it("рендерит heading level=3 как <h3>", () => {
+    const { container } = render(<AstRender blocks={[HEADING_LEVEL_3]} />);
+    expect(container.querySelector("h3")?.textContent).toBe("Подзаголовок");
+  });
+
+  it("без level или с невалидным level рендерит <h2>", () => {
+    const { container } = render(<AstRender blocks={[HEADING_NO_LEVEL]} />);
+    expect(container.querySelector("h2")?.textContent).toBe("Заголовок без уровня");
   });
 });
