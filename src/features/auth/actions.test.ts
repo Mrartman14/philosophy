@@ -61,10 +61,13 @@ describe("loginAction", () => {
         new Response(JSON.stringify({ data: { token: "jwt" } }), { status: 200 })
       )
     );
-    await expect(
-      loginAction(initial, fd({ ...validCreds, next: "//evil.com" }))
-    ).rejects.toThrow(/NEXT_REDIRECT/);
-    // redirect был вызван с "/"
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await loginAction(initial, fd({ ...validCreds, next: "//evil.com" }));
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+    expect(thrown.digest).toBe("NEXT_REDIRECT;/");
   });
 
   it("200 без token в data → service_unavailable, cookie не выставлена", async () => {
