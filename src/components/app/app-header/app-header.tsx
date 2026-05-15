@@ -4,8 +4,11 @@ import { NavigationMenu } from "@base-ui/react/navigation-menu";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
+import { LogoutForm } from "@/features/auth";
+import { getMe } from "@/utils/me";
 
-export const AppHeader: React.FC = () => {
+export const AppHeader = async () => {
+  const me = await getMe();
   return (
     <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--color-background) border-t-0 border-b md:border-t border-(--color-border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:left-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--color-border) bg-(--color-background) pl-4 pr-4">
@@ -19,7 +22,16 @@ export const AppHeader: React.FC = () => {
           <div className="flex gap-2 items-center">
             {/* TODO: вернуть SearchInput после восстановления фичи `search` */}
             <NetworkIndicator className="text-xl" />
-            {/* TODO: вернуть logout/login UI после восстановления фичи `auth` */}
+            {me ? (
+              <LogoutForm username={me.username} />
+            ) : (
+              <Link
+                href="/login"
+                className="text-sm text-(--color-description) hover:text-(--color-primary)"
+              >
+                Войти
+              </Link>
+            )}
           </div>
         </NavigationMenu.List>
 
