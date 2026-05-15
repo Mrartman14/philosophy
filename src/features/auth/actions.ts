@@ -25,7 +25,7 @@ class AuthError extends Error {
   }
 }
 
-export const loginAction = createFormAction(async (formData) => {
+export const loginAction = createFormAction<void>(async (formData) => {
   const { username, password, next } = parseFormData(LoginSchema, formData);
 
   let res: Response;
