@@ -2,3 +2,4 @@
 export { LoginForm } from "./ui/login-form";
 export { LogoutForm } from "./ui/logout-form";
 export { logoutAction } from "./actions";
+export { safeNextPath } from "./safe-next";
