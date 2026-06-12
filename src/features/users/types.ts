@@ -1,8 +1,11 @@
-// src/features/_template/types.ts
-// Сужения и derived-типы из @/api/schema.
-// Пример:
-//   import type { components } from "@/api/schema";
-//   export type Entity = components["schemas"]["entity.Entity"];
-//   export type EntityListItem = Pick<Entity, "id" | "title" | "created_at">;
+// src/features/users/types.ts
+import type { components } from "@/api/schema";
 
-export type _Placeholder = unknown;
+/** Пользователь в админ-списке: id, username, role, status, created_at, updated_at. */
+export type AdminUser = components["schemas"]["user.User"];
+
+/** "user" | "admin" */
+export type UserRole = components["schemas"]["rbac.Role"];
+
+/** "active" | "suspended" | "banned" */
+export type UserStatus = components["schemas"]["rbac.Status"];
