@@ -18,12 +18,27 @@ export const AppHeader = async () => {
               <LogoIcon className="text-3xl text-(--color-description) group-hover:text-(--color-primary) self-center" />
             </Link>
           </NavigationMenu.Item>
-          <div />
+          <NavigationMenu.Item className="flex items-center">
+            <Link
+              href="/calendar"
+              className="text-sm text-(--color-description) hover:text-(--color-primary)"
+            >
+              Календарь
+            </Link>
+          </NavigationMenu.Item>
           <div className="flex gap-2 items-center">
             {/* TODO: вернуть SearchInput после восстановления фичи `search` */}
             <NetworkIndicator className="text-xl" />
             {me ? (
-              <LogoutForm username={me.username} />
+              <>
+                <Link
+                  href="/settings"
+                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
+                >
+                  Настройки
+                </Link>
+                <LogoutForm username={me.username} />
+              </>
             ) : (
               <Link
                 href="/login"
