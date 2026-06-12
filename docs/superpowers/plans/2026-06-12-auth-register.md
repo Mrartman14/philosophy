@@ -485,7 +485,7 @@ git commit -m "feat(auth): add registerAction (no auto-login, redirect to /login
 
 Client-компонент по образцу `ui/login-form.tsx`. Unit-тесты на UI-компоненты по конвенциям проекта не пишутся (`docs/frontend-conventions.md` §5) — поведение покрыто тестами action и схемы.
 
-- [ ] **Step 1: Создать `register-form.tsx`**
+- [x] **Step 1: Создать `register-form.tsx`**
 
 ```tsx
 // src/features/auth/ui/register-form.tsx
@@ -558,7 +558,7 @@ export function RegisterForm({ next }: RegisterFormProps) {
 }
 ```
 
-- [ ] **Step 2: Экспортировать из `index.ts`**
+- [x] **Step 2: Экспортировать из `index.ts`**
 
 `src/features/auth/index.ts` целиком после правки:
 
@@ -573,12 +573,12 @@ export { safeNextPath } from "./safe-next";
 
 `registerAction` наружу не экспортируется — он нужен только `RegisterForm` (как `loginAction` для `LoginForm`).
 
-- [ ] **Step 3: Проверить lint и тесты слайса**
+- [x] **Step 3: Проверить lint и тесты слайса**
 
 Run: `npm run lint && npx vitest run src/features/auth`
 Expected: lint без ошибок, все тесты слайса PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/features/auth/ui/register-form.tsx src/features/auth/index.ts
