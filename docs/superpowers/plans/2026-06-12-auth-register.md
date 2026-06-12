@@ -102,7 +102,7 @@ src/app/
 
 Схема зеркалит правила бека (`username` 3–30 после trim, `password` ≥ 6) + front-only ограничение `max(72)` (bcrypt-лимит бека) + front-only поле `password_confirm` с проверкой совпадения через `superRefine` с явным `path: ["password_confirm"]` (ошибка попадёт в `fieldErrors.password_confirm`, а не в `_form`).
 
-- [ ] **Step 1: Дописать failing-тесты в `schemas.test.ts`**
+- [x] **Step 1: Дописать failing-тесты в `schemas.test.ts`**
 
 В конец файла `src/features/auth/schemas.test.ts` добавить блок (и расширить import в первой строке):
 
@@ -184,12 +184,12 @@ describe("RegisterSchema", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/auth/schemas.test.ts`
 Expected: FAIL — `RegisterSchema` не экспортируется из `./schemas` (SyntaxError / undefined).
 
-- [ ] **Step 3: Реализовать `RegisterSchema`**
+- [x] **Step 3: Реализовать `RegisterSchema`**
 
 В конец `src/features/auth/schemas.ts` (после `LoginInput`) добавить:
 
@@ -221,12 +221,12 @@ export const RegisterSchema = z
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 ```
 
-- [ ] **Step 4: Убедиться, что тесты зелёные**
+- [x] **Step 4: Убедиться, что тесты зелёные**
 
 Run: `npx vitest run src/features/auth/schemas.test.ts`
 Expected: PASS — все тесты `LoginSchema` и `RegisterSchema` зелёные.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/auth/schemas.ts src/features/auth/schemas.test.ts
@@ -243,7 +243,7 @@ git commit -m "feat(auth): add RegisterSchema with password confirmation"
 
 По образцу `loginAction`: `parseFormData` → `fetch` → маппинг статусов в `AuthError(kind)`. Отличия: на 201 cookie **не ставим** (токена нет), редиректим на `/login?registered=1` с прокинутым `next` (через `safeNextPath`; дефолтный `/` в URL не дублируем).
 
-- [ ] **Step 1: Дописать failing-тесты в `actions.test.ts`**
+- [x] **Step 1: Дописать failing-тесты в `actions.test.ts`**
 
 В `src/features/auth/actions.test.ts` расширить import:
 
@@ -385,12 +385,12 @@ describe("registerAction", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/auth/actions.test.ts`
 Expected: FAIL — `registerAction` не экспортируется из `./actions`.
 
-- [ ] **Step 3: Реализовать `registerAction`**
+- [x] **Step 3: Реализовать `registerAction`**
 
 В `src/features/auth/actions.ts`:
 
@@ -463,12 +463,12 @@ export const registerAction = createFormAction<void>(async (formData) => {
 });
 ```
 
-- [ ] **Step 4: Убедиться, что тесты зелёные**
+- [x] **Step 4: Убедиться, что тесты зелёные**
 
 Run: `npx vitest run src/features/auth/actions.test.ts`
 Expected: PASS — все тесты `loginAction` и `registerAction` зелёные.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/auth/actions.ts src/features/auth/actions.test.ts
@@ -485,7 +485,7 @@ git commit -m "feat(auth): add registerAction (no auto-login, redirect to /login
 
 Client-компонент по образцу `ui/login-form.tsx`. Unit-тесты на UI-компоненты по конвенциям проекта не пишутся (`docs/frontend-conventions.md` §5) — поведение покрыто тестами action и схемы.
 
-- [ ] **Step 1: Создать `register-form.tsx`**
+- [x] **Step 1: Создать `register-form.tsx`**
 
 ```tsx
 // src/features/auth/ui/register-form.tsx
@@ -558,7 +558,7 @@ export function RegisterForm({ next }: RegisterFormProps) {
 }
 ```
 
-- [ ] **Step 2: Экспортировать из `index.ts`**
+- [x] **Step 2: Экспортировать из `index.ts`**
 
 `src/features/auth/index.ts` целиком после правки:
 
@@ -573,12 +573,12 @@ export { safeNextPath } from "./safe-next";
 
 `registerAction` наружу не экспортируется — он нужен только `RegisterForm` (как `loginAction` для `LoginForm`).
 
-- [ ] **Step 3: Проверить lint и тесты слайса**
+- [x] **Step 3: Проверить lint и тесты слайса**
 
 Run: `npm run lint && npx vitest run src/features/auth`
 Expected: lint без ошибок, все тесты слайса PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/features/auth/ui/register-form.tsx src/features/auth/index.ts
@@ -594,7 +594,7 @@ git commit -m "feat(auth): add RegisterForm component"
 
 По образцу `src/app/login/page.tsx`: `next` через `safeNextPath`, залогиненных редиректим на target, плюс обратная ссылка на `/login` с сохранением `next`.
 
-- [ ] **Step 1: Создать страницу**
+- [x] **Step 1: Создать страницу**
 
 ```tsx
 // src/app/register/page.tsx
@@ -636,12 +636,12 @@ export default async function RegisterPage({ searchParams }: PageProps) {
 }
 ```
 
-- [ ] **Step 2: Проверить lint**
+- [x] **Step 2: Проверить lint**
 
 Run: `npm run lint`
 Expected: без ошибок (импорт слайса только через `@/features/auth` — deep-import guard доволен).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/register/page.tsx
@@ -657,7 +657,7 @@ git commit -m "feat(auth): add /register page"
 
 Два изменения: (1) ссылка «Нет аккаунта? Зарегистрируйтесь» с сохранением `next`; (2) при `?registered=1` — branded-сообщение об успешной регистрации (его ставит `registerAction`).
 
-- [ ] **Step 1: Обновить страницу `/login`**
+- [x] **Step 1: Обновить страницу `/login`**
 
 `src/app/login/page.tsx` целиком после правки:
 
@@ -705,12 +705,12 @@ export default async function LoginPage({ searchParams }: PageProps) {
 }
 ```
 
-- [ ] **Step 2: Проверить lint**
+- [x] **Step 2: Проверить lint**
 
 Run: `npm run lint`
 Expected: без ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/login/page.tsx
@@ -723,7 +723,7 @@ git commit -m "feat(auth): cross-link login/register and registered notice"
 
 **Files:** нет новых изменений (если верификация ничего не выявит).
 
-- [ ] **Step 1: Полный прогон**
+- [x] **Step 1: Полный прогон**
 
 Run: `npm run lint && npm test && npm run build`
 Expected: все три команды зелёные. В `npm test` среди прочих:
@@ -733,7 +733,7 @@ Expected: все три команды зелёные. В `npm test` среди 
 
 В `npm run build` появляются маршруты `/register` (и прежний `/login`).
 
-- [ ] **Step 2: Чеклист готовности фичи** (`src/features/_template/README.md`, с поправкой на стиль слайса auth)
+- [x] **Step 2: Чеклист готовности фичи** (`src/features/_template/README.md`, с поправкой на стиль слайса auth)
 
 - `index.ts` экспортирует только нужное снаружи (`RegisterForm` добавлен, `registerAction` — нет).
 - `schemas.ts`, `actions.ts` начинаются с `import "server-only";` (уже так — файлы только дополнялись).
@@ -743,7 +743,7 @@ Expected: все три команды зелёные. В `npm test` среди 
 - Нет импортов других `@/features/*`.
 - UI-файл `ui/register-form.tsx` добавлен.
 
-- [ ] **Step 3: Ручная проверка** (если поднят бек на `API_URL`)
+- [ ] **Step 3: Ручная проверка** — пропущено: бек на API_URL (localhost:8090) не поднят (если поднят бек на `API_URL`)
 
 1. `/register` → форма; регистрация нового username → редирект на `/login?registered=1`, зелёный notice, логин этими credentials работает.
 2. Повторная регистрация того же username → «Это имя пользователя уже занято.»
@@ -751,7 +751,7 @@ Expected: все три команды зелёные. В `npm test` среди 
 4. `/register?next=/admin` → после регистрации и логина попадаем в `/admin`.
 5. Залогиненным открыть `/register` → мгновенный редирект.
 
-- [ ] **Step 4: Финальный коммит (только если были фиксы на шагах 1–3)**
+- [x] **Step 4: Финальный коммит (только если были фиксы на шагах 1–3)** — фиксов не было, коммит не требуется
 
 ```bash
 git add <конкретные исправленные файлы по имени>

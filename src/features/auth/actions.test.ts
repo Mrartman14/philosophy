@@ -16,7 +16,7 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-import { loginAction } from "./actions";
+import { loginAction, registerAction } from "./actions";
 
 function fd(input: Record<string, string>): FormData {
   const f = new FormData();
@@ -129,5 +129,134 @@ describe("loginAction", () => {
     expect(res.success).toBe(false);
     if (!res.success) expect(res.code).toBe("validation");
     expect(cookieSet).not.toHaveBeenCalled();
+  });
+});
+
+const validReg = {
+  username: "alice",
+  password: "secret1",
+  password_confirm: "secret1",
+};
+
+describe("registerAction", () => {
+  it("201 + next → redirect на /login?registered=1&next=…, cookie не выставлена", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(
+          JSON.stringify({ data: { id: "u1", username: "alice" } }),
+          { status: 201 }
+        )
+      )
+    );
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await registerAction(initial, fd({ ...validReg, next: "/admin" }));
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+    expect(thrown.digest).toBe(
+      "NEXT_REDIRECT;/login?registered=1&next=%2Fadmin"
+    );
+    expect(cookieSet).not.toHaveBeenCalled();
+  });
+
+  it("201 без next → redirect на /login?registered=1", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ data: { id: "u1" } }), { status: 201 })
+      )
+    );
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await registerAction(initial, fd(validReg));
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+    expect(thrown.digest).toBe("NEXT_REDIRECT;/login?registered=1");
+  });
+
+  it("201 + опасный next → next отбрасывается (redirect без next)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ data: { id: "u1" } }), { status: 201 })
+      )
+    );
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await registerAction(initial, fd({ ...validReg, next: "//evil.com" }));
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+    expect(thrown.digest).toBe("NEXT_REDIRECT;/login?registered=1");
+  });
+
+  it("409 → username_taken", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({}), { status: 409 }))
+    );
+    const res = await registerAction(initial, fd(validReg));
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error).toBe("username_taken");
+  });
+
+  it("422 → invalid_input", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({}), { status: 422 }))
+    );
+    const res = await registerAction(initial, fd(validReg));
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error).toBe("invalid_input");
+  });
+
+  it("429 → too_many_requests", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("rate limit exceeded", { status: 429 }))
+    );
+    const res = await registerAction(initial, fd(validReg));
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error).toBe("too_many_requests");
+  });
+
+  it("500 → service_unavailable", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({}), { status: 500 }))
+    );
+    const res = await registerAction(initial, fd(validReg));
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error).toBe("service_unavailable");
+  });
+
+  it("network reject → service_unavailable", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("fetch failed");
+      })
+    );
+    const res = await registerAction(initial, fd(validReg));
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error).toBe("service_unavailable");
+  });
+
+  it("пароли не совпадают → validation, fetch не вызван", async () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
+    const res = await registerAction(
+      initial,
+      fd({ username: "alice", password: "secret1", password_confirm: "other77" })
+    );
+    expect(res.success).toBe(false);
+    if (res.success || res.code !== "validation") {
+      throw new Error("expected validation error");
+    }
+    expect(res.fieldErrors["password_confirm"]).toBe("Пароли не совпадают");
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
