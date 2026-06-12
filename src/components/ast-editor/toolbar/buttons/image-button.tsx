@@ -38,7 +38,18 @@ export function ImageButton({ editor, schema, context }: Props) {
     try {
       const fd = new FormData();
       fd.set("file", file);
-      const res = await uploadImage(fd);
+      let res: Awaited<ReturnType<typeof uploadImage>>;
+      try {
+        res = await uploadImage(fd);
+      } catch {
+        // Reject транспорта (сеть, прерванный server action) — generic-toast,
+        // иначе unhandled rejection.
+        toast.add({
+          title: "Не удалось загрузить изображение",
+          description: "Произошла ошибка. Попробуйте ещё раз.",
+        });
+        return;
+      }
       if (!res.success) {
         toast.add({
           title: "Не удалось загрузить изображение",

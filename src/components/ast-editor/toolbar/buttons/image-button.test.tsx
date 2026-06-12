@@ -98,6 +98,29 @@ describe("ImageButton", () => {
     editor.destroy();
   });
 
+  it("reject транспорта (uploadImage кидает) → generic-toast, без unhandled rejection", async () => {
+    mockedUpload.mockRejectedValue(new Error("network down"));
+    const editor = makeEditor();
+    // Toolbar.Button требует контекст Toolbar.Root (Base UI).
+    const { container } = render(
+      <Toolbar.Root>
+        <ImageButton editor={editor} schema={snapshot} context="document" />
+      </Toolbar.Root>,
+    );
+
+    fireEvent.change(container.querySelector('input[type="file"]')!, {
+      target: { files: [makePngFile()] },
+    });
+
+    await waitFor(() => expect(toastAdd).toHaveBeenCalledOnce());
+    const arg = toastAdd.mock.calls[0]![0] as { title?: string };
+    expect(arg.title).toMatch(/не удалось загрузить/i);
+    expect(JSON.stringify(editor.getJSON())).not.toContain('"type":"image"');
+    // Кнопка разблокирована (busy сброшен в finally).
+    expect(screen.getByLabelText(/изображение/i)).not.toBeDisabled();
+    editor.destroy();
+  });
+
   it("код forbidden → branded-текст в toast", async () => {
     mockedUpload.mockResolvedValue({
       success: false,
