@@ -8,6 +8,12 @@ import {
   getLectureById,
   LectureEditForm,
 } from "@/features/lectures";
+import {
+  canAssignTags,
+  getLectureTags,
+  getTags,
+  LectureTagsForm,
+} from "@/features/tags";
 
 export const metadata = { title: "Редактирование лекции" };
 
@@ -20,16 +26,40 @@ export default async function EditLecturePage({ params }: Props) {
   const me = await getMe();
   const lecture = await getLectureById(id);
   if (!lecture) notFound();
-  if (!canUpdateLecture(me, lecture)) forbidden();
+
+  const canUpdate = canUpdateLecture(me, lecture);
+  const canAssign = canAssignTags(me);
+  // Мутации лекции — owner-only (бек, спека §6.4); назначение тегов —
+  // отдельная capability tag.assign без owner-чека. Страница доступна тем,
+  // кому доступно хотя бы одно из действий.
+  if (!canUpdate && !canAssign) forbidden();
+
+  const [allTags, lectureTags] = canAssign
+    ? await Promise.all([getTags(), getLectureTags(lecture.id)])
+    : [null, null];
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">{lecture.title}</h1>
-      <LectureEditForm
-        lecture={lecture}
-        canSetVisibility={canSetLectureVisibility(me, lecture)}
-        canDelete={canDeleteLecture(me)}
-      />
+      {canUpdate && (
+        <LectureEditForm
+          lecture={lecture}
+          canSetVisibility={canSetLectureVisibility(me, lecture)}
+          canDelete={canDeleteLecture(me)}
+        />
+      )}
+      {canAssign && allTags && lectureTags && (
+        <section className="max-w-xl border-t border-(--color-border) pt-4">
+          <h2 className="mb-3 text-lg font-semibold">Теги</h2>
+          <LectureTagsForm
+            lectureId={lecture.id}
+            allTags={allTags.items}
+            assignedTagIds={lectureTags
+              .map((t) => t.id)
+              .filter((tagId): tagId is number => typeof tagId === "number")}
+          />
+        </section>
+      )}
     </div>
   );
 }

@@ -15,6 +15,7 @@ export const Tags = {
   EVENTS: "events",
   LECTURES: "lectures",
   GLOSSARY: "glossary",
+  TAGS: "tags",
 } as const;
 
 export type EntityTag = (typeof Tags)[keyof typeof Tags];
