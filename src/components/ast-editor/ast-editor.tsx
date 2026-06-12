@@ -11,12 +11,21 @@ import type { AstBlock, EntityContext } from "./types";
 import { EditorToolbar } from "./toolbar/toolbar";
 import { SlashMenu } from "./toolbar/slash-menu";
 import { createSlashMenuPlugin } from "./toolbar/slash-menu-plugin";
+import { AtMenu } from "./pickers/at-menu";
+import { createAtSuggestionPlugin } from "./pickers/at-suggestion-plugin";
 import { useDriftWarn } from "./drift-warn";
 
 const slashHost = Extension.create({
   name: "slash-menu-host",
   addProseMirrorPlugins() {
     return [createSlashMenuPlugin()];
+  },
+});
+
+const atHost = Extension.create({
+  name: "at-suggestion-host",
+  addProseMirrorPlugins() {
+    return [createAtSuggestionPlugin()];
   },
 });
 
@@ -63,7 +72,7 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
     ariaLabel: props.ariaLabel,
     schema,
     onChange: handleChange,
-    extraExtensions: [slashHost],
+    extraExtensions: [slashHost, atHost],
   });
 
   useImperativeHandle(
@@ -100,6 +109,9 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
       <EditorContent editor={editor} className="prose prose-sm max-w-none" />
       {props.editable !== false && (
         <SlashMenu editor={editor} schema={schema} context={props.entityContext} />
+      )}
+      {props.editable !== false && (
+        <AtMenu editor={editor} defaultLectureId={props.defaultLectureId} />
       )}
       {props.name ? (
         <input
