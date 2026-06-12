@@ -1,15 +1,16 @@
-// src/features/_template/index.ts
+// src/features/tags/index.ts
 // Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
-
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
-
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+export { getTags, getLectureTags } from "./api";
+export type { TagListFilter, TagListResult } from "./api";
+export { createTag, updateTag, deleteTag, setLectureTags } from "./actions";
+export {
+  canCreateTag,
+  canUpdateTag,
+  canDeleteTag,
+  canAssignTags,
+} from "./permissions";
+export { TagCreateForm } from "./ui/tag-create-form";
+export { TagAdminRow } from "./ui/tag-admin-row";
+export { TagDeleteButton } from "./ui/tag-delete-button";
+export { LectureTagsForm } from "./ui/lecture-tags-form";
+export type { Tag } from "./types";
