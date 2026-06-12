@@ -6,7 +6,7 @@ import { getEventRevision, getEventRevisions } from "../api";
 interface Props {
   eventId: string;
   /** id выбранной ревизии из searchParams страницы (?revision=). */
-  selectedRevisionId?: string;
+  selectedRevisionId?: string | undefined;
 }
 
 /**
