@@ -10,6 +10,8 @@ import { LinkMark } from "./marks/link";
 import { defaultGlossaryRef } from "./marks/glossary-ref";
 import { defaultLectureRef } from "./marks/lecture-ref";
 import { defaultDocumentRef } from "./marks/document-ref";
+import { defaultMediaRef } from "./marks/media-ref";
+import { defaultCommentRef } from "./marks/comment-ref";
 
 interface Props {
   nodes: AstNode[] | undefined;
@@ -56,7 +58,12 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
       return renderRefMark(mark, children, ctx.renderLectureRef ?? defaultLectureRef);
     case "document_ref":
       return renderRefMark(mark, children, ctx.renderDocumentRef ?? defaultDocumentRef);
+    case "media_ref":
+      return renderRefMark(mark, children, ctx.renderMediaRef ?? defaultMediaRef);
+    case "comment_ref":
+      return renderRefMark(mark, children, ctx.renderCommentRef ?? defaultCommentRef);
     default: {
+      // canvas_ref (вне скоупа программы) и будущие mark'и — graceful fallback.
       // @ts-expect-error — drift-detector: при добавлении нового mark.type в схему,
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = mark.type;

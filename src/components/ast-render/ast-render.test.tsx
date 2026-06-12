@@ -24,6 +24,8 @@ import {
   PARAGRAPH_WITH_LECTURE_REF,
   PARAGRAPH_WITH_EMPTY_REF,
   PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK,
+  PARAGRAPH_WITH_MEDIA_REF,
+  PARAGRAPH_WITH_COMMENT_REF,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -179,24 +181,55 @@ describe("AstRender — ref-marks", () => {
     expect(container.querySelector("a")).toBeNull();
     expect(container.querySelector("p")?.textContent).toBe("пустой");
   });
+
+  it("default: media_ref → <a href='/media/{id}'>", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_MEDIA_REF]} />);
+    const a = container.querySelector("a");
+    expect(a?.getAttribute("href")).toBe("/media/med-uuid-789");
+    expect(a?.textContent).toBe("запись");
+  });
+
+  it("default: comment_ref → <a href='/comments/{id}'>", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_COMMENT_REF]} />);
+    expect(container.querySelector("a")?.getAttribute("href")).toBe(
+      "/comments/com-uuid-012",
+    );
+  });
+
+  it("ctx.renderMediaRef переопределяет рендер", () => {
+    const { container } = render(
+      <AstRender
+        blocks={[PARAGRAPH_WITH_MEDIA_REF]}
+        ctx={{
+          renderMediaRef: ({ id, label }) => (
+            <span data-custom-media-ref={id}>{label}</span>
+          ),
+        }}
+      />
+    );
+    expect(container.querySelector("a")).toBeNull();
+    expect(
+      container.querySelector("[data-custom-media-ref='med-uuid-789']")?.textContent
+    ).toBe("запись");
+  });
 });
 
 describe("AstRender — unsupported marks fallback", () => {
-  it("неизвестный mark рендерится как plain text с data-unsupported-mark", () => {
+  it("canvas_ref (вне скоупа) рендерится как plain text с data-unsupported-mark", () => {
     const block: import("./types").AstBlock = {
       id: "p-unk",
       type: "paragraph",
       content: [
         {
           type: "text",
-          text: "media-ref",
-          marks: [{ type: "media_ref", attrs: { id: "x" } }],
+          text: "canvas-ref",
+          marks: [{ type: "canvas_ref", attrs: { id: "x" } }],
         },
       ],
     };
     const { container } = render(<AstRender blocks={[block]} />);
-    expect(container.querySelector("[data-unsupported-mark='media_ref']")).not.toBeNull();
-    expect(container.querySelector("p")?.textContent).toBe("media-ref");
+    expect(container.querySelector("[data-unsupported-mark='canvas_ref']")).not.toBeNull();
+    expect(container.querySelector("p")?.textContent).toBe("canvas-ref");
   });
 });
 

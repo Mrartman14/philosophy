@@ -203,3 +203,27 @@ export const PARAGRAPH_WITH_EMPTY_REF: AstBlock = {
     },
   ],
 };
+
+export const PARAGRAPH_WITH_MEDIA_REF: AstBlock = {
+  id: "p-mref",
+  type: "paragraph",
+  content: [
+    {
+      type: "text",
+      text: "запись",
+      marks: [{ type: "media_ref", attrs: { id: "med-uuid-789" } }],
+    },
+  ],
+};
+
+export const PARAGRAPH_WITH_COMMENT_REF: AstBlock = {
+  id: "p-cref",
+  type: "paragraph",
+  content: [
+    {
+      type: "text",
+      text: "реплика",
+      marks: [{ type: "comment_ref", attrs: { id: "com-uuid-012" } }],
+    },
+  ],
+};
