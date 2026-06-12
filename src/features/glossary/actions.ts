@@ -26,10 +26,11 @@ import type { Term } from "./types";
 type ApiError = { code?: string; error?: string };
 
 function rethrowApiError(err: ApiError | undefined): never {
-  if (err?.code === "forbidden") {
-    throw new ForbiddenError("role", err.error);
-  }
+  // Бек пишет code в UPPER_SNAKE_CASE (internal/apperror, middleware/auth.go) —
+  // сравнение с lowercase "forbidden" не срабатывало (паттерн — events/actions.ts).
   switch (err?.code) {
+    case "FORBIDDEN":
+      throw new ForbiddenError("role", err.error);
     case "BLOCKS_EMPTY":
       throw new Error("Тело термина не может быть пустым.");
     case "BLOCKS_HAVE_ANCHORS":

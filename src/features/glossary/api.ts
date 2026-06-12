@@ -2,7 +2,7 @@
 import "server-only";
 import { cache } from "react";
 import { createApiClient } from "@/api/client";
-import type { Term } from "./types";
+import type { Term, TermRevision, TermRevisionMeta } from "./types";
 
 export interface TermListFilter {
   q?: string;
@@ -49,3 +49,45 @@ export const getTermById = cache(async (id: string): Promise<Term | null> => {
   }
   return (data?.data ?? null) as Term | null;
 });
+
+/**
+ * Список ревизий термина. Эндпоинт публичный (без капабилити-гейтов).
+ * Бек отдаёт по created_at ASC (старые первыми) с потолком 200 записей
+ * (internal/revision/repo.go) — порядок отображения решает UI.
+ * 404 (термин не найден) → пустой список: страница уже отдала notFound()
+ * по самому термину раньше, сюда 404 может прийти только в гонке удаления.
+ */
+export const getTermRevisions = cache(
+  async (id: string): Promise<TermRevisionMeta[]> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET(
+      "/api/glossary/{id}/revisions",
+      { params: { path: { id } } },
+    );
+    if (response.status === 404) return [];
+    if (error) {
+      throw new Error(error.error ?? "Не удалось загрузить ревизии термина");
+    }
+    return (data?.data ?? []) as TermRevisionMeta[];
+  },
+);
+
+/**
+ * Одна ревизия термина со снапшотом blocks. 404 (нет ревизии или она
+ * принадлежит другому термину) и 400 (битый id из ?revision= в URL) → null —
+ * секция ревизий просто не покажет панель снапшота.
+ */
+export const getTermRevision = cache(
+  async (id: string, revisionId: string): Promise<TermRevision | null> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET(
+      "/api/glossary/{id}/revisions/{revisionID}",
+      { params: { path: { id, revisionID: revisionId } } },
+    );
+    if (response.status === 404 || response.status === 400) return null;
+    if (error) {
+      throw new Error(error.error ?? "Не удалось загрузить ревизию термина");
+    }
+    return (data?.data ?? null) as TermRevision | null;
+  },
+);
