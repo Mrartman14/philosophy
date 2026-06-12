@@ -1,20 +1,39 @@
-// src/features/_template/permissions.ts
+// src/features/tags/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-// import { can } from "@/utils/permissions";
+import { isMutationAllowed } from "@/utils/permissions";
 
 /**
- * Доменные permission-хелперы. Каждая функция возвращает boolean.
- * Status-чек уже включён в can() — не дублируйте.
+ * Имена capability сверены с philosophy-api
+ * `internal/rbac/capabilities.go` (CapTagCreate/CapTagUpdate/CapTagDelete/CapTagAssign).
  *
- * Owner-aware-проверки делаются здесь, например:
- *   export function canDeleteX(me: MaybeMe, x: { user_id: string }): boolean {
- *     if (!me) return false;
- *     if (x.user_id === me.id) return can(me, "x.delete_own");
- *     return can(me, "x.delete_any");
- *   }
+ * Union `Capability` в `src/utils/permissions.ts` (запретная зона) пока не
+ * содержит `tag.*`, поэтому чек написан через `isMutationAllowed` +
+ * `capabilities.includes(...)` — это в точности семантика `can()`:
+ * гость → false, не-active → false, иначе членство в списке capabilities.
+ * После foundation-touch волны 1 (расширение union) перевести на `can()`.
  */
+const TAG_CREATE = "tag.create";
+const TAG_UPDATE = "tag.update";
+const TAG_DELETE = "tag.delete";
+const TAG_ASSIGN = "tag.assign";
 
-export function canPlaceholder(_me: MaybeMe): boolean {
-  return false;
+function hasTagCapability(me: MaybeMe, capability: string): boolean {
+  return isMutationAllowed(me) && me.capabilities.includes(capability);
+}
+
+export function canCreateTag(me: MaybeMe): boolean {
+  return hasTagCapability(me, TAG_CREATE);
+}
+
+export function canUpdateTag(me: MaybeMe): boolean {
+  return hasTagCapability(me, TAG_UPDATE);
+}
+
+export function canDeleteTag(me: MaybeMe): boolean {
+  return hasTagCapability(me, TAG_DELETE);
+}
+
+export function canAssignTags(me: MaybeMe): boolean {
+  return hasTagCapability(me, TAG_ASSIGN);
 }
