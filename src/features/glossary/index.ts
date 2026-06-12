@@ -14,4 +14,6 @@ export { GlossaryAdminRow } from "./ui/glossary-admin-row";
 export { GlossaryCreateForm } from "./ui/glossary-create-form";
 export { GlossaryEditForm } from "./ui/glossary-edit-form";
 export { GlossaryDeleteButton } from "./ui/glossary-delete-button";
+export { GlossaryExportLinks } from "./ui/glossary-export-links";
+export { GlossaryRevisions } from "./ui/glossary-revisions";
 export type { Term } from "./types";
