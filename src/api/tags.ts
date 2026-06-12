@@ -12,6 +12,7 @@
  */
 
 export const Tags = {
+  EVENTS: "events",
   LECTURES: "lectures",
   GLOSSARY: "glossary",
 } as const;
