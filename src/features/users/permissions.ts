@@ -1,20 +1,18 @@
-// src/features/_template/permissions.ts
+// src/features/users/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-// import { can } from "@/utils/permissions";
+import { can } from "@/utils/permissions";
 
 /**
- * Доменные permission-хелперы. Каждая функция возвращает boolean.
- * Status-чек уже включён в can() — не дублируйте.
- *
- * Owner-aware-проверки делаются здесь, например:
- *   export function canDeleteX(me: MaybeMe, x: { user_id: string }): boolean {
- *     if (!me) return false;
- *     if (x.user_id === me.id) return can(me, "x.delete_own");
- *     return can(me, "x.delete_any");
- *   }
+ * Capability-имена строго из RBAC бекенда
+ * (philosophy-api/internal/rbac/capabilities.go: user.list, user.moderate).
+ * Status-чек (active) уже внутри can() — не дублировать.
  */
 
-export function canPlaceholder(_me: MaybeMe): boolean {
-  return false;
+export function canListUsers(me: MaybeMe): boolean {
+  return can(me, "user.list");
+}
+
+export function canModerateUsers(me: MaybeMe): boolean {
+  return can(me, "user.moderate");
 }
