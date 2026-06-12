@@ -1,5 +1,6 @@
 // src/app/lectures/page.tsx
 import { getLectures, LectureList, LectureSearchForm } from "@/features/lectures";
+import { getLectureTags, getTags } from "@/features/tags";
 import { Pagination } from "@/components/ui";
 
 export const metadata = { title: "Лекции" };
@@ -33,11 +34,24 @@ export default async function LecturesPage({ searchParams }: Props) {
 
   const { items, total } = await getLectures(filter);
 
+  // Теги для фильтра и карточек. Батч-эндпоинта нет — по запросу на лекцию
+  // текущей страницы (≤ limit, публичные GET, дешёвые). См. план tags, §решения.
+  const [allTags, tagsEntries] = await Promise.all([
+    getTags(),
+    Promise.all(
+      items.map(async (l) => [l.id, await getLectureTags(l.id)] as const),
+    ),
+  ]);
+  const tagsByLectureId = Object.fromEntries(tagsEntries);
+
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
       <h1 className="text-3xl font-bold">Лекции</h1>
-      <LectureSearchForm basePath="/lectures" />
-      <LectureList items={items} />
+      <LectureSearchForm
+        basePath="/lectures"
+        tagOptions={allTags.items.map((t) => t.name)}
+      />
+      <LectureList items={items} tagsByLectureId={tagsByLectureId} />
       {total > limit && (
         <Pagination basePath="/lectures" offset={offset} limit={limit} total={total} />
       )}
