@@ -110,7 +110,7 @@ src/api/tags.ts                   # MODIFIED: + USERS: "users"
 **Files:**
 - Create: `src/features/users/*` (копия `src/features/_template/`)
 
-- [ ] **Step 1: Скопировать шаблон и убрать служебные файлы**
+- [x] **Step 1: Скопировать шаблон и убрать служебные файлы**
 
 ```bash
 cp -R src/features/_template src/features/users
@@ -120,12 +120,12 @@ rm src/features/users/ui/.gitkeep
 
 (`README.md` — чеклист, остаётся жить в `_template`; `.gitkeep` не нужен — реальные ui-файлы появятся в Tasks 9–11.)
 
-- [ ] **Step 2: Прогнать тесты слайса (placeholder-тесты шаблона должны пройти)**
+- [x] **Step 2: Прогнать тесты слайса (placeholder-тесты шаблона должны пройти)**
 
 Run: `npx vitest run src/features/users`
 Expected: PASS — 2 файла (`permissions.test.ts`, `schemas.test.ts`), placeholder-тесты зелёные.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/users/index.ts src/features/users/api.ts src/features/users/actions.ts src/features/users/permissions.ts src/features/users/permissions.test.ts src/features/users/schemas.ts src/features/users/schemas.test.ts src/features/users/types.ts
@@ -139,7 +139,7 @@ git commit -m "chore(users): scaffold users slice from _template"
 **Files:**
 - Modify: `src/features/users/types.ts` (полная замена содержимого)
 
-- [ ] **Step 1: Написать типы**
+- [x] **Step 1: Написать типы**
 
 ```ts
 // src/features/users/types.ts
@@ -155,7 +155,7 @@ export type UserRole = components["schemas"]["rbac.Role"];
 export type UserStatus = components["schemas"]["rbac.Status"];
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/features/users/types.ts
@@ -169,7 +169,7 @@ git commit -m "feat(users): add AdminUser/UserRole/UserStatus types"
 **Files:**
 - Modify: `src/api/tags.ts` (append-only, см. Parallel-safety contract)
 
-- [ ] **Step 1: Добавить ключ USERS в конец объекта Tags**
+- [x] **Step 1: Добавить ключ USERS в конец объекта Tags**
 
 Файл сейчас заканчивается так:
 
@@ -192,7 +192,7 @@ export const Tags = {
 
 Ничего больше в файле не менять (append-only; при merge-конфликте — оставить обе добавленные строки, новые ключи по алфавиту).
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/api/tags.ts
@@ -207,7 +207,7 @@ git commit -m "feat(users): register USERS cache tag"
 - Modify: `src/features/users/permissions.test.ts` (полная замена)
 - Modify: `src/features/users/permissions.ts` (полная замена)
 
-- [ ] **Step 1: Написать падающие тесты**
+- [x] **Step 1: Написать падающие тесты**
 
 ```ts
 // src/features/users/permissions.test.ts
@@ -260,12 +260,12 @@ describe("canModerateUsers", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/users/permissions.test.ts`
 Expected: FAIL — модуль `./permissions` не экспортирует `canListUsers` / `canModerateUsers`.
 
-- [ ] **Step 3: Реализовать permissions.ts**
+- [x] **Step 3: Реализовать permissions.ts**
 
 ```ts
 // src/features/users/permissions.ts
@@ -288,12 +288,12 @@ export function canModerateUsers(me: MaybeMe): boolean {
 }
 ```
 
-- [ ] **Step 4: Убедиться, что тесты зелёные**
+- [x] **Step 4: Убедиться, что тесты зелёные**
 
 Run: `npx vitest run src/features/users/permissions.test.ts`
 Expected: PASS — 9 тестов.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/users/permissions.ts src/features/users/permissions.test.ts
@@ -308,7 +308,7 @@ git commit -m "feat(users): add canListUsers/canModerateUsers permissions"
 - Modify: `src/features/users/schemas.test.ts` (полная замена)
 - Modify: `src/features/users/schemas.ts` (полная замена)
 
-- [ ] **Step 1: Написать падающие тесты**
+- [x] **Step 1: Написать падающие тесты**
 
 ```ts
 // src/features/users/schemas.test.ts
@@ -364,12 +364,12 @@ describe("UserStatusUpdateSchema", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/users/schemas.test.ts`
 Expected: FAIL — модуль `./schemas` не экспортирует `UserRoleUpdateSchema` / `UserStatusUpdateSchema`.
 
-- [ ] **Step 3: Реализовать schemas.ts**
+- [x] **Step 3: Реализовать schemas.ts**
 
 ```ts
 // src/features/users/schemas.ts
@@ -396,12 +396,12 @@ export type UserRoleUpdateInput = z.infer<typeof UserRoleUpdateSchema>;
 export type UserStatusUpdateInput = z.infer<typeof UserStatusUpdateSchema>;
 ```
 
-- [ ] **Step 4: Убедиться, что тесты зелёные**
+- [x] **Step 4: Убедиться, что тесты зелёные**
 
 Run: `npx vitest run src/features/users/schemas.test.ts`
 Expected: PASS — 10 тестов.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/users/schemas.ts src/features/users/schemas.test.ts
@@ -418,7 +418,7 @@ git commit -m "feat(users): add role/status update Zod schemas"
 - Create: `src/features/users/errors.test.ts`
 - Create: `src/features/users/errors.ts`
 
-- [ ] **Step 1: Написать падающие тесты**
+- [x] **Step 1: Написать падающие тесты**
 
 ```ts
 // src/features/users/errors.test.ts
@@ -503,12 +503,12 @@ describe("rethrowUserApiError", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/users/errors.test.ts`
 Expected: FAIL — модуль `./errors` не существует.
 
-- [ ] **Step 3: Реализовать errors.ts**
+- [x] **Step 3: Реализовать errors.ts**
 
 ```ts
 // src/features/users/errors.ts
@@ -556,12 +556,12 @@ export function rethrowUserApiError(err: UserApiError | undefined): never {
 }
 ```
 
-- [ ] **Step 4: Убедиться, что тесты зелёные**
+- [x] **Step 4: Убедиться, что тесты зелёные**
 
 Run: `npx vitest run src/features/users/errors.test.ts`
 Expected: PASS — 10 тестов.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/users/errors.ts src/features/users/errors.test.ts
@@ -577,7 +577,7 @@ git commit -m "feat(users): map backend 409/403/404 errors to russian texts"
 **Files:**
 - Modify: `src/features/users/api.ts` (полная замена)
 
-- [ ] **Step 1: Реализовать getUsers**
+- [x] **Step 1: Реализовать getUsers**
 
 ```ts
 // src/features/users/api.ts
@@ -625,12 +625,12 @@ export const getUsers = cache(
 );
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit`
 Expected: 0 ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/users/api.ts
@@ -644,7 +644,7 @@ git commit -m "feat(users): add getUsers fetcher"
 **Files:**
 - Modify: `src/features/users/actions.ts` (полная замена)
 
-- [ ] **Step 1: Реализовать actions**
+- [x] **Step 1: Реализовать actions**
 
 ```ts
 // src/features/users/actions.ts
@@ -702,12 +702,12 @@ export const setUserStatus = createAction(
 );
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit`
 Expected: 0 ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/users/actions.ts
@@ -721,7 +721,7 @@ git commit -m "feat(users): add setUserRole/setUserStatus server actions"
 **Files:**
 - Create: `src/features/users/ui/user-role-control.tsx`
 
-- [ ] **Step 1: Реализовать контрол смены роли**
+- [x] **Step 1: Реализовать контрол смены роли**
 
 Паттерн: Select с локальным state; кнопка «Применить» появляется только когда значение отличается от текущего. Ошибки — тостом: `forbidden` → branded-текст, остальное — текст из action (уже русский после Task 6). После успеха — `router.refresh()`, серверный prop `current` обновится и кнопка исчезнет.
 
@@ -788,12 +788,12 @@ export function UserRoleControl({ userId, username, current }: Props) {
 }
 ```
 
-- [ ] **Step 2: Проверить типы и lint**
+- [x] **Step 2: Проверить типы и lint**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: 0 ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/users/ui/user-role-control.tsx
@@ -807,7 +807,7 @@ git commit -m "feat(users): add role select control"
 **Files:**
 - Create: `src/features/users/ui/user-status-control.tsx`
 
-- [ ] **Step 1: Реализовать контрол смены статуса**
+- [x] **Step 1: Реализовать контрол смены статуса**
 
 Деструктивный переход (выбран `banned`) — кнопка «Применить» оборачивается в `ConfirmDialog` (danger). Остальные переходы (`active`, `suspended`) — прямое применение. По конвенции (`docs/frontend-conventions.md` §3.4) `ConfirmDialog` не surface'ит ошибки `onConfirm` — поэтому `apply()` сам ловит неуспех в тост и возвращается нормально.
 
@@ -888,12 +888,12 @@ export function UserStatusControl({ userId, username, current }: Props) {
 }
 ```
 
-- [ ] **Step 2: Проверить типы и lint**
+- [x] **Step 2: Проверить типы и lint**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: 0 ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/users/ui/user-status-control.tsx
@@ -907,7 +907,7 @@ git commit -m "feat(users): add status select control with ban confirm"
 **Files:**
 - Create: `src/features/users/ui/users-table.tsx`
 
-- [ ] **Step 1: Реализовать таблицу**
+- [x] **Step 1: Реализовать таблицу**
 
 Контролы рендерятся только при `canModerate` и не для собственной строки (бек всё равно вернёт 409 «не себя» — но UI не предлагает заведомо запрещённое действие). Для своей строки и для читателей без `user.moderate` — текстовые лейблы.
 
@@ -1011,12 +1011,12 @@ export function UsersTable({ users, canModerate, meId }: Props) {
 }
 ```
 
-- [ ] **Step 2: Проверить типы и lint**
+- [x] **Step 2: Проверить типы и lint**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: 0 ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/users/ui/users-table.tsx
@@ -1030,7 +1030,7 @@ git commit -m "feat(users): add users table"
 **Files:**
 - Modify: `src/features/users/index.ts` (полная замена)
 
-- [ ] **Step 1: Экспортировать только то, что нужно странице**
+- [x] **Step 1: Экспортировать только то, что нужно странице**
 
 `errors.ts`, `schemas.ts`, client-контролы — приватные (контролы рендерит `UsersTable` внутри слайса).
 
@@ -1044,12 +1044,12 @@ export { UsersTable } from "./ui/users-table";
 export type { AdminUser, UserRole, UserStatus } from "./types";
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit`
 Expected: 0 ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/users/index.ts
@@ -1063,7 +1063,7 @@ git commit -m "feat(users): export public slice API"
 **Files:**
 - Create: `src/app/admin/users/page.tsx`
 
-- [ ] **Step 1: Реализовать страницу**
+- [x] **Step 1: Реализовать страницу**
 
 Layer-3 гейт по конвенции: `getMe()` + доменный `canListUsers` + `forbidden()` из `next/navigation`. `forbidden()` типизирован как `never` — после if `me` сужается до `Me`.
 
@@ -1128,12 +1128,12 @@ export default async function AdminUsersPage({ searchParams }: Props) {
 export const metadata = { title: "Пользователи — админ" };
 ```
 
-- [ ] **Step 2: Проверить типы и lint**
+- [x] **Step 2: Проверить типы и lint**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: 0 ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/admin/users/page.tsx
@@ -1146,7 +1146,7 @@ git commit -m "feat(users): add /admin/users page with layer-3 gate"
 
 **Files:** нет изменений. Только чтение.
 
-- [ ] **Step 1: Проверить capability-гейт пункта users в admin layout**
+- [x] **Step 1: Проверить capability-гейт пункта users в admin layout**
 
 Run: `grep -n "user.list" src/app/admin/layout.tsx src/utils/permissions.ts`
 
@@ -1156,7 +1156,7 @@ Expected:
 
 Это имя сверено с бекендом (`philosophy-api/internal/rbac/capabilities.go:26` — `CapUserList Capability = "user.list"`). Совпадает → **в этой ветке `src/app/admin/layout.tsx` НЕ редактируется**.
 
-- [ ] **Step 2: Если grep вдруг показал расхождение** (не ожидается) — НЕ править layout. Записать заметку в секцию "Foundation-touch notes" в конце этого файла плана и сообщить менеджеру в финальном отчёте. Правка запретной зоны — отдельным foundation-update коммитом менеджера после мержа волны.
+- [x] **Step 2: Если grep вдруг показал расхождение** (не ожидается) — НЕ править layout. Записать заметку в секцию "Foundation-touch notes" в конце этого файла плана и сообщить менеджеру в финальном отчёте. Правка запретной зоны — отдельным foundation-update коммитом менеджера после мержа волны.
 
 ---
 
@@ -1164,7 +1164,7 @@ Expected:
 
 **Files:** нет новых файлов (фиксы по результатам — в уже созданных файлах плана).
 
-- [ ] **Step 1: Чеклист `src/features/_template/README.md`**
+- [x] **Step 1: Чеклист `src/features/_template/README.md`**
 
 Пройти по пунктам:
 - `index.ts` экспортирует только нужное снаружи — да (Task 12).
@@ -1175,12 +1175,12 @@ Expected:
 - Не импортит другие `@/features/*` — да.
 - `ui/.gitkeep` удалён, реальные UI-файлы добавлены — да (Tasks 1, 9–11).
 
-- [ ] **Step 2: Полный прогон**
+- [x] **Step 2: Полный прогон**
 
 Run: `npm run lint && npm test && npm run build`
 Expected: все три зелёные. Если красное — фиксить в файлах этого плана (не отключать правила), повторить прогон.
 
-- [ ] **Step 3: Проверить, что в ветке нет лишних файлов**
+- [x] **Step 3: Проверить, что в ветке нет лишних файлов**
 
 Run: `git status --short`
 Expected: пусто (всё закоммичено), изменены только файлы из Parallel-safety contract. Незакоммиченный чужой diff в `public/sw.js` и `.env.development.local` (если виден в worktree) — НЕ добавлять и НЕ откатывать.
