@@ -1,5 +1,6 @@
 import {
   getTerms,
+  GlossaryExportLinks,
   GlossaryList,
   GlossarySearchForm,
 } from "@/features/glossary";
@@ -20,6 +21,7 @@ export default async function GlossaryIndexPage({ searchParams }: Props) {
       <h1 className="text-3xl font-bold">Глоссарий</h1>
       <GlossarySearchForm defaultQ={q ?? ""} />
       <GlossaryList items={result.items} total={result.total} />
+      <GlossaryExportLinks />
     </main>
   );
 }
