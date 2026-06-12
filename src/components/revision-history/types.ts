@@ -22,8 +22,13 @@ export interface RevisionHistoryProps {
    * в своём мостике перед передачей сюда.
    */
   revisions: RevisionListItem[];
-  /** id выбранной ревизии (обычно из searchParams страницы). */
-  selectedId?: string;
+  /**
+   * id выбранной ревизии (обычно из searchParams страницы).
+   * Явный `| undefined` — для удобства потребителей при
+   * exactOptionalPropertyTypes: searchParams-значения имеют тип
+   * `string | undefined`.
+   */
+  selectedId?: string | undefined;
   /**
    * Строит href ссылки выбора ревизии. Роутингом владеет слайс:
    * например (rid) => `/admin/events/${eventId}/edit?revision=${rid}`.

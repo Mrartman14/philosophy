@@ -1,0 +1,152 @@
+"use client";
+// src/features/events/ui/event-edit-form.tsx
+import { useActionState, useState } from "react";
+import {
+  Checkbox,
+  Form,
+  FormField,
+  SubmitButton,
+  TextInput,
+} from "@/components/ui";
+import type { ActionResult } from "@/utils/create-action";
+import { AstEditor } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
+import { updateEvent } from "../actions";
+import type { CalendarEvent } from "../types";
+
+const initial: ActionResult<CalendarEvent | null> = {
+  success: true,
+  data: null,
+};
+
+/** RFC3339 ("2026-07-01T19:00:00Z") → значение <input type="datetime-local">. */
+function toDatetimeLocal(value?: string): string {
+  if (!value) return "";
+  return value.replace(/Z$/, "").slice(0, 16);
+}
+
+interface Props {
+  event: CalendarEvent;
+}
+
+export function EventEditForm({ event }: Props) {
+  const initialAllDay = event.all_day ?? true;
+  const [allDay, setAllDay] = useState(initialAllDay);
+  const [startDate, setStartDate] = useState(
+    initialAllDay ? (event.start_date ?? "") : toDatetimeLocal(event.start_date),
+  );
+  const [endDate, setEndDate] = useState(
+    initialAllDay ? (event.end_date ?? "") : toDatetimeLocal(event.end_date),
+  );
+  const [blocks, setBlocks] = useState<AstBlock[]>(event.blocks ?? []);
+  const [state, action] = useActionState(updateEvent, initial);
+
+  const fieldErrors: Record<string, string> =
+    state.success === false && state.code === "validation"
+      ? state.fieldErrors
+      : {};
+
+  // При переключении формата приводим значения, чтобы input
+  // type="date"/"datetime-local" не потерял значение.
+  const handleAllDayChange = (next: boolean) => {
+    setAllDay(next);
+    if (next) {
+      setStartDate((v) => v.slice(0, 10));
+      setEndDate((v) => v.slice(0, 10));
+    } else {
+      setStartDate((v) => (v ? `${v.slice(0, 10)}T00:00` : v));
+      setEndDate((v) => (v ? `${v.slice(0, 10)}T00:00` : v));
+    }
+  };
+
+  return (
+    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
+      <input type="hidden" name="id" value={event.id ?? ""} />
+      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+
+      <FormField name="title" label="Название" required>
+        <TextInput
+          name="title"
+          defaultValue={event.title ?? ""}
+          required
+          maxLength={500}
+        />
+      </FormField>
+
+      <label className="flex items-center gap-2 text-sm">
+        <Checkbox
+          name="all_day"
+          checked={allDay}
+          onCheckedChange={handleAllDayChange}
+        />
+        Весь день
+      </label>
+
+      <FormField
+        name="start_date"
+        label={allDay ? "Дата начала" : "Дата и время начала (UTC)"}
+        required
+      >
+        <TextInput
+          name="start_date"
+          type={allDay ? "date" : "datetime-local"}
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          required
+        />
+      </FormField>
+
+      <FormField
+        name="end_date"
+        label={
+          allDay
+            ? "Дата окончания (необязательно)"
+            : "Дата и время окончания (UTC, необязательно)"
+        }
+      >
+        <TextInput
+          name="end_date"
+          type={allDay ? "date" : "datetime-local"}
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+      </FormField>
+
+      <FormField name="rrule" label="Повторение (RRULE, необязательно)">
+        <TextInput
+          name="rrule"
+          defaultValue={event.rrule ?? ""}
+          placeholder="FREQ=WEEKLY;BYDAY=MO"
+        />
+      </FormField>
+      <p className="text-xs text-(--color-description)">
+        Уже сохранённые «Дату окончания» и «Повторение» очистить нельзя —
+        бекенд игнорирует пустые значения этих полей.
+      </p>
+
+      <FormField name="blocks" label="Описание события">
+        <AstEditor
+          defaultValue={event.blocks ?? []}
+          entityContext="event"
+          onChange={(next: AstBlock[]) => setBlocks(next)}
+        />
+      </FormField>
+
+      {state.success && state.data && (
+        <p className="text-sm text-(--color-description)">Сохранено.</p>
+      )}
+      {state.success === false && state.code === "forbidden" && (
+        <p className="text-sm text-red-600">
+          У вас нет прав на изменение события.
+        </p>
+      )}
+      {state.success === false && !state.code && (
+        <p className="text-sm text-red-600">{state.error}</p>
+      )}
+
+      <div>
+        <SubmitButton>Сохранить</SubmitButton>
+      </div>
+    </Form>
+  );
+}
