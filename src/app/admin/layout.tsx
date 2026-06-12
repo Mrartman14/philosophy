@@ -32,10 +32,23 @@ function buildNavItems(me: MaybeMe): NavItem[] {
   ) {
     items.push({ href: "/admin/glossary", label: "Глоссарий" });
   }
-  if (can(me, "comment.moderate")) {
+  if (
+    can(me, "tag.create") ||
+    can(me, "tag.update") ||
+    can(me, "tag.delete")
+  ) {
+    items.push({ href: "/admin/tags", label: "Теги" });
+  }
+  if (can(me, "event.read")) {
+    items.push({ href: "/admin/events", label: "События" });
+  }
+  if (can(me, "banner.read")) {
+    items.push({ href: "/admin/banners", label: "Баннеры" });
+  }
+  if (can(me, "comment.delete_any")) {
     items.push({ href: "/admin/comments", label: "Комментарии" });
   }
-  if (can(me, "annotation.moderate")) {
+  if (can(me, "annotation.delete_any")) {
     items.push({ href: "/admin/annotations", label: "Аннотации" });
   }
   if (can(me, "user.list")) {
@@ -43,6 +56,9 @@ function buildNavItems(me: MaybeMe): NavItem[] {
   }
   if (can(me, "push.send")) {
     items.push({ href: "/admin/push", label: "Push-уведомления" });
+  }
+  if (can(me, "audit.read")) {
+    items.push({ href: "/admin/audit", label: "Аудит" });
   }
   return items;
 }
