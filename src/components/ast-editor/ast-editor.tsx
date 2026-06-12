@@ -90,7 +90,12 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
         ${props.editable === false ? "opacity-50 pointer-events-none" : ""}`}
     >
       {props.editable !== false && (
-        <EditorToolbar editor={editor} schema={schema} context={props.entityContext} />
+        <EditorToolbar
+          editor={editor}
+          schema={schema}
+          context={props.entityContext}
+          defaultLectureId={props.defaultLectureId}
+        />
       )}
       <EditorContent editor={editor} className="prose prose-sm max-w-none" />
       {props.editable !== false && (
