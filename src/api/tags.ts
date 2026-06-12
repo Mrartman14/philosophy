@@ -13,8 +13,9 @@
 
 export const Tags = {
   EVENTS: "events",
-  LECTURES: "lectures",
   GLOSSARY: "glossary",
+  LECTURES: "lectures",
+  PREFERENCES: "preferences",
   TAGS: "tags",
 } as const;
 

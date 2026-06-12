@@ -120,7 +120,7 @@
 - Create: `src/features/preferences/types.ts` (перезапись шаблонного)
 - Modify: `src/api/tags.ts`
 
-- [ ] **Step 1: Скопировать шаблон и убрать README**
+- [x] **Step 1: Скопировать шаблон и убрать README**
 
 ```bash
 cp -R src/features/_template src/features/preferences
@@ -129,7 +129,7 @@ rm src/features/preferences/README.md
 
 (`ui/.gitkeep` останется до Task 6, чтобы каталог не потерялся; удалим при добавлении первого ui-файла.)
 
-- [ ] **Step 2: Написать `src/features/preferences/types.ts`** (полная замена шаблонного содержимого)
+- [x] **Step 2: Написать `src/features/preferences/types.ts`** (полная замена шаблонного содержимого)
 
 ```ts
 // src/features/preferences/types.ts
@@ -148,7 +148,7 @@ export type ReadingMode = (typeof READING_MODES)[number];
 
 (Ответ `POST /api/push/subscribe` (`push.Subscription`) фронтом не используется — тип для него не заводим, YAGNI.)
 
-- [ ] **Step 3: Дополнить `src/api/tags.ts`** — строго append-only
+- [x] **Step 3: Дополнить `src/api/tags.ts`** — строго append-only
 
 Существующие ключи НЕ переставлять (сейчас в файле `LECTURES, GLOSSARY` — менять их порядок нельзя: это увеличило бы конфликтную поверхность с другими ветками волны). Новый ключ `PREFERENCES` алфавитно последний — добавить одну строку в конец объекта:
 
@@ -162,12 +162,12 @@ export const Tags = {
 
 (Остальной файл — без изменений.)
 
-- [ ] **Step 4: Проверить, что ничего не сломалось**
+- [x] **Step 4: Проверить, что ничего не сломалось**
 
 Run: `npm run lint && npm test`
 Expected: зелёные (шаблонные placeholder-тесты `canPlaceholder`/`PlaceholderSchema` проходят).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/preferences src/api/tags.ts
@@ -184,7 +184,7 @@ git commit -m "feat(preferences): scaffold slice from template, add PREFERENCES 
 
 Бизнес-правила: изменение своих настроек и push-подписка — любой залогиненный **active**-пользователь без специальной capability (бекенд гейтит только RequireMutator); рассылка — capability `push.send`.
 
-- [ ] **Step 1: Написать failing-тесты** — полная замена `src/features/preferences/permissions.test.ts`
+- [x] **Step 1: Написать failing-тесты** — полная замена `src/features/preferences/permissions.test.ts`
 
 ```ts
 // src/features/preferences/permissions.test.ts
@@ -250,12 +250,12 @@ describe("canSendPush", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/preferences/permissions.test.ts`
 Expected: FAIL — `canSendPush`/`canSubscribePush`/`canUpdatePreferences` не экспортируются.
 
-- [ ] **Step 3: Реализовать** — полная замена `src/features/preferences/permissions.ts`
+- [x] **Step 3: Реализовать** — полная замена `src/features/preferences/permissions.ts`
 
 ```ts
 // src/features/preferences/permissions.ts
@@ -286,12 +286,12 @@ export function canSendPush(me: MaybeMe): boolean {
 }
 ```
 
-- [ ] **Step 4: Убедиться, что тесты проходят**
+- [x] **Step 4: Убедиться, что тесты проходят**
 
 Run: `npx vitest run src/features/preferences/permissions.test.ts`
 Expected: PASS, 13 тестов.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/preferences/permissions.ts src/features/preferences/permissions.test.ts
@@ -306,7 +306,7 @@ git commit -m "feat(preferences): permission helpers with tests"
 - Modify: `src/features/preferences/schemas.ts` (полная замена шаблонного)
 - Test: `src/features/preferences/schemas.test.ts` (полная замена шаблонного)
 
-- [ ] **Step 1: Написать failing-тесты** — полная замена `src/features/preferences/schemas.test.ts`
+- [x] **Step 1: Написать failing-тесты** — полная замена `src/features/preferences/schemas.test.ts`
 
 ```ts
 // src/features/preferences/schemas.test.ts
@@ -440,12 +440,12 @@ describe("PushSendSchema", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/preferences/schemas.test.ts`
 Expected: FAIL — схемы не экспортируются.
 
-- [ ] **Step 3: Реализовать** — полная замена `src/features/preferences/schemas.ts`
+- [x] **Step 3: Реализовать** — полная замена `src/features/preferences/schemas.ts`
 
 Примечание: проект на Zod 4 — для URL используется топ-левел `z.url()` (`z.string().url()` в v4 deprecated).
 
@@ -512,12 +512,12 @@ export type PushUnsubscribeInput = z.infer<typeof PushUnsubscribeSchema>;
 export type PushSendInput = z.infer<typeof PushSendSchema>;
 ```
 
-- [ ] **Step 4: Убедиться, что тесты проходят**
+- [x] **Step 4: Убедиться, что тесты проходят**
 
 Run: `npx vitest run src/features/preferences/schemas.test.ts`
 Expected: PASS, 18 тестов.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/preferences/schemas.ts src/features/preferences/schemas.test.ts
@@ -533,7 +533,7 @@ git commit -m "feat(preferences): zod schemas with tests"
 
 Тесты на fetchers по конвенции не пишутся (glossary их тоже не имеет); компиляцию проверит `npm run build` в Task 11.
 
-- [ ] **Step 1: Реализовать** — полная замена `src/features/preferences/api.ts`
+- [x] **Step 1: Реализовать** — полная замена `src/features/preferences/api.ts`
 
 ```ts
 // src/features/preferences/api.ts
@@ -572,12 +572,12 @@ export const getVapidKey = cache(async (): Promise<string | null> => {
 });
 ```
 
-- [ ] **Step 2: Проверить типы и линт**
+- [x] **Step 2: Проверить типы и линт**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: без ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/preferences/api.ts
@@ -591,7 +591,7 @@ git commit -m "feat(preferences): server fetchers getPreferences/getVapidKey"
 **Files:**
 - Modify: `src/features/preferences/actions.ts` (полная замена шаблонного)
 
-- [ ] **Step 1: Реализовать** — полная замена `src/features/preferences/actions.ts`
+- [x] **Step 1: Реализовать** — полная замена `src/features/preferences/actions.ts`
 
 ```ts
 // src/features/preferences/actions.ts
@@ -699,12 +699,12 @@ export const sendPushBroadcast = createFormAction(async (formData) => {
 });
 ```
 
-- [ ] **Step 2: Проверить типы и линт**
+- [x] **Step 2: Проверить типы и линт**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: без ошибок. Если openapi-fetch ругается на `body` у `DELETE /api/push/subscribe` — проверить, что путь и метод совпадают со schema.ts (requestBody там объявлен, `schema.ts:10284-10296`).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/preferences/actions.ts
@@ -721,7 +721,7 @@ git commit -m "feat(preferences): server actions for preferences and push"
 
 UI-компоненты тестами не покрываются (конвенция §5: не тестируем UI-примитивы; вся логика — в schemas/permissions, уже покрытых).
 
-- [ ] **Step 1: Создать `src/features/preferences/ui/preferences-form.tsx`**
+- [x] **Step 1: Создать `src/features/preferences/ui/preferences-form.tsx`**
 
 ```tsx
 "use client";
@@ -789,7 +789,7 @@ export function PreferencesForm({
 }
 ```
 
-- [ ] **Step 2: Удалить gitkeep (он закоммичен в Task 1 — поэтому `git rm`, не `rm`), проверить линт**
+- [x] **Step 2: Удалить gitkeep (он закоммичен в Task 1 — поэтому `git rm`, не `rm`), проверить линт**
 
 ```bash
 git rm src/features/preferences/ui/.gitkeep
@@ -798,7 +798,7 @@ npm run lint
 
 Expected: без ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/preferences/ui/preferences-form.tsx
@@ -816,7 +816,7 @@ git commit -m "feat(preferences): preferences form (reading_mode)"
 
 Это замена замороженной паре `push-service.ts` + `use-push-subscription.ts`: вся браузерная логика — внутри слайса. Отличия от старого кода: VAPID-ключ приходит пропом с бекенда (не из env), подписка реально отправляется на бекенд server action'ом, отписка шлёт DELETE.
 
-- [ ] **Step 1: Создать `src/features/preferences/ui/push-subscription-toggle.tsx`**
+- [x] **Step 1: Создать `src/features/preferences/ui/push-subscription-toggle.tsx`**
 
 ```tsx
 "use client";
@@ -1015,12 +1015,12 @@ export function PushSubscriptionToggle({
 }
 ```
 
-- [ ] **Step 2: Проверить типы и линт**
+- [x] **Step 2: Проверить типы и линт**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: без ошибок. (Если TS ругается на `applicationServerKey` — каст `as BufferSource` уже стоит; не менять lib в tsconfig.)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/preferences/ui/push-subscription-toggle.tsx
@@ -1034,7 +1034,7 @@ git commit -m "feat(preferences): push subscription toggle wired to /api/push/*"
 **Files:**
 - Create: `src/features/preferences/ui/push-send-form.tsx`
 
-- [ ] **Step 1: Создать `src/features/preferences/ui/push-send-form.tsx`**
+- [x] **Step 1: Создать `src/features/preferences/ui/push-send-form.tsx`**
 
 ```tsx
 "use client";
@@ -1109,12 +1109,12 @@ export function PushSendForm() {
 }
 ```
 
-- [ ] **Step 2: Проверить линт**
+- [x] **Step 2: Проверить линт**
 
 Run: `npm run lint`
 Expected: без ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/preferences/ui/push-send-form.tsx
@@ -1130,7 +1130,7 @@ git commit -m "feat(preferences): admin push broadcast form"
 
 Экспортируется только то, что нужно страницам в `app/` (deep-imports снаружи запрещены ESLint'ом). Server actions наружу не экспортируем — их используют только ui-компоненты слайса через относительные импорты (YAGNI).
 
-- [ ] **Step 1: Реализовать** — полная замена `src/features/preferences/index.ts`
+- [x] **Step 1: Реализовать** — полная замена `src/features/preferences/index.ts`
 
 ```ts
 // src/features/preferences/index.ts
@@ -1146,12 +1146,12 @@ export { PushSendForm } from "./ui/push-send-form";
 export type { Preferences, ReadingMode } from "./types";
 ```
 
-- [ ] **Step 2: Проверить линт и тесты**
+- [x] **Step 2: Проверить линт и тесты**
 
 Run: `npm run lint && npm test`
 Expected: зелёные.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/preferences/index.ts
@@ -1167,7 +1167,7 @@ git commit -m "feat(preferences): export public slice API"
 
 Гейт: гостя редиректим на `/login?next=/settings` (паттерн `src/app/login/page.tsx` — login сам читает `next` через `safeNextPath`).
 
-- [ ] **Step 1: Создать `src/app/settings/page.tsx`**
+- [x] **Step 1: Создать `src/app/settings/page.tsx`**
 
 ```tsx
 // src/app/settings/page.tsx
@@ -1218,12 +1218,12 @@ export default async function SettingsPage() {
 }
 ```
 
-- [ ] **Step 2: Проверить линт**
+- [x] **Step 2: Проверить линт**
 
 Run: `npm run lint`
 Expected: без ошибок (импорт только через `@/features/preferences` — deep-import guard доволен).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/settings/page.tsx
@@ -1239,7 +1239,7 @@ git commit -m "feat(preferences): /settings page (auth-gated)"
 
 Layer-3 гейт по конвенции (`forbidden()` из `next/navigation`). Пункт sidebar уже существует и гейтится `can(me, "push.send")` в `src/app/admin/layout.tsx` — НЕ трогать.
 
-- [ ] **Step 1: Создать `src/app/admin/push/page.tsx`**
+- [x] **Step 1: Создать `src/app/admin/push/page.tsx`**
 
 ```tsx
 // src/app/admin/push/page.tsx
@@ -1268,12 +1268,12 @@ export default async function AdminPushPage() {
 }
 ```
 
-- [ ] **Step 2: Полная проверка с билдом**
+- [x] **Step 2: Полная проверка с билдом**
 
 Run: `npm run lint && npm test && npm run build`
 Expected: всё зелёное. ВНИМАНИЕ: `npm run build` авто-бампнет `SW_VERSION` в `public/sw.js` — НЕ добавлять его в git.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/admin/push/page.tsx
@@ -1289,7 +1289,7 @@ git commit -m "feat(preferences): /admin/push page with layer-3 gate"
 
 Обоснование размещения в части A: файл не входит в запретные зоны; после замены он перестаёт импортировать замороженный `use-push-subscription`, а target `/settings` создан в этой же ветке — main работоспособен в любой точке между мержами. Замороженные hook/service после этого становятся мёртвым кодом и удаляются частью B.
 
-- [ ] **Step 1: Заменить содержимое `src/app/push/page.tsx` целиком**
+- [x] **Step 1: Заменить содержимое `src/app/push/page.tsx` целиком**
 
 ```tsx
 // src/app/push/page.tsx
@@ -1304,17 +1304,17 @@ export default function PushRedirectPage() {
 }
 ```
 
-- [ ] **Step 2: Проверить, что замороженный хук больше никем не используется**
+- [x] **Step 2: Проверить, что замороженный хук больше никем не используется**
 
 Run: `grep -rn "use-push-subscription\|push-service" src/ --include='*.ts' --include='*.tsx' | grep -v 'src/hooks/use-push-subscription.ts' | grep -v 'src/services/push-service/'`
 Expected: пусто (единственным потребителем был старый `/push`).
 
-- [ ] **Step 3: Линт и тесты**
+- [x] **Step 3: Линт и тесты**
 
 Run: `npm run lint && npm test`
 Expected: зелёные.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/app/push/page.tsx
@@ -1327,7 +1327,7 @@ git commit -m "feat(preferences): redirect /push to /settings"
 
 **Files:** — (только проверки)
 
-- [ ] **Step 1: Пройти чеклист `src/features/_template/README.md`**
+- [x] **Step 1: Пройти чеклист `src/features/_template/README.md`**
 
 - `index.ts` экспортирует только нужное снаружи — да (Task 9).
 - `api.ts`, `actions.ts`, `permissions.ts`, `schemas.ts` начинаются с `import "server-only";` — проверить глазами все четыре файла.
@@ -1337,12 +1337,12 @@ git commit -m "feat(preferences): redirect /push to /settings"
 - Не импортит другие `@/features/*` — да (ESLint enforce).
 - `ui/.gitkeep` удалён, реальные UI-файлы добавлены — да (Tasks 6-8).
 
-- [ ] **Step 2: Финальная верификация**
+- [x] **Step 2: Финальная верификация**
 
 Run: `npm run lint && npm test && npm run build`
 Expected: всё зелёное. Перепроверить `git status`: `public/sw.js` (авто-бамп от build) — НЕ закоммичен; в ветке только файлы из Parallel-safety contract части A.
 
-- [ ] **Step 3: Если что-то красное** — чинить (REQUIRED SUB-SKILL: superpowers:systematic-debugging), не отключать правила и не комментировать тесты.
+- [x] **Step 3: Если что-то красное** — чинить (REQUIRED SUB-SKILL: superpowers:systematic-debugging), не отключать правила и не комментировать тесты.
 
 ---
 
