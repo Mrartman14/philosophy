@@ -25,6 +25,19 @@ export type Capability =
   | "glossary.create"
   | "glossary.update"
   | "glossary.delete"
+  | "tag.create"
+  | "tag.update"
+  | "tag.delete"
+  | "tag.assign"
+  | "event.read"
+  | "event.create"
+  | "event.update"
+  | "event.delete"
+  | "banner.read"
+  | "banner.create"
+  | "banner.update"
+  | "banner.delete"
+  | "audit.read"
   | "admin.access";
 
 /**
