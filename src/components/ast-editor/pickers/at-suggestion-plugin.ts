@@ -31,12 +31,25 @@ export function createAtSuggestionPlugin() {
         // Map prev.from через mapping любых правок других плагинов, иначе
         // позиция "@" устареет и textBetween вернёт мусор.
         const mappedFrom = tr.mapping.map(prev.from, -1);
+        const end = tr.selection.from;
         if (tr.docChanged) {
-          const end = tr.selection.from;
           if (end < mappedFrom) return CLOSED;
           const text = tr.doc.textBetween(mappedFrom, end);
           if (!text.startsWith("@")) return CLOSED;
+          // Enter/split: textBetween с blockSeparator "" склеивает текст через
+          // границу блока, startsWith("@") остаётся true, хотя курсор уже в
+          // другом блоке. Расхождение длины текста и диапазона = escape.
+          if (end - mappedFrom !== text.length) return CLOSED;
           return { ...prev, from: mappedFrom, query: text.slice(1) };
+        }
+        // Selection-only транзакция (клик мышью, End/стрелки): курсор вне
+        // диапазона "@"+query — закрываем, иначе consumeAtMarker удалит
+        // чужой текст или получит to < from.
+        if (
+          tr.selectionSet &&
+          (end < mappedFrom || end > mappedFrom + 1 + prev.query.length)
+        ) {
+          return CLOSED;
         }
         return { ...prev, from: mappedFrom };
       },
@@ -80,5 +93,9 @@ export function consumeAtMarker(
   from: number,
 ) {
   const to = view.state.selection.from;
-  view.dispatch(view.state.tr.delete(from, to).setMeta(atSuggestionKey, CLOSED));
+  // Guard: если курсор уехал до маркера (to < from), delete(from, to) с
+  // перевёрнутым диапазоном портит документ — только закрываем состояние.
+  const tr = view.state.tr;
+  if (to > from) tr.delete(from, to);
+  view.dispatch(tr.setMeta(atSuggestionKey, CLOSED));
 }

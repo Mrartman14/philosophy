@@ -1,6 +1,7 @@
 // src/components/ast-editor/pickers/at-suggestion-plugin.test.ts
 import { describe, it, expect } from "vitest";
 import { Editor, Extension } from "@tiptap/core";
+import { TextSelection } from "@tiptap/pm/state";
 import { buildExtensions } from "../extensions";
 import {
   createAtSuggestionPlugin,
@@ -78,6 +79,85 @@ describe("createAtSuggestionPlugin", () => {
     expect(editor.getText()).toBe("@");
     consumeAtMarker(view, 1);
     expect(editor.getText()).toBe("");
+    expect(atSuggestionKey.getState(view.state)?.open).toBe(false);
+    editor.destroy();
+  });
+
+  it("selection-only уход курсора за маркер (End/стрелки) закрывает state", () => {
+    const editor = makeEditor("tail");
+    const view = editor.view;
+    // "@tail": "@" в позиции 1, текст до 6.
+    view.dispatch(
+      view.state.tr
+        .insertText("@", 1)
+        .setMeta(atSuggestionKey, { open: true, from: 1, query: "" }),
+    );
+    expect(atSuggestionKey.getState(view.state)?.open).toBe(true);
+    // End: курсор уезжает в конец "tail" — selection-only транзакция.
+    view.dispatch(
+      view.state.tr.setSelection(TextSelection.create(view.state.doc, 6)),
+    );
+    expect(atSuggestionKey.getState(view.state)?.open).toBe(false);
+    editor.destroy();
+  });
+
+  it("selection-only клик ДО маркера закрывает state", () => {
+    const editor = makeEditor("ab ");
+    const view = editor.view;
+    // "ab @": "@" в позиции 4.
+    view.dispatch(
+      view.state.tr
+        .insertText("@", 4)
+        .setMeta(atSuggestionKey, { open: true, from: 4, query: "" }),
+    );
+    view.dispatch(
+      view.state.tr.setSelection(TextSelection.create(view.state.doc, 1)),
+    );
+    expect(atSuggestionKey.getState(view.state)?.open).toBe(false);
+    editor.destroy();
+  });
+
+  it("selection-only движение в пределах '@'+query НЕ закрывает state", () => {
+    const editor = makeEditor();
+    const view = editor.view;
+    view.dispatch(
+      view.state.tr
+        .insertText("@ab", 1)
+        .setMeta(atSuggestionKey, { open: true, from: 1, query: "ab" }),
+    );
+    // Стрелка влево внутри query: 4 → 3 — меню должно остаться открытым.
+    view.dispatch(
+      view.state.tr.setSelection(TextSelection.create(view.state.doc, 3)),
+    );
+    expect(atSuggestionKey.getState(view.state)?.open).toBe(true);
+    editor.destroy();
+  });
+
+  it("Enter (split блока) при открытом меню закрывает state", () => {
+    const editor = makeEditor();
+    const view = editor.view;
+    view.dispatch(
+      view.state.tr
+        .insertText("@", 1)
+        .setMeta(atSuggestionKey, { open: true, from: 1, query: "" }),
+    );
+    // Enter после "@": split переносит курсор в новый блок, textBetween с
+    // blockSeparator "" склеивает "@" через границу — state обязан закрыться.
+    view.dispatch(view.state.tr.split(2));
+    expect(atSuggestionKey.getState(view.state)?.open).toBe(false);
+    editor.destroy();
+  });
+
+  it("consumeAtMarker при курсоре ДО маркера не кидает и не удаляет чужой текст", () => {
+    const editor = makeEditor("ab ");
+    const view = editor.view;
+    // "ab @": "@" в позиции 4, курсор уводим в 1 (как клик мышью до маркера).
+    view.dispatch(view.state.tr.insertText("@", 4));
+    view.dispatch(
+      view.state.tr.setSelection(TextSelection.create(view.state.doc, 1)),
+    );
+    expect(() => consumeAtMarker(view, 4)).not.toThrow();
+    expect(editor.getText()).toBe("ab @");
     expect(atSuggestionKey.getState(view.state)?.open).toBe(false);
     editor.destroy();
   });
