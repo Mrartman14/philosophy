@@ -1,20 +1,22 @@
-// src/features/_template/schemas.ts
+// src/features/users/schemas.ts
 import "server-only";
 import { z } from "zod";
 
 /**
- * Zod-схемы для валидации FormData в server actions. Используются через
- * `parseFormData(Schema, formData)`.
- *
- * Хранятся отдельно от actions.ts, чтобы при необходимости их можно было
- * импортировать в client-форму для preview-валидации (через "use client"
- * границу).
+ * Enum-значения зеркалят бекенд (philosophy-api/internal/user/request.go:
+ * oneof=user admin / oneof=active suspended banned) и schema.ts
+ * (user.UpdateRoleRequest / user.UpdateStatusRequest).
  */
 
-// export const EntityCreateSchema = z.object({
-//   title: z.string().min(1).max(200),
-//   description: z.string().max(1000).optional(),
-// });
-// export type EntityCreateInput = z.infer<typeof EntityCreateSchema>;
+export const UserRoleUpdateSchema = z.object({
+  id: z.string().uuid("Некорректный id пользователя"),
+  role: z.enum(["user", "admin"]),
+});
 
-export const PlaceholderSchema = z.object({});
+export const UserStatusUpdateSchema = z.object({
+  id: z.string().uuid("Некорректный id пользователя"),
+  status: z.enum(["active", "suspended", "banned"]),
+});
+
+export type UserRoleUpdateInput = z.infer<typeof UserRoleUpdateSchema>;
+export type UserStatusUpdateInput = z.infer<typeof UserStatusUpdateSchema>;
