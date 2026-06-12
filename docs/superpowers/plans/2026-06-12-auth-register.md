@@ -102,7 +102,7 @@ src/app/
 
 Схема зеркалит правила бека (`username` 3–30 после trim, `password` ≥ 6) + front-only ограничение `max(72)` (bcrypt-лимит бека) + front-only поле `password_confirm` с проверкой совпадения через `superRefine` с явным `path: ["password_confirm"]` (ошибка попадёт в `fieldErrors.password_confirm`, а не в `_form`).
 
-- [ ] **Step 1: Дописать failing-тесты в `schemas.test.ts`**
+- [x] **Step 1: Дописать failing-тесты в `schemas.test.ts`**
 
 В конец файла `src/features/auth/schemas.test.ts` добавить блок (и расширить import в первой строке):
 
@@ -184,12 +184,12 @@ describe("RegisterSchema", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/auth/schemas.test.ts`
 Expected: FAIL — `RegisterSchema` не экспортируется из `./schemas` (SyntaxError / undefined).
 
-- [ ] **Step 3: Реализовать `RegisterSchema`**
+- [x] **Step 3: Реализовать `RegisterSchema`**
 
 В конец `src/features/auth/schemas.ts` (после `LoginInput`) добавить:
 
@@ -221,12 +221,12 @@ export const RegisterSchema = z
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 ```
 
-- [ ] **Step 4: Убедиться, что тесты зелёные**
+- [x] **Step 4: Убедиться, что тесты зелёные**
 
 Run: `npx vitest run src/features/auth/schemas.test.ts`
 Expected: PASS — все тесты `LoginSchema` и `RegisterSchema` зелёные.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/auth/schemas.ts src/features/auth/schemas.test.ts
