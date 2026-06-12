@@ -657,7 +657,7 @@ git commit -m "feat(auth): add /register page"
 
 Два изменения: (1) ссылка «Нет аккаунта? Зарегистрируйтесь» с сохранением `next`; (2) при `?registered=1` — branded-сообщение об успешной регистрации (его ставит `registerAction`).
 
-- [ ] **Step 1: Обновить страницу `/login`**
+- [x] **Step 1: Обновить страницу `/login`**
 
 `src/app/login/page.tsx` целиком после правки:
 
@@ -705,12 +705,12 @@ export default async function LoginPage({ searchParams }: PageProps) {
 }
 ```
 
-- [ ] **Step 2: Проверить lint**
+- [x] **Step 2: Проверить lint**
 
 Run: `npm run lint`
 Expected: без ошибок.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/login/page.tsx
