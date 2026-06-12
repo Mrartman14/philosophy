@@ -1,20 +1,34 @@
-// src/features/_template/api.ts
+// src/features/preferences/api.ts
 import "server-only";
 import { cache } from "react";
-// import { unstable_cache } from "next/cache";
-// import { createApiClient } from "@/api/client";
+import { createApiClient } from "@/api/client";
+import type { Preferences } from "./types";
 
 /**
- * Серверные fetchers сущности. Дедуплицируются через React.cache внутри одного
- * запроса. Для cross-request кеширования — обернуть в unstable_cache с тегом
- * `entity` (для list) или `entity:<id>` (для item).
+ * Настройки текущего пользователя. Данные пер-юзерные — НЕ оборачивать в
+ * unstable_cache: cross-request кеш протёк бы между пользователями.
+ * React.cache дедуплицирует вызовы в рамках одного запроса.
+ *
+ * Вызывать только после проверки getMe() !== null (требует auth-токен).
  */
+export const getPreferences = cache(async (): Promise<Preferences> => {
+  const api = await createApiClient();
+  const { data, error } = await api.GET("/api/me/preferences");
+  if (error) {
+    throw new Error(error.error ?? "Не удалось загрузить настройки");
+  }
+  return data?.data ?? {};
+});
 
-// export const getEntities = cache(async () => {
-//   const api = await createApiClient();
-//   const { data, error } = await api.GET("/...");
-//   if (error) throw new Error(error.message);
-//   return data;
-// });
-
-export const _placeholder = cache(async () => null);
+/**
+ * Публичный VAPID-ключ с бекенда (НЕ из env — env-заглушка уходит вместе с
+ * push-service в foundation-touch части B). Возвращает null, если push на
+ * бекенде не сконфигурирован (503 NOT_CONFIGURED) или ключ пуст — страница
+ * настроек должна работать и без push.
+ */
+export const getVapidKey = cache(async (): Promise<string | null> => {
+  const api = await createApiClient();
+  const { data, response } = await api.GET("/api/push/vapid-key");
+  if (!response.ok) return null;
+  return data?.data?.publicKey || null;
+});
