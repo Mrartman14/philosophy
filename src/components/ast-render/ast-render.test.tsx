@@ -16,12 +16,14 @@ import {
   PARAGRAPH_WITH_RELATIVE_LINK,
   PARAGRAPH_WITH_DANGEROUS_LINK,
   IMAGE_BLOCK,
-  IMAGE_BLOCK_NO_SRC,
+  IMAGE_BLOCK_WITH_CAPTION,
+  IMAGE_BLOCK_NO_KEY,
+  IMAGE_BLOCK_INVALID_KEY,
+  STORAGE_KEY_FIXTURE,
   PARAGRAPH_WITH_GLOSSARY_REF,
   PARAGRAPH_WITH_LECTURE_REF,
   PARAGRAPH_WITH_EMPTY_REF,
   PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK,
-  IMAGE_BLOCK_DANGEROUS_SRC,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -115,22 +117,28 @@ describe("AstRender — link mark + safety", () => {
 });
 
 describe("AstRender — image node", () => {
-  it("рендерит <img> с src и alt", () => {
+  it("рендерит <figure><img> с URL из resolveStorageUrl и alt", () => {
     const { container } = render(<AstRender blocks={[IMAGE_BLOCK]} />);
-    const img = container.querySelector("img");
-    expect(img?.getAttribute("src")).toBe("/uploads/foo.png");
+    const img = container.querySelector("figure img");
+    expect(img?.getAttribute("src")).toContain(`/static/files/${STORAGE_KEY_FIXTURE}`);
     expect(img?.getAttribute("alt")).toBe("Описание");
     expect(img?.getAttribute("loading")).toBe("lazy");
+    expect(container.querySelector("figcaption")).toBeNull();
   });
 
-  it("без src рендерит data-unsupported (без <img>)", () => {
-    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_SRC]} />);
+  it("рендерит figcaption при наличии caption", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_WITH_CAPTION]} />);
+    expect(container.querySelector("figure figcaption")?.textContent).toBe("Подпись");
+  });
+
+  it("без storage_key рендерит data-unsupported (без <img>)", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_KEY]} />);
     expect(container.querySelector("img")).toBeNull();
-    expect(container.querySelector("[data-unsupported]")).not.toBeNull();
+    expect(container.querySelector("[data-unsupported='image']")).not.toBeNull();
   });
 
-  it("javascript: src отклоняется как unsupported", () => {
-    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_DANGEROUS_SRC]} />);
+  it("невалидный storage_key (не 64-hex) отклоняется как unsupported", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_INVALID_KEY]} />);
     expect(container.querySelector("img")).toBeNull();
     expect(container.querySelector("[data-unsupported='image']")).not.toBeNull();
   });

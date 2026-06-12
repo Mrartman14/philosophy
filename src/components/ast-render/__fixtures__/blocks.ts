@@ -124,17 +124,27 @@ export const PARAGRAPH_WITH_DANGEROUS_LINK: AstBlock = {
   ],
 };
 
+/** Валидный 64-hex storage_key — как настоящий sha256 с бека. */
+export const STORAGE_KEY_FIXTURE = "deadbeef".repeat(8);
+
 export const IMAGE_BLOCK: AstBlock = {
   id: "img1",
   type: "image",
-  attrs: { src: "/uploads/foo.png", alt: "Описание" },
+  attrs: { storage_key: STORAGE_KEY_FIXTURE, alt: "Описание" },
   content: [],
 };
 
-export const IMAGE_BLOCK_NO_SRC: AstBlock = {
+export const IMAGE_BLOCK_WITH_CAPTION: AstBlock = {
+  id: "img-cap",
+  type: "image",
+  attrs: { storage_key: STORAGE_KEY_FIXTURE, alt: "Описание", caption: "Подпись" },
+  content: [],
+};
+
+export const IMAGE_BLOCK_NO_KEY: AstBlock = {
   id: "img2",
   type: "image",
-  attrs: { alt: "Без src" },
+  attrs: { alt: "Без storage_key" },
   content: [],
 };
 
@@ -163,10 +173,10 @@ export const PARAGRAPH_WITH_LECTURE_REF: AstBlock = {
   ],
 };
 
-export const IMAGE_BLOCK_DANGEROUS_SRC: AstBlock = {
+export const IMAGE_BLOCK_INVALID_KEY: AstBlock = {
   id: "img-bad",
   type: "image",
-  attrs: { src: "javascript:alert(1)", alt: "bad" },
+  attrs: { storage_key: "javascript:alert(1)", alt: "bad" },
   content: [],
 };
 
