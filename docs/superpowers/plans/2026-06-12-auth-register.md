@@ -594,7 +594,7 @@ git commit -m "feat(auth): add RegisterForm component"
 
 По образцу `src/app/login/page.tsx`: `next` через `safeNextPath`, залогиненных редиректим на target, плюс обратная ссылка на `/login` с сохранением `next`.
 
-- [ ] **Step 1: Создать страницу**
+- [x] **Step 1: Создать страницу**
 
 ```tsx
 // src/app/register/page.tsx
@@ -636,12 +636,12 @@ export default async function RegisterPage({ searchParams }: PageProps) {
 }
 ```
 
-- [ ] **Step 2: Проверить lint**
+- [x] **Step 2: Проверить lint**
 
 Run: `npm run lint`
 Expected: без ошибок (импорт слайса только через `@/features/auth` — deep-import guard доволен).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/register/page.tsx
