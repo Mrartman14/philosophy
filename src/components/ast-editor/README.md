@@ -25,10 +25,11 @@ import { AstEditor, SchemaContextProvider } from "@/components/ast-editor";
 - **Hardcoded extensions** (Phase 1): по одному `Node.create` / `Mark.create` на тип в `internal/ast/schema.go`. Имена snake_case (`code_block`, `table_row`, `hard_break`).
 - **Runtime schema** (Phase 1, schema-context): `/api/ast/schema` → `block_levels`, лимиты, attr-правила, url-policy.
 - **Validation plugins** (Phase 1): `limits-plugin` (численные лимиты), `attr-plugin` (per-attr из ExportedAttr), `dedup-block-id-plugin` (split-paragraph fixup).
-- **Image upload** (Phase 2a, в разработке): `upload/upload-image.ts` server action + paste/drop plugin.
-- **Pickers** (Phase 2b, в разработке): AsyncCombobox + 6 категорий + 2-stage comment picker.
+- **Image upload** (Phase 2a): `upload/upload-image.ts` server action + paste/drop plugin.
+- **Pickers** (Phase 2b): AsyncCombobox + 5 активных категорий + 2-stage comment picker. `canvas-picker.tsx` — dormant (canvas вне скоупа программы), в RefMenu не подключён.
 - **Toolbar + slash-menu** (Phase 2c): per-context кнопки и `/`-палитра.
 - **Drift-warn** (Phase 2c): dev-only sanity-check hardcode ⊆ runtime.
+- **Integration** (Phase 2d): image-кнопка в toolbar (`toolbar/buttons/image-button.tsx`), RefMenu-кнопка (`toolbar/buttons/ref-popover.tsx`), `@`-suggestion (`pickers/at-suggestion-plugin.ts` + `pickers/at-menu.tsx`), прокид `defaultLectureId` до comment-picker'а.
 
 ## Frozen zones
 
@@ -44,7 +45,9 @@ import { AstEditor, SchemaContextProvider } from "@/components/ast-editor";
 
 ## Что НЕ покрыто (Phase 3+)
 
-- Image toolbar-кнопка / RefMenu trigger в toolbar / `@`-suggestion — добавляются tail-PR'ами после merge 2a + 2b.
+- Canvas: picker dormant, `canvas_ref` вставить из UI нельзя (graceful fallback в ast-render).
+- Toast при ошибке paste/drop-загрузки картинки (plugin пишет console.warn; toast есть только у toolbar-кнопки).
+- Позиционирование slash-/at-меню под курсором через `view.coordsAtPos`.
 - Drag-handle reorder блоков.
 - Heading anchor (`heading.id`) inline edit.
 - Code-block syntax highlight.

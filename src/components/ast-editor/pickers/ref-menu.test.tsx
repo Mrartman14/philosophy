@@ -85,4 +85,30 @@ describe("RefMenu", () => {
     expect(json).toContain('"id":"l1"');
     editor.destroy();
   });
+
+  it("не показывает категорию Canvas (canvas вне скоупа — dormant)", () => {
+    const editor = makeEditor();
+    render(<RefMenu editor={editor} />);
+    expect(screen.queryByRole("button", { name: /canvas/i })).toBeNull();
+    // Остальные пять категорий на месте.
+    for (const name of ["Лекция", "Термин", "Документ", "Медиа", "Комментарий"]) {
+      expect(screen.getByRole("button", { name })).toBeInTheDocument();
+    }
+    editor.destroy();
+  });
+
+  it("onWillInsert вызывается до вставки mark", async () => {
+    mocked.searchLectures.mockResolvedValue({
+      data: [{ id: "l1", title: "L1" }],
+      total: 1,
+    });
+    const editor = makeEditor();
+    const onWillInsert = vi.fn();
+    render(<RefMenu editor={editor} onWillInsert={onWillInsert} />);
+    fireEvent.click(screen.getByRole("button", { name: /лекция/i }));
+    fireEvent.mouseDown(await screen.findByText("L1"));
+    expect(onWillInsert).toHaveBeenCalledOnce();
+    expect(JSON.stringify(editor.getJSON())).toContain('"type":"lecture_ref"');
+    editor.destroy();
+  });
 });

@@ -20,6 +20,10 @@ export interface AstRenderContext {
   renderLectureRef?: RefLinkRenderer;
   /** Override how `document_ref` mark is rendered. Default: <a href="/documents/{id}">{label}</a>. */
   renderDocumentRef?: RefLinkRenderer;
+  /** Override how `media_ref` mark is rendered. Default: <a href="/media/{id}">{label}</a>. */
+  renderMediaRef?: RefLinkRenderer;
+  /** Override how `comment_ref` mark is rendered. Default: <a href="/comments/{id}">{label}</a>. */
+  renderCommentRef?: RefLinkRenderer;
 }
 
 export type RefLinkRenderer = (props: { id: string; label: string }) => ReactNode;

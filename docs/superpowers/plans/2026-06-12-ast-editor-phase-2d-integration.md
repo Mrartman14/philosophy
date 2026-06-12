@@ -86,7 +86,7 @@
 
 **Files:** только чтение.
 
-- [ ] **Step 1: Проверить, что 2a/2b/2c смержены и RefPopover уже подключён**
+- [x] **Step 1: Проверить, что 2a/2b/2c смержены и RefPopover уже подключён**
 
 Run:
 
@@ -97,12 +97,12 @@ grep -n "RefPopover" src/components/ast-editor/toolbar/toolbar.tsx
 
 Expected: все три файла существуют; `toolbar.tsx` импортирует и рендерит `RefPopover`. Если RefPopover отсутствует — состояние ветки отличается от main `c7e0da3e`: остановиться и доложить менеджеру (план писался против этого состояния).
 
-- [ ] **Step 2: Проверить, что canvas сейчас подключён в RefMenu**
+- [x] **Step 2: Проверить, что canvas сейчас подключён в RefMenu**
 
 Run: `grep -n "CanvasPicker\|canvas" src/components/ast-editor/pickers/ref-menu.tsx`
 Expected: импорт `CanvasPicker`, ключ `canvas` в `MARK_FOR`/`labels` и render-ветка. Если canvas уже отключён — в Task 5 выполнить только шаги с тестами.
 
-- [ ] **Step 3: Проверить баг ast-render image**
+- [x] **Step 3: Проверить баг ast-render image**
 
 Run: `grep -n "attrs?.src" src/components/ast-render/nodes/image.tsx`
 Expected: совпадение есть (рендер читает `src`, которого бек не присылает).
@@ -114,7 +114,7 @@ Expected: совпадение есть (рендер читает `src`, кот
 **Files:**
 - Create: `src/components/ast-editor/toolbar/buttons/image-button.test.tsx`
 
-- [ ] **Step 1: Написать тест**
+- [x] **Step 1: Написать тест**
 
 ```tsx
 // src/components/ast-editor/toolbar/buttons/image-button.test.tsx
@@ -240,7 +240,7 @@ describe("ImageButton", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить — должен провалиться (компонента нет)**
+- [x] **Step 2: Запустить — должен провалиться (компонента нет)**
 
 Run: `npx vitest run src/components/ast-editor/toolbar/buttons/image-button.test.tsx`
 Expected: FAIL — `Cannot find module './image-button'`.
@@ -254,7 +254,7 @@ Expected: FAIL — `Cannot find module './image-button'`.
 
 **Why server action + toast:** auth — httpOnly cookie, клиентский fetch невозможен → переиспользуем `uploadImage` (2a). Toast закрывает отложенный из 2a пункт «UI-toast при upload-ошибке» для toolbar-потока. Branded-текст при `forbidden` — конвенция RBAC (CLAUDE.md). Toast в paste/drop-плагине НЕ трогаем (см. «Что НЕ входит»).
 
-- [ ] **Step 1: Реализовать компонент**
+- [x] **Step 1: Реализовать компонент**
 
 ```tsx
 // src/components/ast-editor/toolbar/buttons/image-button.tsx
@@ -350,12 +350,12 @@ export function ImageButton({ editor, schema, context }: Props) {
 }
 ```
 
-- [ ] **Step 2: Прогнать тест — PASS**
+- [x] **Step 2: Прогнать тест — PASS**
 
 Run: `npx vitest run src/components/ast-editor/toolbar/buttons/image-button.test.tsx`
 Expected: PASS (4 tests).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/components/ast-editor/toolbar/buttons/image-button.tsx src/components/ast-editor/toolbar/buttons/image-button.test.tsx
@@ -374,7 +374,7 @@ git commit -m "feat(ast-editor): add image upload toolbar button with toast erro
 
 **Why defaultLectureId:** `AstEditorProps.defaultLectureId` объявлен ещё в Phase 2c, но никуда не прокинут (dead prop), при этом `RefMenu` и `Comment2StagePicker` его поддерживают. Закрываем разрыв: страница лекции сможет передать контекст, и comment-picker стартует сразу с шага 2.
 
-- [ ] **Step 1: Обновить toolbar.test.tsx (failing для новых кейсов)**
+- [x] **Step 1: Обновить toolbar.test.tsx (failing для новых кейсов)**
 
 Полная замена файла:
 
@@ -509,12 +509,12 @@ describe("EditorToolbar defaultLectureId", () => {
 
 Примечание: если Base UI Popover в jsdom не откроется по `fireEvent.click` (попап не появился, `findByRole` таймаутится) — заменить открытие на `fireEvent.pointerDown` + `fireEvent.click` по триггеру; это поведение Base UI, сверить по факту.
 
-- [ ] **Step 2: Прогнать — новые кейсы падают**
+- [x] **Step 2: Прогнать — новые кейсы падают**
 
 Run: `npx vitest run src/components/ast-editor/toolbar/toolbar.test.tsx`
 Expected: FAIL — нет `aria-label="Изображение"` в document-кейсе, у `EditorToolbar` нет пропа `defaultLectureId`.
 
-- [ ] **Step 3: toolbar.tsx — полная замена**
+- [x] **Step 3: toolbar.tsx — полная замена**
 
 ```tsx
 // src/components/ast-editor/toolbar/toolbar.tsx
@@ -594,7 +594,7 @@ export function EditorToolbar({ editor, schema, context, defaultLectureId }: Edi
 }
 ```
 
-- [ ] **Step 4: ref-popover.tsx — полная замена**
+- [x] **Step 4: ref-popover.tsx — полная замена**
 
 ```tsx
 // src/components/ast-editor/toolbar/buttons/ref-popover.tsx
@@ -643,7 +643,7 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
 }
 ```
 
-- [ ] **Step 5: ast-editor.tsx — прокинуть проп в EditorToolbar**
+- [x] **Step 5: ast-editor.tsx — прокинуть проп в EditorToolbar**
 
 В `src/components/ast-editor/ast-editor.tsx` заменить строку рендера toolbar:
 
@@ -660,17 +660,17 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
 
 (остальное в файле не трогать — AtMenu добавится в Task 8).
 
-- [ ] **Step 6: Прогнать toolbar-тесты — PASS**
+- [x] **Step 6: Прогнать toolbar-тесты — PASS**
 
 Run: `npx vitest run src/components/ast-editor/toolbar/toolbar.test.tsx`
 Expected: PASS (6 tests).
 
-- [ ] **Step 7: Прогнать весь suite (регрессии wiring)**
+- [x] **Step 7: Прогнать весь suite (регрессии wiring)**
 
 Run: `npm test`
 Expected: все тесты PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/components/ast-editor/toolbar/toolbar.tsx src/components/ast-editor/toolbar/toolbar.test.tsx src/components/ast-editor/toolbar/buttons/ref-popover.tsx src/components/ast-editor/ast-editor.tsx
@@ -689,7 +689,7 @@ git commit -m "feat(ast-editor): wire image button into toolbar and thread defau
 
 `onWillInsert` добавляем здесь же (один rewrite файла): он нужен Task 7 (AtMenu удаляет `@`-маркер перед вставкой).
 
-- [ ] **Step 1: Дописать failing-тесты в ref-menu.test.tsx**
+- [x] **Step 1: Дописать failing-тесты в ref-menu.test.tsx**
 
 Добавить в конец `describe("RefMenu", …)` (после второго `it`):
 
@@ -721,12 +721,12 @@ git commit -m "feat(ast-editor): wire image button into toolbar and thread defau
   });
 ```
 
-- [ ] **Step 2: Прогнать — оба новых кейса падают**
+- [x] **Step 2: Прогнать — оба новых кейса падают**
 
 Run: `npx vitest run src/components/ast-editor/pickers/ref-menu.test.tsx`
 Expected: FAIL — кнопка Canvas присутствует; пропа `onWillInsert` нет.
 
-- [ ] **Step 3: ref-menu.tsx — полная замена**
+- [x] **Step 3: ref-menu.tsx — полная замена**
 
 ```tsx
 // src/components/ast-editor/pickers/ref-menu.tsx
@@ -831,17 +831,17 @@ export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: Ref
 
 Важно: `onWillInsert?.()` — первая строка `apply`, ДО чтения `editor.state.selection.empty` (после удаления маркера selection схлопнут → ветка insertContent).
 
-- [ ] **Step 4: Прогнать — PASS**
+- [x] **Step 4: Прогнать — PASS**
 
 Run: `npx vitest run src/components/ast-editor/pickers/ref-menu.test.tsx`
 Expected: PASS (4 tests).
 
-- [ ] **Step 5: Прогнать pickers-тесты (CanvasPicker как компонент жив)**
+- [x] **Step 5: Прогнать pickers-тесты (CanvasPicker как компонент жив)**
 
 Run: `npx vitest run src/components/ast-editor/pickers/pickers.test.tsx`
 Expected: PASS — тест CanvasPicker остался зелёным (компонент dormant, но рабочий).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/components/ast-editor/pickers/ref-menu.tsx src/components/ast-editor/pickers/ref-menu.test.tsx
@@ -858,7 +858,7 @@ git commit -m "feat(ast-editor): disable canvas category in RefMenu (dormant) an
 
 **Поведение** (зеркало slash-menu-plugin, отличие — условие срабатывания): `@` открывает меню, если напечатан в начале текста или после пробельного символа (не внутри слова — e-mail не триггерит). Дальнейший ввод дописывает `query`; если текст после маркера перестал начинаться с `@` — состояние закрывается. Esc закрывает. `consumeAtMarker` удаляет `@`+query и закрывает состояние.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 
 ```ts
 // src/components/ast-editor/pickers/at-suggestion-plugin.test.ts
@@ -963,12 +963,12 @@ describe("createAtSuggestionPlugin", () => {
 });
 ```
 
-- [ ] **Step 2: Прогнать — fail (модуля нет)**
+- [x] **Step 2: Прогнать — fail (модуля нет)**
 
 Run: `npx vitest run src/components/ast-editor/pickers/at-suggestion-plugin.test.ts`
 Expected: FAIL — `Cannot find module './at-suggestion-plugin'`.
 
-- [ ] **Step 3: Реализовать plugin**
+- [x] **Step 3: Реализовать plugin**
 
 ```ts
 // src/components/ast-editor/pickers/at-suggestion-plugin.ts
@@ -1057,12 +1057,12 @@ export function consumeAtMarker(
 }
 ```
 
-- [ ] **Step 4: Прогнать — PASS**
+- [x] **Step 4: Прогнать — PASS**
 
 Run: `npx vitest run src/components/ast-editor/pickers/at-suggestion-plugin.test.ts`
 Expected: PASS (5 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/ast-editor/pickers/at-suggestion-plugin.ts src/components/ast-editor/pickers/at-suggestion-plugin.test.ts
@@ -1079,7 +1079,7 @@ git commit -m "feat(ast-editor): add @-suggestion ProseMirror plugin (state mach
 
 **Поведение:** подписка на транзакции редактора (как SlashMenu); пока state закрыт — `null`; при open рендерит RefMenu. `onWillInsert` → `consumeAtMarker` (удаляет `@`+query), `onClose` → `closeAtSuggestion`. Позиционирование — inline-панель под редактором, как у slash-menu (точное позиционирование под курсор — за скоупом, та же договорённость, что в 2c). Query, набранный после `@`, пикеры не фильтрует (у каждого пикера свой поиск) — он удаляется вместе с маркером.
 
-- [ ] **Step 1: Failing test**
+- [x] **Step 1: Failing test**
 
 ```tsx
 // src/components/ast-editor/pickers/at-menu.test.tsx
@@ -1177,12 +1177,12 @@ describe("AtMenu", () => {
 });
 ```
 
-- [ ] **Step 2: Прогнать — fail (компонента нет)**
+- [x] **Step 2: Прогнать — fail (компонента нет)**
 
 Run: `npx vitest run src/components/ast-editor/pickers/at-menu.test.tsx`
 Expected: FAIL.
 
-- [ ] **Step 3: Реализовать AtMenu**
+- [x] **Step 3: Реализовать AtMenu**
 
 ```tsx
 // src/components/ast-editor/pickers/at-menu.tsx
@@ -1240,12 +1240,12 @@ export function AtMenu({ editor, defaultLectureId }: Props) {
 }
 ```
 
-- [ ] **Step 4: Прогнать — PASS**
+- [x] **Step 4: Прогнать — PASS**
 
 Run: `npx vitest run src/components/ast-editor/pickers/at-menu.test.tsx`
 Expected: PASS (2 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/ast-editor/pickers/at-menu.tsx src/components/ast-editor/pickers/at-menu.test.tsx
@@ -1259,7 +1259,7 @@ git commit -m "feat(ast-editor): add AtMenu — @-suggestion opens RefMenu and c
 **Files:**
 - Modify: `src/components/ast-editor/ast-editor.tsx`
 
-- [ ] **Step 1: Подключить atHost и AtMenu**
+- [x] **Step 1: Подключить atHost и AtMenu**
 
 В `src/components/ast-editor/ast-editor.tsx`:
 
@@ -1295,12 +1295,12 @@ const atHost = Extension.create({
       )}
 ```
 
-- [ ] **Step 2: Прогнать весь suite + build**
+- [x] **Step 2: Прогнать весь suite + build**
 
 Run: `npm test && npm run build`
 Expected: тесты PASS, build clean.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/components/ast-editor/ast-editor.tsx
@@ -1319,7 +1319,7 @@ git commit -m "feat(ast-editor): wire @-suggestion (atHost plugin + AtMenu) into
 
 **Why:** текущий рендер читает `attrs.src`, которого у image-блока на беке нет (бек: `storage_key` 64-hex + `alt` + `caption`, `internal/ast/schema.go:162-169`) — публичный рендер картинок, созданных редактором, сейчас всегда падает в fallback. Переиспользуем `resolveStorageUrl` из `@/components/ast-editor/upload/storage-url` (единственный источник правды для `/static/files/<key>`; импорт между shared-компонентами разрешён — ESLint-гарды ограничивают только `src/features/*`; модуль pure, без "use client" и без tiptap-зависимостей). Вместо `isSafeHref` валидируем сам ключ строгим `^[0-9a-f]{64}$` — XSS через невалидный ключ невозможен.
 
-- [ ] **Step 1: Обновить фикстуры**
+- [x] **Step 1: Обновить фикстуры**
 
 В `src/components/ast-render/__fixtures__/blocks.ts` заменить три image-экспорта (`IMAGE_BLOCK`, `IMAGE_BLOCK_NO_SRC`, `IMAGE_BLOCK_DANGEROUS_SRC`) на:
 
@@ -1358,7 +1358,7 @@ export const IMAGE_BLOCK_INVALID_KEY: AstBlock = {
 
 (`IMAGE_BLOCK_DANGEROUS_SRC` и `IMAGE_BLOCK_NO_SRC` больше не существуют — их использовал только image-describe в `ast-render.test.tsx`, обновляется в Step 2.)
 
-- [ ] **Step 2: Обновить тесты image (failing)**
+- [x] **Step 2: Обновить тесты image (failing)**
 
 В `src/components/ast-render/ast-render.test.tsx`:
 
@@ -1396,12 +1396,12 @@ describe("AstRender — image node", () => {
 });
 ```
 
-- [ ] **Step 3: Прогнать — image-кейсы падают**
+- [x] **Step 3: Прогнать — image-кейсы падают**
 
 Run: `npx vitest run src/components/ast-render/ast-render.test.tsx`
 Expected: FAIL — рендер всё ещё читает `src`.
 
-- [ ] **Step 4: Переписать nodes/image.tsx**
+- [x] **Step 4: Переписать nodes/image.tsx**
 
 ```tsx
 // src/components/ast-render/nodes/image.tsx
@@ -1441,12 +1441,12 @@ export function ImageNode({ attrs }: Props): ReactNode {
 }
 ```
 
-- [ ] **Step 5: Прогнать — image-кейсы PASS, combo snapshot падает (ожидаемо)**
+- [x] **Step 5: Прогнать — image-кейсы PASS, combo snapshot падает (ожидаемо)**
 
 Run: `npx vitest run src/components/ast-render/ast-render.test.tsx`
 Expected: image-тесты PASS; snapshot-тест FAIL (IMAGE_BLOCK теперь рендерится как figure с новым src).
 
-- [ ] **Step 6: Регенерировать snapshot и проверить дифф глазами**
+- [x] **Step 6: Регенерировать snapshot и проверить дифф глазами**
 
 Run:
 
@@ -1457,12 +1457,12 @@ git diff src/components/ast-render/__snapshots__/ast-render.test.tsx.snap
 
 Expected: в снапшоте image-фрагмент сменился на `<figure><img src=".../static/files/deadbeef…" …/></figure>`; других смысловых изменений нет.
 
-- [ ] **Step 7: Прогнать ещё раз без -u — всё PASS**
+- [x] **Step 7: Прогнать ещё раз без -u — всё PASS**
 
 Run: `npx vitest run src/components/ast-render/ast-render.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/components/ast-render/nodes/image.tsx src/components/ast-render/__fixtures__/blocks.ts src/components/ast-render/ast-render.test.tsx src/components/ast-render/__snapshots__/ast-render.test.tsx.snap
@@ -1483,7 +1483,7 @@ git commit -m "feat(ast-render): render image blocks by storage_key via shared r
 
 **Why:** редактор (RefMenu) вставляет `media_ref`/`comment_ref`, а публичный рендер сейчас роняет их в `data-unsupported-mark`. По образцу `document-ref`: дефолт — `<a href>`, переопределение через `ctx`. `canvas_ref` НЕ добавляем (вне скоупа, graceful fallback остаётся и покрывается тестом). Дефолтные href: `/media/{id}` (страница появится в волне 2, слайс `media`) и `/comments/{id}` (резолв якоря определит волна 2, слайс `comments`); страницы-консьюмеры могут переопределить рендер через `ctx.renderMediaRef`/`ctx.renderCommentRef` — тот же подход, что был принят для `document_ref` до существования страницы документов.
 
-- [ ] **Step 1: Добавить фикстуры**
+- [x] **Step 1: Добавить фикстуры**
 
 В конец `src/components/ast-render/__fixtures__/blocks.ts`:
 
@@ -1513,7 +1513,7 @@ export const PARAGRAPH_WITH_COMMENT_REF: AstBlock = {
 };
 ```
 
-- [ ] **Step 2: Failing-тесты**
+- [x] **Step 2: Failing-тесты**
 
 В `src/components/ast-render/ast-render.test.tsx`:
 
@@ -1577,12 +1577,12 @@ describe("AstRender — unsupported marks fallback", () => {
 });
 ```
 
-- [ ] **Step 3: Прогнать — новые кейсы падают**
+- [x] **Step 3: Прогнать — новые кейсы падают**
 
 Run: `npx vitest run src/components/ast-render/ast-render.test.tsx`
 Expected: FAIL — `media_ref`/`comment_ref` уходят в fallback, `renderMediaRef` не существует в типе ctx.
 
-- [ ] **Step 4: Новые mark-рендереры**
+- [x] **Step 4: Новые mark-рендереры**
 
 ```tsx
 // src/components/ast-render/marks/media-ref.tsx
@@ -1605,7 +1605,7 @@ export function defaultCommentRef({ id, label }: { id: string; label: string }):
 }
 ```
 
-- [ ] **Step 5: types.ts — полная замена**
+- [x] **Step 5: types.ts — полная замена**
 
 ```ts
 // src/components/ast-render/types.ts
@@ -1639,7 +1639,7 @@ export interface AstRenderContext {
 export type RefLinkRenderer = (props: { id: string; label: string }) => ReactNode;
 ```
 
-- [ ] **Step 6: inline-renderer.tsx — полная замена**
+- [x] **Step 6: inline-renderer.tsx — полная замена**
 
 ```tsx
 // src/components/ast-render/inline-renderer.tsx
@@ -1743,12 +1743,12 @@ function nodeToString(node: ReactNode): string {
 
 Важно: `@ts-expect-error` в default-ветке НЕ удалять — `canvas_ref` (и `undefined`) остаются необработанными, ошибка типа сохраняется, drift-детектор работает. Если после правок tsc ругается «unused @ts-expect-error» — значит switch случайно стал исчерпывающим, проверь кейсы.
 
-- [ ] **Step 7: Прогнать — все ast-render тесты PASS**
+- [x] **Step 7: Прогнать — все ast-render тесты PASS**
 
 Run: `npx vitest run src/components/ast-render/ast-render.test.tsx`
 Expected: PASS (combo snapshot не изменился — media/comment-фикстуры в него не входят).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/components/ast-render/marks/media-ref.tsx src/components/ast-render/marks/comment-ref.tsx src/components/ast-render/types.ts src/components/ast-render/inline-renderer.tsx src/components/ast-render/__fixtures__/blocks.ts src/components/ast-render/ast-render.test.tsx
@@ -1762,7 +1762,7 @@ git commit -m "feat(ast-render): render media_ref and comment_ref marks with ctx
 **Files:**
 - Modify: `src/components/ast-editor/README.md`
 
-- [ ] **Step 1: Обновить секцию «Архитектура»**
+- [x] **Step 1: Обновить секцию «Архитектура»**
 
 Заменить строки:
 
@@ -1783,7 +1783,7 @@ git commit -m "feat(ast-render): render media_ref and comment_ref marks with ctx
 - **Integration** (Phase 2d): image-кнопка в toolbar (`toolbar/buttons/image-button.tsx`), RefMenu-кнопка (`toolbar/buttons/ref-popover.tsx`), `@`-suggestion (`pickers/at-suggestion-plugin.ts` + `pickers/at-menu.tsx`), прокид `defaultLectureId` до comment-picker'а.
 ```
 
-- [ ] **Step 2: Обновить секцию «Что НЕ покрыто (Phase 3+)»**
+- [x] **Step 2: Обновить секцию «Что НЕ покрыто (Phase 3+)»**
 
 Заменить строку:
 
@@ -1799,7 +1799,7 @@ git commit -m "feat(ast-render): render media_ref and comment_ref marks with ctx
 - Позиционирование slash-/at-меню под курсором через `view.coordsAtPos`.
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/components/ast-editor/README.md
@@ -1810,29 +1810,29 @@ git commit -m "docs(ast-editor): update README for Phase 2d integration state"
 
 ## Task 12: Финальные гейты + self-review
 
-- [ ] **Step 1: Полные гейты**
+- [x] **Step 1: Полные гейты**
 
 Run: `npm run lint && npm test && npm run build`
 Expected: все три зелёные. Если красное — фиксить, не отключая правила.
 
-- [ ] **Step 2: Проверить периметр диффа**
+- [x] **Step 2: Проверить периметр диффа**
 
 Run: `git diff --name-only main...HEAD` (если ветка от main) или `git status --short`
 Expected: только файлы из Parallel-safety contract (Create + Modify). Особо проверить отсутствие: `src/api/schema.ts`, `package.json`, `src/utils/`, `src/components/ui/`, `src/app/`, `pickers/canvas-picker.tsx`, `pickers/actions.ts`, `extensions/`.
 
-- [ ] **Step 3: Self-review checklist**
+- [x] **Step 3: Self-review checklist**
 
-- [ ] `pickers/canvas-picker.tsx` НЕ удалён и НЕ изменён; `searchCanvases` в `actions.ts` на месте; тест CanvasPicker в `pickers.test.tsx` зелёный.
-- [ ] В RefMenu нет категории canvas; в `extensions/marks/nav-ref.ts` и `drift-warn.ts` `canvas_ref` остался (их diff пуст).
-- [ ] `onWillInsert` вызывается ДО чтения `selection.empty` в `apply` RefMenu.
-- [ ] ImageButton вставляет attrs `{ storage_key, alt: "", caption: "", blockId: "" }` — ровно как paste/drop-плагин 2a.
-- [ ] `forbidden` от uploadImage показывается branded-текстом «У вас нет прав …», не raw error.
-- [ ] ast-render image: невалидный/отсутствующий `storage_key` → `data-unsupported="image"`, никакого `<img>`.
-- [ ] `@ts-expect-error` в default-ветках `inline-renderer.tsx` и `block-renderer.tsx` сохранены, tsc не ругается на «unused @ts-expect-error».
-- [ ] `resolveStorageUrl` импортируется в ast-render из `@/components/ast-editor/upload/storage-url` — никакой копии функции.
-- [ ] Снапшот `ast-render.test.tsx.snap` пересоздан осознанно (дифф просмотрен), не вслепую.
+- [x] `pickers/canvas-picker.tsx` НЕ удалён и НЕ изменён; `searchCanvases` в `actions.ts` на месте; тест CanvasPicker в `pickers.test.tsx` зелёный.
+- [x] В RefMenu нет категории canvas; в `extensions/marks/nav-ref.ts` и `drift-warn.ts` `canvas_ref` остался (их diff пуст).
+- [x] `onWillInsert` вызывается ДО чтения `selection.empty` в `apply` RefMenu.
+- [x] ImageButton вставляет attrs `{ storage_key, alt: "", caption: "", blockId: "" }` — ровно как paste/drop-плагин 2a.
+- [x] `forbidden` от uploadImage показывается branded-текстом «У вас нет прав …», не raw error.
+- [x] ast-render image: невалидный/отсутствующий `storage_key` → `data-unsupported="image"`, никакого `<img>`.
+- [x] `@ts-expect-error` в default-ветках `inline-renderer.tsx` и `block-renderer.tsx` сохранены, tsc не ругается на «unused @ts-expect-error».
+- [x] `resolveStorageUrl` импортируется в ast-render из `@/components/ast-editor/upload/storage-url` — никакой копии функции.
+- [x] Снапшот `ast-render.test.tsx.snap` пересоздан осознанно (дифф просмотрен), не вслепую.
 
-- [ ] **Step 4: Доложить менеджеру**
+- [x] **Step 4: Доложить менеджеру**
 
 Не пушить и не мержить самостоятельно: мерж в локальный `main` выполняет менеджер после code-review (протокол спеки §5). В отчёте указать выполненные отклонения от 2b (canvas отключён) и закрытые follow-up'ы 2a/2c.
 

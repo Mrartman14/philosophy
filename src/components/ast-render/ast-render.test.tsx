@@ -16,12 +16,16 @@ import {
   PARAGRAPH_WITH_RELATIVE_LINK,
   PARAGRAPH_WITH_DANGEROUS_LINK,
   IMAGE_BLOCK,
-  IMAGE_BLOCK_NO_SRC,
+  IMAGE_BLOCK_WITH_CAPTION,
+  IMAGE_BLOCK_NO_KEY,
+  IMAGE_BLOCK_INVALID_KEY,
+  STORAGE_KEY_FIXTURE,
   PARAGRAPH_WITH_GLOSSARY_REF,
   PARAGRAPH_WITH_LECTURE_REF,
   PARAGRAPH_WITH_EMPTY_REF,
   PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK,
-  IMAGE_BLOCK_DANGEROUS_SRC,
+  PARAGRAPH_WITH_MEDIA_REF,
+  PARAGRAPH_WITH_COMMENT_REF,
 } from "./__fixtures__/blocks";
 
 describe("AstRender — paragraph + inline marks", () => {
@@ -115,22 +119,28 @@ describe("AstRender — link mark + safety", () => {
 });
 
 describe("AstRender — image node", () => {
-  it("рендерит <img> с src и alt", () => {
+  it("рендерит <figure><img> с URL из resolveStorageUrl и alt", () => {
     const { container } = render(<AstRender blocks={[IMAGE_BLOCK]} />);
-    const img = container.querySelector("img");
-    expect(img?.getAttribute("src")).toBe("/uploads/foo.png");
+    const img = container.querySelector("figure img");
+    expect(img?.getAttribute("src")).toContain(`/static/files/${STORAGE_KEY_FIXTURE}`);
     expect(img?.getAttribute("alt")).toBe("Описание");
     expect(img?.getAttribute("loading")).toBe("lazy");
+    expect(container.querySelector("figcaption")).toBeNull();
   });
 
-  it("без src рендерит data-unsupported (без <img>)", () => {
-    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_SRC]} />);
+  it("рендерит figcaption при наличии caption", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_WITH_CAPTION]} />);
+    expect(container.querySelector("figure figcaption")?.textContent).toBe("Подпись");
+  });
+
+  it("без storage_key рендерит data-unsupported (без <img>)", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_KEY]} />);
     expect(container.querySelector("img")).toBeNull();
-    expect(container.querySelector("[data-unsupported]")).not.toBeNull();
+    expect(container.querySelector("[data-unsupported='image']")).not.toBeNull();
   });
 
-  it("javascript: src отклоняется как unsupported", () => {
-    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_DANGEROUS_SRC]} />);
+  it("невалидный storage_key (не 64-hex) отклоняется как unsupported", () => {
+    const { container } = render(<AstRender blocks={[IMAGE_BLOCK_INVALID_KEY]} />);
     expect(container.querySelector("img")).toBeNull();
     expect(container.querySelector("[data-unsupported='image']")).not.toBeNull();
   });
@@ -171,24 +181,55 @@ describe("AstRender — ref-marks", () => {
     expect(container.querySelector("a")).toBeNull();
     expect(container.querySelector("p")?.textContent).toBe("пустой");
   });
+
+  it("default: media_ref → <a href='/media/{id}'>", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_MEDIA_REF]} />);
+    const a = container.querySelector("a");
+    expect(a?.getAttribute("href")).toBe("/media/med-uuid-789");
+    expect(a?.textContent).toBe("запись");
+  });
+
+  it("default: comment_ref → <a href='/comments/{id}'>", () => {
+    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_COMMENT_REF]} />);
+    expect(container.querySelector("a")?.getAttribute("href")).toBe(
+      "/comments/com-uuid-012",
+    );
+  });
+
+  it("ctx.renderMediaRef переопределяет рендер", () => {
+    const { container } = render(
+      <AstRender
+        blocks={[PARAGRAPH_WITH_MEDIA_REF]}
+        ctx={{
+          renderMediaRef: ({ id, label }) => (
+            <span data-custom-media-ref={id}>{label}</span>
+          ),
+        }}
+      />
+    );
+    expect(container.querySelector("a")).toBeNull();
+    expect(
+      container.querySelector("[data-custom-media-ref='med-uuid-789']")?.textContent
+    ).toBe("запись");
+  });
 });
 
 describe("AstRender — unsupported marks fallback", () => {
-  it("неизвестный mark рендерится как plain text с data-unsupported-mark", () => {
+  it("canvas_ref (вне скоупа) рендерится как plain text с data-unsupported-mark", () => {
     const block: import("./types").AstBlock = {
       id: "p-unk",
       type: "paragraph",
       content: [
         {
           type: "text",
-          text: "media-ref",
-          marks: [{ type: "media_ref", attrs: { id: "x" } }],
+          text: "canvas-ref",
+          marks: [{ type: "canvas_ref", attrs: { id: "x" } }],
         },
       ],
     };
     const { container } = render(<AstRender blocks={[block]} />);
-    expect(container.querySelector("[data-unsupported-mark='media_ref']")).not.toBeNull();
-    expect(container.querySelector("p")?.textContent).toBe("media-ref");
+    expect(container.querySelector("[data-unsupported-mark='canvas_ref']")).not.toBeNull();
+    expect(container.querySelector("p")?.textContent).toBe("canvas-ref");
   });
 });
 

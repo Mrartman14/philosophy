@@ -1,12 +1,24 @@
 # AST Editor — Phase 2a — Image vertical Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Поднять image-блок до полноценного — upload через `POST /api/uploads/images`, NodeView с alt/caption inline-редактированием, paste/drop захват картинок, resolution `storage_key → URL` через env-driven helper.
 
 **Architecture:** Server action оборачивает upload (берёт cookie через `createApiClient`-pattern, форвардит `multipart/form-data`). Tiptap-плагин ловит paste/drop с `image/*` файлами и вызывает action; на ответ `{storage_key}` вставляет валидный image-блок. NodeView (через `@tiptap/react` `ReactNodeViewRenderer`) рисует `<figure><img/><figcaption contenteditable/></figure>` и редактирует alt/caption inline. Storage-URL — `${NEXT_PUBLIC_STORAGE_URL ?? NEXT_PUBLIC_API_URL}/static/files/${storage_key}` (см. design §6.5 / §9 — оставляет space для перехода на schema-driven без breaking change).
 
 **Tech Stack:** Next.js server actions (`"use server"`), `@tiptap/react` ReactNodeViewRenderer, ProseMirror plugin (paste/drop handlers), msw для тестов upload.
+
+> **СТАТУС (2026-06-12, звено 2a цепочки ast-editor-phase-2):** план уже был
+> выполнен ранее и смержен в main (merge-коммит `773fdc06` ветки
+> `feat/ast-editor-phase-2a-image`; коммиты `a8b66d59`, `97ebe107`, `830e26a1`,
+> `d4aa8fdf`, `87464f01` + polish `f85d29b9`, `b5a7f3ca`). Звено 2a выполнило
+> ВЕРИФИКАЦИЮ deliverables по чеклисту вместо повторной реализации; код не
+> менялся. Это согласуется с планом 2d
+> (`2026-06-12-ast-editor-phase-2d-integration.md`), который фиксирует:
+> «Планы 2a/2b/2c уже выполнены и смержены в main». Task 9 (manual smoke) —
+> deferred to consumer migration, как допускает сам план. Task 10 Step 2 (PR) —
+> вне скоупа звена: ветка `feat/ast-editor-phase-2` продолжается звеньями
+> 2b → 2c → 2d в этом же worktree.
 
 ---
 
@@ -70,7 +82,7 @@ src/components/ast-editor/
 
 **Why this exists:** spec §6.5 — base host для `/static/files/<storage_key>` отличается dev↔prod. MVP — env-driven с дефолтом на API-host. Helper изолирует этот выбор: если бэк позже начнёт отдавать `static_files_base` через `/api/ast/schema`, заменим тело helper'а без изменений NodeView.
 
-- [ ] **Step 1: Создать helper**
+- [x] **Step 1: Создать helper**
 
 ```ts
 // src/components/ast-editor/upload/storage-url.ts
@@ -93,7 +105,7 @@ export function resolveStorageUrl(storageKey: string): string {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/components/ast-editor/upload/storage-url.ts
@@ -107,7 +119,7 @@ git commit -m "feat(ast-editor): add storage-url helper for image src resolution
 **Files:**
 - Create: `src/components/ast-editor/upload/__fixtures__/png-1x1.ts`
 
-- [ ] **Step 1: Создать фикстуру (валидный PNG byte-signature)**
+- [x] **Step 1: Создать фикстуру (валидный PNG byte-signature)**
 
 ```ts
 // src/components/ast-editor/upload/__fixtures__/png-1x1.ts
@@ -135,7 +147,7 @@ export function makePngBlob(): Blob {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/components/ast-editor/upload/__fixtures__/png-1x1.ts
@@ -160,7 +172,7 @@ git commit -m "test(ast-editor): add 1x1 PNG fixture for upload tests"
 - 401 → `code: "forbidden"` (через `ForbiddenError`)
 - остальное → generic `error`
 
-- [ ] **Step 1: Написать failing test**
+- [x] **Step 1: Написать failing test**
 
 ```ts
 // src/components/ast-editor/upload/upload-image.test.ts
@@ -259,12 +271,12 @@ describe("uploadImage server action", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить тест — должен провалиться (action не существует)**
+- [x] **Step 2: Запустить тест — должен провалиться (action не существует)**
 
 Run: `npx vitest run src/components/ast-editor/upload/upload-image.test.ts`
 Expected: FAIL — `Cannot find module './upload-image'`
 
-- [ ] **Step 3: Реализовать action**
+- [x] **Step 3: Реализовать action**
 
 **Why not `createAction`:** обёртка из `src/utils/create-action.ts` (frozen-zone) принимает только `ForbiddenError` → `code: "forbidden"` и сворачивает остальные ошибки в generic `{ success: false, error }` без поля `code`. Нам нужно различать `image_too_large` / `image_invalid_mime` для UX-toast'ов, поэтому формируем `ActionResult`-shape вручную (без падения через throw — все ветки возвращают объект).
 
@@ -324,12 +336,12 @@ export async function uploadImage(formData: FormData): Promise<UploadImageResult
 }
 ```
 
-- [ ] **Step 5: Запустить тесты — все 5 кейсов проходят**
+- [x] **Step 5: Запустить тесты — все 5 кейсов проходят**
 
 Run: `npx vitest run src/components/ast-editor/upload/upload-image.test.ts`
 Expected: PASS (5 tests)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/components/ast-editor/upload/upload-image.ts src/components/ast-editor/upload/upload-image.test.ts
@@ -353,7 +365,7 @@ git commit -m "feat(ast-editor): add upload-image server action with 401/413/422
 
 **MVP simplification:** alt/caption редактируются через 2 input-поля под картинкой (видны при selection). Это проще чем contentEditable figcaption и не путает PM с inline-content внутри атомарной ноды (`atom: true`).
 
-- [ ] **Step 1: Реализация**
+- [x] **Step 1: Реализация**
 
 ```tsx
 // src/components/ast-editor/extensions/nodes/image-node-view.tsx
@@ -403,7 +415,7 @@ export function ImageNodeView({ node, updateAttributes, editor, selected }: Node
 }
 ```
 
-- [ ] **Step 2: Commit (без тестов — RTL для NodeView добавляется в Task 6)**
+- [x] **Step 2: Commit (без тестов — RTL для NodeView добавляется в Task 6)**
 
 ```bash
 git add src/components/ast-editor/extensions/nodes/image-node-view.tsx
@@ -423,7 +435,7 @@ git commit -m "feat(ast-editor): add React image NodeView with inline alt/captio
 - `renderHTML` — для read-only режима (когда NodeView не активен). Серверный SSR-render тоже должен дать смысленный HTML.
 - `addNodeView` — `ReactNodeViewRenderer(ImageNodeView)`.
 
-- [ ] **Step 1: Failing test для parse/render round-trip**
+- [x] **Step 1: Failing test для parse/render round-trip**
 
 ```ts
 // src/components/ast-editor/extensions/nodes/image.test.ts
@@ -471,12 +483,12 @@ describe("ImageExt parseHTML/renderHTML", () => {
 });
 ```
 
-- [ ] **Step 2: Прогнать тест — fail (текущий ImageExt не парсит attrs)**
+- [x] **Step 2: Прогнать тест — fail (текущий ImageExt не парсит attrs)**
 
 Run: `npx vitest run src/components/ast-editor/extensions/nodes/image.test.ts`
 Expected: FAIL — атрибуты undefined / пустые.
 
-- [ ] **Step 3: Расширить ImageExt**
+- [x] **Step 3: Расширить ImageExt**
 
 ```ts
 // src/components/ast-editor/extensions/nodes/image.ts (REPLACE)
@@ -545,17 +557,17 @@ export const ImageExt = Node.create({
 });
 ```
 
-- [ ] **Step 4: Прогнать тест — PASS**
+- [x] **Step 4: Прогнать тест — PASS**
 
 Run: `npx vitest run src/components/ast-editor/extensions/nodes/image.test.ts`
 Expected: PASS (2 tests)
 
-- [ ] **Step 5: Перезапустить весь test-suite — pm-schema/round-trip остаются зелёными**
+- [x] **Step 5: Перезапустить весь test-suite — pm-schema/round-trip остаются зелёными**
 
 Run: `npm test -- --run`
 Expected: все тесты по-прежнему проходят (NodeView не ломает PM-schema).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/components/ast-editor/extensions/nodes/image.ts src/components/ast-editor/extensions/nodes/image.test.ts
@@ -571,7 +583,7 @@ git commit -m "feat(ast-editor): wire React NodeView and parse/render attrs into
 
 **Why:** verify рендер NodeView в actual editor instance (поверх unit-теста parseHTML/renderHTML из Task 5).
 
-- [ ] **Step 1: Дописать тест**
+- [x] **Step 1: Дописать тест**
 
 ```ts
 // дополнение к src/components/ast-editor/extensions/nodes/image.test.ts
@@ -626,12 +638,12 @@ describe("ImageNodeView", () => {
 });
 ```
 
-- [ ] **Step 2: Прогнать тест — должен пройти**
+- [x] **Step 2: Прогнать тест — должен пройти**
 
 Run: `npx vitest run src/components/ast-editor/extensions/nodes/image.test.ts`
 Expected: PASS (4 tests total)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/components/ast-editor/extensions/nodes/image.test.ts
@@ -658,7 +670,7 @@ git commit -m "test(ast-editor): RTL render test for image NodeView"
 
 **Решение проще:** не вставляем skeleton. Ждём ответ → вставляем готовую ноду. Иначе skeleton-vs-attr-plugin конфликт сложнее, чем он того стоит для MVP. UX: «при drop курсор «думает» 0.5–2 сек, потом картинка появляется».
 
-- [ ] **Step 1: Failing test (paste с image/* файлом → upload вызывается)**
+- [x] **Step 1: Failing test (paste с image/* файлом → upload вызывается)**
 
 ```ts
 // src/components/ast-editor/extensions/image-paste-drop-plugin.test.ts
@@ -744,12 +756,12 @@ describe("imagePasteDropPlugin", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить тест — fail (plugin не существует)**
+- [x] **Step 2: Запустить тест — fail (plugin не существует)**
 
 Run: `npx vitest run src/components/ast-editor/extensions/image-paste-drop-plugin.test.ts`
 Expected: FAIL.
 
-- [ ] **Step 3: Реализовать plugin**
+- [x] **Step 3: Реализовать plugin**
 
 ```ts
 // src/components/ast-editor/extensions/image-paste-drop-plugin.ts
@@ -824,12 +836,12 @@ async function insertUploaded(view: EditorView, file: File, pos: number) {
 }
 ```
 
-- [ ] **Step 4: Прогнать — все 3 теста PASS**
+- [x] **Step 4: Прогнать — все 3 теста PASS**
 
 Run: `npx vitest run src/components/ast-editor/extensions/image-paste-drop-plugin.test.ts`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/ast-editor/extensions/image-paste-drop-plugin.ts src/components/ast-editor/extensions/image-paste-drop-plugin.test.ts
@@ -845,7 +857,7 @@ git commit -m "feat(ast-editor): add paste/drop plugin uploading and inserting i
 
 **Что меняем:** добавить `createImagePasteDropPlugin()` в массив plugins внутри `validation`-Extension'а — но только если `allowedBlocks.has("image")`.
 
-- [ ] **Step 1: Изменение**
+- [x] **Step 1: Изменение**
 
 Найти блок `addProseMirrorPlugins()` в `validation`-Extension'е и добавить условие:
 
@@ -870,17 +882,17 @@ const validation = Extension.create({
 });
 ```
 
-- [ ] **Step 2: Прогнать весь test-suite**
+- [x] **Step 2: Прогнать весь test-suite**
 
 Run: `npm test -- --run`
 Expected: все тесты PASS.
 
-- [ ] **Step 3: Lint + build**
+- [x] **Step 3: Lint + build**
 
 Run: `npm run lint && npm run build`
 Expected: clean.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/components/ast-editor/extensions/index.ts
@@ -900,6 +912,8 @@ git commit -m "feat(ast-editor): wire image paste/drop plugin when image is allo
 - [ ] Запустить серверный API в режиме limit-bypass / залить файл >10MiB через DevTools → no insertion, console.warn `Изображение слишком большое (макс 10 MiB)`.
 
 Если smoke невозможен — пометить тут «manual smoke deferred to consumer migration» и продолжать.
+
+**Отметка (2026-06-12): manual smoke deferred to consumer migration** — dev-окружение бэка в звене 2a не поднималось; функционал покрыт 12 автотестами (upload 5, parse/render 2, NodeView 2, paste/drop 3).
 
 ---
 

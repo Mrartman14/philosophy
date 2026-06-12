@@ -5,17 +5,18 @@ import { LecturePicker } from "./lecture-picker";
 import { GlossaryPicker } from "./glossary-picker";
 import { DocumentPicker } from "./document-picker";
 import { MediaPicker } from "./media-picker";
-import { CanvasPicker } from "./canvas-picker";
 import { Comment2StagePicker } from "./comment-2stage-picker";
 
-type Category = "lecture" | "glossary" | "document" | "media" | "canvas" | "comment";
+// canvas вне скоупа программы покрытия (спека 2026-06-12 §4): CanvasPicker
+// остаётся в репо dormant (pickers/canvas-picker.tsx), в меню не подключён,
+// canvas_ref в редакторе зарегистрирован только ради round-trip контента.
+type Category = "lecture" | "glossary" | "document" | "media" | "comment";
 
 const MARK_FOR: Record<Category, string> = {
   lecture: "lecture_ref",
   glossary: "glossary_ref",
   document: "document_ref",
   media: "media_ref",
-  canvas: "canvas_ref",
   comment: "comment_ref",
 };
 
@@ -24,7 +25,6 @@ const labels: Record<Category, string> = {
   glossary: "Термин",
   document: "Документ",
   media: "Медиа",
-  canvas: "Canvas",
   comment: "Комментарий",
 };
 
@@ -32,12 +32,19 @@ export interface RefMenuProps {
   editor: Editor;
   defaultLectureId?: string | undefined;
   onClose?: () => void;
+  /**
+   * Вызывается синхронно ПЕРЕД вставкой mark. @-suggestion (AtMenu) удаляет
+   * здесь "@"-маркер из документа; selection после удаления схлопывается в
+   * позицию маркера, и вставка label-текста попадает ровно туда.
+   */
+  onWillInsert?: () => void;
 }
 
-export function RefMenu({ editor, defaultLectureId, onClose }: RefMenuProps) {
+export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: RefMenuProps) {
   const [cat, setCat] = useState<Category | null>(null);
 
   const apply = (markName: string, id: string, label: string) => {
+    onWillInsert?.();
     const empty = editor.state.selection.empty;
     if (empty) {
       // Collapsed selection — insert the human-readable label as text carrying
@@ -81,7 +88,6 @@ export function RefMenu({ editor, defaultLectureId, onClose }: RefMenuProps) {
         {cat === "glossary" && <GlossaryPicker onSelect={onSelect} />}
         {cat === "document" && <DocumentPicker onSelect={onSelect} />}
         {cat === "media" && <MediaPicker onSelect={onSelect} />}
-        {cat === "canvas" && <CanvasPicker onSelect={onSelect} />}
         {cat === "comment" && (
           <Comment2StagePicker defaultLectureId={defaultLectureId} onSelect={onSelect} />
         )}

@@ -8,15 +8,18 @@ import { BlockButtonsGroup } from "./buttons/block-buttons";
 import { ListButtonsGroup } from "./buttons/list-buttons";
 import { LinkPopover } from "./buttons/link-popover";
 import { RefPopover } from "./buttons/ref-popover";
+import { ImageButton } from "./buttons/image-button";
 import type { SchemaSnapshot, EntityContext } from "../types";
 
 export interface EditorToolbarProps {
   editor: Editor;
   schema: SchemaSnapshot;
   context: EntityContext;
+  /** Контекст лекции для comment_ref picker'а (2-stage стартует сразу с шага 2). */
+  defaultLectureId?: string | undefined;
 }
 
-export function EditorToolbar({ editor, schema, context }: EditorToolbarProps) {
+export function EditorToolbar({ editor, schema, context, defaultLectureId }: EditorToolbarProps) {
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
 
@@ -41,6 +44,10 @@ export function EditorToolbar({ editor, schema, context }: EditorToolbarProps) {
       node: <BlockButtonsGroup editor={editor} schema={schema} context={context} />,
     },
     {
+      visible: allowed.has("image"),
+      node: <ImageButton editor={editor} schema={schema} context={context} />,
+    },
+    {
       visible: allowed.has("list"),
       node: <ListButtonsGroup editor={editor} schema={schema} context={context} />,
     },
@@ -50,7 +57,7 @@ export function EditorToolbar({ editor, schema, context }: EditorToolbarProps) {
     },
     {
       visible: schema.marks.has("lecture_ref"),
-      node: <RefPopover editor={editor} schema={schema} />,
+      node: <RefPopover editor={editor} schema={schema} defaultLectureId={defaultLectureId} />,
     },
   ].filter((g) => g.visible);
 
