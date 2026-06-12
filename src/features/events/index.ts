@@ -1,15 +1,35 @@
-// src/features/_template/index.ts
-// Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
-
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
-
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+// src/features/events/index.ts
+export {
+  getAdminEvents,
+  getAdminEventById,
+  getEventRevisions,
+  getEventRevision,
+  getCalendarOccurrences,
+} from "./api";
+export type { EventListFilter, EventListResult } from "./api";
+export { createEvent, updateEvent, deleteEvent } from "./actions";
+export {
+  canReadEvents,
+  canCreateEvent,
+  canUpdateEvent,
+  canDeleteEvent,
+} from "./permissions";
+export {
+  resolveMonthRange,
+  groupOccurrencesByDate,
+  formatEventDate,
+} from "./calendar";
+export type { MonthRange, OccurrenceGroup } from "./calendar";
+export { EventCreateForm } from "./ui/event-create-form";
+export { EventEditForm } from "./ui/event-edit-form";
+export { EventDeleteButton } from "./ui/event-delete-button";
+export { EventAdminRow } from "./ui/event-admin-row";
+export { EventExportLinks } from "./ui/event-export-links";
+export { EventRevisions } from "./ui/event-revisions";
+export { CalendarView } from "./ui/calendar-view";
+export type {
+  CalendarEvent,
+  EventOccurrence,
+  EventRevision,
+  EventRevisionMeta,
+} from "./types";
