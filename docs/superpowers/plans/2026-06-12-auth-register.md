@@ -243,7 +243,7 @@ git commit -m "feat(auth): add RegisterSchema with password confirmation"
 
 По образцу `loginAction`: `parseFormData` → `fetch` → маппинг статусов в `AuthError(kind)`. Отличия: на 201 cookie **не ставим** (токена нет), редиректим на `/login?registered=1` с прокинутым `next` (через `safeNextPath`; дефолтный `/` в URL не дублируем).
 
-- [ ] **Step 1: Дописать failing-тесты в `actions.test.ts`**
+- [x] **Step 1: Дописать failing-тесты в `actions.test.ts`**
 
 В `src/features/auth/actions.test.ts` расширить import:
 
@@ -385,12 +385,12 @@ describe("registerAction", () => {
 });
 ```
 
-- [ ] **Step 2: Убедиться, что тесты падают**
+- [x] **Step 2: Убедиться, что тесты падают**
 
 Run: `npx vitest run src/features/auth/actions.test.ts`
 Expected: FAIL — `registerAction` не экспортируется из `./actions`.
 
-- [ ] **Step 3: Реализовать `registerAction`**
+- [x] **Step 3: Реализовать `registerAction`**
 
 В `src/features/auth/actions.ts`:
 
@@ -463,12 +463,12 @@ export const registerAction = createFormAction<void>(async (formData) => {
 });
 ```
 
-- [ ] **Step 4: Убедиться, что тесты зелёные**
+- [x] **Step 4: Убедиться, что тесты зелёные**
 
 Run: `npx vitest run src/features/auth/actions.test.ts`
 Expected: PASS — все тесты `loginAction` и `registerAction` зелёные.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/auth/actions.ts src/features/auth/actions.test.ts
