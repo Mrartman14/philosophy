@@ -1,15 +1,45 @@
-// src/features/_template/index.ts
-// Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
-
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
-
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+// src/features/banners/index.ts
+export {
+  getAdminBanners,
+  getAdminBannerById,
+  getBannerRevisions,
+  getBannerRevision,
+  getActiveBanners,
+} from "./api";
+export type { BannerListFilter, BannerListResult } from "./api";
+export {
+  createBanner,
+  updateBanner,
+  deleteBanner,
+  dismissBanner,
+} from "./actions";
+export {
+  canReadBanners,
+  canCreateBanner,
+  canUpdateBanner,
+  canDeleteBanner,
+  canDismissBanner,
+} from "./permissions";
+export {
+  AUDIENCE_LABELS,
+  AUDIENCE_OPTIONS,
+  audienceLabel,
+  formatBannerDate,
+  formatBannerPeriod,
+  toColorInputValue,
+  bannerPreviewText,
+} from "./display";
+export { BannerCreateForm } from "./ui/banner-create-form";
+export { BannerEditForm } from "./ui/banner-edit-form";
+export { BannerDeleteButton } from "./ui/banner-delete-button";
+export { BannerAdminRow } from "./ui/banner-admin-row";
+export { BannerExportLinks } from "./ui/banner-export-links";
+export { BannerRevisions } from "./ui/banner-revisions";
+export { ActiveBanners } from "./ui/active-banners";
+export { BannerDismissButton } from "./ui/banner-dismiss-button";
+export type {
+  Banner,
+  BannerTargetAudience,
+  BannerRevision,
+  BannerRevisionMeta,
+} from "./types";
