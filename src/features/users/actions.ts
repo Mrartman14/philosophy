@@ -1,32 +1,53 @@
-// src/features/_template/actions.ts
+// src/features/users/actions.ts
 "use server";
 import "server-only";
-// import { createFormAction, parseFormData } from "@/utils/create-action";
-// import { requireCapability } from "@/utils/permissions";
-// import { revalidateEntity } from "@/utils/revalidate";
-// import { getMe } from "@/utils/me";
-// import { createApiClient } from "@/api/client";
-// import { canCreateEntity } from "./permissions";
-// import { EntityCreateSchema } from "./schemas";
+import { createApiClient } from "@/api/client";
+import { createAction } from "@/utils/create-action";
+import { getMe } from "@/utils/me";
+import { requireCapability } from "@/utils/permissions";
+import { revalidateEntity } from "@/utils/revalidate";
+import { Tags } from "@/api/tags";
+import { rethrowUserApiError } from "./errors";
+import { canModerateUsers } from "./permissions";
+import { UserRoleUpdateSchema, UserStatusUpdateSchema } from "./schemas";
+import type { AdminUser } from "./types";
 
 /**
- * Server actions сущности. Каждое действие:
- * 1. await getMe()
- * 2. requireCapability(me, canX) — для capability-чека
- * 3. parseFormData(Schema, formData) — для Zod-валидации (если форма)
- * 4. createApiClient() + вызов бекенда
- * 5. revalidateEntity("entity", id?) после успешной мутации
+ * Смена роли пользователя. PUT /api/admin/users/{id}/role (user.moderate).
+ * Гарды «не себя» / «не последнего активного админа» enforce'ит бекенд (409) —
+ * переводятся в русские тексты в rethrowUserApiError.
  */
+export const setUserRole = createAction(
+  async (input: { id: string; role: string }): Promise<AdminUser | null> => {
+    const me = await getMe();
+    requireCapability(me, canModerateUsers);
+    const parsed = UserRoleUpdateSchema.parse(input);
+    const api = await createApiClient();
+    const { data, error } = await api.PUT("/api/admin/users/{id}/role", {
+      params: { path: { id: parsed.id } },
+      body: { role: parsed.role },
+    });
+    if (error) rethrowUserApiError(error);
+    revalidateEntity(Tags.USERS);
+    return data?.data ?? null;
+  },
+);
 
-// export const createEntity = createFormAction(async (formData) => {
-//   const me = await getMe();
-//   const input = parseFormData(EntityCreateSchema, formData);
-//   requireCapability(me, canCreateEntity);
-//   const api = await createApiClient();
-//   const { data, error } = await api.POST("/entities", { body: input });
-//   if (error) throw new Error(error.message);
-//   revalidateEntity("entities");
-//   return data;
-// });
-
-export const _placeholder = async () => null;
+/**
+ * Смена статуса пользователя. PUT /api/admin/users/{id}/status (user.moderate).
+ */
+export const setUserStatus = createAction(
+  async (input: { id: string; status: string }): Promise<AdminUser | null> => {
+    const me = await getMe();
+    requireCapability(me, canModerateUsers);
+    const parsed = UserStatusUpdateSchema.parse(input);
+    const api = await createApiClient();
+    const { data, error } = await api.PUT("/api/admin/users/{id}/status", {
+      params: { path: { id: parsed.id } },
+      body: { status: parsed.status },
+    });
+    if (error) rethrowUserApiError(error);
+    revalidateEntity(Tags.USERS);
+    return data?.data ?? null;
+  },
+);
