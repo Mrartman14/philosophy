@@ -1,20 +1,26 @@
-// src/features/_template/permissions.ts
+// src/features/preferences/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-// import { can } from "@/utils/permissions";
+import { can, isMutationAllowed } from "@/utils/permissions";
 
 /**
- * Доменные permission-хелперы. Каждая функция возвращает boolean.
- * Status-чек уже включён в can() — не дублируйте.
- *
- * Owner-aware-проверки делаются здесь, например:
- *   export function canDeleteX(me: MaybeMe, x: { user_id: string }): boolean {
- *     if (!me) return false;
- *     if (x.user_id === me.id) return can(me, "x.delete_own");
- *     return can(me, "x.delete_any");
- *   }
+ * Изменение собственных настроек: любой залогиненный active-пользователь.
+ * Бекенд гейтит только RequireMutator (suspended → 403 SUSPENDED),
+ * специальной capability нет.
  */
+export function canUpdatePreferences(me: MaybeMe): boolean {
+  return isMutationAllowed(me);
+}
 
-export function canPlaceholder(_me: MaybeMe): boolean {
-  return false;
+/** Подписка/отписка на push: любой залогиненный active-пользователь. */
+export function canSubscribePush(me: MaybeMe): boolean {
+  return isMutationAllowed(me);
+}
+
+/**
+ * Админская рассылка. Имя capability сверено с бекендом:
+ * internal/rbac/capabilities.go:29 (CapPushSend = "push.send").
+ */
+export function canSendPush(me: MaybeMe): boolean {
+  return can(me, "push.send");
 }
