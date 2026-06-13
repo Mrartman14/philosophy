@@ -6,6 +6,7 @@ import {
   canUpdateLecture,
   canDeleteLecture,
   canSetLectureVisibility,
+  canManageCover,
 } from "./permissions";
 
 const owner = "00000000-0000-0000-0000-000000000001";
@@ -99,5 +100,24 @@ describe("canDeleteLecture", () => {
 
   it("suspended admin → false", () => {
     expect(canDeleteLecture(suspendedAdmin)).toBe(false);
+  });
+});
+
+describe("canManageCover", () => {
+  it("owner active → true", () => {
+    expect(canManageCover(activeUser, lecture)).toBe(true);
+  });
+
+  it("not-owner → false", () => {
+    expect(canManageCover(activeUserNotOwner, lecture)).toBe(false);
+  });
+
+  it("гость → false", () => {
+    expect(canManageCover(null, lecture)).toBe(false);
+  });
+
+  it("suspended owner → false", () => {
+    const suspended: Me = { ...activeUser, status: "suspended" };
+    expect(canManageCover(suspended, lecture)).toBe(false);
   });
 });

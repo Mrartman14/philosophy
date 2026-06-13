@@ -26,3 +26,16 @@ export function canSetLectureVisibility(
 export function canDeleteLecture(me: MaybeMe): boolean {
   return can(me, "lecture.delete");
 }
+
+/**
+ * Управление обложкой (set/clear cover) — OWNER-ONLY без admin-override.
+ * Бек (internal/lecture/service.go SetCover/ClearCover): lec.OwnerID ==
+ * actor.UserID, никакой capability не проверяется. Status-гейт обязателен.
+ */
+export function canManageCover(
+  me: MaybeMe,
+  lecture: { owner_id: string },
+): boolean {
+  if (!isMutationAllowed(me)) return false;
+  return lecture.owner_id === me.id;
+}
