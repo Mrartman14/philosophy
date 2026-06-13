@@ -61,7 +61,7 @@ const PARENT_ENTITY_TYPE_SET = {
 
 export const PARENT_ENTITY_TYPES = Object.keys(
   PARENT_ENTITY_TYPE_SET,
-) as ParentEntityType[];
+) as [ParentEntityType, ...ParentEntityType[]];
 
 /**
  * Ответ пер-сущностного списка `GET /api/{entity}/{id}/annotations`.
