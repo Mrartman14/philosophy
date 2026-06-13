@@ -1,5 +1,6 @@
 // src/app/lectures/[id]/page.tsx
 import { notFound } from "next/navigation";
+import { getMe } from "@/utils/me";
 import {
   getLectureById,
   LectureDetail,
@@ -9,20 +10,31 @@ import {
 } from "@/features/lectures";
 import { getLectureTags } from "@/features/tags";
 import { CommentSection } from "@/features/comments";
+import {
+  ShareButton,
+  canCreateShareLink,
+  getShareLinksFor,
+} from "@/features/share-links";
 
 interface Props {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ cq?: string }>;
+  searchParams: Promise<{ cq?: string; token?: string }>;
 }
 
 export default async function LecturePage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { cq } = await searchParams;
-  const [lecture, tags] = await Promise.all([
-    getLectureById(id),
+  const { cq, token } = await searchParams;
+  const [me, lecture, tags] = await Promise.all([
+    getMe(),
+    getLectureById(id, token),
     getLectureTags(id),
   ]);
   if (!lecture) notFound();
+
+  const canShare = canCreateShareLink(me, lecture);
+  const shareLinks = canShare
+    ? await getShareLinksFor("lecture", lecture.id)
+    : [];
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
@@ -32,7 +44,17 @@ export default async function LecturePage({ params, searchParams }: Props) {
           Каждая сама возвращает null, если список пуст. */}
       <LectureDocumentsSection lectureId={id} />
       <LectureMediaSection lectureId={id} />
-      {/* === slot: share-кнопка (share-links, волна 3, follow-up ПОСЛЕ) === */}
+      {/* === slot: share-кнопка (share-links, волна 3) === */}
+      {canShare && (
+        <div className="flex justify-end">
+          <ShareButton
+            resourceType="lecture"
+            resourceId={lecture.id}
+            canCreate={canShare}
+            initialLinks={shareLinks}
+          />
+        </div>
+      )}
       <CommentSection lectureId={id} query={cq} />
     </div>
   );
