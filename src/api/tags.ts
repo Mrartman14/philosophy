@@ -13,6 +13,7 @@
 
 export const Tags = {
   BANNERS: "banners",
+  DOCUMENTS: "documents",
   EVENTS: "events",
   GLOSSARY: "glossary",
   LECTURES: "lectures",
