@@ -58,3 +58,5 @@ export { FormAdminRow } from "./ui/form-admin-row";
 export { FormDetail } from "./ui/form-detail";
 export { FormMeta } from "./ui/form-meta";
 export { FormAfterSubmit } from "./ui/form-after-submit";
+export { FormFill } from "./ui/form-fill";
+export { FormFieldInput } from "./ui/form-field-input";

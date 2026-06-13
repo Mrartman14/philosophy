@@ -1,0 +1,103 @@
+"use client";
+// src/features/forms/ui/form-field-input.tsx
+import { AstRender } from "@/components/ast-render";
+import { TextInput, Textarea } from "@/components/ui";
+import type { FormField } from "../types";
+import type { AnswerInput } from "../answer-codec";
+
+interface Props {
+  field: FormField;
+  value: AnswerInput;
+  disabled?: boolean;
+  onChange: (next: AnswerInput) => void;
+}
+
+export function FormFieldInput({ field, value, disabled = false, onChange }: Props) {
+  const type = field.type ?? "text";
+  const options = field.options ?? [];
+
+  return (
+    <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
+      <div className="prose prose-sm max-w-none">
+        <AstRender blocks={field.prompt ?? []} />
+        {field.required && <span className="text-red-600"> *</span>}
+      </div>
+      {(field.help_text?.length ?? 0) > 0 && (
+        <div className="prose prose-sm max-w-none text-(--color-description)">
+          <AstRender blocks={field.help_text ?? []} />
+        </div>
+      )}
+
+      {type === "text" && (
+        <TextInput
+          disabled={disabled}
+          value={"text" in value ? value.text : ""}
+          onChange={(e) => onChange({ text: e.target.value })}
+        />
+      )}
+      {type === "long_text" && (
+        <Textarea
+          disabled={disabled}
+          rows={4}
+          value={"text" in value ? value.text : ""}
+          onChange={(e) => onChange({ text: e.target.value })}
+        />
+      )}
+      {type === "number" && (
+        <TextInput
+          type="number"
+          disabled={disabled}
+          value={"number" in value ? value.number : ""}
+          onChange={(e) => onChange({ number: e.target.value })}
+        />
+      )}
+      {type === "date" && (
+        <TextInput
+          type="date"
+          disabled={disabled}
+          value={"date" in value ? value.date : ""}
+          onChange={(e) => onChange({ date: e.target.value })}
+        />
+      )}
+      {type === "single_choice" && (
+        <div className="flex flex-col gap-1">
+          {options.map((o) => (
+            <label key={o.id} className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name={`field-${field.id}`}
+                disabled={disabled}
+                checked={"optionId" in value && value.optionId === o.id}
+                onChange={() => onChange({ optionId: o.id ?? "" })}
+              />
+              {o.label}
+            </label>
+          ))}
+        </div>
+      )}
+      {type === "multi_choice" && (
+        <div className="flex flex-col gap-1">
+          {options.map((o) => {
+            const ids = "optionIds" in value ? value.optionIds : [];
+            const checked = ids.includes(o.id ?? "");
+            return (
+              <label key={o.id} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  disabled={disabled}
+                  checked={checked}
+                  onChange={(e) => {
+                    const id = o.id ?? "";
+                    const next = e.target.checked ? [...ids, id] : ids.filter((x) => x !== id);
+                    onChange({ optionIds: next });
+                  }}
+                />
+                {o.label}
+              </label>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
