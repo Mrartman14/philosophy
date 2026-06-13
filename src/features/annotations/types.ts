@@ -30,10 +30,38 @@ export type AnnotationRevisionMeta =
 export type AnnotationRevision = components["schemas"]["revision.Revision"];
 
 /**
- * Подмножество parent-типов, для которых строим UI создания/просмотра.
- * Бек поддерживает также banner/event/canvas, но UI для них не делаем (§4).
+ * Полный домен parent-типов с бэка (сгенерированный enum). Источник истины.
  */
-export type ParentEntityType = "document" | "glossary" | "media" | "comment";
+type BackendParentEntityType =
+  components["schemas"]["annotation.ParentEntityType"];
+
+/**
+ * Подмножество parent-типов, для которых строим UI создания/просмотра.
+ * Бек поддерживает также banner/event/canvas, UI для них не делаем (§4).
+ * `Extract` якорит к бэку: если бэк удалит/переименует одно из 4 значений,
+ * downstream-потребители (PER_ENTITY_PATH Record) → ошибка tsc.
+ */
+export type ParentEntityType = Extract<
+  BackendParentEntityType,
+  "document" | "glossary" | "media" | "comment"
+>;
+
+/**
+ * Рантайм-набор UI parent-типов + двусторонний drift-гард (по образцу
+ * share-links/types.ts). `satisfies Record<ParentEntityType, true>` валит tsc,
+ * если набор разойдётся с типом в любую сторону. Из него строятся Zod-схемы и
+ * options селекта — единственная рантайм-копия значений в слайсе.
+ */
+const PARENT_ENTITY_TYPE_SET = {
+  document: true,
+  glossary: true,
+  media: true,
+  comment: true,
+} as const satisfies Record<ParentEntityType, true>;
+
+export const PARENT_ENTITY_TYPES = Object.keys(
+  PARENT_ENTITY_TYPE_SET,
+) as [ParentEntityType, ...ParentEntityType[]];
 
 /**
  * Ответ пер-сущностного списка `GET /api/{entity}/{id}/annotations`.
