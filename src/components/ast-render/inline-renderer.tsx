@@ -12,6 +12,7 @@ import { defaultLectureRef } from "./marks/lecture-ref";
 import { defaultDocumentRef } from "./marks/document-ref";
 import { defaultMediaRef } from "./marks/media-ref";
 import { defaultCommentRef } from "./marks/comment-ref";
+import { defaultCanvasRef } from "./marks/canvas-ref";
 
 interface Props {
   nodes: AstNode[] | undefined;
@@ -62,8 +63,11 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
       return renderRefMark(mark, children, ctx.renderMediaRef ?? defaultMediaRef);
     case "comment_ref":
       return renderRefMark(mark, children, ctx.renderCommentRef ?? defaultCommentRef);
+    case "canvas_ref":
+      return renderRefMark(mark, children, ctx.renderCanvasRef ?? defaultCanvasRef);
     default: {
-      // canvas_ref (вне скоупа программы) и будущие mark'и — graceful fallback.
+      // Сюда попадает только `undefined` mark.type (тип в схеме опционален) и
+      // будущие mark'и — graceful fallback.
       // @ts-expect-error — drift-detector: при добавлении нового mark.type в схему,
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = mark.type;

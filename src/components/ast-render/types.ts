@@ -24,6 +24,8 @@ export interface AstRenderContext {
   renderMediaRef?: RefLinkRenderer;
   /** Override how `comment_ref` mark is rendered. Default: <a href="/comments/{id}">{label}</a>. */
   renderCommentRef?: RefLinkRenderer;
+  /** Override how `canvas_ref` mark is rendered. Default: <a href="/canvases/{id}">{label}</a>. */
+  renderCanvasRef?: RefLinkRenderer;
 }
 
 export type RefLinkRenderer = (props: { id: string; label: string }) => ReactNode;
