@@ -2,6 +2,7 @@
 import { forbidden } from "next/navigation";
 import { getMe } from "@/utils/me";
 import { Pagination } from "@/components/ui";
+import { parseNonNegativeInt } from "@/utils/paging";
 import {
   canCreateBanner,
   canDeleteBanner,
@@ -25,7 +26,7 @@ export default async function AdminBannersPage({ searchParams }: Props) {
 
   const { offset } = await searchParams;
   const result = await getAdminBanners({
-    offset: offset ? Number(offset) : 0,
+    offset: parseNonNegativeInt(offset, 0),
     limit: 20,
   });
 

@@ -13,7 +13,7 @@ export default async function MyFormsPage() {
   const canCreate = canCreateForm(me);
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <h1 className="text-2xl font-bold">Мои формы</h1>
 
       {canCreate && (
@@ -28,6 +28,6 @@ export default async function MyFormsPage() {
       )}
 
       <MyFormsList forms={forms} />
-    </main>
+    </div>
   );
 }

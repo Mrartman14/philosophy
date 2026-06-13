@@ -76,7 +76,7 @@ describe("createFormAction", () => {
     const action = createFormAction(async (fd: FormData) => fd.get("x") as string);
     const fd = new FormData();
     fd.set("x", "ok");
-    const result = await action({ success: true, data: undefined }, fd);
+    const result = await action({ success: false, error: "" }, fd);
     expect(result).toEqual({ success: true, data: "ok" });
   });
 
@@ -84,7 +84,7 @@ describe("createFormAction", () => {
     const action = createFormAction(async () => {
       throw new ForbiddenError("role");
     });
-    const result = await action({ success: true, data: undefined }, new FormData());
+    const result = await action({ success: false, error: "" }, new FormData());
     expect(result).toMatchObject({ success: false, code: "forbidden" });
   });
 
@@ -96,7 +96,7 @@ describe("createFormAction", () => {
     });
     const fd = new FormData();
     fd.set("email", "bad");
-    const result = await action({ success: true, data: undefined }, fd);
+    const result = await action({ success: false, error: "" }, fd);
     expect(result).toMatchObject({
       success: false,
       code: "validation",
@@ -108,7 +108,7 @@ describe("createFormAction", () => {
     const action = createFormAction(async () => {
       throw new Error("boom");
     });
-    const result = await action({ success: true, data: undefined }, new FormData());
+    const result = await action({ success: false, error: "" }, new FormData());
     expect(result).toEqual({ success: false, error: "boom" });
     expect((result as { code?: string }).code).toBeUndefined();
   });
@@ -119,7 +119,7 @@ describe("ZodValidationError", () => {
     const action = createFormAction(async () => {
       throw new ZodValidationError({ x: "must be set" });
     });
-    const result = await action({ success: true, data: undefined }, new FormData());
+    const result = await action({ success: false, error: "" }, new FormData());
     expect(result).toMatchObject({
       success: false,
       code: "validation",

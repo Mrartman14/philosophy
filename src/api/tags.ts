@@ -16,6 +16,10 @@ export const Tags = {
   BANNERS: "banners",
   CANVASES: "canvas",
   COMMENTS: "comments",
+  // Отдельный тег для quasi-static схемы комментариев: мутации комментариев
+  // сбрасывают COMMENTS, но НЕ должны сбрасывать кешированную схему (её бек
+  // отдаёт с Cache-Control 1h).
+  COMMENT_SCHEMA: "comments:schema",
   DOCUMENTS: "documents",
   EVENTS: "events",
   FORMS: "forms",

@@ -43,7 +43,7 @@ export default async function FormPage({ params, searchParams }: Props) {
     canShare && form.id ? await getShareLinksFor("form", form.id) : [];
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex flex-col gap-3">
         <FormDetail form={form} />
         {/* actions-слот: share-кнопка (share-links) — композиция через страницу,
@@ -92,7 +92,7 @@ export default async function FormPage({ params, searchParams }: Props) {
           Форма опубликована — её структуру нельзя изменить.
         </p>
       )}
-    </main>
+    </div>
   );
 }
 

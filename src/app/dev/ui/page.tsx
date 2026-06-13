@@ -1,4 +1,5 @@
 // src/app/dev/ui/page.tsx
+import { notFound } from "next/navigation";
 import { Field } from "@base-ui/react/field";
 import {
   Button,
@@ -22,6 +23,9 @@ import {
 export const metadata = { title: "UI Kit smoke" };
 
 export default function UiKitSmokePage() {
+  // Dev-only витрина UI-кита — в проде маршрут недоступен.
+  if (process.env.NODE_ENV === "production") notFound();
+
   return (
     <div className="flex flex-col gap-8 p-8">
       <section className="flex flex-col gap-2">

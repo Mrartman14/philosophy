@@ -47,7 +47,7 @@ export default async function SubmissionPage({ params }: Props) {
   const canRetract = canRetractSubmission(me, form, submission);
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold">{form.title}</h1>
         <p className="text-sm text-(--color-description)">
@@ -78,6 +78,6 @@ export default async function SubmissionPage({ params }: Props) {
           {canRetract && <SubmissionActions submissionId={submission.id} kind="retract" />}
         </section>
       )}
-    </main>
+    </div>
   );
 }

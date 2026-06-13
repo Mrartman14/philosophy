@@ -111,20 +111,22 @@ revalidateEntity("comments", "abc-123"); // плюс "comments:abc-123"
 import "server-only";
 import { createFormAction, parseFormData } from "@/utils/create-action";
 import { requireCapability } from "@/utils/permissions";
+import { handleCommonApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { getMe } from "@/utils/me";
 import { createApiClient } from "@/api/client";
+import { Tags } from "@/api/tags";
 import { canCreateComment } from "./permissions";
 import { CommentCreateSchema } from "./schemas";
 
 export const createComment = createFormAction(async (formData) => {
   const me = await getMe();
+  requireCapability(me, canCreateComment);        // гейт ДО парсинга (capability-only)
   const input = parseFormData(CommentCreateSchema, formData);
-  requireCapability(me, canCreateComment);
   const api = await createApiClient();
   const { data, error } = await api.POST("/comments", { body: input });
-  if (error) throw new Error(error.message);
-  revalidateEntity("comments");
+  if (error) handleCommonApiError(error);         // FORBIDDEN/SUSPENDED/fallback
+  revalidateEntity(Tags.COMMENTS);                // тег из реестра, не литерал
   return data;
 });
 ```
@@ -133,6 +135,17 @@ export const createComment = createFormAction(async (formData) => {
 их в `ActionResult { success: false, code: "forbidden" | "validation", … }`.
 Внутренние ошибки Next.js (`redirect()`, `notFound()`, `forbidden()`)
 пробрасываются дальше.
+
+**Порядок гейта и парсинга (канон).** Для **capability-only** мутаций
+ставь `requireCapability(me, canX)` / `requireActive(me)` ДО `parseFormData`
+(отказ дешевле без траты на парсинг). Для **owner-aware** мутаций сначала
+`parseFormData` (нужен `id` из формы), затем загрузка сущности и
+`requireCapability(me, () => canEditX(me, entity))`.
+
+**Обработка ошибок бека.** Общие коды (`FORBIDDEN`/`SUSPENDED`) и fallback —
+через `handleCommonApiError(error, fallback?)` из `@/utils/api-error`; доменные
+коды слайс обрабатывает в своём `switch` ДО вызова хелпера. Тип `code` —
+сгенерированный union `ApiErrorCode` (drift-guard).
 
 ### 3.4. Форма с `useActionState`
 
@@ -210,13 +223,17 @@ revalidation бесплатна, fetcher запускается заново.
   передавай только готовые булевы / примитивы, не сам объект `me`.
 - **В client UI:** показывай `result.code === "forbidden"` бренд-текстом
   «У вас нет прав на <действие>», не raw `result.error`.
-- **Layer-3 гейт** на `src/app/admin/*/page.tsx`:
+- **Layer-3 гейт** на `src/app/admin/*/page.tsx` — доменный `canX` раздела:
   ```ts
   const me = await getMe();
-  if (!can(me, "admin.access")) forbidden();
+  if (!canListAdminDocuments(me)) forbidden();
   ```
+  **Admin-граница (Layer-1)** в `src/app/admin/layout.tsx` — `canAccessAdmin(me)`
+  из `src/app/admin/admin-access.ts` («есть хотя бы один admin-нав-итем»).
+  Отдельной capability `admin.access` НЕТ (была фантомом, удалена при переходе
+  `Capability` на сгенерированный `rbac.Capability`).
 - `can()` уже учитывает `status === "active"`, дублировать в доменных
-  хелперах не нужно.
+  хелперах не нужно (для owner-aware — `isMutationAllowed` / `ownerOrCap`).
 
 ---
 

@@ -14,7 +14,7 @@ export const InstallBanner: React.FC = () => {
         <span className="text-sm">Установить приложение на устройство</span>
         <button
           onClick={promptInstall}
-          className="text-sm font-medium px-3 py-1 rounded bg-(--foreground) text-(--color-background) hover:opacity-80 shrink-0"
+          className="text-sm font-medium px-3 py-1 rounded bg-(--color-foreground) text-(--color-background) hover:opacity-80 shrink-0"
         >
           Установить
         </button>

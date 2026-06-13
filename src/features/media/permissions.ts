@@ -1,7 +1,7 @@
 // src/features/media/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-import { can, isMutationAllowed } from "@/utils/permissions";
+import { can, isMutationAllowed, ownerOrCap } from "@/utils/permissions";
 import type { Media } from "./types";
 
 /**
@@ -26,9 +26,7 @@ export function canDeleteAnyMedia(me: MaybeMe): boolean {
  * philosophy-api internal/media/service.go:Delete).
  */
 export function canDeleteMedia(me: MaybeMe, media: Media): boolean {
-  if (!isMutationAllowed(me)) return false;
-  if (media.owner_id === me.id) return true;
-  return can(me, "media.delete_any");
+  return ownerOrCap(me, media.owner_id, "media.delete_any");
 }
 
 /**

@@ -21,7 +21,7 @@ export interface CommentListResult {
   limit: number;
 }
 
-export interface SearchResult {
+export interface CommentSearchResult {
   items: CommentSummary[];
   total: number;
 }
@@ -38,7 +38,7 @@ export const getCommentSchema = unstable_cache(
     return (data?.data ?? null) as CommentSchema | null;
   },
   ["comments-schema"],
-  { tags: [Tags.COMMENTS] },
+  { tags: [Tags.COMMENT_SCHEMA] },
 );
 
 /** Список корней лекции с поддеревьями (public, my_reactions при auth). */
@@ -90,7 +90,7 @@ export const searchComments = cache(
     lectureId: string,
     q: string,
     opts: { offset?: number; limit?: number } = {},
-  ): Promise<SearchResult> => {
+  ): Promise<CommentSearchResult> => {
     const api = await createApiClient();
     const offset = opts.offset ?? 0;
     const limit = opts.limit ?? 20;

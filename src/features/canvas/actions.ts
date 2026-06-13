@@ -4,7 +4,8 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import { createAction, createFormAction, parseFormData } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireActive, requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import { canCreateCanvas } from "./permissions";
@@ -16,13 +17,9 @@ import {
 } from "./schemas";
 import type { Canvas, CanvasData } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /** Маппинг UPPER_SNAKE_CASE кодов бека в понятный русский текст. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "PUBLIC_IMMUTABLE":
       throw new Error("Публичный канвас нельзя сделать приватным.");
     case "PRECONDITION_FAILED":
@@ -34,7 +31,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "BAD_REQUEST":
       throw new Error("Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /** POST /api/canvases (JSON). Гейт — canvas.create. */
@@ -67,7 +64,7 @@ export const createCanvas = createFormAction(async (formData) => {
  */
 export const updateCanvas = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(CanvasUpdateSchema, formData);
   const etag = formData.get("etag");
   if (typeof etag !== "string" || etag === "") {
@@ -90,7 +87,7 @@ export const updateCanvas = createFormAction(async (formData) => {
 /** PATCH /api/canvases/{id}/visibility. UI шлёт только private→public. */
 export const setCanvasVisibility = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(CanvasVisibilitySchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/canvases/{id}/visibility", {
@@ -106,7 +103,7 @@ export const setCanvasVisibility = createFormAction(async (formData) => {
 /** DELETE /api/canvases/{id}. Owner (любая) или admin delete_any (public) — enforce'ит бек. */
 export const deleteCanvas = createAction(async (rawId: string) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const { id } = CanvasIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/canvases/{id}", { params: { path: { id } } });

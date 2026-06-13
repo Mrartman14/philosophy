@@ -3,45 +3,42 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
+type YmFn = (counterId: number, action: string, ...params: unknown[]) => void;
+
 declare global {
   interface Window {
-    ym?: (...args: any[]) => void;
+    ym?: YmFn & { a?: unknown[][]; l?: number };
   }
 }
 
-const YM_COUNTER_ID = 104376496 as const;
+const YM_COUNTER_ID = Number(
+  process.env.NEXT_PUBLIC_YM_COUNTER_ID ?? 104376496,
+);
 
 export const YandexMetrika: React.FC = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!window.ym) {
-      (function (m: any, e: Document, t: string, r: string, i: string) {
-        (m as any)[i] =
-          (m as any)[i] ||
-          function (...args: any[]) {
-            ((m as any)[i].a = (m as any)[i].a || []).push(args);
-          };
-        (m as any)[i].l = Date.now();
-        const k = e.createElement(t) as HTMLScriptElement;
-        const a = e.getElementsByTagName(t)[0];
-        k.async = true;
-        k.src = r;
-        a?.parentNode?.insertBefore(k, a);
-      })(
-        window,
-        document,
-        "script",
-        "https://mc.yandex.ru/metrika/tag.js",
-        "ym"
-      );
-      window.ym!(YM_COUNTER_ID, "init", {
-        clickmap: true,
-        trackLinks: true,
-        accurateTrackBounce: true,
-        webvisor: true,
-      });
-    }
+    if (window.ym) return;
+
+    const stub = function (...args: unknown[]) {
+      (stub.a = stub.a || []).push(args);
+    } as YmFn & { a: unknown[][]; l: number };
+    stub.l = Date.now();
+    window.ym = stub;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://mc.yandex.ru/metrika/tag.js";
+    const first = document.getElementsByTagName("script")[0];
+    first?.parentNode?.insertBefore(script, first);
+
+    window.ym(YM_COUNTER_ID, "init", {
+      clickmap: true,
+      trackLinks: true,
+      accurateTrackBounce: true,
+      webvisor: true,
+    });
   }, []);
 
   useEffect(() => {

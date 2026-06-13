@@ -24,9 +24,9 @@ export default async function CanvasEditPage({ params }: Props) {
   if (!canEditCanvas(me, canvas)) forbidden();
 
   return (
-    <main className="flex flex-col">
+    <div className="flex flex-col">
       <h1 className="sr-only">Редактор канваса {canvas.title}</h1>
       <CanvasEditor canvas={canvas} etag={etag} />
-    </main>
+    </div>
   );
 }

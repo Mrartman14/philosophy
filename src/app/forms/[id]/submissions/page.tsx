@@ -26,10 +26,10 @@ export default async function FormSubmissionsPage({ params }: Props) {
   if (submissions === null) notFound();
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <h1 className="text-2xl font-bold">Отклики: {form.title}</h1>
       <p className="text-sm text-(--color-description)">Всего: {submissions.length}</p>
       <SubmissionList submissions={submissions} />
-    </main>
+    </div>
   );
 }

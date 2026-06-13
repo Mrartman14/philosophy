@@ -161,3 +161,12 @@ describe("canAdminDeleteForm / canListAdminForms", () => {
   it("с капой → list true", () =>
     expect(canListAdminForms(makeMe({ capabilities: ["form.delete_any"] }))).toBe(true));
 });
+
+describe("canDeleteSubmission (доп. ветки доступа)", () => {
+  it("гость → false", () =>
+    expect(canDeleteSubmission(null, draftPrivate, activeSub)).toBe(false));
+  it("не автор → false", () =>
+    expect(canDeleteSubmission(makeMe({ id: "x" }), draftPrivate, activeSub)).toBe(false));
+  it("suspended автор → false", () =>
+    expect(canDeleteSubmission(makeMe({ status: "suspended" }), draftPrivate, activeSub)).toBe(false));
+});

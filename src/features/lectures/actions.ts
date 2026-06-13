@@ -8,7 +8,9 @@ import {
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
+import { Tags } from "@/api/tags";
 import { getLectureById } from "./api";
 import {
   canAttachToLecture,
@@ -31,15 +33,13 @@ import {
 } from "./schemas";
 import type { Lecture, AttachmentEntityType } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "forbidden":
-    case "FORBIDDEN":
+    // Доменные 403-коды лекций; общий "FORBIDDEN" ловит handleCommonApiError.
     case "ATTACH_FORBIDDEN":
     case "UPLOAD_FOREIGN":
       throw new ForbiddenError("role", err.error);
+    // Свой текст-fallback (общий хелпер дал бы "Аккаунт ограничен.").
     case "SUSPENDED":
       throw new ForbiddenError("status", err.error);
     case "UPLOAD_NOT_FOUND":
@@ -52,7 +52,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "LECTURE_NOT_FOUND":
       throw new Error("Лекция не найдена.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /** Грузит лекцию для owner-aware гейта. 404 → ForbiddenError (secure). */
@@ -76,7 +76,7 @@ export const createLecture = createFormAction(async (formData) => {
     },
   });
   if (error) rethrowApiError(error);
-  revalidateEntity("lectures");
+  revalidateEntity(Tags.LECTURES);
   return (data?.data ?? null) as Lecture | null;
 });
 
@@ -89,8 +89,8 @@ export const updateLecture = createFormAction(async (formData) => {
     body: { title: input.title, description: input.description, date: input.date },
   });
   if (error) rethrowApiError(error);
-  revalidateEntity("lectures", input.id);
-  revalidateEntity("lectures");
+  revalidateEntity(Tags.LECTURES, input.id);
+  revalidateEntity(Tags.LECTURES);
   return (data?.data ?? null) as Lecture | null;
 });
 
@@ -102,8 +102,8 @@ export const setLectureVisibility = createFormAction(async (formData) => {
     body: { visibility: input.visibility },
   });
   if (error) rethrowApiError(error);
-  revalidateEntity("lectures", input.id);
-  revalidateEntity("lectures");
+  revalidateEntity(Tags.LECTURES, input.id);
+  revalidateEntity(Tags.LECTURES);
   return (data?.data ?? null) as Lecture | null;
 });
 
@@ -116,7 +116,7 @@ export const deleteLecture = createAction(async (rawId: string) => {
     params: { path: { id } },
   });
   if (error) rethrowApiError(error);
-  revalidateEntity("lectures");
+  revalidateEntity(Tags.LECTURES);
   return undefined;
 });
 
@@ -140,8 +140,8 @@ export const setLectureCover = createAction(
       },
     });
     if (error) rethrowApiError(error as ApiError);
-    revalidateEntity("lectures", input.id);
-    revalidateEntity("lectures");
+    revalidateEntity(Tags.LECTURES, input.id);
+    revalidateEntity(Tags.LECTURES);
     return undefined;
   },
 );
@@ -157,8 +157,8 @@ export const clearLectureCover = createAction(async (rawId: string) => {
     params: { path: { id } },
   });
   if (error) rethrowApiError(error as ApiError);
-  revalidateEntity("lectures", id);
-  revalidateEntity("lectures");
+  revalidateEntity(Tags.LECTURES, id);
+  revalidateEntity(Tags.LECTURES);
   return undefined;
 });
 
@@ -187,7 +187,7 @@ export const attachToLecture = createAction(
       },
     });
     if (error) rethrowApiError(error as ApiError);
-    revalidateEntity("lectures", input.lecture_id);
+    revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
 );
@@ -220,7 +220,7 @@ export const detachFromLecture = createAction(
       },
     );
     if (error) rethrowApiError(error as ApiError);
-    revalidateEntity("lectures", input.lecture_id);
+    revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
 );
@@ -325,7 +325,7 @@ export const reorderLectureAttachment = createAction(
       },
     );
     if (error) rethrowApiError(error as ApiError);
-    revalidateEntity("lectures", input.lecture_id);
+    revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
 );

@@ -9,7 +9,12 @@ import {
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import {
+  ForbiddenError,
+  requireActive,
+  requireCapability,
+} from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import { canCreateDocument, canListAdminDocuments } from "./permissions";
@@ -24,13 +29,9 @@ import type { Document } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
-type ApiError = { code?: string; error?: string };
-
 /** Маппинг UPPER_SNAKE_CASE кодов бека в понятный русский текст. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "PUBLIC_IMMUTABLE":
       throw new Error("Публичный документ нельзя сделать приватным.");
     case "DOCUMENT_REFERENCED":
@@ -56,7 +57,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "IMAGE_UNKNOWN_KEY":
       throw new Error("В документе есть изображение с неизвестным ключом.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /** POST /api/documents (JSON). Гейт — document.create. */
@@ -127,7 +128,7 @@ export const uploadDocument = createFormAction(async (formData) => {
 /** PATCH /api/documents/{id} (метаданные — title). Owner-only enforce'ит бек. */
 export const updateDocumentMeta = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(DocumentMetaSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/documents/{document_id}", {
@@ -143,7 +144,7 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
 /** PUT /api/documents/{id}/blocks. Owner-only enforce'ит бек. */
 export const updateDocumentBlocks = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(DocumentBlocksSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/documents/{document_id}/blocks", {
@@ -159,7 +160,7 @@ export const updateDocumentBlocks = createFormAction(async (formData) => {
 /** PATCH /api/documents/{id}/visibility. UI шлёт только private→public. */
 export const setDocumentVisibility = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(DocumentVisibilitySchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/documents/{document_id}/visibility", {
@@ -175,7 +176,7 @@ export const setDocumentVisibility = createFormAction(async (formData) => {
 /** DELETE /api/documents/{id}. Owner или admin (delete_any, не-private) — enforce'ит бек. */
 export const deleteDocument = createAction(async (rawId: string) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const { id } = DocumentIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/documents/{document_id}", {

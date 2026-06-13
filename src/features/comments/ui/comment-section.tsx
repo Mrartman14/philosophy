@@ -13,7 +13,7 @@ import { CommentCreateForm } from "./comment-create-form";
 import { CommentSearch } from "./comment-search";
 import { CommentExportLinks } from "./comment-export-links";
 import { commentTypeLabel } from "./comment-type-badge";
-import type { CommentListResult, SearchResult } from "../api";
+import type { CommentListResult, CommentSearchResult } from "../api";
 import type { CommentSchema, CommentType } from "../types";
 
 interface Props {
@@ -31,7 +31,7 @@ interface Props {
  */
 function renderContent(
   searching: boolean,
-  search: SearchResult | null,
+  search: CommentSearchResult | null,
   list: CommentListResult | null,
   lectureId: string,
   schema: CommentSchema,

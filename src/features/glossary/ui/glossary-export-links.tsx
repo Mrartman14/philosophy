@@ -1,10 +1,10 @@
 // src/features/glossary/ui/glossary-export-links.tsx
+import { API_URL } from "@/api/client";
 import { glossaryExportUrls } from "../export-urls";
 
-// Тот же env и fallback, что в src/api/client.ts. Серверный компонент:
+// API_URL — единый источник (src/api/client.ts). Серверный компонент:
 // process.env читается при SSR — рендерить ТОЛЬКО из server components
 // (в client-дереве env недоступен).
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 interface Props {
   /** id термина — ссылки на выгрузки термина; без него — выгрузки списка. */

@@ -9,19 +9,17 @@ import {
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import { canManageOwnLinks, canModerateShareLinks } from "./permissions";
 import { ShareLinkCreateSchema, RevokeTokenSchema } from "./schemas";
 import type { ShareLink } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /** Маппинг кодов apperror бекенда на доменные ошибки фронта. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
+    // Свой текст (общий хелпер дал бы "Аккаунт ограничен." при пустом err.error).
     case "SUSPENDED":
       throw new ForbiddenError("status", err.error);
     case "NOT_FOUND":
@@ -35,7 +33,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "BAD_REQUEST":
       throw new Error(err.error ?? "Сервер отклонил данные.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /**

@@ -8,28 +8,17 @@ import {
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
-import {
-  canCreateEvent,
-  canUpdateEvent,
-  canDeleteEvent,
-} from "./permissions";
-import {
-  EventCreateSchema,
-  EventUpdateSchema,
-  EventIdSchema,
-} from "./schemas";
+import { canCreateEvent, canUpdateEvent, canDeleteEvent } from "./permissions";
+import { EventCreateSchema, EventUpdateSchema, EventIdSchema } from "./schemas";
 import type { CalendarEvent } from "./types";
-
-type ApiError = { code?: string; error?: string };
 
 function rethrowApiError(err: ApiError | undefined): never {
   // Бек пишет code в UPPER_SNAKE_CASE (internal/apperror, middleware/auth.go).
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "INVALID_DATE":
       throw new Error(
         "Бекенд отклонил дату: проверьте формат и порядок дат начала/окончания.",
@@ -49,7 +38,7 @@ function rethrowApiError(err: ApiError | undefined): never {
         "Нельзя удалить блок с привязанными комментариями. Удалите комментарии или оставьте блок.",
       );
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 export const createEvent = createFormAction(async (formData) => {

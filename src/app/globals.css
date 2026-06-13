@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@import "../components/markdown-editor/editor-styles.css";
-
 @theme {
   --color-primary: var(--color-primary);
   --color-background: var(--color-background);
@@ -10,6 +8,7 @@
   --color-link: var(--color-link);
   --color-description: var(--color-description);
   --color-text-pane: var(--color-text-pane);
+  --color-foreground: var(--color-foreground);
 
   --spacing-header: 50px;
 }
@@ -23,6 +22,7 @@
   :root {
     --color-primary: AccentColor;
     --color-background: Canvas;
+    --color-foreground: CanvasText;
     --color-border: ButtonBorder;
     --color-link: LinkText;
     --color-description: GrayText;

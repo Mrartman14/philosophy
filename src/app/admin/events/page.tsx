@@ -2,6 +2,7 @@
 import { forbidden } from "next/navigation";
 import { getMe } from "@/utils/me";
 import { Pagination } from "@/components/ui";
+import { parseNonNegativeInt } from "@/utils/paging";
 import {
   canCreateEvent,
   canDeleteEvent,
@@ -25,7 +26,7 @@ export default async function AdminEventsPage({ searchParams }: Props) {
 
   const { offset } = await searchParams;
   const result = await getAdminEvents({
-    offset: offset ? Number(offset) : 0,
+    offset: parseNonNegativeInt(offset, 0),
     limit: 20,
   });
 

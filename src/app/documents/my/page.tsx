@@ -1,6 +1,7 @@
 // src/app/documents/my/page.tsx
 import { redirect } from "next/navigation";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 import { SchemaContextProvider } from "@/components/ast-editor";
 import {
   canCreateDocument,
@@ -22,11 +23,11 @@ export default async function MyDocumentsPage({ searchParams }: Props) {
   if (!me || me.status !== "active") redirect("/login?next=/documents/my");
 
   const { offset } = await searchParams;
-  const result = await getMyDocuments({ offset: offset ? Number(offset) : 0, limit: 20 });
+  const result = await getMyDocuments({ offset: parseNonNegativeInt(offset, 0), limit: 20 });
   const canCreate = canCreateDocument(me);
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header>
         <h1 className="text-2xl font-bold">Мои документы</h1>
         <p className="text-sm text-(--color-description)">Всего: {result.total}</p>
@@ -56,6 +57,6 @@ export default async function MyDocumentsPage({ searchParams }: Props) {
       )}
 
       <DocumentMyList documents={result.items} />
-    </main>
+    </div>
   );
 }

@@ -8,7 +8,8 @@ import {
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import {
@@ -23,14 +24,10 @@ import {
 } from "./schemas";
 import type { Term } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 function rethrowApiError(err: ApiError | undefined): never {
   // Бек пишет code в UPPER_SNAKE_CASE (internal/apperror, middleware/auth.go) —
   // сравнение с lowercase "forbidden" не срабатывало (паттерн — events/actions.ts).
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "BLOCKS_EMPTY":
       throw new Error("Тело термина не может быть пустым.");
     case "BLOCKS_HAVE_ANCHORS":
@@ -44,7 +41,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "REF_NOT_FOUND":
       throw new Error("Одна из ссылок указывает на несуществующий объект.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 export const createTerm = createFormAction(async (formData) => {

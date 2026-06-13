@@ -44,7 +44,7 @@ describe("createAtSuggestionPlugin", () => {
   it("'@' в пустом параграфе открывает state", () => {
     const editor = makeEditor();
     const view = editor.view;
-    view.someProp("handleTextInput", (fn) => fn(view, 1, 1, "@"));
+    view.someProp("handleTextInput", (fn) => fn(view, 1, 1, "@", () => view.state.tr));
     const s = atSuggestionKey.getState(view.state);
     expect(s?.open).toBe(true);
     expect(s?.from).toBe(1);
@@ -55,7 +55,7 @@ describe("createAtSuggestionPlugin", () => {
     const editor = makeEditor("foo ");
     const view = editor.view;
     // текст "foo " занимает позиции 1..5, курсор в 5
-    view.someProp("handleTextInput", (fn) => fn(view, 5, 5, "@"));
+    view.someProp("handleTextInput", (fn) => fn(view, 5, 5, "@", () => view.state.tr));
     expect(atSuggestionKey.getState(view.state)?.open).toBe(true);
     editor.destroy();
   });
@@ -63,7 +63,7 @@ describe("createAtSuggestionPlugin", () => {
   it("'@' внутри слова (e-mail) НЕ открывает state", () => {
     const editor = makeEditor("user");
     const view = editor.view;
-    view.someProp("handleTextInput", (fn) => fn(view, 5, 5, "@"));
+    view.someProp("handleTextInput", (fn) => fn(view, 5, 5, "@", () => view.state.tr));
     expect(atSuggestionKey.getState(view.state)?.open).toBe(false);
     editor.destroy();
   });

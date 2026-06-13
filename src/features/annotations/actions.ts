@@ -10,6 +10,7 @@ import {
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import {
@@ -24,24 +25,13 @@ import {
   AnnotationIdSchema,
 } from "./schemas";
 import { getAnnotationById } from "./api";
-import type { Annotation, ParentEntityType } from "./types";
+import { PER_ENTITY_PATH, type Annotation } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
-
-const PER_ENTITY_PATH: Record<ParentEntityType, string> = {
-  document: "documents",
-  comment: "comments",
-  glossary: "glossary",
-  media: "media",
-};
-
-type ApiError = { code?: string; error?: string };
 
 /** Маппинг UPPER_SNAKE-кодов бекенда на доменные ошибки фронта. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "SUSPENDED":
       throw new ForbiddenError("status", err.error);
     case "BLOCKS_EMPTY":
@@ -57,7 +47,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "REQUEST_BODY_TOO_LARGE":
       throw new Error("Аннотация слишком большая.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /**

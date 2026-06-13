@@ -3,24 +3,17 @@ import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { createApiClient } from "@/api/client";
-import type {
-  Annotation,
-  AnnotationListResponse,
-  AnnotationListResult,
-  AnnotationRevisionMeta,
-  AnnotationRevision,
-  ParentEntityType,
+import {
+  PER_ENTITY_PATH,
+  type Annotation,
+  type AnnotationListResponse,
+  type AnnotationListResult,
+  type AnnotationRevisionMeta,
+  type AnnotationRevision,
+  type ParentEntityType,
 } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
-
-/** Реальный путь пер-сущностного списка (§10.1: documents/comments/glossary/media). */
-const PER_ENTITY_PATH: Record<ParentEntityType, string> = {
-  document: "documents",
-  comment: "comments",
-  glossary: "glossary",
-  media: "media",
-};
 
 function toResult(
   resp: AnnotationListResponse | null,
@@ -77,7 +70,7 @@ export const getAnnotationById = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error("Не удалось загрузить аннотацию");
+    if (error) throw new Error(error?.error ?? "Не удалось загрузить аннотацию");
     return (data?.data ?? null) as Annotation | null;
   },
 );
@@ -99,7 +92,7 @@ export const getMyAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error("Не удалось загрузить мои аннотации");
+    if (error) throw new Error(error?.error ?? "Не удалось загрузить мои аннотации");
     return {
       items: (data?.data ?? []) as Annotation[],
       total: data?.pagination?.total ?? 0,
@@ -128,7 +121,7 @@ export const getLectureAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error("Не удалось загрузить аннотации лекции");
+    if (error) throw new Error(error?.error ?? "Не удалось загрузить аннотации лекции");
     return {
       items: (data?.data ?? []) as Annotation[],
       total: data?.pagination?.total ?? 0,
@@ -165,7 +158,7 @@ export const getAdminAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error("Не удалось загрузить список аннотаций");
+    if (error) throw new Error(error?.error ?? "Не удалось загрузить список аннотаций");
     return {
       items: (data?.data ?? []) as Annotation[],
       total: data?.pagination?.total ?? 0,
@@ -182,7 +175,7 @@ export const getAnnotationRevisions = cache(
     const { data, error } = await api.GET("/api/annotations/{id}/revisions", {
       params: { path: { id } },
     });
-    if (error) throw new Error("Не удалось загрузить ревизии");
+    if (error) throw new Error(error?.error ?? "Не удалось загрузить ревизии");
     return (data?.data ?? []) as AnnotationRevisionMeta[];
   },
 );
@@ -196,7 +189,7 @@ export const getAnnotationRevision = cache(
       { params: { path: { id, revisionID: revisionId } } },
     );
     if (response.status === 404) return null;
-    if (error) throw new Error("Не удалось загрузить ревизию");
+    if (error) throw new Error(error?.error ?? "Не удалось загрузить ревизию");
     return (data?.data ?? null) as AnnotationRevision | null;
   },
 );

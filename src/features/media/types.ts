@@ -12,7 +12,7 @@ export type MediaSummary = components["schemas"]["media.MediaSummary"];
 export type FileType = components["schemas"]["media.FileType"];
 
 /** "private" | "public". */
-export type Visibility = components["schemas"]["access.Visibility"];
+export type { AccessVisibility as Visibility } from "@/api/types";
 
 /** Элемент GET /api/media/{id}/attachments — контейнер, к которому привязано медиа. */
 export type MediaAttachment = components["schemas"]["attachment.AttachmentDTO"];

@@ -1,5 +1,6 @@
 import { forbidden } from "next/navigation";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 import {
   canCreateTerm,
   canUpdateTerm,
@@ -24,7 +25,7 @@ export default async function AdminGlossaryPage({ searchParams }: Props) {
   const { q, offset } = await searchParams;
   const result = await getTerms({
     ...(q ? { q } : {}),
-    offset: offset ? Number(offset) : 0,
+    offset: parseNonNegativeInt(offset, 0),
     limit: 50,
   });
   const sorted = [...result.items].sort((a, b) =>

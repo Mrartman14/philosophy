@@ -4,11 +4,10 @@ import "server-only";
 import { cookies } from "next/headers";
 import { getMe } from "@/utils/me";
 import { revalidateEntity } from "@/utils/revalidate";
+import { API_URL } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { canCreateMedia } from "./permissions";
 import type { Media } from "./types";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 export type UploadMediaResult =
   | { success: true; data: Media }

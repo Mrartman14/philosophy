@@ -1,15 +1,14 @@
 // src/features/documents/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-import { can } from "@/utils/permissions";
+import { can, isMutationAllowed, ownerOrCap } from "@/utils/permissions";
 import type { Document } from "./types";
 
 /**
  * Имена capabilities сверены с philosophy-api internal/rbac/capabilities.go
  * (CapDocumentCreate, CapDocumentDeleteAny); typo ловит tsc через union
- * `Capability`. Чистые cap-чеки делегированы `can()`: гость → false,
- * не-active → false, иначе членство в capabilities (status-гейт внутри can()).
- * Owner-aware хелперы ниже комбинируют can()-семантику с owner_id вручную.
+ * `Capability`. Чистые cap-чеки делегированы `can()` (status-гейт внутри
+ * can()). Owner-aware-комбинации — через `ownerOrCap` / `isMutationAllowed`.
  */
 
 /** Создание документа (JSON и upload) — capability document.create. */
@@ -19,31 +18,31 @@ export function canCreateDocument(me: MaybeMe): boolean {
 
 /**
  * Редактирование (title, blocks, visibility) — OWNER-ONLY без admin-override.
- * Бек: doc.OwnerID == actor.UserID (service.go). Status-гейт обязателен.
+ * Бек: doc.OwnerID == actor.UserID (service.go).
  */
 export function canEditDocument(me: MaybeMe, doc: Document): boolean {
-  if (!me || me.status !== "active") return false;
-  return doc.owner_id === me.id;
+  return isMutationAllowed(me) && doc.owner_id === me.id;
 }
 
 /**
  * Удаление со страницы документа. Владелец — любая видимость. Admin с
- * delete_any — только НЕ-private (private чужой → бек вернёт 404).
+ * delete_any — только public (private чужой → бек вернёт 404).
  */
 export function canDeleteDocument(me: MaybeMe, doc: Document): boolean {
-  if (!me || me.status !== "active") return false;
-  if (doc.owner_id === me.id) return true;
-  if (!can(me, "document.delete_any")) return false;
-  return doc.visibility !== "private";
+  return ownerOrCap(
+    me,
+    doc.owner_id,
+    "document.delete_any",
+    () => doc.visibility === "public",
+  );
 }
 
 /**
- * Удаление из admin-списка: только delete_any и только НЕ-private (§6.2 спеки).
+ * Удаление из admin-списка: только delete_any и только public (§6.2 спеки).
  * Admin-список и так отдаёт только public-документы.
  */
 export function canAdminDeleteDocument(me: MaybeMe, doc: Document): boolean {
-  if (!can(me, "document.delete_any")) return false;
-  return doc.visibility !== "private";
+  return can(me, "document.delete_any") && doc.visibility === "public";
 }
 
 /** Доступ к admin-списку документов. */

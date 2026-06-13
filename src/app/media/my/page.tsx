@@ -17,7 +17,7 @@ interface Props {
 
 export default async function MyMediaPage({ searchParams }: Props) {
   const me = await getMe();
-  if (!me) redirect("/login?next=/media/my");
+  if (!me || me.status !== "active") redirect("/login?next=/media/my");
 
   const { offset: rawOffset, free_floating } = await searchParams;
   const offset = Number.parseInt(rawOffset ?? "0", 10) || 0;
@@ -26,7 +26,7 @@ export default async function MyMediaPage({ searchParams }: Props) {
   const { items, total, limit } = await getMyMedia({ offset, freeFloating });
 
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-col gap-8 p-4">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 p-4">
       <h1 className="text-2xl font-bold">Мои медиа</h1>
 
       <section className="flex flex-col gap-3 rounded border border-(--color-border) p-4">
@@ -38,6 +38,6 @@ export default async function MyMediaPage({ searchParams }: Props) {
         <MediaGrid items={items} />
         <MediaPagination offset={offset} limit={limit} total={total} />
       </section>
-    </main>
+    </div>
   );
 }

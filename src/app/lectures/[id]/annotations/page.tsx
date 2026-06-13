@@ -31,7 +31,7 @@ export default async function LectureAnnotationsPage({
   const { items, total } = await getLectureAnnotations(id, offset, LIMIT);
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-bold">Аннотации лекции</h1>
       {items.length === 0 ? (
         <p className="text-sm text-(--color-description)">
@@ -51,6 +51,6 @@ export default async function LectureAnnotationsPage({
         </ul>
       )}
       <AnnotationPagination offset={offset} limit={LIMIT} total={total} />
-    </main>
+    </div>
   );
 }

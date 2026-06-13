@@ -34,6 +34,30 @@ export function isMutationAllowed(me: MaybeMe): me is NonNullable<MaybeMe> {
 }
 
 /**
+ * Owner-aware предикат для доменных `canDeleteX` / `canEditX`: пользователь
+ * active И (владелец ресурса ИЛИ есть `cap` и выполнен доп. предикат `extra`).
+ *
+ * `ownerId` передаётся ЗНАЧЕНИЕМ (`resource.owner_id` / `resource.user_id`) —
+ * слайс сам решает, какое поле сравнивать, а тип ловит ошибку. `extra` —
+ * доп. условие для cap-ветки (напр. `() => doc.visibility === "public"`).
+ *
+ * @example
+ *   canDeleteDocument: ownerOrCap(me, doc.owner_id, "document.delete_any",
+ *     () => doc.visibility === "public")
+ */
+export function ownerOrCap(
+  me: MaybeMe,
+  ownerId: string | undefined,
+  cap: Capability,
+  extra?: () => boolean,
+): boolean {
+  if (!isMutationAllowed(me)) return false;
+  if (ownerId !== undefined && ownerId === me.id) return true;
+  if (!can(me, cap)) return false;
+  return extra ? extra() : true;
+}
+
+/**
  * Причина, по которой действие недоступно. Используется для выбора UX-паттерна
  * в `<ActionTooltip>` / `<LoginCta>`.
  *
@@ -79,4 +103,19 @@ export function requireCapability(
   if (!me) throw new ForbiddenError("guest");
   if (me.status !== "active") throw new ForbiddenError("status");
   throw new ForbiddenError("role");
+}
+
+/**
+ * Гейт «нужен залогиненный active-пользователь, права решает бек». Бросает
+ * `ForbiddenError("guest" | "status")`. Используется в server actions, где
+ * специфической capability нет (создать комментарий, лайк, owner-only мутации
+ * с проверкой владения на беке). Эквивалент `requireCapability(me,
+ * isMutationAllowed)`, но читается как намерение и сужает тип `me` через
+ * `asserts`.
+ */
+export function requireActive(
+  me: MaybeMe
+): asserts me is NonNullable<MaybeMe> {
+  if (!me) throw new ForbiddenError("guest");
+  if (me.status !== "active") throw new ForbiddenError("status");
 }

@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 import {
   canCreateCanvas,
   getCanvases,
@@ -26,13 +27,13 @@ export default async function CanvasesPage({ searchParams }: Props) {
   const limit = 20;
   const result = await getCanvases({
     ...(q ? { q } : {}),
-    offset: offset ? Number(offset) : 0,
+    offset: parseNonNegativeInt(offset, 0),
     limit,
   });
   const canCreate = canCreateCanvas(me);
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Канвасы</h1>
@@ -48,6 +49,6 @@ export default async function CanvasesPage({ searchParams }: Props) {
       <CanvasSearch />
       <CanvasMyList canvases={result.items} />
       <CanvasPagination offset={result.offset} limit={result.limit} total={result.total} />
-    </main>
+    </div>
   );
 }

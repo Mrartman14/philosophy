@@ -11,7 +11,7 @@ export {
 } from "./api";
 export type {
   CommentListResult,
-  SearchResult,
+  CommentSearchResult,
 } from "./api";
 
 export {

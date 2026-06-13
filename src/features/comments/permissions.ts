@@ -1,7 +1,7 @@
 // src/features/comments/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-import { can, isMutationAllowed } from "@/utils/permissions";
+import { can, isMutationAllowed, ownerOrCap } from "@/utils/permissions";
 import type { Comment } from "./types";
 
 /**
@@ -38,8 +38,7 @@ export function canDeleteComment(
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   if (comment.is_deleted) return false;
-  if (comment.user_id === me.id) return true;
-  return can(me, "comment.delete_any");
+  return ownerOrCap(me, comment.user_id, "comment.delete_any");
 }
 
 /**

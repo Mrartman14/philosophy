@@ -8,7 +8,7 @@ export type Document = components["schemas"]["document.Document"];
 export type DocumentSummary = components["schemas"]["document.DocumentSummary"];
 
 /** Видимость: "private" | "public". */
-export type Visibility = components["schemas"]["access.Visibility"];
+export type { AccessVisibility as Visibility } from "@/api/types";
 
 /** Мета-ревизии (элемент списка). */
 export type DocumentRevisionMeta = components["schemas"]["revision.RevisionMeta"];

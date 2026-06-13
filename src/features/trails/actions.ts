@@ -8,7 +8,8 @@ import {
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireActive, requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import { canCreateTrail, canListAdminTrails } from "./permissions";
@@ -21,13 +22,9 @@ import {
 } from "./schemas";
 import type { Trail, TrailWithItems } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /** Маппинг кодов/сообщений бека в понятный русский текст. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "PUBLIC_IMMUTABLE":
       throw new Error("Публичный маршрут нельзя сделать приватным — только удалить.");
   }
@@ -39,14 +36,7 @@ function rethrowApiError(err: ApiError | undefined): never {
   if (msg.startsWith("lecture not found")) {
     throw new Error("Одна из лекций не найдена. Обновите список и повторите.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
-}
-
-/** Требует залогиненного active-пользователя (defense-in-depth для owner-only мутаций). */
-function requireActive(me: Awaited<ReturnType<typeof getMe>>): asserts me is NonNullable<typeof me> {
-  if (!me || me.status !== "active") {
-    throw new ForbiddenError(me ? "status" : "guest");
-  }
+  handleCommonApiError(err);
 }
 
 /** POST /api/trails. Гейт — trail.create. */

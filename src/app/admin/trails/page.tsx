@@ -2,6 +2,7 @@
 import { forbidden } from "next/navigation";
 import { getMe } from "@/utils/me";
 import { Pagination } from "@/components/ui";
+import { parseNonNegativeInt } from "@/utils/paging";
 import {
   canListAdminTrails,
   canAdminDeleteTrail,
@@ -20,7 +21,7 @@ export default async function AdminTrailsPage({ searchParams }: Props) {
   if (!canListAdminTrails(me)) forbidden();
 
   const { offset } = await searchParams;
-  const result = await getAdminTrails({ offset: offset ? Number(offset) : 0, limit: 20 });
+  const result = await getAdminTrails({ offset: parseNonNegativeInt(offset, 0), limit: 20 });
 
   return (
     <section className="flex flex-col gap-6">

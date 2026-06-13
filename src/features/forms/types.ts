@@ -17,7 +17,7 @@ export type FieldType = components["schemas"]["form.FieldType"];
 export type SubmissionMode = components["schemas"]["form.SubmissionMode"];
 
 /** Видимость: private | public. */
-export type Visibility = components["schemas"]["access.Visibility"];
+export type { AccessVisibility as Visibility } from "@/api/types";
 
 /** Отклик с ответами (GET /api/submissions/{id}). */
 export type Submission = components["schemas"]["form.Submission"];

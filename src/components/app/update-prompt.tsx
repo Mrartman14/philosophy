@@ -12,7 +12,7 @@ export const UpdatePrompt: React.FC = () => {
       <span className="text-sm">Доступно обновление</span>
       <button
         onClick={applyUpdate}
-        className="text-sm font-medium px-3 py-1 rounded bg-(--foreground) text-(--color-background) hover:opacity-80"
+        className="text-sm font-medium px-3 py-1 rounded bg-(--color-foreground) text-(--color-background) hover:opacity-80"
       >
         Обновить
       </button>

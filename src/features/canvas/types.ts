@@ -17,7 +17,7 @@ export type CanvasNode = components["schemas"]["canvas.Node"];
 export type CanvasEdge = components["schemas"]["canvas.Edge"];
 
 /** Видимость: "private" | "public". */
-export type Visibility = components["schemas"]["access.Visibility"];
+export type { AccessVisibility as Visibility } from "@/api/types";
 
 /** Мета-ревизии (элемент списка). У канваса нет id — ключ rev_num. */
 export type CanvasRevisionMeta = components["schemas"]["canvas.RevisionMeta"];

@@ -8,7 +8,8 @@ import {
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError } from "@/utils/permissions";
+import { ForbiddenError, requireActive } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import { canCreateForm } from "./permissions";
@@ -23,13 +24,9 @@ import {
 } from "./schemas";
 import type { Form, SubmitResponse } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /** UPPER_SNAKE_CASE коды бека → понятный русский (internal/apperror, form/service.go). */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "FORM_PUBLISHED":
       throw new Error("Форма опубликована — её структуру нельзя менять.");
     case "PUBLIC_IMMUTABLE":
@@ -56,7 +53,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "SUBMISSION_NOT_FOUND":
       throw new Error("Отклик не найден.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /** Собирает тело CreateFormRequest из payload (опускает undefined-ключи: exactOptionalPropertyTypes). */
@@ -106,7 +103,7 @@ export const createForm = createFormAction(async (formData) => {
 /** PATCH /api/forms/{id} — замена структуры. Owner-only + не опубликована (enforce бек). */
 export const updateForm = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(FormUpdateSchema, formData);
   const { payload } = input;
   const api = await createApiClient();
@@ -130,7 +127,7 @@ export const updateForm = createFormAction(async (formData) => {
 /** PATCH /api/forms/{id} visibility-only → publish (private→public). */
 export const publishForm = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(FormVisibilitySchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/forms/{id}", {
@@ -146,7 +143,7 @@ export const publishForm = createFormAction(async (formData) => {
 /** DELETE /api/forms/{id}. Owner или delete_any(public) — enforce бек. */
 export const deleteForm = createAction(async (rawId: string) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const { id } = FormIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/forms/{id}", { params: { path: { id } } });
@@ -158,7 +155,7 @@ export const deleteForm = createAction(async (rawId: string) => {
 /** POST /api/forms/{id}/submissions. token — для приватной формы (share-link). */
 export const submitForm = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(SubmitSchema, formData);
   const api = await createApiClient();
   const query: { token?: string } = {};
@@ -176,7 +173,7 @@ export const submitForm = createFormAction(async (formData) => {
 /** PATCH /api/submissions/{id} (editable). Автор — enforce бек. */
 export const editSubmission = createFormAction(async (formData) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const input = parseFormData(SubmissionEditSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/submissions/{id}", {
@@ -192,7 +189,7 @@ export const editSubmission = createFormAction(async (formData) => {
 /** DELETE /api/submissions/{id} (editable, освобождает слот). */
 export const deleteSubmission = createAction(async (rawId: string) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const { id } = SubmissionIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/submissions/{id}", { params: { path: { id } } });
@@ -204,7 +201,7 @@ export const deleteSubmission = createAction(async (rawId: string) => {
 /** POST /api/submissions/{id}/retract (immutable, сжигает слот). */
 export const retractSubmission = createAction(async (rawId: string) => {
   const me = await getMe();
-  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  requireActive(me);
   const { id } = SubmissionIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.POST("/api/submissions/{id}/retract", {

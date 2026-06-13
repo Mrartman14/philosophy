@@ -8,7 +8,8 @@ import {
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import {
@@ -25,16 +26,13 @@ import {
 } from "./schemas";
 import type { Tag } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /**
  * Коды бекенда — UPPERCASE (internal/apperror, internal/middleware/auth.go,
  * internal/httputil/require_actor.go). Сверено с кодом, не со swagger.
  */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
+    // Свой текст для SUSPENDED — общий хелпер дал бы другой fallback.
     case "SUSPENDED":
       throw new Error("Аккаунт приостановлен — действие недоступно.");
     case "CONFLICT":
@@ -42,7 +40,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "NOT_FOUND":
       throw new Error("Объект не найден — возможно, уже удалён. Обновите страницу.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 export const createTag = createFormAction(async (formData) => {

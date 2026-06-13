@@ -46,7 +46,7 @@ export default async function MediaPage({ params, searchParams }: Props) {
     : [];
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
       {canShare && (
         <div className="flex justify-end">
           <ShareButton
@@ -71,6 +71,6 @@ export default async function MediaPage({ params, searchParams }: Props) {
       {media.id && (
         <AnnotationsSection parentEntityType="media" parentId={media.id} />
       )}
-    </main>
+    </div>
   );
 }

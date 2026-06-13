@@ -9,6 +9,7 @@ import {
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import {
@@ -24,13 +25,11 @@ import {
 } from "./schemas";
 import type { Preferences } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /** Маппинг кодов httputil/apperror бекенда на доменные ошибки фронта. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
+    // SUSPENDED оставлен локально: без дефолтного текста "Аккаунт ограничен."
+    // — поведение 1:1 (handleCommonApiError подставил бы фоллбек).
     case "SUSPENDED":
       throw new ForbiddenError("status", err.error);
     case "NOT_CONFIGURED":
@@ -42,7 +41,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "VALIDATION_ERROR":
       throw new Error(err.error ?? "Сервер отклонил данные формы.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 export const updatePreferences = createFormAction(async (formData) => {

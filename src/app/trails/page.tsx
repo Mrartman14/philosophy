@@ -1,5 +1,6 @@
 // src/app/trails/page.tsx
 import { Pagination } from "@/components/ui";
+import { parseNonNegativeInt } from "@/utils/paging";
 import { getTrails, TrailPublicList } from "@/features/trails";
 
 export const metadata = { title: "Маршруты" };
@@ -10,10 +11,10 @@ interface Props {
 
 export default async function TrailsPage({ searchParams }: Props) {
   const { offset } = await searchParams;
-  const result = await getTrails({ offset: offset ? Number(offset) : 0, limit: 20 });
+  const result = await getTrails({ offset: parseNonNegativeInt(offset, 0), limit: 20 });
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header>
         <h1 className="text-2xl font-bold">Маршруты</h1>
         <p className="text-sm text-(--color-description)">
@@ -29,6 +30,6 @@ export default async function TrailsPage({ searchParams }: Props) {
         limit={result.limit}
         total={result.total}
       />
-    </main>
+    </div>
   );
 }

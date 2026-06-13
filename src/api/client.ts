@@ -1,7 +1,7 @@
 import createClient from "openapi-fetch";
 import type { paths } from "./schema";
 
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
+export const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 /** Серверный клиент — автоматически прикладывает JWT из cookie */
 export async function createApiClient() {

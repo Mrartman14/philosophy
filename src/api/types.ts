@@ -12,6 +12,23 @@ import type { components } from "./schema";
 
 type Schemas = components["schemas"];
 
+// --- Common ---
+/** Видимость ресурса (`access.Visibility`): "private" | "public". Единый
+ * источник для слайсов вместо локальных дублей `type Visibility`. */
+export type AccessVisibility = Schemas["access.Visibility"];
+
+/** Общая форма списочного ответа бека (httputil.ListResponse + UI-проекция). */
+export type ApiList<T> = {
+  data: T[];
+  pagination: { offset: number; limit: number; total: number };
+};
+
+/** Машиночитаемые коды ошибок бека (`apperror.Code`, UPPER_SNAKE_CASE).
+ * Единственный источник истины — const-блок `internal/apperror/codes.go`,
+ * проброшен через swaggo enum → OpenAPI → `schema.ts`. Типизирует `code`
+ * в `switch` слайсов: автокомплит + детект дрифта при regen схемы. */
+export type ApiErrorCode = Schemas["apperror.Code"];
+
 // --- Lectures ---
 export type Lecture = Schemas["lecture.Lecture"];
 export type LectureCreateRequest = Schemas["lecture.CreateRequest"];

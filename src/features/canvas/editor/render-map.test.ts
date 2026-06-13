@@ -27,8 +27,8 @@ describe("canvasDataToRenderData", () => {
   });
   it("пропускает узлы без id/type и рёбра без концов", () => {
     const data: CanvasData = {
-      nodes: [{ type: "text", x: 0, y: 0, width: 10, height: 10, text: "x" } as CanvasData["nodes"][number]],
-      edges: [{ id: "e1", from_node: "n1" } as CanvasData["edges"][number]],
+      nodes: [{ type: "text", x: 0, y: 0, width: 10, height: 10, text: "x" } as NonNullable<CanvasData["nodes"]>[number]],
+      edges: [{ id: "e1", from_node: "n1" } as NonNullable<CanvasData["edges"]>[number]],
     };
     const r = canvasDataToRenderData(data);
     expect(r.nodes).toHaveLength(0);

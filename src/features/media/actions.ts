@@ -5,19 +5,18 @@ import { createApiClient } from "@/api/client";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import { canDeleteMedia, canChangeMediaVisibility } from "./permissions";
 import { MediaIdSchema, MediaVisibilitySchema } from "./schemas";
 import type { Media } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /** Маппинг UPPER_SNAKE_CASE-кодов бекенда на доменные ошибки фронта. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
+    // SUSPENDED оставлен локально: без дефолтного текста "Аккаунт ограничен."
+    // — поведение 1:1 (handleCommonApiError подставил бы фоллбек).
     case "SUSPENDED":
       throw new ForbiddenError("status", err.error);
     case "PUBLIC_IMMUTABLE":
@@ -27,7 +26,7 @@ function rethrowApiError(err: ApiError | undefined): never {
     case "NOT_FOUND":
       throw new Error("Медиа не найдено.");
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /** Загружает media-запись для owner-aware RBAC. 404 → ForbiddenError (secure). */

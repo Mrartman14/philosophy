@@ -16,6 +16,7 @@ export const TableExt = Node.create({
   group: "block",
   content: "table_row+",
   isolating: true,
+  // @ts-expect-error tableRole — поле аугментации @tiptap/pm/tables (этим самописным extension не импортируется); читается ProseMirror в рантайме.
   tableRole: "table",
 
   addAttributes() {
@@ -41,6 +42,7 @@ export const TableExt = Node.create({
 export const TableRowExt = Node.create({
   name: "table_row",
   content: "table_cell+",
+  // @ts-expect-error tableRole — поле аугментации @tiptap/pm/tables (не импортируется); читается ProseMirror в рантайме.
   tableRole: "row",
 
   addAttributes() {
@@ -68,6 +70,7 @@ export const TableCellExt = Node.create({
   name: "table_cell",
   content: "(text | hard_break)*",
   isolating: true,
+  // @ts-expect-error tableRole — поле аугментации @tiptap/pm/tables (не импортируется); читается ProseMirror в рантайме.
   tableRole: "cell",
 
   addAttributes() {

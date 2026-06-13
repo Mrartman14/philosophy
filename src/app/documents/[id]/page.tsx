@@ -47,7 +47,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
       : [];
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{document.filename || "Документ"}</h1>
         <div className="flex items-center gap-2">
@@ -97,7 +97,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
           <DocumentDeleteButton id={document.id} />
         </div>
       )}
-    </main>
+    </div>
   );
 }
 

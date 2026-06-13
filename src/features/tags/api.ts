@@ -30,6 +30,8 @@ export const getTags = cache(
       params: { query: { offset, limit } },
     });
     if (error) {
+      // openapi-типизирует error этого роута как `never` (нет error-body в
+      // схеме) — пробросить error.error нельзя, отдаём фиксированный текст.
       throw new Error("Не удалось загрузить теги");
     }
     return {

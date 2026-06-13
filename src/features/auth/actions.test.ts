@@ -48,7 +48,7 @@ describe("loginAction", () => {
       .rejects.toThrow("NEXT_REDIRECT");
 
     expect(cookieSet).toHaveBeenCalledOnce();
-    const [name, value, opts] = cookieSet.mock.calls[0];
+    const [name, value, opts] = cookieSet.mock.calls[0]!;
     expect(name).toBe("token");
     expect(value).toBe("jwt-abc");
     expect(opts).toMatchObject({ httpOnly: true, sameSite: "lax", path: "/" });

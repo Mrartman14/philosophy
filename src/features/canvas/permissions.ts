@@ -1,7 +1,7 @@
 // src/features/canvas/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-import { can, isMutationAllowed } from "@/utils/permissions";
+import { can, isMutationAllowed, ownerOrCap } from "@/utils/permissions";
 import type { Canvas } from "./types";
 
 /**
@@ -41,10 +41,12 @@ export function canChangeVisibility(me: MaybeMe, canvas: Canvas): boolean {
  * (чужой private → бек 404, кнопку не показываем).
  */
 export function canDeleteCanvas(me: MaybeMe, canvas: Canvas): boolean {
-  if (!isMutationAllowed(me)) return false;
-  if (canvas.owner_id === me.id) return true;
-  if (!can(me, "canvas.delete_any")) return false;
-  return canvas.visibility === "public";
+  return ownerOrCap(
+    me,
+    canvas.owner_id,
+    "canvas.delete_any",
+    () => canvas.visibility === "public",
+  );
 }
 
 /**

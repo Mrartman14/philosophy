@@ -64,6 +64,18 @@ export const PARENT_ENTITY_TYPES = Object.keys(
 ) as [ParentEntityType, ...ParentEntityType[]];
 
 /**
+ * Реальный путь пер-сущностного роута `/api/{entity}/{id}/annotations`
+ * (§10.1: documents/comments/glossary/media). Единый источник для `api.ts`
+ * (список) и `actions.ts` (создание) — этих роутов нет в schema.ts.
+ */
+export const PER_ENTITY_PATH: Record<ParentEntityType, string> = {
+  document: "documents",
+  comment: "comments",
+  glossary: "glossary",
+  media: "media",
+};
+
+/**
  * Ответ пер-сущностного списка `GET /api/{entity}/{id}/annotations`.
  * Этих роутов НЕТ в schema.ts (§10.2) — типизируем вручную. Форма ответа —
  * стандартный httputil.ListResponse (data + pagination), как у лекционного

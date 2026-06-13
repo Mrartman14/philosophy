@@ -9,6 +9,7 @@ import {
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
 import {
@@ -24,13 +25,9 @@ import {
 } from "./schemas";
 import type { Comment, ReactionAxis } from "./types";
 
-type ApiError = { code?: string; error?: string };
-
 /** Маппинг UPPER_SNAKE_CASE-кодов бека в понятные русские тексты. */
 function rethrowApiError(err: ApiError | undefined): never {
   switch (err?.code) {
-    case "FORBIDDEN":
-      throw new ForbiddenError("role", err.error);
     case "SUSPENDED":
       throw new ForbiddenError("status", "Аккаунт ограничен: вы не можете писать.");
     case "SELF_REACTION":
@@ -72,7 +69,7 @@ function rethrowApiError(err: ApiError | undefined): never {
         "К блокам этого комментария привязаны другие комментарии. Сначала открепите их.",
       );
   }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  handleCommonApiError(err);
 }
 
 /** Создать комментарий (корень или ответ). FormData: type, blocks(JSON), parent_id?. */

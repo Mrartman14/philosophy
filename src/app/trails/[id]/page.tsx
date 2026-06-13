@@ -52,7 +52,7 @@ export default async function TrailPage({ params, searchParams }: Props) {
     canShare && trail.id ? await getShareLinksFor("trail", trail.id) : [];
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{trail.title || "Маршрут"}</h1>
         {trail.id && (
@@ -81,7 +81,7 @@ export default async function TrailPage({ params, searchParams }: Props) {
           <TrailDeleteButton id={trail.id} />
         </div>
       )}
-    </main>
+    </div>
   );
 }
 
