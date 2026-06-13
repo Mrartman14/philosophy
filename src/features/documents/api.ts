@@ -50,12 +50,20 @@ export const getMyDocuments = cache(
   },
 );
 
-/** Документ по id (GET /api/documents/{id}). 404 → null. */
+/**
+ * Документ по id (GET /api/documents/{id}). 404 → null.
+ * token (?token=) пробрасывается для приватных документов через share-link
+ * (shareTokenMW, philosophy-api cmd/server/main.go:929). Без токена — поведение
+ * прежнее. schema.ts не объявляет token в query (§10.5) → cast `as never`.
+ */
 export const getDocumentById = cache(
-  async (id: string): Promise<Document | null> => {
+  async (id: string, token?: string): Promise<Document | null> => {
     const api = await createApiClient();
     const { data, error, response } = await api.GET("/api/documents/{document_id}", {
-      params: { path: { document_id: id } },
+      params: {
+        path: { document_id: id },
+        ...(token ? { query: { token } as never } : {}),
+      },
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить документ");
