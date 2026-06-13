@@ -14,3 +14,16 @@ export type {
   SubmissionListItem,
   AstBlock,
 } from "./types";
+
+export {
+  canCreateForm,
+  canEditForm,
+  canPublishForm,
+  canDeleteForm,
+  canListFormSubmissions,
+  canEditSubmission,
+  canDeleteSubmission,
+  canRetractSubmission,
+  canAdminDeleteForm,
+  canListAdminForms,
+} from "./permissions";
