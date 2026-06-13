@@ -16,6 +16,7 @@ import {
   DocumentRevisions,
   DocumentContainers,
 } from "@/features/documents";
+import { AnnotationsSection } from "@/features/annotations";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -45,11 +46,13 @@ export default async function DocumentPage({ params, searchParams }: Props) {
 
       <DocumentContainers documentId={id} />
 
-      {/* === СЛОТ ДЛЯ ANNOTATIONS (волна 3) ===
-          annotations встраивается follow-up-коммитом ПОСЛЕ мержа documents.
-          Точка композиции: здесь, под телом документа. Исполнитель annotations
-          добавит <DocumentAnnotations documentId={id} entityType="document" />
-          или аналог из своего слайса. Ничего другого менять не нужно. */}
+      {/* Аннотации на документе. Композиция через страницу (не cross-feature
+          импорт): слайс annotations экспонирует AnnotationsSection из своего
+          index.ts. Видимые аннотации фетчатся внутри секции (матрица
+          видимости — на беке). */}
+      {document.id && (
+        <AnnotationsSection parentEntityType="document" parentId={document.id} />
+      )}
 
       {canEdit && (
         <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
