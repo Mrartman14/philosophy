@@ -6,7 +6,7 @@ export {
   getCanvasRevision,
   getCanvasContainers,
 } from "./api";
-export type { CanvasListFilter, CanvasListResult } from "./api";
+export type { CanvasListFilter, CanvasListResult, CanvasWithETag } from "./api";
 
 export {
   canCreateCanvas,

@@ -11,14 +11,22 @@ const initial: ActionResult<Canvas | null> = { success: true, data: null };
 
 interface Props {
   canvas: Canvas;
+  /**
+   * Значение заголовка ETag из ответа GET (с кавычками, формат `"...000Z"`).
+   * Кладётся как есть в скрытое поле и шлётся как If-Match — бек сам снимает
+   * кавычки. НЕ берём версию из JSON canvas.updated_at: Go обрезает хвостовые
+   * нули мс, из-за чего бек отдаёт ложный 412. null → версии нет (action
+   * отклонит сохранение с просьбой обновить страницу).
+   */
+  etag: string | null;
 }
 
 /**
- * Редактирование канваса: title + data-JSON. updated_at канваса хранится в
+ * Редактирование канваса: title + data-JSON. ETag (версия канваса) хранится в
  * скрытом поле и шлётся как If-Match — на 412 action вернёт понятный текст.
  * data сериализуется из canvas.data в pretty-JSON для удобства правки.
  */
-export function CanvasEditForm({ canvas }: Props) {
+export function CanvasEditForm({ canvas, etag }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [state, action] = useActionState(updateCanvas, initial);
@@ -41,7 +49,7 @@ export function CanvasEditForm({ canvas }: Props) {
   return (
     <Form action={action} errors={fieldErrors}>
       <input type="hidden" name="id" value={canvas.id ?? ""} />
-      <input type="hidden" name="updated_at" value={canvas.updated_at ?? ""} />
+      <input type="hidden" name="etag" value={etag ?? ""} />
       <FormField name="title" label="Название" required>
         <TextInput name="title" defaultValue={canvas.title ?? ""} required />
       </FormField>

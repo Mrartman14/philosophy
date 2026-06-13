@@ -57,7 +57,11 @@ export const createCanvas = createFormAction(async (formData) => {
 
 /**
  * PUT /api/canvases/{id} (полная замена title+data). Owner-only enforce'ит бек.
- * Требует If-Match: "<updated_at>". updated_at приходит из скрытого поля формы.
+ * Требует If-Match — берётся из заголовка ETag ответа GET (скрытое поле `etag`
+ * формы), а НЕ из JSON canvas.updated_at: Go сериализует updated_at как
+ * RFC3339Nano и обрезает хвостовые нули мс (`.000Z` → `Z`), тогда как бек
+ * сравнивает по фиксированному `.000Z` — это давало ложный 412 (см. api.ts /
+ * handler.go). Значение шлётся как есть (кавычки включены, бек снимает их сам).
  * If-Match типизирован в schema.ts как обязательный header-параметр PUT —
  * передаём через params.header (type-safe, без кастомного fetch-fallback).
  */
@@ -65,15 +69,15 @@ export const updateCanvas = createFormAction(async (formData) => {
   const me = await getMe();
   if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
   const input = parseFormData(CanvasUpdateSchema, formData);
-  const updatedAt = formData.get("updated_at");
-  if (typeof updatedAt !== "string" || updatedAt === "") {
-    throw new Error("Отсутствует версия канваса (updated_at) — обновите страницу.");
+  const etag = formData.get("etag");
+  if (typeof etag !== "string" || etag === "") {
+    throw new Error("Отсутствует версия канваса (ETag) — обновите страницу.");
   }
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/canvases/{id}", {
     params: {
       path: { id: input.id },
-      header: { "If-Match": `"${updatedAt}"` },
+      header: { "If-Match": etag },
     },
     body: { title: input.title, data: input.data as CanvasData },
   });

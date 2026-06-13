@@ -25,8 +25,9 @@ export default async function CanvasPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { revision, token } = await searchParams;
   const me = await getMe();
-  const canvas = await getCanvasById(id, token);
-  if (!canvas) notFound();
+  const result = await getCanvasById(id, token);
+  if (!result) notFound();
+  const { canvas, etag } = result;
 
   const canEdit = canEditCanvas(me, canvas);
   const canDelete = canDeleteCanvas(me, canvas);
@@ -57,7 +58,7 @@ export default async function CanvasPage({ params, searchParams }: Props) {
       {canEdit && (
         <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
           <h2 className="text-lg font-semibold">Редактирование</h2>
-          <CanvasEditForm canvas={canvas} />
+          <CanvasEditForm canvas={canvas} etag={etag} />
           {canPublish && canvas.id && <CanvasVisibilityButton id={canvas.id} />}
         </section>
       )}
@@ -77,6 +78,6 @@ export default async function CanvasPage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const canvas = await getCanvasById(id);
-  return { title: canvas?.title ?? "Канвас" };
+  const result = await getCanvasById(id);
+  return { title: result?.canvas.title ?? "Канвас" };
 }
