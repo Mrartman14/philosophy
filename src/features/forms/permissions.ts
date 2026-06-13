@@ -1,28 +1,24 @@
 // src/features/forms/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
+import { can, isMutationAllowed } from "@/utils/permissions";
 import type { Form, Submission } from "./types";
 
 /**
- * Capability-чек локальный: `form.create` / `form.delete_any` ЕСТЬ в RBAC
- * бекенда (internal/rbac/capabilities.go), но НЕ внесены в union
- * `Capability` (`src/utils/permissions.ts` — запретная зона). Поэтому
- * проверяем членство вручную с тем же status-гейтом, что и `can()`.
- * Внесение в union — отдельный foundation-touch PR (см. план, секция
- * foundation-touch).
+ * Имена capabilities сверены с philosophy-api internal/rbac/capabilities.go
+ * (CapFormCreate, CapFormDeleteAny); typo ловит tsc через union `Capability`.
+ * Чистые cap-чеки делегированы `can()`: гость → false, не-active → false,
+ * иначе членство в capabilities (status-гейт внутри can()). Owner-aware
+ * хелперы ниже комбинируют can()-семантику с owner_id вручную.
  */
-function hasCap(me: MaybeMe, cap: "form.create" | "form.delete_any"): boolean {
-  if (!me || me.status !== "active") return false;
-  return me.capabilities.includes(cap);
-}
 
 function isActive(me: MaybeMe): me is NonNullable<MaybeMe> {
-  return me !== null && me.status === "active";
+  return isMutationAllowed(me);
 }
 
 /** Создание формы — capability form.create. */
 export function canCreateForm(me: MaybeMe): boolean {
-  return hasCap(me, "form.create");
+  return can(me, "form.create");
 }
 
 /**
@@ -49,7 +45,7 @@ export function canPublishForm(me: MaybeMe, form: Form): boolean {
 export function canDeleteForm(me: MaybeMe, form: Form): boolean {
   if (!isActive(me)) return false;
   if (form.owner_id === me.id) return true;
-  if (!hasCap(me, "form.delete_any")) return false;
+  if (!can(me, "form.delete_any")) return false;
   return form.visibility === "public";
 }
 
@@ -84,11 +80,11 @@ export function canRetractSubmission(me: MaybeMe, form: Form, sub: Submission): 
 
 /** Admin-удаление из списка: delete_any + только public. */
 export function canAdminDeleteForm(me: MaybeMe, form: Form): boolean {
-  if (!hasCap(me, "form.delete_any")) return false;
+  if (!can(me, "form.delete_any")) return false;
   return form.visibility === "public";
 }
 
 /** Доступ к admin-списку форм. */
 export function canListAdminForms(me: MaybeMe): boolean {
-  return hasCap(me, "form.delete_any");
+  return can(me, "form.delete_any");
 }
