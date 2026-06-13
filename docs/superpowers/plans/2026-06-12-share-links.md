@@ -1,6 +1,6 @@
 # Share-links — план реализации
 
-> **Для агентов-исполнителей:** ОБЯЗАТЕЛЬНЫЙ САБ-СКИЛЛ: используй superpowers:subagent-driven-development (рекомендуется) или superpowers:executing-plans для пошагового исполнения. Шаги размечены чекбоксами (`- [ ]`).
+> **Для агентов-исполнителей:** ОБЯЗАТЕЛЬНЫЙ САБ-СКИЛЛ: используй superpowers:subagent-driven-development (рекомендуется) или superpowers:executing-plans для пошагового исполнения. Шаги размечены чекбоксами (`- [x]`).
 
 **Goal:** Дать пользователям возможность выпускать токенизированные ссылки на приватные ресурсы (lecture / document / trail / media / form), управлять ими (список+revoke), а держателям ссылок — открывать приватный ресурс через `?token=`; админам — модерировать чужие ссылки.
 
@@ -179,7 +179,7 @@ src/app/layout.tsx                    # header «Мои ссылки» (опц.)
 **Files:**
 - Create: `src/features/share-links/types.ts`
 
-- [ ] **Step 1: Скопировать шаблон слайса**
+- [x] **Step 1: Скопировать шаблон слайса**
 
 ```bash
 cp -r src/features/_template src/features/share-links
@@ -188,7 +188,7 @@ git add src/features/share-links
 git commit -m "chore(share-links): scaffold slice from _template"
 ```
 
-- [ ] **Step 2: Написать types.ts**
+- [x] **Step 2: Написать types.ts**
 
 Заменить содержимое `src/features/share-links/types.ts`:
 
@@ -239,12 +239,12 @@ export const RESOURCE_TYPE_LABELS: Record<ResourceType, string> = {
 };
 ```
 
-- [ ] **Step 3: Проверить компиляцию типов**
+- [x] **Step 3: Проверить компиляцию типов**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "share-links/types" || echo "OK: no type errors in types.ts"`
 Expected: `OK: no type errors in types.ts`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/features/share-links/types.ts
@@ -259,7 +259,7 @@ git commit -m "feat(share-links): types — ShareLink, ResourceType, resource-ty
 - Create: `src/features/share-links/schemas.ts`
 - Test: `src/features/share-links/schemas.test.ts`
 
-- [ ] **Step 1: Написать failing-тест schemas.test.ts**
+- [x] **Step 1: Написать failing-тест schemas.test.ts**
 
 Заменить содержимое `src/features/share-links/schemas.test.ts`:
 
@@ -368,12 +368,12 @@ describe("RevokeTokenSchema", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить тест — убедиться, что падает**
+- [x] **Step 2: Запустить тест — убедиться, что падает**
 
 Run: `npm test -- src/features/share-links/schemas.test.ts`
 Expected: FAIL — `Cannot find module './schemas'` (или resolve-ошибка).
 
-- [ ] **Step 3: Написать schemas.ts**
+- [x] **Step 3: Написать schemas.ts**
 
 Заменить содержимое `src/features/share-links/schemas.ts`:
 
@@ -436,12 +436,12 @@ export const RevokeTokenSchema = z.object({
 export type RevokeTokenInput = z.infer<typeof RevokeTokenSchema>;
 ```
 
-- [ ] **Step 4: Запустить тест — убедиться, что проходит**
+- [x] **Step 4: Запустить тест — убедиться, что проходит**
 
 Run: `npm test -- src/features/share-links/schemas.test.ts`
 Expected: PASS (все describe-блоки зелёные).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/share-links/schemas.ts src/features/share-links/schemas.test.ts
@@ -456,7 +456,7 @@ git commit -m "feat(share-links): Zod schemas (create/lookup/revoke) + tests"
 - Create: `src/features/share-links/permissions.ts`
 - Test: `src/features/share-links/permissions.test.ts`
 
-- [ ] **Step 1: Написать failing-тест permissions.test.ts**
+- [x] **Step 1: Написать failing-тест permissions.test.ts**
 
 Заменить содержимое `src/features/share-links/permissions.test.ts`:
 
@@ -564,12 +564,12 @@ describe("canManageOwnLinks", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить тест — убедиться, что падает**
+- [x] **Step 2: Запустить тест — убедиться, что падает**
 
 Run: `npm test -- src/features/share-links/permissions.test.ts`
 Expected: FAIL — `Cannot find module './permissions'` (или экспорты не найдены).
 
-- [ ] **Step 3: Написать permissions.ts**
+- [x] **Step 3: Написать permissions.ts**
 
 Заменить содержимое `src/features/share-links/permissions.ts`:
 
@@ -628,12 +628,12 @@ export function canManageOwnLinks(me: MaybeMe): boolean {
 }
 ```
 
-- [ ] **Step 4: Запустить тест — убедиться, что проходит**
+- [x] **Step 4: Запустить тест — убедиться, что проходит**
 
 Run: `npm test -- src/features/share-links/permissions.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/share-links/permissions.ts src/features/share-links/permissions.test.ts
@@ -650,7 +650,7 @@ git commit -m "feat(share-links): permissions (create/moderate/manage-own) + tes
 
 Заметка: `NEXT_PUBLIC_BASE_URL` = `http://localhost:3000` (dev) / `https://mrartman14.github.io/philosophy` (prod), `NEXT_PUBLIC_BASE_PATH` = `""` (dev) / `/philosophy` (prod). Чтобы избежать двойного `/philosophy`, базу строим из `NEXT_PUBLIC_BASE_URL` (он уже содержит base-path в prod), а `NEXT_PUBLIC_BASE_PATH` не добавляем повторно. Это покрыто тестом.
 
-- [ ] **Step 1: Написать failing-тест share-url.test.ts**
+- [x] **Step 1: Написать failing-тест share-url.test.ts**
 
 Заменить содержимое `src/features/share-links/share-url.test.ts`:
 
@@ -707,12 +707,12 @@ describe("buildShareUrl", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить тест — убедиться, что падает**
+- [x] **Step 2: Запустить тест — убедиться, что падает**
 
 Run: `npm test -- src/features/share-links/share-url.test.ts`
 Expected: FAIL — `Cannot find module './share-url'`.
 
-- [ ] **Step 3: Написать share-url.ts**
+- [x] **Step 3: Написать share-url.ts**
 
 Создать `src/features/share-links/share-url.ts`:
 
@@ -762,12 +762,12 @@ export function buildShareUrl(
 }
 ```
 
-- [ ] **Step 4: Запустить тест — убедиться, что проходит**
+- [x] **Step 4: Запустить тест — убедиться, что проходит**
 
 Run: `npm test -- src/features/share-links/share-url.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/share-links/share-url.ts src/features/share-links/share-url.test.ts
@@ -782,7 +782,7 @@ git commit -m "feat(share-links): buildShareUrl util + tests"
 - Modify: `src/api/tags.ts` (append `SHARE_LINKS`)
 - Create: `src/features/share-links/api.ts`
 
-- [ ] **Step 1: Добавить тег в реестр**
+- [x] **Step 1: Добавить тег в реестр**
 
 В `src/api/tags.ts`, в объекте `Tags`, между строкой `PREFERENCES: "preferences",` и `TAGS: "tags",` вставить:
 
@@ -797,7 +797,7 @@ git commit -m "feat(share-links): buildShareUrl util + tests"
   TAGS: "tags",
 ```
 
-- [ ] **Step 2: Написать api.ts**
+- [x] **Step 2: Написать api.ts**
 
 Заменить содержимое `src/features/share-links/api.ts`:
 
@@ -864,12 +864,12 @@ export const getAdminShareLinksFor = cache(
 );
 ```
 
-- [ ] **Step 3: Проверить типы**
+- [x] **Step 3: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "share-links/api" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/api/tags.ts src/features/share-links/api.ts
@@ -883,7 +883,7 @@ git commit -m "feat(share-links): fetchers getShareLinksFor / getAdminShareLinks
 **Files:**
 - Create: `src/features/share-links/actions.ts`
 
-- [ ] **Step 1: Написать actions.ts**
+- [x] **Step 1: Написать actions.ts**
 
 Заменить содержимое `src/features/share-links/actions.ts`:
 
@@ -990,14 +990,14 @@ export const adminRevokeShareLink = createAction(
 );
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "share-links/actions" || echo "OK"`
 Expected: `OK`
 
 Если TS ругается на `params.path.token` или body-поля — сверить с `src/api/schema.ts` пути `/api/share-links/{token}` и `/api/admin/share-links/{token}` (они задокументированы, path-param `token` есть; см. §0).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/share-links/actions.ts
@@ -1011,7 +1011,7 @@ git commit -m "feat(share-links): server actions create/revoke/adminRevoke"
 **Files:**
 - Create: `src/features/share-links/ui/copy-button.tsx`
 
-- [ ] **Step 1: Написать copy-button.tsx**
+- [x] **Step 1: Написать copy-button.tsx**
 
 Создать `src/features/share-links/ui/copy-button.tsx`:
 
@@ -1060,14 +1060,14 @@ export function CopyButton({ value, label = "Копировать" }: Props) {
 }
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "copy-button" || echo "OK"`
 Expected: `OK`
 
 Заметка: если `Button` не принимает `variant="ghost"` — проверить тип `ButtonProps` в `src/components/ui/button.tsx` и подставить существующий вариант (audit-filter-form использует `variant="ghost"`, значит вариант есть).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/share-links/ui/copy-button.tsx
@@ -1083,7 +1083,7 @@ git commit -m "feat(share-links): CopyButton with clipboard fallback"
 
 Заметка: компонент клиентский (нужны `onClick`-revoke и `useTransition`). Получает данные пропами из server-компонентов; action и флаг admin прокидываются пропами, чтобы один список работал и для своих ссылок, и для admin-модерации.
 
-- [ ] **Step 1: Написать share-link-list.tsx**
+- [x] **Step 1: Написать share-link-list.tsx**
 
 Создать `src/features/share-links/ui/share-link-list.tsx`:
 
@@ -1230,14 +1230,14 @@ export function ShareLinkList({
 }
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "share-link-list" || echo "OK"`
 Expected: `OK`
 
 Заметка: если `Button` не знает `variant="danger"` — сверить варианты в `button.tsx` (confirm-dialog/frontend-conventions используют `variant="danger"`, значит есть).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/share-links/ui/share-link-list.tsx
@@ -1253,7 +1253,7 @@ git commit -m "feat(share-links): ShareLinkList (owner/admin revoke + copyable U
 
 Заметка по контракту: компонент **клиентский**, получает уже посчитанный `canCreate: boolean` пропом из server-компонента страницы (по конвенции `me` в клиент не передаём). Существующие ссылки фетчатся на сервере и тоже передаются пропом `initialLinks`. После создания/отзыва — `router.refresh()` подтянет свежие.
 
-- [ ] **Step 1: Написать share-button.tsx**
+- [x] **Step 1: Написать share-button.tsx**
 
 Создать `src/features/share-links/ui/share-button.tsx`:
 
@@ -1354,14 +1354,14 @@ export function ShareButton({
 }
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "share-button" || echo "OK"`
 Expected: `OK`
 
 Заметка: `useActionState` в React 19 возвращает `[state, action, isPending]` — третий элемент `pending` есть. Если версия React в проекте отдаёт двойной кортеж, убрать `pending` и вычислять через `useTransition` (сверить версию react в package.json при исполнении).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/features/share-links/ui/share-button.tsx
@@ -1376,7 +1376,7 @@ git commit -m "feat(share-links): ShareButton dialog (create + list)"
 - Create: `src/features/share-links/ui/share-lookup-form.tsx`
 - Modify (replace): `src/features/share-links/index.ts`
 
-- [ ] **Step 1: Написать share-lookup-form.tsx**
+- [x] **Step 1: Написать share-lookup-form.tsx**
 
 Создать `src/features/share-links/ui/share-lookup-form.tsx`:
 
@@ -1446,7 +1446,7 @@ export function ShareLookupForm({ admin = false }: Props) {
 }
 ```
 
-- [ ] **Step 2: Написать index.ts (public API слайса)**
+- [x] **Step 2: Написать index.ts (public API слайса)**
 
 Заменить содержимое `src/features/share-links/index.ts`:
 
@@ -1475,12 +1475,12 @@ export { ShareLinkList } from "./ui/share-link-list";
 export { ShareLookupForm } from "./ui/share-lookup-form";
 ```
 
-- [ ] **Step 3: Проверить типы и линт слайса**
+- [x] **Step 3: Проверить типы и линт слайса**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "share-links" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/features/share-links/ui/share-lookup-form.tsx src/features/share-links/index.ts
@@ -1494,7 +1494,7 @@ git commit -m "feat(share-links): ShareLookupForm + slice public API (index.ts)"
 **Files:**
 - Create: `src/app/share-links/page.tsx`
 
-- [ ] **Step 1: Написать страницу**
+- [x] **Step 1: Написать страницу**
 
 Создать `src/app/share-links/page.tsx`:
 
@@ -1555,12 +1555,12 @@ export default async function MyShareLinksPage({ searchParams }: Props) {
 export const metadata = { title: "Мои ссылки" };
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "app/share-links" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/share-links/page.tsx
@@ -1574,7 +1574,7 @@ git commit -m "feat(share-links): /share-links page (my links lookup + revoke)"
 **Files:**
 - Create: `src/app/admin/share-links/page.tsx`
 
-- [ ] **Step 1: Написать страницу**
+- [x] **Step 1: Написать страницу**
 
 Создать `src/app/admin/share-links/page.tsx`:
 
@@ -1635,12 +1635,12 @@ export default async function AdminShareLinksPage({ searchParams }: Props) {
 export const metadata = { title: "Модерация ссылок — админ" };
 ```
 
-- [ ] **Step 2: Проверить типы**
+- [x] **Step 2: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep "admin/share-links" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/admin/share-links/page.tsx
@@ -1657,7 +1657,7 @@ git commit -m "feat(share-links): /admin/share-links moderation page"
 
 Заметка по типам token-query: пути в schema.ts НЕ объявляют `token` в query (см. §0/§10.5). openapi-fetch типизирует query этих путей узко. Чтобы добавить `token`, формируем объект params и кастуем query через `as never` (по образцу `preferences/actions.ts`, где body кастуется из-за расхождения schema.ts). Это локально, с комментарием-ссылкой на §10.5.
 
-- [ ] **Step 1: Доработать getDocumentById (обратно совместимо)**
+- [x] **Step 1: Доработать getDocumentById (обратно совместимо)**
 
 В `src/features/documents/api.ts` заменить тело `getDocumentById`. Текущая форма:
 
@@ -1698,7 +1698,7 @@ export const getDocumentById = cache(
 
 Заметка: если фактическая сигнатура/имя в `documents/api.ts` отличается (слайс смержен раньше), исполнитель адаптирует точечно: добавить второй опциональный параметр `token?: string` и тот же `...(token ? { query: { token } as never } : {})` в `params`. Прочие fetchers НЕ трогать.
 
-- [ ] **Step 2: Встроить чтение token + ShareButton в страницу документа**
+- [x] **Step 2: Встроить чтение token + ShareButton в страницу документа**
 
 В `src/app/documents/[id]/page.tsx`:
 
@@ -1751,12 +1751,12 @@ import {
 )}
 ```
 
-- [ ] **Step 3: Проверить типы и сборку страницы**
+- [x] **Step 3: Проверить типы и сборку страницы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "documents/api|documents/\[id\]" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/features/documents/api.ts "src/app/documents/[id]/page.tsx"
@@ -1773,7 +1773,7 @@ git commit -m "feat(share-links): document page — token viewer + ShareButton"
 
 Заметка: `getMediaById` обёрнут в `unstable_cache` с ключом `["media-by-id", id]`. Токен НЕ должен попадать в cache-ключ как cross-request-разделитель пер-юзера — приватный ответ протёк бы между держателями. Решение: при наличии токена обходим `unstable_cache` (прямой fetch), без токена — поведение прежнее.
 
-- [ ] **Step 1: Доработать getMediaById**
+- [x] **Step 1: Доработать getMediaById**
 
 В `src/features/media/api.ts` заменить `getMediaById`. Текущая форма:
 
@@ -1839,7 +1839,7 @@ export const getMediaById = cache(
 );
 ```
 
-- [ ] **Step 2: Встроить чтение token + ShareButton в страницу медиа**
+- [x] **Step 2: Встроить чтение token + ShareButton в страницу медиа**
 
 В `src/app/media/[id]/page.tsx`:
 
@@ -1891,12 +1891,12 @@ import {
 
 Заметка: если на странице медиа `me` ещё не загружается — добавить `const me = await getMe();` (импорт `getMe` из `@/utils/me`), как в документе.
 
-- [ ] **Step 3: Проверить типы**
+- [x] **Step 3: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "media/api|media/\[id\]" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/features/media/api.ts "src/app/media/[id]/page.tsx"
@@ -1911,7 +1911,7 @@ git commit -m "feat(share-links): media page — token viewer + ShareButton"
 - Modify: `src/features/lectures/api.ts`
 - Modify: `src/app/lectures/[id]/page.tsx`
 
-- [ ] **Step 1: Доработать getLectureById**
+- [x] **Step 1: Доработать getLectureById**
 
 В `src/features/lectures/api.ts` заменить `getLectureById`. Текущая форма:
 
@@ -1950,7 +1950,7 @@ export const getLectureById = cache(
 );
 ```
 
-- [ ] **Step 2: Встроить чтение token + ShareButton в страницу лекции**
+- [x] **Step 2: Встроить чтение token + ShareButton в страницу лекции**
 
 В `src/app/lectures/[id]/page.tsx`:
 
@@ -1993,12 +1993,12 @@ import {
 />
 ```
 
-- [ ] **Step 3: Проверить типы**
+- [x] **Step 3: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "lectures/api|lectures/\[id\]" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/features/lectures/api.ts "src/app/lectures/[id]/page.tsx"
@@ -2015,12 +2015,12 @@ git commit -m "feat(share-links): lecture page — token viewer + ShareButton"
 
 Заметка: слайс `forms` смержен раньше в волне 3. Исполнитель сначала ЧИТАЕТ `src/features/forms/api.ts` и `src/app/forms/[id]/page.tsx`, находит fetcher одиночной формы (вероятно `getFormById` / `getForm`) и сигнатуру страницы, затем применяет тот же паттерн. Ниже — обобщённый шаблон; имена адаптировать к фактическим.
 
-- [ ] **Step 1: Прочитать текущий код**
+- [x] **Step 1: Прочитать текущий код**
 
 Run: `sed -n '1,80p' src/features/forms/api.ts && echo "=== page ===" && sed -n '1,60p' "src/app/forms/[id]/page.tsx"`
 Зафиксировать: имя fetcher одиночной формы, имя поля владельца (`owner_id`) и `visibility` в типе формы, тип searchParams страницы.
 
-- [ ] **Step 2: Доработать fetcher формы (обратно совместимо)**
+- [x] **Step 2: Доработать fetcher формы (обратно совместимо)**
 
 Добавить второй опциональный параметр `token?: string` в fetcher одиночной формы и прокинуть в query (по образцу Task 13/15):
 
@@ -2030,7 +2030,7 @@ Run: `sed -n '1,80p' src/features/forms/api.ts && echo "=== page ===" && sed -n 
 ```
 Сигнатуру изменить с `(id: string)` на `(id: string, token?: string)`. Эндпоинт — `GET /api/forms/{id}` (shareTokenMW, main.go:961).
 
-- [ ] **Step 3: Встроить token + ShareButton в страницу формы**
+- [x] **Step 3: Встроить token + ShareButton в страницу формы**
 
 (a) Добавить `token?: string` в searchParams-тип страницы (если searchParams нет — добавить `searchParams: Promise<{ token?: string }>`).
 (b) Прочитать token, прокинуть в fetcher формы.
@@ -2059,12 +2059,12 @@ import {
 )}
 ```
 
-- [ ] **Step 4: Проверить типы**
+- [x] **Step 4: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "forms/api|forms/\[id\]" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/forms/api.ts "src/app/forms/[id]/page.tsx"
@@ -2081,19 +2081,19 @@ git commit -m "feat(share-links): form page — token viewer + ShareButton"
 
 Заметка: слайс `trails` смержен раньше. Тот же подход, что и forms (Task 16). Эндпоинт — `GET /api/trails/{id}` (shareTokenMW, main.go:1198).
 
-- [ ] **Step 1: Прочитать текущий код**
+- [x] **Step 1: Прочитать текущий код**
 
 Run: `sed -n '1,80p' src/features/trails/api.ts && echo "=== page ===" && sed -n '1,60p' "src/app/trails/[id]/page.tsx"`
 Зафиксировать: имя fetcher одиночного трейла, поля `owner_id`/`visibility` в типе Trail, тип searchParams страницы.
 
-- [ ] **Step 2: Доработать fetcher трейла**
+- [x] **Step 2: Доработать fetcher трейла**
 
 Добавить `token?: string` и прокинуть в query (как Task 13/15):
 ```ts
 ...(token ? { query: { token } as never } : {}),
 ```
 
-- [ ] **Step 3: Встроить token + ShareButton в страницу трейла**
+- [x] **Step 3: Встроить token + ShareButton в страницу трейла**
 
 (a) `token?: string` в searchParams-тип (или добавить searchParams).
 (b) Прочитать token, прокинуть в fetcher.
@@ -2122,12 +2122,12 @@ import {
 )}
 ```
 
-- [ ] **Step 4: Проверить типы**
+- [x] **Step 4: Проверить типы**
 
 Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "trails/api|trails/\[id\]" || echo "OK"`
 Expected: `OK`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/features/trails/api.ts "src/app/trails/[id]/page.tsx"
@@ -2140,38 +2140,38 @@ git commit -m "feat(share-links): trail page — token viewer + ShareButton"
 
 **Files:** —
 
-- [ ] **Step 1: Прогнать весь тест-набор слайса**
+- [x] **Step 1: Прогнать весь тест-набор слайса**
 
 Run: `npm test -- src/features/share-links`
 Expected: PASS — все три файла (`schemas.test.ts`, `permissions.test.ts`, `share-url.test.ts`).
 
-- [ ] **Step 2: Линт (ESLint-гарды изоляции слайсов)**
+- [x] **Step 2: Линт (ESLint-гарды изоляции слайсов)**
 
 Run: `npm run lint`
 Expected: без ошибок. Особое внимание: НЕТ cross-feature импортов из `@/features/*` внутри `src/features/share-links/*` (слайс ничего из других слайсов не импортит); НЕТ `react-dom/client` в server-only файлах; detail-страницы импортят share-links только через `@/features/share-links`.
 
-- [ ] **Step 3: Полный тест-набор**
+- [x] **Step 3: Полный тест-набор**
 
 Run: `npm test`
 Expected: PASS (никакие чужие тесты не сломаны правками api.ts — параметр опциональный).
 
-- [ ] **Step 4: Сборка**
+- [x] **Step 4: Сборка**
 
 Run: `npm run build`
 Expected: успешная сборка. Проверить, что новые роуты `/share-links` и `/admin/share-links` появились в выводе.
 
-- [ ] **Step 5: Финальный self-review по чеклисту `_template/README.md`**
+- [x] **Step 5: Финальный self-review по чеклисту `_template/README.md`**
 
-- [ ] `index.ts` экспортирует только нужное снаружи.
-- [ ] `api.ts`/`actions.ts`/`permissions.ts`/`schemas.ts` начинаются с `import "server-only";` (кроме `share-url.ts` — он client-safe, это осознанно).
-- [ ] Каждая `canXxx` покрыта тестом (3 хелпера — покрыты).
-- [ ] Каждая Zod-схема имеет success+failure тест (3 схемы — покрыты).
-- [ ] `createFormAction`/`parseFormData`/`revalidateEntity` использованы.
-- [ ] Слайс не импортит другие `@/features/*`.
-- [ ] Удалён `ui/.gitkeep`, добавлены реальные UI-файлы.
-- [ ] `npm run lint && npm test && npm run build` зелёные.
+- [x] `index.ts` экспортирует только нужное снаружи.
+- [x] `api.ts`/`actions.ts`/`permissions.ts`/`schemas.ts` начинаются с `import "server-only";` (кроме `share-url.ts` — он client-safe, это осознанно).
+- [x] Каждая `canXxx` покрыта тестом (3 хелпера — покрыты).
+- [x] Каждая Zod-схема имеет success+failure тест (3 схемы — покрыты).
+- [x] `createFormAction`/`parseFormData`/`revalidateEntity` использованы.
+- [x] Слайс не импортит другие `@/features/*`.
+- [x] Удалён `ui/.gitkeep`, добавлены реальные UI-файлы.
+- [x] `npm run lint && npm test && npm run build` зелёные.
 
-- [ ] **Step 6: Commit (если self-review потребовал правок)**
+- [x] **Step 6: Commit (если self-review потребовал правок)**
 
 ```bash
 git add src/features/share-links src/app/share-links src/app/admin/share-links
