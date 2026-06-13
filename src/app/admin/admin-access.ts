@@ -14,6 +14,7 @@ import type { NavItem } from "./admin-sidebar";
  */
 export function buildNavItems(me: MaybeMe): NavItem[] {
   const items: NavItem[] = [];
+  // lecture.update не существует в rbac.Capability — ветка опущена (был дрейф).
   if (can(me, "lecture.create") || can(me, "lecture.delete")) {
     items.push({ href: "/admin/lectures", label: "Лекции" });
   }

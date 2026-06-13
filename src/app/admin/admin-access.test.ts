@@ -54,8 +54,25 @@ describe("buildNavItems", () => {
   it("гость → пусто", () => expect(buildNavItems(guest)).toHaveLength(0));
   it("обычный active-юзер → пусто", () =>
     expect(buildNavItems(plainUser)).toHaveLength(0));
-  it("админ → есть пункты", () =>
-    expect(buildNavItems(admin).length).toBeGreaterThan(0));
+  it("админ → полный набор пунктов (конкретные роуты на месте)", () => {
+    const hrefs = buildNavItems(admin).map((i) => i.href);
+    expect(hrefs).toEqual([
+      "/admin/lectures",
+      "/admin/glossary",
+      "/admin/tags",
+      "/admin/events",
+      "/admin/banners",
+      "/admin/documents",
+      "/admin/forms",
+      "/admin/trails",
+      "/admin/share-links",
+      "/admin/comments",
+      "/admin/annotations",
+      "/admin/users",
+      "/admin/push",
+      "/admin/audit",
+    ]);
+  });
 });
 
 describe("инвариант связности гейта: нав-cap ∩ RoleUser = ∅", () => {
