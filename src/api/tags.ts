@@ -12,6 +12,7 @@
  */
 
 export const Tags = {
+  ANNOTATIONS: "annotations",
   BANNERS: "banners",
   COMMENTS: "comments",
   DOCUMENTS: "documents",
