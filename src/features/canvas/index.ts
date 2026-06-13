@@ -1,15 +1,38 @@
-// src/features/_template/index.ts
-// Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
+// src/features/canvas/index.ts
+export {
+  getCanvases,
+  getCanvasById,
+  getCanvasRevisions,
+  getCanvasRevision,
+  getCanvasContainers,
+} from "./api";
+export type { CanvasListFilter, CanvasListResult } from "./api";
 
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
+export {
+  canCreateCanvas,
+  canEditCanvas,
+  canChangeVisibility,
+  canDeleteCanvas,
+  canSeeRevisions,
+} from "./permissions";
 
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+export {
+  createCanvas,
+  updateCanvas,
+  setCanvasVisibility,
+  deleteCanvas,
+} from "./actions";
+
+export type {
+  Canvas,
+  CanvasSummary,
+  CanvasData,
+  CanvasNode,
+  CanvasEdge,
+  Visibility,
+  CanvasRevision,
+  CanvasRevisionMeta,
+  AttachmentDTO,
+} from "./types";
+
+// UI-экспорты добавляются в Задаче 13.
