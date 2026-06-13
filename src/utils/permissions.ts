@@ -18,6 +18,8 @@ export type Capability =
   | "document.delete_any"
   | "comment.create"
   | "comment.delete_any"
+  | "canvas.create"
+  | "canvas.delete_any"
   | "annotation.create"
   | "annotation.delete_any"
   | "entity.attach"
