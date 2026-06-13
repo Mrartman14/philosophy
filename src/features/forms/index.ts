@@ -63,3 +63,5 @@ export { FormFieldInput } from "./ui/form-field-input";
 export { SubmissionDetail } from "./ui/submission-detail";
 export { SubmissionEditForm } from "./ui/submission-edit-form";
 export { SubmissionActions } from "./ui/submission-actions";
+export { SubmissionList } from "./ui/submission-list";
+export { MySubmissionsList } from "./ui/my-submissions-list";
