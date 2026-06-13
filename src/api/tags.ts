@@ -22,6 +22,7 @@ export const Tags = {
   MEDIA: "media",
   PREFERENCES: "preferences",
   TAGS: "tags",
+  TRAILS: "trails",
   USERS: "users",
 } as const;
 
