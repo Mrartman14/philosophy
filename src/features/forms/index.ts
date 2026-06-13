@@ -60,3 +60,6 @@ export { FormMeta } from "./ui/form-meta";
 export { FormAfterSubmit } from "./ui/form-after-submit";
 export { FormFill } from "./ui/form-fill";
 export { FormFieldInput } from "./ui/form-field-input";
+export { SubmissionDetail } from "./ui/submission-detail";
+export { SubmissionEditForm } from "./ui/submission-edit-form";
+export { SubmissionActions } from "./ui/submission-actions";
