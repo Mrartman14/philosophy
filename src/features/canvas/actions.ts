@@ -1,32 +1,112 @@
-// src/features/_template/actions.ts
+// src/features/canvas/actions.ts
 "use server";
 import "server-only";
-// import { createFormAction, parseFormData } from "@/utils/create-action";
-// import { requireCapability } from "@/utils/permissions";
-// import { revalidateEntity } from "@/utils/revalidate";
-// import { getMe } from "@/utils/me";
-// import { createApiClient } from "@/api/client";
-// import { canCreateEntity } from "./permissions";
-// import { EntityCreateSchema } from "./schemas";
+import { createApiClient } from "@/api/client";
+import { createAction, createFormAction, parseFormData } from "@/utils/create-action";
+import { getMe } from "@/utils/me";
+import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { revalidateEntity } from "@/utils/revalidate";
+import { Tags } from "@/api/tags";
+import { canCreateCanvas } from "./permissions";
+import {
+  CanvasCreateSchema,
+  CanvasUpdateSchema,
+  CanvasVisibilitySchema,
+  CanvasIdSchema,
+} from "./schemas";
+import type { Canvas, CanvasData } from "./types";
+
+type ApiError = { code?: string; error?: string };
+
+/** Маппинг UPPER_SNAKE_CASE кодов бека в понятный русский текст. */
+function rethrowApiError(err: ApiError | undefined): never {
+  switch (err?.code) {
+    case "FORBIDDEN":
+      throw new ForbiddenError("role", err.error);
+    case "PUBLIC_IMMUTABLE":
+      throw new Error("Публичный канвас нельзя сделать приватным.");
+    case "PRECONDITION_FAILED":
+      throw new Error("Канвас изменён в другом месте — обновите страницу и повторите.");
+    case "PAYLOAD_TOO_LARGE":
+    case "REQUEST_BODY_TOO_LARGE":
+      throw new Error("Данные графа слишком большие (лимит 1 МиБ).");
+    case "VALIDATION_ERROR":
+    case "BAD_REQUEST":
+      throw new Error("Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).");
+  }
+  throw new Error(err?.error ?? "Ошибка сервера");
+}
+
+/** POST /api/canvases (JSON). Гейт — canvas.create. */
+export const createCanvas = createFormAction(async (formData) => {
+  const me = await getMe();
+  requireCapability(me, canCreateCanvas);
+  const input = parseFormData(CanvasCreateSchema, formData);
+  const api = await createApiClient();
+  const { data, error } = await api.POST("/api/canvases", {
+    body: {
+      title: input.title,
+      ...(input.visibility ? { visibility: input.visibility } : {}),
+      ...(input.data ? { data: input.data as CanvasData } : {}),
+    },
+  });
+  if (error) rethrowApiError(error);
+  revalidateEntity(Tags.CANVASES);
+  return (data?.data ?? null) as Canvas | null;
+});
 
 /**
- * Server actions сущности. Каждое действие:
- * 1. await getMe()
- * 2. requireCapability(me, canX) — для capability-чека
- * 3. parseFormData(Schema, formData) — для Zod-валидации (если форма)
- * 4. createApiClient() + вызов бекенда
- * 5. revalidateEntity("entity", id?) после успешной мутации
+ * PUT /api/canvases/{id} (полная замена title+data). Owner-only enforce'ит бек.
+ * Требует If-Match: "<updated_at>". updated_at приходит из скрытого поля формы.
+ * If-Match типизирован в schema.ts как обязательный header-параметр PUT —
+ * передаём через params.header (type-safe, без кастомного fetch-fallback).
  */
+export const updateCanvas = createFormAction(async (formData) => {
+  const me = await getMe();
+  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  const input = parseFormData(CanvasUpdateSchema, formData);
+  const updatedAt = formData.get("updated_at");
+  if (typeof updatedAt !== "string" || updatedAt === "") {
+    throw new Error("Отсутствует версия канваса (updated_at) — обновите страницу.");
+  }
+  const api = await createApiClient();
+  const { data, error } = await api.PUT("/api/canvases/{id}", {
+    params: {
+      path: { id: input.id },
+      header: { "If-Match": `"${updatedAt}"` },
+    },
+    body: { title: input.title, data: input.data as CanvasData },
+  });
+  if (error) rethrowApiError(error);
+  revalidateEntity(Tags.CANVASES, input.id);
+  revalidateEntity(Tags.CANVASES);
+  return (data?.data ?? null) as Canvas | null;
+});
 
-// export const createEntity = createFormAction(async (formData) => {
-//   const me = await getMe();
-//   const input = parseFormData(EntityCreateSchema, formData);
-//   requireCapability(me, canCreateEntity);
-//   const api = await createApiClient();
-//   const { data, error } = await api.POST("/entities", { body: input });
-//   if (error) throw new Error(error.message);
-//   revalidateEntity("entities");
-//   return data;
-// });
+/** PATCH /api/canvases/{id}/visibility. UI шлёт только private→public. */
+export const setCanvasVisibility = createFormAction(async (formData) => {
+  const me = await getMe();
+  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  const input = parseFormData(CanvasVisibilitySchema, formData);
+  const api = await createApiClient();
+  const { data, error } = await api.PATCH("/api/canvases/{id}/visibility", {
+    params: { path: { id: input.id } },
+    body: { visibility: input.visibility },
+  });
+  if (error) rethrowApiError(error);
+  revalidateEntity(Tags.CANVASES, input.id);
+  revalidateEntity(Tags.CANVASES);
+  return (data?.data ?? null) as Canvas | null;
+});
 
-export const _placeholder = async () => null;
+/** DELETE /api/canvases/{id}. Owner (любая) или admin delete_any (public) — enforce'ит бек. */
+export const deleteCanvas = createAction(async (rawId: string) => {
+  const me = await getMe();
+  if (!me || me.status !== "active") throw new ForbiddenError(me ? "status" : "guest");
+  const { id } = CanvasIdSchema.parse({ id: rawId });
+  const api = await createApiClient();
+  const { error } = await api.DELETE("/api/canvases/{id}", { params: { path: { id } } });
+  if (error) rethrowApiError(error);
+  revalidateEntity(Tags.CANVASES);
+  return undefined;
+});
