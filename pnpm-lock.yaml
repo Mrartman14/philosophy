@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+neverBuiltDependencies:
+  - unrs-resolver
+
 dependencies:
   '@base-ui/react':
     specifier: ^1.4.1
@@ -5441,7 +5444,6 @@ packages:
 
   /unrs-resolver@1.9.1:
     resolution: {integrity: sha512-4AZVxP05JGN6DwqIkSP4VKLOcwQa5l37SWHF/ahcuqBMbfxbpN1L1QKafEhWCziHhzKex9H/AR09H0OuVyU+9g==}
-    requiresBuild: true
     dependencies:
       napi-postinstall: 0.2.4
     optionalDependencies:
