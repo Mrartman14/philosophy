@@ -14,6 +14,11 @@ import {
   FormPublishButton,
   FormDeleteButton,
 } from "@/features/forms";
+import {
+  ShareButton,
+  canCreateShareLink,
+  getShareLinksFor,
+} from "@/features/share-links";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -33,13 +38,25 @@ export default async function FormPage({ params, searchParams }: Props) {
   const canDelete = canDeleteForm(me, form);
   const canSeeSubmissions = canListFormSubmissions(me, form);
 
+  const canShare = canCreateShareLink(me, form);
+  const shareLinks =
+    canShare && form.id ? await getShareLinksFor("form", form.id) : [];
+
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex flex-col gap-3">
         <FormDetail form={form} />
-        {/* actions-слот: share-кнопка (share-links) добавится сюда после мержа
-            через композицию страницы — без cross-feature импорта в слайсе forms. */}
+        {/* actions-слот: share-кнопка (share-links) — композиция через страницу,
+            без cross-feature импорта в слайсе forms. */}
         <div className="flex flex-wrap items-center gap-2">
+          {form.id && (
+            <ShareButton
+              resourceType="form"
+              resourceId={form.id}
+              canCreate={canShare}
+              initialLinks={shareLinks}
+            />
+          )}
           {canSeeSubmissions && form.id && (
             <Link
               href={`/forms/${form.id}/submissions`}
