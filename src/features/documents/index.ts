@@ -30,4 +30,21 @@ export type {
   DocumentRevisionMeta,
   AttachmentDTO,
 } from "./types";
-// UI-экспорты добавляются в Этапах B и C (см. задачи 8–22).
+
+// === Этап B: actions + формы создания/редактирования/удаления ===
+export {
+  createDocument,
+  uploadDocument,
+  updateDocumentMeta,
+  updateDocumentBlocks,
+  setDocumentVisibility,
+  deleteDocument,
+  adminDeleteDocument,
+} from "./actions";
+export { DocumentCreateForm } from "./ui/document-create-form";
+export { DocumentUploadForm } from "./ui/document-upload-form";
+export { DocumentEditForm } from "./ui/document-edit-form";
+export { DocumentMetaForm } from "./ui/document-meta-form";
+export { DocumentVisibilityButton } from "./ui/document-visibility-button";
+export { DocumentDeleteButton } from "./ui/document-delete-button";
+// UI-экспорты Этапа C добавляются в задачах 18–20.
