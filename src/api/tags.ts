@@ -14,6 +14,7 @@
 export const Tags = {
   ANNOTATIONS: "annotations",
   BANNERS: "banners",
+  CANVASES: "canvas",
   COMMENTS: "comments",
   DOCUMENTS: "documents",
   EVENTS: "events",
