@@ -11,15 +11,20 @@ import { ForbiddenError, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 import { getLectureById } from "./api";
 import {
+  canAttachToLecture,
   canCreateLecture,
   canDeleteLecture,
+  canManageAttachments,
   canManageCover,
 } from "./permissions";
 import {
+  LectureAttachSchema,
   LectureCreateSchema,
   LectureCoverClearSchema,
   LectureCoverSchema,
+  LectureDetachSchema,
   LectureIdSchema,
+  LectureReorderSchema,
   LectureUpdateSchema,
   LectureVisibilitySchema,
 } from "./schemas";
@@ -155,3 +160,101 @@ export const clearLectureCover = createAction(async (rawId: string) => {
   revalidateEntity("lectures");
   return undefined;
 });
+
+/**
+ * POST /api/lectures/{lectureID}/attachments — прикрепить document|media|canvas.
+ * Гейт: entity.attach ∧ ownership (§6.3). 201 → AttachmentDTO (нам не нужен, void).
+ */
+export const attachToLecture = createAction(
+  async (raw: {
+    lecture_id: string;
+    entity_id: string;
+    entity_type: "document" | "media" | "canvas";
+    sort_order?: number;
+  }) => {
+    const me = await getMe();
+    const input = LectureAttachSchema.parse(raw);
+    const lecture = await loadLectureForGate(input.lecture_id);
+    requireCapability(me, (m) => canAttachToLecture(m, lecture));
+    const api = await createApiClient();
+    const { error } = await api.POST("/api/lectures/{lectureID}/attachments", {
+      params: { path: { lectureID: input.lecture_id } },
+      body: {
+        entity_id: input.entity_id,
+        entity_type: input.entity_type,
+        ...(input.sort_order !== undefined && { sort_order: input.sort_order }),
+      },
+    });
+    if (error) rethrowApiError(error as ApiError);
+    revalidateEntity("lectures", input.lecture_id);
+    return undefined;
+  },
+);
+
+/**
+ * DELETE /api/lectures/{lectureID}/attachments/{entityType}/{entityID}.
+ * Гейт: ownership лекции (без capability). 204.
+ */
+export const detachFromLecture = createAction(
+  async (raw: {
+    lecture_id: string;
+    entity_id: string;
+    entity_type: "document" | "media" | "canvas";
+  }) => {
+    const me = await getMe();
+    const input = LectureDetachSchema.parse(raw);
+    const lecture = await loadLectureForGate(input.lecture_id);
+    requireCapability(me, (m) => canManageAttachments(m, lecture));
+    const api = await createApiClient();
+    const { error } = await api.DELETE(
+      "/api/lectures/{lectureID}/attachments/{entityType}/{entityID}",
+      {
+        params: {
+          path: {
+            lectureID: input.lecture_id,
+            entityType: input.entity_type,
+            entityID: input.entity_id,
+          },
+        },
+      },
+    );
+    if (error) rethrowApiError(error as ApiError);
+    revalidateEntity("lectures", input.lecture_id);
+    return undefined;
+  },
+);
+
+/**
+ * PATCH /api/lectures/{lectureID}/attachments/{entityType}/{entityID}.
+ * Абсолютный sort_order (не swap, бек клампит). Гейт: ownership. 204.
+ */
+export const reorderLectureAttachment = createAction(
+  async (raw: {
+    lecture_id: string;
+    entity_id: string;
+    entity_type: "document" | "media" | "canvas";
+    sort_order: number;
+  }) => {
+    const me = await getMe();
+    const input = LectureReorderSchema.parse(raw);
+    const lecture = await loadLectureForGate(input.lecture_id);
+    requireCapability(me, (m) => canManageAttachments(m, lecture));
+    const api = await createApiClient();
+    const { error } = await api.PATCH(
+      "/api/lectures/{lectureID}/attachments/{entityType}/{entityID}",
+      {
+        params: {
+          path: {
+            lectureID: input.lecture_id,
+            entityType: input.entity_type,
+            entityID: input.entity_id,
+          },
+        },
+        body: { sort_order: input.sort_order },
+      },
+    );
+    if (error) rethrowApiError(error as ApiError);
+    revalidateEntity("lectures", input.lecture_id);
+    return undefined;
+  },
+);
