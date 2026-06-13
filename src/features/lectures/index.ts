@@ -28,3 +28,22 @@ export { lectureCoverUrl } from "./cover-url";
 export { LectureCoverForm } from "./ui/lecture-cover-form";
 export { canManageCover } from "./permissions";
 export { setLectureCover, clearLectureCover } from "./actions";
+
+// lecture-enrichment (волна 3) — attachments.
+export { getLectureDocuments, getLectureMedia } from "./api";
+export {
+  attachToLecture,
+  detachFromLecture,
+  reorderLectureAttachment,
+  searchDocumentsForAttach,
+  searchMediaForAttach,
+} from "./actions";
+export { canManageAttachments, canAttachToLecture } from "./permissions";
+export { LectureAttachmentsManager } from "./ui/lecture-attachments-manager";
+export type { ManagedAttachment } from "./ui/lecture-attachments-manager";
+export type {
+  LectureDocument,
+  LectureMediaItem,
+  LectureAttachment,
+  AttachmentEntityType,
+} from "./types";

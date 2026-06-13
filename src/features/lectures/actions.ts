@@ -225,6 +225,58 @@ export const detachFromLecture = createAction(
 );
 
 /**
+ * Поиск документов для attach-пикера (GET /api/documents — picker, requiredAuth).
+ * Возвращает {data:[{id,label}], total}. Прямой вызов API (НЕ cross-feature
+ * импорт слайса documents — слайс lectures зовёт публичный API напрямую).
+ */
+export const searchDocumentsForAttach = createAction(
+  async (raw: { q: string; offset: number; limit: number }) => {
+    const api = await createApiClient();
+    const { data, error } = await api.GET("/api/documents", {
+      params: {
+        query: {
+          offset: raw.offset,
+          limit: raw.limit,
+          ...(raw.q ? { q: raw.q } : {}),
+        },
+      },
+    });
+    if (error) throw new Error(error.error ?? "Ошибка поиска документов");
+    const items = (data?.data ?? []) as { id?: string; filename?: string }[];
+    return {
+      data: items
+        .filter((d): d is { id: string; filename?: string } => Boolean(d.id))
+        .map((d) => ({ id: d.id, label: d.filename ?? d.id })),
+      total: data?.pagination?.total ?? null,
+    };
+  },
+);
+
+/** Поиск медиа для attach-пикера (GET /api/media — picker, requiredAuth). */
+export const searchMediaForAttach = createAction(
+  async (raw: { q: string; offset: number; limit: number }) => {
+    const api = await createApiClient();
+    const { data, error } = await api.GET("/api/media", {
+      params: {
+        query: {
+          offset: raw.offset,
+          limit: raw.limit,
+          ...(raw.q ? { q: raw.q } : {}),
+        },
+      },
+    });
+    if (error) throw new Error(error.error ?? "Ошибка поиска медиа");
+    const items = (data?.data ?? []) as { id?: string; filename?: string }[];
+    return {
+      data: items
+        .filter((m): m is { id: string; filename?: string } => Boolean(m.id))
+        .map((m) => ({ id: m.id, label: m.filename ?? m.id })),
+      total: data?.pagination?.total ?? null,
+    };
+  },
+);
+
+/**
  * PATCH /api/lectures/{lectureID}/attachments/{entityType}/{entityID}.
  * Абсолютный sort_order (не swap, бек клампит). Гейт: ownership. 204.
  */
