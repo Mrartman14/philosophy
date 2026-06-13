@@ -113,3 +113,134 @@ describe("add-команды", () => {
     expect(n?.anchor).toBeUndefined();
   });
 });
+
+describe("move / resize", () => {
+  it("moveSelection сдвигает выбранные узлы и делает dirty", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "selectNode", nodeId: "n1", additive: false });
+    s = canvasReducer(s, { type: "moveSelection", dx: 10, dy: 20 });
+    expect(s.data.nodes?.[0]?.x).toBe(10);
+    expect(s.data.nodes?.[0]?.y).toBe(20);
+    expect(s.data.nodes?.[1]?.x).toBe(200); // n2 не выбран — не двигается
+    expect(s.dirty).toBe(true);
+  });
+  it("moveSelection без выделения — no-op", () => {
+    const s0 = initEditorState(baseData);
+    const s1 = canvasReducer(s0, { type: "moveSelection", dx: 10, dy: 10 });
+    expect(s1).toBe(s0);
+  });
+  it("resizeNode se увеличивает размер", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "resizeNode", nodeId: "n2", handle: "se", dx: 20, dy: 10 });
+    expect(s.data.nodes?.[1]?.width).toBe(100);
+    expect(s.data.nodes?.[1]?.height).toBe(90);
+  });
+  it("setNodeSize клампит минимум 20", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "setNodeSize", nodeId: "n1", width: 5, height: 5 });
+    expect(s.data.nodes?.[0]?.width).toBe(20);
+    expect(s.data.nodes?.[0]?.height).toBe(20);
+  });
+});
+
+describe("edit node", () => {
+  it("setNodeText меняет текст text-узла", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "setNodeText", nodeId: "n1", text: "новый" });
+    expect(s.data.nodes?.[0]?.text).toBe("новый");
+  });
+  it("setShapeKind меняет фигуру", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "setShapeKind", nodeId: "n2", shapeKind: "diamond" });
+    expect(s.data.nodes?.[1]?.shape_kind).toBe("diamond");
+  });
+});
+
+describe("edges", () => {
+  it("addEdge создаёт ребро между разными узлами", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addEdge", fromNode: "n1", toNode: "n2", fromSide: "right", toSide: "left" });
+    expect(s.data.edges).toHaveLength(1);
+    expect(s.data.edges?.[0]).toMatchObject({ id: "gen-1", from_node: "n1", to_node: "n2", from_side: "right", to_side: "left" });
+    expect(s.selection.edgeIds).toEqual(["gen-1"]);
+  });
+  it("addEdge self-loop — no-op", () => {
+    const s0 = initEditorState(baseData);
+    const s1 = canvasReducer(s0, { type: "addEdge", fromNode: "n1", toNode: "n1" });
+    expect(s1).toBe(s0);
+  });
+  it("setEdgeLabel / setEdgeStyle / setEdgeEnd", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addEdge", fromNode: "n1", toNode: "n2" });
+    const eid = s.data.edges?.[0]!.id!;
+    s = canvasReducer(s, { type: "setEdgeLabel", edgeId: eid, label: "связь" });
+    s = canvasReducer(s, { type: "setEdgeStyle", edgeId: eid, style: "dashed" });
+    s = canvasReducer(s, { type: "setEdgeEnd", edgeId: eid, end: "none" });
+    expect(s.data.edges?.[0]).toMatchObject({ label: "связь", style: "dashed", end: "none" });
+  });
+});
+
+describe("delete", () => {
+  it("deleteSelection удаляет узел и инцидентные рёбра", () => {
+    let s = initEditorState({
+      nodes: baseData.nodes ?? [],
+      edges: [{ id: "e1", from_node: "n1", to_node: "n2" }],
+    });
+    s = canvasReducer(s, { type: "selectNode", nodeId: "n1", additive: false });
+    s = canvasReducer(s, { type: "deleteSelection" });
+    expect((s.data.nodes ?? []).map((n) => n.id)).toEqual(["n2"]);
+    expect(s.data.edges).toHaveLength(0); // e1 инцидентно n1 → удалено
+  });
+  it("deleteSelection удаляет выбранное ребро, оставляя узлы", () => {
+    let s = initEditorState({
+      nodes: baseData.nodes ?? [],
+      edges: [{ id: "e1", from_node: "n1", to_node: "n2" }],
+    });
+    s = canvasReducer(s, { type: "selectEdge", edgeId: "e1", additive: false });
+    s = canvasReducer(s, { type: "deleteSelection" });
+    expect(s.data.nodes).toHaveLength(2);
+    expect(s.data.edges).toHaveLength(0);
+  });
+});
+
+describe("undo / redo / dirty", () => {
+  it("undo откатывает последнюю мутацию", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    expect(s.data.nodes).toHaveLength(3);
+    s = canvasReducer(s, { type: "undo" });
+    expect(s.data.nodes).toHaveLength(2);
+    expect(s.dirty).toBe(false); // вернулись к baseline
+  });
+  it("redo возвращает откат", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    s = canvasReducer(s, { type: "undo" });
+    s = canvasReducer(s, { type: "redo" });
+    expect(s.data.nodes).toHaveLength(3);
+    expect(s.dirty).toBe(true);
+  });
+  it("новая мутация чистит future", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    s = canvasReducer(s, { type: "undo" });
+    s = canvasReducer(s, { type: "addShapeNode", shapeKind: "rect", x: 0, y: 0 });
+    expect(s.future).toHaveLength(0);
+    s = canvasReducer(s, { type: "redo" });
+    expect(s.data.nodes).toHaveLength(3); // redo no-op (future пуст)
+  });
+  it("undo на пустом стеке — no-op", () => {
+    const s0 = initEditorState(baseData);
+    expect(canvasReducer(s0, { type: "undo" })).toBe(s0);
+  });
+  it("markSaved обновляет baseline и сбрасывает dirty", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    expect(s.dirty).toBe(true);
+    s = canvasReducer(s, { type: "markSaved", data: s.data });
+    expect(s.dirty).toBe(false);
+    // дальнейший undo вернёт к графу с 2 узлами, который теперь != baseline → dirty
+    s = canvasReducer(s, { type: "undo" });
+    expect(s.dirty).toBe(true);
+  });
+});
