@@ -1,56 +1,17 @@
 import type { MaybeMe } from "./me";
+import type { Capability } from "@/api/types";
 
 /**
- * Плоский реестр всех capability фронта. Узкий union ловит опечатки в `tsc`.
+ * Реестр capability фронта — ре-экспорт сгенерированного `rbac.Capability`
+ * (источник истины: бэк philosophy-api `internal/rbac/capabilities.go`).
+ * Узкий union ловит опечатки и дрейф в `tsc`. НЕ редактировать руками —
+ * после изменения RBAC на бэке прогнать `npm run generate:api`.
  *
- * Ownership-проверки (например, «свой ли это комментарий») сюда не входят —
- * они живут в доменных хелперах `src/features/{name}/permissions.ts`.
- *
- * Status-гейт (`active` vs `suspended/banned`) — глобальный, реализован в
- * `can()` ниже. Не нужно дублировать в каждом capability.
+ * Ownership-проверки («свой ли это комментарий») сюда не входят — они живут в
+ * доменных хелперах `src/features/{name}/permissions.ts`. Status-гейт
+ * (`active` vs `suspended/banned`) — глобальный, в `can()` ниже.
  */
-export type Capability =
-  | "lecture.create"
-  | "lecture.update"
-  | "lecture.delete"
-  | "lecture.upload_files"
-  | "document.create"
-  | "document.delete_any"
-  | "comment.create"
-  | "comment.delete_any"
-  | "canvas.create"
-  | "canvas.delete_any"
-  | "annotation.create"
-  | "annotation.delete_any"
-  | "entity.attach"
-  | "form.create"
-  | "form.delete_any"
-  | "trail.create"
-  | "trail.delete_any"
-  | "share_link.moderate"
-  | "media.create"
-  | "media.delete_any"
-  | "transcript.edit"
-  | "user.moderate"
-  | "user.list"
-  | "push.send"
-  | "glossary.create"
-  | "glossary.update"
-  | "glossary.delete"
-  | "tag.create"
-  | "tag.update"
-  | "tag.delete"
-  | "tag.assign"
-  | "event.read"
-  | "event.create"
-  | "event.update"
-  | "event.delete"
-  | "banner.read"
-  | "banner.create"
-  | "banner.update"
-  | "banner.delete"
-  | "audit.read"
-  | "admin.access";
+export type { Capability };
 
 /**
  * Базовый capability-чек. Гость и не-active пользователь — всегда `false`.
