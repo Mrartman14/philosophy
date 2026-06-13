@@ -1,15 +1,50 @@
-// src/features/_template/index.ts
-// Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
-
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
-
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+// src/features/annotations/index.ts
+export {
+  getAnnotationsFor,
+  getAnnotationById,
+  getMyAnnotations,
+  getLectureAnnotations,
+  getAdminAnnotations,
+  getAnnotationRevisions,
+  getAnnotationRevision,
+  getBlockContext,
+} from "./api";
+export {
+  createAnnotation,
+  updateAnnotation,
+  deleteAnnotation,
+  adminDeleteAnnotation,
+} from "./actions";
+export {
+  canCreateAnnotation,
+  canEditAnnotation,
+  canDeleteAnnotation,
+  canAdminDeleteAnnotation,
+  canModerateAnnotations,
+} from "./permissions";
+export {
+  buildTextAnchor,
+  buildMediaAnchor,
+  isValidTextAnchor,
+  isValidMediaAnchor,
+} from "./anchor";
+export { AnnotationsSection } from "./ui/annotations-section";
+export { AnnotationCard } from "./ui/annotation-card";
+export { AnnotationList } from "./ui/annotation-list";
+export { AnnotationCreateForm } from "./ui/annotation-create-form";
+export { AnnotationEditForm } from "./ui/annotation-edit-form";
+export { AnnotationDeleteButton } from "./ui/annotation-delete-button";
+export { AnnotationVisibilityField } from "./ui/annotation-visibility-field";
+export { AnnotationExportLinks } from "./ui/annotation-export-links";
+export { AnnotationRevisions } from "./ui/annotation-revisions";
+export { AnnotationAnchorContext } from "./ui/annotation-anchor-context";
+export { AnnotationAdminRow } from "./ui/annotation-admin-row";
+export { AnnotationAdminFilterForm } from "./ui/annotation-admin-filter-form";
+export { AnnotationPagination } from "./ui/annotation-pagination";
+export type {
+  Annotation,
+  AnnotationVisibility,
+  Anchor,
+  ParentEntityType,
+  AnnotationListResult,
+} from "./types";
