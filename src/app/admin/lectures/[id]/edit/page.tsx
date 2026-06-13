@@ -3,9 +3,11 @@ import { forbidden, notFound } from "next/navigation";
 import { getMe } from "@/utils/me";
 import {
   canDeleteLecture,
+  canManageCover,
   canSetLectureVisibility,
   canUpdateLecture,
   getLectureById,
+  LectureCoverForm,
   LectureEditForm,
 } from "@/features/lectures";
 import {
@@ -58,6 +60,28 @@ export default async function EditLecturePage({ params }: Props) {
               .map((t) => t.id)
               .filter((tagId): tagId is number => typeof tagId === "number")}
           />
+        </section>
+      )}
+
+      {canManageCover(me, lecture) && (
+        <section className="max-w-xl border-t border-(--color-border) pt-4">
+          <LectureCoverForm
+            lectureId={lecture.id}
+            coverImageKey={lecture.cover_image_key ?? null}
+            coverImageAlt={lecture.cover_image_alt ?? null}
+          />
+        </section>
+      )}
+
+      {canManageCover(me, lecture) && (
+        <section className="max-w-xl border-t border-(--color-border) pt-4">
+          <h2 className="mb-2 text-lg font-semibold">Прикрепления</h2>
+          <a
+            href={`/admin/lectures/${lecture.id}/attachments`}
+            className="text-sm underline hover:no-underline"
+          >
+            Управление документами и медиа лекции →
+          </a>
         </section>
       )}
     </div>

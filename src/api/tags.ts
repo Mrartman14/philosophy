@@ -24,6 +24,7 @@ export const Tags = {
   PREFERENCES: "preferences",
   SUBMISSIONS: "submissions",
   TAGS: "tags",
+  TRAILS: "trails",
   USERS: "users",
 } as const;
 

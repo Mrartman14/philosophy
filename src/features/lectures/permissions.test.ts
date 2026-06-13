@@ -6,6 +6,9 @@ import {
   canUpdateLecture,
   canDeleteLecture,
   canSetLectureVisibility,
+  canManageCover,
+  canManageAttachments,
+  canAttachToLecture,
 } from "./permissions";
 
 const owner = "00000000-0000-0000-0000-000000000001";
@@ -99,5 +102,75 @@ describe("canDeleteLecture", () => {
 
   it("suspended admin → false", () => {
     expect(canDeleteLecture(suspendedAdmin)).toBe(false);
+  });
+});
+
+describe("canManageCover", () => {
+  it("owner active → true", () => {
+    expect(canManageCover(activeUser, lecture)).toBe(true);
+  });
+
+  it("not-owner → false", () => {
+    expect(canManageCover(activeUserNotOwner, lecture)).toBe(false);
+  });
+
+  it("гость → false", () => {
+    expect(canManageCover(null, lecture)).toBe(false);
+  });
+
+  it("suspended owner → false", () => {
+    const suspended: Me = { ...activeUser, status: "suspended" };
+    expect(canManageCover(suspended, lecture)).toBe(false);
+  });
+});
+
+const ownerWithAttach: Me = {
+  ...activeUser,
+  capabilities: ["entity.attach"],
+};
+
+describe("canManageAttachments", () => {
+  it("owner active → true (detach/reorder — только ownership)", () => {
+    expect(canManageAttachments(activeUser, lecture)).toBe(true);
+  });
+
+  it("not-owner → false", () => {
+    expect(canManageAttachments(activeUserNotOwner, lecture)).toBe(false);
+  });
+
+  it("гость → false", () => {
+    expect(canManageAttachments(null, lecture)).toBe(false);
+  });
+
+  it("suspended owner → false", () => {
+    const suspended: Me = { ...activeUser, status: "suspended" };
+    expect(canManageAttachments(suspended, lecture)).toBe(false);
+  });
+});
+
+describe("canAttachToLecture", () => {
+  it("owner + entity.attach → true", () => {
+    expect(canAttachToLecture(ownerWithAttach, lecture)).toBe(true);
+  });
+
+  it("owner без entity.attach → false", () => {
+    expect(canAttachToLecture(activeUser, lecture)).toBe(false);
+  });
+
+  it("entity.attach но не owner → false", () => {
+    const strangerWithAttach: Me = {
+      ...ownerWithAttach,
+      id: "00000000-0000-0000-0000-000000000002",
+    };
+    expect(canAttachToLecture(strangerWithAttach, lecture)).toBe(false);
+  });
+
+  it("гость → false", () => {
+    expect(canAttachToLecture(null, lecture)).toBe(false);
+  });
+
+  it("suspended owner с cap → false", () => {
+    const suspended: Me = { ...ownerWithAttach, status: "suspended" };
+    expect(canAttachToLecture(suspended, lecture)).toBe(false);
   });
 });

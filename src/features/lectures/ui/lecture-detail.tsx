@@ -1,6 +1,8 @@
 // src/features/lectures/ui/lecture-detail.tsx
 import Link from "next/link";
 import type { Lecture, LectureTag } from "../types";
+import { lectureCoverUrl } from "../cover-url";
+import { LectureDescription } from "./lecture-description";
 
 export function LectureDetail({
   lecture,
@@ -9,8 +11,17 @@ export function LectureDetail({
   lecture: Lecture;
   tags?: LectureTag[];
 }) {
+  const coverUrl = lectureCoverUrl(lecture.cover_image_key ?? null);
   return (
     <article className="flex flex-col gap-4">
+      {coverUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={coverUrl}
+          alt={lecture.cover_image_alt ?? ""}
+          className="max-h-80 w-full rounded-lg object-cover"
+        />
+      )}
       <header className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold">{lecture.title}</h1>
         <p className="text-sm text-(--color-description)">{lecture.date}</p>
@@ -29,9 +40,7 @@ export function LectureDetail({
           </ul>
         )}
       </header>
-      {lecture.description && (
-        <div className="whitespace-pre-wrap text-base">{lecture.description}</div>
-      )}
+      {lecture.description && <LectureDescription description={lecture.description} />}
     </article>
   );
 }
