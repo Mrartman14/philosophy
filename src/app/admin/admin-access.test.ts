@@ -57,3 +57,21 @@ describe("buildNavItems", () => {
   it("админ → есть пункты", () =>
     expect(buildNavItems(admin).length).toBeGreaterThan(0));
 });
+
+describe("инвариант связности гейта: нав-cap ∩ RoleUser = ∅", () => {
+  // Если кто-то загейтит нав-итем на user-capability, юзер с этим капом
+  // получит непустой buildNavItems → откроется admin-shell. Этот тест ловит
+  // такое: ни одна capability из RoleUser не должна давать пункт меню.
+  it("ни один RoleUser-кап не порождает нав-итем", () => {
+    for (const cap of ROLE_USER_CAPS) {
+      const probe: Me = {
+        id: "p",
+        username: "probe",
+        role: "user",
+        status: "active",
+        capabilities: [cap],
+      };
+      expect(buildNavItems(probe), `cap ${cap} не должен давать нав-итем`).toHaveLength(0);
+    }
+  });
+});
