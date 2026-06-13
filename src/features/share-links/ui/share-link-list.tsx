@@ -84,9 +84,9 @@ export function ShareLinkList({
     );
   }
 
-  // canvas-ссылки в admin-модерации: URL построить нельзя (нет страницы) —
-  // показываем токен без копируемого URL.
-  const canBuildUrl = showUrl && resourceType !== "canvas";
+  // canvas теперь имеет страницу /canvases/{id} (фаза 1), buildShareUrl его
+  // поддерживает — URL строим для всех типов ресурсов.
+  const canBuildUrl = showUrl;
 
   return (
     <Table>

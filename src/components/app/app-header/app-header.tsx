@@ -51,6 +51,12 @@ export const AppHeader = async () => {
                   Мои медиа
                 </Link>
                 <Link
+                  href="/canvases"
+                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
+                >
+                  Канвасы
+                </Link>
+                <Link
                   href="/me/annotations"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >

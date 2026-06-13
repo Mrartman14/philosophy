@@ -214,22 +214,51 @@ describe("AstRender — ref-marks", () => {
   });
 });
 
-describe("AstRender — unsupported marks fallback", () => {
-  it("canvas_ref (вне скоупа) рендерится как plain text с data-unsupported-mark", () => {
+describe("AstRender — canvas_ref mark", () => {
+  it("default: canvas_ref → <a href='/canvases/{id}'>", () => {
     const block: import("./types").AstBlock = {
-      id: "p-unk",
+      id: "p-cv",
       type: "paragraph",
       content: [
         {
           type: "text",
           text: "canvas-ref",
-          marks: [{ type: "canvas_ref", attrs: { id: "x" } }],
+          marks: [{ type: "canvas_ref", attrs: { id: "cv-uuid-345" } }],
         },
       ],
     };
     const { container } = render(<AstRender blocks={[block]} />);
-    expect(container.querySelector("[data-unsupported-mark='canvas_ref']")).not.toBeNull();
-    expect(container.querySelector("p")?.textContent).toBe("canvas-ref");
+    const a = container.querySelector("a");
+    expect(a?.getAttribute("href")).toBe("/canvases/cv-uuid-345");
+    expect(a?.textContent).toBe("canvas-ref");
+  });
+
+  it("ctx.renderCanvasRef переопределяет рендер", () => {
+    const block: import("./types").AstBlock = {
+      id: "p-cv2",
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "canvas-ref",
+          marks: [{ type: "canvas_ref", attrs: { id: "cv-uuid-345" } }],
+        },
+      ],
+    };
+    const { container } = render(
+      <AstRender
+        blocks={[block]}
+        ctx={{
+          renderCanvasRef: ({ id, label }) => (
+            <span data-custom-canvas-ref={id}>{label}</span>
+          ),
+        }}
+      />
+    );
+    expect(container.querySelector("a")).toBeNull();
+    expect(
+      container.querySelector("[data-custom-canvas-ref='cv-uuid-345']")?.textContent
+    ).toBe("canvas-ref");
   });
 });
 

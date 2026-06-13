@@ -1,24 +1,20 @@
 // src/features/canvas/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-import { isMutationAllowed } from "@/utils/permissions";
+import { can, isMutationAllowed } from "@/utils/permissions";
 import type { Canvas } from "./types";
 
 /**
- * Локальный capability-чек: canvas.create / canvas.delete_any ЕЩЁ НЕ в union
- * `Capability` (`@/utils/permissions`) — это foundation-touch (мигрируем на
- * can() отдельным PR). До тех пор используем isMutationAllowed + членство в
- * capabilities напрямую (паттерн волн forms/trails/comments). Имена сверены с
- * philosophy-api internal/rbac/capabilities.go (CapCanvasCreate="canvas.create",
- * CapCanvasDeleteAny="canvas.delete_any").
+ * canvas.create / canvas.delete_any теперь в union `Capability`
+ * (`@/utils/permissions`) — плоские cap-чеки идут через `can()` (он уже
+ * проверяет status === "active"). Owner-aware-комбинации остаются здесь.
+ * Имена сверены с philosophy-api internal/rbac/capabilities.go
+ * (CapCanvasCreate="canvas.create", CapCanvasDeleteAny="canvas.delete_any").
  */
-function hasCap(me: MaybeMe, cap: string): boolean {
-  return isMutationAllowed(me) && me.capabilities.includes(cap);
-}
 
 /** Создание канваса — capability canvas.create. */
 export function canCreateCanvas(me: MaybeMe): boolean {
-  return hasCap(me, "canvas.create");
+  return can(me, "canvas.create");
 }
 
 /**
@@ -47,7 +43,7 @@ export function canChangeVisibility(me: MaybeMe, canvas: Canvas): boolean {
 export function canDeleteCanvas(me: MaybeMe, canvas: Canvas): boolean {
   if (!isMutationAllowed(me)) return false;
   if (canvas.owner_id === me.id) return true;
-  if (!me.capabilities.includes("canvas.delete_any")) return false;
+  if (!can(me, "canvas.delete_any")) return false;
   return canvas.visibility === "public";
 }
 

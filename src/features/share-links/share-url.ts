@@ -3,15 +3,16 @@
 import type { ResourceType } from "./types";
 
 /**
- * Сегмент detail-страницы для каждого типа ресурса. canvas сюда не входит:
- * canvas-страниц на фронте нет (фича вне скоупа). Ключи — пути app-роутера.
+ * Сегмент detail-страницы для каждого типа ресурса. Ключи — пути app-роутера.
+ * canvas включён: страница /canvases/{id} существует с фазы 1 canvas.
  */
-const RESOURCE_PATH_SEGMENT: Record<Exclude<ResourceType, "canvas">, string> = {
+const RESOURCE_PATH_SEGMENT: Record<ResourceType, string> = {
   lecture: "lectures",
   document: "documents",
   trail: "trails",
   media: "media",
   form: "forms",
+  canvas: "canvases",
 };
 
 /**
@@ -19,17 +20,12 @@ const RESOURCE_PATH_SEGMENT: Record<Exclude<ResourceType, "canvas">, string> = {
  * NEXT_PUBLIC_BASE_URL (он уже содержит base-path в prod, напр.
  * https://mrartman14.github.io/philosophy — поэтому NEXT_PUBLIC_BASE_PATH
  * повторно НЕ добавляем). Завершающий слеш базы нормализуется.
- *
- * Бросает на canvas — для него detail-страницы и share-URL не существует.
  */
 export function buildShareUrl(
   resourceType: ResourceType,
   resourceId: string,
   token: string,
 ): string {
-  if (resourceType === "canvas") {
-    throw new Error("buildShareUrl: canvas не поддерживается фронтендом");
-  }
   const segment = RESOURCE_PATH_SEGMENT[resourceType];
   const rawBase = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
   const base = rawBase.replace(/\/+$/, "");

@@ -44,7 +44,9 @@ describe("buildShareUrl", () => {
     );
   });
 
-  it("падает с понятной ошибкой на canvas (вне скоупа фронта)", () => {
-    expect(() => buildShareUrl("canvas", "c1", "t")).toThrow(/canvas/i);
+  it("строит URL канваса (страница /canvases/{id} есть с фазы 1)", () => {
+    expect(buildShareUrl("canvas", "c1", "t")).toBe(
+      "https://example.test/app/canvases/c1?token=t",
+    );
   });
 });
