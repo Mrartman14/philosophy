@@ -47,3 +47,4 @@ export { CanvasDeleteButton } from "./ui/canvas-delete-button";
 export { CanvasDetail } from "./ui/canvas-detail";
 export { CanvasContainers } from "./ui/canvas-containers";
 export { CanvasRevisions } from "./ui/canvas-revisions";
+export { CanvasEditor } from "./ui/canvas-editor";
