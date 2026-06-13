@@ -22,3 +22,9 @@ export { LectureCreateForm } from "./ui/lecture-create-form";
 export { LectureEditForm } from "./ui/lecture-edit-form";
 export { LectureAdminRow } from "./ui/lecture-admin-row";
 export type { Lecture, LectureListItem, LectureVisibility } from "./types";
+
+// lecture-enrichment (волна 3) — cover.
+export { lectureCoverUrl } from "./cover-url";
+export { LectureCoverForm } from "./ui/lecture-cover-form";
+export { canManageCover } from "./permissions";
+export { setLectureCover, clearLectureCover } from "./actions";
