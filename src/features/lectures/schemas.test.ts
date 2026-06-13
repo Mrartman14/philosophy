@@ -5,6 +5,8 @@ import {
   LectureUpdateSchema,
   LectureVisibilitySchema,
   LectureIdSchema,
+  LectureCoverSchema,
+  LectureCoverClearSchema,
 } from "./schemas";
 
 describe("LectureCreateSchema", () => {
@@ -125,6 +127,52 @@ describe("LectureIdSchema", () => {
 
   it("отклоняет невалидный uuid", () => {
     const r = LectureIdSchema.safeParse({ id: "x" });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureCoverSchema", () => {
+  it("принимает id+upload_id (+опц. alt_text)", () => {
+    const r = LectureCoverSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      upload_id: "11111111-1111-1111-1111-111111111111",
+      alt_text: "Кант",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("принимает без alt_text", () => {
+    const r = LectureCoverSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      upload_id: "11111111-1111-1111-1111-111111111111",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет пустой upload_id", () => {
+    const r = LectureCoverSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      upload_id: "",
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("отклоняет невалидный id лекции", () => {
+    const r = LectureCoverSchema.safeParse({ id: "x", upload_id: "u" });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureCoverClearSchema", () => {
+  it("принимает валидный uuid", () => {
+    const r = LectureCoverClearSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет невалидный uuid", () => {
+    const r = LectureCoverClearSchema.safeParse({ id: "x" });
     expect(r.success).toBe(false);
   });
 });

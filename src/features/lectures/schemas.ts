@@ -27,7 +27,19 @@ export const LectureIdSchema = z.object({
   id: z.string().uuid("Некорректный id лекции"),
 });
 
+export const LectureCoverSchema = z.object({
+  id: z.string().uuid("Некорректный id лекции"),
+  upload_id: z.string().min(1, "Не выбрано изображение"),
+  alt_text: z.string().max(500, "До 500 символов").optional(),
+});
+
+export const LectureCoverClearSchema = z.object({
+  id: z.string().uuid("Некорректный id лекции"),
+});
+
 export type LectureCreateInput = z.infer<typeof LectureCreateSchema>;
 export type LectureUpdateInput = z.infer<typeof LectureUpdateSchema>;
 export type LectureVisibilityInput = z.infer<typeof LectureVisibilitySchema>;
 export type LectureIdInput = z.infer<typeof LectureIdSchema>;
+export type LectureCoverInput = z.infer<typeof LectureCoverSchema>;
+export type LectureCoverClearInput = z.infer<typeof LectureCoverClearSchema>;
