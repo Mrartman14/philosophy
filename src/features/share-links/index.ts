@@ -1,15 +1,22 @@
-// src/features/_template/index.ts
-// Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
+// src/features/share-links/index.ts
+// Public API слайса share-links. Снаружи слайс импортируется только отсюда.
 
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
-
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+export { getShareLinksFor, getAdminShareLinksFor } from "./api";
+export {
+  canCreateShareLink,
+  canModerateShareLinks,
+  canManageOwnLinks,
+  type ShareableResource,
+} from "./permissions";
+export { buildShareUrl } from "./share-url";
+export {
+  type ShareLink,
+  type ResourceType,
+  SHARE_RESOURCE_TYPES,
+  ALL_RESOURCE_TYPES,
+  RESOURCE_TYPE_LABELS,
+} from "./types";
+export { ShareLinkLookupSchema, type ShareLinkLookupInput } from "./schemas";
+export { ShareButton } from "./ui/share-button";
+export { ShareLinkList } from "./ui/share-link-list";
+export { ShareLookupForm } from "./ui/share-lookup-form";
