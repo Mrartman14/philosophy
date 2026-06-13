@@ -2,7 +2,7 @@
 import type { Anchor } from "../types";
 
 interface Props {
-  anchor?: Anchor;
+  anchor?: Anchor | undefined;
 }
 
 /**
