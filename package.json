@@ -11,8 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "generate:api": "npx swagger2openapi ${SWAGGER_URL:-../philosophy-api/docs/swagger/swagger.json} -o /tmp/openapi3.json && npx openapi-typescript /tmp/openapi3.json -o src/api/schema.ts"
+    "generate:api": "pnpm dlx swagger2openapi ${SWAGGER_URL:-../philosophy-api/docs/swagger/swagger.json} -o /tmp/openapi3.json && pnpm exec openapi-typescript /tmp/openapi3.json -o src/api/schema.ts"
   },
+  "packageManager": "pnpm@8.14.3",
   "dependencies": {
     "@base-ui/react": "^1.4.1",
     "@tiptap/extension-image": "^3.22.3",

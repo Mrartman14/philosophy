@@ -12,7 +12,7 @@
 - [ ] Использует `createFormAction` + `parseFormData` + `requireCapability` + `revalidateEntity`
 - [ ] Не импортит другие `@/features/*` (запрещено ESLint'ом)
 - [ ] Удалён `ui/.gitkeep`, добавлены реальные UI-файлы
-- [ ] `npm run lint && npm run test && npm run build` зелёные локально
+- [ ] `pnpm lint && pnpm test && pnpm build` зелёные локально
 
 См. конвенции: `docs/frontend-conventions.md`.
 См. дизайн: `docs/superpowers/specs/2026-04-26-frontend-foundation-design.md`.

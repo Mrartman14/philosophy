@@ -270,7 +270,7 @@ Vitest с `jsdom`. Конфиг — `vitest.config.ts`. `server-only` алиас
 зелёные:
 
 ```bash
-npm run lint && npm test && npm run build
+pnpm lint && pnpm test && pnpm build
 ```
 
 Если красное — фикси, не комментируй и не отключай правила.

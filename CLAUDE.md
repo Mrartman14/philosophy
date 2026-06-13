@@ -33,7 +33,7 @@
 
 ESLint-гарды форсят: запрет cross-feature импортов, deep-импортов в чужие фичи мимо `index.ts`, `react-dom/client` в server-only файлах слайса.
 
-Перед PR должны быть зелёными: `npm run lint && npm test && npm run build`.
+Перед PR должны быть зелёными: `pnpm lint && pnpm test && pnpm build`.
 
 ## RBAC
 
