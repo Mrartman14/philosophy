@@ -22,6 +22,7 @@ export const Tags = {
   LECTURES: "lectures",
   MEDIA: "media",
   PREFERENCES: "preferences",
+  SHARE_LINKS: "share-links",
   SUBMISSIONS: "submissions",
   TAGS: "tags",
   TRAILS: "trails",
