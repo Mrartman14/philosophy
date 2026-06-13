@@ -53,3 +53,10 @@ export type {
   AstBlock,
   ResolvedBlock,
 } from "./types";
+
+export { CommentSection } from "./ui/comment-section";
+export { CommentTree } from "./ui/comment-tree";
+export { CommentRevisions } from "./ui/comment-revisions";
+export { CommentExportLinks } from "./ui/comment-export-links";
+export { AdminCommentRow } from "./ui/admin-comment-row";
+export { commentTypeLabel } from "./ui/comment-type-badge";
