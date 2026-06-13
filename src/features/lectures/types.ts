@@ -26,8 +26,13 @@ export type LectureMediaItem = components["schemas"]["media.Media"];
 /** Элемент attachment-списка лекции (reverse — какие сущности прикреплены). */
 export type LectureAttachment = components["schemas"]["attachment.AttachmentDTO"];
 
-/** Тип прикрепляемой сущности. canvas валиден на беке, просмотра нет (§4 спеки). */
-export type AttachmentEntityType = "document" | "media" | "canvas";
+/**
+ * Тип прикрепляемой сущности. Ре-экспорт сгенерированного enum из request-схемы
+ * attachment (`validate:"oneof=document media canvas"` на бэке). canvas валиден
+ * на беке, отдельного просмотра нет (§4 спеки). НЕ редактировать руками.
+ */
+export type AttachmentEntityType =
+  components["schemas"]["attachment.CreateAttachmentRequest"]["entity_type"];
 
 /** Один найденный термин глоссария (POST /api/glossary/suggest). */
 export type GlossarySuggestion = components["schemas"]["suggest.Suggestion"];

@@ -35,6 +35,10 @@ export type UserRegisterRequest = Schemas["user.RegisterRequest"];
 export type UserUpdateStatusRequest = Schemas["user.UpdateStatusRequest"];
 export type UserStatus = UserUpdateStatusRequest["status"];
 
+// --- RBAC ---
+/** Полный реестр capability (генерируется из rbac.Capability). */
+export type Capability = Schemas["rbac.Capability"];
+
 // --- Push ---
 export type PushSubscribeRequest = Schemas["push.SubscribeRequest"];
 export type PushUnsubscribeRequest = Schemas["push.UnsubscribeRequest"];

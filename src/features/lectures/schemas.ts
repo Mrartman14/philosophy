@@ -1,6 +1,7 @@
 // src/features/lectures/schemas.ts
 import "server-only";
 import { z } from "zod";
+import type { AttachmentEntityType } from "./types";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -37,7 +38,18 @@ export const LectureCoverClearSchema = z.object({
   id: z.string().uuid("Некорректный id лекции"),
 });
 
-const ENTITY_TYPE = z.enum(["document", "media", "canvas"]);
+// drift-гард: ключи обязаны ТОЧНО совпадать с AttachmentEntityType (обе стороны).
+// `satisfies Record<AttachmentEntityType, true>` валит tsc, если бэк добавит/уберёт
+// значение, а этот набор отстанет. См. spec §«Рантайм-нюанс».
+const ENTITY_TYPE_SET = {
+  document: true,
+  media: true,
+  canvas: true,
+} as const satisfies Record<AttachmentEntityType, true>;
+
+const ENTITY_TYPE = z.enum(
+  Object.keys(ENTITY_TYPE_SET) as [AttachmentEntityType, ...AttachmentEntityType[]],
+);
 
 export const LectureAttachSchema = z.object({
   lecture_id: z.string().uuid("Некорректный id лекции"),
