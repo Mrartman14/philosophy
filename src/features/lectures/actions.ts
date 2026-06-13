@@ -29,7 +29,7 @@ import {
   LectureUpdateSchema,
   LectureVisibilitySchema,
 } from "./schemas";
-import type { Lecture } from "./types";
+import type { Lecture, AttachmentEntityType } from "./types";
 
 type ApiError = { code?: string; error?: string };
 
@@ -170,7 +170,7 @@ export const attachToLecture = createAction(
   async (raw: {
     lecture_id: string;
     entity_id: string;
-    entity_type: "document" | "media" | "canvas";
+    entity_type: AttachmentEntityType;
     sort_order?: number;
   }) => {
     const me = await getMe();
@@ -200,7 +200,7 @@ export const detachFromLecture = createAction(
   async (raw: {
     lecture_id: string;
     entity_id: string;
-    entity_type: "document" | "media" | "canvas";
+    entity_type: AttachmentEntityType;
   }) => {
     const me = await getMe();
     const input = LectureDetachSchema.parse(raw);
@@ -303,7 +303,7 @@ export const reorderLectureAttachment = createAction(
   async (raw: {
     lecture_id: string;
     entity_id: string;
-    entity_type: "document" | "media" | "canvas";
+    entity_type: AttachmentEntityType;
     sort_order: number;
   }) => {
     const me = await getMe();

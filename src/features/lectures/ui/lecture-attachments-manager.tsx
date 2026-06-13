@@ -13,11 +13,12 @@ import {
   detachFromLecture,
   reorderLectureAttachment,
 } from "../actions";
+import type { AttachmentEntityType } from "../types";
 
 /** Минимальная форма прикреплённой сущности для панели (id+label+type). */
 export interface ManagedAttachment {
   entityId: string;
-  entityType: "document" | "media" | "canvas";
+  entityType: AttachmentEntityType;
   label: string;
   sortOrder: number;
 }
@@ -68,12 +69,12 @@ export function LectureAttachmentsManager({
 
   // Восстанавливаем entityType/entityId из составного id панели.
   function split(id: string): {
-    entityType: "document" | "media" | "canvas";
+    entityType: AttachmentEntityType;
     entityId: string;
   } {
     const idx = id.indexOf(":");
     return {
-      entityType: id.slice(0, idx) as "document" | "media" | "canvas",
+      entityType: id.slice(0, idx) as AttachmentEntityType,
       entityId: id.slice(idx + 1),
     };
   }
