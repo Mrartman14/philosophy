@@ -1,4 +1,5 @@
 // src/app/canvases/[id]/page.tsx
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMe } from "@/utils/me";
 import {
@@ -10,7 +11,6 @@ import {
   CanvasDetail,
   CanvasContainers,
   CanvasRevisions,
-  CanvasEditForm,
   CanvasVisibilityButton,
   CanvasDeleteButton,
 } from "@/features/canvas";
@@ -27,7 +27,7 @@ export default async function CanvasPage({ params, searchParams }: Props) {
   const me = await getMe();
   const result = await getCanvasById(id, token);
   if (!result) notFound();
-  const { canvas, etag } = result;
+  const { canvas } = result;
 
   const canEdit = canEditCanvas(me, canvas);
   const canDelete = canDeleteCanvas(me, canvas);
@@ -56,9 +56,14 @@ export default async function CanvasPage({ params, searchParams }: Props) {
       {canvas.id && <CanvasContainers canvasId={canvas.id} token={token} />}
 
       {canEdit && (
-        <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
+        <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
           <h2 className="text-lg font-semibold">Редактирование</h2>
-          <CanvasEditForm canvas={canvas} etag={etag} />
+          <Link
+            href={`/canvases/${canvas.id}/edit`}
+            className="inline-flex h-10 w-fit items-center rounded bg-(--color-primary) px-4 text-sm font-medium text-(--color-background)"
+          >
+            Открыть редактор
+          </Link>
           {canPublish && canvas.id && <CanvasVisibilityButton id={canvas.id} />}
         </section>
       )}

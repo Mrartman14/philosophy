@@ -10,4 +10,12 @@ export type {
   EntityRefView,
   BBox,
 } from "./types";
-export { boundingBox, sidePoint, edgePath } from "./geometry";
+export {
+  boundingBox,
+  sidePoint,
+  edgePath,
+  center,
+  boxBorderIntersection,
+} from "./geometry";
+export type { Point, EdgeGeometry } from "./geometry";
+export { NodeShapeRender } from "./node-shapes";
