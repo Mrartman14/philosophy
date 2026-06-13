@@ -1,20 +1,123 @@
-// src/features/_template/schemas.ts
+// src/features/annotations/schemas.ts
 import "server-only";
 import { z } from "zod";
 
 /**
- * Zod-схемы для валидации FormData в server actions. Используются через
- * `parseFormData(Schema, formData)`.
- *
- * Хранятся отдельно от actions.ts, чтобы при необходимости их можно было
- * импортировать в client-форму для preview-валидации (через "use client"
- * границу).
+ * JSON-строка AST-блоков из hidden-input формы (паттерн comments/events:
+ * BlocksJsonSchema). Парсит и проверяет, что результат — непустой массив.
  */
+const BlocksJsonSchema = z
+  .string()
+  .min(1, "Тело аннотации не может быть пустым")
+  .transform((s, ctx) => {
+    try {
+      const parsed: unknown = JSON.parse(s);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Тело должно быть непустым массивом блоков",
+        });
+        return z.NEVER;
+      }
+      return parsed as unknown[];
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Битый JSON в теле аннотации",
+      });
+      return z.NEVER;
+    }
+  });
 
-// export const EntityCreateSchema = z.object({
-//   title: z.string().min(1).max(200),
-//   description: z.string().max(1000).optional(),
-// });
-// export type EntityCreateInput = z.infer<typeof EntityCreateSchema>;
+/** Подмножество parent-типов с UI (banner/event/canvas не покрываем — §4). */
+const ParentEntityTypeSchema = z.enum([
+  "document",
+  "glossary",
+  "media",
+  "comment",
+]);
 
-export const PlaceholderSchema = z.object({});
+const VisibilitySchema = z.enum(["private", "public"]);
+
+/**
+ * Опциональный JSON-якорь (hidden-input). Парсится в объект; структурную
+ * валидность под parent-тип проверяет бек (422 ANCHOR_INVALID) + наши
+ * anchor.ts-предикаты на клиенте до сабмита.
+ */
+const AnchorJsonSchema = z
+  .string()
+  .optional()
+  .transform((s, ctx) => {
+    if (!s || s.trim() === "") return undefined;
+    try {
+      const parsed: unknown = JSON.parse(s);
+      if (
+        typeof parsed !== "object" ||
+        parsed === null ||
+        Array.isArray(parsed)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Якорь должен быть объектом",
+        });
+        return z.NEVER;
+      }
+      return parsed as Record<string, unknown>;
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Битый JSON в якоре",
+      });
+      return z.NEVER;
+    }
+  });
+
+export const AnnotationCreateSchema = z.object({
+  parent_entity_type: ParentEntityTypeSchema,
+  parent_entity_id: z.string().uuid("Некорректный id родительской сущности"),
+  visibility: VisibilitySchema.optional().default("private"),
+  blocks: BlocksJsonSchema,
+  anchor: AnchorJsonSchema,
+});
+
+export const AnnotationUpdateSchema = z
+  .object({
+    id: z.string().uuid("Некорректный id аннотации"),
+    blocks: BlocksJsonSchema,
+    anchor: AnchorJsonSchema,
+  })
+  // visibility намеренно не входит в схему: иммутабельна (§6.8). Лишний ключ
+  // в форме игнорируется (z.object strip по умолчанию).
+  .transform((v) => ({
+    id: v.id,
+    blocks: v.blocks,
+    ...(v.anchor !== undefined ? { anchor: v.anchor } : {}),
+  }));
+
+export const AnnotationIdSchema = z.object({
+  id: z.string().uuid("Некорректный id аннотации"),
+});
+
+/** offset для локальной/серверной пагинации. */
+export const AnnotationOffsetSchema = z.coerce
+  .number()
+  .int()
+  .min(0, "offset >= 0");
+
+/** Фильтр admin-списка. Битые значения → undefined (не бросаем). */
+export const AdminAnnotationFilterSchema = z.object({
+  parent_entity_type: z
+    .enum(["document", "glossary", "media", "comment"])
+    .optional()
+    .catch(undefined),
+  parent_entity_id: z.string().uuid().optional().catch(undefined),
+  author_id: z.string().uuid().optional().catch(undefined),
+  offset: AnnotationOffsetSchema.optional().catch(undefined),
+});
+
+export type AnnotationCreateInput = z.infer<typeof AnnotationCreateSchema>;
+export type AnnotationUpdateInput = z.infer<typeof AnnotationUpdateSchema>;
+export type AnnotationIdInput = z.infer<typeof AnnotationIdSchema>;
+export type AdminAnnotationFilterInput = z.infer<
+  typeof AdminAnnotationFilterSchema
+>;
