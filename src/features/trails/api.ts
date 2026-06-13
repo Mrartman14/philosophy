@@ -60,12 +60,20 @@ export const getMyTrails = cache(
   },
 );
 
-/** Маршрут по id с items (GET /api/trails/{id}). 404 → null. */
+/**
+ * Маршрут по id с items (GET /api/trails/{id}). 404 → null.
+ * token (?token=) пробрасывается для приватных маршрутов через share-link
+ * (shareTokenMW, philosophy-api cmd/server/main.go:1198). Без токена — поведение
+ * прежнее. schema.ts не объявляет token в query (§10.5) → cast `as never`.
+ */
 export const getTrailById = cache(
-  async (id: string): Promise<TrailWithItems | null> => {
+  async (id: string, token?: string): Promise<TrailWithItems | null> => {
     const api = await createApiClient();
     const { data, error, response } = await api.GET("/api/trails/{id}", {
-      params: { path: { id } },
+      params: {
+        path: { id },
+        ...(token ? { query: { token } as never } : {}),
+      },
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршрут");

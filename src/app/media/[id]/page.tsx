@@ -9,9 +9,15 @@ import {
   getMediaContainers,
 } from "@/features/media";
 import { AnnotationsSection } from "@/features/annotations";
+import {
+  ShareButton,
+  canCreateShareLink,
+  getShareLinksFor,
+} from "@/features/share-links";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ token?: string }>;
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -20,9 +26,10 @@ export async function generateMetadata({ params }: Props) {
   return { title: media ? media.filename : "Медиа" };
 }
 
-export default async function MediaPage({ params }: Props) {
+export default async function MediaPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const [me, media] = await Promise.all([getMe(), getMediaById(id)]);
+  const { token } = await searchParams;
+  const [me, media] = await Promise.all([getMe(), getMediaById(id, token)]);
   // Secure-by-obscurity: «не видно» ≡ «не существует».
   if (!media) notFound();
 
@@ -33,8 +40,24 @@ export default async function MediaPage({ params }: Props) {
   // Admin-удаление: есть право удалять, но это не его медиа (для текста диалога).
   const isAdminDelete = canDelete && !!me && media.owner_id !== me.id;
 
+  const canShare = canCreateShareLink(me, media);
+  const shareLinks = canShare
+    ? await getShareLinksFor("media", media.id)
+    : [];
+
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4">
+      {canShare && (
+        <div className="flex justify-end">
+          <ShareButton
+            resourceType="media"
+            resourceId={media.id}
+            canCreate={canShare}
+            initialLinks={shareLinks}
+          />
+        </div>
+      )}
+
       <MediaDetail
         media={media}
         containers={containers}

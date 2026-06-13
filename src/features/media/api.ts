@@ -59,7 +59,25 @@ export const getMyMedia = cache(
  * tags — иначе все id делят один кеш.
  */
 export const getMediaById = cache(
-  async (id: string): Promise<Media | null> => {
+  async (id: string, token?: string): Promise<Media | null> => {
+    // С токеном (viewer share-link) обходим cross-request unstable_cache:
+    // приватный ответ не должен кешироваться между держателями ссылок.
+    // shareTokenMW (philosophy-api cmd/server/main.go:944) принимает ?token=,
+    // schema.ts его не объявляет (§10.5) → cast `as never`.
+    if (token) {
+      const api = await createApiClient();
+      const { data, error, response } = await api.GET("/api/media/{media_id}", {
+        params: {
+          path: { media_id: id },
+          query: { token } as never,
+        },
+      });
+      if (response.status === 404) return null;
+      if (error) {
+        throw new Error(error.error ?? "Не удалось загрузить медиа");
+      }
+      return (data?.data ?? null) as Media | null;
+    }
     const fetcher = unstable_cache(
       async (mediaId: string): Promise<Media | null> => {
         const api = await createApiClient();

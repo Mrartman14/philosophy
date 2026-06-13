@@ -47,18 +47,29 @@ export const getLectures = cache(
   },
 );
 
-export const getLectureById = cache(async (id: string): Promise<Lecture | null> => {
-  const api = await createApiClient();
-  const { data, error, response } = await api.GET("/api/lectures/{id}", {
-    params: { path: { id } },
-  });
-  if (response.status === 404) return null;
-  if (error) {
-    throw new Error(error.error ?? "Не удалось загрузить лекцию");
-  }
-  const lecture = data?.data;
-  return (lecture ?? null) as Lecture | null;
-});
+/**
+ * Лекция по id (GET /api/lectures/{id}). 404 → null.
+ * token (?token=) пробрасывается для приватных лекций через share-link
+ * (shareTokenMW, philosophy-api cmd/server/main.go:910). Без токена — поведение
+ * прежнее. schema.ts не объявляет token в query (§10.5) → cast `as never`.
+ */
+export const getLectureById = cache(
+  async (id: string, token?: string): Promise<Lecture | null> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/lectures/{id}", {
+      params: {
+        path: { id },
+        ...(token ? { query: { token } as never } : {}),
+      },
+    });
+    if (response.status === 404) return null;
+    if (error) {
+      throw new Error(error.error ?? "Не удалось загрузить лекцию");
+    }
+    const lecture = data?.data;
+    return (lecture ?? null) as Lecture | null;
+  },
+);
 
 /** GET /api/lectures/{id}/documents — документы лекции (по sort_order). 404 → []. */
 export const getLectureDocuments = cache(

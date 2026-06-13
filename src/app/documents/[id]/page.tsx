@@ -17,17 +17,22 @@ import {
   DocumentContainers,
 } from "@/features/documents";
 import { AnnotationsSection } from "@/features/annotations";
+import {
+  ShareButton,
+  canCreateShareLink,
+  getShareLinksFor,
+} from "@/features/share-links";
 
 interface Props {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ revision?: string }>;
+  searchParams: Promise<{ revision?: string; token?: string }>;
 }
 
 export default async function DocumentPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { revision } = await searchParams;
+  const { revision, token } = await searchParams;
   const me = await getMe();
-  const document = await getDocumentById(id);
+  const document = await getDocumentById(id, token);
   if (!document) notFound();
 
   const canEdit = canEditDocument(me, document);
@@ -35,11 +40,27 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   const showRevisions = canSeeRevisions(document);
   const isPrivateOwned = canEdit && document.visibility === "private";
 
+  const canShare = canCreateShareLink(me, document);
+  const shareLinks =
+    canShare && document.id
+      ? await getShareLinksFor("document", document.id)
+      : [];
+
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{document.filename || "Документ"}</h1>
-        {document.id && <DocumentExportLinks id={document.id} />}
+        <div className="flex items-center gap-2">
+          {document.id && (
+            <ShareButton
+              resourceType="document"
+              resourceId={document.id}
+              canCreate={canShare}
+              initialLinks={shareLinks}
+            />
+          )}
+          {document.id && <DocumentExportLinks id={document.id} />}
+        </div>
       </header>
 
       <DocumentDetail document={document} />
