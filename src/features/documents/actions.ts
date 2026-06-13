@@ -12,7 +12,7 @@ import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 import { Tags } from "@/api/tags";
-import { canCreateDocument } from "./permissions";
+import { canCreateDocument, canListAdminDocuments } from "./permissions";
 import {
   DocumentCreateSchema,
   DocumentBlocksSchema,
@@ -189,9 +189,7 @@ export const deleteDocument = createAction(async (rawId: string) => {
 /** DELETE /api/admin/documents/{id}. Гейт — document.delete_any (только public). */
 export const adminDeleteDocument = createAction(async (rawId: string) => {
   const me = await getMe();
-  if (!me || me.status !== "active" || !me.capabilities.includes("document.delete_any")) {
-    throw new ForbiddenError(me ? (me.status !== "active" ? "status" : "role") : "guest");
-  }
+  requireCapability(me, canListAdminDocuments);
   const { id } = DocumentIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/documents/{document_id}", {

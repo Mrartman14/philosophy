@@ -45,6 +45,9 @@ function buildNavItems(me: MaybeMe): NavItem[] {
   if (can(me, "banner.read")) {
     items.push({ href: "/admin/banners", label: "Баннеры" });
   }
+  if (can(me, "document.delete_any")) {
+    items.push({ href: "/admin/documents", label: "Документы" });
+  }
   if (can(me, "comment.delete_any")) {
     items.push({ href: "/admin/comments", label: "Комментарии" });
   }
