@@ -47,4 +47,11 @@ export { DocumentEditForm } from "./ui/document-edit-form";
 export { DocumentMetaForm } from "./ui/document-meta-form";
 export { DocumentVisibilityButton } from "./ui/document-visibility-button";
 export { DocumentDeleteButton } from "./ui/document-delete-button";
-// UI-экспорты Этапа C добавляются в задачах 18–20.
+
+// === Этап C: detail, ревизии, контейнеры, export, admin-строка ===
+export { DocumentDetail } from "./ui/document-detail";
+export { DocumentExportLinks } from "./ui/document-export-links";
+export { DocumentMyList } from "./ui/document-my-list";
+export { DocumentRevisions } from "./ui/document-revisions";
+export { DocumentContainers } from "./ui/document-containers";
+export { DocumentAdminRow } from "./ui/document-admin-row";
