@@ -5,6 +5,7 @@ import { LogoIcon } from "@/assets/icons/logo-icon";
 import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { LogoutForm } from "@/features/auth";
+import { SearchInput } from "@/features/search";
 import { getMe } from "@/utils/me";
 
 export const AppHeader = async () => {
@@ -18,16 +19,22 @@ export const AppHeader = async () => {
               <LogoIcon className="text-3xl text-(--color-description) group-hover:text-(--color-primary) self-center" />
             </Link>
           </NavigationMenu.Item>
-          <NavigationMenu.Item className="flex items-center">
+          <NavigationMenu.Item className="flex items-center gap-4">
             <Link
               href="/calendar"
               className="text-sm text-(--color-description) hover:text-(--color-primary)"
             >
               Календарь
             </Link>
+            <Link
+              href="/trails"
+              className="text-sm text-(--color-description) hover:text-(--color-primary)"
+            >
+              Маршруты
+            </Link>
           </NavigationMenu.Item>
           <div className="flex gap-2 items-center">
-            {/* TODO: вернуть SearchInput после восстановления фичи `search` */}
+            <SearchInput variant="header" />
             <NetworkIndicator className="text-xl" />
             {me ? (
               <>
@@ -48,6 +55,12 @@ export const AppHeader = async () => {
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Мои аннотации
+                </Link>
+                <Link
+                  href="/me/forms"
+                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
+                >
+                  Мои формы
                 </Link>
                 <Link
                   href="/settings"
