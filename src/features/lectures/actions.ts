@@ -25,6 +25,7 @@ import {
   LectureDetachSchema,
   LectureIdSchema,
   LectureReorderSchema,
+  LectureSuggestSchema,
   LectureUpdateSchema,
   LectureVisibilitySchema,
 } from "./schemas";
@@ -221,6 +222,24 @@ export const detachFromLecture = createAction(
     if (error) rethrowApiError(error as ApiError);
     revalidateEntity("lectures", input.lecture_id);
     return undefined;
+  },
+);
+
+/**
+ * POST /api/glossary/suggest — найти термины глоссария в блоках текста.
+ * requiredAuth (гость → бек 401 → ForbiddenError → forbidden-код; вызывающий
+ * деградирует до plain-текста). offset/length в ответе — БАЙТЫ (см.
+ * suggest-highlight.ts конверсию). Возвращаем suggestions как есть.
+ */
+export const suggestGlossaryTerms = createAction(
+  async (raw: { blocks: { block_id: string; text: string }[] }) => {
+    const input = LectureSuggestSchema.parse(raw);
+    const api = await createApiClient();
+    const { data, error } = await api.POST("/api/glossary/suggest", {
+      body: { blocks: input.blocks },
+    });
+    if (error) rethrowApiError(error as ApiError);
+    return data?.data?.suggestions ?? [];
   },
 );
 

@@ -10,6 +10,7 @@ import {
   LectureAttachSchema,
   LectureDetachSchema,
   LectureReorderSchema,
+  LectureSuggestSchema,
 } from "./schemas";
 
 describe("LectureCreateSchema", () => {
@@ -248,6 +249,27 @@ describe("LectureReorderSchema", () => {
       entity_id: "11111111-1111-1111-1111-111111111111",
       entity_type: "document",
       sort_order: -1,
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureSuggestSchema", () => {
+  it("принимает непустые блоки", () => {
+    const r = LectureSuggestSchema.safeParse({
+      blocks: [{ block_id: "b1", text: "Кант философ" }],
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет пустой список блоков", () => {
+    const r = LectureSuggestSchema.safeParse({ blocks: [] });
+    expect(r.success).toBe(false);
+  });
+
+  it("отклоняет блок без block_id", () => {
+    const r = LectureSuggestSchema.safeParse({
+      blocks: [{ block_id: "", text: "x" }],
     });
     expect(r.success).toBe(false);
   });

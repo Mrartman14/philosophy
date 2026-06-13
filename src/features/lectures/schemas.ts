@@ -59,6 +59,18 @@ export const LectureReorderSchema = z.object({
   sort_order: z.number().int().gte(0),
 });
 
+export const LectureSuggestSchema = z.object({
+  blocks: z
+    .array(
+      z.object({
+        block_id: z.string().min(1),
+        text: z.string().max(50000),
+      }),
+    )
+    .min(1, "Нужен хотя бы один блок")
+    .max(500),
+});
+
 export type LectureCreateInput = z.infer<typeof LectureCreateSchema>;
 export type LectureUpdateInput = z.infer<typeof LectureUpdateSchema>;
 export type LectureVisibilityInput = z.infer<typeof LectureVisibilitySchema>;
@@ -68,3 +80,4 @@ export type LectureCoverClearInput = z.infer<typeof LectureCoverClearSchema>;
 export type LectureAttachInput = z.infer<typeof LectureAttachSchema>;
 export type LectureDetachInput = z.infer<typeof LectureDetachSchema>;
 export type LectureReorderInput = z.infer<typeof LectureReorderSchema>;
+export type LectureSuggestInput = z.infer<typeof LectureSuggestSchema>;
