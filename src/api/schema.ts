@@ -4187,7 +4187,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Список канвасов с поиском (свои + публичные) */
+        /**
+         * Поиск канвасов (picker)
+         * @description Lightweight summary list of canvases visible to the actor,
+         *     filtered by ?q= LIKE on title. Used by the AST editor's
+         *     canvas_ref picker.
+         */
         get: {
             parameters: {
                 query?: {
@@ -6646,7 +6651,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description Тип родительской сущности */
-                    type: "document" | "comment" | "glossary" | "banner" | "event" | "media";
+                    type: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
                     /** @description ID родительской сущности */
                     id: string;
                 };
@@ -11975,7 +11980,7 @@ export interface components {
             is_edited?: boolean;
             owner_id?: string;
             parent_entity_id?: string;
-            parent_entity_type?: string;
+            parent_entity_type?: components["schemas"]["annotation.ParentEntityType"];
             updated_at?: string;
             visibility?: components["schemas"]["annotation.Visibility"];
         };
@@ -11985,6 +11990,8 @@ export interface components {
             /** @enum {unknown} */
             visibility?: "private" | "public";
         };
+        /** @enum {string} */
+        "annotation.ParentEntityType": "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
         "annotation.UpdateRequest": {
             anchor?: components["schemas"]["annotation.Anchor"];
             blocks: components["schemas"]["ast.Block"][];
@@ -12078,7 +12085,7 @@ export interface components {
             container_id?: string;
             container_type?: string;
             entity_id?: string;
-            entity_type?: string;
+            entity_type?: components["schemas"]["attachment.EntityType"];
             sort_order?: number;
         };
         "attachment.CreateAttachmentRequest": {
@@ -12092,6 +12099,8 @@ export interface components {
             /** @description SortOrder is optional; when nil the service treats it as 0 (prepends). */
             sort_order?: number;
         };
+        /** @enum {string} */
+        "attachment.EntityType": "document" | "media" | "canvas";
         "attachment.UpdateAttachmentRequest": {
             sort_order?: number;
         };

@@ -1,6 +1,8 @@
 // src/features/annotations/schemas.ts
 import "server-only";
 import { z } from "zod";
+import { PARENT_ENTITY_TYPES } from "./types";
+import type { ParentEntityType } from "./types";
 
 /**
  * JSON-строка AST-блоков из hidden-input формы (паттерн comments/events:
@@ -30,12 +32,9 @@ const BlocksJsonSchema = z
   });
 
 /** Подмножество parent-типов с UI (banner/event/canvas не покрываем — §4). */
-const ParentEntityTypeSchema = z.enum([
-  "document",
-  "glossary",
-  "media",
-  "comment",
-]);
+const ParentEntityTypeSchema = z.enum(
+  PARENT_ENTITY_TYPES as [ParentEntityType, ...ParentEntityType[]],
+);
 
 const VisibilitySchema = z.enum(["private", "public"]);
 
@@ -107,7 +106,7 @@ export const AnnotationOffsetSchema = z.coerce
 /** Фильтр admin-списка. Битые значения → undefined (не бросаем). */
 export const AdminAnnotationFilterSchema = z.object({
   parent_entity_type: z
-    .enum(["document", "glossary", "media", "comment"])
+    .enum(PARENT_ENTITY_TYPES as [ParentEntityType, ...ParentEntityType[]])
     .optional()
     .catch(undefined),
   parent_entity_id: z.string().uuid().optional().catch(undefined),

@@ -1,8 +1,7 @@
 "use client";
 // src/features/annotations/ui/annotation-admin-filter-form.tsx
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-const PARENT_TYPES = ["document", "glossary", "media", "comment"] as const;
+import { PARENT_ENTITY_TYPES as PARENT_TYPES } from "../types";
 
 /**
  * Фильтр admin-списка аннотаций по типу родительской сущности. Обновляет URL
