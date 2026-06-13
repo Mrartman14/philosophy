@@ -29,7 +29,10 @@ function rethrowApiError(err: ApiError | undefined): never {
       throw new Error("Ресурс не найден или вы не его владелец.");
     case "RESOURCE_NOT_PRIVATE":
       throw new Error("Ссылку можно создать только для приватного ресурса.");
-    case "VALIDATION_ERROR":
+    // Бек на этих эндпоинтах валит вход через apperror.Validation(...) →
+    // код "BAD_REQUEST" (sharelink/handler.go, service.go). Кода
+    // "VALIDATION_ERROR" здесь не бывает.
+    case "BAD_REQUEST":
       throw new Error(err.error ?? "Сервер отклонил данные.");
   }
   throw new Error(err?.error ?? "Ошибка сервера");
