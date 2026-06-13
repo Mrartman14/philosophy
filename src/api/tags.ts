@@ -16,6 +16,7 @@ export const Tags = {
   EVENTS: "events",
   GLOSSARY: "glossary",
   LECTURES: "lectures",
+  MEDIA: "media",
   PREFERENCES: "preferences",
   TAGS: "tags",
   USERS: "users",
