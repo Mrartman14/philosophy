@@ -16,6 +16,8 @@ export type Capability =
   | "lecture.upload_files"
   | "comment.delete_any"
   | "annotation.delete_any"
+  | "media.create"
+  | "media.delete_any"
   | "transcript.edit"
   | "user.moderate"
   | "user.list"
