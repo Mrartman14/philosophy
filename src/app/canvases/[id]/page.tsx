@@ -1,0 +1,82 @@
+// src/app/canvases/[id]/page.tsx
+import { notFound } from "next/navigation";
+import { getMe } from "@/utils/me";
+import {
+  canEditCanvas,
+  canDeleteCanvas,
+  canChangeVisibility,
+  canSeeRevisions,
+  getCanvasById,
+  CanvasDetail,
+  CanvasContainers,
+  CanvasRevisions,
+  CanvasEditForm,
+  CanvasVisibilityButton,
+  CanvasDeleteButton,
+} from "@/features/canvas";
+import { ShareButton, canCreateShareLink, getShareLinksFor } from "@/features/share-links";
+
+interface Props {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ revision?: string; token?: string }>;
+}
+
+export default async function CanvasPage({ params, searchParams }: Props) {
+  const { id } = await params;
+  const { revision, token } = await searchParams;
+  const me = await getMe();
+  const canvas = await getCanvasById(id, token);
+  if (!canvas) notFound();
+
+  const canEdit = canEditCanvas(me, canvas);
+  const canDelete = canDeleteCanvas(me, canvas);
+  const canPublish = canChangeVisibility(me, canvas);
+  const showRevisions = canSeeRevisions(canvas);
+
+  const canShare = canCreateShareLink(me, canvas);
+  const shareLinks = canShare && canvas.id ? await getShareLinksFor("canvas", canvas.id) : [];
+
+  return (
+    <main className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
+      <header className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">{canvas.title || "Канвас"}</h1>
+        {canvas.id && (
+          <ShareButton
+            resourceType="canvas"
+            resourceId={canvas.id}
+            canCreate={canShare}
+            initialLinks={shareLinks}
+          />
+        )}
+      </header>
+
+      <CanvasDetail data={canvas.data} />
+
+      {canvas.id && <CanvasContainers canvasId={canvas.id} token={token} />}
+
+      {canEdit && (
+        <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
+          <h2 className="text-lg font-semibold">Редактирование</h2>
+          <CanvasEditForm canvas={canvas} />
+          {canPublish && canvas.id && <CanvasVisibilityButton id={canvas.id} />}
+        </section>
+      )}
+
+      {showRevisions && canvas.id && (
+        <CanvasRevisions canvasId={canvas.id} selectedRevision={revision} token={token} />
+      )}
+
+      {canDelete && canvas.id && (
+        <div>
+          <CanvasDeleteButton id={canvas.id} />
+        </div>
+      )}
+    </main>
+  );
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { id } = await params;
+  const canvas = await getCanvasById(id);
+  return { title: canvas?.title ?? "Канвас" };
+}
