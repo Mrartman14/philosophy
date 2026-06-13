@@ -7,6 +7,9 @@ import {
   LectureIdSchema,
   LectureCoverSchema,
   LectureCoverClearSchema,
+  LectureAttachSchema,
+  LectureDetachSchema,
+  LectureReorderSchema,
 } from "./schemas";
 
 describe("LectureCreateSchema", () => {
@@ -173,6 +176,79 @@ describe("LectureCoverClearSchema", () => {
 
   it("отклоняет невалидный uuid", () => {
     const r = LectureCoverClearSchema.safeParse({ id: "x" });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureAttachSchema", () => {
+  it("принимает document/media/canvas", () => {
+    for (const t of ["document", "media", "canvas"] as const) {
+      const r = LectureAttachSchema.safeParse({
+        lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+        entity_id: "11111111-1111-1111-1111-111111111111",
+        entity_type: t,
+      });
+      expect(r.success).toBe(true);
+    }
+  });
+
+  it("отклоняет неизвестный entity_type", () => {
+    const r = LectureAttachSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "banner",
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("отклоняет невалидный lecture_id", () => {
+    const r = LectureAttachSchema.safeParse({
+      lecture_id: "x",
+      entity_id: "y",
+      entity_type: "document",
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureDetachSchema", () => {
+  it("принимает валидную тройку", () => {
+    const r = LectureDetachSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "media",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет неизвестный entity_type", () => {
+    const r = LectureDetachSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "zzz",
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureReorderSchema", () => {
+  it("принимает sort_order >= 0", () => {
+    const r = LectureReorderSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "document",
+      sort_order: 0,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет отрицательный sort_order", () => {
+    const r = LectureReorderSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "document",
+      sort_order: -1,
+    });
     expect(r.success).toBe(false);
   });
 });
