@@ -48,6 +48,15 @@ function buildNavItems(me: MaybeMe): NavItem[] {
   if (can(me, "document.delete_any")) {
     items.push({ href: "/admin/documents", label: "Документы" });
   }
+  if (can(me, "form.delete_any")) {
+    items.push({ href: "/admin/forms", label: "Формы" });
+  }
+  if (can(me, "trail.delete_any")) {
+    items.push({ href: "/admin/trails", label: "Маршруты" });
+  }
+  if (can(me, "share_link.moderate")) {
+    items.push({ href: "/admin/share-links", label: "Ссылки" });
+  }
   if (can(me, "comment.delete_any")) {
     items.push({ href: "/admin/comments", label: "Комментарии" });
   }
