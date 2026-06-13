@@ -200,3 +200,22 @@ export const getAnnotationRevision = cache(
     return (data?.data ?? null) as AnnotationRevision | null;
   },
 );
+
+/**
+ * Контекст блока для резолва text-якоря. `GET /api/blocks/{block_id}` есть в
+ * schema.ts (строка 4047), но data типизирован как unknown (§10, generic
+ * httputil.Response) — ручной разбор. Возвращает блок или null (graceful).
+ */
+export const getBlockContext = cache(
+  async (blockId: string): Promise<{ exact?: string | undefined } | null> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/blocks/{block_id}", {
+      params: { path: { block_id: blockId } },
+    });
+    if (response.status === 404 || error) return null;
+    const block = (data as { data?: unknown })?.data;
+    if (!block || typeof block !== "object") return null;
+    const text = (block as { text?: unknown }).text;
+    return { exact: typeof text === "string" ? text : undefined };
+  },
+);
