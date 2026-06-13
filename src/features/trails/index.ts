@@ -1,15 +1,48 @@
-// src/features/_template/index.ts
-// Public API слайса.
-// Сюда экспортируется ТОЛЬКО то, что нужно снаружи (страницам в app/, root layout).
-// types.ts, schemas.ts, model/* по умолчанию приватные — экспортируй явно при необходимости.
+// src/features/trails/index.ts
+export {
+  getTrails,
+  getMyTrails,
+  getTrailById,
+  getAdminTrails,
+  getLectureSummary,
+} from "./api";
+export type {
+  TrailListFilter,
+  AdminTrailListFilter,
+  TrailListResult,
+} from "./api";
 
-// Раскомментируй и наполни реальными именами после реализации:
-// export { getEntities, getEntityById } from "./api";
-// export { createEntity, updateEntity, deleteEntity } from "./actions";
-// export { canCreateEntity, canDeleteEntity } from "./permissions";
-// export { EntityList, EntityCreateForm } from "./ui/entity-list"; // и т. д.
+export {
+  canCreateTrail,
+  canEditTrail,
+  canDeleteTrail,
+  canAdminDeleteTrail,
+  canListAdminTrails,
+} from "./permissions";
 
-// Пустой re-export нужен только чтобы файл оставался валидным TS-модулем,
-// пока не добавлен ни один реальный экспорт. Удали при появлении первого
-// экспорта выше.
-export {};
+export {
+  createTrail,
+  updateTrailMeta,
+  setTrailItems,
+  setTrailVisibility,
+  deleteTrail,
+  adminDeleteTrail,
+} from "./actions";
+
+export type {
+  Trail,
+  TrailWithItems,
+  TrailItem,
+  TrailVisibility,
+  TrailLectureSummary,
+} from "./types";
+
+export { TrailMyList } from "./ui/trail-my-list";
+export { TrailPublicList } from "./ui/trail-public-list";
+export { TrailAdminRow } from "./ui/trail-admin-row";
+export { TrailDetail } from "./ui/trail-detail";
+export { TrailCreateForm } from "./ui/trail-create-form";
+export { TrailMetaForm } from "./ui/trail-meta-form";
+export { TrailVisibilityButton } from "./ui/trail-visibility-button";
+export { TrailDeleteButton } from "./ui/trail-delete-button";
+export { TrailItemsEditor } from "./ui/trail-items-editor";
