@@ -5,6 +5,12 @@ import {
   LectureUpdateSchema,
   LectureVisibilitySchema,
   LectureIdSchema,
+  LectureCoverSchema,
+  LectureCoverClearSchema,
+  LectureAttachSchema,
+  LectureDetachSchema,
+  LectureReorderSchema,
+  LectureSuggestSchema,
 } from "./schemas";
 
 describe("LectureCreateSchema", () => {
@@ -125,6 +131,146 @@ describe("LectureIdSchema", () => {
 
   it("отклоняет невалидный uuid", () => {
     const r = LectureIdSchema.safeParse({ id: "x" });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureCoverSchema", () => {
+  it("принимает id+upload_id (+опц. alt_text)", () => {
+    const r = LectureCoverSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      upload_id: "11111111-1111-1111-1111-111111111111",
+      alt_text: "Кант",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("принимает без alt_text", () => {
+    const r = LectureCoverSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      upload_id: "11111111-1111-1111-1111-111111111111",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет пустой upload_id", () => {
+    const r = LectureCoverSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      upload_id: "",
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("отклоняет невалидный id лекции", () => {
+    const r = LectureCoverSchema.safeParse({ id: "x", upload_id: "u" });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureCoverClearSchema", () => {
+  it("принимает валидный uuid", () => {
+    const r = LectureCoverClearSchema.safeParse({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет невалидный uuid", () => {
+    const r = LectureCoverClearSchema.safeParse({ id: "x" });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureAttachSchema", () => {
+  it("принимает document/media/canvas", () => {
+    for (const t of ["document", "media", "canvas"] as const) {
+      const r = LectureAttachSchema.safeParse({
+        lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+        entity_id: "11111111-1111-1111-1111-111111111111",
+        entity_type: t,
+      });
+      expect(r.success).toBe(true);
+    }
+  });
+
+  it("отклоняет неизвестный entity_type", () => {
+    const r = LectureAttachSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "banner",
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("отклоняет невалидный lecture_id", () => {
+    const r = LectureAttachSchema.safeParse({
+      lecture_id: "x",
+      entity_id: "y",
+      entity_type: "document",
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureDetachSchema", () => {
+  it("принимает валидную тройку", () => {
+    const r = LectureDetachSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "media",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет неизвестный entity_type", () => {
+    const r = LectureDetachSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "zzz",
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureReorderSchema", () => {
+  it("принимает sort_order >= 0", () => {
+    const r = LectureReorderSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "document",
+      sort_order: 0,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет отрицательный sort_order", () => {
+    const r = LectureReorderSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "document",
+      sort_order: -1,
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("LectureSuggestSchema", () => {
+  it("принимает непустые блоки", () => {
+    const r = LectureSuggestSchema.safeParse({
+      blocks: [{ block_id: "b1", text: "Кант философ" }],
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("отклоняет пустой список блоков", () => {
+    const r = LectureSuggestSchema.safeParse({ blocks: [] });
+    expect(r.success).toBe(false);
+  });
+
+  it("отклоняет блок без block_id", () => {
+    const r = LectureSuggestSchema.safeParse({
+      blocks: [{ block_id: "", text: "x" }],
+    });
     expect(r.success).toBe(false);
   });
 });
