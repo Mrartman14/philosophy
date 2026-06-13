@@ -54,3 +54,20 @@ export type { LectureExportUrls } from "./export-urls";
 export { LectureExportLinks } from "./ui/lecture-export-links";
 export { LectureDocumentsSection } from "./ui/lecture-documents-section";
 export { LectureMediaSection } from "./ui/lecture-media-section";
+
+// lecture-enrichment (волна 3) — glossary suggest (nice-to-have).
+export { suggestGlossaryTerms } from "./actions";
+export { LectureDescription } from "./ui/lecture-description";
+export {
+  byteRangeToCodeUnits,
+  segmentWithHighlights,
+} from "./suggest-highlight";
+export type {
+  HighlightRange,
+  Segment,
+  CodeUnitRange,
+} from "./suggest-highlight";
+export type {
+  GlossarySuggestion,
+  GlossaryOccurrence,
+} from "./types";

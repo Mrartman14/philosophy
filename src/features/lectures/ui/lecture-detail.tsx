@@ -2,6 +2,7 @@
 import Link from "next/link";
 import type { Lecture, LectureTag } from "../types";
 import { lectureCoverUrl } from "../cover-url";
+import { LectureDescription } from "./lecture-description";
 
 export function LectureDetail({
   lecture,
@@ -39,9 +40,7 @@ export function LectureDetail({
           </ul>
         )}
       </header>
-      {lecture.description && (
-        <div className="whitespace-pre-wrap text-base">{lecture.description}</div>
-      )}
+      {lecture.description && <LectureDescription description={lecture.description} />}
     </article>
   );
 }
