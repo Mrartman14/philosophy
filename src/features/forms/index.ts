@@ -55,3 +55,6 @@ export { FormPublishButton } from "./ui/form-publish-button";
 export { FormDeleteButton } from "./ui/form-delete-button";
 export { MyFormsList } from "./ui/my-forms-list";
 export { FormAdminRow } from "./ui/form-admin-row";
+export { FormDetail } from "./ui/form-detail";
+export { FormMeta } from "./ui/form-meta";
+export { FormAfterSubmit } from "./ui/form-after-submit";
