@@ -8,6 +8,7 @@ import {
   getMediaById,
   getMediaContainers,
 } from "@/features/media";
+import { AnnotationsSection } from "@/features/annotations";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -41,6 +42,12 @@ export default async function MediaPage({ params }: Props) {
         canChangeVisibility={canChangeVisibility}
         isAdminDelete={isAdminDelete}
       />
+
+      {/* Аннотации на медиа (media-якорь по времени). Композиция через
+          страницу: AnnotationsSection из index.ts слайса annotations. */}
+      {media.id && (
+        <AnnotationsSection parentEntityType="media" parentId={media.id} />
+      )}
     </main>
   );
 }
