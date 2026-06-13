@@ -5,18 +5,13 @@ import { can, isMutationAllowed } from "@/utils/permissions";
 import type { Comment } from "./types";
 
 /**
- * Создание комментария: гейт `comment.create` (есть у user И admin).
- *
- * ВНИМАНИЕ: `comment.create` пока НЕ входит в union `Capability`
- * (src/utils/permissions.ts — запретная зона). Поэтому чек делаем локально:
- * active-пользователь + членство в capabilities. Это паттерн волны 1 для
- * cap'ов, ещё не внесённых в union.
- * TODO(foundation-update): добавить "comment.create" в union Capability и
- * заменить на can(me, "comment.create").
+ * Создание комментария: гейт `comment.create` (есть у user И admin; сверено с
+ * philosophy-api internal/rbac/capabilities.go — CapCommentCreate). Чек
+ * делегирован `can()`: гость → false, не-active → false, иначе членство в
+ * capabilities (status-гейт внутри can()).
  */
 export function canCreateComment(me: MaybeMe): boolean {
-  if (!isMutationAllowed(me)) return false;
-  return me.capabilities.includes("comment.create");
+  return can(me, "comment.create");
 }
 
 /**

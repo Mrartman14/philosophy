@@ -6,13 +6,12 @@ import type { Annotation } from "./types";
 
 /**
  * Создание аннотации. Бек требует capability `annotation.create`
- * (internal/rbac/capabilities.go: есть у роли user и admin). Эта капа НЕ
- * входит в union `Capability` из src/utils/permissions.ts (frozen-зона), и
- * `can()` её не примет — поэтому локальный чек: active-мутатор + членство
- * в capabilities. См. план §«Известные расхождения», п.5.
+ * (philosophy-api internal/rbac/capabilities.go — CapAnnotationCreate: есть у
+ * роли user и admin). Чек делегирован `can()`: гость → false, не-active →
+ * false, иначе членство в capabilities (status-гейт внутри can()).
  */
 export function canCreateAnnotation(me: MaybeMe): boolean {
-  return isMutationAllowed(me) && me.capabilities.includes("annotation.create");
+  return can(me, "annotation.create");
 }
 
 /**
