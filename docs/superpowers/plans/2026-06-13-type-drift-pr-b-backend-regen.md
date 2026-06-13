@@ -23,8 +23,8 @@
 - Modify: `internal/annotation/service.go:161,369,560` — три `string()`/конструктор-каста.
 - Modify: `internal/annotation/handler.go:154` — реконсилировать `Enums()` (добавить canvas).
 - Modify: `internal/annotation/handler_md_consistency_test.go:74` — `string()`-каст в сравнении.
-- Modify: `internal/attachment/request.go:35` — `EntityType string` → `EntityType EntityType`.
-- Modify: `internal/attachment/handler.go:257` — убрать каст `string(a.EntityType)`.
+- Modify: `internal/attachment/request.go` (`AttachmentDTO.EntityType`, ~стр. 33 на HEAD d6aaf19) — `EntityType string` → `EntityType EntityType`.
+- Modify: `internal/attachment/handler.go` (`toDTO`, ~стр. 258) — убрать каст `string(a.EntityType)`.
 - Regenerate: `docs/swagger/swagger.json` (через `make swagger`).
 
 **Frontend (`philosophy`):**
@@ -246,7 +246,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 - [ ] **Step 1: Типизировать поле DTO**
 
-В `internal/attachment/request.go:35` заменить:
+В `internal/attachment/request.go` (поле `AttachmentDTO.EntityType`, ~стр. 33 — то, что БЕЗ `oneof`-тега, в отличие от `CreateAttachmentRequest.EntityType`) заменить:
 
 ```go
 	EntityType    string `json:"entity_type"`
@@ -262,7 +262,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 - [ ] **Step 2: Убрать ненужный каст в `toDTO`**
 
-В `internal/attachment/handler.go:257` заменить:
+В `internal/attachment/handler.go` (`toDTO`, ~стр. 258) заменить:
 
 ```go
 		EntityType:    string(a.EntityType),
