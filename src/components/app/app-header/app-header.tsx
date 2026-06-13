@@ -32,6 +32,24 @@ export const AppHeader = async () => {
             {me ? (
               <>
                 <Link
+                  href="/documents/my"
+                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
+                >
+                  Мои документы
+                </Link>
+                <Link
+                  href="/media/my"
+                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
+                >
+                  Мои медиа
+                </Link>
+                <Link
+                  href="/me/annotations"
+                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
+                >
+                  Мои аннотации
+                </Link>
+                <Link
                   href="/settings"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
