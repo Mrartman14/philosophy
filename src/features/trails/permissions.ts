@@ -1,30 +1,21 @@
 // src/features/trails/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
+import { can } from "@/utils/permissions";
 import type { Trail } from "./types";
 
 /**
- * Имена capabilities сверены с philosophy-api internal/rbac/capabilities.go:
- * CapTrailCreate = "trail.create", CapTrailDeleteAny = "trail.delete_any".
- *
- * Локальный cap-чек вместо `can()` из @/utils/permissions: на момент написания
- * фичи union `Capability` ещё НЕ содержит trail.* (их добавит foundation-touch
- * волны 3 — см. docs/superpowers/plans/2026-06-12-trails.md, секция Foundation).
- * Чтобы воркдерево собиралось независимо, проверяем членство в me.capabilities
- * напрямую. Семантика идентична can(): null/не-active → false, статус-гейт
- * глобальный. После расширения union foundation-агент МОЖЕТ заменить hasTrailCap
- * на can(me, cap) — поведение не изменится.
+ * Имена capabilities сверены с philosophy-api internal/rbac/capabilities.go
+ * (CapTrailCreate = "trail.create", CapTrailDeleteAny = "trail.delete_any");
+ * typo ловит tsc через union `Capability`. Чистые cap-чеки делегированы
+ * `can()`: гость → false, не-active → false, иначе членство в capabilities
+ * (status-гейт внутри can()). Owner-aware хелперы ниже комбинируют
+ * can()-семантику с owner_id вручную.
  */
-type TrailCapability = "trail.create" | "trail.delete_any";
-
-function hasTrailCap(me: MaybeMe, cap: TrailCapability): boolean {
-  if (!me || me.status !== "active") return false;
-  return me.capabilities.includes(cap);
-}
 
 /** Создание маршрута — capability trail.create. */
 export function canCreateTrail(me: MaybeMe): boolean {
-  return hasTrailCap(me, "trail.create");
+  return can(me, "trail.create");
 }
 
 /**
@@ -43,7 +34,7 @@ export function canEditTrail(me: MaybeMe, trail: Trail): boolean {
 export function canDeleteTrail(me: MaybeMe, trail: Trail): boolean {
   if (!me || me.status !== "active") return false;
   if (trail.owner_id === me.id) return true;
-  if (!hasTrailCap(me, "trail.delete_any")) return false;
+  if (!can(me, "trail.delete_any")) return false;
   return trail.visibility !== "private";
 }
 
@@ -52,11 +43,11 @@ export function canDeleteTrail(me: MaybeMe, trail: Trail): boolean {
  * Admin-список (GET /api/admin/trails) и так отдаёт только public.
  */
 export function canAdminDeleteTrail(me: MaybeMe, trail: Trail): boolean {
-  if (!hasTrailCap(me, "trail.delete_any")) return false;
+  if (!can(me, "trail.delete_any")) return false;
   return trail.visibility !== "private";
 }
 
 /** Доступ к admin-списку маршрутов. */
 export function canListAdminTrails(me: MaybeMe): boolean {
-  return hasTrailCap(me, "trail.delete_any");
+  return can(me, "trail.delete_any");
 }

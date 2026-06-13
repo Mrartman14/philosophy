@@ -35,6 +35,10 @@ function rethrowApiError(err: ApiError | undefined): never {
       throw new ForbiddenError("status", err.error);
     case "NOT_CONFIGURED":
       throw new Error("Push-уведомления не настроены на сервере.");
+    // preference/service.go валит и тем и другим: 400 BAD_REQUEST
+    // (apperror.Validation — невалидный JSON) и 422 VALIDATION_ERROR
+    // (prefs.Validate). Push-схемы тоже отдают BAD_REQUEST. UX одинаковый.
+    case "BAD_REQUEST":
     case "VALIDATION_ERROR":
       throw new Error(err.error ?? "Сервер отклонил данные формы.");
   }

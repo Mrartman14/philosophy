@@ -1,7 +1,7 @@
 // src/features/share-links/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-import { isMutationAllowed } from "@/utils/permissions";
+import { can, isMutationAllowed } from "@/utils/permissions";
 
 /**
  * Минимальная форма ресурса для проверки права создать ссылку.
@@ -33,14 +33,13 @@ export function canCreateShareLink(
 /**
  * Модерация чужих ссылок (admin-страница, admin-revoke).
  *
- * Капа "share_link.moderate" (philosophy-api rbac/capabilities.go:52) НЕ входит
- * в union Capability (src/utils/permissions.ts заморожен — foundation-зона),
- * поэтому проверяем членство в capabilities напрямую. После foundation-touch,
- * добавляющего капу в union, этот хелпер можно заменить на can(me, ...).
+ * Капа "share_link.moderate" сверена с philosophy-api
+ * internal/rbac/capabilities.go (CapShareLinkModerate). Чек делегирован
+ * `can()`: гость → false, не-active → false, иначе членство в capabilities
+ * (status-гейт внутри can()).
  */
 export function canModerateShareLinks(me: MaybeMe): boolean {
-  if (!isMutationAllowed(me)) return false;
-  return me.capabilities.includes("share_link.moderate");
+  return can(me, "share_link.moderate");
 }
 
 /**
