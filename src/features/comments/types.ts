@@ -35,9 +35,7 @@ export type CommentRevisionMeta = components["schemas"]["revision.RevisionMeta"]
 export type CommentRevision = components["schemas"]["revision.Revision"];
 
 /**
- * GET /api/blocks/{block_id} в schema.ts отдаёт httputil.Response без
- * типизированного data. Реально data — это ast.Block (document/comment блок).
- * Типизируем вручную (см. docs/superpowers/specs/...coverage...md §10 — дрейф
- * schema.ts). Используется только для контекста якоря.
+ * GET /api/blocks/{block_id} в schema.ts типизирует data как ast.Block
+ * (document/comment блок). Используется только для контекста якоря.
  */
 export type ResolvedBlock = AstBlock;

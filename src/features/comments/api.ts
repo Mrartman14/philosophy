@@ -132,7 +132,7 @@ export const getCommentRevision = cache(
 
 /**
  * Резолв одного блока для контекста якоря (public, optionalAuth).
- * data не типизирован в schema.ts — кастуем к ResolvedBlock вручную (§10).
+ * schema.ts теперь типизирует data как ast.Block (= ResolvedBlock).
  */
 export const getBlock = cache(
   async (blockId: string): Promise<ResolvedBlock | null> => {
@@ -142,8 +142,7 @@ export const getBlock = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить блок");
-    const payload = data as { data?: unknown } | undefined;
-    return (payload?.data ?? null) as ResolvedBlock | null;
+    return data?.data ?? null;
   },
 );
 

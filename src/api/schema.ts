@@ -4079,7 +4079,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.Response"];
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["ast.Block"];
+                        };
                     };
                 };
                 /** @description Bad Request */
@@ -11998,6 +12000,8 @@ export interface components {
         };
         /** @enum {string} */
         "annotation.Visibility": "private" | "public";
+        /** @enum {string} */
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -12535,7 +12539,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         "httputil.ErrorResponse": {
-            code?: string;
+            code?: components["schemas"]["apperror.Code"];
             detail?: {
                 [key: string]: unknown;
             };
@@ -12554,7 +12558,7 @@ export interface components {
             data?: unknown;
         };
         "httputil.ValidationErrorResponse": {
-            code?: string;
+            code?: components["schemas"]["apperror.Code"];
             error?: string;
             fields?: {
                 [key: string]: string;

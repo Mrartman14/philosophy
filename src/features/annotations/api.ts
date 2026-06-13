@@ -202,9 +202,9 @@ export const getAnnotationRevision = cache(
 );
 
 /**
- * Контекст блока для резолва text-якоря. `GET /api/blocks/{block_id}` есть в
- * schema.ts (строка 4047), но data типизирован как unknown (§10, generic
- * httputil.Response) — ручной разбор. Возвращает блок или null (graceful).
+ * Контекст блока для резолва text-якоря. schema.ts типизирует data ответа
+ * `GET /api/blocks/{block_id}` как ast.Block (text?: string). Возвращает текст
+ * блока или null (graceful: 404/ошибка → null).
  */
 export const getBlockContext = cache(
   async (blockId: string): Promise<{ exact?: string | undefined } | null> => {
@@ -213,9 +213,7 @@ export const getBlockContext = cache(
       params: { path: { block_id: blockId } },
     });
     if (response.status === 404 || error) return null;
-    const block = (data as { data?: unknown })?.data;
-    if (!block || typeof block !== "object") return null;
-    const text = (block as { text?: unknown }).text;
-    return { exact: typeof text === "string" ? text : undefined };
+    const text = data?.data?.text;
+    return { exact: text };
   },
 );
