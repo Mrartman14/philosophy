@@ -9,9 +9,16 @@ import {
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
-import { canCreateLecture, canDeleteLecture } from "./permissions";
+import { getLectureById } from "./api";
+import {
+  canCreateLecture,
+  canDeleteLecture,
+  canManageCover,
+} from "./permissions";
 import {
   LectureCreateSchema,
+  LectureCoverClearSchema,
+  LectureCoverSchema,
   LectureIdSchema,
   LectureUpdateSchema,
   LectureVisibilitySchema,
@@ -21,10 +28,32 @@ import type { Lecture } from "./types";
 type ApiError = { code?: string; error?: string };
 
 function rethrowApiError(err: ApiError | undefined): never {
-  if (err?.code === "forbidden") {
-    throw new ForbiddenError("role", err.error);
+  switch (err?.code) {
+    case "forbidden":
+    case "FORBIDDEN":
+    case "ATTACH_FORBIDDEN":
+    case "UPLOAD_FOREIGN":
+      throw new ForbiddenError("role", err.error);
+    case "SUSPENDED":
+      throw new ForbiddenError("status", err.error);
+    case "UPLOAD_NOT_FOUND":
+      throw new Error("Загруженное изображение не найдено. Попробуйте ещё раз.");
+    case "ALREADY_ATTACHED":
+      throw new Error("Эта сущность уже прикреплена к лекции.");
+    case "INVALID_ENTITY_TYPE":
+      throw new Error("Недопустимый тип сущности.");
+    case "NOT_FOUND":
+    case "LECTURE_NOT_FOUND":
+      throw new Error("Лекция не найдена.");
   }
   throw new Error(err?.error ?? "Ошибка сервера");
+}
+
+/** Грузит лекцию для owner-aware гейта. 404 → ForbiddenError (secure). */
+async function loadLectureForGate(id: string): Promise<Lecture> {
+  const lecture = await getLectureById(id);
+  if (!lecture) throw new ForbiddenError("owner", "Лекция не найдена");
+  return lecture;
 }
 
 export const createLecture = createFormAction(async (formData) => {
@@ -81,6 +110,48 @@ export const deleteLecture = createAction(async (rawId: string) => {
     params: { path: { id } },
   });
   if (error) rethrowApiError(error);
+  revalidateEntity("lectures");
+  return undefined;
+});
+
+/**
+ * PUT /api/lectures/{id}/cover — промоут ранее загруженного изображения
+ * (upload_id из POST /api/uploads/images) в cover-слот. Owner-only.
+ * Бек отдаёт 204 — фронт инвалидирует кеш и перечитывает лекцию.
+ */
+export const setLectureCover = createAction(
+  async (raw: { id: string; upload_id: string; alt_text?: string }) => {
+    const me = await getMe();
+    const input = LectureCoverSchema.parse(raw);
+    const lecture = await loadLectureForGate(input.id);
+    requireCapability(me, (m) => canManageCover(m, lecture));
+    const api = await createApiClient();
+    const { error } = await api.PUT("/api/lectures/{id}/cover", {
+      params: { path: { id: input.id } },
+      body: {
+        upload_id: input.upload_id,
+        ...(input.alt_text !== undefined && { alt_text: input.alt_text }),
+      },
+    });
+    if (error) rethrowApiError(error as ApiError);
+    revalidateEntity("lectures", input.id);
+    revalidateEntity("lectures");
+    return undefined;
+  },
+);
+
+/** DELETE /api/lectures/{id}/cover — снять обложку. Owner-only. 204. */
+export const clearLectureCover = createAction(async (rawId: string) => {
+  const me = await getMe();
+  const { id } = LectureCoverClearSchema.parse({ id: rawId });
+  const lecture = await loadLectureForGate(id);
+  requireCapability(me, (m) => canManageCover(m, lecture));
+  const api = await createApiClient();
+  const { error } = await api.DELETE("/api/lectures/{id}/cover", {
+    params: { path: { id } },
+  });
+  if (error) rethrowApiError(error as ApiError);
+  revalidateEntity("lectures", id);
   revalidateEntity("lectures");
   return undefined;
 });
