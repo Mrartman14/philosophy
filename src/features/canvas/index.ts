@@ -35,4 +35,15 @@ export type {
   AttachmentDTO,
 } from "./types";
 
-// UI-экспорты добавляются в Задаче 13.
+export { resolveEntityRefView } from "./entity-ref";
+
+export { CanvasMyList } from "./ui/canvas-my-list";
+export { CanvasSearch } from "./ui/canvas-search";
+export { CanvasPagination } from "./ui/canvas-pagination";
+export { CanvasCreateForm } from "./ui/canvas-create-form";
+export { CanvasEditForm } from "./ui/canvas-edit-form";
+export { CanvasVisibilityButton } from "./ui/canvas-visibility-button";
+export { CanvasDeleteButton } from "./ui/canvas-delete-button";
+export { CanvasDetail } from "./ui/canvas-detail";
+export { CanvasContainers } from "./ui/canvas-containers";
+export { CanvasRevisions } from "./ui/canvas-revisions";
