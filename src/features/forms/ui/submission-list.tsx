@@ -14,7 +14,7 @@ export function SubmissionList({ submissions }: Props) {
     <ul className="flex flex-col divide-y divide-(--color-border)">
       {submissions.map((s) => (
         <li key={s.id} className="flex items-center justify-between gap-2 py-2">
-          <Link href={`/me/submissions#${s.id}`} className="text-sm hover:underline">
+          <Link href={`/submissions/${s.id}`} className="text-sm hover:underline">
             Отклик {s.id?.slice(0, 8)}
           </Link>
           <span className="text-xs text-(--color-description)">
