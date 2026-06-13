@@ -2,7 +2,11 @@
 import "server-only";
 import { cache } from "react";
 import { createApiClient } from "@/api/client";
-import type { Lecture } from "./types";
+import type {
+  Lecture,
+  LectureDocument,
+  LectureMediaItem,
+} from "./types";
 
 export interface LectureListFilter {
   q?: string;
@@ -55,3 +59,29 @@ export const getLectureById = cache(async (id: string): Promise<Lecture | null> 
   const lecture = data?.data;
   return (lecture ?? null) as Lecture | null;
 });
+
+/** GET /api/lectures/{id}/documents — документы лекции (по sort_order). 404 → []. */
+export const getLectureDocuments = cache(
+  async (id: string): Promise<LectureDocument[]> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/lectures/{id}/documents", {
+      params: { path: { id } },
+    });
+    if (response.status === 404) return [];
+    if (error) throw new Error(error.error ?? "Не удалось загрузить документы лекции");
+    return (data?.data ?? []) as LectureDocument[];
+  },
+);
+
+/** GET /api/lectures/{id}/media — медиа лекции (по sort_order). 404 → []. */
+export const getLectureMedia = cache(
+  async (id: string): Promise<LectureMediaItem[]> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/lectures/{id}/media", {
+      params: { path: { id } },
+    });
+    if (response.status === 404) return [];
+    if (error) throw new Error(error.error ?? "Не удалось загрузить медиа лекции");
+    return (data?.data ?? []) as LectureMediaItem[];
+  },
+);
