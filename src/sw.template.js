@@ -1,3 +1,4 @@
+/* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, PRESERVED_CACHES */
 const BASE_PATH = '__BASE_PATH__';
 const SW_VERSION = '__SW_VERSION__';
 
@@ -19,6 +20,10 @@ const STATIC_ASSETS = [
 const OFFLINE_URL = `${BASE_PATH}/offline.html`;
 const IMAGE_CACHE_LIMIT = 100;
 
+// Чистая маршрутизация/очистка кэшей инлайнится из src/services/offline/sw/sw-logic.ts
+// на этапе build (scripts/generate-sw-assets.mjs). Здесь НЕ редактировать.
+//__SW_LOGIC__
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
@@ -35,9 +40,7 @@ self.addEventListener('activate', (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys
-            .filter((key) => key.startsWith(CACHE_PREFIX) && !ALL_CACHES.includes(key))
-            .map((key) => caches.delete(key))
+          selectCachesToDelete(keys, ALL_CACHES).map((key) => caches.delete(key))
         )
       )
       .then(() => self.clients.claim())
