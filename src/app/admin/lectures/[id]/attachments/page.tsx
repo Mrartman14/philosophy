@@ -40,9 +40,9 @@ export default async function LectureAttachmentsPage({ params }: Props) {
     sortOrder: i,
   }));
   const mediaItems: ManagedAttachment[] = media.map((m, i) => ({
-    entityId: m.id ?? "",
+    entityId: m.id,
     entityType: "media",
-    label: m.filename ?? m.id ?? "Медиа",
+    label: m.filename,
     sortOrder: i,
   }));
 

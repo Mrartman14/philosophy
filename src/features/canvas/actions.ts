@@ -45,7 +45,7 @@ export const createCanvas = createFormAction(async (formData) => {
     body: {
       title: input.title,
       ...(input.visibility ? { visibility: input.visibility } : {}),
-      ...(input.data ? { data: input.data as CanvasData } : {}),
+      data: input.data as CanvasData,
     },
   });
   if (error) rethrowApiError(error);

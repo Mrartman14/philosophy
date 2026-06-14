@@ -47,7 +47,7 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
             name="description"
             rows={6}
             maxLength={5000}
-            defaultValue={lecture.description ?? ""}
+            defaultValue={lecture.description}
           />
         </FormField>
 

@@ -53,8 +53,8 @@ export function byteRangeToCodeUnits(
   let endCU: number | null = null;
 
   // Граница ПЕРЕД первым символом (bytes === 0).
-  if (bytes >= byteOffset && startCU === null) startCU = cu;
-  if (bytes >= byteEnd && endCU === null) endCU = cu;
+  if (bytes >= byteOffset) startCU = cu;
+  if (bytes >= byteEnd) endCU = cu;
 
   // for..of итерирует по code points (не code units).
   for (const ch of text) {

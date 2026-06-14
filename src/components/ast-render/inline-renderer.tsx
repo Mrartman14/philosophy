@@ -75,7 +75,7 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
       if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
         console.warn(`AstRender: unsupported mark type "${String(_exhaustive)}"`);
       }
-      return <span data-unsupported-mark={mark.type ?? "unknown"}>{children}</span>;
+      return <span data-unsupported-mark={(mark.type as string | undefined) ?? "unknown"}>{children}</span>;
     }
   }
 }

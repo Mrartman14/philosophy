@@ -24,7 +24,7 @@ export function LinkPopover({ editor, schema }: Props) {
   const handleOpen = (nextOpen: boolean) => {
     if (nextOpen) {
       const currentHref =
-        (editor.getAttributes("link").href as string) ?? "";
+        (editor.getAttributes("link").href as string | undefined) ?? "";
       setHref(currentHref);
       setErr(null);
     }

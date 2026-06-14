@@ -22,8 +22,8 @@ export const YandexMetrika: React.FC = () => {
     if (window.ym) return;
 
     const stub = function (...args: unknown[]) {
-      (stub.a = stub.a || []).push(args);
-    } as YmFn & { a: unknown[][]; l: number };
+      (stub.a = stub.a ?? []).push(args);
+    } as YmFn & { a?: unknown[][]; l: number };
     stub.l = Date.now();
     window.ym = stub;
 

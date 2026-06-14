@@ -20,6 +20,7 @@ export function CopyButton({ value, label = "Копировать" }: Props) {
 
   async function onCopy() {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- navigator.clipboard типизирован как всегда присутствующий, но undefined в insecure-контексте/старых браузерах
       if (!navigator.clipboard) {
         throw new Error("clipboard unavailable");
       }

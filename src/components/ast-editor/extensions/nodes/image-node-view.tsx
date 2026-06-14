@@ -9,9 +9,9 @@ export function ImageNodeView({
   selected,
 }: NodeViewProps) {
   const editable = editor.isEditable;
-  const storageKey = (node.attrs.storage_key as string) ?? "";
-  const alt = (node.attrs.alt as string) ?? "";
-  const caption = (node.attrs.caption as string) ?? "";
+  const storageKey = (node.attrs.storage_key as string | undefined) ?? "";
+  const alt = (node.attrs.alt as string | undefined) ?? "";
+  const caption = (node.attrs.caption as string | undefined) ?? "";
 
   return (
     <NodeViewWrapper

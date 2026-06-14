@@ -80,6 +80,7 @@ describe("imagePasteDropPlugin", () => {
     vi.clearAllMocks();
     // jsdom does not implement elementFromPoint; PM's posAtCoords falls back
     // gracefully when it returns null (our plugin then uses selection.from).
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- jsdom не реализует elementFromPoint; DOM-lib типизирует его как всегда присутствующий
     if (!document.elementFromPoint) {
       (document as unknown as { elementFromPoint: () => null }).elementFromPoint = () => null;
     }

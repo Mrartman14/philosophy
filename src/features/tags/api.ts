@@ -31,6 +31,7 @@ export const getTags = cache(
     const { data, error } = await api.GET("/api/tags", {
       params: { query: { offset, limit } },
     });
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- error этого роута openapi-типизирован как never, но runtime может его выставить (network/non-2xx)
     if (error) {
       // openapi-типизирует error этого роута как `never` (нет error-body в
       // схеме) — пробросить error.error нельзя, отдаём фиксированный текст.

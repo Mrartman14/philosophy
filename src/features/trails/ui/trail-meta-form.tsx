@@ -24,7 +24,7 @@ export function TrailMetaForm({ trail }: Props) {
       <input type="hidden" name="id" value={trail.id} />
 
       <FormField name="title" label="Название" required>
-        <TextInput name="title" required maxLength={200} defaultValue={trail.title ?? ""} />
+        <TextInput name="title" required maxLength={200} defaultValue={trail.title} />
       </FormField>
 
       <FormField name="description" label="Описание">

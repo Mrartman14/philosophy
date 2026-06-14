@@ -25,7 +25,7 @@ export async function LectureMediaSection({ lectureId }: Props) {
               href={`/media/${m.id}`}
               className="text-sm underline hover:no-underline"
             >
-              {m.filename ?? m.id}
+              {m.filename}
             </Link>
           </li>
         ))}

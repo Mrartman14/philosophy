@@ -4,7 +4,7 @@ import type { AstBlock, AstNode, SchemaSnapshot } from "./types";
 const LEAF_BLOCK_TYPES = new Set(["code_block", "image", "thematic_break"]);
 
 export function deserialize(blocks: AstBlock[], _schema: SchemaSnapshot): ProseMirrorJSON {
-  if (!blocks || blocks.length === 0) {
+  if (blocks.length === 0) {
     return { type: "doc", content: [{ type: "paragraph" }] };
   }
   return {

@@ -33,6 +33,7 @@ export function LectureDescription({
       const r = await suggestGlossaryTerms({
         blocks: [{ block_id: blockId, text: description }],
       });
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- cancelled мутируется в cleanup эффекта (race guard), TS не отслеживает closure-мутацию
       if (cancelled || !r.success) return;
       const next: HighlightRange[] = [];
       for (const sug of r.data) {

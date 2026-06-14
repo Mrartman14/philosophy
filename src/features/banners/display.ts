@@ -16,7 +16,7 @@ export const AUDIENCE_OPTIONS = (
 
 export function audienceLabel(audience?: BannerTargetAudience): string {
   if (!audience) return "";
-  return AUDIENCE_LABELS[audience] ?? audience;
+  return AUDIENCE_LABELS[audience];
 }
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {

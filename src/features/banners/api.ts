@@ -94,6 +94,7 @@ export const getBannerRevision = cache(
 export const getActiveBanners = cache(async (): Promise<Banner[]> => {
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/banners/active");
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- openapi types this route's error as never, but openapi-fetch sets it at runtime on network/non-2xx failures
   if (error) {
     throw new Error("Не удалось загрузить баннеры");
   }

@@ -36,6 +36,7 @@ export const getCommentSchema = unstable_cache(
   async (): Promise<CommentSchema | null> => {
     const api = createPublicApiClient();
     const { data, error } = await api.GET("/api/comments/schema");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- openapi types this route error as never, but openapi-fetch sets it at runtime on network/non-2xx failures
     if (error) throw new Error("Не удалось загрузить схему комментариев");
     return (data.data ?? null) as CommentSchema | null;
   },

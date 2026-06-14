@@ -112,6 +112,7 @@ describe("ImageExt parseHTML/renderHTML", () => {
       if (n.type.name === "image") imageNode = n;
     });
     expect(imageNode).not.toBeNull();
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- imageNode мутируется в callback descendants(), TS не отслеживает closure-мутацию
     if (imageNode === null) throw new Error("image-узел не найден");
     const attrs = imageNode.attrs as { storage_key: string; alt: string; caption: string; blockId: string };
     expect(attrs.storage_key).toBe("def");

@@ -34,6 +34,7 @@ export function createLimitsPlugin(snapshot: SchemaSnapshot, contextLevel: strin
         }
         return true;
       });
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- ok мутируется внутри callback descendants(), TS не видит мутацию
       if (!ok) return false;
 
       if (treeDepth(newDoc) > limits.maxDepth) return false;

@@ -51,7 +51,7 @@ export default async function EditLecturePage({ params }: Props) {
           canDelete={canDeleteLecture(me)}
         />
       )}
-      {canAssign && allTags && lectureTags && (
+      {canAssign && allTags && (
         <section className="max-w-xl border-t border-(--color-border) pt-4">
           <h2 className="mb-3 text-lg font-semibold">Теги</h2>
           <LectureTagsForm

@@ -13,7 +13,7 @@ const TYPE_LABELS: Record<CommentType, string> = {
 };
 
 export function commentTypeLabel(type: CommentType): string {
-  return TYPE_LABELS[type] ?? type;
+  return TYPE_LABELS[type];
 }
 
 export function CommentTypeBadge({ type }: { type: CommentType }) {

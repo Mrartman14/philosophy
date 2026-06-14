@@ -72,7 +72,7 @@ export async function uploadMedia(
   }
 
   if (res.status === 201) {
-    const body = (await res.json()) as { data?: Media } | Media;
+    const body: unknown = await res.json();
     const media =
       typeof body === "object" && body !== null && "data" in body
         ? (body as { data: Media }).data
