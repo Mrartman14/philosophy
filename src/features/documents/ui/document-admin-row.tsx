@@ -14,7 +14,7 @@ export function DocumentAdminRow({ document, canDelete }: Props) {
     <li className="flex items-center justify-between gap-3 py-2">
       <div className="flex flex-col">
         <Link href={`/documents/${document.id}`} className="text-sm hover:underline">
-          {document.filename || "Без названия"}
+          {document.filename ?? "Без названия"}
         </Link>
         <span className="text-xs text-(--color-description)">
           {document.visibility} · автор {document.owner_id}

@@ -75,6 +75,7 @@ export function AuditTable({ records }: Props) {
             <Td>
               <div className="flex flex-col">
                 {/* у удалённого актора username пустой — LEFT JOIN на беке */}
+                {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- бек возвращает "" для удалённого актора (LEFT JOIN), "" → "—" намеренно */}
                 <span>{rec.actor_username || "—"}</span>
                 <code
                   className="text-xs text-(--color-description)"

@@ -30,5 +30,6 @@ export const getVapidKey = cache(async (): Promise<string | null> => {
   const api = await createApiClient();
   const { data, response } = await api.GET("/api/push/vapid-key");
   if (!response.ok) return null;
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- пустая строка "" — невалидный VAPID-ключ, трактуется как «не задано»
   return data?.data?.publicKey || null;
 });

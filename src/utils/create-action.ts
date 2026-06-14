@@ -124,9 +124,7 @@ export function parseFormData<T extends ZodType>(
   const fieldErrors: Record<string, string> = {};
   for (const issue of parsed.error.issues) {
     const key = issue.path.length === 0 ? "_form" : issue.path.join(".");
-    if (!fieldErrors[key]) {
-      fieldErrors[key] = issue.message;
-    }
+    fieldErrors[key] ??= issue.message;
   }
   throw new ZodValidationError(fieldErrors);
 }

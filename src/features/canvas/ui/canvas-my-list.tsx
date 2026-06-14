@@ -18,7 +18,7 @@ export function CanvasMyList({ canvases }: Props) {
           ? [
               <li key={c.id} className="rounded border border-(--color-border) p-3">
                 <Link href={`/canvases/${c.id}`} className="font-medium hover:text-(--color-primary)">
-                  {c.title || "Без названия"}
+                  {c.title ?? "Без названия"}
                 </Link>
                 <span className="ml-2 text-xs text-(--color-description)">
                   {c.visibility === "public" ? "публичный" : "приватный"}

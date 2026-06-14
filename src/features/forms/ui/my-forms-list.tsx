@@ -18,7 +18,7 @@ export function MyFormsList({ forms }: Props) {
       {forms.map((f) => (
         <li key={f.id} className="flex items-center justify-between gap-2 py-2">
           <Link href={`/forms/${f.id}`} className="text-sm hover:underline">
-            {f.title || "Без названия"}
+            {f.title ?? "Без названия"}
           </Link>
           <span className="text-xs text-(--color-description)">
             {visLabel[f.visibility ?? "private"] ?? f.visibility}

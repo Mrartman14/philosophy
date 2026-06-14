@@ -118,6 +118,7 @@ export const getLectureSummary = cache(
       return { id, title: "Лекция недоступна" };
     }
     const lecture = data?.data as { id?: string; title?: string } | undefined;
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- API может вернуть "", "" трактуется как «нет заголовка»
     return { id, title: lecture?.title || "Без названия" };
   },
 );

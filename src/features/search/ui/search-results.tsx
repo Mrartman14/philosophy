@@ -40,7 +40,9 @@ function hitHref(hit: SearchHit): string | null {
 }
 
 function hitTitle(hit: SearchHit): string {
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- .trim() может дать "", "" → "Без названия" намеренно
   if (hit.type === "lecture") return hit.lecture?.title?.trim() || "Без названия";
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- аналогично: trim → ""
   if (hit.type === "glossary") return hit.glossary_term?.title?.trim() || "Без названия";
   return "Результат";
 }

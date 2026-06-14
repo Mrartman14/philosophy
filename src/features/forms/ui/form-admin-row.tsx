@@ -20,7 +20,7 @@ export function FormAdminRow({ form, canDelete }: Props) {
   return (
     <li className="flex items-center justify-between gap-2 py-2">
       <Link href={`/forms/${form.id}`} className="text-sm hover:underline">
-        {form.title || "Без названия"}
+        {form.title ?? "Без названия"}
       </Link>
       <div className="flex items-center gap-2">
         <span className="text-xs text-(--color-description)">{form.visibility}</span>

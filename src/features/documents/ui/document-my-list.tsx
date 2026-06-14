@@ -24,7 +24,7 @@ export function DocumentMyList({ documents }: Props) {
       {documents.map((doc) => (
         <li key={doc.id} className="flex items-center justify-between gap-2 py-2">
           <Link href={`/documents/${doc.id}`} className="text-sm hover:underline">
-            {doc.filename || "Без названия"}
+            {doc.filename ?? "Без названия"}
           </Link>
           <span className="text-xs text-(--color-description)">
             {visibilityLabel[doc.visibility ?? "private"] ?? doc.visibility}

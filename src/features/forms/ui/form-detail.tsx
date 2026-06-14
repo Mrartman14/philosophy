@@ -7,7 +7,7 @@ export function FormDetail({ form }: { form: Form }) {
   const description = form.description ?? [];
   return (
     <div className="flex flex-col gap-3">
-      <h1 className="text-2xl font-bold">{form.title || "Форма"}</h1>
+      <h1 className="text-2xl font-bold">{form.title ?? "Форма"}</h1>
       <FormMeta form={form} />
       {description.length > 0 && (
         <article className="prose max-w-none">

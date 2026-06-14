@@ -40,7 +40,7 @@ export default async function CanvasPage({ params, searchParams }: Props) {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">{canvas.title || "Канвас"}</h1>
+        <h1 className="text-2xl font-bold">{canvas.title ?? "Канвас"}</h1>
         {canvas.id && (
           <ShareButton
             resourceType="canvas"

@@ -42,6 +42,7 @@ function normalizeFields(raw: EventFieldsRaw) {
       : allDay
         ? raw.end_date
         : toRfc3339(raw.end_date),
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- пустая строка "" трактуется как «не задано» (form trim + optional), ?? оставил бы "" как валидное значение
     rrule: raw.rrule ? raw.rrule : undefined,
   };
 }

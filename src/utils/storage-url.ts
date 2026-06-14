@@ -10,9 +10,11 @@
  */
 export function resolveStorageUrl(storageKey: string): string {
   if (!storageKey) return "";
+  /* eslint-disable @typescript-eslint/prefer-nullish-coalescing -- пустая env-строка трактуется как «не задано» (→ фолбэк), ?? оставил бы "" как базу URL */
   const base =
     process.env.NEXT_PUBLIC_STORAGE_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
     "";
+  /* eslint-enable @typescript-eslint/prefer-nullish-coalescing */
   return `${base}/static/files/${storageKey}`;
 }

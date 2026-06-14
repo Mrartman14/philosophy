@@ -50,6 +50,7 @@ function renderContent(
               <p>
                 {item.id ? (
                   <a href={`/comments/${item.id}`} className="hover:underline">
+                    {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- snippet может быть "" (пустой комментарий), "" → "(без текста)" намеренно */}
                     {item.snippet || "(без текста)"}
                   </a>
                 ) : (
