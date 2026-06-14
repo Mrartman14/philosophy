@@ -1,7 +1,16 @@
 // src/components/ast-editor/toolbar/buttons/image-button.test.tsx
 import "@testing-library/jest-dom/vitest";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { Toolbar } from "@base-ui/react/toolbar";
 import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
+import { Editor } from "@tiptap/core";
+import { describe, it, expect, vi, afterEach } from "vitest";
+
+import { buildExtensions } from "../../extensions";
+import type { SchemaSnapshot } from "../../types";
+import { makePngFile } from "../../upload/__fixtures__/png-1x1";
+import { uploadImage } from "../../upload/upload-image";
+
+import { ImageButton } from "./image-button";
 
 // vi.mock поднимается выше всех объявлений файла — внешние переменные внутри
 // фабрики допустимы только через vi.hoisted, иначе ReferenceError.
@@ -12,17 +21,6 @@ vi.mock("@/components/ui", () => ({
 vi.mock("../../upload/upload-image", () => ({
   uploadImage: vi.fn(),
 }));
-
-import { Toolbar } from "@base-ui/react/toolbar";
-import { Editor } from "@tiptap/core";
-
-
-import { buildExtensions } from "../../extensions";
-import type { SchemaSnapshot } from "../../types";
-import { makePngFile } from "../../upload/__fixtures__/png-1x1";
-import { uploadImage } from "../../upload/upload-image";
-
-import { ImageButton } from "./image-button";
 
 const mockedUpload = uploadImage as unknown as ReturnType<typeof vi.fn>;
 

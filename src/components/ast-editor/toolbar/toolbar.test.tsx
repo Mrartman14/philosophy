@@ -1,6 +1,14 @@
 // src/components/ast-editor/toolbar/toolbar.test.tsx
-import { describe, it, expect, vi, afterEach } from "vitest";
 import "@testing-library/jest-dom/vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { Editor } from "@tiptap/core";
+import { describe, it, expect, vi, afterEach } from "vitest";
+
+import { buildExtensions } from "../extensions";
+import * as pickerActions from "../pickers/actions";
+import type { EntityContext, SchemaSnapshot } from "../types";
+
+import { EditorToolbar } from "./toolbar";
 
 // Фабрики vi.mock не должны ссылаться на внешние переменные (hoisting).
 // toolbar.test не ассертит вызовы toast — достаточно inline vi.fn().
@@ -15,15 +23,6 @@ vi.mock("../pickers/actions", () => ({
   searchCanvases: vi.fn(),
   searchCommentsByLecture: vi.fn(),
 }));
-
-import { Editor } from "@tiptap/core";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-
-import { buildExtensions } from "../extensions";
-import * as pickerActions from "../pickers/actions";
-import type { EntityContext, SchemaSnapshot } from "../types";
-
-import { EditorToolbar } from "./toolbar";
 
 const mockedActions = pickerActions as unknown as {
   searchCommentsByLecture: ReturnType<typeof vi.fn>;

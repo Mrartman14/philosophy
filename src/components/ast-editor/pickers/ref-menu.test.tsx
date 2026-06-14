@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom/vitest";
-import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { Editor } from "@tiptap/core";
+import { describe, it, expect, vi, afterEach } from "vitest";
+
+import { buildExtensions } from "../extensions";
+import type { SchemaSnapshot } from "../types";
+
+import * as actions from "./actions";
+import { RefMenu } from "./ref-menu";
 
 vi.mock("./actions", () => ({
   searchLectures: vi.fn(),
@@ -10,14 +17,6 @@ vi.mock("./actions", () => ({
   searchCanvases: vi.fn(),
   searchCommentsByLecture: vi.fn(),
 }));
-
-import { Editor } from "@tiptap/core";
-
-import { buildExtensions } from "../extensions";
-import type { SchemaSnapshot } from "../types";
-
-import * as actions from "./actions";
-import { RefMenu } from "./ref-menu";
 
 const mocked = actions as unknown as { searchLectures: ReturnType<typeof vi.fn> };
 

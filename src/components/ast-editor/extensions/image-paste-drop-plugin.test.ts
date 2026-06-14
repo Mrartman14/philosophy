@@ -1,10 +1,11 @@
 import { Editor } from "@tiptap/core";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { buildExtensions } from "./index";
-
 import type { SchemaSnapshot } from "../types";
 import { makePngFile } from "../upload/__fixtures__/png-1x1";
+import { uploadImage } from "../upload/upload-image";
+
+import { buildExtensions } from "./index";
 
 vi.mock("../upload/upload-image", () => ({
   uploadImage: vi.fn(() => ({
@@ -12,8 +13,6 @@ vi.mock("../upload/upload-image", () => ({
     data: { storage_key: "abc-key", upload_id: "u-1" },
   })),
 }));
-
-import { uploadImage } from "../upload/upload-image";
 
 const fullSnapshot: SchemaSnapshot = {
   blockLevels: { full: ["paragraph", "image"] },

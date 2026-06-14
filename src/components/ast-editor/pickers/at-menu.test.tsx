@@ -1,7 +1,15 @@
 // src/components/ast-editor/pickers/at-menu.test.tsx
 import "@testing-library/jest-dom/vitest";
 import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
+import { Editor, Extension } from "@tiptap/core";
 import { describe, it, expect, vi, afterEach } from "vitest";
+
+import { buildExtensions } from "../extensions";
+import type { SchemaSnapshot } from "../types";
+
+import * as actions from "./actions";
+import { AtMenu } from "./at-menu";
+import { createAtSuggestionPlugin, atSuggestionKey } from "./at-suggestion-plugin";
 
 vi.mock("./actions", () => ({
   searchLectures: vi.fn(),
@@ -11,15 +19,6 @@ vi.mock("./actions", () => ({
   searchCanvases: vi.fn(),
   searchCommentsByLecture: vi.fn(),
 }));
-
-import { Editor, Extension } from "@tiptap/core";
-
-import { buildExtensions } from "../extensions";
-import type { SchemaSnapshot } from "../types";
-
-import * as actions from "./actions";
-import { AtMenu } from "./at-menu";
-import { createAtSuggestionPlugin, atSuggestionKey } from "./at-suggestion-plugin";
 
 const mocked = actions as unknown as { searchLectures: ReturnType<typeof vi.fn> };
 

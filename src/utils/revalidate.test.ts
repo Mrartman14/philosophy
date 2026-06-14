@@ -1,13 +1,12 @@
 // src/utils/revalidate.test.ts
+import { revalidateTag } from "next/cache";
 import { describe, it, expect, vi } from "vitest";
+
+import { revalidateEntity } from "./revalidate";
 
 vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }));
-
-import { revalidateTag } from "next/cache";
-
-import { revalidateEntity } from "./revalidate";
 
 describe("revalidateEntity", () => {
   it("invalidates the list tag", () => {
