@@ -1,6 +1,6 @@
 /* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, PRESERVED_CACHES */
 const BASE_PATH = '';
-const SW_VERSION = 'mqe6nz7h';
+const SW_VERSION = 'mqe6pd9l';
 
 const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;
@@ -101,6 +101,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Сохранённые офлайн-файлы (content-addressed, без расширения) — из офлайн-бакета.
+  if (isOfflineFileRequest(url.pathname)) {
+    event.respondWith(offlineFileFirst(request));
+    return;
+  }
+
   // Next.js static chunks — cache-first
   if (url.pathname.includes('/_next/static/')) {
     event.respondWith(cacheFirst(request, NEXT_ASSETS_CACHE));
@@ -178,6 +184,24 @@ async function trimCache(cacheName, limit) {
   const excess = keys.length - limit;
   for (let i = 0; i < excess; i++) {
     await cache.delete(keys[i]);
+  }
+}
+
+async function offlineFileFirst(request) {
+  const offlineCache = await caches.open(OFFLINE_IMAGE_CACHE);
+  const saved = await offlineCache.match(request);
+  if (saved) return saved;
+  try {
+    const response = await fetch(request);
+    if (response && response.status === 200) {
+      const lru = await caches.open(IMAGE_CACHE);
+      lru.put(request, response.clone());
+      trimCache(IMAGE_CACHE, IMAGE_CACHE_LIMIT);
+    }
+    return response;
+  } catch {
+    // Для картинки возвращаем 504, а не offline.html (HTML в <img> бессмыслен).
+    return new Response(null, { status: 504, statusText: 'Offline' });
   }
 }
 
