@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // React Compiler (Next 16, режим infer). Next прогоняет babel-plugin-react-compiler
+  // через SWC-оптимизацию только по релевантным файлам — Turbopack/SWC сохраняются
+  // (.babelrc намеренно НЕ добавляем). Рантайм компилятора встроен в React 19.2.
+  reactCompiler: true,
   reactStrictMode: true,
   images: {
     unoptimized: true,

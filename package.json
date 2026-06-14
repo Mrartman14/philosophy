@@ -16,7 +16,9 @@
   "packageManager": "pnpm@8.14.3",
   "pnpm": {
     "//": "unrs-resolver's napi-postinstall 'check' script is redundant — the native binding is installed via the platform optionalDependency (@unrs/resolver-binding-*) — and its bin shim fails to resolve on re-install under node-linker=hoisted, making `pnpm install` exit 1. Skipping it keeps installs clean; the resolver still loads.",
-    "neverBuiltDependencies": ["unrs-resolver"]
+    "neverBuiltDependencies": [
+      "unrs-resolver"
+    ]
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -53,6 +55,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/coverage-v8": "^4.1.5",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "jsdom": "^29.0.2",
