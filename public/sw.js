@@ -1,6 +1,6 @@
 /* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, PRESERVED_CACHES */
 const BASE_PATH = '';
-const SW_VERSION = 'mqe6pd9l';
+const SW_VERSION = 'mqe6qqa5';
 
 const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;
@@ -94,6 +94,13 @@ self.addEventListener('fetch', (event) => {
 
   if (request.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
+
+  // Навигация в офлайн-раздел /saved — network-first в сохраняемый shell-кэш (app-shell).
+  // RSC-fetch'и (mode !== 'navigate') сюда не попадают — клиентскую навигацию не ломаем.
+  if (isSavedShellNavigation(request.mode, url.pathname)) {
+    event.respondWith(navigationNetworkFirst(request, SAVED_SHELL_CACHE));
+    return;
+  }
 
   // API requests — network-first
   if (url.pathname.startsWith('/api/')) {
@@ -202,6 +209,21 @@ async function offlineFileFirst(request) {
   } catch {
     // Для картинки возвращаем 504, а не offline.html (HTML в <img> бессмыслен).
     return new Response(null, { status: 504, statusText: 'Offline' });
+  }
+}
+
+async function navigationNetworkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetch(request);
+    // Не кэшируем редиректы (redirected Response в навигации может бросить в respondWith).
+    if (response && response.status === 200 && !response.redirected) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    const cached = await cache.match(request);
+    return cached || caches.match(OFFLINE_URL);
   }
 }
 
