@@ -24,9 +24,9 @@ function toResult(
 ): AnnotationListResult {
   return {
     items: resp?.data ?? [],
-    total: resp?.pagination?.total ?? 0,
-    offset: resp?.pagination?.offset ?? offset,
-    limit: resp?.pagination?.limit ?? limit,
+    total: resp?.pagination.total ?? 0,
+    offset: resp?.pagination.offset ?? offset,
+    limit: resp?.pagination.limit ?? limit,
   };
 }
 
@@ -72,8 +72,8 @@ export const getAnnotationById = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error?.error ?? "Не удалось загрузить аннотацию");
-    return (data?.data ?? null) as Annotation | null;
+    if (error) throw new Error(error.error ?? "Не удалось загрузить аннотацию");
+    return (data.data ?? null) as Annotation | null;
   },
 );
 
@@ -94,12 +94,12 @@ export const getMyAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error(error?.error ?? "Не удалось загрузить мои аннотации");
+    if (error) throw new Error(error.error ?? "Не удалось загрузить мои аннотации");
     return {
-      items: (data?.data ?? []) as Annotation[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Annotation[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -123,12 +123,12 @@ export const getLectureAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error(error?.error ?? "Не удалось загрузить аннотации лекции");
+    if (error) throw new Error(error.error ?? "Не удалось загрузить аннотации лекции");
     return {
-      items: (data?.data ?? []) as Annotation[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Annotation[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -160,12 +160,12 @@ export const getAdminAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error(error?.error ?? "Не удалось загрузить список аннотаций");
+    if (error) throw new Error(error.error ?? "Не удалось загрузить список аннотаций");
     return {
-      items: (data?.data ?? []) as Annotation[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Annotation[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -177,8 +177,8 @@ export const getAnnotationRevisions = cache(
     const { data, error } = await api.GET("/api/annotations/{id}/revisions", {
       params: { path: { id } },
     });
-    if (error) throw new Error(error?.error ?? "Не удалось загрузить ревизии");
-    return (data?.data ?? []) as AnnotationRevisionMeta[];
+    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
+    return (data.data ?? []) as AnnotationRevisionMeta[];
   },
 );
 
@@ -191,8 +191,8 @@ export const getAnnotationRevision = cache(
       { params: { path: { id, revisionID: revisionId } } },
     );
     if (response.status === 404) return null;
-    if (error) throw new Error(error?.error ?? "Не удалось загрузить ревизию");
-    return (data?.data ?? null) as AnnotationRevision | null;
+    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
+    return (data.data ?? null) as AnnotationRevision | null;
   },
 );
 
@@ -208,7 +208,7 @@ export const getBlockContext = cache(
       params: { path: { block_id: blockId } },
     });
     if (response.status === 404 || error) return null;
-    const text = data?.data?.text;
+    const text = data.data?.text;
     return { exact: text };
   },
 );

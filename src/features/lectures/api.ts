@@ -41,10 +41,10 @@ export const getLectures = cache(
       throw new Error(error.error ?? "Не удалось загрузить лекции");
     }
     return {
-      items: (data?.data ?? []) as Lecture[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Lecture[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -68,7 +68,7 @@ export const getLectureById = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить лекцию");
     }
-    const lecture = data?.data;
+    const lecture = data.data;
     return (lecture ?? null) as Lecture | null;
   },
 );
@@ -82,7 +82,7 @@ export const getLectureDocuments = cache(
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? "Не удалось загрузить документы лекции");
-    return (data?.data ?? []) as LectureDocument[];
+    return (data.data ?? []) as LectureDocument[];
   },
 );
 
@@ -95,6 +95,6 @@ export const getLectureMedia = cache(
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? "Не удалось загрузить медиа лекции");
-    return (data?.data ?? []) as LectureMediaItem[];
+    return (data.data ?? []) as LectureMediaItem[];
   },
 );

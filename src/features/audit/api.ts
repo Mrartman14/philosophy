@@ -64,10 +64,10 @@ export const getAuditLog = cache(
       throw new Error(error.error ?? "Не удалось загрузить audit-лог");
     }
     return {
-      items: (data?.data ?? []) as AuditRecord[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as AuditRecord[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );

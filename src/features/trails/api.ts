@@ -35,10 +35,10 @@ export const getTrails = cache(
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
     return {
-      items: (data?.data ?? []) as Trail[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Trail[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -54,10 +54,10 @@ export const getMyTrails = cache(
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
     return {
-      items: (data?.data ?? []) as Trail[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Trail[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -79,7 +79,7 @@ export const getTrailById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршрут");
-    return (data?.data ?? null) as TrailWithItems | null;
+    return (data.data ?? null) as TrailWithItems | null;
   },
 );
 
@@ -94,10 +94,10 @@ export const getAdminTrails = cache(
     const { data, error } = await api.GET("/api/admin/trails", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
     return {
-      items: (data?.data ?? []) as Trail[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Trail[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -119,7 +119,7 @@ export const getLectureSummary = cache(
     if (response.status === 404 || error) {
       return { id, title: "Лекция недоступна" };
     }
-    const lecture = data?.data as { id?: string; title?: string } | undefined;
+    const lecture = data.data as { id?: string; title?: string } | undefined;
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- API может вернуть "", "" трактуется как «нет заголовка»
     return { id, title: lecture?.title || "Без названия" };
   },

@@ -70,7 +70,7 @@ export const createBanner = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.BANNERS);
-  return (data?.data ?? null) as Banner | null;
+  return (data.data ?? null) as Banner | null;
 });
 
 export const updateBanner = createFormAction(async (formData) => {
@@ -98,7 +98,7 @@ export const updateBanner = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.BANNERS, input.id);
   revalidateEntity(Tags.BANNERS);
-  return (data?.data ?? null) as Banner | null;
+  return (data.data ?? null) as Banner | null;
 });
 
 export const deleteBanner = createAction(async (rawId: string) => {
@@ -125,7 +125,7 @@ export const dismissBanner = createAction(async (rawId: string) => {
   if (error) {
     const err = error as ApiError;
     // dismissible=false → 409 CONFLICT («banner is not dismissible»).
-    if (err?.code === "CONFLICT") {
+    if (err.code === "CONFLICT") {
       throw new Error("Этот баннер нельзя скрыть.");
     }
     rethrowApiError(err);

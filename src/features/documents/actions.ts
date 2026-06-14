@@ -77,7 +77,7 @@ export const createDocument = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data?.data ?? null) as Document | null;
+  return (data.data ?? null) as Document | null;
 });
 
 /**
@@ -140,7 +140,7 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data?.data ?? null) as Document | null;
+  return (data.data ?? null) as Document | null;
 });
 
 /** PUT /api/documents/{id}/blocks. Owner-only enforce'ит бек. */
@@ -156,7 +156,7 @@ export const updateDocumentBlocks = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data?.data ?? null) as Document | null;
+  return (data.data ?? null) as Document | null;
 });
 
 /** PATCH /api/documents/{id}/visibility. UI шлёт только private→public. */
@@ -172,7 +172,7 @@ export const setDocumentVisibility = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data?.data ?? null) as Document | null;
+  return (data.data ?? null) as Document | null;
 });
 
 /** DELETE /api/documents/{id}. Owner или admin (delete_any, не-private) — enforce'ит бек. */

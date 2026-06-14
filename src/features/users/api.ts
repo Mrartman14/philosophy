@@ -36,10 +36,10 @@ export const getUsers = cache(
       throw new Error(error.error ?? "Не удалось загрузить пользователей");
     }
     return {
-      items: data?.data ?? [],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: data.data ?? [],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );

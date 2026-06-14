@@ -30,7 +30,7 @@ export const setUserRole = createAction(
     });
     if (error) rethrowUserApiError(error);
     revalidateEntity(Tags.USERS);
-    return data?.data ?? null;
+    return data.data ?? null;
   },
 );
 
@@ -49,6 +49,6 @@ export const setUserStatus = createAction(
     });
     if (error) rethrowUserApiError(error);
     revalidateEntity(Tags.USERS);
-    return data?.data ?? null;
+    return data.data ?? null;
   },
 );

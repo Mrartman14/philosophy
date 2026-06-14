@@ -127,7 +127,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
       dispatch({ type: "clearSelection" });
       dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
     }
-    (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
   const onNodePointerDown = (nodeId: string, e: React.PointerEvent) => {
@@ -138,19 +138,19 @@ export function CanvasEditor({ canvas, etag }: Props) {
       dispatch({ type: "selectNode", nodeId, additive: true });
     }
     dragRef.current = { kind: "move", lastWorld: eventWorld(e) };
-    svgRef.current?.setPointerCapture?.(e.pointerId);
+    svgRef.current?.setPointerCapture(e.pointerId);
   };
 
   const onResizeHandleDown = (nodeId: string, handle: ResizeHandle, e: React.PointerEvent) => {
     e.stopPropagation();
     dragRef.current = { kind: "resize", nodeId, handle, lastWorld: eventWorld(e) };
-    svgRef.current?.setPointerCapture?.(e.pointerId);
+    svgRef.current?.setPointerCapture(e.pointerId);
   };
 
   const onSideHandleDown = (nodeId: string, side: Side, e: React.PointerEvent) => {
     e.stopPropagation();
     dragRef.current = { kind: "edge", fromNode: nodeId, fromSide: side, currentWorld: eventWorld(e) };
-    svgRef.current?.setPointerCapture?.(e.pointerId);
+    svgRef.current?.setPointerCapture(e.pointerId);
   };
 
   const onEdgePointerDown = (edgeId: string, e: React.PointerEvent) => {

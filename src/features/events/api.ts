@@ -38,10 +38,10 @@ export const getAdminEvents = cache(
       throw new Error(error.error ?? "Не удалось загрузить события");
     }
     return {
-      items: (data?.data ?? []) as CalendarEvent[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as CalendarEvent[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -56,7 +56,7 @@ export const getAdminEventById = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить событие");
     }
-    return (data?.data ?? null) as CalendarEvent | null;
+    return (data.data ?? null) as CalendarEvent | null;
   },
 );
 
@@ -71,7 +71,7 @@ export const getEventRevisions = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизии");
     }
-    return (data?.data ?? []) as EventRevisionMeta[];
+    return (data.data ?? []) as EventRevisionMeta[];
   },
 );
 
@@ -86,7 +86,7 @@ export const getEventRevision = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизию");
     }
-    return (data?.data ?? null) as EventRevision | null;
+    return (data.data ?? null) as EventRevision | null;
   },
 );
 
@@ -112,7 +112,7 @@ export const getCalendarOccurrences = unstable_cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить календарь");
     }
-    return (data?.data ?? []) as EventOccurrence[];
+    return (data.data ?? []) as EventOccurrence[];
   },
   ["calendar-occurrences"],
   { tags: [Tags.EVENTS], revalidate: 3600 },

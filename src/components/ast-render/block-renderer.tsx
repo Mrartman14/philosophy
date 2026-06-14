@@ -52,7 +52,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       // @ts-expect-error — drift-detector: при добавлении нового block.type в схему,
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = block.type;
-      if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+      if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
         console.warn(`AstRender: unsupported block type "${String(_exhaustive)}"`);
       }
       return (

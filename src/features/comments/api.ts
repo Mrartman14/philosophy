@@ -37,7 +37,7 @@ export const getCommentSchema = unstable_cache(
     const api = createPublicApiClient();
     const { data, error } = await api.GET("/api/comments/schema");
     if (error) throw new Error("Не удалось загрузить схему комментариев");
-    return (data?.data ?? null) as CommentSchema | null;
+    return (data.data ?? null) as CommentSchema | null;
   },
   ["comments-schema"],
   { tags: [Tags.COMMENT_SCHEMA] },
@@ -62,10 +62,10 @@ export const getLectureComments = cache(
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить комментарии");
     return {
-      subtrees: (data?.data ?? []) as RootSubtree[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      subtrees: (data.data ?? []) as RootSubtree[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -79,7 +79,7 @@ export const getCommentSubtree = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ветку");
-    return (data?.data ?? null) as RootSubtree | null;
+    return (data.data ?? null) as RootSubtree | null;
   },
 );
 
@@ -101,8 +101,8 @@ export const searchComments = cache(
     });
     if (error) throw new Error(error.error ?? "Не удалось выполнить поиск");
     return {
-      items: (data?.data ?? []) as CommentSummary[],
-      total: data?.pagination?.total ?? 0,
+      items: (data.data ?? []) as CommentSummary[],
+      total: data.pagination?.total ?? 0,
     };
   },
 );
@@ -115,7 +115,7 @@ export const getCommentRevisions = cache(
       params: { path: { id: commentId } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
-    return (data?.data ?? []) as CommentRevisionMeta[];
+    return (data.data ?? []) as CommentRevisionMeta[];
   },
 );
 
@@ -128,7 +128,7 @@ export const getCommentRevision = cache(
     );
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
-    return (data?.data ?? null) as CommentRevision | null;
+    return (data.data ?? null) as CommentRevision | null;
   },
 );
 
@@ -144,7 +144,7 @@ export const getBlock = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить блок");
-    return data?.data ?? null;
+    return data.data ?? null;
   },
 );
 
@@ -162,10 +162,10 @@ export const getAdminLectureComments = cache(
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить комментарии");
     return {
-      items: (data?.data ?? []) as Comment[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Comment[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );

@@ -106,7 +106,7 @@ describe("CanvasCreateSchema", () => {
   it("парсит data-JSON строку в объект", () => {
     const r = CanvasCreateSchema.safeParse({ title: "Граф", data: JSON.stringify({ nodes: [VALID_NODE_TEXT], edges: [] }) });
     expect(r.success).toBe(true);
-    if (r.success) expect(r.data.data?.nodes).toHaveLength(1);
+    if (r.success) expect(r.data.data.nodes).toHaveLength(1);
   });
   it("отклоняет битый data-JSON", () => {
     expect(CanvasCreateSchema.safeParse({ title: "Граф", data: "{bad" }).success).toBe(false);

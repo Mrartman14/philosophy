@@ -44,10 +44,10 @@ export const getMyDocuments = cache(
     const { data, error } = await api.GET("/api/me/documents", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить документы");
     return {
-      items: (data?.data ?? []) as Document[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Document[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -69,7 +69,7 @@ export const getDocumentById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить документ");
-    return (data?.data ?? null) as Document | null;
+    return (data.data ?? null) as Document | null;
   },
 );
 
@@ -81,7 +81,7 @@ export const getDocumentContainers = cache(
       params: { path: { id } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить привязки");
-    return (data?.data ?? []) as AttachmentDTO[];
+    return (data.data ?? []) as AttachmentDTO[];
   },
 );
 
@@ -97,7 +97,7 @@ export const getDocumentRevisions = cache(
       params: { path: { id } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
-    return (data?.data ?? []) as DocumentRevisionMeta[];
+    return (data.data ?? []) as DocumentRevisionMeta[];
   },
 );
 
@@ -111,7 +111,7 @@ export const getDocumentRevision = cache(
     );
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
-    return (data?.data ?? null) as DocumentRevision | null;
+    return (data.data ?? null) as DocumentRevision | null;
   },
 );
 
@@ -126,10 +126,10 @@ export const getAdminDocuments = cache(
     const { data, error } = await api.GET("/api/admin/documents", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить документы");
     return {
-      items: (data?.data ?? []) as Document[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Document[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );

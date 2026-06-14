@@ -55,7 +55,7 @@ export const createTrail = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.TRAILS);
-  return (data?.data ?? null) as Trail | null;
+  return (data.data ?? null) as Trail | null;
 });
 
 /** PUT /api/trails/{id} (метаданные: title + description). Owner-only enforce'ит бек. */
@@ -71,7 +71,7 @@ export const updateTrailMeta = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
-  return (data?.data ?? null) as Trail | null;
+  return (data.data ?? null) as Trail | null;
 });
 
 /** PUT /api/trails/{id}/items (bulk-replace упорядоченного списка лекций). Owner-only. */
@@ -87,7 +87,7 @@ export const setTrailItems = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
-  return (data?.data ?? null) as TrailWithItems | null;
+  return (data.data ?? null) as TrailWithItems | null;
 });
 
 /** PATCH /api/trails/{id}/visibility. UI шлёт только private→public. Owner-only. */
@@ -103,7 +103,7 @@ export const setTrailVisibility = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
-  return (data?.data ?? null) as Trail | null;
+  return (data.data ?? null) as Trail | null;
 });
 
 /** DELETE /api/trails/{id}. Owner (любая видимость) или admin delete_any (public) — enforce'ит бек. */

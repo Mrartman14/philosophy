@@ -19,7 +19,7 @@ export const getPreferences = cache(async (): Promise<Preferences> => {
   if (error) {
     throw new Error(error.error ?? "Не удалось загрузить настройки");
   }
-  return data?.data ?? {};
+  return data.data ?? {};
 });
 
 /**

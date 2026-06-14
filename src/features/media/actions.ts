@@ -41,7 +41,7 @@ async function loadMediaForGate(id: string): Promise<Media> {
     throw new ForbiddenError("owner", "Медиа не найдено");
   }
   if (error) rethrowApiError(error);
-  return (data?.data ?? null) as Media;
+  return (data.data ?? null) as Media;
 }
 
 /**

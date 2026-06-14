@@ -72,7 +72,7 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
       // @ts-expect-error — drift-detector: при добавлении нового mark.type в схему,
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = mark.type;
-      if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+      if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
         console.warn(`AstRender: unsupported mark type "${String(_exhaustive)}"`);
       }
       return <span data-unsupported-mark={mark.type ?? "unknown"}>{children}</span>;

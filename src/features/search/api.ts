@@ -52,10 +52,10 @@ export const getSearchResults = cache(
       throw new Error(error.error ?? "Не удалось выполнить поиск");
     }
     return {
-      items: (data?.data ?? []) as SearchHit[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as SearchHit[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );

@@ -45,10 +45,10 @@ export const getMyMedia = cache(
       throw new Error(error.error ?? "Не удалось загрузить медиа");
     }
     return {
-      items: (data?.data ?? []) as Media[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Media[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -78,7 +78,7 @@ export const getMediaById = cache(
       if (error) {
         throw new Error(error.error ?? "Не удалось загрузить медиа");
       }
-      return (data?.data ?? null) as Media | null;
+      return (data.data ?? null) as Media | null;
     }
     const fetcher = unstable_cache(
       async (mediaId: string): Promise<Media | null> => {
@@ -91,7 +91,7 @@ export const getMediaById = cache(
         if (error) {
           throw new Error(error.error ?? "Не удалось загрузить медиа");
         }
-        return (data?.data ?? null) as Media | null;
+        return (data.data ?? null) as Media | null;
       },
       ["media-by-id", id],
       { tags: [`${Tags.MEDIA}:${id}`] },
@@ -116,6 +116,6 @@ export const getMediaContainers = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить контейнеры");
     }
-    return (data?.data ?? []) as MediaAttachment[];
+    return (data.data ?? []) as MediaAttachment[];
   },
 );

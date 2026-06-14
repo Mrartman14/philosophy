@@ -93,7 +93,7 @@ export const createComment = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.COMMENTS, lectureId);
   revalidateEntity(Tags.COMMENTS);
-  return (data?.data ?? null) as Comment | null;
+  return (data.data ?? null) as Comment | null;
 });
 
 /** Редактировать blocks комментария (owner-only — бек проверит). FormData: id, blocks(JSON). */
@@ -109,7 +109,7 @@ export const updateCommentBlocks = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.COMMENTS, input.id);
   revalidateEntity(Tags.COMMENTS);
-  return (data?.data ?? null) as Comment | null;
+  return (data.data ?? null) as Comment | null;
 });
 
 /** Удалить свой комментарий (owner). Аргумент — id (uuid). */

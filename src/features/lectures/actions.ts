@@ -78,7 +78,7 @@ export const createLecture = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.LECTURES);
-  return (data?.data ?? null) as Lecture | null;
+  return (data.data ?? null) as Lecture | null;
 });
 
 export const updateLecture = createFormAction(async (formData) => {
@@ -92,7 +92,7 @@ export const updateLecture = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
-  return (data?.data ?? null) as Lecture | null;
+  return (data.data ?? null) as Lecture | null;
 });
 
 export const setLectureVisibility = createFormAction(async (formData) => {
@@ -105,7 +105,7 @@ export const setLectureVisibility = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
-  return (data?.data ?? null) as Lecture | null;
+  return (data.data ?? null) as Lecture | null;
 });
 
 export const deleteLecture = createAction(async (rawId: string) => {
@@ -240,7 +240,7 @@ export const suggestGlossaryTerms = createAction(
       body: { blocks: input.blocks },
     });
     if (error) rethrowApiError(error as ApiError);
-    return data?.data?.suggestions ?? [];
+    return data.data?.suggestions ?? [];
   },
 );
 
@@ -262,12 +262,12 @@ export const searchDocumentsForAttach = createAction(
       },
     });
     if (error) throw new Error(error.error ?? "Ошибка поиска документов");
-    const items = (data?.data ?? []) as { id?: string; filename?: string }[];
+    const items = (data.data ?? []) as { id?: string; filename?: string }[];
     return {
       data: items
         .filter((d): d is { id: string; filename?: string } => Boolean(d.id))
         .map((d) => ({ id: d.id, label: d.filename ?? d.id })),
-      total: data?.pagination?.total ?? null,
+      total: data.pagination?.total ?? null,
     };
   },
 );
@@ -286,12 +286,12 @@ export const searchMediaForAttach = createAction(
       },
     });
     if (error) throw new Error(error.error ?? "Ошибка поиска медиа");
-    const items = (data?.data ?? []) as { id?: string; filename?: string }[];
+    const items = (data.data ?? []) as { id?: string; filename?: string }[];
     return {
       data: items
         .filter((m): m is { id: string; filename?: string } => Boolean(m.id))
         .map((m) => ({ id: m.id, label: m.filename ?? m.id })),
-      total: data?.pagination?.total ?? null,
+      total: data.pagination?.total ?? null,
     };
   },
 );

@@ -32,10 +32,10 @@ export const getTerms = cache(
       throw new Error(error.error ?? "Не удалось загрузить термины");
     }
     return {
-      items: (data?.data ?? []) as Term[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as Term[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
@@ -49,7 +49,7 @@ export const getTermById = cache(async (id: string): Promise<Term | null> => {
   if (error) {
     throw new Error(error.error ?? "Не удалось загрузить термин");
   }
-  return (data?.data ?? null) as Term | null;
+  return (data.data ?? null) as Term | null;
 });
 
 /**
@@ -70,7 +70,7 @@ export const getTermRevisions = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизии термина");
     }
-    return (data?.data ?? []) as TermRevisionMeta[];
+    return (data.data ?? []) as TermRevisionMeta[];
   },
 );
 
@@ -90,6 +90,6 @@ export const getTermRevision = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизию термина");
     }
-    return (data?.data ?? null) as TermRevision | null;
+    return (data.data ?? null) as TermRevision | null;
   },
 );

@@ -98,7 +98,7 @@ export const createForm = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.FORMS);
-  return (data?.data ?? null) as Form | null;
+  return (data.data ?? null) as Form | null;
 });
 
 /** PATCH /api/forms/{id} — замена структуры. Owner-only + не опубликована (enforce бек). */
@@ -122,7 +122,7 @@ export const updateForm = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
-  return (data?.data ?? null) as Form | null;
+  return (data.data ?? null) as Form | null;
 });
 
 /** PATCH /api/forms/{id} visibility-only → publish (private→public). */
@@ -138,7 +138,7 @@ export const publishForm = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
-  return (data?.data ?? null) as Form | null;
+  return (data.data ?? null) as Form | null;
 });
 
 /** DELETE /api/forms/{id}. Owner или delete_any(public) — enforce бек. */
@@ -168,7 +168,7 @@ export const submitForm = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.SUBMISSIONS);
   revalidateEntity(Tags.FORMS, input.formId);
-  return (data?.data ?? null) as SubmitResponse | null;
+  return (data.data ?? null) as SubmitResponse | null;
 });
 
 /** PATCH /api/submissions/{id} (editable). Автор — enforce бек. */
@@ -184,7 +184,7 @@ export const editSubmission = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.SUBMISSIONS, input.id);
   revalidateEntity(Tags.SUBMISSIONS);
-  return (data?.data ?? null) as SubmitResponse | null;
+  return (data.data ?? null) as SubmitResponse | null;
 });
 
 /** DELETE /api/submissions/{id} (editable, освобождает слот). */

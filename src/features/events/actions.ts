@@ -58,7 +58,7 @@ export const createEvent = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.EVENTS);
-  return (data?.data ?? null) as CalendarEvent | null;
+  return (data.data ?? null) as CalendarEvent | null;
 });
 
 export const updateEvent = createFormAction(async (formData) => {
@@ -84,7 +84,7 @@ export const updateEvent = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.EVENTS, input.id);
   revalidateEntity(Tags.EVENTS);
-  return (data?.data ?? null) as CalendarEvent | null;
+  return (data.data ?? null) as CalendarEvent | null;
 });
 
 export const deleteEvent = createAction(async (rawId: string) => {

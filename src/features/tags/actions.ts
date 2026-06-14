@@ -54,7 +54,7 @@ export const createTag = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.TAGS);
-  return (data?.data ?? null) as Tag | null;
+  return (data.data ?? null) as Tag | null;
 });
 
 export const updateTag = createFormAction(async (formData) => {
@@ -70,7 +70,7 @@ export const updateTag = createFormAction(async (formData) => {
   revalidateEntity(Tags.TAGS);
   // Имя тега показывается на карточках/страницах лекций.
   revalidateEntity(Tags.LECTURES);
-  return (data?.data ?? null) as Tag | null;
+  return (data.data ?? null) as Tag | null;
 });
 
 export const deleteTag = createAction(async (rawId: number) => {
@@ -102,5 +102,5 @@ export const setLectureTags = createFormAction(async (formData) => {
   revalidateEntity(Tags.LECTURES);
   // Tag[] | null — чтобы initial state формы (data: null) совпал по типам
   // с useActionState (паттерн glossary: Term | null).
-  return (data?.data ?? null) as Tag[] | null;
+  return (data.data ?? null) as Tag[] | null;
 });

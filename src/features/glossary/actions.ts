@@ -64,7 +64,7 @@ export const createTerm = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.GLOSSARY);
-  return (data?.data ?? null) as Term | null;
+  return (data.data ?? null) as Term | null;
 });
 
 export const updateTermBlocks = createFormAction(async (formData) => {
@@ -79,7 +79,7 @@ export const updateTermBlocks = createFormAction(async (formData) => {
   if (error) rethrowApiError(error);
   revalidateEntity(Tags.GLOSSARY, input.id);
   revalidateEntity(Tags.GLOSSARY);
-  return (data?.data ?? null) as Term | null;
+  return (data.data ?? null) as Term | null;
 });
 
 export const deleteTerm = createAction(async (rawId: string) => {

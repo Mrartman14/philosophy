@@ -117,7 +117,7 @@ export const updateAnnotation = createFormAction(async (formData) => {
   if (error) rethrowApiError(error as ApiError);
   revalidateEntity(Tags.ANNOTATIONS, input.id);
   revalidateEntity(Tags.ANNOTATIONS);
-  return (data?.data ?? null) as Annotation | null;
+  return (data.data ?? null) as Annotation | null;
 });
 
 /** Удаление своей аннотации (DELETE /api/annotations/{id}). */

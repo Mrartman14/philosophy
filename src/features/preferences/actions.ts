@@ -60,7 +60,7 @@ export const updatePreferences = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error as ApiError);
   revalidateEntity(Tags.PREFERENCES);
-  return (data?.data ?? null) as Preferences | null;
+  return (data.data ?? null) as Preferences | null;
 });
 
 /**

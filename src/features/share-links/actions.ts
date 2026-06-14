@@ -62,7 +62,7 @@ export const createShareLink = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error as ApiError);
   revalidateEntity(Tags.SHARE_LINKS, input.resource_id);
-  return (data?.data ?? null) as ShareLink | null;
+  return (data.data ?? null) as ShareLink | null;
 });
 
 /**

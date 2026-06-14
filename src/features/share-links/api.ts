@@ -30,7 +30,7 @@ export const getShareLinksFor = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ссылки");
     }
-    return (data?.data ?? []) as ShareLink[];
+    return (data.data ?? []) as ShareLink[];
   },
 );
 
@@ -54,6 +54,6 @@ export const getAdminShareLinksFor = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ссылки");
     }
-    return (data?.data ?? []) as ShareLink[];
+    return (data.data ?? []) as ShareLink[];
   },
 );

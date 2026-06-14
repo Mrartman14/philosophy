@@ -38,7 +38,7 @@ export const getFormById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить форму");
-    return (data?.data ?? null) as Form | null;
+    return (data.data ?? null) as Form | null;
   },
 );
 
@@ -47,7 +47,7 @@ export const getMyForms = cache(async (): Promise<FormListItem[]> => {
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/me/forms");
   if (error) throw new Error(error.error ?? "Не удалось загрузить формы");
-  return (data?.data ?? []) as FormListItem[];
+  return (data.data ?? []) as FormListItem[];
 });
 
 /** Мои отклики (GET /api/me/submissions). Гейт — auth. */
@@ -55,7 +55,7 @@ export const getMySubmissions = cache(async (): Promise<SubmissionListItem[]> =>
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/me/submissions");
   if (error) throw new Error(error.error ?? "Не удалось загрузить отклики");
-  return (data?.data ?? []) as SubmissionListItem[];
+  return (data.data ?? []) as SubmissionListItem[];
 });
 
 /**
@@ -70,7 +70,7 @@ export const getSubmissionsByForm = cache(
     });
     if (response.status === 403 || response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить отклики");
-    return (data?.data ?? []) as SubmissionListItem[];
+    return (data.data ?? []) as SubmissionListItem[];
   },
 );
 
@@ -86,7 +86,7 @@ export const getSubmissionById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить отклик");
-    return (data?.data ?? null) as Submission | null;
+    return (data.data ?? null) as Submission | null;
   },
 );
 
@@ -101,10 +101,10 @@ export const getAdminForms = cache(
     const { data, error } = await api.GET("/api/admin/forms", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить формы");
     return {
-      items: (data?.data ?? []) as FormListItem[],
-      total: data?.pagination?.total ?? 0,
-      offset: data?.pagination?.offset ?? offset,
-      limit: data?.pagination?.limit ?? limit,
+      items: (data.data ?? []) as FormListItem[],
+      total: data.pagination?.total ?? 0,
+      offset: data.pagination?.offset ?? offset,
+      limit: data.pagination?.limit ?? limit,
     };
   },
 );
