@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { VISIBILITY } from "@/api/enums";
+
 /** Парсит JSON-строку blocks из скрытого поля формы в непустой массив. */
 const BlocksJsonSchema = z
   .string()
@@ -31,7 +33,7 @@ const TitleSchema = z
   .min(1, "Введите название")
   .max(500, "До 500 символов");
 
-const VisibilityEnum = z.enum(["private", "public"]);
+const VisibilityEnum = z.enum(VISIBILITY);
 
 /** POST /api/documents (JSON create). visibility опционально. */
 export const DocumentCreateSchema = z.object({

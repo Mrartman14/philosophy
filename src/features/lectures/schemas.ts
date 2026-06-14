@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { VISIBILITY } from "@/api/enums";
+
 import type { AttachmentEntityType } from "./types";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -10,7 +12,7 @@ export const LectureCreateSchema = z.object({
   title: z.string().trim().min(1, "Введите название").max(200, "До 200 символов"),
   description: z.string().max(5000, "До 5000 символов").optional().default(""),
   date: z.string().regex(ISO_DATE, "Дата должна быть в формате ГГГГ-ММ-ДД"),
-  visibility: z.enum(["private", "public"]).optional(),
+  visibility: z.enum(VISIBILITY).optional(),
 });
 
 export const LectureUpdateSchema = z.object({
@@ -22,7 +24,7 @@ export const LectureUpdateSchema = z.object({
 
 export const LectureVisibilitySchema = z.object({
   id: z.uuid("Некорректный id лекции"),
-  visibility: z.enum(["private", "public"]),
+  visibility: z.enum(VISIBILITY),
 });
 
 export const LectureIdSchema = z.object({

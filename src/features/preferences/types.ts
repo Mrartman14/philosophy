@@ -7,6 +7,5 @@ export type Preferences = components["schemas"]["preference.Preferences"];
 /** Режим чтения (бек: `preference.ReadingMode`). */
 export type ReadingMode = components["schemas"]["preference.ReadingMode"];
 
-/** Рантайм-значения для Zod (`z.enum`) — заякорены на `preference.ReadingMode`:
- * лишнее/устаревшее значение сломает сборку после regen `schema.ts`. */
-export const READING_MODES = ["full", "focused"] as const satisfies readonly ReadingMode[];
+/** Рантайм-значения reading_mode — единый источник в `@/api/enums`. */
+export { READING_MODES } from "@/api/enums";

@@ -17,6 +17,5 @@ export type SearchMatch = components["schemas"]["search.Match"];
 /** Тип источника поиска (бек: `search.HitType`). */
 export type SearchType = components["schemas"]["search.HitType"];
 
-/** Рантайм-значения для Zod/UI — заякорены на `search.HitType`:
- * лишнее/устаревшее значение сломает сборку после regen `schema.ts`. */
-export const SEARCH_TYPES = ["lecture", "glossary"] as const satisfies readonly SearchType[];
+/** Рантайм-значения для Zod/UI — единый источник в `@/api/enums`. */
+export { SEARCH_HIT_TYPES as SEARCH_TYPES } from "@/api/enums";

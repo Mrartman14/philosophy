@@ -2,7 +2,14 @@
 import "server-only";
 import { z } from "zod";
 
-import type { CanvasRefEntityType } from "./types";
+import {
+  VISIBILITY,
+  CANVAS_SHAPE_KINDS,
+  CANVAS_EDGE_SIDES,
+  CANVAS_EDGE_STYLES,
+  CANVAS_EDGE_ENDS,
+  CANVAS_REF_ENTITY_TYPES,
+} from "@/api/enums";
 
 /**
  * Zod-зеркало canvas-графа. Источник истины — philosophy-api
@@ -15,11 +22,6 @@ const MAX_NODES = 2000;
 const MAX_EDGES = 2000;
 const MAX_NODE_TEXT = 10_000;
 const MAX_EDGE_LABEL = 200;
-
-const ALLOWED_REF_TYPES = [
-  "document", "lecture", "annotation", "comment", "media",
-  "glossary", "banner", "event", "form", "canvas",
-] as const satisfies readonly CanvasRefEntityType[];
 
 const PosInt = z.number().int();
 const PosDim = z.number().int().positive();
@@ -39,13 +41,13 @@ const TextNode = BaseNode.extend({
 
 const ShapeNode = BaseNode.extend({
   type: z.literal("shape"),
-  shape_kind: z.enum(["rect", "ellipse", "diamond"]),
+  shape_kind: z.enum(CANVAS_SHAPE_KINDS),
   text: z.string().max(MAX_NODE_TEXT).optional(),
 });
 
 const EntityRefNode = BaseNode.extend({
   type: z.literal("entity_ref"),
-  entity_type: z.enum(ALLOWED_REF_TYPES),
+  entity_type: z.enum(CANVAS_REF_ENTITY_TYPES),
   entity_id: z.string().min(1),
   // anchor — пробрасываем как есть; бек проверяет совместимость kind'а.
   anchor: z.record(z.string(), z.unknown()).optional(),
@@ -57,11 +59,11 @@ const EdgeSchema = z.object({
   id: z.string().min(1),
   from_node: z.string().min(1),
   to_node: z.string().min(1),
-  from_side: z.enum(["top", "right", "bottom", "left"]).optional(),
-  to_side: z.enum(["top", "right", "bottom", "left"]).optional(),
+  from_side: z.enum(CANVAS_EDGE_SIDES).optional(),
+  to_side: z.enum(CANVAS_EDGE_SIDES).optional(),
   label: z.string().max(MAX_EDGE_LABEL).optional(),
-  style: z.enum(["solid", "dashed"]).optional(),
-  end: z.enum(["none", "arrow"]).optional(),
+  style: z.enum(CANVAS_EDGE_STYLES).optional(),
+  end: z.enum(CANVAS_EDGE_ENDS).optional(),
 });
 
 /** Полная структурная валидация графа (зеркало ValidateData). */
@@ -127,7 +129,7 @@ const DataJsonField = z.string().optional().transform((s, ctx) => {
 });
 
 const TitleSchema = z.string().trim().min(1, "Введите название").max(200, "До 200 символов");
-const VisibilityEnum = z.enum(["private", "public"]);
+const VisibilityEnum = z.enum(VISIBILITY);
 const UuidSchema = z.uuid("Некорректный id канваса");
 
 /** POST /api/canvases. visibility/data опциональны. */

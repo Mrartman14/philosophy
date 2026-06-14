@@ -2,20 +2,7 @@
 import "server-only";
 import { z } from "zod";
 
-import type { CommentType, ReactionAxis } from "./types";
-
-const COMMENT_TYPES = [
-  "claim",
-  "grounds",
-  "rebuttal",
-  "qualifier",
-  "question",
-  "answer",
-  "offtop",
-  "summary",
-] as const satisfies readonly CommentType[];
-
-const AXES = ["agreement", "quality", "insight"] as const satisfies readonly ReactionAxis[];
+import { COMMENT_TYPES, REACTION_AXES as AXES } from "@/api/enums";
 
 /**
  * blocks приходит из скрытого input формы как JSON-строка (AstEditor

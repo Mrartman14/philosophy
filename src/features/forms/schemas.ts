@@ -2,19 +2,14 @@
 import "server-only";
 import { z } from "zod";
 
+import { VISIBILITY, FORM_SUBMISSION_MODES, FORM_FIELD_TYPES } from "@/api/enums";
+
 const UUID = z.uuid("Некорректный идентификатор");
 
 const TitleSchema = z.string().trim().min(1, "Введите название").max(500, "До 500 символов");
-const VisibilityEnum = z.enum(["private", "public"]);
-const ModeEnum = z.enum(["editable", "immutable"]);
-const FieldTypeEnum = z.enum([
-  "text",
-  "long_text",
-  "single_choice",
-  "multi_choice",
-  "number",
-  "date",
-]);
+const VisibilityEnum = z.enum(VISIBILITY);
+const ModeEnum = z.enum(FORM_SUBMISSION_MODES);
+const FieldTypeEnum = z.enum(FORM_FIELD_TYPES);
 
 /** Описание одного поля в payload конструктора. */
 const FieldSchema = z

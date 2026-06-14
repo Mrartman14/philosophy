@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { BANNER_TARGET_AUDIENCES } from "@/api/enums";
+
 /** Регекс бекенда (internal/banner/service.go hexColorRe) — повторяем 1:1. */
 const HEX_COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const UUID_RE =
@@ -24,7 +26,7 @@ const BannerFieldsSchema = z.object({
     .string()
     .trim()
     .regex(HEX_COLOR_RE, "Цвет — hex вида #RGB или #RRGGBB"),
-  target_audience: z.enum(["all", "authenticated", "admin"], {
+  target_audience: z.enum(BANNER_TARGET_AUDIENCES, {
     message: "Выберите аудиторию",
   }),
   // Hidden input в формах всегда отправляет "true" | "false" — omitted-чекбокс

@@ -1,31 +1,13 @@
 // src/features/audit/target-types.ts
+import type { components } from "@/api/schema";
 
 /**
- * Известные значения target_type audit-лога. Источник — call-sites
- * audit.Logger в philosophy-api/internal (grep `TargetType:`, июнь 2026).
- * Динамический случай share_link.create пишет TargetType = ResourceType
- * ссылки (lecture|document|trail|media|form|canvas) — все уже в перечне.
- *
- * Файл намеренно БЕЗ `import "server-only"`: перечень нужен и Zod-схеме
- * (schemas.ts, server-only), и client-форме фильтров.
- *
- * Append-only: новые типы добавлять при появлении новых доменов на беке.
+ * Значения target_type audit-лога. Источник истины — сгенерированный
+ * `audit.TargetType` (бек навесил swaggo-enum). Рантайм-значения (нужны и
+ * Zod-схеме schemas.ts, и client-форме фильтров) — в `@/api/enums`, который
+ * клиент-safe (без `server-only`). Новый домен на беке → regen `schema.ts`
+ * → сборка краснеет, пока значение не добавят в `AUDIT_TARGET_TYPES`.
  */
-export const AUDIT_TARGET_TYPES = [
-  "annotation",
-  "banner",
-  "canvas",
-  "comment",
-  "document",
-  "event",
-  "form",
-  "glossary_term",
-  "lecture",
-  "media",
-  "push",
-  "tag",
-  "trail",
-  "user",
-] as const;
+export { AUDIT_TARGET_TYPES } from "@/api/enums";
 
-export type AuditTargetType = (typeof AUDIT_TARGET_TYPES)[number];
+export type AuditTargetType = components["schemas"]["audit.TargetType"];

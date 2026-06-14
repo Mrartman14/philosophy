@@ -4,12 +4,13 @@ import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
 
+import type { AuditTargetType } from "./target-types";
 import type { AuditRecord } from "./types";
 
 export interface AuditLogFilter {
   /** Точное равенство actor_user_id (UUID). По username бек не ищет. */
   actor?: string;
-  target_type?: string;
+  target_type?: AuditTargetType;
   target_id?: string;
   /** Точное равенство, формат domain.verb (например, lecture.create). */
   action?: string;
@@ -44,7 +45,7 @@ export const getAuditLog = cache(
       offset: number;
       limit: number;
       actor?: string;
-      target_type?: string;
+      target_type?: AuditTargetType;
       target_id?: string;
       action?: string;
       from?: string;

@@ -1,8 +1,8 @@
 // src/features/canvas/editor/editor-types.ts
-import type { CanvasData, CanvasRefEntityType } from "../types";
+import type { CanvasData, CanvasRefEntityType, CanvasEdgeSide } from "../types";
 
-/** Сторона бокса (совпадает с canvas-render Side). */
-export type Side = "top" | "right" | "bottom" | "left";
+/** Сторона бокса (= `canvas.EdgeSide`, совпадает с canvas-render Side). */
+export type Side = CanvasEdgeSide;
 
 /** Вид выделенного элемента. */
 export type SelectionKind = "node" | "edge";

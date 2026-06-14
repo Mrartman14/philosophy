@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { VISIBILITY } from "@/api/enums";
+
 import { PARENT_ENTITY_TYPES } from "./types";
 
 /**
@@ -34,7 +36,7 @@ const BlocksJsonSchema = z
 /** Подмножество parent-типов с UI (banner/event/canvas не покрываем — §4). */
 const ParentEntityTypeSchema = z.enum(PARENT_ENTITY_TYPES);
 
-const VisibilitySchema = z.enum(["private", "public"]);
+const VisibilitySchema = z.enum(VISIBILITY);
 
 /**
  * Опциональный JSON-якорь (hidden-input). Парсится в объект; структурную

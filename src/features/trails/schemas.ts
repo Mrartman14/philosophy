@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { VISIBILITY } from "@/api/enums";
+
 const TitleSchema = z
   .string()
   .trim()
@@ -12,7 +14,7 @@ const DescriptionSchema = z
   .string()
   .max(2000, "До 2000 символов");
 
-const VisibilityEnum = z.enum(["private", "public"]);
+const VisibilityEnum = z.enum(VISIBILITY);
 
 const TrailIdField = z.uuid("Некорректный id маршрута");
 

@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { VISIBILITY } from "@/api/enums";
+
 /** Валидация media_id перед DELETE. */
 export const MediaIdSchema = z.object({
   id: z.uuid("Некорректный id медиа"),
@@ -14,7 +16,7 @@ export const MediaIdSchema = z.object({
  */
 export const MediaVisibilitySchema = z.object({
   id: z.uuid("Некорректный id медиа"),
-  visibility: z.enum(["private", "public"]),
+  visibility: z.enum(VISIBILITY),
 });
 
 export type MediaIdInput = z.infer<typeof MediaIdSchema>;

@@ -16,6 +16,9 @@ export type CanvasNode = components["schemas"]["canvas.Node"];
 /** Тип цели entity_ref-узла (10 значений, бек: `canvas.RefEntityType` / AllowedRefEntityTypes). */
 export type CanvasRefEntityType = components["schemas"]["canvas.RefEntityType"];
 
+/** Сторона узла для привязки ребра (бек: `canvas.EdgeSide`). */
+export type CanvasEdgeSide = components["schemas"]["canvas.EdgeSide"];
+
 /** Ребро графа. */
 export type CanvasEdge = components["schemas"]["canvas.Edge"];
 

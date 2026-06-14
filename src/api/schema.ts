@@ -158,7 +158,7 @@ export interface paths {
                     /** @description ID актора */
                     actor?: string;
                     /** @description Тип цели */
-                    target_type?: string;
+                    target_type?: "annotation" | "banner" | "canvas" | "comment" | "document" | "event" | "form" | "glossary_term" | "lecture" | "media" | "push" | "tag" | "trail" | "user";
                     /** @description ID цели */
                     target_id?: string;
                     /** @description Действие */
@@ -12233,8 +12233,10 @@ export interface components {
             id?: string;
             request_id?: string;
             target_id?: string;
-            target_type?: string;
+            target_type?: components["schemas"]["audit.TargetType"];
         };
+        /** @enum {string} */
+        "audit.TargetType": "annotation" | "banner" | "canvas" | "comment" | "document" | "event" | "form" | "glossary_term" | "lecture" | "media" | "push" | "tag" | "trail" | "user";
         "banner.Banner": {
             background_color?: string;
             blocks?: components["schemas"]["ast.Block"][];
