@@ -1,5 +1,8 @@
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
+import reactHooks from "eslint-plugin-react-hooks";
+import react from "eslint-plugin-react";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 
 const eslintConfig = [
   // Сгенерированные файлы не линтим: `pnpm generate:api` (openapi-typescript)
@@ -36,11 +39,6 @@ const eslintConfig = [
   {
     files: ["src/**/*.{ts,tsx}"],
     rules: {
-      // off: значительная часть срабатываний — легитимные defensive-проверки на границе
-      // с бекенд-API (тип обещает поле, рантайм-ответ может его не содержать). Чище
-      // отключить целиком, чем рассыпать eslint-disable по коду.
-      // Альтернатива на будущее: включить noUncheckedIndexedAccess в tsconfig и вернуть правило.
-      "@typescript-eslint/no-unnecessary-condition": "off",
       // числа и булевы в шаблонных строках — норм; защита от ${object}/${null} остаётся.
       "@typescript-eslint/restrict-template-expressions": [
         "error",
@@ -58,9 +56,33 @@ const eslintConfig = [
       ],
     },
   },
+  // Строгий React-стек. Плагины (react, react-hooks, jsx-a11y, import) уже
+  // зарегистрированы eslint-config-next, поэтому подключаем ТОЛЬКО .rules выбранных
+  // пресетов — спред целого пресет-объекта даёт "Cannot redefine plugin".
   {
+    files: ["src/**/*.{ts,tsx}"],
+    settings: { react: { version: "detect" } },
     rules: {
-      "react-hooks/exhaustive-deps": "error",
+      // eslint-plugin-react-hooks recommended-latest: rules-of-hooks + exhaustive-deps (error)
+      // + compiler-powered правила (set-state-in-effect, immutability, purity, refs, …).
+      ...reactHooks.configs.flat["recommended-latest"].rules,
+      // eslint-plugin-react recommended + jsx-runtime (off react-in-jsx-scope для Next).
+      ...react.configs.flat.recommended.rules,
+      ...react.configs.flat["jsx-runtime"].rules,
+      // prop-types не нужен в TS-проекте — валидацию пропсов даёт typescript.
+      "react/prop-types": "off",
+      // jsx-a11y strict.
+      ...jsxA11y.flatConfigs.strict.rules,
+      // import-гигиена.
+      "import/order": [
+        "error",
+        {
+          groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
+          "newlines-between": "always",
+          alphabetize: { order: "asc", caseInsensitive: true },
+        },
+      ],
+      "import/no-duplicates": "error",
     },
   },
   // Guardrail 1: deep-imports into other features must go through their index.ts
