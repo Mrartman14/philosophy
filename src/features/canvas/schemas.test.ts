@@ -43,8 +43,7 @@ describe("CanvasDataSchema — failure", () => {
     expect(CanvasDataSchema.safeParse({ nodes: [{ id, type, x, y, width, height }], edges: [] }).success).toBe(false);
   });
   it("отклоняет shape-узел без shape_kind", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- text is omitted intentionally to build a shape node without the text field
-    const { text, ...rest } = VALID_NODE_TEXT;
+    const { text: _text, ...rest } = VALID_NODE_TEXT;
     expect(CanvasDataSchema.safeParse({ nodes: [{ ...rest, type: "shape" }], edges: [] }).success).toBe(false);
   });
   it("отклоняет entity_ref с неразрешённым типом", () => {

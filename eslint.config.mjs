@@ -41,6 +41,16 @@ const eslintConfig = [
         "error",
         { allowNumber: true, allowBoolean: true },
       ],
+      // intentional-discard convention: `_`-prefixed vars/args are deliberately unused.
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
     },
   },
   {

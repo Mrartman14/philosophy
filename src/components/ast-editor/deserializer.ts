@@ -3,7 +3,6 @@ import type { ProseMirrorJSON } from "./serializer";
 
 const LEAF_BLOCK_TYPES = new Set(["code_block", "image", "thematic_break"]);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved parameter for future schema-aware deserialization; _prefix satisfies tsc noUnusedParameters
 export function deserialize(blocks: AstBlock[], _schema: SchemaSnapshot): ProseMirrorJSON {
   if (!blocks || blocks.length === 0) {
     return { type: "doc", content: [{ type: "paragraph" }] };

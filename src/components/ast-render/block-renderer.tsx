@@ -52,7 +52,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = block.type;
       if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
-        console.warn(`AstRender: unsupported block type "${String(_exhaustive ?? "unknown")}"`);
+        console.warn(`AstRender: unsupported block type "${String(_exhaustive)}"`);
       }
       return (
         <div data-unsupported={block.type ?? "unknown"}>

@@ -29,5 +29,5 @@ import "server-only";
 //   return data;
 // });
 
-// eslint-disable-next-line @typescript-eslint/require-await -- "use server" requires async signature; placeholder has no real await
+// eslint-disable-next-line @typescript-eslint/require-await -- placeholder; will be replaced by a real async server action before use
 export const _placeholder = async () => null;

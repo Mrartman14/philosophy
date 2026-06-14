@@ -43,7 +43,8 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
   }
 
   if (node) {
-    const nodeId = node.id ?? "";
+    const nodeId = node.id;
+    if (!nodeId) return null;
     return (
       <div className="flex flex-col gap-3">
         <h3 className="text-sm font-semibold">Узел: {node.type}</h3>
@@ -94,7 +95,8 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
     return <p className="text-sm text-(--color-description)">Выберите узел или ребро.</p>;
   }
 
-  const edgeId = edge.id ?? "";
+  const edgeId = edge.id;
+  if (!edgeId) return null;
   // edge
   const sideValue = (s: Side | undefined) => s ?? "";
   return (
