@@ -6,7 +6,7 @@
 
 **Architecture:** Слой не знает ни про UI, ни про конкретную сущность, ни про источник данных. Чистые типы/константы в `contract/storage.ts` (изоморфны); browser-only CRUD-модули поверх `idb` и Cache Storage в `store/*`. Это фундамент generic offline foundation (см. `docs/superpowers/specs/2026-06-14-offline-mode-design.md` v2): поверх него встанут `OfflineDescriptor`/registry, репозиторий-контракт и sync-драйвер (отдельные планы).
 
-**Tech Stack:** TypeScript 6, `idb`, Cache Storage API, `navigator.storage`; тесты — vitest 4 (jsdom, `globals:false`) + `fake-indexeddb`.
+**Tech Stack:** TypeScript 6 (strict, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`), `idb`, Cache Storage API, `navigator.storage`; тесты — vitest 4 (jsdom, `globals:false`) + `fake-indexeddb`; lint — `tseslint.configs.strictTypeChecked` (в т.ч. `no-non-null-assertion`, `no-unnecessary-condition` = error, действуют и на тесты).
 
 **Контекст проекта (важно для исполнителя):**
 
@@ -15,6 +15,7 @@
 - `src/services/*` — foundation/запретная зона по `CLAUDE.md`: координированный foundation-PR. `git add` — только свои файлы по имени, без `git add -A`. Не трогать `public/sw.js` и `.env.development.local`.
 - `vitest.config.ts` НЕ трогаем (frozen) — `fake-indexeddb` подключаем импортом `"fake-indexeddb/auto"` в тест-файлах.
 - Модули `store/*` — browser-only (используют `indexedDB`/`caches`/`navigator.storage`); импортировать только из клиентского кода. `contract/storage.ts` — изоморфен (только типы/константы/чистая `bundleKey`).
+- **Strict-флаги, на которых легко споткнуться** (учтены в коде ниже): `noUncheckedIndexedAccess` (индексный доступ `arr[0]` → `T | undefined`, использовать `?.`); `exactOptionalPropertyTypes` (нельзя присваивать `undefined` в `field?: T` — патчи собирать через `Partial<…>`-spread, не передавать явный `undefined`); `no-non-null-assertion` (никаких `x!` — нарраивать guard'ом); `no-unnecessary-condition` (feature-detection web-API — через локальный тип с optional-методами, см. Task 6).
 - Перед коммитом каждой задачи: `pnpm test` зелёный; в конце — `pnpm lint && pnpm typecheck && pnpm test`.
 
 ---
@@ -25,11 +26,15 @@
 |---|---|
 | `src/services/offline/contract/storage.ts` | Generic типы (`SavedBundleRecord<T>`, `OutboxCommand<T>`), статусы, константы БД/кэша, чистая `bundleKey`. Без рантайма. |
 | `src/services/offline/store/db.ts` | `openOfflineDb()` — IndexedDB, сторы + индексы, миграции. |
-| `src/services/offline/store/saved-bundles.ts` | CRUD снимков (put/get/list/listByEntity/delete/setStatus), ключ выводится из `entity`+`id`. |
-| `src/services/offline/store/outbox.ts` | Generic очередь команд: enqueue, выборки by-status/by-entity, update, delete. |
+| `src/services/offline/store/saved-bundles.ts` | CRUD снимков (put/get/list/listByEntity/listByStatus/update/delete), ключ из `entity`+`id`. |
+| `src/services/offline/store/outbox.ts` | Generic очередь команд: enqueue, list (all/by-status/by-entity), update, delete. |
 | `src/services/offline/store/images.ts` | Кэш картинок в Cache Storage (cache/has/match). |
 | `src/services/offline/store/persistence.ts` | `requestPersistentStorage`/`isStoragePersisted`/`getStorageEstimate`. |
 | `*.test.ts` | Co-located unit-тесты (кроме `contract/storage.ts` type-only — проверяется typecheck). |
+
+**Решение по дженерикам:** функции стора оперируют `snapshot`/`payload` как `unknown` (стор домен не интерпретирует); типизация снимка/payload — ответственность слоя дескриптора/view выше. Тип-параметры `SavedBundleRecord<T>`/`OutboxCommand<T>` нужны вызывающим коду для построения типизированных записей (`T` ⊂ `unknown` присваивается стору без касты).
+
+**Решение по транзакциям:** каждая функция стора = одна короткоживущая транзакция (open → op → close в `finally`). Атомарные **мульти-шаговые** операции (single-drain claim «pending→syncing», reconcile snapshot за один tx) — НЕ задача этого слоя; их строит sync-слой напрямую через `openOfflineDb()` своей `readwrite`-транзакцией. См. Self-Review.
 
 ---
 
@@ -38,6 +43,8 @@
 **Files:**
 - Modify: `package.json`
 - Create: `src/services/offline/contract/storage.ts`
+
+> Примечание: `idb` добавляется именно здесь (в store-слое, который его использует), НЕ в SW-PR (F1). Спек v2 §11 согласован соответственно.
 
 - [ ] **Step 1: Поставить зависимости**
 
@@ -48,7 +55,7 @@ pnpm add idb@^8.0.0
 pnpm add -D fake-indexeddb@^6.0.0
 ```
 
-Expected: `package.json` + `pnpm-lock.yaml` обновлены, установка кодом 0.
+Expected: `package.json` + `pnpm-lock.yaml` обновлены, установка кодом 0. (Если ругается на `unrs-resolver` postinstall — известная вещь, см. `pnpm.neverBuiltDependencies`; установка проходит.)
 
 - [ ] **Step 2: Создать контракт**
 
@@ -87,6 +94,11 @@ export interface SavedBundleRecord<TSnapshot = unknown> {
   imageKeys: string[]; // sha256-ключи картинок для Cache Storage
 }
 
+/** Патч записи снимка (служебные ключи менять нельзя). */
+export type SavedBundlePatch = Partial<
+  Omit<SavedBundleRecord, "key" | "entity" | "id">
+>;
+
 export type OutboxStatus = "pending" | "syncing" | "failed" | "done";
 
 /** Сейчас только create; update/delete — позже (уровень 2, нужен version-токен). */
@@ -107,6 +119,9 @@ export interface OutboxCommand<TPayload = unknown> {
   lastError?: string;
   serverId?: string;
 }
+
+/** Патч команды (clientId неизменяем). */
+export type OutboxPatch = Partial<Omit<OutboxCommand, "clientId">>;
 
 /** Вход для постановки в очередь; служебные поля проставляет enqueue. */
 export type OutboxEnqueueInput<TPayload = unknown> = Pick<
@@ -164,10 +179,13 @@ describe("openOfflineDb", () => {
     db.close();
   });
 
-  it("создаёт индекс by-entity на saved-bundles", async () => {
+  it("создаёт индексы by-entity и by-status на saved-bundles", async () => {
     const db = await openOfflineDb();
     const tx = db.transaction("saved-bundles", "readonly");
-    expect(Array.from(tx.store.indexNames)).toEqual(["by-entity"]);
+    expect(Array.from(tx.store.indexNames).sort()).toEqual([
+      "by-entity",
+      "by-status",
+    ]);
     db.close();
   });
 
@@ -202,6 +220,7 @@ import {
   OFFLINE_DB_NAME,
   OFFLINE_DB_VERSION,
   type SavedBundleRecord,
+  type SavedBundleStatus,
   type OutboxCommand,
   type OutboxStatus,
 } from "../contract/storage";
@@ -210,7 +229,7 @@ export interface OfflineDB extends DBSchema {
   "saved-bundles": {
     key: string;
     value: SavedBundleRecord;
-    indexes: { "by-entity": string };
+    indexes: { "by-entity": string; "by-status": SavedBundleStatus };
   };
   outbox: {
     key: string;
@@ -227,6 +246,7 @@ export function openOfflineDb(): Promise<IDBPDatabase<OfflineDB>> {
           keyPath: "key",
         });
         bundles.createIndex("by-entity", "entity");
+        bundles.createIndex("by-status", "status");
       }
       if (!db.objectStoreNames.contains("outbox")) {
         const outbox = db.createObjectStore("outbox", { keyPath: "clientId" });
@@ -273,8 +293,9 @@ import {
   getSavedBundle,
   listSavedBundles,
   listSavedBundlesByEntity,
+  listSavedBundlesByStatus,
+  updateSavedBundle,
   deleteSavedBundle,
-  setSavedBundleStatus,
 } from "./saved-bundles";
 import type { SavedBundleRecord } from "../contract/storage";
 
@@ -318,22 +339,38 @@ describe("saved-bundles store", () => {
     expect(lectures.map((r) => r.id).sort()).toEqual(["l1", "l2"]);
   });
 
+  it("listByStatus фильтрует по статусу (recovery зависших saving)", async () => {
+    await putSavedBundle(makeInput("lectures", "l1")); // saving
+    await putSavedBundle({ ...makeInput("lectures", "l2"), status: "complete" });
+    expect((await listSavedBundlesByStatus("saving")).map((r) => r.id)).toEqual([
+      "l1",
+    ]);
+    expect(
+      (await listSavedBundlesByStatus("complete")).map((r) => r.id),
+    ).toEqual(["l2"]);
+  });
+
   it("delete удаляет по entity+id", async () => {
     await putSavedBundle(makeInput("lectures", "l1"));
     await deleteSavedBundle("lectures", "l1");
     expect(await getSavedBundle("lectures", "l1")).toBeUndefined();
   });
 
-  it("setStatus меняет статус и пишет error", async () => {
+  it("update мёржит patch (status, error, snapshot — для reconcile)", async () => {
     await putSavedBundle(makeInput("lectures", "l1"));
-    await setSavedBundleStatus("lectures", "l1", "error", "boom");
+    await updateSavedBundle("lectures", "l1", {
+      status: "error",
+      error: "boom",
+      snapshot: { reconciled: true },
+    });
     const got = await getSavedBundle("lectures", "l1");
     expect(got?.status).toBe("error");
     expect(got?.error).toBe("boom");
+    expect(got?.snapshot).toEqual({ reconciled: true });
   });
 
-  it("setStatus на несуществующей — no-op", async () => {
-    await setSavedBundleStatus("lectures", "nope", "complete");
+  it("update на несуществующей — no-op", async () => {
+    await updateSavedBundle("lectures", "nope", { status: "complete" });
     expect(await getSavedBundle("lectures", "nope")).toBeUndefined();
   });
 });
@@ -355,6 +392,7 @@ import { openOfflineDb } from "./db";
 import {
   bundleKey,
   type SavedBundleRecord,
+  type SavedBundlePatch,
   type SavedBundleStatus,
 } from "../contract/storage";
 
@@ -362,11 +400,14 @@ export async function putSavedBundle(
   record: Omit<SavedBundleRecord, "key">,
 ): Promise<void> {
   const db = await openOfflineDb();
-  await db.put("saved-bundles", {
-    ...record,
-    key: bundleKey(record.entity, record.id),
-  });
-  db.close();
+  try {
+    await db.put("saved-bundles", {
+      ...record,
+      key: bundleKey(record.entity, record.id),
+    });
+  } finally {
+    db.close();
+  }
 }
 
 export async function getSavedBundle(
@@ -374,25 +415,59 @@ export async function getSavedBundle(
   id: string,
 ): Promise<SavedBundleRecord | undefined> {
   const db = await openOfflineDb();
-  const record = await db.get("saved-bundles", bundleKey(entity, id));
-  db.close();
-  return record;
+  try {
+    return await db.get("saved-bundles", bundleKey(entity, id));
+  } finally {
+    db.close();
+  }
 }
 
 export async function listSavedBundles(): Promise<SavedBundleRecord[]> {
   const db = await openOfflineDb();
-  const all = await db.getAll("saved-bundles");
-  db.close();
-  return all;
+  try {
+    return await db.getAll("saved-bundles");
+  } finally {
+    db.close();
+  }
 }
 
 export async function listSavedBundlesByEntity(
   entity: string,
 ): Promise<SavedBundleRecord[]> {
   const db = await openOfflineDb();
-  const list = await db.getAllFromIndex("saved-bundles", "by-entity", entity);
-  db.close();
-  return list;
+  try {
+    return await db.getAllFromIndex("saved-bundles", "by-entity", entity);
+  } finally {
+    db.close();
+  }
+}
+
+export async function listSavedBundlesByStatus(
+  status: SavedBundleStatus,
+): Promise<SavedBundleRecord[]> {
+  const db = await openOfflineDb();
+  try {
+    return await db.getAllFromIndex("saved-bundles", "by-status", status);
+  } finally {
+    db.close();
+  }
+}
+
+/** Мёрж patch в запись (status/error/snapshot/…). No-op, если записи нет. */
+export async function updateSavedBundle(
+  entity: string,
+  id: string,
+  patch: SavedBundlePatch,
+): Promise<void> {
+  const db = await openOfflineDb();
+  try {
+    const existing = await db.get("saved-bundles", bundleKey(entity, id));
+    if (existing) {
+      await db.put("saved-bundles", { ...existing, ...patch });
+    }
+  } finally {
+    db.close();
+  }
 }
 
 export async function deleteSavedBundle(
@@ -400,29 +475,18 @@ export async function deleteSavedBundle(
   id: string,
 ): Promise<void> {
   const db = await openOfflineDb();
-  await db.delete("saved-bundles", bundleKey(entity, id));
-  db.close();
-}
-
-export async function setSavedBundleStatus(
-  entity: string,
-  id: string,
-  status: SavedBundleStatus,
-  error?: string,
-): Promise<void> {
-  const db = await openOfflineDb();
-  const existing = await db.get("saved-bundles", bundleKey(entity, id));
-  if (existing) {
-    await db.put("saved-bundles", { ...existing, status, error });
+  try {
+    await db.delete("saved-bundles", bundleKey(entity, id));
+  } finally {
+    db.close();
   }
-  db.close();
 }
 ```
 
 - [ ] **Step 4: Запустить — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/services/offline/store/saved-bundles.test.ts`
-Expected: PASS (6 тестов).
+Expected: PASS (7 тестов).
 
 - [ ] **Step 5: Commit**
 
@@ -452,6 +516,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   enqueueOutbox,
   getOutboxCommand,
+  listOutbox,
   listOutboxByStatus,
   listOutboxByEntity,
   updateOutboxCommand,
@@ -481,8 +546,17 @@ describe("outbox store", () => {
   });
 
   it("enqueue уважает переданный clientId (идемпотентность)", async () => {
-    const cmd = await enqueueOutbox({ ...makeInput("annotation"), clientId: "fixed-id" });
+    const cmd = await enqueueOutbox({
+      ...makeInput("annotation"),
+      clientId: "fixed-id",
+    });
     expect(cmd.clientId).toBe("fixed-id");
+  });
+
+  it("listOutbox возвращает все команды", async () => {
+    await enqueueOutbox(makeInput("annotation"));
+    await enqueueOutbox(makeInput("comment"));
+    expect(await listOutbox()).toHaveLength(2);
   });
 
   it("listOutboxByStatus фильтрует по статусу", async () => {
@@ -492,7 +566,7 @@ describe("outbox store", () => {
     expect(await listOutboxByStatus("pending")).toHaveLength(1);
     const done = await listOutboxByStatus("done");
     expect(done).toHaveLength(1);
-    expect(done[0].clientId).toBe(a.clientId);
+    expect(done[0]?.clientId).toBe(a.clientId);
   });
 
   it("listOutboxByEntity фильтрует по сущности", async () => {
@@ -539,10 +613,13 @@ Create `src/services/offline/store/outbox.ts`:
 ```ts
 // src/services/offline/store/outbox.ts
 // Browser-only: generic персистентная очередь отложенных записей.
+// ВНИМАНИЕ: атомарный claim "pending→syncing" (single-drain) НЕ здесь —
+// его строит sync-слой напрямую через openOfflineDb() readwrite-транзакцией.
 import { openOfflineDb } from "./db";
 import {
   type OutboxCommand,
   type OutboxEnqueueInput,
+  type OutboxPatch,
   type OutboxStatus,
 } from "../contract/storage";
 
@@ -559,8 +636,11 @@ export async function enqueueOutbox(
     attempts: 0,
   };
   const db = await openOfflineDb();
-  await db.put("outbox", command);
-  db.close();
+  try {
+    await db.put("outbox", command);
+  } finally {
+    db.close();
+  }
   return command;
 }
 
@@ -568,52 +648,73 @@ export async function getOutboxCommand(
   clientId: string,
 ): Promise<OutboxCommand | undefined> {
   const db = await openOfflineDb();
-  const cmd = await db.get("outbox", clientId);
-  db.close();
-  return cmd;
+  try {
+    return await db.get("outbox", clientId);
+  } finally {
+    db.close();
+  }
+}
+
+export async function listOutbox(): Promise<OutboxCommand[]> {
+  const db = await openOfflineDb();
+  try {
+    return await db.getAll("outbox");
+  } finally {
+    db.close();
+  }
 }
 
 export async function listOutboxByStatus(
   status: OutboxStatus,
 ): Promise<OutboxCommand[]> {
   const db = await openOfflineDb();
-  const list = await db.getAllFromIndex("outbox", "by-status", status);
-  db.close();
-  return list;
+  try {
+    return await db.getAllFromIndex("outbox", "by-status", status);
+  } finally {
+    db.close();
+  }
 }
 
 export async function listOutboxByEntity(
   entity: string,
 ): Promise<OutboxCommand[]> {
   const db = await openOfflineDb();
-  const list = await db.getAllFromIndex("outbox", "by-entity", entity);
-  db.close();
-  return list;
+  try {
+    return await db.getAllFromIndex("outbox", "by-entity", entity);
+  } finally {
+    db.close();
+  }
 }
 
 export async function updateOutboxCommand(
   clientId: string,
-  patch: Partial<Omit<OutboxCommand, "clientId">>,
+  patch: OutboxPatch,
 ): Promise<void> {
   const db = await openOfflineDb();
-  const existing = await db.get("outbox", clientId);
-  if (existing) {
-    await db.put("outbox", { ...existing, ...patch });
+  try {
+    const existing = await db.get("outbox", clientId);
+    if (existing) {
+      await db.put("outbox", { ...existing, ...patch });
+    }
+  } finally {
+    db.close();
   }
-  db.close();
 }
 
 export async function deleteOutboxCommand(clientId: string): Promise<void> {
   const db = await openOfflineDb();
-  await db.delete("outbox", clientId);
-  db.close();
+  try {
+    await db.delete("outbox", clientId);
+  } finally {
+    db.close();
+  }
 }
 ```
 
 - [ ] **Step 4: Запустить — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/services/offline/store/outbox.test.ts`
-Expected: PASS (6 тестов).
+Expected: PASS (7 тестов).
 
 - [ ] **Step 5: Commit**
 
@@ -629,6 +730,8 @@ git commit -m "feat(offline): generic outbox command queue (by-status/by-entity)
 **Files:**
 - Create: `src/services/offline/store/images.ts`
 - Test: `src/services/offline/store/images.test.ts`
+
+> Шов: записи хранят `imageKeys` (sha256), а `cacheImage(url)` принимает URL. Мост `key → /static/files/{key}` строит слой докачки выше (дескриптор/save-flow), не этот модуль.
 
 - [ ] **Step 1: Написать падающий тест**
 
@@ -687,7 +790,8 @@ describe("images cache", () => {
     await cacheImage("/static/files/abc");
     const res = await matchCachedImage("/static/files/abc");
     expect(res).toBeInstanceOf(Response);
-    expect(await res!.text()).toBe("img-bytes");
+    if (!res) throw new Error("ожидали Response из кэша");
+    expect(await res.text()).toBe("img-bytes");
   });
 });
 ```
@@ -747,6 +851,8 @@ git commit -m "feat(offline): Cache Storage helper for offline images"
 **Files:**
 - Create: `src/services/offline/store/persistence.ts`
 - Test: `src/services/offline/store/persistence.test.ts`
+
+> Feature-detection web-API сделан через локальный тип `MaybeStorageManager` с **опциональными** методами + приведение `navigator.storage` к `… | undefined`. Это разрывает «всегда-истинность» гарда (lib.dom типизирует `storage` и методы как всегда-определённые), иначе `@typescript-eslint/no-unnecessary-condition` (error) отвергнет код, хотя рантайм-гард реально нужен (старые браузеры/SSR).
 
 - [ ] **Step 1: Написать падающий тест**
 
@@ -812,24 +918,42 @@ Create `src/services/offline/store/persistence.ts`:
 ```ts
 // src/services/offline/store/persistence.ts
 // Browser-only: защита явно сохранённого контента от LRU-вытеснения origin'а.
+// Feature-detection через тип с опциональными методами — иначе lib.dom считает
+// navigator.storage и его методы всегда-определёнными и no-unnecessary-condition
+// отвергнет рантайм-гард (нужный для старых браузеров/SSR).
 export interface OfflineStorageEstimate {
   usage: number;
   quota: number;
 }
 
+interface MaybeStorageManager {
+  persist?: () => Promise<boolean>;
+  persisted?: () => Promise<boolean>;
+  estimate?: () => Promise<StorageEstimate>;
+}
+
+function offlineStorage(): MaybeStorageManager | undefined {
+  return navigator.storage as MaybeStorageManager | undefined;
+}
+
 export async function requestPersistentStorage(): Promise<boolean> {
-  if (!navigator.storage?.persist) return false;
-  return navigator.storage.persist();
+  const storage = offlineStorage();
+  if (!storage || typeof storage.persist !== "function") return false;
+  return storage.persist();
 }
 
 export async function isStoragePersisted(): Promise<boolean> {
-  if (!navigator.storage?.persisted) return false;
-  return navigator.storage.persisted();
+  const storage = offlineStorage();
+  if (!storage || typeof storage.persisted !== "function") return false;
+  return storage.persisted();
 }
 
 export async function getStorageEstimate(): Promise<OfflineStorageEstimate> {
-  if (!navigator.storage?.estimate) return { usage: 0, quota: 0 };
-  const estimate = await navigator.storage.estimate();
+  const storage = offlineStorage();
+  if (!storage || typeof storage.estimate !== "function") {
+    return { usage: 0, quota: 0 };
+  }
+  const estimate = await storage.estimate();
   return { usage: estimate.usage ?? 0, quota: estimate.quota ?? 0 };
 }
 ```
@@ -847,7 +971,7 @@ Run:
 pnpm lint && pnpm typecheck && pnpm test
 ```
 
-Expected: всё PASS (существующие тесты не сломаны).
+Expected: всё PASS (lint чистый, типы под strict ок, существующие тесты не сломаны).
 
 ```bash
 git add src/services/offline/store/persistence.ts src/services/offline/store/persistence.test.ts
@@ -860,17 +984,35 @@ git commit -m "feat(offline): persistent-storage and quota-estimate helpers"
 
 **Покрытие спека v2 (§9 хранилище):**
 
-- `saved-bundles` (key `${entity}:${id}`, `snapshot`, `imageKeys`, `status`) + индекс `by-entity` — Task 2,3. ✓
+- `saved-bundles` (key `${entity}:${id}`, `snapshot`, `imageKeys`, `status`) + индексы `by-entity`/`by-status` — Task 2,3. ✓
 - `outbox` generic (`{clientId, entity, op, payload, status, attempts}`) + индексы `by-status`/`by-entity` — Task 2,4. ✓
-- `clientId` = UUID = temp-id = idempotency-key = reconcile-key — Task 1 (контракт), Task 4 (enqueue). ✓
+- `clientId` = UUID = temp-id = idempotency-key = reconcile-key — Task 1, Task 4. ✓
 - Cache Storage `flbz-offline-images` — Task 5. ✓
 - `persist()` + `estimate()` — Task 6. ✓
-- Entity-agnostic: слой оперирует `entity`/`snapshot`/`payload` как данными, домен не интерпретирует. ✓
+- Entity-agnostic: слой оперирует `entity`/`snapshot`/`payload` как данными. ✓
 
-**Вне скоупа этого плана (следующие планы под спек v2):** `OfflineDescriptor`/registry (F3-контракт) + composition root (F4); репозиторий-контракт (server/IndexedDB-адаптеры); generic sync-драйвер + route handler `POST /api/offline/[entity]`; lecture-дескриптор + `/saved` + `SavedLectureView` (слайс L); annotation-дескриптор + офлайн-create + reconcile (слайс A); правки SW (F1: cache `/static/files/*`, app-shell `/saved*`); вынос shared-хелперов + рефактор CommentNode (F2).
+**Симметрия API (закрыто после ревью):**
 
-**Плейсхолдеры:** нет.
+- `saved-bundles` и `outbox` теперь оба имеют: `list`(all), `listBy-status`, `listBy-entity`, `get`, generic `update(patch)`, `delete`. Узкий `setSavedBundleStatus` заменён на общий `updateSavedBundle(entity,id,patch)` — симметрично `updateOutboxCommand`.
+- `by-status` добавлен и в `saved-bundles` → recovery «зависших `saving`» через `listSavedBundlesByStatus` (раньше асимметрия с outbox).
+- `updateSavedBundle` принимает `snapshot` в патче → **reconcile temp→server** реализуем (заменить tempId на serverId внутри снимка).
+- Асимметрия create-моделей (`enqueueOutbox` генерит служебные поля vs `putSavedBundle` принимает готовую запись минус `key`) — оправдана: команда генерится клиентом, снимок собирается server-флоу.
 
-**Согласованность типов:** `SavedBundleRecord<T>`/`OutboxCommand<T>`/`OutboxEnqueueInput<T>`/`SavedBundleStatus`/`OutboxStatus`/`OutboxOp`/`bundleKey`/`OfflineStorageEstimate` — едины между контрактом, реализацией и тестами. Имена функций (`putSavedBundle`, `enqueueOutbox`, `listOutboxByEntity`, `updateOutboxCommand`, …) совпадают. Индексы `by-entity`/`by-status` объявлены в `OfflineDB` (Task 2) и используются в Task 3,4. ✓
+**Незакрытые seam'ы — осознанно вне этого слоя (для sync-плана):**
 
-**Заметки исполнителю:** `git add` — только перечисленные файлы по имени; `public/sw.js` и `.env.development.local` не трогать. Если `pnpm add` ругается на `unrs-resolver` postinstall — известная вещь (`pnpm.neverBuiltDependencies`), установка проходит.
+- **Атомарный claim single-drain** («взять pending → пометить syncing» за один tx) и любые **мульти-record атомарные** операции НЕ строятся поверх self-closing helper'ов стора. Sync-слой делает это напрямую через `openOfflineDb()` своей `readwrite`-транзакцией. Межвкладочную гонку дополнительно добивает server-side idempotency (бэкенд-рычаг 3). Зафиксировано комментарием в `outbox.ts`.
+- **Мост `imageKey (sha256) → /static/files/{key}`** строит слой докачки выше (комментарий в Task 5).
+
+**Strict-флаги (исправлено после ревью):**
+
+- `noUncheckedIndexedAccess`: индексные доступы в тестах через `?.` (`done[0]?.clientId`). ✓
+- `exactOptionalPropertyTypes`: мутации через `Partial<…>`-патчи (`updateSavedBundle`/`updateOutboxCommand`), без присваивания явного `undefined`. ✓
+- `no-non-null-assertion`: тест images нарраивает через `if (!res) throw` вместо `res!`. ✓
+- `no-unnecessary-condition`: feature-detection в `persistence.ts` через `MaybeStorageManager`-тип с optional-методами. ✓
+- `db.close()` в `finally` во всех функциях стора (нет утечки соединения при исключении). ✓
+
+**Решение по дженерикам:** функции стора работают с `unknown` snapshot/payload (типизация — на слое дескриптора); тип-параметры `<T>` в контракте служат вызывающим коду. Это не недосмотр, а граница ответственности.
+
+**Вне скоупа этого плана (следующие планы под спек v2):** `OfflineDescriptor`/registry (F3-контракт) + composition root (F4); репозиторий-контракт (server/IndexedDB-адаптеры); generic sync-драйвер (+ атомарный claim) + route handler `POST /api/offline/[entity]`; lecture-дескриптор + `/saved` + `SavedLectureView` (слайс L); annotation-дескриптор + офлайн-create + reconcile (слайс A); правки SW (F1: cache `/static/files/*`, app-shell `/saved*`); вынос shared-хелперов + рефактор CommentNode (F2).
+
+**Плейсхолдеры:** нет. **Согласованность типов/имён:** проверена между контрактом, реализацией и тестами (`SavedBundlePatch`/`OutboxPatch`/`updateSavedBundle`/`listOutbox`/`listSavedBundlesByStatus`/`MaybeStorageManager` и пр.).

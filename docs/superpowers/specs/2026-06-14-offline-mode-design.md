@@ -201,7 +201,7 @@ interface OutboxCommand {
 
 | PR | Тип | Содержимое |
 |---|---|---|
-| **F1** | foundation | `src/sw.template.js` (cache `/static/files/*` + app-shell `/saved*`); `package.json` — `idb` |
+| **F1** | foundation | `src/sw.template.js` (cache `/static/files/*` + app-shell `/saved*`). NB: `idb` добавляется в F3-плане персистентности, НЕ здесь — чтобы два PR не трогали одну строку `package.json` |
 | **F2** | prerequisite | вынос чистых хелперов рендера в shared; рефактор `CommentNode` → контейнер/view |
 | **F3** | infra (generic) | `src/services/offline/`: contract/descriptor, store (saved-bundles + outbox + images + persist), repository-контракт, generic sync-драйвер |
 | **F4** | infra | `app/_offline/registry.ts` (composition root) + generic `saveOffline` action + generic route handler `POST /api/offline/[entity]` |
