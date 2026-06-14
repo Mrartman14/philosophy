@@ -25,7 +25,8 @@ const schema = getSchema(extensions);
 
 describe("ImageExt parseHTML/renderHTML", () => {
   it("renderHTML emits data-storage-key/alt/caption/block-id", () => {
-    const node = schema.nodes.image!.create({
+    if (!schema.nodes.image) throw new Error("schema.nodes.image не зарегистрирован");
+    const node = schema.nodes.image.create({
       storage_key: "abc",
       alt: "alpha",
       caption: "cap",
@@ -34,8 +35,9 @@ describe("ImageExt parseHTML/renderHTML", () => {
     const dom = DOMSerializer.fromSchema(schema).serializeNode(node);
     const wrap = document.createElement("div");
     wrap.appendChild(dom);
-    const fig = wrap.querySelector("figure[data-ast-image]")!;
+    const fig = wrap.querySelector("figure[data-ast-image]");
     expect(fig).not.toBeNull();
+    if (fig === null) throw new Error("figure не найден");
     expect(fig.getAttribute("data-storage-key")).toBe("abc");
     expect(fig.getAttribute("data-alt")).toBe("alpha");
     expect(fig.getAttribute("data-caption")).toBe("cap");
@@ -43,7 +45,8 @@ describe("ImageExt parseHTML/renderHTML", () => {
   });
 
   it("renderHTML emits <img> and <figcaption> children for SSR / getHTML", () => {
-    const node = schema.nodes.image!.create({
+    if (!schema.nodes.image) throw new Error("schema.nodes.image не зарегистрирован");
+    const node = schema.nodes.image.create({
       storage_key: "abc",
       alt: "alpha",
       caption: "look",
@@ -54,15 +57,18 @@ describe("ImageExt parseHTML/renderHTML", () => {
     wrap.appendChild(dom);
     const img = wrap.querySelector("figure[data-ast-image] > img");
     expect(img).not.toBeNull();
-    expect(img!.getAttribute("src")).toContain("/static/files/abc");
-    expect(img!.getAttribute("alt")).toBe("alpha");
+    if (img === null) throw new Error("img не найден");
+    expect(img.getAttribute("src")).toContain("/static/files/abc");
+    expect(img.getAttribute("alt")).toBe("alpha");
     const figcap = wrap.querySelector("figure[data-ast-image] > figcaption");
     expect(figcap).not.toBeNull();
-    expect(figcap!.textContent).toBe("look");
+    if (figcap === null) throw new Error("figcaption не найден");
+    expect(figcap.textContent).toBe("look");
   });
 
   it("renderHTML omits children when storage_key/caption are empty", () => {
-    const node = schema.nodes.image!.create({
+    if (!schema.nodes.image) throw new Error("schema.nodes.image не зарегистрирован");
+    const node = schema.nodes.image.create({
       storage_key: "",
       alt: "",
       caption: "",
@@ -76,7 +82,8 @@ describe("ImageExt parseHTML/renderHTML", () => {
   });
 
   it("renderHTML omits attrs when empty (no noisy attributes in serialized HTML)", () => {
-    const node = schema.nodes.image!.create({
+    if (!schema.nodes.image) throw new Error("schema.nodes.image не зарегистрирован");
+    const node = schema.nodes.image.create({
       storage_key: "",
       alt: "",
       caption: "",
@@ -85,7 +92,9 @@ describe("ImageExt parseHTML/renderHTML", () => {
     const dom = DOMSerializer.fromSchema(schema).serializeNode(node);
     const wrap = document.createElement("div");
     wrap.appendChild(dom);
-    const fig = wrap.querySelector("figure[data-ast-image]")!;
+    const fig = wrap.querySelector("figure[data-ast-image]");
+    expect(fig).not.toBeNull();
+    if (fig === null) throw new Error("figure не найден");
     expect(fig.hasAttribute("data-storage-key")).toBe(false);
     expect(fig.hasAttribute("data-alt")).toBe(false);
     expect(fig.hasAttribute("data-caption")).toBe(false);
@@ -102,9 +111,10 @@ describe("ImageExt parseHTML/renderHTML", () => {
       if (n.type.name === "image") imageNode = n;
     });
     expect(imageNode).not.toBeNull();
-    expect(imageNode!.attrs.storage_key).toBe("def");
-    expect(imageNode!.attrs.alt).toBe("bb");
-    expect(imageNode!.attrs.caption).toBe("ccap");
-    expect(imageNode!.attrs.blockId).toBe("b-2");
+    if (imageNode === null) throw new Error("image-узел не найден");
+    expect(imageNode.attrs.storage_key).toBe("def");
+    expect(imageNode.attrs.alt).toBe("bb");
+    expect(imageNode.attrs.caption).toBe("ccap");
+    expect(imageNode.attrs.blockId).toBe("b-2");
   });
 });

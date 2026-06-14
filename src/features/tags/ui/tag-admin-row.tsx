@@ -44,8 +44,8 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
               {editing ? "Отмена" : "Переименовать"}
             </Button>
           )}
-          {canDelete && hasId && (
-            <TagDeleteButton id={tag.id!} name={tag.name} />
+          {canDelete && typeof tag.id === "number" && (
+            <TagDeleteButton id={tag.id} name={tag.name} />
           )}
         </div>
       </div>

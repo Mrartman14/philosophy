@@ -231,7 +231,8 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
     // ---------------- history ----------------
     case "undo": {
       if (state.past.length === 0) return state;
-      const previous = state.past[state.past.length - 1]!;
+      const previous = state.past[state.past.length - 1];
+      if (previous === undefined) return state;
       return {
         ...state,
         data: previous,
@@ -243,7 +244,8 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
     }
     case "redo": {
       if (state.future.length === 0) return state;
-      const next = state.future[0]!;
+      const next = state.future[0];
+      if (next === undefined) return state;
       return {
         ...state,
         data: next,

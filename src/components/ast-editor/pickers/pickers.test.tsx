@@ -44,7 +44,8 @@ describe("LecturePicker", () => {
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "Ан" } });
     await waitFor(
       () => {
-        const lastCall = mocked.searchLectures.mock.calls.at(-1)!;
+        const lastCall = mocked.searchLectures.mock.calls.at(-1);
+        if (lastCall === undefined) throw new Error("searchLectures не был вызван");
         expect(lastCall[0]).toBe("Ан");
       },
       { timeout: 600 },
@@ -106,7 +107,9 @@ describe("CommentPicker", () => {
     render(<CommentPicker lectureId="L42" onSelect={onSelect} />);
     await screen.findByText("интересная мысль");
     expect(mocked.searchCommentsByLecture).toHaveBeenCalled();
-    expect(mocked.searchCommentsByLecture.mock.calls[0]![0]).toBe("L42");
+    const firstCall = mocked.searchCommentsByLecture.mock.calls[0];
+    if (firstCall === undefined) throw new Error("searchCommentsByLecture не был вызван");
+    expect(firstCall[0]).toBe("L42");
     fireEvent.mouseDown(screen.getByText("интересная мысль"));
     expect(onSelect).toHaveBeenCalledWith("c1", "интересная мысль");
   });

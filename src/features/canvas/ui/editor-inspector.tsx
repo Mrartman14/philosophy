@@ -43,6 +43,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
   }
 
   if (node) {
+    const nodeId = node.id ?? "";
     return (
       <div className="flex flex-col gap-3">
         <h3 className="text-sm font-semibold">Узел: {node.type}</h3>
@@ -52,7 +53,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
             <Select
               name="shape_kind"
               value={node.shape_kind ?? "rect"}
-              onValueChange={(v) => { dispatch({ type: "setShapeKind", nodeId: node.id!, shapeKind: v as "rect" | "ellipse" | "diamond" }); }}
+              onValueChange={(v) => { dispatch({ type: "setShapeKind", nodeId, shapeKind: v as "rect" | "ellipse" | "diamond" }); }}
               options={[
                 { value: "rect", label: "Прямоугольник" },
                 { value: "ellipse", label: "Эллипс" },
@@ -67,7 +68,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
             <TextInput
               type="number"
               value={String(node.width ?? 0)}
-              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId: node.id!, width: Number(e.target.value), height: node.height ?? 0 }); }}
+              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: Number(e.target.value), height: node.height ?? 0 }); }}
             />
           </label>
           <label className="flex flex-1 flex-col gap-1 text-sm">
@@ -75,7 +76,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
             <TextInput
               type="number"
               value={String(node.height ?? 0)}
-              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId: node.id!, width: node.width ?? 0, height: Number(e.target.value) }); }}
+              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: node.width ?? 0, height: Number(e.target.value) }); }}
             />
           </label>
         </div>
@@ -88,6 +89,12 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
     );
   }
 
+  // We know edge is defined here: the !node && !edge guard above returned early.
+  if (!edge) {
+    return <p className="text-sm text-(--color-description)">Выберите узел или ребро.</p>;
+  }
+
+  const edgeId = edge.id ?? "";
   // edge
   const sideValue = (s: Side | undefined) => s ?? "";
   return (
@@ -96,17 +103,17 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
       <label className="flex flex-col gap-1 text-sm">
         Подпись
         <TextInput
-          value={edge!.label ?? ""}
+          value={edge.label ?? ""}
           maxLength={200}
-          onChange={(e) => { dispatch({ type: "setEdgeLabel", edgeId: edge!.id!, label: e.target.value }); }}
+          onChange={(e) => { dispatch({ type: "setEdgeLabel", edgeId, label: e.target.value }); }}
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
         Стиль
         <Select
           name="style"
-          value={edge!.style ?? "solid"}
-          onValueChange={(v) => { dispatch({ type: "setEdgeStyle", edgeId: edge!.id!, style: v as "solid" | "dashed" }); }}
+          value={edge.style ?? "solid"}
+          onValueChange={(v) => { dispatch({ type: "setEdgeStyle", edgeId, style: v as "solid" | "dashed" }); }}
           options={[{ value: "solid", label: "Сплошная" }, { value: "dashed", label: "Пунктир" }]}
         />
       </label>
@@ -114,8 +121,8 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
         Конец
         <Select
           name="end"
-          value={edge!.end ?? "arrow"}
-          onValueChange={(v) => { dispatch({ type: "setEdgeEnd", edgeId: edge!.id!, end: v as "none" | "arrow" }); }}
+          value={edge.end ?? "arrow"}
+          onValueChange={(v) => { dispatch({ type: "setEdgeEnd", edgeId, end: v as "none" | "arrow" }); }}
           options={[{ value: "arrow", label: "Стрелка" }, { value: "none", label: "Без стрелки" }]}
         />
       </label>
@@ -124,8 +131,8 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           От стороны
           <Select
             name="from_side"
-            value={sideValue(edge!.from_side)}
-            onValueChange={(v) => { dispatch(sidesCommand(edge!.id!, (v || undefined) as Side | undefined, edge!.to_side)); }}
+            value={sideValue(edge.from_side)}
+            onValueChange={(v) => { dispatch(sidesCommand(edgeId, (v || undefined) as Side | undefined, edge.to_side)); }}
             options={SIDE_OPTIONS}
           />
         </label>
@@ -133,8 +140,8 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           К стороне
           <Select
             name="to_side"
-            value={sideValue(edge!.to_side)}
-            onValueChange={(v) => { dispatch(sidesCommand(edge!.id!, edge!.from_side, (v || undefined) as Side | undefined)); }}
+            value={sideValue(edge.to_side)}
+            onValueChange={(v) => { dispatch(sidesCommand(edgeId, edge.from_side, (v || undefined) as Side | undefined)); }}
             options={SIDE_OPTIONS}
           />
         </label>

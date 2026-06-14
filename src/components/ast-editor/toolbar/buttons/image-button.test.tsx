@@ -65,7 +65,8 @@ describe("ImageButton", () => {
 
     const input = container.querySelector('input[type="file"]');
     expect(input).not.toBeNull();
-    fireEvent.change(input!, { target: { files: [makePngFile()] } });
+    if (input === null) throw new Error("file input не найден");
+    fireEvent.change(input, { target: { files: [makePngFile()] } });
 
     await waitFor(() => {
       expect(JSON.stringify(editor.getJSON())).toContain(KEY);
@@ -89,7 +90,9 @@ describe("ImageButton", () => {
       </Toolbar.Root>,
     );
 
-    fireEvent.change(container.querySelector('input[type="file"]')!, {
+    const fileInput2 = container.querySelector('input[type="file"]');
+    if (fileInput2 === null) throw new Error("file input не найден");
+    fireEvent.change(fileInput2, {
       target: { files: [makePngFile()] },
     });
 
@@ -108,13 +111,17 @@ describe("ImageButton", () => {
       </Toolbar.Root>,
     );
 
-    fireEvent.change(container.querySelector('input[type="file"]')!, {
+    const fileInput3 = container.querySelector('input[type="file"]');
+    if (fileInput3 === null) throw new Error("file input не найден");
+    fireEvent.change(fileInput3, {
       target: { files: [makePngFile()] },
     });
 
     await waitFor(() => { expect(toastAdd).toHaveBeenCalledOnce(); });
-    const arg = toastAdd.mock.calls[0]![0] as { title?: string };
-    expect(arg.title).toMatch(/не удалось загрузить/i);
+    const call3 = toastAdd.mock.calls[0];
+    if (call3 === undefined) throw new Error("toastAdd не был вызван");
+    const arg3 = call3[0] as { title?: string };
+    expect(arg3.title).toMatch(/не удалось загрузить/i);
     expect(JSON.stringify(editor.getJSON())).not.toContain('"type":"image"');
     // Кнопка разблокирована (busy сброшен в finally).
     expect(screen.getByLabelText(/изображение/i)).not.toBeDisabled();
@@ -135,13 +142,17 @@ describe("ImageButton", () => {
       </Toolbar.Root>,
     );
 
-    fireEvent.change(container.querySelector('input[type="file"]')!, {
+    const fileInput4 = container.querySelector('input[type="file"]');
+    if (fileInput4 === null) throw new Error("file input не найден");
+    fireEvent.change(fileInput4, {
       target: { files: [makePngFile()] },
     });
 
     await waitFor(() => { expect(toastAdd).toHaveBeenCalledOnce(); });
-    const arg = toastAdd.mock.calls[0]![0] as { description?: string };
-    expect(arg.description).toMatch(/нет прав/i);
+    const call4 = toastAdd.mock.calls[0];
+    if (call4 === undefined) throw new Error("toastAdd не был вызван");
+    const arg4 = call4[0] as { description?: string };
+    expect(arg4.description).toMatch(/нет прав/i);
     editor.destroy();
   });
 

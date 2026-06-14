@@ -87,5 +87,5 @@ function validateAttr(
 
 function extractScheme(s: string): string | null {
   const m = /^([a-z][a-z0-9+\-.]*):/i.exec(s);
-  return m ? m[1]!.toLowerCase() : null;
+  return m ? (m[1] ?? "").toLowerCase() : null;
 }

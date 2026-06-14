@@ -71,7 +71,8 @@ describe("PM-schema round-trip", () => {
       // Re-serialize from the PM-validated tree and compare.
       const out = serialize(doc.toJSON());
       expect(out).toHaveLength(1);
-      const result = out[0]!;
+      const result = out[0];
+      if (result === undefined) throw new Error("serialize вернул пустой массив");
       expect(result.type).toBe(block.type);
       expect(result.id).toBe(block.id);
       expect(result.attrs ?? {}).toEqual(block.attrs ?? {});

@@ -98,7 +98,8 @@ export function AttachmentsPanel({
                       className="rounded px-1 text-sm hover:bg-(--color-text-pane)"
                       disabled={pending}
                       onClick={() => {
-                        const prev = sorted[i - 1]!;
+                        const prev = sorted[i - 1];
+                        if (prev === undefined) return;
                         run(() => onReorder(item, prev.sortOrder));
                       }}
                     >
@@ -112,7 +113,8 @@ export function AttachmentsPanel({
                       className="rounded px-1 text-sm hover:bg-(--color-text-pane)"
                       disabled={pending}
                       onClick={() => {
-                        const next = sorted[i + 1]!;
+                        const next = sorted[i + 1];
+                        if (next === undefined) return;
                         run(() => onReorder(item, next.sortOrder));
                       }}
                     >

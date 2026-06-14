@@ -370,7 +370,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
             <EditorTextOverlay
               node={editingNode}
               viewport={vp}
-              onCommit={(text) => { dispatch({ type: "setNodeText", nodeId: editingNode.id!, text }); setEditingNodeId(null); }}
+              onCommit={(text) => { if (!editingNode.id) return; dispatch({ type: "setNodeText", nodeId: editingNode.id, text }); setEditingNodeId(null); }}
               onCancel={() => { setEditingNodeId(null); }}
             />
           )}

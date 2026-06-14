@@ -89,7 +89,9 @@ describe("AsyncCombobox", () => {
     await screen.findByText("0A");
     fireEvent.click(screen.getByRole("button", { name: /загрузить ещё/i }));
     await screen.findByText("2A");
-    expect(fetcher.mock.calls[1]![1]).toBe(2);
+    const secondCall = fetcher.mock.calls[1];
+    if (secondCall === undefined) throw new Error("fetcher не был вызван второй раз");
+    expect(secondCall[1]).toBe(2);
   });
 
   it("Esc calls onClose when provided", async () => {

@@ -172,7 +172,10 @@ describe("edges", () => {
   it("setEdgeLabel / setEdgeStyle / setEdgeEnd", () => {
     let s = initEditorState(baseData);
     s = canvasReducer(s, { type: "addEdge", fromNode: "n1", toNode: "n2" });
-    const eid = s.data.edges?.[0]!.id!;
+    const firstEdge = s.data.edges?.[0];
+    if (firstEdge === undefined) throw new Error("edges пустой после addEdge");
+    if (firstEdge.id === undefined) throw new Error("id ребра не задан");
+    const eid = firstEdge.id;
     s = canvasReducer(s, { type: "setEdgeLabel", edgeId: eid, label: "связь" });
     s = canvasReducer(s, { type: "setEdgeStyle", edgeId: eid, style: "dashed" });
     s = canvasReducer(s, { type: "setEdgeEnd", edgeId: eid, end: "none" });

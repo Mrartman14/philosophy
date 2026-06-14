@@ -51,7 +51,8 @@ describe("round-trip serialize ↔ deserialize", () => {
       const pm = deserialize([block], fakeSnapshot);
       const out = serialize(pm);
       expect(out).toHaveLength(1);
-      const result = out[0]!;
+      const result = out[0];
+      if (result === undefined) throw new Error("serialize вернул пустой массив");
       expect(result.position).toBe(0);
       expect(result.type).toBe(block.type);
       expect(result.id).toBe(block.id);

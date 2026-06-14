@@ -37,7 +37,9 @@ describe("AttachmentsPanel", () => {
     );
     const buttons = screen.getAllByRole("button", { name: /Открепить/ });
     expect(buttons.length).toBe(2);
-    fireEvent.click(buttons[0]!);
+    const firstDetachBtn = buttons[0];
+    if (firstDetachBtn === undefined) throw new Error("кнопка Открепить не найдена");
+    fireEvent.click(firstDetachBtn);
     await waitFor(() => { expect(onDetach).toHaveBeenCalledTimes(1); });
   });
 
@@ -75,7 +77,10 @@ describe("AttachmentsPanel", () => {
     render(
       <AttachmentsPanel items={items} canManage onDetach={onDetach} onReorder={vi.fn()} />,
     );
-    fireEvent.click(screen.getAllByRole("button", { name: /Открепить/ })[0]!);
+    const detachBtns = screen.getAllByRole("button", { name: /Открепить/ });
+    const detachBtn = detachBtns[0];
+    if (detachBtn === undefined) throw new Error("кнопка Открепить не найдена");
+    fireEvent.click(detachBtn);
     await waitFor(() => { expect(screen.getByRole("alert").textContent).toContain("Нельзя открепить"); });
   });
 });

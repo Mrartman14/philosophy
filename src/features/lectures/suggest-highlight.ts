@@ -58,7 +58,7 @@ export function byteRangeToCodeUnits(
 
   // for..of итерирует по code points (не code units).
   for (const ch of text) {
-    bytes += utf8Len(ch.codePointAt(0)!);
+    bytes += utf8Len(ch.codePointAt(0) ?? 0);
     cu += ch.length; // 1 для BMP, 2 для суррогатных пар
     if (startCU === null && bytes >= byteOffset) startCU = cu;
     if (endCU === null && bytes >= byteEnd) endCU = cu;
