@@ -42,7 +42,7 @@ export async function searchMedia(
   type?: "video" | "audio",
 ): Promise<PickerPage<MediaSummary>> {
   const api = await createApiClient();
-  const query: { q: string; offset: number; limit: number; type?: string } = { q, offset, limit };
+  const query: { q: string; offset: number; limit: number; type?: "video" | "audio" } = { q, offset, limit };
   if (type) query.type = type;
   const { data, error } = await api.GET("/api/media", { params: { query } });
   if (error) throw new Error((error as ApiError).error ?? "Ошибка загрузки медиа");

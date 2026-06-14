@@ -2529,8 +2529,8 @@ export interface paths {
         get: {
             parameters: {
                 query: {
-                    /** @description Resource type (lecture, document, trail, media, canvas, form) */
-                    resource_type: string;
+                    /** @description Resource type */
+                    resource_type: "lecture" | "document" | "trail" | "media" | "canvas" | "form";
                     /** @description Resource ID */
                     resource_id: string;
                 };
@@ -3276,7 +3276,10 @@ export interface paths {
         /** Получить пометку по ID */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID пометки */
@@ -3485,7 +3488,10 @@ export interface paths {
         /** Получить пометку в формате Markdown */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID пометки */
@@ -3542,7 +3548,10 @@ export interface paths {
         /** Получить пометку в формате plain text */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID пометки */
@@ -4063,7 +4072,10 @@ export interface paths {
         /** Получить блок документа */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID блока */
@@ -4344,7 +4356,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Share-token для приватных канвасов (обрабатывается shareTokenMW) */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                 };
                 header?: never;
@@ -4572,7 +4584,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Share token (анонимный доступ к приватной сущности) */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                     /** @description Смещение */
                     offset?: number;
@@ -4647,7 +4659,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Share-token для приватных канвасов */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                 };
                 header?: never;
@@ -4718,7 +4730,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Share-token для приватных канвасов */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                 };
                 header?: never;
@@ -5233,8 +5245,8 @@ export interface paths {
                 path: {
                     /** @description ID комментария */
                     id: string;
-                    /** @description Ось реакции (agreement, quality, insight) */
-                    axis: string;
+                    /** @description Ось реакции */
+                    axis: "agreement" | "quality" | "insight";
                 };
                 cookie?: never;
             };
@@ -5882,7 +5894,10 @@ export interface paths {
         /** Получить документ */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID документа */
@@ -6091,7 +6106,10 @@ export interface paths {
         /** Получить документ в формате Markdown */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID документа */
@@ -6148,7 +6166,10 @@ export interface paths {
         /** Получить документ в формате plain text */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID документа */
@@ -6426,7 +6447,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Share token (анонимный доступ к приватной сущности) */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                     /** @description Смещение */
                     offset?: number;
@@ -6641,7 +6662,73 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Список аннотаций родительской сущности
+         * @description Универсальный GET: тип родительской сущности фиксируется в URL.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр аннотаций по блоку (block_id) */
+                    block_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description Тип родительской сущности */
+                    type: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         put?: never;
         /**
          * Создать аннотацию для родительской сущности
@@ -6838,7 +6925,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Share-token для приватных форм */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                 };
                 header?: never;
@@ -7122,7 +7209,7 @@ export interface paths {
         post: {
             parameters: {
                 query?: {
-                    /** @description Share-token для приватных форм */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                 };
                 header?: never;
@@ -7886,7 +7973,10 @@ export interface paths {
         /** Получить лекцию */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID лекции */
@@ -8038,7 +8128,10 @@ export interface paths {
         /** Получить лекцию в формате Markdown */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID лекции */
@@ -8095,7 +8188,10 @@ export interface paths {
         /** Получить лекцию в формате plain text */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID лекции */
@@ -8153,8 +8249,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Фильтр по типу родительской сущности (document, comment, media) */
-                    parent_entity_type?: string;
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр по типу родительской сущности */
+                    parent_entity_type?: "document" | "comment" | "media";
                     /** @description Смещение */
                     offset?: number;
                     /** @description Записей на странице */
@@ -8749,7 +8847,10 @@ export interface paths {
         /** Список документов лекции */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID лекции */
@@ -8817,7 +8918,10 @@ export interface paths {
         /** Список медиа лекции */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID лекции */
@@ -9160,8 +9264,8 @@ export interface paths {
                 path: {
                     /** @description Lecture ID */
                     lectureID: string;
-                    /** @description Entity type: document|media */
-                    entityType: string;
+                    /** @description Тип сущности */
+                    entityType: "document" | "media" | "canvas";
                     /** @description Entity ID */
                     entityID: string;
                 };
@@ -9233,8 +9337,8 @@ export interface paths {
                 path: {
                     /** @description Lecture ID */
                     lectureID: string;
-                    /** @description Entity type: document|media */
-                    entityType: string;
+                    /** @description Тип сущности */
+                    entityType: "document" | "media" | "canvas";
                     /** @description Entity ID */
                     entityID: string;
                 };
@@ -9810,8 +9914,8 @@ export interface paths {
                 query?: {
                     /** @description Поиск по filename */
                     q?: string;
-                    /** @description video|audio */
-                    type?: string;
+                    /** @description Тип медиа */
+                    type?: "video" | "audio";
                     /** @description Смещение */
                     offset?: number;
                     /** @description Лимит */
@@ -9961,7 +10065,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description Share token (анонимный доступ к приватной сущности) */
+                    /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                     /** @description Смещение */
                     offset?: number;
@@ -10035,7 +10139,10 @@ export interface paths {
         /** Получить медиа */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID медиа */
@@ -10459,8 +10566,8 @@ export interface paths {
                 query: {
                     /** @description Поисковый запрос */
                     q: string;
-                    /** @description Тип результата (lecture, glossary) */
-                    type?: string;
+                    /** @description Тип результата */
+                    type?: "lecture" | "glossary";
                     /** @description Лимит результатов */
                     limit?: number;
                     /** @description Смещение */
@@ -10524,8 +10631,8 @@ export interface paths {
                 query: {
                     /** @description Поисковый запрос */
                     q: string;
-                    /** @description Тип результата (lecture, glossary) */
-                    type?: string;
+                    /** @description Тип результата */
+                    type?: "lecture" | "glossary";
                     /** @description Лимит результатов */
                     limit?: number;
                     /** @description Смещение */
@@ -10576,8 +10683,8 @@ export interface paths {
         get: {
             parameters: {
                 query: {
-                    /** @description Resource type (lecture, document, trail, media, canvas, form) */
-                    resource_type: string;
+                    /** @description Resource type */
+                    resource_type: "lecture" | "document" | "trail" | "media" | "canvas" | "form";
                     /** @description Resource ID */
                     resource_id: string;
                 };
@@ -11336,7 +11443,10 @@ export interface paths {
         /** Получить маршрут */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID маршрута */
@@ -11773,7 +11883,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["image.UploadImageResponse"];
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["image.UploadImageResponse"];
+                        };
                     };
                 };
                 /** @description Bad Request */
@@ -12087,17 +12199,19 @@ export interface components {
         "attachment.AttachmentDTO": {
             attached_at?: string;
             container_id?: string;
-            container_type?: string;
+            container_type?: components["schemas"]["attachment.ContainerType"];
             entity_id?: string;
             entity_type?: components["schemas"]["attachment.EntityType"];
             sort_order?: number;
         };
+        /** @enum {string} */
+        "attachment.ContainerType": "lecture";
         "attachment.CreateAttachmentRequest": {
             /** @description EntityID is the target entity's ID. */
             entity_id: string;
             /**
              * @description EntityType is one of "document" | "media" | "canvas".
-             * @enum {string}
+             * @enum {unknown}
              */
             entity_type: "document" | "media" | "canvas";
             /** @description SortOrder is optional; when nil the service treats it as 0 (prepends). */
@@ -12140,7 +12254,7 @@ export interface components {
             end_at?: string;
             event_id?: string;
             start_at: string;
-            /** @enum {string} */
+            /** @enum {unknown} */
             target_audience: "all" | "authenticated" | "admin";
         };
         /** @enum {string} */
@@ -12152,7 +12266,7 @@ export interface components {
             end_at?: string;
             event_id?: string;
             start_at?: string;
-            /** @enum {string} */
+            /** @enum {unknown} */
             target_audience?: "all" | "authenticated" | "admin";
         };
         "canvas.Canvas": {
@@ -12202,7 +12316,7 @@ export interface components {
             anchor?: components["schemas"]["anchor.Position"];
             entity_id?: string;
             /** @description entity_ref */
-            entity_type?: string;
+            entity_type?: components["schemas"]["canvas.RefEntityType"];
             height?: number;
             id?: string;
             /** @description shape */
@@ -12216,6 +12330,8 @@ export interface components {
         };
         /** @enum {string} */
         "canvas.NodeType": "text" | "shape" | "entity_ref";
+        /** @enum {string} */
+        "canvas.RefEntityType": "document" | "lecture" | "annotation" | "comment" | "media" | "glossary" | "banner" | "event" | "form" | "canvas";
         "canvas.Revision": {
             canvas_id?: string;
             created_at?: string;
@@ -12251,7 +12367,7 @@ export interface components {
             start_sec?: number;
             suffix?: string;
             target_entity_id: string;
-            /** @enum {string} */
+            /** @enum {unknown} */
             target_entity_type: "document" | "glossary" | "comment" | "media";
         };
         "comment.Author": {
@@ -12331,6 +12447,8 @@ export interface components {
             /** @enum {integer} */
             value: -1 | 1;
         };
+        /** @enum {string} */
+        "comment.TargetEntityType": "document" | "glossary" | "comment" | "media";
         "comment.UpdateRequest": {
             blocks: components["schemas"]["ast.Block"][];
         };
@@ -12413,7 +12531,7 @@ export interface components {
             prompt?: string;
             required?: boolean;
             sort_order?: number;
-            type?: string;
+            type?: components["schemas"]["form.FieldType"];
         };
         "form.CreateFormRequest": {
             /** @description markdown, optional */
@@ -12422,10 +12540,10 @@ export interface components {
             description?: string;
             fields?: components["schemas"]["form.CreateFieldRequest"][];
             /** @description "editable" | "immutable" */
-            submission_mode?: string;
+            submission_mode?: components["schemas"]["form.SubmissionMode"];
             title?: string;
             /** @description "private" | "public" */
-            visibility?: string;
+            visibility?: components["schemas"]["access.Visibility"];
         };
         "form.CreateOptionInput": {
             label?: string;
@@ -12469,9 +12587,9 @@ export interface components {
             id?: string;
             /** @description RFC3339 */
             published_at?: string;
-            submission_mode?: string;
+            submission_mode?: components["schemas"]["form.SubmissionMode"];
             title?: string;
-            visibility?: string;
+            visibility?: components["schemas"]["access.Visibility"];
         };
         "form.Submission": {
             answers?: components["schemas"]["form.Answer"][];
@@ -12509,10 +12627,10 @@ export interface components {
             /** @description markdown; nil = unchanged, "" = clear */
             description?: string;
             fields?: components["schemas"]["form.CreateFieldRequest"][];
-            submission_mode?: string;
+            submission_mode?: components["schemas"]["form.SubmissionMode"];
             title?: string;
             /** @description "private" | "public" */
-            visibility?: string;
+            visibility?: components["schemas"]["access.Visibility"];
         };
         "glossary.CreateRequest": {
             blocks: components["schemas"]["ast.Block"][];
@@ -12626,8 +12744,10 @@ export interface components {
             visibility: "private" | "public";
         };
         "preference.Preferences": {
-            reading_mode?: string;
+            reading_mode?: components["schemas"]["preference.ReadingMode"];
         };
+        /** @enum {string} */
+        "preference.ReadingMode": "full" | "focused";
         "push.SendRequest": {
             body?: string;
             title: string;
@@ -12681,8 +12801,10 @@ export interface components {
             glossary_term?: components["schemas"]["search.GlossaryData"];
             lecture?: components["schemas"]["search.LectureData"];
             matches?: components["schemas"]["search.Match"][];
-            type?: string;
+            type?: components["schemas"]["search.HitType"];
         };
+        /** @enum {string} */
+        "search.HitType": "lecture" | "glossary";
         "search.LectureData": {
             date?: string;
             lecture_id?: string;

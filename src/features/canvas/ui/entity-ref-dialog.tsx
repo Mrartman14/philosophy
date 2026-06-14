@@ -7,9 +7,10 @@ import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
 import { GlossaryPicker } from "@/components/ast-editor/pickers/glossary-picker";
 import { MediaPicker } from "@/components/ast-editor/pickers/media-picker";
 import { CanvasPicker } from "@/components/ast-editor/pickers/canvas-picker";
+import type { CanvasRefEntityType } from "../types";
 
 /** Все 10 типов entity_ref (порядок UI). */
-const ENTITY_TYPES: { value: string; label: string }[] = [
+const ENTITY_TYPES: { value: CanvasRefEntityType; label: string }[] = [
   { value: "document", label: "Документ" },
   { value: "lecture", label: "Лекция" },
   { value: "glossary", label: "Глоссарий" },
@@ -28,7 +29,7 @@ const PICKER_TYPES = new Set(["document", "lecture", "glossary", "media", "canva
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (entityType: string, entityId: string) => void;
+  onConfirm: (entityType: CanvasRefEntityType, entityId: string) => void;
 }
 
 /**
@@ -42,7 +43,7 @@ interface Props {
  * Колбэк onOpenChange(false) ⇒ закрытие.
  */
 export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
-  const [entityType, setEntityType] = useState("document");
+  const [entityType, setEntityType] = useState<CanvasRefEntityType>("document");
   const [manualId, setManualId] = useState("");
 
   const usePicker = PICKER_TYPES.has(entityType);
@@ -68,7 +69,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
           <Select
             name="entity_type"
             value={entityType}
-            onValueChange={setEntityType}
+            onValueChange={(v) => { setEntityType(v as CanvasRefEntityType); }}
             options={ENTITY_TYPES}
           />
         </label>

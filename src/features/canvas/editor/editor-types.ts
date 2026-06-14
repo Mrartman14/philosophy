@@ -1,5 +1,5 @@
 // src/features/canvas/editor/editor-types.ts
-import type { CanvasData } from "../types";
+import type { CanvasData, CanvasRefEntityType } from "../types";
 
 /** Сторона бокса (совпадает с canvas-render Side). */
 export type Side = "top" | "right" | "bottom" | "left";
@@ -30,7 +30,7 @@ export type ResizeHandle =
 
 /** Черновик entity_ref для диалога создания. */
 export interface EntityRefDraft {
-  entityType: string;
+  entityType: CanvasRefEntityType;
   entityId: string;
 }
 
@@ -75,7 +75,7 @@ export type EditorCommand =
   // --- node mutations ---
   | { type: "addTextNode"; x: number; y: number }
   | { type: "addShapeNode"; shapeKind: "rect" | "ellipse" | "diamond"; x: number; y: number }
-  | { type: "addEntityRefNode"; entityType: string; entityId: string; x: number; y: number }
+  | { type: "addEntityRefNode"; entityType: CanvasRefEntityType; entityId: string; x: number; y: number }
   | { type: "moveSelection"; dx: number; dy: number }
   | { type: "resizeNode"; nodeId: string; handle: ResizeHandle; dx: number; dy: number }
   | { type: "setNodeText"; nodeId: string; text: string }

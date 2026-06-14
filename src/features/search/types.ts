@@ -14,6 +14,9 @@ export type SearchLectureData = components["schemas"]["search.LectureData"];
 export type SearchGlossaryData = components["schemas"]["search.GlossaryData"];
 export type SearchMatch = components["schemas"]["search.Match"];
 
-/** Известные типы хитов. Бек отдаёт только эти два (handler.go validTypes). */
-export const SEARCH_TYPES = ["lecture", "glossary"] as const;
-export type SearchType = (typeof SEARCH_TYPES)[number];
+/** Тип источника поиска (бек: `search.HitType`). */
+export type SearchType = components["schemas"]["search.HitType"];
+
+/** Рантайм-значения для Zod/UI — заякорены на `search.HitType`:
+ * лишнее/устаревшее значение сломает сборку после regen `schema.ts`. */
+export const SEARCH_TYPES = ["lecture", "glossary"] as const satisfies readonly SearchType[];

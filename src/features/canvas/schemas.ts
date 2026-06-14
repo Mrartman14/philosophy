@@ -1,6 +1,7 @@
 // src/features/canvas/schemas.ts
 import "server-only";
 import { z } from "zod";
+import type { CanvasRefEntityType } from "./types";
 
 /**
  * Zod-зеркало canvas-графа. Источник истины — philosophy-api
@@ -17,7 +18,7 @@ const MAX_EDGE_LABEL = 200;
 const ALLOWED_REF_TYPES = [
   "document", "lecture", "annotation", "comment", "media",
   "glossary", "banner", "event", "form", "canvas",
-] as const;
+] as const satisfies readonly CanvasRefEntityType[];
 
 const PosInt = z.number().int();
 const PosDim = z.number().int().positive();

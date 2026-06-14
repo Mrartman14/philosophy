@@ -7,7 +7,7 @@ import type { Point, RenderNode, Side } from "@/components/canvas-render";
 import type { ActionResult } from "@/utils/create-action";
 import { resolveEntityRefView } from "../entity-ref";
 import { updateCanvas } from "../actions";
-import type { Canvas } from "../types";
+import type { Canvas, CanvasRefEntityType } from "../types";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits,
@@ -246,7 +246,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
 
   const onAddText = () => { const c = viewportCenterWorld(); dispatch({ type: "addTextNode", x: c.x, y: c.y }); };
   const onAddShape = (kind: "rect" | "ellipse" | "diamond") => { const c = viewportCenterWorld(); dispatch({ type: "addShapeNode", shapeKind: kind, x: c.x, y: c.y }); };
-  const onAddEntityRefConfirm = (entityType: string, entityId: string) => {
+  const onAddEntityRefConfirm = (entityType: CanvasRefEntityType, entityId: string) => {
     const c = viewportCenterWorld();
     dispatch({ type: "addEntityRefNode", entityType, entityId, x: c.x, y: c.y });
     setRefDialogOpen(false);

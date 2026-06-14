@@ -39,7 +39,7 @@ export const getSearchResults = cache(
       q: string;
       offset: number;
       limit: number;
-      type?: string;
+      type?: SearchType;
     } = { q: filter.q, offset, limit };
     if (filter.type) query.type = filter.type;
 
