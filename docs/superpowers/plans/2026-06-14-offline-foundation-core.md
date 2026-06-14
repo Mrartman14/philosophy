@@ -33,7 +33,7 @@
 | `src/services/offline/contract/descriptor.ts` | Изоморфный тип `OfflineDescriptor<TSnapshot, TWritePayload>` (плаг сущности): `entity`, `pathSegment`, `assemble`, `extractImageKeys`, опц. `write`. Тип-only, без рантайма. |
 | `src/services/offline/repository.ts` | Read-контракт `OfflineRepository` + два адаптера: `createServerRepository(resolve)` (онлайн, через `descriptor.assemble`), `createIndexedDbRepository()` (офлайн, через `getSavedBundle`). |
 | `src/services/offline/sync/transport.ts` | Порт-типы sync-слоя: `SyncSendResult`, `SyncTransport`, `ReconcileHook`, `DrainDeps`, `DrainResult`. Тип-only. |
-| `src/services/offline/sync/drain.ts` | Generic foreground-драйвер `drainOutbox(deps)` + приватный атомарный `claimPending` (single-drain, oldest-first, backoff на transient, reconcile-порт). |
+| `src/services/offline/sync/drain.ts` | Generic foreground-драйвер `drainOutbox(deps)` (recovery осиротевших syncing, single-drain, oldest-first, backoff на transient, reconcile-порт) + экспортируемый атомарный `claimPending` (pending→syncing, для прицельного теста). |
 | `*.test.ts` | Co-located unit-тесты (кроме тип-only `descriptor.ts`/`transport.ts` — проверяются typecheck'ом и косвенно тестами потребителей). |
 
 **Решение по портам (ключевое):** sync-драйвер НЕ делает `fetch` и НЕ переписывает снимок сам. Он принимает `send: SyncTransport` (что делать с командой → результат) и опц. `onSynced: ReconcileHook` (что сделать после успеха). Конкретный транспорт `POST /api/offline/{entity}` + маппинг HTTP-кодов в `SyncSendResult` + привязка к `online`/`visibilitychange` — это **F4** (composition root). Конкретный reconcile снимка (temp clientId → serverId в `saved-bundles`) или render-time merge кэш+pending — это **слайс A**. Так ядро остаётся entity-agnostic и сетенезависимым, а тесты — детерминированными.
@@ -121,9 +121,14 @@ Create `src/services/offline/contract/descriptor.ts`:
 import type { ActionResult } from "@/utils/create-action";
 
 export interface OfflineDescriptor<TSnapshot = unknown, TWritePayload = unknown> {
-  /** Стабильный ключ сущности; === Tags.* (@/api/tags). Напр. "lectures". */
+  /**
+   * Стабильный ключ сущности. ОБЯЗАН быть значением из `Tags` (@/api/tags),
+   * напр. `Tags.LECTURES` === "lectures", `Tags.ANNOTATIONS` === "annotations"
+   * (мн. ч.!) — НЕ имя сущности в ед. числе. По нему резолвится дескриптор и
+   * строится `POST /api/offline/{entity}`; рассинхрон молча вернёт null.
+   */
   entity: string;
-  /** Path-сегмент для ключей IDB / SW-match. Напр. "lectures". */
+  /** Path-сегмент для ключей IDB / SW-match (потребляется в F1/слайсах; в F3 не читается). Напр. "lectures". */
   pathSegment: string;
 
   // ── ЧТЕНИЕ ──
@@ -273,7 +278,11 @@ export type DescriptorResolver = (
 ) => OfflineDescriptor | undefined;
 
 export interface OfflineRepository {
-  /** Снимок сущности или null, если его нет/нет доступа. */
+  /**
+   * Снимок сущности или null, если его нет/нет доступа.
+   * Может reject при сбое источника (сеть в `assemble`, повреждённая IDB);
+   * null — ТОЛЬКО для отсутствия, не для ошибки.
+   */
   getSnapshot(entity: string, id: string): Promise<unknown>;
 }
 
@@ -294,7 +303,8 @@ export function createIndexedDbRepository(): OfflineRepository {
   return {
     async getSnapshot(entity, id) {
       const record = await getSavedBundle(entity, id);
-      return record?.snapshot ?? null;
+      // Различаем «нет записи» (null) от записи с любым (в т.ч. falsy) снимком.
+      return record ? record.snapshot : null;
     },
   };
 }
@@ -330,7 +340,7 @@ git commit -m "feat(offline): read repository with server and IndexedDB adapters
 - Create: `src/services/offline/sync/drain.ts`
 - Test: `src/services/offline/sync/drain.test.ts`
 
-> Драйвер entity-agnostic и сетенезависим: дренирует `outbox` через инжектируемый `send`. Single-drain (module-level lock), oldest-first (по `createdAt`), атомарный claim `pending→syncing`. 2xx → `done`+`serverId`+`onSynced`; не-retriable (4xx) → `failed`, продолжаем; retriable (сеть/5xx, в т.ч. брошенное исключение транспорта) → откат в `pending`+`attempts++` и **стоп дренажа** (backoff/офлайн). Брошенное `send`-исключение трактуется как transient.
+> Драйвер entity-agnostic и сетенезависим: дренирует `outbox` через инжектируемый `send`. На старте — **recovery-проход**: осиротевшие `syncing` (умерший прошлый drain) возвращаются в `pending`. Single-drain (module-level lock), oldest-first (по `createdAt`, tie-break по `clientId`), атомарный claim `pending→syncing` (экспортируется для прицельного теста). 2xx → `done`+`serverId`+`onSynced`; не-retriable (4xx) → `failed`, продолжаем; retriable (сеть/5xx, в т.ч. брошенное исключение транспорта) → откат в `pending`+`attempts++` и **стоп дренажа** (backoff/офлайн). Брошенное `send`-исключение трактуется как transient. `onSynced` получает ВЕСЬ `OutboxCommand` (не голый serverId) — слайс A достанет parent-координаты из `command.payload`.
 
 - [ ] **Step 1: Создать порт-типы transport.ts**
 
@@ -342,7 +352,15 @@ Create `src/services/offline/sync/transport.ts`:
 // reconcile снимка) инжектируются из F4/слайса A — ядро их не знает.
 import type { OutboxCommand } from "../contract/storage";
 
-/** Результат отправки одной команды. retriable различает «попробовать позже» и «отказ». */
+/**
+ * Результат отправки одной команды.
+ * `retriable: true` — ТОЛЬКО для подлинно временных сбоев (офлайн/сеть/5xx):
+ * драйвер вернёт команду в pending и остановит проход (backoff).
+ * `retriable: false` — для детерминированных/клиентских отказов (4xx): команда
+ * уходит в `failed` и НЕ блокирует очередь. КОНТРАКТ транспорта: детерминированную
+ * ошибку (невалидный payload и т.п.) обязан маппить в `retriable: false`, иначе
+ * она навсегда встанет головой очереди (см. head-of-line в Self-Review).
+ */
 export type SyncSendResult =
   | { ok: true; serverId: string }
   | { ok: false; retriable: boolean; error: string };
@@ -386,7 +404,8 @@ import {
   getOutboxCommand,
   updateOutboxCommand,
 } from "../store/outbox";
-import { drainOutbox } from "./drain";
+
+import { claimPending, drainOutbox } from "./drain";
 import type { DrainResult, SyncTransport } from "./transport";
 
 beforeEach(() => {
@@ -396,7 +415,7 @@ beforeEach(() => {
 describe("drainOutbox", () => {
   it("на 2xx помечает команду done + serverId", async () => {
     const cmd = await enqueueOutbox({
-      entity: "annotation",
+      entity: "annotations",
       op: "create",
       payload: { text: "x" },
     });
@@ -418,20 +437,23 @@ describe("drainOutbox", () => {
     });
   });
 
-  it("обрабатывает команды oldest-first", async () => {
+  it("обрабатывает команды oldest-first (по createdAt, НЕ по clientId)", async () => {
+    // clientId намеренно в ОБРАТНОМ лексикографическом порядке к createdAt:
+    // если убрать сортировку по createdAt, индекс отдаст по clientId (a-new < z-old)
+    // и тест упадёт — значит он реально проверяет сортировку, а не порядок ключей.
     await enqueueOutbox({
       entity: "a",
       op: "create",
       payload: {},
-      clientId: "c2",
-      createdAt: "2026-06-14T00:00:02.000Z",
+      clientId: "z-old",
+      createdAt: "2026-06-14T00:00:01.000Z",
     });
     await enqueueOutbox({
       entity: "a",
       op: "create",
       payload: {},
-      clientId: "c1",
-      createdAt: "2026-06-14T00:00:01.000Z",
+      clientId: "a-new",
+      createdAt: "2026-06-14T00:00:02.000Z",
     });
     const seen: string[] = [];
     const send: SyncTransport = (command) => {
@@ -441,12 +463,12 @@ describe("drainOutbox", () => {
 
     await drainOutbox({ send });
 
-    expect(seen).toEqual(["c1", "c2"]);
+    expect(seen).toEqual(["z-old", "a-new"]);
   });
 
   it("вызывает onSynced с (command, serverId) на успехе", async () => {
     const cmd = await enqueueOutbox({
-      entity: "annotation",
+      entity: "annotations",
       op: "create",
       payload: {},
     });
@@ -546,19 +568,24 @@ describe("drainOutbox", () => {
     });
   });
 
-  it("не трогает команды вне статуса pending", async () => {
+  it("реклеймит осиротевшие syncing-команды и синкает их (recovery)", async () => {
+    // Симулируем оборванный предыдущий drain: команда застряла в syncing.
     const cmd = await enqueueOutbox({ entity: "a", op: "create", payload: {} });
     await updateOutboxCommand(cmd.clientId, { status: "syncing" });
     let calls = 0;
     const send: SyncTransport = () => {
       calls++;
-      return Promise.resolve({ ok: true, serverId: "x" });
+      return Promise.resolve({ ok: true, serverId: "srv" });
     };
 
     const result = await drainOutbox({ send });
 
-    expect(calls).toBe(0);
-    expect(result).toMatchObject({ attempted: 0, done: 0 });
+    expect(calls).toBe(1);
+    expect(result).toMatchObject({ skipped: false, attempted: 1, done: 1 });
+    expect(await getOutboxCommand(cmd.clientId)).toMatchObject({
+      status: "done",
+      serverId: "srv",
+    });
   });
 
   it("single-drain: повторный вызов во время дренажа возвращает skipped", async () => {
@@ -575,6 +602,27 @@ describe("drainOutbox", () => {
 
     expect(reentrant?.skipped).toBe(true);
     expect(reentrant?.attempted).toBe(0);
+  });
+});
+
+describe("claimPending", () => {
+  it("переводит pending→syncing и возвращает команду", async () => {
+    const cmd = await enqueueOutbox({ entity: "a", op: "create", payload: {} });
+    const claimed = await claimPending(cmd.clientId);
+    expect(claimed?.status).toBe("syncing");
+    expect(await getOutboxCommand(cmd.clientId)).toMatchObject({
+      status: "syncing",
+    });
+  });
+
+  it("возвращает null для уже заклеймленной (не-pending) команды", async () => {
+    const cmd = await enqueueOutbox({ entity: "a", op: "create", payload: {} });
+    await claimPending(cmd.clientId);
+    expect(await claimPending(cmd.clientId)).toBeNull();
+  });
+
+  it("возвращает null для несуществующей команды", async () => {
+    expect(await claimPending("nope")).toBeNull();
   });
 });
 ```
@@ -597,6 +645,7 @@ Create `src/services/offline/sync/drain.ts`:
 import type { OutboxCommand } from "../contract/storage";
 import { openOfflineDb } from "../store/db";
 import { listOutboxByStatus, updateOutboxCommand } from "../store/outbox";
+
 import type { DrainDeps, DrainResult, SyncSendResult } from "./transport";
 
 let draining = false;
@@ -606,7 +655,7 @@ let draining = false;
  * Возвращает null, если её уже забрали (status !== "pending") —
  * защита от двойной обработки (в т.ч. межвкладочной гонки).
  */
-async function claimPending(
+export async function claimPending(
   clientId: string,
 ): Promise<OutboxCommand | null> {
   const db = await openOfflineDb();
@@ -636,8 +685,17 @@ export async function drainOutbox(deps: DrainDeps): Promise<DrainResult> {
   let failed = 0;
   let deferred = 0;
   try {
-    const pending = (await listOutboxByStatus("pending")).sort((a, b) =>
-      a.createdAt.localeCompare(b.createdAt),
+    // Recovery: вернуть «осиротевшие» syncing-команды (предыдущий drain умер в
+    // середине send — вкладка закрыта/краш) в pending, иначе они навсегда
+    // выпадут из выборки. Безопасно для create-only: server-side idempotency
+    // (Idempotency-Key=clientId) дедупит команду, если она всё же дошла.
+    for (const orphan of await listOutboxByStatus("syncing")) {
+      await updateOutboxCommand(orphan.clientId, { status: "pending" });
+    }
+    const pending = (await listOutboxByStatus("pending")).sort(
+      (a, b) =>
+        a.createdAt.localeCompare(b.createdAt) ||
+        a.clientId.localeCompare(b.clientId),
     );
     for (const queued of pending) {
       const claimed = await claimPending(queued.clientId);
@@ -675,7 +733,11 @@ export async function drainOutbox(deps: DrainDeps): Promise<DrainResult> {
           lastError: outcome.error,
         });
         deferred++;
-        break; // backoff: стоп на первом transient-сбое (напр. офлайн)
+        // backoff: стоп на первом transient-сбое (доминирующий кейс — офлайн,
+        // где упадут и все следующие). Цена — head-of-line при «ядовитой»
+        // retriable-команде; контракт транспорта (см. transport.ts) обязывает
+        // маппить детерминированные ошибки в retriable:false, чтобы не блокировать.
+        break;
       } else {
         await updateOutboxCommand(claimed.clientId, {
           status: "failed",
@@ -695,7 +757,7 @@ export async function drainOutbox(deps: DrainDeps): Promise<DrainResult> {
 - [ ] **Step 5: Запустить — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/services/offline/sync/drain.test.ts`
-Expected: PASS (8 тестов).
+Expected: PASS (11 тестов — 8 в `drainOutbox` + 3 в `claimPending`).
 
 - [ ] **Step 6: Финальная проверка + commit**
 
@@ -739,7 +801,19 @@ git commit -m "feat(offline): generic foreground outbox sync driver"
 - `no-non-null-assertion`: нет `x!`; тест дескриптора нарраивает `if (!demo.write) throw`. ✓
 - `no-empty`: пустой `catch {}` reconcile — с комментарием внутри (ESLint считает блок с комментарием непустым). ✓
 - `exactOptionalPropertyTypes`: патчи `updateOutboxCommand` передают конкретные значения (`serverId`/`lastError`: string, `attempts`: number), не `undefined`. ✓
-- `import/order`: каждая задача гоняет `eslint --fix` ДО `pnpm lint` (урок плана 1: parent перед sibling). ✓
+- `import/order`: между parent- и sibling-группой стоит пустая строка (`newlines-between: always`); каждая задача гоняет `eslint --fix` ДО `pnpm lint` (урок плана 1: parent перед sibling). ✓
+
+**Учтено по адверсариальному ревью (5 агентов: логика/конкурентность, strict-lint, симметрия, архитектура, эмпирический прогон vitest+fake-indexeddb с мутационным тестированием):**
+
+- **[было Critical] Recovery осиротевших `syncing`:** при крахе/закрытии вкладки в середине `send` команда оставалась бы в `syncing` навсегда (drain берёт только `pending`) → тихая потеря create. Добавлен reclaim-проход `syncing→pending` в начале `drainOutbox`; безопасен благодаря server-side idempotency. Покрыт тестом (прежний тест «не трогает syncing» заменён — его семантика была неверной: осиротевшие syncing мы как раз ДОЛЖНЫ восстанавливать).
+- **[было Critical/lint] `import/order` `newlines-between: always`:** в дословных блоках `drain.ts`/`drain.test.ts` не было пустой строки между parent- и sibling-импортами (рецидив урока плана 1, поймано эмпирически). Пустые строки добавлены в код.
+- **[было Important] Тавтологичный oldest-first тест:** `clientId` (`c1`/`c2`) случайно совпадал с порядком `createdAt` — тест проходил и БЕЗ `.sort()` (подтверждено мутацией). Переписан на `clientId` в ОБРАТНОМ порядке (`z-old`/`a-new`); добавлен tie-break по `clientId` при равных `createdAt`.
+- **[было Important] Непокрытый guard `claimPending`:** мутация status-проверки оставляла все тесты зелёными. `claimPending` экспортирован, добавлен прицельный набор (claim pending→syncing; повторный → null; несуществующая → null).
+- **[было Important] `entity` ед./мн. число:** тест-литералы `"annotation"` → `"annotations"`; в контракте усилен комментарий `entity` (ОБЯЗАН быть значением `Tags.*` — резолв/URL молча вернут null при рассинхроне).
+- **[было Minor] IndexedDB-адаптер `record?.snapshot ?? null`:** коллапсировал «нет записи» и «falsy-снимок». Заменён на `record ? record.snapshot : null`; JSDoc контракта: `getSnapshot` может reject, `null` — только отсутствие.
+- **[было Minor] `onSynced` достаточность:** порт получает ВЕСЬ `OutboxCommand` — слайс A достаёт parent-координаты из `command.payload`; ядро agnostic, сигнатуру порта менять НЕ потребуется (зафиксировано в blurb Task 3).
+
+**Известное ограничение (осознанно оставлено, НЕ баг F3): head-of-line.** `break` на первом transient-сбое: «ядовитая» вечно-retriable команда головой очереди задержит остальные. Митигируется контрактом транспорта (детерминированные/клиентские ошибки → `retriable:false` → `failed`, не блокируют — закреплено в JSDoc `SyncSendResult`) и backoff/attempt-cap на уровне F4. В F3 `attempts` копится без потолка осознанно: cap на уровне ядра ошибочно «завалил» бы команды при долгом офлайне (при `break` attempts растёт только у головы очереди). Различение «офлайн vs серверная ошибка» — при необходимости в F4, без правок контракта ядра.
 
 **Согласованность типов/имён:** `OfflineDescriptor`/`OfflineRepository`/`DescriptorResolver`/`SyncTransport`/`SyncSendResult`/`ReconcileHook`/`DrainDeps`/`DrainResult`/`drainOutbox`/`claimPending` — единообразны между файлами и тестами. Store-API (`getSavedBundle`/`enqueueOutbox`/`getOutboxCommand`/`listOutboxByStatus`/`updateOutboxCommand`) и типы (`OutboxCommand`/`SavedBundleRecord`) совпадают с реализованным планом 1. `ActionResult<{id}>` — точная форма из `@/utils/create-action`. **Плейсхолдеры:** нет.
 
