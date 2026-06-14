@@ -3,6 +3,8 @@ import "fake-indexeddb/auto";
 import { IDBFactory } from "fake-indexeddb";
 import { describe, it, expect, beforeEach } from "vitest";
 
+import type { OutboxEnqueueInput } from "../contract/storage";
+
 import {
   enqueueOutbox,
   getOutboxCommand,
@@ -12,7 +14,6 @@ import {
   updateOutboxCommand,
   deleteOutboxCommand,
 } from "./outbox";
-import type { OutboxEnqueueInput } from "../contract/storage";
 
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory();

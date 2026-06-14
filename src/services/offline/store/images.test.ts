@@ -5,11 +5,12 @@ import { cacheImage, hasCachedImage, matchCachedImage } from "./images";
 
 class FakeCache {
   store = new Map<string, Response>();
-  async put(url: string, res: Response) {
+  put(url: string, res: Response): Promise<void> {
     this.store.set(url, res);
+    return Promise.resolve();
   }
-  async match(url: string) {
-    return this.store.get(url);
+  match(url: string): Promise<Response | undefined> {
+    return Promise.resolve(this.store.get(url));
   }
 }
 

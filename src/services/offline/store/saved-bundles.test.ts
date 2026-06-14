@@ -3,6 +3,8 @@ import "fake-indexeddb/auto";
 import { IDBFactory } from "fake-indexeddb";
 import { describe, it, expect, beforeEach } from "vitest";
 
+import type { SavedBundleRecord } from "../contract/storage";
+
 import {
   putSavedBundle,
   getSavedBundle,
@@ -12,7 +14,6 @@ import {
   updateSavedBundle,
   deleteSavedBundle,
 } from "./saved-bundles";
-import type { SavedBundleRecord } from "../contract/storage";
 
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory();

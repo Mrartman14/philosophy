@@ -1,12 +1,13 @@
 // src/services/offline/store/saved-bundles.ts
 // Browser-only CRUD офлайн-снимков. Ключ выводится из entity+id.
-import { openOfflineDb } from "./db";
 import {
   bundleKey,
   type SavedBundleRecord,
   type SavedBundlePatch,
   type SavedBundleStatus,
 } from "../contract/storage";
+
+import { openOfflineDb } from "./db";
 
 export async function putSavedBundle(
   record: Omit<SavedBundleRecord, "key">,

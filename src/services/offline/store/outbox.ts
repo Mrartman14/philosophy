@@ -2,13 +2,14 @@
 // Browser-only: generic персистентная очередь отложенных записей.
 // ВНИМАНИЕ: атомарный claim "pending→syncing" (single-drain) НЕ здесь —
 // его строит sync-слой напрямую через openOfflineDb() readwrite-транзакцией.
-import { openOfflineDb } from "./db";
 import {
   type OutboxCommand,
   type OutboxEnqueueInput,
   type OutboxPatch,
   type OutboxStatus,
 } from "../contract/storage";
+
+import { openOfflineDb } from "./db";
 
 export async function enqueueOutbox(
   input: OutboxEnqueueInput,
