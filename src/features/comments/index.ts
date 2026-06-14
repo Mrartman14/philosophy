@@ -56,6 +56,9 @@ export type {
 
 export { CommentSection } from "./ui/comment-section";
 export { CommentTree } from "./ui/comment-tree";
+export { CommentNodeView } from "./ui/comment-node-view";
+export { CommentTreeView } from "./ui/comment-tree-view";
+export { CommentReactionSummary } from "./ui/comment-reaction-summary";
 export { CommentRevisions } from "./ui/comment-revisions";
 export { CommentExportLinks } from "./ui/comment-export-links";
 export { AdminCommentRow } from "./ui/admin-comment-row";
