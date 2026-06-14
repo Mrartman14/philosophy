@@ -10,12 +10,12 @@ export type LectureListItem = Pick<
 >;
 
 /**
- * Минимальная форма тега для отображения. Объявлена локально, потому что
- * cross-feature импорт из @/features/tags запрещён ESLint'ом; реальные
- * данные (tag.Tag) структурно совместимы и прокидываются страницами.
- * name уникален на беке (UNIQUE) — годится как key.
+ * Минимальная форма тега для отображения. Cross-feature импорт из
+ * @/features/tags запрещён ESLint'ом, но сам сгенерированный тип `tag.Tag`
+ * импортировать можно — якорим `name` на схему (UNIQUE на беке → годится
+ * как key; рендер сломается, если бек переименует поле).
  */
-export type LectureTag = { name: string };
+export type LectureTag = Pick<components["schemas"]["tag.Tag"], "name">;
 
 /** Документ, прикреплённый к лекции (GET /api/lectures/{id}/documents). */
 export type LectureDocument = components["schemas"]["document.Document"];

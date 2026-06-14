@@ -1,6 +1,7 @@
 // src/features/comments/schemas.ts
 import "server-only";
 import { z } from "zod";
+import type { CommentType, ReactionAxis } from "./types";
 
 const COMMENT_TYPES = [
   "claim",
@@ -11,9 +12,9 @@ const COMMENT_TYPES = [
   "answer",
   "offtop",
   "summary",
-] as const;
+] as const satisfies readonly CommentType[];
 
-const AXES = ["agreement", "quality", "insight"] as const;
+const AXES = ["agreement", "quality", "insight"] as const satisfies readonly ReactionAxis[];
 
 /**
  * blocks приходит из скрытого input формы как JSON-строка (AstEditor
