@@ -1,6 +1,5 @@
 // src/features/comments/ui/admin-comment-row.tsx
 import { AstRender } from "@/components/ast-render";
-import { type AstBlock } from "@/components/ast-editor";
 import { CommentTypeBadge } from "./comment-type-badge";
 import { CommentDeleteButton } from "./comment-delete-button";
 import type { Comment } from "../types";
@@ -24,7 +23,7 @@ export function AdminCommentRow({ comment }: { comment: Comment }) {
         </div>
         {!deleted && (
           <div className="prose prose-sm max-w-none">
-            <AstRender blocks={(comment.blocks ?? []) as AstBlock[]} />
+            <AstRender blocks={(comment.blocks ?? [])} />
           </div>
         )}
       </div>

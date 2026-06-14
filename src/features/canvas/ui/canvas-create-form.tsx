@@ -30,7 +30,7 @@ export function CanvasCreateForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  const fieldErrors = state.success === false && state.code === "validation" ? state.fieldErrors : {};
+  const fieldErrors = !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   return (
     <Form action={action} errors={fieldErrors}>

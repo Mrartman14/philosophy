@@ -42,10 +42,10 @@ export function DocumentUploadForm() {
         </select>
       </FormField>
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на загрузку документа.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

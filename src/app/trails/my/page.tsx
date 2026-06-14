@@ -18,7 +18,7 @@ interface Props {
 export default async function MyTrailsPage({ searchParams }: Props) {
   const me = await getMe();
   // Маршруты «мои» — приватная зона: гостя на логин.
-  if (!me || me.status !== "active") redirect("/login?next=/trails/my");
+  if (me?.status !== "active") redirect("/login?next=/trails/my");
 
   const { offset } = await searchParams;
   const result = await getMyTrails({ offset: parseNonNegativeInt(offset, 0), limit: 20 });

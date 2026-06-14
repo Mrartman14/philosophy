@@ -47,7 +47,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [state, rawDispatch] = useReducer(canvasReducer, canvas.data ?? { nodes: [], edges: [] }, initEditorState);
-  const dispatch = useCallback((c: EditorCommand) => rawDispatch(c), []);
+  const dispatch = useCallback((c: EditorCommand) => { rawDispatch(c); }, []);
 
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<Drag>(null);
@@ -69,7 +69,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
       }
     };
     window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
+    return () => { window.removeEventListener("beforeunload", handler); };
   }, [state.dirty]);
 
   // измеряем контейнер для viewBox
@@ -81,7 +81,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
       if (r) setSize({ width: r.width, height: r.height });
     });
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => { ro.disconnect(); };
   }, []);
 
   const renderData = useMemo(() => canvasDataToRenderData(state.data), [state.data]);
@@ -296,8 +296,8 @@ export function CanvasEditor({ canvas, etag }: Props) {
           dispatch={dispatch} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
           dirty={state.dirty} gridEnabled={state.gridEnabled} saving={saving} showJson={showJson}
           hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
-          onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => setRefDialogOpen(true)}
-          onSave={onSave} onToggleJson={() => setShowJson(false)} onBack={onBack}
+          onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
+          onSave={onSave} onToggleJson={() => { setShowJson(false); }} onBack={onBack}
         />
         <CanvasEditForm canvas={canvas} etag={etag} />
       </div>
@@ -310,8 +310,8 @@ export function CanvasEditor({ canvas, etag }: Props) {
         dispatch={dispatch} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
         dirty={state.dirty} gridEnabled={state.gridEnabled} saving={saving} showJson={showJson}
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
-        onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => setRefDialogOpen(true)}
-        onSave={onSave} onToggleJson={() => setShowJson(true)} onBack={onBack}
+        onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
+        onSave={onSave} onToggleJson={() => { setShowJson(true); }} onBack={onBack}
       />
 
       <div className="flex">
@@ -370,7 +370,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
               node={editingNode}
               viewport={vp}
               onCommit={(text) => { dispatch({ type: "setNodeText", nodeId: editingNode.id!, text }); setEditingNodeId(null); }}
-              onCancel={() => setEditingNodeId(null)}
+              onCancel={() => { setEditingNodeId(null); }}
             />
           )}
         </div>
@@ -386,7 +386,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
         </aside>
       </div>
 
-      <EntityRefDialog open={refDialogOpen} onClose={() => setRefDialogOpen(false)} onConfirm={onAddEntityRefConfirm} />
+      <EntityRefDialog open={refDialogOpen} onClose={() => { setRefDialogOpen(false); }} onConfirm={onAddEntityRefConfirm} />
     </div>
   );
 }

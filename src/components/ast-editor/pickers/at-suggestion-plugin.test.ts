@@ -156,7 +156,7 @@ describe("createAtSuggestionPlugin", () => {
     view.dispatch(
       view.state.tr.setSelection(TextSelection.create(view.state.doc, 1)),
     );
-    expect(() => consumeAtMarker(view, 4)).not.toThrow();
+    expect(() => { consumeAtMarker(view, 4); }).not.toThrow();
     expect(editor.getText()).toBe("ab @");
     expect(atSuggestionKey.getState(view.state)?.open).toBe(false);
     editor.destroy();

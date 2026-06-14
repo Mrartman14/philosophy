@@ -42,18 +42,18 @@ const plainUser: Me = {
 const suspendedAdmin: Me = { ...admin, status: "suspended" };
 
 describe("canAccessAdmin", () => {
-  it("гость → false", () => expect(canAccessAdmin(guest)).toBe(false));
+  it("гость → false", () => { expect(canAccessAdmin(guest)).toBe(false); });
   it("обычный active-юзер (только RoleUser-капы) → false", () =>
-    expect(canAccessAdmin(plainUser)).toBe(false));
+    { expect(canAccessAdmin(plainUser)).toBe(false); });
   it("suspended админ → false", () =>
-    expect(canAccessAdmin(suspendedAdmin)).toBe(false));
-  it("active админ → true", () => expect(canAccessAdmin(admin)).toBe(true));
+    { expect(canAccessAdmin(suspendedAdmin)).toBe(false); });
+  it("active админ → true", () => { expect(canAccessAdmin(admin)).toBe(true); });
 });
 
 describe("buildNavItems", () => {
-  it("гость → пусто", () => expect(buildNavItems(guest)).toHaveLength(0));
+  it("гость → пусто", () => { expect(buildNavItems(guest)).toHaveLength(0); });
   it("обычный active-юзер → пусто", () =>
-    expect(buildNavItems(plainUser)).toHaveLength(0));
+    { expect(buildNavItems(plainUser)).toHaveLength(0); });
   it("админ → полный набор пунктов (конкретные роуты на месте)", () => {
     const hrefs = buildNavItems(admin).map((i) => i.href);
     expect(hrefs).toEqual([

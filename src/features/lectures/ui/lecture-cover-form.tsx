@@ -89,7 +89,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
           type="text"
           value={alt}
           maxLength={500}
-          onChange={(e) => setAlt(e.target.value)}
+          onChange={(e) => { setAlt(e.target.value); }}
           className="rounded border border-(--color-border) px-2 py-1"
         />
       </label>

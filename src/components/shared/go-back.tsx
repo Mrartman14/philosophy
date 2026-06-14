@@ -10,7 +10,7 @@ export const GoBack: React.FC<
 
   return (
     <button
-      onClick={() => router.back()}
+      onClick={() => { router.back(); }}
       className={cn("underline text-2xl cursor-pointer", className)}
     >
       {children || "Назад"}

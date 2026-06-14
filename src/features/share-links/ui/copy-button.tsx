@@ -25,7 +25,7 @@ export function CopyButton({ value, label = "Копировать" }: Props) {
       await navigator.clipboard.writeText(value);
       setCopied(true);
       toast.add({ title: "Скопировано" });
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => { setCopied(false); }, 2000);
     } catch {
       toast.add({
         title: "Не удалось скопировать",

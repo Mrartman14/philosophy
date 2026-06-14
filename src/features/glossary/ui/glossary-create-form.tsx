@@ -17,7 +17,7 @@ export function GlossaryCreateForm() {
   const router = useRouter();
   const [state, action] = useActionState(createTerm, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -33,10 +33,10 @@ export function GlossaryCreateForm() {
         <TextInput name="title" required maxLength={300} placeholder="Например: «Эпистемология»" />
       </FormField>
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на создание термина.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

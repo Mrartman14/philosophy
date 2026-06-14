@@ -18,7 +18,7 @@ export type TrailVisibility = components["schemas"]["trail.Visibility"];
  * что cross-feature импорт из @/features/lectures запрещён ESLint'ом; данные
  * структурно совместимы (приходят с /api/lectures).
  */
-export type TrailLectureSummary = {
+export interface TrailLectureSummary {
   id: string;
   title: string;
-};
+}

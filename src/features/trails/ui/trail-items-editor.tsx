@@ -34,7 +34,7 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
   }, [state, router, toast]);
 
   useEffect(() => {
-    if (state.success === false && !state.code) {
+    if (!state.success && !state.code) {
       toast.add({ title: "Ошибка", description: state.error });
     }
   }, [state, toast]);
@@ -89,7 +89,7 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
                   size="sm"
                   disabled={index === 0}
                   aria-label="Вверх"
-                  onClick={() => move(index, -1)}
+                  onClick={() => { move(index, -1); }}
                 >
                   ↑
                 </Button>
@@ -99,7 +99,7 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
                   size="sm"
                   disabled={index === items.length - 1}
                   aria-label="Вниз"
-                  onClick={() => move(index, 1)}
+                  onClick={() => { move(index, 1); }}
                 >
                   ↓
                 </Button>
@@ -108,7 +108,7 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
                   variant="danger"
                   size="sm"
                   aria-label="Убрать"
-                  onClick={() => removeAt(index)}
+                  onClick={() => { removeAt(index); }}
                 >
                   ✕
                 </Button>
@@ -121,12 +121,12 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
       {picking ? (
         <div className="rounded border border-(--color-border) p-2">
           <LecturePicker onSelect={addLecture} />
-          <Button type="button" variant="ghost" size="sm" onClick={() => setPicking(false)}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => { setPicking(false); }}>
             Отмена
           </Button>
         </div>
       ) : (
-        <Button type="button" variant="secondary" size="sm" onClick={() => setPicking(true)}>
+        <Button type="button" variant="secondary" size="sm" onClick={() => { setPicking(true); }}>
           + Добавить лекцию
         </Button>
       )}
@@ -135,10 +135,10 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
         <input type="hidden" name="id" value={trailId} />
         <input type="hidden" name="lecture_ids" value={JSON.stringify(orderedIds)} />
         <SubmitButton>Сохранить содержимое</SubmitButton>
-        {state.success === false && state.code === "forbidden" && (
+        {!state.success && state.code === "forbidden" && (
           <span className="text-sm text-red-600">У вас нет прав на изменение маршрута.</span>
         )}
-        {state.success === false && state.code === "validation" && (
+        {!state.success && state.code === "validation" && (
           <span className="text-sm text-red-600">Проверьте список лекций.</span>
         )}
       </Form>

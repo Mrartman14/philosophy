@@ -18,11 +18,11 @@ export function createImagePasteDropPlugin() {
     key: imagePasteDropPluginKey,
     props: {
       handleDrop(view, event) {
-        const dt = (event as DragEvent).dataTransfer;
+        const dt = (event).dataTransfer;
         const files = collectImageFiles(dt?.files);
         if (files.length === 0) return false;
         event.preventDefault();
-        const drag = event as DragEvent;
+        const drag = event;
         const pos =
           view.posAtCoords({ left: drag.clientX, top: drag.clientY })?.pos ??
           view.state.selection.from;
@@ -30,7 +30,7 @@ export function createImagePasteDropPlugin() {
         return true;
       },
       handlePaste(view, event) {
-        const cd = (event as ClipboardEvent).clipboardData;
+        const cd = (event).clipboardData;
         const files = collectImageFiles(cd?.files);
         if (files.length === 0) return false;
         event.preventDefault();
@@ -60,7 +60,7 @@ async function insertUploaded(view: EditorView, file: File, pos: number) {
     console.warn("[ast-editor] image upload failed:", res.error);
     return;
   }
-  const imageType = view.state.schema.nodes["image"];
+  const imageType = view.state.schema.nodes.image;
   if (!imageType) return;
   const node = imageType.create({
     storage_key: res.data.storage_key,

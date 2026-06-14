@@ -25,7 +25,7 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
   const [selected, setSelected] = useState<number[]>(assignedTagIds);
   const [state, action] = useActionState(setLectureTags, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -58,7 +58,7 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
             <Checkbox
               id={`lecture-tag-${tag.id}`}
               checked={selected.includes(tag.id)}
-              onCheckedChange={(checked) => toggle(tag.id, checked)}
+              onCheckedChange={(checked) => { toggle(tag.id, checked); }}
               aria-label={tag.name}
             />
             <label htmlFor={`lecture-tag-${tag.id}`} className="cursor-pointer text-sm">
@@ -71,16 +71,16 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
       {state.success && state.data && (
         <p className="text-sm text-green-600">Теги сохранены.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на назначение тегов.</p>
       )}
-      {state.success === false && state.code === "validation" &&
-        (fieldErrors["tag_ids"] ?? fieldErrors["lecture_id"] ?? fieldErrors["_form"]) && (
+      {!state.success && state.code === "validation" &&
+        (fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form) && (
           <p role="alert" className="text-sm text-red-600">
-            {fieldErrors["tag_ids"] ?? fieldErrors["lecture_id"] ?? fieldErrors["_form"]}
+            {fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form}
           </p>
         )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

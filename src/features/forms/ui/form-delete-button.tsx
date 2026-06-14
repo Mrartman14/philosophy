@@ -32,7 +32,7 @@ export function FormDeleteButton({ id, redirectTo = "/me/forms", label = "Уда
           });
           return;
         }
-        startTransition(() => router.push(redirectTo));
+        startTransition(() => { router.push(redirectTo); });
       }}
     />
   );

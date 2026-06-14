@@ -93,17 +93,17 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
 
       <label className="flex flex-col gap-1 text-sm">
         Название формы
-        <TextInput value={title} disabled={disabled} maxLength={500} onChange={(e) => setTitle(e.target.value)} required />
+        <TextInput value={title} disabled={disabled} maxLength={500} onChange={(e) => { setTitle(e.target.value); }} required />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Описание (markdown, необязательно)
-        <Textarea value={description} disabled={disabled} rows={3} onChange={(e) => setDescription(e.target.value)} />
+        <Textarea value={description} disabled={disabled} rows={3} onChange={(e) => { setDescription(e.target.value); }} />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
         Текст после отправки (markdown, необязательно)
-        <Textarea value={afterSubmit} disabled={disabled} rows={2} onChange={(e) => setAfterSubmit(e.target.value)} />
+        <Textarea value={afterSubmit} disabled={disabled} rows={2} onChange={(e) => { setAfterSubmit(e.target.value); }} />
       </label>
 
       {mode === "create" && (
@@ -114,7 +114,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
               className="rounded border border-(--color-border) px-2 py-1 text-sm"
               value={visibility}
               disabled={disabled}
-              onChange={(e) => setVisibility(e.target.value as Visibility)}
+              onChange={(e) => { setVisibility(e.target.value as Visibility); }}
             >
               <option value="private">Приватная</option>
               <option value="public">Публичная (опубликовать сразу)</option>
@@ -126,7 +126,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
               className="rounded border border-(--color-border) px-2 py-1 text-sm"
               value={submissionMode}
               disabled={disabled}
-              onChange={(e) => setSubmissionMode(e.target.value as SubmissionMode)}
+              onChange={(e) => { setSubmissionMode(e.target.value as SubmissionMode); }}
             >
               <option value="editable">Редактируемый (можно менять/удалять отклик)</option>
               <option value="immutable">Без изменений (только отозвать)</option>
@@ -145,17 +145,17 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
             index={i}
             field={f}
             disabled={disabled}
-            onChange={(next) => patchField(i, next)}
-            onRemove={() => removeField(i)}
-            onMoveUp={() => move(i, -1)}
-            onMoveDown={() => move(i, 1)}
+            onChange={(next) => { patchField(i, next); }}
+            onRemove={() => { removeField(i); }}
+            onMoveUp={() => { move(i, -1); }}
+            onMoveDown={() => { move(i, 1); }}
             canMoveUp={i > 0}
             canMoveDown={i < fields.length - 1}
           />
         ))}
       </div>
 
-      <Button type="button" variant="secondary" disabled={disabled} onClick={() => setFields((p) => [...p, emptyField()])}>
+      <Button type="button" variant="secondary" disabled={disabled} onClick={() => { setFields((p) => [...p, emptyField()]); }}>
         + Добавить поле
       </Button>
     </div>

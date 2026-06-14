@@ -70,7 +70,7 @@ export function FormFill({ form, token }: Props) {
       });
       return;
     }
-    setAfterBlocks((result.data?.after_submit_blocks ?? []) as AstBlock[]);
+    setAfterBlocks((result.data?.after_submit_blocks ?? []));
     setDone(true);
   }
 
@@ -82,7 +82,7 @@ export function FormFill({ form, token }: Props) {
           field={f}
           disabled={pending}
           value={values[f.id ?? ""] ?? emptyAnswerValue(f.type ?? "text")}
-          onChange={(next) => setValues((prev) => ({ ...prev, [f.id ?? ""]: next }))}
+          onChange={(next) => { setValues((prev) => ({ ...prev, [f.id ?? ""]: next })); }}
         />
       ))}
       <div>

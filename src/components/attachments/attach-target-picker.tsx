@@ -24,7 +24,7 @@ export function AttachTargetPicker({
       fetcher={fetcher}
       renderItem={(t) => <span>{t.label}</span>}
       getKey={(t) => t.id}
-      onSelect={(t) => onSelect(t.id, t.label)}
+      onSelect={(t) => { onSelect(t.id, t.label); }}
       {...(onClose ? { onClose } : {})}
       placeholder={placeholder ?? "Поиск…"}
     />

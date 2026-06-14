@@ -32,7 +32,7 @@ export function FormPublishButton({ formId }: Props) {
           });
           return;
         }
-        startTransition(() => router.refresh());
+        startTransition(() => { router.refresh(); });
       }}
     />
   );

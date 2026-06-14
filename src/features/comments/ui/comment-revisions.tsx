@@ -1,7 +1,6 @@
 // src/features/comments/ui/comment-revisions.tsx
 import { AstRender } from "@/components/ast-render";
 import { RevisionHistory } from "@/components/revision-history";
-import { type AstBlock } from "@/components/ast-editor";
 import { getCommentRevision, getCommentRevisions } from "../api";
 
 interface Props {
@@ -28,7 +27,7 @@ export async function CommentRevisions({ commentId, selectedRevisionId, basePath
     >
       {selected && (
         <div className="prose prose-sm max-w-none">
-          <AstRender blocks={(selected.blocks ?? []) as AstBlock[]} />
+          <AstRender blocks={(selected.blocks ?? [])} />
         </div>
       )}
     </RevisionHistory>

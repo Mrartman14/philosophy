@@ -42,7 +42,7 @@ export function EventEditForm({ event }: Props) {
   const [state, action] = useActionState(updateEvent, initial);
 
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -91,7 +91,7 @@ export function EventEditForm({ event }: Props) {
           name="start_date"
           type={allDay ? "date" : "datetime-local"}
           value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
+          onChange={(e) => { setStartDate(e.target.value); }}
           required
         />
       </FormField>
@@ -108,7 +108,7 @@ export function EventEditForm({ event }: Props) {
           name="end_date"
           type={allDay ? "date" : "datetime-local"}
           value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
+          onChange={(e) => { setEndDate(e.target.value); }}
         />
       </FormField>
 
@@ -128,19 +128,19 @@ export function EventEditForm({ event }: Props) {
         <AstEditor
           defaultValue={event.blocks ?? []}
           entityContext="event"
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
         />
       </FormField>
 
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
           У вас нет прав на изменение события.
         </p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

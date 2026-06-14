@@ -19,7 +19,7 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState(updateTag, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -40,12 +40,12 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
         <span className="flex-1 truncate">{tag.name}</span>
         <div className="flex items-center gap-2">
           {canEdit && hasId && (
-            <Button variant="ghost" onClick={() => setEditing((v) => !v)}>
+            <Button variant="ghost" onClick={() => { setEditing((v) => !v); }}>
               {editing ? "Отмена" : "Переименовать"}
             </Button>
           )}
           {canDelete && hasId && (
-            <TagDeleteButton id={tag.id as number} name={tag.name} />
+            <TagDeleteButton id={tag.id!} name={tag.name} />
           )}
         </div>
       </div>
@@ -59,10 +59,10 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
           <SubmitButton>Сохранить</SubmitButton>
         </Form>
       )}
-      {editing && state.success === false && state.code === "forbidden" && (
+      {editing && !state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на переименование тега.</p>
       )}
-      {editing && state.success === false && !state.code && (
+      {editing && !state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
     </li>

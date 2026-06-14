@@ -14,7 +14,7 @@ import { CommentSearch } from "./comment-search";
 import { CommentExportLinks } from "./comment-export-links";
 import { commentTypeLabel } from "./comment-type-badge";
 import type { CommentListResult, CommentSearchResult } from "../api";
-import type { CommentSchema, CommentType } from "../types";
+import type { CommentSchema } from "../types";
 
 interface Props {
   lectureId: string;
@@ -44,7 +44,7 @@ function renderContent(
           {search.items.map((item) => (
             <li key={item.id} className="rounded border border-(--color-border) p-2 text-sm">
               <span className="text-xs text-(--color-description)">
-                {commentTypeLabel((item.type ?? "claim") as CommentType)} ·{" "}
+                {commentTypeLabel((item.type ?? "claim"))} ·{" "}
                 {item.author?.username ?? "—"}
               </span>
               <p>
@@ -74,7 +74,7 @@ export async function CommentSection({ lectureId, query }: Props) {
     return <p className="text-sm text-(--color-description)">Комментарии временно недоступны.</p>;
   }
 
-  const rootTypes = (schema.allowed_roots ?? []) as CommentType[];
+  const rootTypes = (schema.allowed_roots ?? []);
   const trimmed = (query ?? "").trim();
   const searching = trimmed.length > 0 && canSearchComments(me);
 

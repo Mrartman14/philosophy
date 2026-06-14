@@ -96,7 +96,7 @@ export function LinkPopover({ editor, schema }: Props) {
               <input
                 type="url"
                 value={href}
-                onChange={(e) => setHref(e.target.value)}
+                onChange={(e) => { setHref(e.target.value); }}
                 onKeyDown={handleKeyDown}
                 placeholder="https://…"
                 aria-label="URL ссылки"

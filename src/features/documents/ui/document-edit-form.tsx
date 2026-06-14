@@ -27,17 +27,17 @@ export function DocumentEditForm({ document }: Props) {
         <AstEditor
           defaultValue={document.blocks ?? []}
           entityContext="document"
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
         />
       </FormField>
 
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на изменение документа.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

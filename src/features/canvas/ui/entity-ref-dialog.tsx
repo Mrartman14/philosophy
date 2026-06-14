@@ -75,11 +75,11 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
 
         {usePicker ? (
           <div className="entity-ref-picker">
-            {entityType === "document" && <DocumentPicker onSelect={(id) => pick(id)} />}
-            {entityType === "lecture" && <LecturePicker onSelect={(id) => pick(id)} />}
-            {entityType === "glossary" && <GlossaryPicker onSelect={(id) => pick(id)} />}
-            {entityType === "media" && <MediaPicker onSelect={(id) => pick(id)} />}
-            {entityType === "canvas" && <CanvasPicker onSelect={(id) => pick(id)} />}
+            {entityType === "document" && <DocumentPicker onSelect={(id) => { pick(id); }} />}
+            {entityType === "lecture" && <LecturePicker onSelect={(id) => { pick(id); }} />}
+            {entityType === "glossary" && <GlossaryPicker onSelect={(id) => { pick(id); }} />}
+            {entityType === "media" && <MediaPicker onSelect={(id) => { pick(id); }} />}
+            {entityType === "canvas" && <CanvasPicker onSelect={(id) => { pick(id); }} />}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
@@ -88,7 +88,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
               <TextInput
                 name="entity_id"
                 value={manualId}
-                onChange={(e) => setManualId(e.target.value)}
+                onChange={(e) => { setManualId(e.target.value); }}
                 placeholder="00000000-0000-0000-0000-000000000000"
               />
             </label>

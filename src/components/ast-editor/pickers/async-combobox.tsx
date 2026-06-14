@@ -98,7 +98,7 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
         type="text"
         value={q}
         placeholder={props.placeholder}
-        onChange={(e) => setQ(e.target.value)}
+        onChange={(e) => { setQ(e.target.value); }}
         onKeyDown={onKey}
       />
       <ul id={listboxId} role="listbox">
@@ -108,7 +108,7 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
             role="option"
             aria-selected={active === i}
             onMouseDown={(e) => { e.preventDefault(); props.onSelect(item); }}
-            onMouseEnter={() => setActive(i)}
+            onMouseEnter={() => { setActive(i); }}
           >
             {props.renderItem(item, active === i)}
           </li>
@@ -136,8 +136,8 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
 function useDebounced<T>(value: T, ms: number): T {
   const [v, setV] = useState(value);
   useEffect(() => {
-    const t = setTimeout(() => setV(value), ms);
-    return () => clearTimeout(t);
+    const t = setTimeout(() => { setV(value); }, ms);
+    return () => { clearTimeout(t); };
   }, [value, ms]);
   return v;
 }

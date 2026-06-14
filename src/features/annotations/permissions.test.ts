@@ -59,67 +59,67 @@ function ann(overrides: Partial<Annotation> = {}): Annotation {
 }
 
 describe("canCreateAnnotation", () => {
-  it("гость → false", () => expect(canCreateAnnotation(guest)).toBe(false));
+  it("гость → false", () => { expect(canCreateAnnotation(guest)).toBe(false); });
   it("active без cap → false", () =>
-    expect(canCreateAnnotation(userNoCap)).toBe(false));
+    { expect(canCreateAnnotation(userNoCap)).toBe(false); });
   it("suspended с cap → false", () =>
-    expect(canCreateAnnotation(suspendedAuthor)).toBe(false));
+    { expect(canCreateAnnotation(suspendedAuthor)).toBe(false); });
   it("active с annotation.create → true", () =>
-    expect(canCreateAnnotation(author)).toBe(true));
+    { expect(canCreateAnnotation(author)).toBe(true); });
 });
 
 describe("canEditAnnotation", () => {
   it("гость → false", () =>
-    expect(canEditAnnotation(guest, ann())).toBe(false));
+    { expect(canEditAnnotation(guest, ann())).toBe(false); });
   it("автор → true", () =>
-    expect(canEditAnnotation(author, ann())).toBe(true));
+    { expect(canEditAnnotation(author, ann())).toBe(true); });
   it("не автор → false", () =>
-    expect(canEditAnnotation(otherUser, ann())).toBe(false));
+    { expect(canEditAnnotation(otherUser, ann())).toBe(false); });
   it("suspended автор → false", () =>
-    expect(canEditAnnotation(suspendedAuthor, ann())).toBe(false));
+    { expect(canEditAnnotation(suspendedAuthor, ann())).toBe(false); });
   it("админ-не-автор → false (admin не правит чужой контент, §6.2)", () =>
-    expect(canEditAnnotation(admin, ann())).toBe(false));
+    { expect(canEditAnnotation(admin, ann())).toBe(false); });
 });
 
 describe("canDeleteAnnotation", () => {
   it("гость → false", () =>
-    expect(canDeleteAnnotation(guest, ann())).toBe(false));
+    { expect(canDeleteAnnotation(guest, ann())).toBe(false); });
   it("автор private → true", () =>
-    expect(canDeleteAnnotation(author, ann())).toBe(true));
+    { expect(canDeleteAnnotation(author, ann())).toBe(true); });
   it("автор public → true", () =>
-    expect(canDeleteAnnotation(author, ann({ visibility: "public" }))).toBe(
+    { expect(canDeleteAnnotation(author, ann({ visibility: "public" }))).toBe(
       true,
-    ));
+    ); });
   it("не автор → false", () =>
-    expect(canDeleteAnnotation(otherUser, ann())).toBe(false));
+    { expect(canDeleteAnnotation(otherUser, ann())).toBe(false); });
   it("suspended автор → false", () =>
-    expect(canDeleteAnnotation(suspendedAuthor, ann())).toBe(false));
+    { expect(canDeleteAnnotation(suspendedAuthor, ann())).toBe(false); });
 });
 
 describe("canAdminDeleteAnnotation", () => {
   it("админ + public → true", () =>
-    expect(
+    { expect(
       canAdminDeleteAnnotation(admin, ann({ visibility: "public" })),
-    ).toBe(true));
+    ).toBe(true); });
   it("админ + private → false (delete_any только на public, §6.2)", () =>
-    expect(
+    { expect(
       canAdminDeleteAnnotation(admin, ann({ visibility: "private" })),
-    ).toBe(false));
+    ).toBe(false); });
   it("не-админ + public → false", () =>
-    expect(
+    { expect(
       canAdminDeleteAnnotation(author, ann({ visibility: "public" })),
-    ).toBe(false));
+    ).toBe(false); });
   it("гость → false", () =>
-    expect(
+    { expect(
       canAdminDeleteAnnotation(guest, ann({ visibility: "public" })),
-    ).toBe(false));
+    ).toBe(false); });
 });
 
 describe("canModerateAnnotations", () => {
   it("админ с delete_any → true", () =>
-    expect(canModerateAnnotations(admin)).toBe(true));
+    { expect(canModerateAnnotations(admin)).toBe(true); });
   it("обычный user → false", () =>
-    expect(canModerateAnnotations(author)).toBe(false));
+    { expect(canModerateAnnotations(author)).toBe(false); });
   it("гость → false", () =>
-    expect(canModerateAnnotations(guest)).toBe(false));
+    { expect(canModerateAnnotations(guest)).toBe(false); });
 });

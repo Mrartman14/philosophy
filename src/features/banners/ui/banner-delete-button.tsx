@@ -37,9 +37,9 @@ export function BannerDeleteButton({ id }: Props) {
         }
         // С edit-страницы — на список; из списка — refresh.
         if (pathname.startsWith(`/admin/banners/${id}`)) {
-          startTransition(() => router.push("/admin/banners"));
+          startTransition(() => { router.push("/admin/banners"); });
         } else {
-          startTransition(() => router.refresh());
+          startTransition(() => { router.refresh(); });
         }
       }}
     />

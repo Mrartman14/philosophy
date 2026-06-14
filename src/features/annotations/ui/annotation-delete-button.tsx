@@ -43,7 +43,7 @@ export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
           );
           return;
         }
-        startTransition(() => router.refresh());
+        startTransition(() => { router.refresh(); });
       }}
     />
   );

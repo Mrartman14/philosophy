@@ -20,7 +20,7 @@ interface Props {
 export default async function MyDocumentsPage({ searchParams }: Props) {
   const me = await getMe();
   // Документы — приватная зона: гостя отправляем на логин.
-  if (!me || me.status !== "active") redirect("/login?next=/documents/my");
+  if (me?.status !== "active") redirect("/login?next=/documents/my");
 
   const { offset } = await searchParams;
   const result = await getMyDocuments({ offset: parseNonNegativeInt(offset, 0), limit: 20 });

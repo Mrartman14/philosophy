@@ -28,7 +28,7 @@ export function CommentSearch({ defaultQuery = "" }: Props) {
     if (q) params.set("cq", q);
     else params.delete("cq");
     const qs = params.toString();
-    startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname));
+    startTransition(() => { router.replace(qs ? `${pathname}?${qs}` : pathname); });
   }
 
   return (

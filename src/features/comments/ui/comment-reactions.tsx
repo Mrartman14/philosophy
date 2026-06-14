@@ -95,7 +95,7 @@ export function CommentReactions({
                     key={v}
                     type="button"
                     disabled={!canReact || pending}
-                    onClick={() => toggle(axis, v)}
+                    onClick={() => { toggle(axis, v); }}
                     aria-pressed={active}
                     className={
                       active

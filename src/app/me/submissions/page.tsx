@@ -7,7 +7,7 @@ export const metadata = { title: "Мои отклики" };
 
 export default async function MySubmissionsPage() {
   const me = await getMe();
-  if (!me || me.status !== "active") redirect("/login?next=/me/submissions");
+  if (me?.status !== "active") redirect("/login?next=/me/submissions");
 
   const submissions = await getMySubmissions();
 

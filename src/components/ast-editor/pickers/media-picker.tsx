@@ -15,9 +15,9 @@ export function MediaPicker({ onSelect }: MediaPickerProps) {
     <div>
       <fieldset>
         <legend>Тип</legend>
-        <label><input type="radio" name="media-type" checked={type === undefined} onChange={() => setType(undefined)} /> все</label>
-        <label><input type="radio" name="media-type" checked={type === "video"} onChange={() => setType("video")} /> видео</label>
-        <label><input type="radio" name="media-type" checked={type === "audio"} onChange={() => setType("audio")} /> аудио</label>
+        <label><input type="radio" name="media-type" checked={type === undefined} onChange={() => { setType(undefined); }} /> все</label>
+        <label><input type="radio" name="media-type" checked={type === "video"} onChange={() => { setType("video"); }} /> видео</label>
+        <label><input type="radio" name="media-type" checked={type === "audio"} onChange={() => { setType("audio"); }} /> аудио</label>
       </fieldset>
       <AsyncCombobox<MediaSummary>
         fetcher={fetcher}

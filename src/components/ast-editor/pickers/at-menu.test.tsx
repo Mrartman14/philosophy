@@ -87,7 +87,7 @@ describe("AtMenu", () => {
     expect(json).toContain('"type":"lecture_ref"');
     expect(json).toContain('"id":"l1"');
     // Состояние закрыто → меню скрыто (через transaction-listener, ждём React).
-    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitFor(() => { expect(screen.queryByRole("dialog")).toBeNull(); });
     editor.destroy();
   });
 });

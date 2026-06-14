@@ -23,7 +23,7 @@ describe("AsyncCombobox", () => {
     );
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "abc" } });
     expect(fetcher).not.toHaveBeenCalledWith("abc", expect.any(Number), expect.any(Number));
-    await waitFor(() => expect(fetcher).toHaveBeenCalledWith("abc", 0, 20), { timeout: 600 });
+    await waitFor(() => { expect(fetcher).toHaveBeenCalledWith("abc", 0, 20); }, { timeout: 600 });
     expect(await screen.findByText("match-abc")).toBeInTheDocument();
   });
 
@@ -69,7 +69,7 @@ describe("AsyncCombobox", () => {
     );
     expect(await screen.findByText(/ошибка/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /повторить/i }));
-    await waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+    await waitFor(() => { expect(fetcher).toHaveBeenCalledTimes(2); });
   });
 
   it("Load more appends next page", async () => {

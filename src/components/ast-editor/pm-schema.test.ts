@@ -43,7 +43,7 @@ const fullSnapshot: SchemaSnapshot = {
 const extensions = buildExtensions({ snapshot: fullSnapshot, context: "document" });
 const schema = getSchema(extensions);
 
-const cases: Array<[string, AstBlock]> = [
+const cases: [string, AstBlock][] = [
   ["paragraph", fixtureParagraph],
   ["heading", fixtureHeading],
   ["blockquote", fixtureBlockquote],
@@ -81,18 +81,18 @@ describe("PM-schema round-trip", () => {
   }
 
   it("registers expected node names in PM schema", () => {
-    expect(schema.nodes["table"]).toBeDefined();
-    expect(schema.nodes["table_row"]).toBeDefined();
-    expect(schema.nodes["table_cell"]).toBeDefined();
-    expect(schema.nodes["hard_break"]).toBeDefined();
-    expect(schema.nodes["thematic_break"]).toBeDefined();
-    expect(schema.nodes["list"]).toBeDefined();
-    expect(schema.nodes["list_item"]).toBeDefined();
-    expect(schema.nodes["code_block"]).toBeDefined();
+    expect(schema.nodes.table).toBeDefined();
+    expect(schema.nodes.table_row).toBeDefined();
+    expect(schema.nodes.table_cell).toBeDefined();
+    expect(schema.nodes.hard_break).toBeDefined();
+    expect(schema.nodes.thematic_break).toBeDefined();
+    expect(schema.nodes.list).toBeDefined();
+    expect(schema.nodes.list_item).toBeDefined();
+    expect(schema.nodes.code_block).toBeDefined();
     // Ensure camelCase defaults didn't leak through.
-    expect(schema.nodes["tableRow"]).toBeUndefined();
-    expect(schema.nodes["tableCell"]).toBeUndefined();
-    expect(schema.nodes["hardBreak"]).toBeUndefined();
-    expect(schema.nodes["horizontalRule"]).toBeUndefined();
+    expect(schema.nodes.tableRow).toBeUndefined();
+    expect(schema.nodes.tableCell).toBeUndefined();
+    expect(schema.nodes.hardBreak).toBeUndefined();
+    expect(schema.nodes.horizontalRule).toBeUndefined();
   });
 });

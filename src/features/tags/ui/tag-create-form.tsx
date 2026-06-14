@@ -11,7 +11,7 @@ const initial: ActionResult<Tag | null> = { success: true, data: null };
 export function TagCreateForm() {
   const [state, action] = useActionState(createTag, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -24,10 +24,10 @@ export function TagCreateForm() {
       {state.success && state.data && (
         <p className="text-sm text-green-600">Тег «{state.data.name}» создан.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на создание тега.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

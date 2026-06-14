@@ -43,7 +43,7 @@ export function MediaVisibilityForm({ id, canChange }: Props) {
           return;
         }
         toast.add({ title: "Опубликовано" });
-        startTransition(() => router.refresh());
+        startTransition(() => { router.refresh(); });
       }}
     />
   );

@@ -16,7 +16,7 @@ export const metadata = { title: "Редактор канваса" };
 export default async function CanvasEditPage({ params }: Props) {
   const { id } = await params;
   const me = await getMe();
-  if (!me || me.status !== "active") redirect(`/login?next=/canvases/${id}/edit`);
+  if (me?.status !== "active") redirect(`/login?next=/canvases/${id}/edit`);
 
   const result = await getCanvasById(id);
   if (!result) notFound();

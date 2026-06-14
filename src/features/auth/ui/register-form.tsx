@@ -10,7 +10,7 @@ import {
 import type { ActionResult } from "@/utils/create-action";
 import { registerAction } from "../actions";
 
-const initial: ActionResult<void> = { success: true, data: undefined };
+const initial: ActionResult = { success: true, data: undefined };
 
 const ERROR_TEXT: Record<string, string> = {
   username_taken: "Это имя пользователя уже занято.",
@@ -26,12 +26,12 @@ interface RegisterFormProps {
 export function RegisterForm({ next }: RegisterFormProps) {
   const [state, action] = useActionState(registerAction, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
   const genericError =
-    state.success === false && !state.code
+    !state.success && !state.code
       ? ERROR_TEXT[state.error] ?? "Не удалось зарегистрироваться."
       : null;
 

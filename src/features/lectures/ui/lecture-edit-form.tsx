@@ -24,7 +24,7 @@ interface Props {
 export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props) {
   const [state, action] = useActionState(updateLecture, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   return (
     <div className="flex flex-col gap-6">
@@ -48,10 +48,10 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
           />
         </FormField>
 
-        {state.success === false && state.code === "forbidden" && (
+        {!state.success && state.code === "forbidden" && (
           <p className="text-sm text-red-600">У вас нет прав на редактирование.</p>
         )}
-        {state.success === false && !state.code && (
+        {!state.success && !state.code && (
           <p className="text-sm text-red-600">{state.error}</p>
         )}
         {state.success && state.data && (

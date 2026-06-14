@@ -37,7 +37,7 @@ export function BannerEditForm({ banner }: Props) {
   const [state, action] = useActionState(updateBanner, initial);
 
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -111,26 +111,26 @@ export function BannerEditForm({ banner }: Props) {
         <AstEditor
           defaultValue={banner.blocks ?? []}
           entityContext="banner"
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
         />
       </FormField>
 
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
           У вас нет прав на изменение баннера.
         </p>
       )}
-      {state.success === false &&
+      {!state.success &&
         state.code === "validation" &&
         fieldErrors._form && (
           <p role="alert" className="text-sm text-red-600">
             {fieldErrors._form}
           </p>
         )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

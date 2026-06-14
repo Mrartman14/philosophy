@@ -32,7 +32,7 @@ export function TagDeleteButton({ id, name }: Props) {
           );
           return;
         }
-        startTransition(() => router.refresh());
+        startTransition(() => { router.refresh(); });
       }}
     />
   );

@@ -29,7 +29,7 @@ const fakeSnapshot: SchemaSnapshot = {
   exclusiveCategories: [],
 };
 
-const cases: Array<[string, AstBlock]> = [
+const cases: [string, AstBlock][] = [
   ["paragraph", fixtureParagraph],
   ["heading", fixtureHeading],
   ["blockquote", fixtureBlockquote],

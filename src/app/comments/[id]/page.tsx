@@ -23,7 +23,7 @@ export default async function CommentSubtreePage({ params, searchParams }: Props
     getCommentSubtree(id),
     getCommentSchema(),
   ]);
-  if (!subtree || !subtree.root || !schema) notFound();
+  if (!subtree?.root || !schema) notFound();
 
   const lectureId = subtree.root.lecture_id;
 

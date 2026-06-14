@@ -44,7 +44,7 @@ export function SubmissionActions({ submissionId, kind, redirectTo = "/me/submis
           });
           return;
         }
-        startTransition(() => router.push(redirectTo));
+        startTransition(() => { router.push(redirectTo); });
       }}
     />
   );

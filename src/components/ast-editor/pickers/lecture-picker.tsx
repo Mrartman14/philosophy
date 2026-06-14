@@ -10,7 +10,7 @@ export function LecturePicker({ onSelect }: LecturePickerProps) {
       fetcher={searchLectures}
       renderItem={(l) => <span>{l.title || "—"}</span>}
       getKey={(l) => l.id}
-      onSelect={(l) => onSelect(l.id, l.title || l.id)}
+      onSelect={(l) => { onSelect(l.id, l.title || l.id); }}
       placeholder="Поиск лекции…"
     />
   );

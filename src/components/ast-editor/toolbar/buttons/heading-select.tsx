@@ -11,7 +11,7 @@ interface Props {
 
 type Value = "paragraph" | `h${1 | 2 | 3 | 4 | 5 | 6}`;
 
-const items: Array<{ label: string; value: Value }> = [
+const items: { label: string; value: Value }[] = [
   { label: "Параграф", value: "paragraph" },
   { label: "Заголовок 1", value: "h1" },
   { label: "Заголовок 2", value: "h2" },

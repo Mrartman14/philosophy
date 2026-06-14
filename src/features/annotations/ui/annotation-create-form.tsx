@@ -29,7 +29,7 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
   const [state, action] = useActionState(createAnnotation, initial);
 
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -50,19 +50,19 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
         <AstEditor
           defaultValue={[]}
           entityContext="annotation"
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
           ariaLabel="Текст аннотации"
         />
       </FormField>
 
       <AnnotationVisibilityField />
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
           У вас нет прав на создание аннотации.
         </p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

@@ -19,7 +19,7 @@ export function LectureCreateForm() {
   const router = useRouter();
   const [state, action] = useActionState(createLecture, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   useEffect(() => {
     if (state.success && state.data) {
@@ -52,10 +52,10 @@ export function LectureCreateForm() {
         />
       </FormField>
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на создание лекции.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

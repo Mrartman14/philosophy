@@ -110,6 +110,6 @@ describe("RemoveReactionSchema", () => {
 });
 
 describe("CommentIdSchema", () => {
-  it("принимает uuid", () => expect(CommentIdSchema.safeParse({ id: UUID }).success).toBe(true));
-  it("отклоняет не-uuid", () => expect(CommentIdSchema.safeParse({ id: "x" }).success).toBe(false));
+  it("принимает uuid", () => { expect(CommentIdSchema.safeParse({ id: UUID }).success).toBe(true); });
+  it("отклоняет не-uuid", () => { expect(CommentIdSchema.safeParse({ id: "x" }).success).toBe(false); });
 });

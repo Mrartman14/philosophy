@@ -45,8 +45,8 @@ export function AtMenu({ editor, defaultLectureId }: Props) {
       <RefMenu
         editor={editor}
         defaultLectureId={defaultLectureId}
-        onWillInsert={() => consumeAtMarker(editor.view, state.from)}
-        onClose={() => closeAtSuggestion(editor.view)}
+        onWillInsert={() => { consumeAtMarker(editor.view, state.from); }}
+        onClose={() => { closeAtSuggestion(editor.view); }}
       />
     </div>
   );

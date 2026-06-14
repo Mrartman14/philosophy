@@ -27,7 +27,7 @@ export function AnnotationAdminFilterForm() {
       Тип сущности:
       <select
         value={current}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => { onChange(e.target.value); }}
         className="rounded border border-(--color-border) px-2 py-1"
       >
         <option value="">Все</option>

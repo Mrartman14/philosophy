@@ -20,11 +20,11 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks }: Props) 
   const [blocks, setBlocks] = useState<AstBlock[]>(initialBlocks);
   const [state, action] = useActionState(updateCommentBlocks, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   if (!open) {
     return (
-      <Button type="button" variant="ghost" onClick={() => setOpen(true)}>
+      <Button type="button" variant="ghost" onClick={() => { setOpen(true); }}>
         Редактировать
       </Button>
     );
@@ -39,22 +39,22 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks }: Props) 
           defaultValue={initialBlocks}
           entityContext="comment"
           defaultLectureId={lectureId}
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
           ariaLabel="Редактирование комментария"
         />
       </FormField>
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на изменение комментария.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
       <div className="flex gap-2">
         <SubmitButton>Сохранить</SubmitButton>
-        <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+        <Button type="button" variant="ghost" onClick={() => { setOpen(false); }}>
           Отмена
         </Button>
       </div>

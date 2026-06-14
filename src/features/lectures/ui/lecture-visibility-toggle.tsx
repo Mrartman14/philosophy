@@ -36,10 +36,10 @@ export function LectureVisibilityToggle({
         <option value="private">Приватная</option>
         <option value="public">Публичная</option>
       </select>
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-xs text-red-600">У вас нет прав на смену видимости.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-xs text-red-600">{state.error}</p>
       )}
     </form>

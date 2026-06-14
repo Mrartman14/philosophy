@@ -43,7 +43,7 @@ export function CanvasEditForm({ canvas, etag }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  const fieldErrors = state.success === false && state.code === "validation" ? state.fieldErrors : {};
+  const fieldErrors = !state.success && state.code === "validation" ? state.fieldErrors : {};
   const dataJson = JSON.stringify(canvas.data ?? { nodes: [], edges: [] }, null, 2);
 
   return (

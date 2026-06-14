@@ -22,7 +22,7 @@ export function GlossaryEditForm({ term }: Props) {
   const [state, action] = useActionState(updateTermBlocks, initial);
 
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -35,17 +35,17 @@ export function GlossaryEditForm({ term }: Props) {
         <AstEditor
           defaultValue={term.blocks ?? []}
           entityContext="glossary"
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
         />
       </FormField>
 
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на изменение термина.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

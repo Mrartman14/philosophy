@@ -37,9 +37,9 @@ export function EventDeleteButton({ id }: Props) {
         }
         // С edit-страницы — на список; из списка — refresh.
         if (pathname.startsWith(`/admin/events/${id}`)) {
-          startTransition(() => router.push("/admin/events"));
+          startTransition(() => { router.push("/admin/events"); });
         } else {
-          startTransition(() => router.refresh());
+          startTransition(() => { router.refresh(); });
         }
       }}
     />

@@ -24,7 +24,7 @@ describe("useDriftWarn", () => {
       ["paragraph", "heading", "blockquote", "code_block", "list", "list_item", "image", "table", "table_row", "table_cell", "thematic_break", "hard_break", "text", "future_block"],
       ["bold", "italic", "code", "link", "lecture_ref", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
     );
-    renderHook(() => useDriftWarn(schema));
+    renderHook(() => { useDriftWarn(schema); });
     expect(warnSpy).toHaveBeenCalled();
     const allArgs = warnSpy.mock.calls[0]?.map((a: unknown) => JSON.stringify(a)).join(" ") ?? "";
     expect(allArgs).toMatch(/future_block/);
@@ -35,7 +35,7 @@ describe("useDriftWarn", () => {
       ["paragraph", "heading", "blockquote", "code_block", "list", "list_item", "image", "table", "table_row", "table_cell", "thematic_break", "hard_break", "text"],
       ["bold", "italic"], // missing several
     );
-    renderHook(() => useDriftWarn(schema));
+    renderHook(() => { useDriftWarn(schema); });
     expect(warnSpy).toHaveBeenCalled();
   });
 
@@ -44,7 +44,7 @@ describe("useDriftWarn", () => {
       ["paragraph", "heading", "blockquote", "code_block", "list", "list_item", "image", "table", "table_row", "table_cell", "thematic_break", "hard_break", "text"],
       ["bold", "italic", "code", "link", "lecture_ref", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
     );
-    renderHook(() => useDriftWarn(schema));
+    renderHook(() => { useDriftWarn(schema); });
     expect(warnSpy).not.toHaveBeenCalled();
   });
 });

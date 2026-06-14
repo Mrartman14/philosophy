@@ -32,29 +32,29 @@ const suspendedAdmin: Me = {
 };
 
 describe("canReadEvents", () => {
-  it("гость → false", () => expect(canReadEvents(guest)).toBe(false));
-  it("active без cap → false", () => expect(canReadEvents(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canReadEvents(suspendedAdmin)).toBe(false));
-  it("active с cap → true", () => expect(canReadEvents(adminFull)).toBe(true));
+  it("гость → false", () => { expect(canReadEvents(guest)).toBe(false); });
+  it("active без cap → false", () => { expect(canReadEvents(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canReadEvents(suspendedAdmin)).toBe(false); });
+  it("active с cap → true", () => { expect(canReadEvents(adminFull)).toBe(true); });
 });
 
 describe("canCreateEvent", () => {
-  it("гость → false", () => expect(canCreateEvent(guest)).toBe(false));
-  it("active без cap → false", () => expect(canCreateEvent(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canCreateEvent(suspendedAdmin)).toBe(false));
-  it("active с cap → true", () => expect(canCreateEvent(adminFull)).toBe(true));
+  it("гость → false", () => { expect(canCreateEvent(guest)).toBe(false); });
+  it("active без cap → false", () => { expect(canCreateEvent(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canCreateEvent(suspendedAdmin)).toBe(false); });
+  it("active с cap → true", () => { expect(canCreateEvent(adminFull)).toBe(true); });
 });
 
 describe("canUpdateEvent", () => {
-  it("гость → false", () => expect(canUpdateEvent(guest)).toBe(false));
-  it("active без cap → false", () => expect(canUpdateEvent(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canUpdateEvent(suspendedAdmin)).toBe(false));
-  it("active с cap → true", () => expect(canUpdateEvent(adminFull)).toBe(true));
+  it("гость → false", () => { expect(canUpdateEvent(guest)).toBe(false); });
+  it("active без cap → false", () => { expect(canUpdateEvent(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canUpdateEvent(suspendedAdmin)).toBe(false); });
+  it("active с cap → true", () => { expect(canUpdateEvent(adminFull)).toBe(true); });
 });
 
 describe("canDeleteEvent", () => {
-  it("гость → false", () => expect(canDeleteEvent(guest)).toBe(false));
-  it("active без cap → false", () => expect(canDeleteEvent(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canDeleteEvent(suspendedAdmin)).toBe(false));
-  it("active с cap → true", () => expect(canDeleteEvent(adminFull)).toBe(true));
+  it("гость → false", () => { expect(canDeleteEvent(guest)).toBe(false); });
+  it("active без cap → false", () => { expect(canDeleteEvent(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canDeleteEvent(suspendedAdmin)).toBe(false); });
+  it("active с cap → true", () => { expect(canDeleteEvent(adminFull)).toBe(true); });
 });

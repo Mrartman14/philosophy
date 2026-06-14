@@ -14,7 +14,7 @@ interface Props {
 
 export default async function MyShareLinksPage({ searchParams }: Props) {
   const me = await getMe();
-  if (!me || me.status !== "active") {
+  if (me?.status !== "active") {
     redirect("/login?next=/share-links");
   }
 

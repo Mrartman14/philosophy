@@ -63,7 +63,7 @@ function PageForm() {
     if (type) next.set("type", type);
     // offset сбрасываем при новом запросе (его просто не переносим)
     const qs = next.toString();
-    startTransition(() => router.replace(qs ? `/search?${qs}` : "/search"));
+    startTransition(() => { router.replace(qs ? `/search?${qs}` : "/search"); });
   }
 
   return (
@@ -133,7 +133,7 @@ function HeaderInput() {
           ref={inputRef}
           type="search"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => { setValue(e.target.value); }}
           onKeyDown={onKeyDown}
           onBlur={() => {
             if (!value.trim()) setOpen(false);
@@ -157,7 +157,7 @@ function HeaderInput() {
   return (
     <button
       type="button"
-      onClick={() => setOpen(true)}
+      onClick={() => { setOpen(true); }}
       aria-label="Открыть поиск"
       className="text-xl text-(--color-description) hover:text-(--color-primary)"
     >

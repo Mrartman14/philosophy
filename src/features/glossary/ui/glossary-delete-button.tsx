@@ -36,9 +36,9 @@ export function GlossaryDeleteButton({ id }: Props) {
         }
         // Если мы на edit-странице термина — редирект на список; иначе refresh.
         if (pathname.startsWith(`/admin/glossary/${id}`)) {
-          startTransition(() => router.push("/admin/glossary"));
+          startTransition(() => { router.push("/admin/glossary"); });
         } else {
-          startTransition(() => router.refresh());
+          startTransition(() => { router.refresh(); });
         }
       }}
     />

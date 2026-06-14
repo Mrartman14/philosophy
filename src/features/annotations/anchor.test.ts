@@ -45,30 +45,30 @@ describe("buildTextAnchor", () => {
 
 describe("isValidTextAnchor", () => {
   it("валиден: оба block_id + exact заданы", () =>
-    expect(
+    { expect(
       isValidTextAnchor({
         start_block_id: "b1",
         end_block_id: "b2",
         exact: "x",
       }),
-    ).toBe(true));
+    ).toBe(true); });
   it("невалиден: нет exact", () =>
-    expect(
+    { expect(
       isValidTextAnchor({ start_block_id: "b1", end_block_id: "b2" }),
-    ).toBe(false));
+    ).toBe(false); });
   it("невалиден: нет end_block_id", () =>
-    expect(isValidTextAnchor({ start_block_id: "b1", exact: "x" })).toBe(
+    { expect(isValidTextAnchor({ start_block_id: "b1", exact: "x" })).toBe(
       false,
-    ));
+    ); });
   it("невалиден: примешаны media-поля", () =>
-    expect(
+    { expect(
       isValidTextAnchor({
         start_block_id: "b1",
         end_block_id: "b2",
         exact: "x",
         start_sec: 5,
       }),
-    ).toBe(false));
+    ).toBe(false); });
 });
 
 describe("buildMediaAnchor", () => {
@@ -82,15 +82,15 @@ describe("buildMediaAnchor", () => {
 
 describe("isValidMediaAnchor", () => {
   it("валиден: start_sec >= 0", () =>
-    expect(isValidMediaAnchor({ start_sec: 0 })).toBe(true));
+    { expect(isValidMediaAnchor({ start_sec: 0 })).toBe(true); });
   it("валиден: end_sec > start_sec", () =>
-    expect(isValidMediaAnchor({ start_sec: 5, end_sec: 10 })).toBe(true));
+    { expect(isValidMediaAnchor({ start_sec: 5, end_sec: 10 })).toBe(true); });
   it("невалиден: end_sec <= start_sec", () =>
-    expect(isValidMediaAnchor({ start_sec: 10, end_sec: 10 })).toBe(false));
+    { expect(isValidMediaAnchor({ start_sec: 10, end_sec: 10 })).toBe(false); });
   it("невалиден: отрицательный start_sec", () =>
-    expect(isValidMediaAnchor({ start_sec: -1 })).toBe(false));
+    { expect(isValidMediaAnchor({ start_sec: -1 })).toBe(false); });
   it("невалиден: примешаны text-поля", () =>
-    expect(
+    { expect(
       isValidMediaAnchor({ start_sec: 5, start_block_id: "b1" }),
-    ).toBe(false));
+    ).toBe(false); });
 });

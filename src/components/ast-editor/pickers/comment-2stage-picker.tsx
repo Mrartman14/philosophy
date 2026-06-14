@@ -15,13 +15,13 @@ export function Comment2StagePicker({ defaultLectureId, onSelect }: Comment2Stag
     return (
       <div>
         <p>Шаг 1: выберите лекцию</p>
-        <LecturePicker onSelect={(id) => setLectureId(id)} />
+        <LecturePicker onSelect={(id) => { setLectureId(id); }} />
       </div>
     );
   }
   return (
     <div>
-      <button type="button" onClick={() => setLectureId(undefined)}>← Сменить лекцию</button>
+      <button type="button" onClick={() => { setLectureId(undefined); }}>← Сменить лекцию</button>
       <p>Шаг 2: выберите комментарий</p>
       <CommentPicker lectureId={lectureId} onSelect={onSelect} />
     </div>

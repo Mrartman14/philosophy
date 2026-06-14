@@ -1,6 +1,5 @@
 // src/features/comments/ui/comment-anchor-context.tsx
 import { AstRender } from "@/components/ast-render";
-import { type AstBlock } from "@/components/ast-editor";
 import { getBlock } from "../api";
 import type { Comment } from "../types";
 
@@ -34,7 +33,7 @@ export async function CommentAnchorContext({ anchor }: { anchor: Anchor }) {
       )}
       {block && (
         <div className="prose prose-sm mt-1 max-w-none opacity-80">
-          <AstRender blocks={[block as AstBlock]} />
+          <AstRender blocks={[block]} />
         </div>
       )}
     </div>

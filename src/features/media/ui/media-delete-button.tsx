@@ -42,9 +42,9 @@ export function MediaDeleteButton({ id, isAdminDelete = false }: Props) {
           return;
         }
         if (pathname === `/media/${id}`) {
-          startTransition(() => router.push("/media/my"));
+          startTransition(() => { router.push("/media/my"); });
         } else {
-          startTransition(() => router.refresh());
+          startTransition(() => { router.refresh(); });
         }
       }}
     />

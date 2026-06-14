@@ -30,7 +30,7 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
     }
   };
 
-  const itemChecked = editor.getAttributes("list_item")?.["checked"];
+  const itemChecked = editor.getAttributes("list_item")?.checked;
   const isTaskActive = editor.isActive("list_item") && itemChecked != null;
 
   return (
@@ -38,21 +38,21 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
       <Toolbar.Button
         aria-label="Маркированный список"
         aria-pressed={editor.isActive("list", { ordered: false })}
-        onClick={() => toggle(false)}
+        onClick={() => { toggle(false); }}
       >
         <ListBulletIcon />
       </Toolbar.Button>
       <Toolbar.Button
         aria-label="Нумерованный список"
         aria-pressed={editor.isActive("list", { ordered: true })}
-        onClick={() => toggle(true)}
+        onClick={() => { toggle(true); }}
       >
         <ListOrderedIcon />
       </Toolbar.Button>
       <Toolbar.Button
         aria-label="Чек-лист"
         aria-pressed={isTaskActive}
-        onClick={() => toggle(false, true)}
+        onClick={() => { toggle(false, true); }}
       >
         ☐
       </Toolbar.Button>

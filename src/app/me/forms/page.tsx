@@ -7,7 +7,7 @@ export const metadata = { title: "Мои формы" };
 
 export default async function MyFormsPage() {
   const me = await getMe();
-  if (!me || me.status !== "active") redirect("/login?next=/me/forms");
+  if (me?.status !== "active") redirect("/login?next=/me/forms");
 
   const forms = await getMyForms();
   const canCreate = canCreateForm(me);

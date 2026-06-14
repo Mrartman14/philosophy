@@ -10,7 +10,7 @@ import {
 import type { ActionResult } from "@/utils/create-action";
 import { loginAction } from "../actions";
 
-const initial: ActionResult<void> = { success: true, data: undefined };
+const initial: ActionResult = { success: true, data: undefined };
 
 const ERROR_TEXT: Record<string, string> = {
   invalid_credentials: "Неверный логин или пароль.",
@@ -25,12 +25,12 @@ interface LoginFormProps {
 export function LoginForm({ next }: LoginFormProps) {
   const [state, action] = useActionState(loginAction, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
   const genericError =
-    state.success === false && !state.code
+    !state.success && !state.code
       ? ERROR_TEXT[state.error] ?? "Не удалось войти."
       : null;
 

@@ -26,7 +26,7 @@ export function BannerCreateForm() {
   const [state, action] = useActionState(createBanner, initial);
 
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -81,19 +81,19 @@ export function BannerCreateForm() {
         <TextInput name="event_id" placeholder="UUID события из /admin/events" />
       </FormField>
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
           У вас нет прав на создание баннера.
         </p>
       )}
-      {state.success === false &&
+      {!state.success &&
         state.code === "validation" &&
         fieldErrors._form && (
           <p role="alert" className="text-sm text-red-600">
             {fieldErrors._form}
           </p>
         )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

@@ -23,10 +23,10 @@ export function TrailVisibilityButton({ id }: Props) {
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="visibility" value="public" />
       <SubmitButton>Сделать публичным</SubmitButton>
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <span className="text-sm text-red-600">У вас нет прав на изменение видимости.</span>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <span className="text-sm text-red-600">{state.error}</span>
       )}
     </Form>

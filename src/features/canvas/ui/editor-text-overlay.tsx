@@ -36,8 +36,8 @@ export function EditorTextOverlay({ node, viewport, onCommit, onCancel }: Props)
       ref={ref}
       value={value}
       maxLength={10000}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={() => onCommit(value)}
+      onChange={(e) => { setValue(e.target.value); }}
+      onBlur={() => { onCommit(value); }}
       onKeyDown={(e) => {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();

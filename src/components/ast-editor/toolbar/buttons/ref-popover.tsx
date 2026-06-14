@@ -33,7 +33,7 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
             <RefMenu
               editor={editor}
               defaultLectureId={defaultLectureId}
-              onClose={() => setOpen(false)}
+              onClose={() => { setOpen(false); }}
             />
           </Popover.Popup>
         </Popover.Positioner>

@@ -93,7 +93,7 @@ describe("ImageButton", () => {
       target: { files: [makePngFile()] },
     });
 
-    await waitFor(() => expect(toastAdd).toHaveBeenCalledOnce());
+    await waitFor(() => { expect(toastAdd).toHaveBeenCalledOnce(); });
     expect(JSON.stringify(editor.getJSON())).not.toContain('"type":"image"');
     editor.destroy();
   });
@@ -112,7 +112,7 @@ describe("ImageButton", () => {
       target: { files: [makePngFile()] },
     });
 
-    await waitFor(() => expect(toastAdd).toHaveBeenCalledOnce());
+    await waitFor(() => { expect(toastAdd).toHaveBeenCalledOnce(); });
     const arg = toastAdd.mock.calls[0]![0] as { title?: string };
     expect(arg.title).toMatch(/не удалось загрузить/i);
     expect(JSON.stringify(editor.getJSON())).not.toContain('"type":"image"');
@@ -139,7 +139,7 @@ describe("ImageButton", () => {
       target: { files: [makePngFile()] },
     });
 
-    await waitFor(() => expect(toastAdd).toHaveBeenCalledOnce());
+    await waitFor(() => { expect(toastAdd).toHaveBeenCalledOnce(); });
     const arg = toastAdd.mock.calls[0]![0] as { description?: string };
     expect(arg.description).toMatch(/нет прав/i);
     editor.destroy();

@@ -41,7 +41,7 @@ export function ShareLookupForm({ admin = false }: Props) {
     if (rid) params.set("resource_id", rid);
     const qs = params.toString();
     startTransition(() =>
-      router.replace(qs ? `${pathname}?${qs}` : pathname),
+      { router.replace(qs ? `${pathname}?${qs}` : pathname); },
     );
   }
 

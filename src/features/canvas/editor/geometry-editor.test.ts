@@ -9,9 +9,9 @@ const node = (over: Partial<RenderNode> = {}): RenderNode => ({
 
 describe("pointInRect", () => {
   const n = node({ x: 10, y: 10, width: 100, height: 50 });
-  it("точка внутри", () => expect(pointInRect({ x: 50, y: 30 }, n)).toBe(true));
-  it("точка снаружи", () => expect(pointInRect({ x: 5, y: 5 }, n)).toBe(false));
-  it("на границе считается внутри", () => expect(pointInRect({ x: 10, y: 10 }, n)).toBe(true));
+  it("точка внутри", () => { expect(pointInRect({ x: 50, y: 30 }, n)).toBe(true); });
+  it("точка снаружи", () => { expect(pointInRect({ x: 5, y: 5 }, n)).toBe(false); });
+  it("на границе считается внутри", () => { expect(pointInRect({ x: 10, y: 10 }, n)).toBe(true); });
 });
 
 describe("hitTestNode — последний (верхний) узел под точкой", () => {

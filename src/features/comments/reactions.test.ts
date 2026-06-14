@@ -23,20 +23,20 @@ const schema: CommentSchema = {
 
 describe("axisAllowedForType", () => {
   it("claim допускает agreement", () =>
-    expect(axisAllowedForType(schema, "claim", "agreement")).toBe(true));
+    { expect(axisAllowedForType(schema, "claim", "agreement")).toBe(true); });
   it("question НЕ допускает agreement", () =>
-    expect(axisAllowedForType(schema, "question", "agreement")).toBe(false));
+    { expect(axisAllowedForType(schema, "question", "agreement")).toBe(false); });
   it("question допускает quality", () =>
-    expect(axisAllowedForType(schema, "question", "quality")).toBe(true));
+    { expect(axisAllowedForType(schema, "question", "quality")).toBe(true); });
   it("offtop не допускает никаких осей", () =>
-    expect(axisAllowedForType(schema, "offtop", "insight")).toBe(false));
+    { expect(axisAllowedForType(schema, "offtop", "insight")).toBe(false); });
   it("неизвестный тип → false (без падения)", () =>
-    expect(axisAllowedForType(schema, "summary", "quality")).toBe(false));
+    { expect(axisAllowedForType(schema, "summary", "quality")).toBe(false); });
 });
 
 describe("REACTION_AXES", () => {
   it("содержит три оси в фиксированном порядке", () =>
-    expect(REACTION_AXES).toEqual(["agreement", "quality", "insight"]));
+    { expect(REACTION_AXES).toEqual(["agreement", "quality", "insight"]); });
 });
 
 describe("axisLabel / axisValueLabel", () => {
@@ -46,7 +46,7 @@ describe("axisLabel / axisValueLabel", () => {
     expect(axisLabel("insight")).toBe("Инсайт");
   });
   it("insight не имеет минуса", () =>
-    expect(axisValueLabel("insight", -1)).toBeNull());
+    { expect(axisValueLabel("insight", -1)).toBeNull(); });
   it("agreement: +1 и -1 имеют подписи", () => {
     expect(axisValueLabel("agreement", 1)).toBe("+");
     expect(axisValueLabel("agreement", -1)).toBe("−");

@@ -1,7 +1,6 @@
 // src/features/comments/ui/comment-node.tsx
 import { AstRender } from "@/components/ast-render";
 import { getMe } from "@/utils/me";
-import { type AstBlock } from "@/components/ast-editor";
 import {
   canDeleteComment,
   canEditComment,
@@ -14,7 +13,7 @@ import { CommentReplyForm } from "./comment-reply-form";
 import { CommentEditForm } from "./comment-edit-form";
 import { CommentDeleteButton } from "./comment-delete-button";
 import { CommentAnchorContext } from "./comment-anchor-context";
-import type { Comment, CommentSchema, CommentType, ReactionAxis } from "../types";
+import type { Comment, CommentSchema, ReactionAxis } from "../types";
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "short",
@@ -45,11 +44,11 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
     );
   }
 
-  const type = comment.type as CommentType;
+  const type = comment.type;
   const allowedAxes = (schema.allowed_reactions?.[type] ?? []).filter((a): a is ReactionAxis =>
-    axisAllowedForType(schema, type, a as ReactionAxis),
+    axisAllowedForType(schema, type, a),
   );
-  const childTypes = (schema.allowed_children?.[type] ?? []) as CommentType[];
+  const childTypes = (schema.allowed_children?.[type] ?? []);
 
   return (
     <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
@@ -65,7 +64,7 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
       )}
 
       <div className="prose prose-sm max-w-none">
-        <AstRender blocks={(comment.blocks ?? []) as AstBlock[]} />
+        <AstRender blocks={(comment.blocks ?? [])} />
       </div>
 
       <CommentReactions
@@ -82,7 +81,7 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
           <CommentEditForm
             commentId={comment.id}
             lectureId={lectureId}
-            initialBlocks={(comment.blocks ?? []) as AstBlock[]}
+            initialBlocks={(comment.blocks ?? [])}
           />
         )}
         {canDeleteComment(me, comment) && (

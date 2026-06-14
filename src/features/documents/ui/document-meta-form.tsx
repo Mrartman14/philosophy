@@ -15,7 +15,7 @@ interface Props {
 export function DocumentMetaForm({ document }: Props) {
   const [state, action] = useActionState(updateDocumentMeta, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
@@ -31,10 +31,10 @@ export function DocumentMetaForm({ document }: Props) {
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на изменение документа.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
       <div>

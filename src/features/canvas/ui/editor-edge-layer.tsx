@@ -36,7 +36,7 @@ export function EditorEdgeLayer({ edges, nodesById, selectedEdgeIds, preview, on
               stroke="transparent"
               strokeWidth={12}
               style={{ cursor: "pointer" }}
-              onPointerDown={(ev) => onEdgePointerDown(e.id, ev)}
+              onPointerDown={(ev) => { onEdgePointerDown(e.id, ev); }}
             />
             <path
               d={geo.d}

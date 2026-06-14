@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type UseRegisterSWReturn = {
+interface UseRegisterSWReturn {
   needsUpdate: boolean;
   applyUpdate: () => void;
-};
+}
 
 export function useRegisterSW(): UseRegisterSWReturn {
   const [needsUpdate, setNeedsUpdate] = useState(false);
@@ -44,7 +44,7 @@ export function useRegisterSW(): UseRegisterSWReturn {
           });
         });
       })
-      .catch((err) => console.error("[SW] registration failed:", err));
+      .catch((err) => { console.error("[SW] registration failed:", err); });
 
     // Reload on controller change (after SKIP_WAITING)
     let refreshing = false;

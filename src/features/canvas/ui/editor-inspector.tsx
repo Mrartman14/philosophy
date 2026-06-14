@@ -52,7 +52,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
             <Select
               name="shape_kind"
               value={node.shape_kind ?? "rect"}
-              onValueChange={(v) => dispatch({ type: "setShapeKind", nodeId: node.id!, shapeKind: v as "rect" | "ellipse" | "diamond" })}
+              onValueChange={(v) => { dispatch({ type: "setShapeKind", nodeId: node.id!, shapeKind: v as "rect" | "ellipse" | "diamond" }); }}
               options={[
                 { value: "rect", label: "Прямоугольник" },
                 { value: "ellipse", label: "Эллипс" },
@@ -67,7 +67,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
             <TextInput
               type="number"
               value={String(node.width ?? 0)}
-              onChange={(e) => dispatch({ type: "setNodeSize", nodeId: node.id!, width: Number(e.target.value), height: node.height ?? 0 })}
+              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId: node.id!, width: Number(e.target.value), height: node.height ?? 0 }); }}
             />
           </label>
           <label className="flex flex-1 flex-col gap-1 text-sm">
@@ -75,7 +75,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
             <TextInput
               type="number"
               value={String(node.height ?? 0)}
-              onChange={(e) => dispatch({ type: "setNodeSize", nodeId: node.id!, width: node.width ?? 0, height: Number(e.target.value) })}
+              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId: node.id!, width: node.width ?? 0, height: Number(e.target.value) }); }}
             />
           </label>
         </div>
@@ -98,7 +98,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
         <TextInput
           value={edge!.label ?? ""}
           maxLength={200}
-          onChange={(e) => dispatch({ type: "setEdgeLabel", edgeId: edge!.id!, label: e.target.value })}
+          onChange={(e) => { dispatch({ type: "setEdgeLabel", edgeId: edge!.id!, label: e.target.value }); }}
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
@@ -106,7 +106,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
         <Select
           name="style"
           value={edge!.style ?? "solid"}
-          onValueChange={(v) => dispatch({ type: "setEdgeStyle", edgeId: edge!.id!, style: v as "solid" | "dashed" })}
+          onValueChange={(v) => { dispatch({ type: "setEdgeStyle", edgeId: edge!.id!, style: v as "solid" | "dashed" }); }}
           options={[{ value: "solid", label: "Сплошная" }, { value: "dashed", label: "Пунктир" }]}
         />
       </label>
@@ -115,7 +115,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
         <Select
           name="end"
           value={edge!.end ?? "arrow"}
-          onValueChange={(v) => dispatch({ type: "setEdgeEnd", edgeId: edge!.id!, end: v as "none" | "arrow" })}
+          onValueChange={(v) => { dispatch({ type: "setEdgeEnd", edgeId: edge!.id!, end: v as "none" | "arrow" }); }}
           options={[{ value: "arrow", label: "Стрелка" }, { value: "none", label: "Без стрелки" }]}
         />
       </label>
@@ -125,7 +125,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           <Select
             name="from_side"
             value={sideValue(edge!.from_side)}
-            onValueChange={(v) => dispatch(sidesCommand(edge!.id!, (v || undefined) as Side | undefined, edge!.to_side))}
+            onValueChange={(v) => { dispatch(sidesCommand(edge!.id!, (v || undefined) as Side | undefined, edge!.to_side)); }}
             options={SIDE_OPTIONS}
           />
         </label>
@@ -134,7 +134,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           <Select
             name="to_side"
             value={sideValue(edge!.to_side)}
-            onValueChange={(v) => dispatch(sidesCommand(edge!.id!, edge!.from_side, (v || undefined) as Side | undefined))}
+            onValueChange={(v) => { dispatch(sidesCommand(edge!.id!, edge!.from_side, (v || undefined) as Side | undefined)); }}
             options={SIDE_OPTIONS}
           />
         </label>

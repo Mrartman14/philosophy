@@ -17,7 +17,7 @@ interface Props {
 
 export default async function MyMediaPage({ searchParams }: Props) {
   const me = await getMe();
-  if (!me || me.status !== "active") redirect("/login?next=/media/my");
+  if (me?.status !== "active") redirect("/login?next=/media/my");
 
   const { offset: rawOffset, free_floating } = await searchParams;
   const offset = Number.parseInt(rawOffset ?? "0", 10) || 0;

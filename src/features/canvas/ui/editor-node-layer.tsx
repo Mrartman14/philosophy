@@ -39,8 +39,8 @@ export function EditorNodeLayer({
           <g
             key={n.id}
             style={{ cursor: "move" }}
-            onPointerDown={(e) => onNodePointerDown(n.id, e)}
-            onDoubleClick={(e) => onNodeDoubleClick(n.id, e)}
+            onPointerDown={(e) => { onNodePointerDown(n.id, e); }}
+            onDoubleClick={(e) => { onNodeDoubleClick(n.id, e); }}
           >
             <NodeShapeRender node={n} resolve={resolveEntityRef} />
             {(selected || invalid) && (
@@ -66,7 +66,7 @@ export function EditorNodeLayer({
             cx={p.x} cy={p.y} r={5}
             fill="var(--color-background)" stroke="var(--color-primary)" strokeWidth={1.5}
             style={{ cursor: "crosshair" }}
-            onPointerDown={(e) => onSideHandleDown(singleSelected.id, side, e)}
+            onPointerDown={(e) => { onSideHandleDown(singleSelected.id, side, e); }}
           />
         );
       })}
@@ -78,7 +78,7 @@ export function EditorNodeLayer({
           x={p.x - 4} y={p.y - 4} width={8} height={8}
           fill="var(--color-primary)"
           style={{ cursor: `${handle}-resize` }}
-          onPointerDown={(e) => onResizeHandleDown(singleSelected.id, handle, e)}
+          onPointerDown={(e) => { onResizeHandleDown(singleSelected.id, handle, e); }}
         />
       ))}
     </g>

@@ -27,10 +27,10 @@ describe("boundingBox", () => {
 
 describe("sidePoint", () => {
   const n = node({ x: 0, y: 0, width: 100, height: 50 });
-  it("top → центр верхней грани", () => expect(sidePoint(n, "top")).toEqual({ x: 50, y: 0 }));
-  it("right → центр правой грани", () => expect(sidePoint(n, "right")).toEqual({ x: 100, y: 25 }));
-  it("bottom → центр нижней грани", () => expect(sidePoint(n, "bottom")).toEqual({ x: 50, y: 50 }));
-  it("left → центр левой грани", () => expect(sidePoint(n, "left")).toEqual({ x: 0, y: 25 }));
+  it("top → центр верхней грани", () => { expect(sidePoint(n, "top")).toEqual({ x: 50, y: 0 }); });
+  it("right → центр правой грани", () => { expect(sidePoint(n, "right")).toEqual({ x: 100, y: 25 }); });
+  it("bottom → центр нижней грани", () => { expect(sidePoint(n, "bottom")).toEqual({ x: 50, y: 50 }); });
+  it("left → центр левой грани", () => { expect(sidePoint(n, "left")).toEqual({ x: 0, y: 25 }); });
 });
 
 describe("boxBorderIntersection", () => {

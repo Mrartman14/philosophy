@@ -34,9 +34,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["annotation.Annotation"][];
@@ -45,18 +43,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -96,43 +90,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -180,9 +164,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["audit.Record"][];
@@ -191,27 +173,21 @@ export interface paths {
                 };
                 /** @description invalid 'from'/'to' (not RFC3339) */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -250,9 +226,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["banner.Banner"][];
@@ -261,18 +235,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -297,9 +267,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["banner.Banner"];
@@ -308,45 +276,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -381,9 +339,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["banner.Banner"];
@@ -392,36 +348,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -448,9 +396,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["banner.Banner"];
@@ -459,54 +405,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -529,43 +463,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -599,45 +523,35 @@ export interface paths {
             responses: {
                 /** @description Markdown-представление баннера */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -674,45 +588,35 @@ export interface paths {
             responses: {
                 /** @description Plain-text-представление баннера */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -749,9 +653,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.RevisionMeta"][];
@@ -760,36 +662,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -828,9 +722,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.Revision"];
@@ -839,36 +731,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -909,9 +793,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["comment.Comment"][];
@@ -920,27 +802,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -980,52 +856,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1063,9 +927,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["document.Document"][];
@@ -1074,18 +936,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1125,43 +983,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1197,9 +1045,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["event.Event"][];
@@ -1208,18 +1054,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1244,9 +1086,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["event.Event"];
@@ -1255,45 +1095,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -1328,9 +1158,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["event.Event"];
@@ -1339,36 +1167,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1395,9 +1215,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["event.Event"];
@@ -1406,54 +1224,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -1476,43 +1282,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1546,45 +1342,35 @@ export interface paths {
             responses: {
                 /** @description Markdown-представление события */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1621,45 +1407,35 @@ export interface paths {
             responses: {
                 /** @description Plain-text-представление события */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1696,9 +1472,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.RevisionMeta"][];
@@ -1707,36 +1481,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1775,9 +1541,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.Revision"];
@@ -1786,36 +1550,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1856,9 +1612,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["form.FormListItem"][];
@@ -1867,18 +1621,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -1919,9 +1669,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["glossary.Term"];
@@ -1930,54 +1678,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -2015,52 +1751,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -2110,9 +1834,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["glossary.Term"];
@@ -2121,63 +1843,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -2217,9 +1925,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["lecture.Lecture"];
@@ -2228,45 +1934,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -2304,34 +2000,26 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -2371,9 +2059,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["tag.Tag"][];
@@ -2382,45 +2068,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -2460,52 +2136,40 @@ export interface paths {
             responses: {
                 /** @description Accepted */
                 202: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -2542,9 +2206,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["sharelink.ShareLink"][];
@@ -2553,27 +2215,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -2613,43 +2269,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -2687,9 +2333,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["tag.Tag"];
@@ -2698,54 +2342,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -2786,9 +2418,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["tag.Tag"];
@@ -2797,63 +2427,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -2876,43 +2492,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -2950,9 +2556,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["trail.Trail"][];
@@ -2961,18 +2565,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3011,9 +2611,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["user.User"][];
@@ -3022,18 +2620,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3076,9 +2670,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["user.User"];
@@ -3087,63 +2679,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -3185,9 +2763,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["user.User"];
@@ -3196,63 +2772,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -3288,9 +2850,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["annotation.Annotation"];
@@ -3299,27 +2859,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3346,9 +2900,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["annotation.Annotation"];
@@ -3357,54 +2909,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -3427,43 +2967,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3497,27 +3027,21 @@ export interface paths {
             responses: {
                 /** @description Markdown-представление пометки */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3554,27 +3078,21 @@ export interface paths {
             responses: {
                 /** @description Plaintext-представление пометки */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3614,9 +3132,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.RevisionMeta"][];
@@ -3625,27 +3141,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3687,9 +3197,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.Revision"];
@@ -3698,27 +3206,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -3757,9 +3259,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["ast.SchemaResponse"];
                     };
@@ -3795,9 +3295,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: {
@@ -3808,45 +3306,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description FORBIDDEN (banned account) */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -3880,9 +3368,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["user.User"];
@@ -3891,36 +3377,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -3952,9 +3430,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["banner.Banner"][];
@@ -3995,52 +3471,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4075,9 +3539,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["ast.Block"];
@@ -4086,27 +3548,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4145,9 +3601,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["event.Occurrence"][];
@@ -4156,18 +3610,14 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -4213,9 +3663,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["canvas.CanvasSummary"][];
@@ -4224,27 +3672,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4282,45 +3724,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -4371,27 +3803,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4434,63 +3860,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Precondition Failed */
                 412: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -4513,43 +3925,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4590,9 +3992,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["attachment.AttachmentDTO"][];
@@ -4601,27 +4001,21 @@ export interface paths {
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description INVALID_ENTITY_TYPE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4661,9 +4055,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["canvas.RevisionMeta"][];
@@ -4672,27 +4064,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4734,9 +4120,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["canvas.Revision"];
@@ -4745,27 +4129,21 @@ export interface paths {
                 };
                 /** @description rev_num не положительное целое */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4813,9 +4191,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["canvas.Canvas"];
@@ -4824,54 +4200,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description PUBLIC_IMMUTABLE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -4899,9 +4263,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["comment.SchemaResponse"];
@@ -4943,52 +4305,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -5038,9 +4388,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["comment.Comment"];
@@ -5049,63 +4397,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -5148,61 +4482,47 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -5242,52 +4562,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -5321,9 +4629,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.RevisionMeta"][];
@@ -5332,27 +4638,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -5391,9 +4691,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.Revision"];
@@ -5402,27 +4700,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -5459,9 +4751,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["comment.RootSubtree"];
@@ -5470,27 +4760,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -5527,27 +4811,21 @@ export interface paths {
             responses: {
                 /** @description Markdown-поддерево комментария */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -5584,27 +4862,21 @@ export interface paths {
             responses: {
                 /** @description Plaintext-поддерево комментария */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -5650,9 +4922,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["document.DocumentSummary"][];
@@ -5661,27 +4931,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -5706,9 +4970,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["document.Document"];
@@ -5717,54 +4979,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description FORBIDDEN / ATTACH_FORBIDDEN */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -5810,9 +5060,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["document.Document"];
@@ -5821,45 +5069,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description FORBIDDEN / ATTACH_FORBIDDEN */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -5894,9 +5132,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["document.Document"];
@@ -5905,27 +5141,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -5949,43 +5179,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6014,9 +5234,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["document.Document"];
@@ -6025,54 +5243,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description FORBIDDEN / ATTACH_FORBIDDEN */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -6103,27 +5309,21 @@ export interface paths {
             responses: {
                 /** @description Markdown-представление документа */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6160,27 +5360,21 @@ export interface paths {
             responses: {
                 /** @description Plaintext-представление документа */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6234,9 +5428,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["document.Document"];
@@ -6245,63 +5437,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -6348,9 +5526,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["document.Document"];
@@ -6359,54 +5535,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description PUBLIC_IMMUTABLE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6444,9 +5608,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["attachment.AttachmentDTO"][];
@@ -6455,27 +5617,21 @@ export interface paths {
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description INVALID_ENTITY_TYPE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6515,9 +5671,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.RevisionMeta"][];
@@ -6526,27 +5680,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6588,9 +5736,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.Revision"];
@@ -6599,27 +5745,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6668,9 +5808,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["annotation.Annotation"];
@@ -6679,54 +5817,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -6765,9 +5891,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.Form"];
@@ -6776,45 +5900,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -6852,9 +5966,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.Form"];
@@ -6863,27 +5975,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6907,43 +6013,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -6972,9 +6068,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.Form"];
@@ -6983,63 +6077,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description PUBLIC_IMMUTABLE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7070,9 +6150,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.SubmissionListItem"][];
@@ -7081,36 +6159,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7141,9 +6211,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.SubmitResponse"];
@@ -7152,63 +6220,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -7247,9 +6301,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["glossary.Term"][];
@@ -7258,9 +6310,7 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7299,9 +6349,7 @@ export interface paths {
             responses: {
                 /** @description Markdown-список терминов */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
@@ -7340,9 +6388,7 @@ export interface paths {
             responses: {
                 /** @description Plaintext-список терминов */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
@@ -7383,9 +6429,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["glossary.SuggestResponse"];
@@ -7394,45 +6438,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -7467,9 +6501,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["glossary.Term"];
@@ -7478,18 +6510,14 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7526,27 +6554,21 @@ export interface paths {
             responses: {
                 /** @description Markdown-представление термина */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7583,27 +6605,21 @@ export interface paths {
             responses: {
                 /** @description Plaintext-представление термина */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7640,9 +6656,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.RevisionMeta"][];
@@ -7651,18 +6665,14 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7701,9 +6711,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["revision.Revision"];
@@ -7712,18 +6720,14 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7766,9 +6770,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["lecture.Lecture"][];
@@ -7777,9 +6779,7 @@ export interface paths {
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7818,9 +6818,7 @@ export interface paths {
             responses: {
                 /** @description Markdown-список лекций */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
@@ -7859,9 +6857,7 @@ export interface paths {
             responses: {
                 /** @description Plaintext-список лекций */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
@@ -7898,9 +6894,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["lecture.Lecture"];
@@ -7909,27 +6903,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -7956,9 +6944,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["lecture.Lecture"];
@@ -7967,54 +6953,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -8050,27 +7024,21 @@ export interface paths {
             responses: {
                 /** @description Markdown-представление */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8107,27 +7075,21 @@ export interface paths {
             responses: {
                 /** @description Plaintext-представление */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8171,9 +7133,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["annotation.Annotation"][];
@@ -8182,27 +7142,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -8246,9 +7200,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["comment.RootSubtree"][];
@@ -8257,18 +7209,14 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8296,9 +7244,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["comment.Comment"];
@@ -8307,54 +7253,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -8394,27 +7328,21 @@ export interface paths {
             responses: {
                 /** @description Markdown-список корневых комментариев */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8456,27 +7384,21 @@ export interface paths {
             responses: {
                 /** @description Plaintext-список корневых комментариев */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8525,9 +7447,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["comment.CommentSummary"][];
@@ -8536,36 +7456,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8611,61 +7523,47 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -8691,43 +7589,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8761,9 +7649,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["document.Document"][];
@@ -8772,27 +7658,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8829,9 +7709,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["media.Media"][];
@@ -8840,27 +7718,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8902,9 +7774,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["tag.Tag"][];
@@ -8913,9 +7783,7 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -8966,9 +7834,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["lecture.Lecture"];
@@ -8977,54 +7843,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description PUBLIC_IMMUTABLE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9062,9 +7916,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["attachment.AttachmentDTO"];
@@ -9073,63 +7925,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description FORBIDDEN / ATTACH_FORBIDDEN */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description ALREADY_ATTACHED */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description INVALID_ENTITY_TYPE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9171,52 +8009,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description FORBIDDEN / ATTACH_FORBIDDEN */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND / attachment */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description INVALID_ENTITY_TYPE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9249,61 +8075,47 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description FORBIDDEN / ATTACH_FORBIDDEN */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description NOT_FOUND / LECTURE_NOT_FOUND / attachment */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description INVALID_ENTITY_TYPE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9336,9 +8148,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["user.MeResponse"];
@@ -9347,27 +8157,21 @@ export interface paths {
                 };
                 /** @description no token / invalid / expired */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description account is banned */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description user from token no longer exists */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9408,9 +8212,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["annotation.Annotation"][];
@@ -9419,9 +8221,7 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9462,9 +8262,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["document.Document"][];
@@ -9473,18 +8271,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9518,9 +8312,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.FormListItem"][];
@@ -9529,18 +8321,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9581,9 +8369,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["media.Media"][];
@@ -9592,18 +8378,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9637,9 +8419,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["preference.Preferences"];
@@ -9648,18 +8428,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9688,9 +8464,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["preference.Preferences"];
@@ -9699,36 +8473,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -9756,9 +8522,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.SubmissionListItem"][];
@@ -9767,18 +8531,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9825,9 +8585,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["media.MediaSummary"][];
@@ -9836,36 +8594,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description INVALID_FILE_TYPE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9897,9 +8647,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["media.Media"];
@@ -9908,36 +8656,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -9979,9 +8719,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["attachment.AttachmentDTO"][];
@@ -9990,27 +8728,21 @@ export interface paths {
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description INVALID_ENTITY_TYPE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10047,9 +8779,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["media.Media"];
@@ -10058,27 +8788,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10102,43 +8826,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10183,9 +8897,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["media.Media"];
@@ -10194,54 +8906,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description PUBLIC_IMMUTABLE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10276,9 +8976,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["push.Subscription"];
@@ -10287,45 +8985,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -10349,52 +9037,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -10425,9 +9101,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: {
@@ -10474,9 +9148,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["search.Hit"][];
@@ -10485,18 +9157,14 @@ export interface paths {
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -10539,18 +9207,14 @@ export interface paths {
             responses: {
                 /** @description Markdown-список результатов */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": string;
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/markdown": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10589,9 +9253,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["sharelink.ShareLink"][];
@@ -10600,27 +9262,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10645,9 +9301,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["sharelink.ShareLink"];
@@ -10656,54 +9310,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -10741,43 +9383,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10811,9 +9443,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.Submission"];
@@ -10822,36 +9452,28 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10875,43 +9497,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -10940,9 +9552,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["form.SubmitResponse"];
@@ -10951,63 +9561,49 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -11040,52 +9636,40 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Conflict */
                 409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -11122,9 +9706,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["tag.Tag"][];
@@ -11165,9 +9747,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["trail.Trail"][];
@@ -11176,9 +9756,7 @@ export interface paths {
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -11203,9 +9781,7 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["trail.Trail"];
@@ -11214,45 +9790,35 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -11289,9 +9855,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["trail.Trail"][];
@@ -11300,18 +9864,14 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -11348,9 +9908,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["trail.TrailWithItems"];
@@ -11359,27 +9917,21 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -11406,9 +9958,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["trail.Trail"];
@@ -11417,54 +9967,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -11487,43 +10025,33 @@ export interface paths {
             responses: {
                 /** @description No Content */
                 204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content?: never;
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -11563,9 +10091,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["trail.TrailWithItems"];
@@ -11574,54 +10100,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unprocessable Entity */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
@@ -11671,9 +10185,7 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["trail.Trail"];
@@ -11682,54 +10194,42 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description PUBLIC_IMMUTABLE */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -11769,54 +10269,42 @@ export interface paths {
             responses: {
                 /** @description Created */
                 201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["image.UploadImageResponse"];
                     };
                 };
                 /** @description Bad Request */
                 400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
                 401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description IMAGE_TOO_LARGE (>10 MiB) */
                 413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description IMAGE_INVALID_MIME */
                 422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
@@ -11851,9 +10339,7 @@ export interface paths {
             responses: {
                 /** @description concatenated markdown entries (text/plain; charset=utf-8, lang=ru) */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
@@ -11890,9 +10376,7 @@ export interface paths {
             responses: {
                 /** @description llms.txt body (text/plain; charset=utf-8, lang=ru) */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "text/plain": string;
                     };
@@ -11929,9 +10413,7 @@ export interface paths {
             responses: {
                 /** @description sitemap.xml body (application/xml; charset=utf-8) */
                 200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
+                    headers: Record<string, unknown>;
                     content: {
                         "application/xml": string;
                     };
@@ -12003,9 +10485,7 @@ export interface components {
         /** @enum {string} */
         "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER";
         "ast.Block": {
-            attrs?: {
-                [key: string]: unknown;
-            };
+            attrs?: Record<string, unknown>;
             content?: components["schemas"]["ast.Node"][];
             id?: string;
             position?: number;
@@ -12025,33 +10505,25 @@ export interface components {
             type?: string;
         };
         "ast.ExportedElement": {
-            attrs?: {
-                [key: string]: components["schemas"]["ast.ExportedAttr"];
-            };
+            attrs?: Record<string, components["schemas"]["ast.ExportedAttr"]>;
             category?: string;
             name?: string;
         };
         "ast.ExportedNode": {
-            attrs?: {
-                [key: string]: components["schemas"]["ast.ExportedAttr"];
-            };
+            attrs?: Record<string, components["schemas"]["ast.ExportedAttr"]>;
             content?: string[];
             leaf?: boolean;
             marks?: string[];
             type?: string;
         };
         "ast.Mark": {
-            attrs?: {
-                [key: string]: unknown;
-            };
+            attrs?: Record<string, unknown>;
             type?: components["schemas"]["ast.MarkType"];
         };
         /** @enum {string} */
         "ast.MarkType": "bold" | "italic" | "code" | "link" | "glossary_ref" | "lecture_ref" | "document_ref" | "comment_ref" | "media_ref" | "canvas_ref";
         "ast.Node": {
-            attrs?: {
-                [key: string]: unknown;
-            };
+            attrs?: Record<string, unknown>;
             content?: components["schemas"]["ast.Node"][];
             marks?: components["schemas"]["ast.Mark"][];
             text?: string;
@@ -12066,16 +10538,10 @@ export interface components {
             max_text_len?: number;
         };
         "ast.SchemaResponse": {
-            block_levels?: {
-                [key: string]: string[];
-            };
+            block_levels?: Record<string, string[]>;
             elements?: components["schemas"]["ast.ExportedElement"][];
-            entity_block_limits?: {
-                [key: string]: number;
-            };
-            entity_contexts?: {
-                [key: string]: string;
-            };
+            entity_block_limits?: Record<string, number>;
+            entity_contexts?: Record<string, string>;
             exclusive_categories?: string[];
             limits?: components["schemas"]["ast.SchemaLimits"];
             nodes?: components["schemas"]["ast.ExportedNode"][];
@@ -12113,9 +10579,7 @@ export interface components {
             actor_user_id?: string;
             actor_username?: string;
             created_at?: string;
-            details?: {
-                [key: string]: unknown;
-            };
+            details?: Record<string, unknown>;
             id?: string;
             request_id?: string;
             target_id?: string;
@@ -12314,13 +10778,9 @@ export interface components {
             root?: components["schemas"]["comment.Comment"];
         };
         "comment.SchemaResponse": {
-            allowed_children?: {
-                [key: string]: components["schemas"]["comment.CommentType"][];
-            };
+            allowed_children?: Record<string, components["schemas"]["comment.CommentType"][]>;
             allowed_markdown?: string[];
-            allowed_reactions?: {
-                [key: string]: components["schemas"]["comment.ReactionAxis"][];
-            };
+            allowed_reactions?: Record<string, components["schemas"]["comment.ReactionAxis"][]>;
             allowed_roots?: components["schemas"]["comment.CommentType"][];
             max_depth?: number;
             types?: components["schemas"]["comment.CommentType"][];
@@ -12492,9 +10952,7 @@ export interface components {
         "form.SubmissionMode": "editable" | "immutable";
         "form.SubmitAnswer": {
             field_id?: string;
-            value?: {
-                [key: string]: unknown;
-            };
+            value?: Record<string, unknown>;
         };
         "form.SubmitRequest": {
             answers?: components["schemas"]["form.SubmitAnswer"][];
@@ -12540,9 +10998,7 @@ export interface components {
         };
         "httputil.ErrorResponse": {
             code?: components["schemas"]["apperror.Code"];
-            detail?: {
-                [key: string]: unknown;
-            };
+            detail?: Record<string, unknown>;
             error?: string;
         };
         "httputil.ListResponse": {
@@ -12560,9 +11016,7 @@ export interface components {
         "httputil.ValidationErrorResponse": {
             code?: components["schemas"]["apperror.Code"];
             error?: string;
-            fields?: {
-                [key: string]: string;
-            };
+            fields?: Record<string, string>;
         };
         "image.UploadImageResponse": {
             storage_key?: string;

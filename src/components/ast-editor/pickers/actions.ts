@@ -12,7 +12,7 @@ export type CommentSummary = components["schemas"]["comment.CommentSummary"];
 
 export interface PickerPage<T> { data: T[]; total: number | null }
 
-type ApiError = { error?: string };
+interface ApiError { error?: string }
 
 export async function searchLectures(q: string, offset: number, limit: number): Promise<PickerPage<Lecture>> {
   const api = await createApiClient();

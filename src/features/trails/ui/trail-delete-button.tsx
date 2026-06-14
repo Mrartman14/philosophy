@@ -45,7 +45,7 @@ export function TrailDeleteButton({
           }
           return;
         }
-        startTransition(() => router.push(redirectTo));
+        startTransition(() => { router.push(redirectTo); });
       }}
     />
   );

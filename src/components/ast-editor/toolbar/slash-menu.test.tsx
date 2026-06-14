@@ -70,7 +70,7 @@ describe("SlashMenu UI", () => {
         .setMeta(slashMenuKey, { open: true, from: pos, query: "" }),
     );
     await waitFor(() =>
-      expect(container.querySelector('[role="listbox"]')).not.toBeNull(),
+      { expect(container.querySelector('[role="listbox"]')).not.toBeNull(); },
     );
     fireEvent.mouseDown(screen.getByText(/заголовок 1/i));
     expect(JSON.stringify(editor.getJSON())).toContain('"type":"heading"');

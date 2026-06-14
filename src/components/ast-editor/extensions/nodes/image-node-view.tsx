@@ -8,9 +8,9 @@ export function ImageNodeView({
   selected,
 }: NodeViewProps) {
   const editable = editor.isEditable;
-  const storageKey = (node.attrs["storage_key"] as string) ?? "";
-  const alt = (node.attrs["alt"] as string) ?? "";
-  const caption = (node.attrs["caption"] as string) ?? "";
+  const storageKey = (node.attrs.storage_key as string) ?? "";
+  const alt = (node.attrs.alt as string) ?? "";
+  const caption = (node.attrs.caption as string) ?? "";
 
   return (
     <NodeViewWrapper
@@ -36,7 +36,7 @@ export function ImageNodeView({
               type="text"
               value={alt}
               maxLength={1000}
-              onChange={(e) => updateAttributes({ alt: e.target.value })}
+              onChange={(e) => { updateAttributes({ alt: e.target.value }); }}
             />
           </label>
           <label>
@@ -45,7 +45,7 @@ export function ImageNodeView({
               type="text"
               value={caption}
               maxLength={1000}
-              onChange={(e) => updateAttributes({ caption: e.target.value })}
+              onChange={(e) => { updateAttributes({ caption: e.target.value }); }}
             />
           </label>
         </div>

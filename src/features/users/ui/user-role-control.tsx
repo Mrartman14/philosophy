@@ -37,7 +37,7 @@ export function UserRoleControl({ userId, username, current }: Props) {
       return;
     }
     toast.add({ title: "Роль обновлена", description: username });
-    startTransition(() => router.refresh());
+    startTransition(() => { router.refresh(); });
   }
 
   return (

@@ -48,11 +48,11 @@ export function AuditFilterForm() {
     }
     params.delete("offset");
     const qs = params.toString();
-    startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname));
+    startTransition(() => { router.replace(qs ? `${pathname}?${qs}` : pathname); });
   }
 
   function onReset() {
-    startTransition(() => router.replace(pathname));
+    startTransition(() => { router.replace(pathname); });
   }
 
   return (

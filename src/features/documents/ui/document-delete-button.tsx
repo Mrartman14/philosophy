@@ -45,7 +45,7 @@ export function DocumentDeleteButton({
           }
           return;
         }
-        startTransition(() => router.push(redirectTo));
+        startTransition(() => { router.push(redirectTo); });
       }}
     />
   );

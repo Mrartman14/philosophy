@@ -32,7 +32,7 @@ export default async function SubmissionPage({ params }: Props) {
   const { id } = await params;
   const me = await getMe();
   // Аноним всё равно получит 404 от бека, но логин-редирект — лучше UX.
-  if (!me || me.status !== "active") redirect(`/login?next=/submissions/${id}`);
+  if (me?.status !== "active") redirect(`/login?next=/submissions/${id}`);
 
   const submission = await getSubmissionById(id);
   if (!submission) notFound();

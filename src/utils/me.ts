@@ -11,7 +11,7 @@ import type { components } from "@/api/schema";
  * см. {@link Capability} в `./permissions.ts`. Бэкенд решает, какие капы
  * выдать; фронт лишь читает список.
  */
-export type Me = {
+export interface Me {
   id: string;
   username: string;
   role: components["schemas"]["rbac.Role"];
@@ -20,7 +20,7 @@ export type Me = {
   // зависимости me.ts ↔ permissions.ts. permissions.ts отвечает за
   // валидацию: `can(me, cap)` принимает `Me | null` и проверяет членство.
   capabilities: string[];
-};
+}
 
 export type MaybeMe = Me | null;
 

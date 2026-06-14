@@ -31,7 +31,7 @@ describe("uploadImage server action", () => {
     fetchMock.mockImplementation(async (url: string, init: RequestInit) => {
       expect(url).toBe("http://localhost:8080/api/uploads/images");
       expect(init.method).toBe("POST");
-      const headers = new Headers(init.headers as HeadersInit);
+      const headers = new Headers(init.headers);
       expect(headers.get("authorization")).toBe("Bearer fake-jwt");
       expect(init.body).toBeInstanceOf(FormData);
       const fd = init.body as FormData;

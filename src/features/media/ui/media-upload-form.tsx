@@ -50,7 +50,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
     }
     toast.add({ title: "Загружено", description: result.data.filename });
     if (inputRef.current) inputRef.current.value = "";
-    startTransition(() => router.refresh());
+    startTransition(() => { router.refresh(); });
   }
 
   return (
@@ -62,7 +62,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
         <select
           id="media-type"
           value={type}
-          onChange={(e) => setType(e.target.value as "video" | "audio")}
+          onChange={(e) => { setType(e.target.value as "video" | "audio"); }}
           className="rounded border border-(--color-border) bg-transparent px-3 py-2"
         >
           <option value="video">Видео (mp4, webm)</option>

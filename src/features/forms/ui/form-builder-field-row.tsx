@@ -74,7 +74,7 @@ export function FormBuilderFieldRow({
           value={field.prompt}
           disabled={disabled}
           maxLength={2000}
-          onChange={(e) => onChange({ ...field, prompt: e.target.value })}
+          onChange={(e) => { onChange({ ...field, prompt: e.target.value }); }}
         />
       </label>
 
@@ -84,7 +84,7 @@ export function FormBuilderFieldRow({
           value={field.help_text}
           disabled={disabled}
           rows={2}
-          onChange={(e) => onChange({ ...field, help_text: e.target.value })}
+          onChange={(e) => { onChange({ ...field, help_text: e.target.value }); }}
         />
       </label>
 
@@ -92,7 +92,7 @@ export function FormBuilderFieldRow({
         <Checkbox
           checked={field.required}
           disabled={disabled}
-          onCheckedChange={(v) => onChange({ ...field, required: v })}
+          onCheckedChange={(v) => { onChange({ ...field, required: v }); }}
         />
         Обязательное поле
       </label>
@@ -117,7 +117,7 @@ export function FormBuilderFieldRow({
                 variant="ghost"
                 size="sm"
                 disabled={disabled || field.options.length <= 1}
-                onClick={() => onChange({ ...field, options: field.options.filter((_, i) => i !== oi) })}
+                onClick={() => { onChange({ ...field, options: field.options.filter((_, i) => i !== oi) }); }}
                 aria-label="Удалить вариант"
               >✕</Button>
             </div>
@@ -127,7 +127,7 @@ export function FormBuilderFieldRow({
             variant="secondary"
             size="sm"
             disabled={disabled}
-            onClick={() => onChange({ ...field, options: [...field.options, ""] })}
+            onClick={() => { onChange({ ...field, options: [...field.options, ""] }); }}
           >
             + Вариант
           </Button>

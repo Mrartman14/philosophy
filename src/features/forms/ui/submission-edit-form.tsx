@@ -87,7 +87,7 @@ export function SubmissionEditForm({ form, submission }: Props) {
           field={f}
           disabled={pending}
           value={values[f.id ?? ""] ?? emptyAnswerValue(f.type ?? "text")}
-          onChange={(next) => setValues((prev) => ({ ...prev, [f.id ?? ""]: next }))}
+          onChange={(next) => { setValues((prev) => ({ ...prev, [f.id ?? ""]: next })); }}
         />
       ))}
       <div>

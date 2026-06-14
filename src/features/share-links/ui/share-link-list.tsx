@@ -143,7 +143,7 @@ export function ShareLinkList({
                     type="button"
                     variant="danger"
                     disabled={pending || !token}
-                    onClick={() => onRevoke(token)}
+                    onClick={() => { onRevoke(token); }}
                   >
                     Отозвать
                   </Button>

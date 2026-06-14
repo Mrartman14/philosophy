@@ -20,7 +20,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   const options = rootTypes.map((t) => ({ value: t, label: commentTypeLabel(t) }));
 
@@ -37,7 +37,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
         <AstEditor
           entityContext="comment"
           defaultLectureId={lectureId}
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
           ariaLabel="Текст комментария"
         />
       </FormField>
@@ -45,10 +45,10 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Комментарий добавлен.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на создание комментария.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

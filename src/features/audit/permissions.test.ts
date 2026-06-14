@@ -27,11 +27,11 @@ const suspendedWithCap: Me = {
 };
 
 describe("canReadAudit", () => {
-  it("гость → false", () => expect(canReadAudit(guest)).toBe(false));
+  it("гость → false", () => { expect(canReadAudit(guest)).toBe(false); });
   it("active с audit.read → true", () =>
-    expect(canReadAudit(adminWithCap)).toBe(true));
+    { expect(canReadAudit(adminWithCap)).toBe(true); });
   it("active без audit.read → false", () =>
-    expect(canReadAudit(adminNoCap)).toBe(false));
+    { expect(canReadAudit(adminNoCap)).toBe(false); });
   it("suspended с audit.read → false", () =>
-    expect(canReadAudit(suspendedWithCap)).toBe(false));
+    { expect(canReadAudit(suspendedWithCap)).toBe(false); });
 });

@@ -8,7 +8,7 @@ import { updateForm } from "../actions";
 import { FormBuilder, type BuilderInitial } from "./form-builder";
 import type { BuilderField } from "./form-builder-field-row";
 import { blocksToPlainText } from "./blocks-text";
-import type { Form as FormEntity, FieldType } from "../types";
+import type { Form as FormEntity } from "../types";
 
 interface Props {
   form: FormEntity;
@@ -19,7 +19,7 @@ function toBuilderInitial(form: FormEntity): BuilderInitial {
     .slice()
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
     .map((f) => ({
-      type: (f.type ?? "text") as FieldType,
+      type: (f.type ?? "text"),
       prompt: blocksToPlainText(f.prompt ?? []),
       help_text: blocksToPlainText(f.help_text ?? []),
       required: f.required ?? false,
@@ -41,7 +41,7 @@ export function FormEditForm({ form }: Props) {
   const router = useRouter();
   const [state, action] = useActionState(updateForm, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   useEffect(() => {
     if (state.success && state.data?.id) router.refresh();
@@ -52,10 +52,10 @@ export function FormEditForm({ form }: Props) {
       <input type="hidden" name="id" value={form.id ?? ""} />
       <FormBuilder mode="edit" initial={toBuilderInitial(form)} />
       {fieldErrors._form && <p className="text-sm text-red-600" role="alert">{fieldErrors._form}</p>}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на изменение формы.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
       <div><SubmitButton>Сохранить структуру</SubmitButton></div>

@@ -88,7 +88,7 @@ export const createAnnotation = createFormAction(async (formData) => {
   }
   const json = (await res.json()) as { data?: Annotation };
   revalidateEntity(Tags.ANNOTATIONS);
-  return (json.data ?? null) as Annotation | null;
+  return (json.data ?? null);
 });
 
 /**

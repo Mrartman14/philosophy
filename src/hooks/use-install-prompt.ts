@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type UseInstallPromptReturn = {
+interface UseInstallPromptReturn {
   canInstall: boolean;
   isIOS: boolean;
   isStandalone: boolean;
   promptInstall: () => Promise<void>;
-};
+}
 
 export function useInstallPrompt(): UseInstallPromptReturn {
   const [canInstall, setCanInstall] = useState(false);
@@ -30,7 +30,7 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    return () => { window.removeEventListener("beforeinstallprompt", handler); };
   }, []);
 
   const promptInstall = async () => {

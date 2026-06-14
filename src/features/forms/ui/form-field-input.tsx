@@ -32,7 +32,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
         <TextInput
           disabled={disabled}
           value={"text" in value ? value.text : ""}
-          onChange={(e) => onChange({ text: e.target.value })}
+          onChange={(e) => { onChange({ text: e.target.value }); }}
         />
       )}
       {type === "long_text" && (
@@ -40,7 +40,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
           disabled={disabled}
           rows={4}
           value={"text" in value ? value.text : ""}
-          onChange={(e) => onChange({ text: e.target.value })}
+          onChange={(e) => { onChange({ text: e.target.value }); }}
         />
       )}
       {type === "number" && (
@@ -48,7 +48,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
           type="number"
           disabled={disabled}
           value={"number" in value ? value.number : ""}
-          onChange={(e) => onChange({ number: e.target.value })}
+          onChange={(e) => { onChange({ number: e.target.value }); }}
         />
       )}
       {type === "date" && (
@@ -56,7 +56,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
           type="date"
           disabled={disabled}
           value={"date" in value ? value.date : ""}
-          onChange={(e) => onChange({ date: e.target.value })}
+          onChange={(e) => { onChange({ date: e.target.value }); }}
         />
       )}
       {type === "single_choice" && (
@@ -68,7 +68,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
                 name={`field-${field.id}`}
                 disabled={disabled}
                 checked={"optionId" in value && value.optionId === o.id}
-                onChange={() => onChange({ optionId: o.id ?? "" })}
+                onChange={() => { onChange({ optionId: o.id ?? "" }); }}
               />
               {o.label}
             </label>

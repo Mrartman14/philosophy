@@ -18,10 +18,10 @@ type Schemas = components["schemas"];
 export type AccessVisibility = Schemas["access.Visibility"];
 
 /** Общая форма списочного ответа бека (httputil.ListResponse + UI-проекция). */
-export type ApiList<T> = {
+export interface ApiList<T> {
   data: T[];
   pagination: { offset: number; limit: number; total: number };
-};
+}
 
 /** Машиночитаемые коды ошибок бека (`apperror.Code`, UPPER_SNAKE_CASE).
  * Единственный источник истины — const-блок `internal/apperror/codes.go`,

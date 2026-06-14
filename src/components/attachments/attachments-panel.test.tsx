@@ -38,7 +38,7 @@ describe("AttachmentsPanel", () => {
     const buttons = screen.getAllByRole("button", { name: /Открепить/ });
     expect(buttons.length).toBe(2);
     fireEvent.click(buttons[0]!);
-    await waitFor(() => expect(onDetach).toHaveBeenCalledTimes(1));
+    await waitFor(() => { expect(onDetach).toHaveBeenCalledTimes(1); });
   });
 
   it("canManage без canAttach: кнопки «Прикрепить» нет", () => {
@@ -76,6 +76,6 @@ describe("AttachmentsPanel", () => {
       <AttachmentsPanel items={items} canManage onDetach={onDetach} onReorder={vi.fn()} />,
     );
     fireEvent.click(screen.getAllByRole("button", { name: /Открепить/ })[0]!);
-    await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Нельзя открепить"));
+    await waitFor(() => { expect(screen.getByRole("alert").textContent).toContain("Нельзя открепить"); });
   });
 });

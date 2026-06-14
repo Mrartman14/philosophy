@@ -88,9 +88,9 @@ describe("AnnotationUpdateSchema", () => {
 
 describe("AnnotationIdSchema", () => {
   it("success: валидный uuid", () =>
-    expect(AnnotationIdSchema.safeParse({ id: UUID }).success).toBe(true));
+    { expect(AnnotationIdSchema.safeParse({ id: UUID }).success).toBe(true); });
   it("failure: не uuid", () =>
-    expect(AnnotationIdSchema.safeParse({ id: "nope" }).success).toBe(false));
+    { expect(AnnotationIdSchema.safeParse({ id: "nope" }).success).toBe(false); });
 });
 
 describe("AnnotationOffsetSchema", () => {
@@ -100,7 +100,7 @@ describe("AnnotationOffsetSchema", () => {
     if (r.success) expect(r.data).toBe(40);
   });
   it("failure: отрицательное", () =>
-    expect(AnnotationOffsetSchema.safeParse("-1").success).toBe(false));
+    { expect(AnnotationOffsetSchema.safeParse("-1").success).toBe(false); });
 });
 
 describe("AdminAnnotationFilterSchema", () => {

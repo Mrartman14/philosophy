@@ -22,7 +22,7 @@ export function GlossarySearchForm({ defaultQ }: Props) {
     if (q) params.set("q", q);
     else params.delete("q");
     params.delete("offset");
-    startTransition(() => router.replace(`${pathname}?${params.toString()}`));
+    startTransition(() => { router.replace(`${pathname}?${params.toString()}`); });
   }
 
   return (

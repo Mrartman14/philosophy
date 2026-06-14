@@ -32,9 +32,9 @@ export function LectureDeleteButton({ lectureId, redirectTo }: Props) {
           return;
         }
         if (redirectTo) {
-          startTransition(() => router.push(redirectTo));
+          startTransition(() => { router.push(redirectTo); });
         } else {
-          startTransition(() => router.refresh());
+          startTransition(() => { router.refresh(); });
         }
       }}
     />

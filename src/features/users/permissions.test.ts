@@ -32,17 +32,17 @@ const listOnly: Me = {
 };
 
 describe("canListUsers", () => {
-  it("гость → false", () => expect(canListUsers(guest)).toBe(false));
-  it("active без cap → false", () => expect(canListUsers(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canListUsers(suspendedAdmin)).toBe(false));
-  it("active с cap → true", () => expect(canListUsers(adminFull)).toBe(true));
+  it("гость → false", () => { expect(canListUsers(guest)).toBe(false); });
+  it("active без cap → false", () => { expect(canListUsers(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canListUsers(suspendedAdmin)).toBe(false); });
+  it("active с cap → true", () => { expect(canListUsers(adminFull)).toBe(true); });
 });
 
 describe("canModerateUsers", () => {
-  it("гость → false", () => expect(canModerateUsers(guest)).toBe(false));
-  it("active без cap → false", () => expect(canModerateUsers(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canModerateUsers(suspendedAdmin)).toBe(false));
-  it("active с cap → true", () => expect(canModerateUsers(adminFull)).toBe(true));
+  it("гость → false", () => { expect(canModerateUsers(guest)).toBe(false); });
+  it("active без cap → false", () => { expect(canModerateUsers(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canModerateUsers(suspendedAdmin)).toBe(false); });
+  it("active с cap → true", () => { expect(canModerateUsers(adminFull)).toBe(true); });
   it("user.list не даёт user.moderate → false", () =>
-    expect(canModerateUsers(listOnly)).toBe(false));
+    { expect(canModerateUsers(listOnly)).toBe(false); });
 });

@@ -256,7 +256,7 @@ describe("registerAction", () => {
     if (res.success || res.code !== "validation") {
       throw new Error("expected validation error");
     }
-    expect(res.fieldErrors["password_confirm"]).toBe("Пароли не совпадают");
+    expect(res.fieldErrors.password_confirm).toBe("Пароли не совпадают");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

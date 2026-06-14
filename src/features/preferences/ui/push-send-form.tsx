@@ -17,7 +17,7 @@ const initial: ActionResult<boolean> = { success: true, data: false };
 export function PushSendForm() {
   const [state, action] = useActionState(sendPushBroadcast, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -48,15 +48,15 @@ export function PushSendForm() {
         <TextInput name="url" placeholder="/lectures/…" />
       </FormField>
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
           У вас нет прав на отправку push-уведомлений.
         </p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
-      {state.success && state.data === true && (
+      {state.success && state.data && (
         <p className="text-sm text-(--color-description)">
           Рассылка принята и будет доставлена подписчикам в фоне.
         </p>

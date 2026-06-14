@@ -29,33 +29,33 @@ const suspendedAdmin: Me = { ...adminWithPush, status: "suspended" };
 const bannedUser: Me = { ...activeUser, status: "banned" };
 
 describe("canUpdatePreferences", () => {
-  it("гость → false", () => expect(canUpdatePreferences(guest)).toBe(false));
+  it("гость → false", () => { expect(canUpdatePreferences(guest)).toBe(false); });
   it("active user → true", () =>
-    expect(canUpdatePreferences(activeUser)).toBe(true));
+    { expect(canUpdatePreferences(activeUser)).toBe(true); });
   it("active admin → true", () =>
-    expect(canUpdatePreferences(adminWithPush)).toBe(true));
+    { expect(canUpdatePreferences(adminWithPush)).toBe(true); });
   it("suspended → false", () =>
-    expect(canUpdatePreferences(suspendedAdmin)).toBe(false));
+    { expect(canUpdatePreferences(suspendedAdmin)).toBe(false); });
   it("banned → false", () =>
-    expect(canUpdatePreferences(bannedUser)).toBe(false));
+    { expect(canUpdatePreferences(bannedUser)).toBe(false); });
 });
 
 describe("canSubscribePush", () => {
-  it("гость → false", () => expect(canSubscribePush(guest)).toBe(false));
+  it("гость → false", () => { expect(canSubscribePush(guest)).toBe(false); });
   it("active user → true", () =>
-    expect(canSubscribePush(activeUser)).toBe(true));
+    { expect(canSubscribePush(activeUser)).toBe(true); });
   it("suspended → false", () =>
-    expect(canSubscribePush(suspendedAdmin)).toBe(false));
+    { expect(canSubscribePush(suspendedAdmin)).toBe(false); });
   it("banned → false", () =>
-    expect(canSubscribePush(bannedUser)).toBe(false));
+    { expect(canSubscribePush(bannedUser)).toBe(false); });
 });
 
 describe("canSendPush", () => {
-  it("гость → false", () => expect(canSendPush(guest)).toBe(false));
+  it("гость → false", () => { expect(canSendPush(guest)).toBe(false); });
   it("active без push.send → false", () =>
-    expect(canSendPush(activeUser)).toBe(false));
+    { expect(canSendPush(activeUser)).toBe(false); });
   it("active с push.send → true", () =>
-    expect(canSendPush(adminWithPush)).toBe(true));
+    { expect(canSendPush(adminWithPush)).toBe(true); });
   it("suspended с push.send → false", () =>
-    expect(canSendPush(suspendedAdmin)).toBe(false));
+    { expect(canSendPush(suspendedAdmin)).toBe(false); });
 });

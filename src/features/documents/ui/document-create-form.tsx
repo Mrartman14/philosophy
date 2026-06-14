@@ -17,7 +17,7 @@ export function DocumentCreateForm() {
   const [state, action] = useActionState(createDocument, initial);
 
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   useEffect(() => {
     if (state.success && state.data?.id) {
@@ -51,14 +51,14 @@ export function DocumentCreateForm() {
         <AstEditor
           defaultValue={[]}
           entityContext="document"
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
         />
       </FormField>
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на создание документа.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

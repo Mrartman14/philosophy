@@ -38,7 +38,7 @@ export function UserStatusControl({ userId, username, current }: Props) {
       return;
     }
     toast.add({ title: "Статус обновлён", description: username });
-    startTransition(() => router.refresh());
+    startTransition(() => { router.refresh(); });
   }
 
   return (

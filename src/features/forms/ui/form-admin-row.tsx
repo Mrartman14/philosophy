@@ -32,7 +32,7 @@ export function FormAdminRow({ form, canDelete }: Props) {
             destructive
             confirmLabel="Удалить"
             onConfirm={async () => {
-              const result = await deleteForm(form.id as string);
+              const result = await deleteForm(form.id!);
               if (!result.success) {
                 toast.add({
                   title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
@@ -40,7 +40,7 @@ export function FormAdminRow({ form, canDelete }: Props) {
                 });
                 return;
               }
-              startTransition(() => router.refresh());
+              startTransition(() => { router.refresh(); });
             }}
           />
         )}

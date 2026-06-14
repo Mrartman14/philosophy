@@ -18,7 +18,7 @@ export function AnnotationVisibilityField() {
           type="radio"
           name="visibility-radio"
           checked={visibility === "private"}
-          onChange={() => setVisibility("private")}
+          onChange={() => { setVisibility("private"); }}
         />
         Приватная (видна только мне)
       </label>
@@ -27,7 +27,7 @@ export function AnnotationVisibilityField() {
           type="radio"
           name="visibility-radio"
           checked={visibility === "public"}
-          onChange={() => setVisibility("public")}
+          onChange={() => { setVisibility("public"); }}
         />
         Публичная (видна всем, кто видит сущность)
       </label>

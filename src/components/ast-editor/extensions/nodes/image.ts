@@ -62,9 +62,9 @@ export const ImageExt = Node.create({
   // round-trip.
   renderHTML({ node, HTMLAttributes }) {
     const figureAttrs = mergeAttributes(HTMLAttributes, { "data-ast-image": "" });
-    const storageKey = (node.attrs["storage_key"] as string) ?? "";
-    const alt = (node.attrs["alt"] as string) ?? "";
-    const caption = (node.attrs["caption"] as string) ?? "";
+    const storageKey = (node.attrs.storage_key as string) ?? "";
+    const alt = (node.attrs.alt as string) ?? "";
+    const caption = (node.attrs.caption as string) ?? "";
 
     const children: DOMOutputSpec[] = [];
     if (storageKey) {

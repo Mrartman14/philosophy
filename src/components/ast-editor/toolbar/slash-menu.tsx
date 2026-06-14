@@ -162,7 +162,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
       }
     };
     document.addEventListener("keydown", handler, true);
-    return () => document.removeEventListener("keydown", handler, true);
+    return () => { document.removeEventListener("keydown", handler, true); };
     // `apply` and `cmds` are derived per render and intentionally not in deps
     // — handler closure captures the latest at attach time.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -189,12 +189,12 @@ export function SlashMenu({ editor, schema, context }: Props) {
             e.preventDefault();
             apply(c);
           }}
-          onMouseEnter={() => setActive(i)}
+          onMouseEnter={() => { setActive(i); }}
         >
           {c.label}
         </button>
       ))}
-      <button type="button" onClick={() => closeSlashMenu(editor.view)}>
+      <button type="button" onClick={() => { closeSlashMenu(editor.view); }}>
         Esc — закрыть
       </button>
     </div>

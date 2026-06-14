@@ -21,7 +21,7 @@ interface Props {
 export default async function CanvasesPage({ searchParams }: Props) {
   const me = await getMe();
   // Список канвасов требует auth (бек: requiredAuth) — гостя на логин.
-  if (!me || me.status !== "active") redirect("/login?next=/canvases");
+  if (me?.status !== "active") redirect("/login?next=/canvases");
 
   const { q, offset } = await searchParams;
   const limit = 20;

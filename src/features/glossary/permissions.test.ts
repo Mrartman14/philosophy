@@ -26,22 +26,22 @@ const suspendedAdmin: Me = {
 };
 
 describe("canCreateTerm", () => {
-  it("гость → false", () => expect(canCreateTerm(guest)).toBe(false));
-  it("active без cap → false", () => expect(canCreateTerm(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canCreateTerm(suspendedAdmin)).toBe(false));
-  it("active с cap → true", () => expect(canCreateTerm(adminFull)).toBe(true));
+  it("гость → false", () => { expect(canCreateTerm(guest)).toBe(false); });
+  it("active без cap → false", () => { expect(canCreateTerm(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canCreateTerm(suspendedAdmin)).toBe(false); });
+  it("active с cap → true", () => { expect(canCreateTerm(adminFull)).toBe(true); });
 });
 
 describe("canUpdateTerm", () => {
-  it("гость → false", () => expect(canUpdateTerm(guest)).toBe(false));
-  it("active с cap → true", () => expect(canUpdateTerm(adminFull)).toBe(true));
-  it("active без cap → false", () => expect(canUpdateTerm(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canUpdateTerm(suspendedAdmin)).toBe(false));
+  it("гость → false", () => { expect(canUpdateTerm(guest)).toBe(false); });
+  it("active с cap → true", () => { expect(canUpdateTerm(adminFull)).toBe(true); });
+  it("active без cap → false", () => { expect(canUpdateTerm(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canUpdateTerm(suspendedAdmin)).toBe(false); });
 });
 
 describe("canDeleteTerm", () => {
-  it("гость → false", () => expect(canDeleteTerm(guest)).toBe(false));
-  it("active с cap → true", () => expect(canDeleteTerm(adminFull)).toBe(true));
-  it("active без cap → false", () => expect(canDeleteTerm(userNoCap)).toBe(false));
-  it("suspended с cap → false", () => expect(canDeleteTerm(suspendedAdmin)).toBe(false));
+  it("гость → false", () => { expect(canDeleteTerm(guest)).toBe(false); });
+  it("active с cap → true", () => { expect(canDeleteTerm(adminFull)).toBe(true); });
+  it("active без cap → false", () => { expect(canDeleteTerm(userNoCap)).toBe(false); });
+  it("suspended с cap → false", () => { expect(canDeleteTerm(suspendedAdmin)).toBe(false); });
 });

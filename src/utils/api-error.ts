@@ -5,7 +5,7 @@ import { ForbiddenError } from "./permissions";
 /** Форма ошибки бека (openapi-fetch error body / ручной JSON). `code`
  * типизирован сгенерированным union `apperror.Code` — опечатка в `case`
  * или удалённый на беке код краснеют после regen `schema.ts`. */
-export type ApiError = { code?: ApiErrorCode; error?: string };
+export interface ApiError { code?: ApiErrorCode; error?: string }
 
 /**
  * Обрабатывает ОБЩИЕ коды ошибок бека (`FORBIDDEN`/`SUSPENDED`) и неизвестные

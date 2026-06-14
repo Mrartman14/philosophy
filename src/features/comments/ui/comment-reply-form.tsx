@@ -22,12 +22,12 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation" ? state.fieldErrors : {};
+    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   if (childTypes.length === 0) return null;
   if (!open) {
     return (
-      <Button type="button" variant="ghost" onClick={() => setOpen(true)}>
+      <Button type="button" variant="ghost" onClick={() => { setOpen(true); }}>
         Ответить
       </Button>
     );
@@ -49,21 +49,21 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
         <AstEditor
           entityContext="comment"
           defaultLectureId={lectureId}
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
           ariaLabel="Текст ответа"
         />
       </FormField>
 
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">У вас нет прав на ответ.</p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 
       <div className="flex gap-2">
         <SubmitButton>Ответить</SubmitButton>
-        <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+        <Button type="button" variant="ghost" onClick={() => { setOpen(false); }}>
           Отмена
         </Button>
       </div>

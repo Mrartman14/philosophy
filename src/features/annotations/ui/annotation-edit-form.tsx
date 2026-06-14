@@ -19,12 +19,12 @@ interface Props {
  */
 export function AnnotationEditForm({ annotation }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>(
-    (annotation.blocks ?? []) as AstBlock[],
+    (annotation.blocks ?? []),
   );
   const [state, action] = useActionState(updateAnnotation, initial);
 
   const fieldErrors: Record<string, string> =
-    state.success === false && state.code === "validation"
+    !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
 
@@ -35,9 +35,9 @@ export function AnnotationEditForm({ annotation }: Props) {
 
       <FormField name="blocks" label="Текст аннотации">
         <AstEditor
-          defaultValue={(annotation.blocks ?? []) as AstBlock[]}
+          defaultValue={(annotation.blocks ?? [])}
           entityContext="annotation"
-          onChange={(next: AstBlock[]) => setBlocks(next)}
+          onChange={(next: AstBlock[]) => { setBlocks(next); }}
           ariaLabel="Текст аннотации"
         />
       </FormField>
@@ -45,12 +45,12 @@ export function AnnotationEditForm({ annotation }: Props) {
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {state.success === false && state.code === "forbidden" && (
+      {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
           У вас нет прав на изменение аннотации.
         </p>
       )}
-      {state.success === false && !state.code && (
+      {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 

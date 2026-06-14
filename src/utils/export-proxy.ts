@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { API_URL } from "@/api/client";
 
-type ExportCtx = { params: Promise<{ id: string }> };
+interface ExportCtx { params: Promise<{ id: string }> }
 
 /**
  * Общий прокси `.md/.txt`-выгрузок. Эндпоинты бека optionalAuth/гейтятся, но

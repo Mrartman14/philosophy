@@ -76,7 +76,7 @@ export const setMediaVisibility = createAction(
     const api = await createApiClient();
     const { error } = await api.PATCH("/api/media/{media_id}/visibility", {
       params: { path: { media_id: input.id } },
-      body: { visibility: input.visibility as "private" | "public" },
+      body: { visibility: input.visibility },
     });
     if (error) rethrowApiError(error as ApiError);
     revalidateEntity(Tags.MEDIA, input.id);

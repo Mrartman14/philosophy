@@ -198,8 +198,8 @@ describe("SubmissionEditSchema", () => {
 });
 
 describe("Id-схемы", () => {
-  it("FormIdSchema принимает uuid", () => expect(FormIdSchema.safeParse({ id: UUID }).success).toBe(true));
-  it("FormIdSchema отклоняет мусор", () => expect(FormIdSchema.safeParse({ id: "x" }).success).toBe(false));
+  it("FormIdSchema принимает uuid", () => { expect(FormIdSchema.safeParse({ id: UUID }).success).toBe(true); });
+  it("FormIdSchema отклоняет мусор", () => { expect(FormIdSchema.safeParse({ id: "x" }).success).toBe(false); });
   it("SubmissionIdSchema принимает uuid", () =>
-    expect(SubmissionIdSchema.safeParse({ id: UUID }).success).toBe(true));
+    { expect(SubmissionIdSchema.safeParse({ id: UUID }).success).toBe(true); });
 });

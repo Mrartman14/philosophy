@@ -49,7 +49,7 @@ export function AttachmentsPanel({
           <button
             type="button"
             className="rounded border border-(--color-border) px-2 py-1 text-sm hover:bg-(--color-text-pane)"
-            onClick={() => setPickerOpen((v) => !v)}
+            onClick={() => { setPickerOpen((v) => !v); }}
             disabled={pending}
           >
             Прикрепить
@@ -64,7 +64,7 @@ export function AttachmentsPanel({
               setPickerOpen(false);
               if (onAttach) run(() => onAttach(id, label));
             },
-            onClose: () => setPickerOpen(false),
+            onClose: () => { setPickerOpen(false); },
           })}
         </div>
       )}
@@ -124,7 +124,7 @@ export function AttachmentsPanel({
                       type="button"
                       className="rounded border border-(--color-border) px-2 py-0.5 text-sm hover:bg-(--color-text-pane)"
                       disabled={pending}
-                      onClick={() => run(() => onDetach(item))}
+                      onClick={() => { run(() => onDetach(item)); }}
                     >
                       Открепить
                     </button>

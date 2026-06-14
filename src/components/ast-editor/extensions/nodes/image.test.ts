@@ -25,7 +25,7 @@ const schema = getSchema(extensions);
 
 describe("ImageExt parseHTML/renderHTML", () => {
   it("renderHTML emits data-storage-key/alt/caption/block-id", () => {
-    const node = schema.nodes["image"]!.create({
+    const node = schema.nodes.image!.create({
       storage_key: "abc",
       alt: "alpha",
       caption: "cap",
@@ -43,7 +43,7 @@ describe("ImageExt parseHTML/renderHTML", () => {
   });
 
   it("renderHTML emits <img> and <figcaption> children for SSR / getHTML", () => {
-    const node = schema.nodes["image"]!.create({
+    const node = schema.nodes.image!.create({
       storage_key: "abc",
       alt: "alpha",
       caption: "look",
@@ -62,7 +62,7 @@ describe("ImageExt parseHTML/renderHTML", () => {
   });
 
   it("renderHTML omits children when storage_key/caption are empty", () => {
-    const node = schema.nodes["image"]!.create({
+    const node = schema.nodes.image!.create({
       storage_key: "",
       alt: "",
       caption: "",
@@ -76,7 +76,7 @@ describe("ImageExt parseHTML/renderHTML", () => {
   });
 
   it("renderHTML omits attrs when empty (no noisy attributes in serialized HTML)", () => {
-    const node = schema.nodes["image"]!.create({
+    const node = schema.nodes.image!.create({
       storage_key: "",
       alt: "",
       caption: "",
@@ -102,9 +102,9 @@ describe("ImageExt parseHTML/renderHTML", () => {
       if (n.type.name === "image") imageNode = n;
     });
     expect(imageNode).not.toBeNull();
-    expect(imageNode!.attrs["storage_key"]).toBe("def");
-    expect(imageNode!.attrs["alt"]).toBe("bb");
-    expect(imageNode!.attrs["caption"]).toBe("ccap");
-    expect(imageNode!.attrs["blockId"]).toBe("b-2");
+    expect(imageNode!.attrs.storage_key).toBe("def");
+    expect(imageNode!.attrs.alt).toBe("bb");
+    expect(imageNode!.attrs.caption).toBe("ccap");
+    expect(imageNode!.attrs.blockId).toBe("b-2");
   });
 });
