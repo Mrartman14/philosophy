@@ -1,7 +1,9 @@
 // src/components/ui/cn.ts
-import { clsx, type ClassValue } from "clsx";
 
-/** Условное склеивание классов. Тонкая обёртка над clsx. */
+/** Значение класса: строка либо falsy (отбрасывается). */
+type ClassValue = string | false | null | undefined;
+
+/** Условное склеивание классов: склеивает строки через пробел, отбрасывая falsy. */
 export function cn(...inputs: ClassValue[]): string {
-  return clsx(inputs);
+  return inputs.filter(Boolean).join(" ");
 }
