@@ -54,7 +54,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <label htmlFor="media-type" className="text-sm font-medium">
           Тип

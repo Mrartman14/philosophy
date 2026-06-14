@@ -54,7 +54,7 @@ export function ConfirmDialog({
         <Button
           variant={destructive ? "danger" : "primary"}
           disabled={pending}
-          onClick={handleConfirm}
+          onClick={() => { void handleConfirm(); }}
         >
           {pending ? "…" : confirmLabel}
         </Button>

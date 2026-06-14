@@ -10,7 +10,7 @@ export function DocumentPicker({ onSelect }: DocumentPickerProps) {
       fetcher={searchDocuments}
       renderItem={(d) => <span>{d.filename ?? "—"}</span>}
       getKey={(d) => d.id ?? ""}
-      onSelect={(d) => d.id && onSelect(d.id, d.filename ?? d.id)}
+      onSelect={(d) => { if (d.id) onSelect(d.id, d.filename ?? d.id); }}
       placeholder="Поиск документа…"
     />
   );

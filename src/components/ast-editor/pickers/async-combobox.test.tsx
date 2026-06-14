@@ -9,7 +9,7 @@ interface Item { id: string; name: string }
 
 describe("AsyncCombobox", () => {
   it("debounces fetcher and renders items", async () => {
-    const fetcher = vi.fn((q: string, _offset: number, _limit: number) => Promise.resolve({
+    const fetcher = vi.fn((q: string) => Promise.resolve({
       data: [{ id: "1", name: `match-${q}` }, { id: "2", name: "other" }],
       total: 2 as number | null,
     }));

@@ -13,7 +13,7 @@ export const InstallBanner: React.FC = () => {
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-(--color-border) bg-(--color-text-pane)">
         <span className="text-sm">Установить приложение на устройство</span>
         <button
-          onClick={promptInstall}
+          onClick={() => { void promptInstall(); }}
           className="text-sm font-medium px-3 py-1 rounded bg-(--color-foreground) text-(--color-background) hover:opacity-80 shrink-0"
         >
           Установить

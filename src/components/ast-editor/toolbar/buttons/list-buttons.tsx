@@ -30,7 +30,7 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
     }
   };
 
-  const itemChecked = editor.getAttributes("list_item")?.checked;
+  const itemChecked = (editor.getAttributes("list_item") as { checked?: boolean | null } | undefined)?.checked;
   const isTaskActive = editor.isActive("list_item") && itemChecked != null;
 
   return (

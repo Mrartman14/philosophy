@@ -60,7 +60,7 @@ export const getMe = cache(async (): Promise<MaybeMe> => {
     throw new Error(`getMe(): backend returned ${res.status}`);
   }
 
-  const json = (await res.json()) as { data?: unknown } | unknown;
+  const json = (await res.json()) as { data?: unknown };
   const candidate =
     typeof json === "object" && json !== null && "data" in json
       ? (json as { data: unknown }).data

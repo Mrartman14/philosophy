@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useDriftWarn } from "./drift-warn";
 import type { SchemaSnapshot } from "./types";
@@ -15,8 +15,9 @@ const baseSnapshot = (nodes: string[], marks: string[]): SchemaSnapshot => ({
 });
 
 describe("useDriftWarn", () => {
-  let warnSpy: ReturnType<typeof vi.spyOn>;
-  beforeEach(() => { warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {}); });
+  let warnSpy: MockInstance<(...args: unknown[]) => void>;
+  // Suppress console.warn during test — warnSpy captures calls for assertions.
+  beforeEach(() => { warnSpy = vi.spyOn(console, "warn").mockImplementation(() => { /* suppress */ }); });
   afterEach(() => { warnSpy.mockRestore(); });
 
   it("warns when runtime schema has a node missing from hardcode", () => {
@@ -26,7 +27,7 @@ describe("useDriftWarn", () => {
     );
     renderHook(() => { useDriftWarn(schema); });
     expect(warnSpy).toHaveBeenCalled();
-    const allArgs = warnSpy.mock.calls[0]?.map((a: unknown) => JSON.stringify(a)).join(" ") ?? "";
+    const allArgs = warnSpy.mock.calls[0]?.map((a) => JSON.stringify(a)).join(" ") ?? "";
     expect(allArgs).toMatch(/future_block/);
   });
 

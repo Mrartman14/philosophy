@@ -112,9 +112,10 @@ describe("ImageExt parseHTML/renderHTML", () => {
     });
     expect(imageNode).not.toBeNull();
     if (imageNode === null) throw new Error("image-узел не найден");
-    expect(imageNode.attrs.storage_key).toBe("def");
-    expect(imageNode.attrs.alt).toBe("bb");
-    expect(imageNode.attrs.caption).toBe("ccap");
-    expect(imageNode.attrs.blockId).toBe("b-2");
+    const attrs = imageNode.attrs as { storage_key: string; alt: string; caption: string; blockId: string };
+    expect(attrs.storage_key).toBe("def");
+    expect(attrs.alt).toBe("bb");
+    expect(attrs.caption).toBe("ccap");
+    expect(attrs.blockId).toBe("b-2");
   });
 });

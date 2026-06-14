@@ -10,7 +10,7 @@ import {
 import type { ActionResult } from "@/utils/create-action";
 import { loginAction } from "../actions";
 
-const initial: ActionResult = { success: true, data: undefined };
+const initial: ActionResult<undefined> = { success: true, data: undefined };
 
 const ERROR_TEXT: Record<string, string> = {
   invalid_credentials: "Неверный логин или пароль.",

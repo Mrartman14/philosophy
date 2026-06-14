@@ -35,7 +35,7 @@ export function CopyButton({ value, label = "Копировать" }: Props) {
   }
 
   return (
-    <Button type="button" variant="ghost" onClick={onCopy}>
+    <Button type="button" variant="ghost" onClick={() => { void onCopy(); }}>
       {copied ? "Скопировано ✓" : label}
     </Button>
   );

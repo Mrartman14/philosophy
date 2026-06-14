@@ -23,7 +23,8 @@ export function CommentSearch({ defaultQuery = "" }: Props) {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const q = String(fd.get("cq") ?? "").trim();
+    const rawCq = fd.get("cq");
+    const q = (typeof rawCq === "string" ? rawCq : "").trim();
     const params = new URLSearchParams(searchParams.toString());
     if (q) params.set("cq", q);
     else params.delete("cq");

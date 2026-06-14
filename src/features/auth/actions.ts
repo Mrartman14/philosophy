@@ -28,7 +28,7 @@ class AuthError extends Error {
   }
 }
 
-export const loginAction = createFormAction<void>(async (formData) => {
+export const loginAction = createFormAction<undefined>(async (formData) => {
   const { username, password, next } = parseFormData(LoginSchema, formData);
 
   let res: Response;
@@ -67,7 +67,7 @@ export const loginAction = createFormAction<void>(async (formData) => {
  * сохраняя next. 409 = username занят; 400/422 в норме недостижимы
  * (RegisterSchema зеркалит правила бека); 429 = login-rate-limiter.
  */
-export const registerAction = createFormAction<void>(async (formData) => {
+export const registerAction = createFormAction<undefined>(async (formData) => {
   const { username, password, next } = parseFormData(RegisterSchema, formData);
 
   let res: Response;

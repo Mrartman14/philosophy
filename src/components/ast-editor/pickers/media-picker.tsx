@@ -23,7 +23,7 @@ export function MediaPicker({ onSelect }: MediaPickerProps) {
         fetcher={fetcher}
         renderItem={(m) => <span>{m.filename ?? "—"}</span>}
         getKey={(m) => m.id ?? ""}
-        onSelect={(m) => m.id && onSelect(m.id, m.filename ?? m.id)}
+        onSelect={(m) => { if (m.id) onSelect(m.id, m.filename ?? m.id); }}
         placeholder="Поиск медиа…"
       />
     </div>

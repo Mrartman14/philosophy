@@ -170,7 +170,7 @@ export function PushSubscriptionToggle({
           variant="secondary"
           className="self-start"
           disabled={pending}
-          onClick={handleUnsubscribe}
+          onClick={() => { void handleUnsubscribe(); }}
         >
           Отписаться
         </Button>
@@ -178,7 +178,7 @@ export function PushSubscriptionToggle({
         <Button
           className="self-start"
           disabled={pending || !canSubscribe}
-          onClick={handleSubscribe}
+          onClick={() => { void handleSubscribe(); }}
         >
           Подписаться
         </Button>

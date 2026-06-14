@@ -52,17 +52,20 @@ export function CommentReactions({
     setError(null);
     const current = myValue(my, axis);
     const isSame = current === value;
-    // Оптимистично. При снятии — удаляем ключ (exactOptionalPropertyTypes:
-    // нельзя присваивать undefined в optional number-поле).
-    const optimistic: MyReactions = { ...my };
+    // Оптимистично. При снятии — пересобираем объект без ключа (exactOptionalPropertyTypes:
+    // нельзя присваивать undefined в optional number-поле, поэтому не delete).
     if (axis === "insight") {
-      optimistic.insight = !isSame;
+      setMy({ ...my, insight: !isSame });
     } else if (isSame) {
-      delete optimistic[axis];
+      // Rebuild without the axis key to satisfy exactOptionalPropertyTypes.
+      const next: MyReactions = {};
+      if (my?.insight !== undefined) next.insight = my.insight;
+      if (axis !== "agreement" && my?.agreement !== undefined) next.agreement = my.agreement;
+      if (axis !== "quality" && my?.quality !== undefined) next.quality = my.quality;
+      setMy(next);
     } else {
-      optimistic[axis] = value;
+      setMy({ ...my, [axis]: value });
     }
-    setMy(optimistic);
 
     startTransition(async () => {
       const result = isSame

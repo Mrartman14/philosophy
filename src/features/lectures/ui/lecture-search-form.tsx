@@ -21,12 +21,14 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const q = String(fd.get("q") ?? "").trim();
+    const rawQ = fd.get("q");
+    const q = (typeof rawQ === "string" ? rawQ : "").trim();
     const next = new URLSearchParams(params.toString());
     if (q) next.set("q", q);
     else next.delete("q");
     if (hasTagFilter) {
-      const tag = String(fd.get("tag") ?? "").trim();
+      const rawTag = fd.get("tag");
+      const tag = (typeof rawTag === "string" ? rawTag : "").trim();
       if (tag) next.set("tag", tag);
       else next.delete("tag");
     }

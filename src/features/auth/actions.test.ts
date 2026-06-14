@@ -48,7 +48,7 @@ describe("loginAction", () => {
       .rejects.toThrow("NEXT_REDIRECT");
 
     expect(cookieSet).toHaveBeenCalledOnce();
-    const cookieSetCall = cookieSet.mock.calls[0];
+    const cookieSetCall = cookieSet.mock.calls[0] as [string, string, Record<string, unknown>] | undefined;
     if (cookieSetCall === undefined) throw new Error("cookieSet не был вызван");
     const [name, value, opts] = cookieSetCall;
     expect(name).toBe("token");

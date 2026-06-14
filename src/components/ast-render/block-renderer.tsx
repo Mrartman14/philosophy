@@ -15,6 +15,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       return <p><InlineRenderer nodes={block.content} ctx={ctx} /></p>;
     case "heading": {
       const level = readHeadingLevel(block.attrs);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc requires the literal union for the dynamic JSX tag; ESLint mis-flags it as a no-op
       const Tag = (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
       return <Tag><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
     }
@@ -51,7 +52,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = block.type;
       if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
-        console.warn(`AstRender: unsupported block type "${_exhaustive ?? "unknown"}"`);
+        console.warn(`AstRender: unsupported block type "${String(_exhaustive ?? "unknown")}"`);
       }
       return (
         <div data-unsupported={block.type ?? "unknown"}>

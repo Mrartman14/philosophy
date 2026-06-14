@@ -76,7 +76,8 @@ function rethrowApiError(err: ApiError | undefined): never {
 export const createComment = createFormAction(async (formData) => {
   const me = await getMe();
   requireCapability(me, canCreateComment);
-  const lectureId = String(formData.get("lecture_id") ?? "");
+  const rawLectureId = formData.get("lecture_id");
+  const lectureId = typeof rawLectureId === "string" ? rawLectureId : "";
   if (!lectureId) throw new Error("Не указана лекция.");
   const input = parseFormData(CommentCreateSchema, formData);
   const api = await createApiClient();

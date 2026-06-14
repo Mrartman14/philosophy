@@ -37,7 +37,7 @@ export function SchemaContextProvider({
       .then((s) => {
         if (!cancelled) setSnapshot(s);
       })
-      .catch((e) => {
+      .catch((e: unknown) => {
         if (!cancelled) setError(e instanceof Error ? e : new Error(String(e)));
       });
     return () => {

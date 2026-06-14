@@ -206,6 +206,7 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
         if (e.id !== command.edgeId) return e;
         // Пересобираем ребро без side-полей, затем добавляем только заданные
         // (exactOptionalPropertyTypes: нельзя присваивать undefined в опц. поле).
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured to omit from_side/to_side keys for exactOptionalPropertyTypes rebuild
         const { from_side: _from, to_side: _to, ...rest } = e;
         const next: CanvasEdge = { ...rest };
         if (command.fromSide) next.from_side = command.fromSide;

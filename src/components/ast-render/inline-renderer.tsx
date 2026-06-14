@@ -72,7 +72,7 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = mark.type;
       if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
-        console.warn(`AstRender: unsupported mark type "${_exhaustive ?? "unknown"}"`);
+        console.warn(`AstRender: unsupported mark type "${String(_exhaustive ?? "unknown")}"`);
       }
       return <span data-unsupported-mark={mark.type ?? "unknown"}>{children}</span>;
     }

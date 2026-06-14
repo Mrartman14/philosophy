@@ -15,6 +15,7 @@ import type { MaybeMe } from "@/utils/me";
  *   }
  */
 
-export function canPlaceholder(_me: MaybeMe): boolean {
+export function canPlaceholder(me: MaybeMe): boolean {
+  void me; // template placeholder — real implementations use me for capability checks
   return false;
 }

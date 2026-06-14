@@ -34,8 +34,10 @@ export function ShareLookupForm({ admin = false }: Props) {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const rt = String(fd.get("resource_type") ?? "").trim();
-    const rid = String(fd.get("resource_id") ?? "").trim();
+    const rawRt = fd.get("resource_type");
+    const rawRid = fd.get("resource_id");
+    const rt = (typeof rawRt === "string" ? rawRt : "").trim();
+    const rid = (typeof rawRid === "string" ? rawRid : "").trim();
     const params = new URLSearchParams();
     if (rt) params.set("resource_type", rt);
     if (rid) params.set("resource_id", rid);

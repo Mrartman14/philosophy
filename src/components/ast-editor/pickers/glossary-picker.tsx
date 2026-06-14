@@ -10,7 +10,7 @@ export function GlossaryPicker({ onSelect }: GlossaryPickerProps) {
       fetcher={searchGlossary}
       renderItem={(g) => <span>{g.title ?? "—"}</span>}
       getKey={(g) => g.id ?? ""}
-      onSelect={(g) => g.id && onSelect(g.id, g.title ?? g.id)}
+      onSelect={(g) => { if (g.id) onSelect(g.id, g.title ?? g.id); }}
       placeholder="Поиск термина…"
     />
   );

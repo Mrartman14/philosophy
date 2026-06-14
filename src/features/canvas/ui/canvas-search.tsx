@@ -12,7 +12,8 @@ export function CanvasSearch() {
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const q = String(form.get("q") ?? "").trim();
+    const raw = form.get("q");
+    const q = (typeof raw === "string" ? raw : "").trim();
     const params = new URLSearchParams(searchParams.toString());
     if (q) params.set("q", q);
     else params.delete("q");

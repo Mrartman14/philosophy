@@ -95,7 +95,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
             <Button
               type="button"
               disabled={manualId.trim() === ""}
-              onClick={() => manualId.trim() && pick(manualId.trim())}
+              onClick={() => { if (manualId.trim()) pick(manualId.trim()); }}
             >
               Добавить
             </Button>

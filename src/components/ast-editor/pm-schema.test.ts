@@ -3,7 +3,7 @@ import { getSchema } from "@tiptap/core";
 import { Node as PMNode } from "@tiptap/pm/model";
 import { buildExtensions } from "./extensions";
 import { deserialize } from "./deserializer";
-import { serialize } from "./serializer";
+import { serialize, type ProseMirrorJSON } from "./serializer";
 import {
   fixtureParagraph,
   fixtureHeading,
@@ -69,7 +69,7 @@ describe("PM-schema round-trip", () => {
       doc.check();
 
       // Re-serialize from the PM-validated tree and compare.
-      const out = serialize(doc.toJSON());
+      const out = serialize(doc.toJSON() as ProseMirrorJSON);
       expect(out).toHaveLength(1);
       const result = out[0];
       if (result === undefined) throw new Error("serialize вернул пустой массив");

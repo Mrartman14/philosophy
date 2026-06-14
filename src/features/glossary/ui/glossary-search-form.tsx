@@ -17,7 +17,8 @@ export function GlossarySearchForm({ defaultQ }: Props) {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const q = String(fd.get("q") ?? "").trim();
+    const rawQ = fd.get("q");
+    const q = (typeof rawQ === "string" ? rawQ : "").trim();
     const params = new URLSearchParams(searchParams.toString());
     if (q) params.set("q", q);
     else params.delete("q");

@@ -18,7 +18,7 @@ export function CommentPicker({ lectureId, onSelect }: CommentPickerProps) {
       fetcher={fetcher}
       renderItem={(c) => <span>{c.snippet ?? "—"}</span>}
       getKey={(c) => c.id ?? ""}
-      onSelect={(c) => c.id && onSelect(c.id, c.snippet ?? c.id)}
+      onSelect={(c) => { if (c.id) onSelect(c.id, c.snippet ?? c.id); }}
       placeholder="Поиск комментария в выбранной лекции…"
     />
   );

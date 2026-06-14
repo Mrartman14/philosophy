@@ -91,7 +91,7 @@ export function SubmissionEditForm({ form, submission }: Props) {
         />
       ))}
       <div>
-        <Button type="button" disabled={pending} onClick={onSave}>
+        <Button type="button" disabled={pending} onClick={() => { void onSave(); }}>
           {pending ? "Сохранение…" : "Сохранить изменения"}
         </Button>
       </div>

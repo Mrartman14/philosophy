@@ -47,7 +47,7 @@ function collectImageFiles(list: FileList | undefined | null): File[] {
   const out: File[] = [];
   for (let i = 0; i < list.length; i++) {
     const f = list.item(i);
-    if (f && f.type.startsWith("image/")) out.push(f);
+    if (f?.type.startsWith("image/")) out.push(f);
   }
   return out;
 }

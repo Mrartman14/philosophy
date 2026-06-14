@@ -73,7 +73,7 @@ export function decodeAnswerText(
   if (value === null || typeof value !== "object") return "";
   const v = value as Record<string, unknown>;
   const labelOf = (id: unknown): string =>
-    options.find((o) => o.id === id)?.label ?? String(id ?? "");
+    options.find((o) => o.id === id)?.label ?? (typeof id === "string" || typeof id === "number" ? String(id) : "");
   switch (type) {
     case "text":
     case "long_text":

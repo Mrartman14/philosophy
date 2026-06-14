@@ -56,8 +56,10 @@ function PageForm() {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const q = String(fd.get("q") ?? "").trim();
-    const type = String(fd.get("type") ?? "").trim();
+    const rawQ = fd.get("q");
+    const rawType = fd.get("type");
+    const q = (typeof rawQ === "string" ? rawQ : "").trim();
+    const type = (typeof rawType === "string" ? rawType : "").trim();
     const next = new URLSearchParams();
     if (q) next.set("q", q);
     if (type) next.set("type", type);

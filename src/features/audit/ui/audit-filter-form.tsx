@@ -42,7 +42,8 @@ export function AuditFilterForm() {
     const fd = new FormData(e.currentTarget);
     const params = new URLSearchParams(searchParams.toString());
     for (const field of FILTER_FIELDS) {
-      const value = String(fd.get(field) ?? "").trim();
+      const rawVal = fd.get(field);
+      const value = (typeof rawVal === "string" ? rawVal : "").trim();
       if (value && value !== ALL_TYPES) params.set(field, value);
       else params.delete(field);
     }

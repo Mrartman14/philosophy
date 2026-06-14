@@ -100,7 +100,7 @@ describe("createFormAction", () => {
     expect(result).toMatchObject({
       success: false,
       code: "validation",
-      fieldErrors: expect.objectContaining({ email: expect.any(String) }),
+      fieldErrors: expect.objectContaining({ email: expect.any(String) as unknown }) as unknown,
     });
   });
 

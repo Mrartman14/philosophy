@@ -86,7 +86,7 @@ export function FormFill({ form, token }: Props) {
         />
       ))}
       <div>
-        <Button type="button" disabled={pending} onClick={onSubmit}>
+        <Button type="button" disabled={pending} onClick={() => { void onSubmit(); }}>
           {pending ? "Отправка…" : "Отправить отклик"}
         </Button>
       </div>

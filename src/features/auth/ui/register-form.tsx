@@ -10,7 +10,7 @@ import {
 import type { ActionResult } from "@/utils/create-action";
 import { registerAction } from "../actions";
 
-const initial: ActionResult = { success: true, data: undefined };
+const initial: ActionResult<undefined> = { success: true, data: undefined };
 
 const ERROR_TEXT: Record<string, string> = {
   username_taken: "Это имя пользователя уже занято.",

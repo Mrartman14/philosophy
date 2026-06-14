@@ -44,7 +44,7 @@ export function useRegisterSW(): UseRegisterSWReturn {
           });
         });
       })
-      .catch((err) => { console.error("[SW] registration failed:", err); });
+      .catch((err: unknown) => { console.error("[SW] registration failed:", err); });
 
     // Reload on controller change (after SKIP_WAITING)
     let refreshing = false;

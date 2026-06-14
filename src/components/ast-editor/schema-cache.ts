@@ -5,7 +5,7 @@ let cached: Promise<SchemaSnapshot> | null = null;
 export function loadSchema(
   fetcher: () => Promise<SchemaResponse>,
 ): Promise<SchemaSnapshot> {
-  cached ??= fetcher().then(normalize).catch((err) => {
+  cached ??= fetcher().then(normalize).catch((err: unknown) => {
     cached = null;
     throw err;
   });

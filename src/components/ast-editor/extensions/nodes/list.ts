@@ -27,7 +27,7 @@ export const ListExt = Node.create({
       ...(node.attrs.ordered && node.attrs.start != null
         ? { start: String(node.attrs.start) }
         : {}),
-      ...(node.attrs.blockId ? { "data-block-id": node.attrs.blockId } : {}),
+      ...(node.attrs.blockId ? { "data-block-id": node.attrs.blockId as string } : {}),
     });
     return [tag, attrs, 0];
   },

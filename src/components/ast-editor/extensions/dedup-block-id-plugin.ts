@@ -20,7 +20,7 @@ export function createDedupBlockIdPlugin() {
       const seen = new Set<string>();
       const toClear: { pos: number; node: PMNode }[] = [];
       newState.doc.forEach((node, pos) => {
-        const id = node.attrs.blockId;
+        const id = node.attrs.blockId as unknown;
         if (typeof id !== "string" || id === "") return;
         if (seen.has(id)) {
           toClear.push({ pos, node });

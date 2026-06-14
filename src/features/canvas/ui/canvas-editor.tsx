@@ -298,7 +298,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
           dirty={state.dirty} gridEnabled={state.gridEnabled} saving={saving} showJson={showJson}
           hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
           onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-          onSave={onSave} onToggleJson={() => { setShowJson(false); }} onBack={onBack}
+          onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(false); }} onBack={onBack}
         />
         <CanvasEditForm canvas={canvas} etag={etag} />
       </div>
@@ -312,7 +312,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
         dirty={state.dirty} gridEnabled={state.gridEnabled} saving={saving} showJson={showJson}
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-        onSave={onSave} onToggleJson={() => { setShowJson(true); }} onBack={onBack}
+        onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(true); }} onBack={onBack}
       />
 
       <div className="flex">

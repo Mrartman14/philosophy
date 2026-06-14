@@ -10,7 +10,7 @@ export function CanvasPicker({ onSelect }: CanvasPickerProps) {
       fetcher={searchCanvases}
       renderItem={(c) => <span>{c.title ?? "—"}</span>}
       getKey={(c) => c.id ?? ""}
-      onSelect={(c) => c.id && onSelect(c.id, c.title ?? c.id)}
+      onSelect={(c) => { if (c.id) onSelect(c.id, c.title ?? c.id); }}
       placeholder="Поиск canvas…"
     />
   );
