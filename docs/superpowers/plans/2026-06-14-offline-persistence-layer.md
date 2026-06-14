@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> ⚠️ **СТАТУС: подлежит регенерации.** Этот план написан под lecture-specific модель. После перехода на **generic foundation** (см. `docs/superpowers/specs/2026-06-14-offline-mode-design.md` v2) типы обобщаются: `SavedLectureRecord` → `SavedBundleRecord` (key = `${entity}:${id}`, `snapshot: TSnapshot`), а `outbox` — entity-agnostic команда (`{clientId, entity, op, payload}`, индексы `by-status`/`by-entity`). Структура задач и TDD-подход сохраняются; план будет перегенерирован из спека v2 перед исполнением.
+
 **Goal:** Построить изолированный, полностью покрытый unit-тестами слой персистентности офлайна (`src/services/offline/`): типизированный контракт, IndexedDB-хранилище (saved-lectures + outbox), кэш картинок в Cache Storage и обёртки persistent-storage.
 
 **Architecture:** Слой не знает про UI и про источник данных. Чистые типы в `contract.ts` (изоморфны, без рантайма); browser-only CRUD-модули поверх `idb` и Cache Storage в `store/*`. Это фундамент для client-адаптера Репозитория (чтение) и драйвера синка (запись), которые идут отдельными планами.
