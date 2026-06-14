@@ -12,6 +12,7 @@ import {
   type AnnotationListResult,
   type AnnotationRevisionMeta,
   type AnnotationRevision,
+  type BackendParentEntityType,
   type ParentEntityType,
 } from "./types";
 
@@ -150,8 +151,14 @@ export const getAdminAnnotations = cache(
         query: {
           offset,
           limit,
+          // Admin-фильтр приходит нетипизированной строкой из URL searchParams;
+          // бэк валидирует значение, здесь кастим к полному доменному union'у,
+          // которого ждёт сгенерированный query-тип (после регена schema.ts).
           ...(filter.parent_entity_type
-            ? { parent_entity_type: filter.parent_entity_type }
+            ? {
+                parent_entity_type:
+                  filter.parent_entity_type as BackendParentEntityType,
+              }
             : {}),
           ...(filter.parent_entity_id
             ? { parent_entity_id: filter.parent_entity_id }

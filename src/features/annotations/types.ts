@@ -32,7 +32,7 @@ export type AnnotationRevision = components["schemas"]["revision.Revision"];
 /**
  * Полный домен parent-типов с бэка (сгенерированный enum). Источник истины.
  */
-type BackendParentEntityType =
+export type BackendParentEntityType =
   components["schemas"]["annotation.ParentEntityType"];
 
 /**
