@@ -327,6 +327,21 @@ describe("runOfflineWrite", () => {
       (await runOfflineWrite(resolve, "annotations", { op: "create" })).status,
     ).toBe(400);
   });
+
+  it("неизвестный op (не create) → 400", async () => {
+    const resolve = makeResolver(() =>
+      Promise.resolve({ success: true, data: { id: "x" } }),
+    );
+    expect(
+      (
+        await runOfflineWrite(resolve, "annotations", {
+          clientId: "c1",
+          op: "delete",
+          payload: {},
+        })
+      ).status,
+    ).toBe(400);
+  });
 });
 ```
 
@@ -362,7 +377,7 @@ function isWriteBody(value: unknown): value is OfflineWriteBody {
   const record = value as Record<string, unknown>;
   return (
     typeof record.clientId === "string" &&
-    typeof record.op === "string" &&
+    record.op === "create" && // уровень 1: только create; уровень 2 (update/delete) расширит множество
     "payload" in record
   );
 }
@@ -402,7 +417,7 @@ export async function runOfflineWrite(
 - [ ] **Step 4: Запустить — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/app/_offline/offline-write.test.ts`
-Expected: PASS (7 тестов).
+Expected: PASS (8 тестов).
 
 - [ ] **Step 5: Lint + typecheck + commit**
 
@@ -423,7 +438,7 @@ git commit -m "feat(offline): runOfflineWrite (write-path logic, ActionResult to
 **Files:**
 - Create: `src/app/api/offline/[entity]/route.ts`
 
-> Тонкий Next-адаптер над `runOfflineWrite` с РЕАЛЬНЫМ `resolveDescriptor`. **Юнит-теста нет осознанно:** логика полностью покрыта `offline-write.test.ts`; тест самого route handler потребовал бы Next route-runtime (вне vitest-юнитов). Корректность гарантируется typecheck + тестом pure-логики. Это первый POST route handler в проекте (существующие — GET-прокси); URL `/api/offline/*` обслуживается Next (rewrites в `next.config` отсутствуют, на бэкенд не проксируется).
+> Тонкий Next-адаптер над `runOfflineWrite` с РЕАЛЬНЫМ `resolveDescriptor`. **Юнит-теста нет осознанно:** логика маппинга полностью покрыта `offline-write.test.ts`; тест самого route handler потребовал бы Next route-runtime (вне vitest-юнитов). Единственная собственная ветка адаптера — `try { request.json() } catch → 400` (тело не JSON) — verified-by-inspection (не покрыта тестом pure-логики, где `rawBody` уже распарсен). Это первый POST route handler в проекте (существующие — GET-прокси); URL `/api/offline/*` обслуживается Next (rewrites в `next.config` отсутствуют, на бэкенд не проксируется).
 
 - [ ] **Step 1: Реализовать route.ts**
 
@@ -496,6 +511,8 @@ Create `src/app/_offline/save-offline-action.ts`:
 // src/app/_offline/save-offline-action.ts
 "use server";
 
+import "server-only";
+
 import { createAction } from "@/utils/create-action";
 
 import { assembleBundle, type OfflineBundleData } from "./offline-read";
@@ -518,12 +535,15 @@ import "fake-indexeddb/auto";
 import { IDBFactory } from "fake-indexeddb";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-const assembleMock = vi.fn();
+// vi.hoisted: фабрика vi.mock хойстится выше const'ов; мок, разыменованный
+// СРАЗУ в возвращаемом объекте фабрики, обязан быть создан через vi.hoisted,
+// иначе TDZ «Cannot access before initialization» (проверено эмпирически).
+const assembleMock = vi.hoisted(() => vi.fn());
 vi.mock("./save-offline-action", () => ({
   assembleOfflineBundle: assembleMock,
 }));
 
-const cacheImageMock = vi.fn();
+const cacheImageMock = vi.hoisted(() => vi.fn());
 vi.mock("@/services/offline/store/images", () => ({
   cacheImage: cacheImageMock,
 }));
@@ -533,6 +553,7 @@ vi.mock("@/services/offline/store/persistence", () => ({
 }));
 
 import { getSavedBundle } from "@/services/offline/store/saved-bundles";
+import { resolveStorageUrl } from "@/utils/storage-url";
 
 import { saveOffline } from "./save-offline";
 
@@ -554,7 +575,7 @@ describe("saveOffline", () => {
 
     expect(res).toEqual({ ok: true });
     expect(cacheImageMock).toHaveBeenCalledTimes(2);
-    expect(cacheImageMock).toHaveBeenCalledWith("/static/files/a");
+    expect(cacheImageMock).toHaveBeenCalledWith(resolveStorageUrl("a"));
     const rec = await getSavedBundle("lectures", "l1");
     expect(rec?.status).toBe("complete");
     expect(rec?.snapshot).toEqual({ t: 1 });
@@ -611,6 +632,7 @@ import {
   putSavedBundle,
   updateSavedBundle,
 } from "@/services/offline/store/saved-bundles";
+import { resolveStorageUrl } from "@/utils/storage-url";
 
 import { assembleOfflineBundle } from "./save-offline-action";
 
@@ -646,7 +668,10 @@ export async function saveOffline(
 
   let failed = 0;
   for (const key of imageKeys) {
-    const cached = await cacheImage(`/static/files/${key}`);
+    // resolveStorageUrl — единая точка истины URL (та же, что рендерит view):
+    // Cache Storage матчит по полному URL, поэтому хардкодить /static/files
+    // нельзя — при NEXT_PUBLIC_STORAGE_URL (CDN) src разойдётся с кэшем.
+    const cached = await cacheImage(resolveStorageUrl(key));
     if (!cached) failed++;
   }
 
@@ -777,6 +802,19 @@ describe("offlineTransport", () => {
     });
   });
 
+  it("2xx с не-JSON телом → не-retriable отказ (не вечный ретрай)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve(new Response("<html>login</html>", { status: 200 })),
+      ),
+    );
+    expect(await offlineTransport(command())).toMatchObject({
+      ok: false,
+      retriable: false,
+    });
+  });
+
   it("шлёт POST на /api/offline/{entity} с телом команды и same-origin", async () => {
     const fetchMock = vi.fn(() =>
       Promise.resolve(
@@ -829,8 +867,19 @@ export const offlineTransport: SyncTransport = async (
   });
 
   if (res.ok) {
-    const json = (await res.json()) as { data?: { id?: string } };
-    const serverId = json.data?.id;
+    let serverId: unknown;
+    try {
+      const json = (await res.json()) as { data?: { id?: string } };
+      serverId = json.data?.id;
+    } catch {
+      // 2xx с не-JSON телом (напр. HTML логина после редиректа) —
+      // детерминированный отказ, НЕ retriable (ретрай вернёт тот же ответ).
+      return {
+        ok: false,
+        retriable: false,
+        error: "Некорректный ответ офлайн-записи (не JSON)",
+      };
+    }
     if (typeof serverId !== "string") {
       return {
         ok: false,
@@ -856,7 +905,7 @@ export const offlineTransport: SyncTransport = async (
 - [ ] **Step 4: Запустить — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/app/_offline/transport.test.ts`
-Expected: PASS (5 тестов).
+Expected: PASS (6 тестов).
 
 - [ ] **Step 5: Lint + typecheck + commit**
 
@@ -888,14 +937,18 @@ Create `src/app/_offline/use-offline-sync.test.ts`:
 // src/app/_offline/use-offline-sync.test.ts
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-const drainMock = vi.fn(() =>
-  Promise.resolve({
-    skipped: false,
-    attempted: 0,
-    done: 0,
-    failed: 0,
-    deferred: 0,
-  }),
+// vi.hoisted — мок разыменовывается сразу в фабрике vi.mock (TDZ-фикс, см.
+// save-offline.test.ts).
+const drainMock = vi.hoisted(() =>
+  vi.fn(() =>
+    Promise.resolve({
+      skipped: false,
+      attempted: 0,
+      done: 0,
+      failed: 0,
+      deferred: 0,
+    }),
+  ),
 );
 vi.mock("@/services/offline/sync/drain", () => ({ drainOutbox: drainMock }));
 
@@ -1037,6 +1090,23 @@ git commit -m "feat(offline): wire foreground sync to online/visibilitychange"
 - `no-non-null-assertion`: нет `x!` (везде `?.`/guard). ✓
 - `import/order`: пустая строка между parent (`@/…`) и sibling (`./…`) группами; `eslint --fix` в каждой задаче. ✓
 - Каст `unknown`→typed через `as { … }` (как в существующем `createAnnotation`: `(await res.json()) as { data?: … }`) — без `any`, member-access безопасен после каста. ✓
+
+**Учтено по адверсариальному ревью (5 агентов: логика, strict-lint, симметрия, архитектура, эмпирический прогон в worktree — реальный lint/typecheck/test + мутации):**
+
+- **[было Critical, эмпирически подтверждён баг] `vi.mock` TDZ-хойстинг:** фабрики `save-offline.test.ts`/`use-offline-sync.test.ts` разыменовывают мок СРАЗУ в возвращаемом объекте → `Cannot access … before initialization` (vitest хойстит `vi.mock` выше `const`). Эталон auth-теста читает мок ЛЕНИВО внутри вложенной функции, потому работает. Фикс: моки через `vi.hoisted(() => vi.fn())`. Эмпирик подтвердил: после фикса 25/25 зелёные.
+- **[было Critical] Транспорт 2xx с не-JSON телом:** `await res.json()` в 2xx-ветке не был обёрнут (в отличие от 4xx) → `SyntaxError` пробрасывался в `drainOutbox` как transient → вечный retriable head-of-line. Обёрнут try/catch → `retriable:false`; добавлен тест.
+- **[было Critical] Хардкод URL картинки:** `saveOffline` кэшировал `/static/files/${key}`, а view рендерит `resolveStorageUrl(key)` (= `${NEXT_PUBLIC_STORAGE_URL||…}/static/files/{key}`). Cache Storage матчит по полному URL → при CDN-base картинки молча не отдавались бы офлайн (тест мокает `cacheImage`, не ловит). Заменён на `resolveStorageUrl(key)` — единая точка истины; тест сверяет против неё.
+- **[было Important] `op` валидировался как `string`, но не использовался:** route handler — публичный same-origin POST; `isWriteBody` теперь требует `op === "create"` (явный 400 на неизвестный op; уровень 2 расширит). Добавлен тест.
+- **[было Minor] `save-offline-action.ts` без `import "server-only"`:** добавлен (100% server-action-файлов фич его дублируют после `"use server"`; vitest стабит).
+- **Подтверждено эмпирически (НЕ требует правок):** дословный код проходит `pnpm lint` БЕЗ `--fix` (import/order чист — рецидива нет) и `pnpm typecheck` (0); все 8 мутаций (forbidden/isWriteBody/generic-500/cacheImage/partial-fail/5xx-retriable/start-drain/cleanup) пойманы — тесты честные. `no-empty` в конфиге вообще не активен (catch-комментарий не нужен, но безвреден).
+
+**Известные ограничения / downstream-контракты (зафиксированы, НЕ баги F4):**
+
+- **Зависшие `"saving"` saved-bundles (recovery):** если процесс умрёт между `putSavedBundle("saving")` и финальным `updateSavedBundle`, запись зависнет в `"saving"`. Это read-cache (НЕ потеря данных, в отличие от outbox-`syncing`). Примитив готов: `listSavedBundlesByStatus("saving")` (план 1). **Контракт слайса L:** при входе в `/saved` подмести зависшие `"saving"`→`"error"` (или показать как failed + предложить пересохранить).
+- **Чтение по статусу:** IndexedDB-репозиторий status-agnostic (отдаёт `snapshot` при любом статусе). **Контракт слайса L:** `SavedLectureView` ОБЯЗАН показывать/использовать только записи `status==="complete"` (или явно помечать `saving`/`error`), иначе пользователь увидит снимок с недокачанными картинками.
+- **Снимок = plain-JSON:** server-action `assembleOfflineBundle` гонит снимок server→client через RSC-сериализацию, далее в IndexedDB через structured-clone. **Контракт слайса L:** `descriptor.assemble` ОБЯЗАН возвращать JSON-значение (без функций/классов/Map/Date-зависимых форм), иначе server- и IndexedDB-адаптеры репозитория разъедутся по типам. Объём тяжёлого снимка едет через action целиком (bundle-endpoint рычага 1 это не уменьшит, лишь соберёт за 1 round-trip).
+- **`Idempotency-Key` ставит слайс A:** F4 прокидывает `clientId` сквозь весь путь (тело команды → `descriptor.write(payload, clientId)`); сам заголовок `Idempotency-Key: clientId` при форварде в `philosophy-api` ставит `descriptor.write` (слайс A). **Контракт слайса A:** `write` ОБЯЗАН проставить заголовок, иначе at-least-once даст дубли (F4 это не ловит). Готовность к рычагу 3 — полная.
+- **Семантика «успех ⟺ `data.id:string`» не масштабируется на уровень 2:** транспорт трактует 2xx без `id` как не-retriable отказ; `delete` (уровень 2) может легитимно вернуть 2xx без `id`. Уровень 2 потребует правки семантики успеха транспорта + сигнатуры `descriptor.write` (принять `op`) — отложено с D15.
 
 **Согласованность типов/имён:** `DescriptorResolver`/`OfflineDescriptor`/`SyncTransport`/`SyncSendResult`/`OutboxCommand`/`drainOutbox`/`OfflineBundleData`/`OfflineWriteResponse`/`SaveOfflineResult` — единообразны между файлами и с F3/планом-1. Store-API (`putSavedBundle`/`updateSavedBundle`/`getSavedBundle`/`cacheImage`/`requestPersistentStorage`) — точные сигнатуры плана 1. `createAction`/`ActionResult` — точная форма `@/utils/create-action`. Route-handler-сигнатура — конвенция Next 16 (`params: Promise<…>`). **Плейсхолдеры:** нет.
 
