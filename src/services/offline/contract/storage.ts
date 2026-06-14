@@ -46,7 +46,7 @@ export type OutboxOp = "create";
  */
 export interface OutboxCommand<TPayload = unknown> {
   clientId: string; // crypto.randomUUID(): temp-id == idempotency-key == reconcile-key
-  entity: string; // "annotation"
+  entity: string; // === Tags.* (@/api/tags), напр. Tags.ANNOTATIONS === "annotations"
   op: OutboxOp;
   payload: TPayload;
   createdAt: string; // ISO
