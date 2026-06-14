@@ -107,13 +107,13 @@ describe("ImageExt parseHTML/renderHTML", () => {
     const wrap = document.createElement("div");
     wrap.innerHTML = html;
     const parsed = PMDOMParser.fromSchema(schema).parse(wrap);
-    let imageNode: PMNode | null = null;
+    const imageNodes: PMNode[] = [];
     parsed.descendants((n) => {
-      if (n.type.name === "image") imageNode = n;
+      if (n.type.name === "image") imageNodes.push(n);
     });
-    expect(imageNode).not.toBeNull();
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- imageNode мутируется в callback descendants(), TS не отслеживает closure-мутацию
-    if (imageNode === null) throw new Error("image-узел не найден");
+    const imageNode = imageNodes[0];
+    expect(imageNode).toBeDefined();
+    if (!imageNode) throw new Error("image-узел не найден");
     const attrs = imageNode.attrs as { storage_key: string; alt: string; caption: string; blockId: string };
     expect(attrs.storage_key).toBe("def");
     expect(attrs.alt).toBe("bb");
