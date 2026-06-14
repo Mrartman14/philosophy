@@ -2,6 +2,11 @@ import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
 
 const eslintConfig = [
+  // Сгенерированные файлы не линтим: `pnpm generate:api` (openapi-typescript)
+  // перезатрёт любые авто-фиксы, поэтому strict-правила тут только создают шум при регене.
+  {
+    ignores: ["src/api/schema.ts"],
+  },
   ...nextCoreWebVitals,
   {
     files: ["**/*.ts", "**/*.tsx"],
