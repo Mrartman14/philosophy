@@ -11,7 +11,9 @@ afterEach(cleanup);
 // next/link вне Next-runtime не нужен — рендерим обычный <a>.
 // vi.mock хоистится над импортами, поэтому объявление после них корректно.
 vi.mock("next/link", () => ({
-  default: (props: ComponentProps<"a">) => <a {...props} />,
+  default: ({ children, ...props }: ComponentProps<"a">) => (
+    <a {...props}>{children}</a>
+  ),
 }));
 
 const revisions: RevisionListItem[] = [

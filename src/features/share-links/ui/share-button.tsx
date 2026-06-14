@@ -79,11 +79,11 @@ export function ShareButton({
         <form action={formAction} className="flex items-end gap-2">
           <input type="hidden" name="resource_type" value={resourceType} />
           <input type="hidden" name="resource_id" value={resourceId} />
-          <label className="flex flex-1 flex-col gap-1">
+          <label htmlFor="expires_at" className="flex flex-1 flex-col gap-1">
             <span className="text-xs text-(--color-description)">
               Срок действия (необязательно)
             </span>
-            <TextInput type="datetime-local" name="expires_at" />
+            <TextInput id="expires_at" type="datetime-local" name="expires_at" />
           </label>
           <Button type="submit" disabled={pending}>
             {pending ? "…" : "Создать ссылку"}

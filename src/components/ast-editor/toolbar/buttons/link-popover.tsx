@@ -2,7 +2,7 @@
 import { Popover } from "@base-ui/react/popover";
 import { Toolbar } from "@base-ui/react/toolbar";
 import type { Editor } from "@tiptap/core";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { LinkIcon } from "@/assets/icons/link-icon";
 
@@ -17,6 +17,7 @@ export function LinkPopover({ editor, schema }: Props) {
   const [open, setOpen] = useState(false);
   const [href, setHref] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   if (!schema.marks.has("link")) return null;
 
@@ -92,17 +93,20 @@ export function LinkPopover({ editor, schema }: Props) {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
-          <Popover.Popup className="bg-(--color-background) border border-(--color-border) rounded p-3 shadow-lg">
+          <Popover.Popup
+            initialFocus={inputRef}
+            className="bg-(--color-background) border border-(--color-border) rounded p-3 shadow-lg"
+          >
             <Popover.Arrow className="fill-(--color-background) stroke-(--color-border)" />
             <div className="flex flex-col gap-2 min-w-[260px]">
               <input
+                ref={inputRef}
                 type="url"
                 value={href}
                 onChange={(e) => { setHref(e.target.value); }}
                 onKeyDown={handleKeyDown}
                 placeholder="https://…"
                 aria-label="URL ссылки"
-                autoFocus
                 className="border border-(--color-border) rounded px-2 py-1 text-sm w-full"
               />
               {err ? (

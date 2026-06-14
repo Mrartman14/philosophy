@@ -47,8 +47,8 @@ export function EventCreateForm() {
         />
       </FormField>
 
-      <label className="flex items-center gap-2 text-sm">
-        <Checkbox name="all_day" checked={allDay} onCheckedChange={setAllDay} />
+      <label htmlFor="all_day" className="flex items-center gap-2 text-sm">
+        <Checkbox id="all_day" name="all_day" checked={allDay} onCheckedChange={setAllDay} />
         Весь день
       </label>
 

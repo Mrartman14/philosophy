@@ -95,40 +95,43 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
         role="combobox"
         aria-expanded
         aria-controls={listboxId}
+        aria-activedescendant={s.items[active] ? `${listboxId}-opt-${String(active)}` : undefined}
         type="text"
         value={q}
         placeholder={props.placeholder}
         onChange={(e) => { setQ(e.target.value); }}
         onKeyDown={onKey}
       />
-      <ul id={listboxId} role="listbox">
+      <div id={listboxId} role="listbox">
         {s.items.map((item, i) => (
-          <li
+          <div
             key={props.getKey(item)}
+            id={`${listboxId}-opt-${String(i)}`}
             role="option"
+            tabIndex={-1}
             aria-selected={active === i}
             onMouseDown={(e) => { e.preventDefault(); props.onSelect(item); }}
             onMouseEnter={() => { setActive(i); }}
           >
             {props.renderItem(item, active === i)}
-          </li>
+          </div>
         ))}
-        {!s.loading && s.items.length === 0 && !s.error && <li role="presentation">{empty}</li>}
-        {s.loading && <li role="presentation">{loadingCopy}</li>}
+        {!s.loading && s.items.length === 0 && !s.error && <div role="presentation">{empty}</div>}
+        {s.loading && <div role="presentation">{loadingCopy}</div>}
         {s.error && (
-          <li role="presentation">
+          <div role="presentation">
             {errorCopy}
             <button type="button" onClick={() => void load(debouncedQ, 0)}>Повторить</button>
-          </li>
+          </div>
         )}
         {canLoadMore && (
-          <li role="presentation">
+          <div role="presentation">
             <button type="button" onClick={() => void load(debouncedQ, s.items.length)}>
               Загрузить ещё
             </button>
-          </li>
+          </div>
         )}
-      </ul>
+      </div>
     </div>
   );
 }

@@ -22,6 +22,7 @@ export function MediaPlayer({ url, type, filename }: MediaPlayerProps) {
         className="w-full max-h-[70vh] rounded bg-black"
       >
         <source src={url} />
+        <track kind="captions" />
         Ваш браузер не поддерживает воспроизведение видео.
       </video>
     );
@@ -29,6 +30,7 @@ export function MediaPlayer({ url, type, filename }: MediaPlayerProps) {
   return (
     <audio controls preload="metadata" className="w-full" aria-label={filename}>
       <source src={url} />
+      <track kind="captions" />
       Ваш браузер не поддерживает воспроизведение аудио.
     </audio>
   );

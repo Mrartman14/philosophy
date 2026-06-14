@@ -35,9 +35,10 @@ export default async function AdminCommentsPage({ searchParams }: Props) {
       <h1 className="text-2xl font-bold">Модерация комментариев</h1>
 
       <form method="get" className="flex items-end gap-2">
-        <label className="flex flex-col gap-1 text-sm">
+        <label htmlFor="lecture_id" className="flex flex-col gap-1 text-sm">
           <span className="text-xs text-(--color-description)">ID лекции</span>
           <TextInput
+            id="lecture_id"
             name="lecture_id"
             defaultValue={lecture_id ?? ""}
             placeholder="UUID лекции"

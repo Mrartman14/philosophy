@@ -66,15 +66,16 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
       title="Добавить ссылку на сущность"
     >
       <div className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
+        <div className="flex flex-col gap-1 text-sm">
           Тип сущности
           <Select
             name="entity_type"
+            aria-label="Тип сущности"
             value={entityType}
             onValueChange={(v) => { setEntityType(v as CanvasRefEntityType); }}
             options={ENTITY_TYPES}
           />
-        </label>
+        </div>
 
         {usePicker ? (
           <div className="entity-ref-picker">
@@ -86,9 +87,10 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <label className="flex flex-col gap-1 text-sm">
+            <label htmlFor="entity_id" className="flex flex-col gap-1 text-sm">
               ID сущности (UUID)
               <TextInput
+                id="entity_id"
                 name="entity_id"
                 value={manualId}
                 onChange={(e) => { setManualId(e.target.value); }}

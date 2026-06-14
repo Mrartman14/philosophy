@@ -320,9 +320,22 @@ export function CanvasEditor({ canvas, etag }: Props) {
 
       <div className="flex">
         {/* холст */}
+        {/*
+          role="application" — корректная WAI-ARIA роль для самодостаточного
+          холста-редактора, который сам управляет клавиатурой (Delete/Esc/Undo)
+          и колесом (zoom). jsx-a11y берёт классификацию ролей из aria-query,
+          где application наследуется от structure, а не widget, поэтому
+          no-noninteractive-* считают её неинтерактивной — ложное срабатывание
+          именно для этого паттерна. tabIndex + onKeyDown обеспечивают полный
+          интерактивный контракт.
+        */}
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
         <div
+          role="application"
+          aria-label="Редактор холста"
           className="relative flex-1"
           style={{ height: "70vh" }}
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
           tabIndex={0}
           onKeyDown={onKeyDown}
           onWheel={onWheel}

@@ -66,8 +66,8 @@ export function BannerCreateForm() {
         />
       </FormField>
 
-      <label className="flex items-center gap-2 text-sm">
-        <Checkbox checked={dismissible} onCheckedChange={setDismissible} />
+      <label htmlFor="dismissible" className="flex items-center gap-2 text-sm">
+        <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
         Пользователь может скрыть баннер
       </label>
 

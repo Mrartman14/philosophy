@@ -75,8 +75,9 @@ export function EventEditForm({ event }: Props) {
         />
       </FormField>
 
-      <label className="flex items-center gap-2 text-sm">
+      <label htmlFor="all_day" className="flex items-center gap-2 text-sm">
         <Checkbox
+          id="all_day"
           name="all_day"
           checked={allDay}
           onCheckedChange={handleAllDayChange}

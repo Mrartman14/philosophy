@@ -51,7 +51,7 @@ export function ShareLookupForm({ admin = false }: Props) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
-      <label className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1">
         <span className="text-xs text-(--color-description)">Тип ресурса</span>
         <Select
           name="resource_type"
@@ -59,10 +59,11 @@ export function ShareLookupForm({ admin = false }: Props) {
           options={options}
           aria-label="Тип ресурса"
         />
-      </label>
-      <label className="flex flex-1 flex-col gap-1">
+      </div>
+      <label htmlFor="resource_id" className="flex flex-1 flex-col gap-1">
         <span className="text-xs text-(--color-description)">ID ресурса</span>
         <TextInput
+          id="resource_id"
           name="resource_id"
           defaultValue={searchParams.get("resource_id") ?? ""}
           placeholder="UUID ресурса"

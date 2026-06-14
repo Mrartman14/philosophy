@@ -69,9 +69,10 @@ export function FormBuilderFieldRow({
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
+      <label htmlFor={`field-${String(index)}-prompt`} className="flex flex-col gap-1 text-sm">
         Текст вопроса (markdown)
         <TextInput
+          id={`field-${String(index)}-prompt`}
           value={field.prompt}
           disabled={disabled}
           maxLength={2000}
@@ -79,9 +80,10 @@ export function FormBuilderFieldRow({
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
+      <label htmlFor={`field-${String(index)}-help`} className="flex flex-col gap-1 text-sm">
         Подсказка (необязательно, markdown)
         <Textarea
+          id={`field-${String(index)}-help`}
           value={field.help_text}
           disabled={disabled}
           rows={2}
@@ -89,8 +91,9 @@ export function FormBuilderFieldRow({
         />
       </label>
 
-      <label className="flex items-center gap-2 text-sm">
+      <label htmlFor={`field-${String(index)}-required`} className="flex items-center gap-2 text-sm">
         <Checkbox
+          id={`field-${String(index)}-required`}
           checked={field.required}
           disabled={disabled}
           onCheckedChange={(v) => { onChange({ ...field, required: v }); }}
