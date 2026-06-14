@@ -9,12 +9,12 @@ import { z } from "zod";
  */
 
 export const UserRoleUpdateSchema = z.object({
-  id: z.string().uuid("Некорректный id пользователя"),
+  id: z.uuid("Некорректный id пользователя"),
   role: z.enum(["user", "admin"]),
 });
 
 export const UserStatusUpdateSchema = z.object({
-  id: z.string().uuid("Некорректный id пользователя"),
+  id: z.uuid("Некорректный id пользователя"),
   status: z.enum(["active", "suspended", "banned"]),
 });
 

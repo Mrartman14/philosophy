@@ -65,6 +65,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
     const handler = (e: BeforeUnloadEvent) => {
       if (state.dirty) {
         e.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-deprecated -- TODO(foundation/eslint-strict): e.returnValue kept for Chrome <119 compat; remove when baseline supports only e.preventDefault()
         e.returnValue = "";
       }
     };

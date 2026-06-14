@@ -52,14 +52,14 @@ function validateFields(v: NormalizedFields, ctx: z.RefinementCtx): void {
   if (v.all_day) {
     if (!DATE_ONLY_RE.test(v.start_date)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["start_date"],
         message: "Формат даты — ГГГГ-ММ-ДД",
       });
     }
     if (v.end_date && !DATE_ONLY_RE.test(v.end_date)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["end_date"],
         message: "Формат даты — ГГГГ-ММ-ДД",
       });
@@ -67,14 +67,14 @@ function validateFields(v: NormalizedFields, ctx: z.RefinementCtx): void {
   } else {
     if (Number.isNaN(Date.parse(v.start_date))) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["start_date"],
         message: "Укажите дату и время начала",
       });
     }
     if (v.end_date && Number.isNaN(Date.parse(v.end_date))) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["end_date"],
         message: "Укажите дату и время окончания",
       });
@@ -84,14 +84,14 @@ function validateFields(v: NormalizedFields, ctx: z.RefinementCtx): void {
   // сравнение корректно и для YYYY-MM-DD, и для RFC3339.
   if (v.end_date && v.end_date < v.start_date) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       path: ["end_date"],
       message: "Дата окончания раньше даты начала",
     });
   }
   if (v.rrule && !v.rrule.startsWith("FREQ=")) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       path: ["rrule"],
       message: "RRULE должен начинаться с FREQ=",
     });
@@ -110,7 +110,7 @@ const BlocksJsonSchema = z
       const parsed: unknown = JSON.parse(s);
       if (!Array.isArray(parsed)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Тело должно быть массивом блоков",
         });
         return z.NEVER;
@@ -118,7 +118,7 @@ const BlocksJsonSchema = z
       return parsed as unknown[];
     } catch {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Битый JSON в теле формы",
       });
       return z.NEVER;
@@ -126,7 +126,7 @@ const BlocksJsonSchema = z
   });
 
 export const EventUpdateSchema = EventFieldsSchema.extend({
-  id: z.string().uuid("Некорректный id события"),
+  id: z.uuid("Некорректный id события"),
   blocks: BlocksJsonSchema,
 })
   .transform((raw) => ({
@@ -137,7 +137,7 @@ export const EventUpdateSchema = EventFieldsSchema.extend({
   .superRefine(validateFields);
 
 export const EventIdSchema = z.object({
-  id: z.string().uuid("Некорректный id события"),
+  id: z.uuid("Некорректный id события"),
 });
 
 export type EventCreateInput = z.infer<typeof EventCreateSchema>;

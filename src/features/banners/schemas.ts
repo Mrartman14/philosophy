@@ -69,14 +69,14 @@ function normalizeFields(raw: BannerFieldsRaw) {
 function validateFields(v: BannerInputCommon, ctx: z.RefinementCtx): void {
   if (Number.isNaN(Date.parse(v.start_at))) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       path: ["start_at"],
       message: "Укажите дату и время начала показа",
     });
   }
   if (v.end_at !== undefined && Number.isNaN(Date.parse(v.end_at))) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       path: ["end_at"],
       message: "Укажите дату и время окончания показа",
     });
@@ -86,14 +86,14 @@ function validateFields(v: BannerInputCommon, ctx: z.RefinementCtx): void {
   // корректно.
   if (v.end_at !== undefined && v.end_at <= v.start_at) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       path: ["end_at"],
       message: "Окончание показа должно быть позже начала",
     });
   }
   if (v.event_id && !UUID_RE.test(v.event_id)) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       path: ["event_id"],
       message: "id события — UUID",
     });
@@ -114,7 +114,7 @@ const BlocksJsonSchema = z
       const parsed: unknown = JSON.parse(s);
       if (!Array.isArray(parsed)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Тело должно быть массивом блоков",
         });
         return z.NEVER;
@@ -122,7 +122,7 @@ const BlocksJsonSchema = z
       return parsed as unknown[];
     } catch {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Битый JSON в теле формы",
       });
       return z.NEVER;
@@ -130,7 +130,7 @@ const BlocksJsonSchema = z
   });
 
 export const BannerUpdateSchema = BannerFieldsSchema.extend({
-  id: z.string().uuid("Некорректный id баннера"),
+  id: z.uuid("Некорректный id баннера"),
   blocks: BlocksJsonSchema,
 })
   .transform((raw) => ({
@@ -141,7 +141,7 @@ export const BannerUpdateSchema = BannerFieldsSchema.extend({
   .superRefine(validateFields);
 
 export const BannerIdSchema = z.object({
-  id: z.string().uuid("Некорректный id баннера"),
+  id: z.uuid("Некорректный id баннера"),
 });
 
 export type BannerCreateInput = z.infer<typeof BannerCreateSchema>;

@@ -7,7 +7,7 @@ describe("rethrowUserApiError", () => {
   it("FORBIDDEN → ForbiddenError (createAction вернёт code=forbidden)", () => {
     expect(() =>
       rethrowUserApiError({ code: "FORBIDDEN", error: "forbidden" }),
-    ).toThrowError(ForbiddenError);
+    ).toThrow(ForbiddenError);
   });
 
   it("CONFLICT: cannot modify your own status → русский текст", () => {
@@ -16,7 +16,7 @@ describe("rethrowUserApiError", () => {
         code: "CONFLICT",
         error: "cannot modify your own status",
       }),
-    ).toThrowError("Нельзя изменить собственный статус.");
+    ).toThrow("Нельзя изменить собственный статус.");
   });
 
   it("CONFLICT: cannot modify your own role → русский текст", () => {
@@ -25,7 +25,7 @@ describe("rethrowUserApiError", () => {
         code: "CONFLICT",
         error: "cannot modify your own role",
       }),
-    ).toThrowError("Нельзя изменить собственную роль.");
+    ).toThrow("Нельзя изменить собственную роль.");
   });
 
   it("CONFLICT: cannot remove the last active admin → русский текст", () => {
@@ -34,7 +34,7 @@ describe("rethrowUserApiError", () => {
         code: "CONFLICT",
         error: "cannot remove the last active admin",
       }),
-    ).toThrowError(
+    ).toThrow(
       "Нельзя приостановить или заблокировать последнего активного администратора.",
     );
   });
@@ -45,7 +45,7 @@ describe("rethrowUserApiError", () => {
         code: "CONFLICT",
         error: "cannot demote the last active admin",
       }),
-    ).toThrowError(
+    ).toThrow(
       "Нельзя понизить роль последнего активного администратора.",
     );
   });
@@ -53,28 +53,28 @@ describe("rethrowUserApiError", () => {
   it("CONFLICT с неизвестным текстом → общий фоллбек, не raw-текст", () => {
     expect(() =>
       rethrowUserApiError({ code: "CONFLICT", error: "something else" }),
-    ).toThrowError("Операция отклонена сервером (конфликт).");
+    ).toThrow("Операция отклонена сервером (конфликт).");
   });
 
   it("NOT_FOUND → «Пользователь не найден.»", () => {
     expect(() =>
       rethrowUserApiError({ code: "NOT_FOUND", error: "user not found" }),
-    ).toThrowError("Пользователь не найден.");
+    ).toThrow("Пользователь не найден.");
   });
 
   it("SUSPENDED → понятный текст про ограниченный аккаунт", () => {
     expect(() =>
       rethrowUserApiError({ code: "SUSPENDED", error: "account suspended" }),
-    ).toThrowError("Ваш аккаунт ограничен — действие недоступно.");
+    ).toThrow("Ваш аккаунт ограничен — действие недоступно.");
   });
 
   it("неизвестный код → пробрасывает error-текст", () => {
     expect(() =>
       rethrowUserApiError({ code: "INTERNAL", error: "internal server error" }),
-    ).toThrowError("internal server error");
+    ).toThrow("internal server error");
   });
 
   it("undefined → «Ошибка сервера»", () => {
-    expect(() => rethrowUserApiError(undefined)).toThrowError("Ошибка сервера");
+    expect(() => rethrowUserApiError(undefined)).toThrow("Ошибка сервера");
   });
 });

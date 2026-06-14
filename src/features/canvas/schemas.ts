@@ -72,16 +72,16 @@ export const CanvasDataSchema = z
     const ids = new Set<string>();
     for (const n of d.nodes) {
       if (ids.has(n.id)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Дубликат node.id "${n.id}"` });
+        ctx.addIssue({ code: "custom", message: `Дубликат node.id "${n.id}"` });
       }
       ids.add(n.id);
     }
     for (const e of d.edges) {
       if (!ids.has(e.from_node)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Ребро "${e.id}": from_node "${e.from_node}" не найден` });
+        ctx.addIssue({ code: "custom", message: `Ребро "${e.id}": from_node "${e.from_node}" не найден` });
       }
       if (!ids.has(e.to_node)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Ребро "${e.id}": to_node "${e.to_node}" не найден` });
+        ctx.addIssue({ code: "custom", message: `Ребро "${e.id}": to_node "${e.to_node}" не найден` });
       }
     }
   });
@@ -118,7 +118,7 @@ export function parseCanvasDataJson(raw: string): ParseDataResult {
 const DataJsonField = z.string().optional().transform((s, ctx) => {
   const result = parseCanvasDataJson(s ?? "");
   if (!result.ok) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: result.error });
+    ctx.addIssue({ code: "custom", message: result.error });
     return z.NEVER;
   }
   return result.data;
@@ -126,7 +126,7 @@ const DataJsonField = z.string().optional().transform((s, ctx) => {
 
 const TitleSchema = z.string().trim().min(1, "Введите название").max(200, "До 200 символов");
 const VisibilityEnum = z.enum(["private", "public"]);
-const UuidSchema = z.string().uuid("Некорректный id канваса");
+const UuidSchema = z.uuid("Некорректный id канваса");
 
 /** POST /api/canvases. visibility/data опциональны. */
 export const CanvasCreateSchema = z.object({

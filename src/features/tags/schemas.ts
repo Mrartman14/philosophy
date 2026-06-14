@@ -28,7 +28,7 @@ export const TagIdSchema = z.object({
  * Пустой массив валиден: бекенд трактует его как «снять все теги».
  */
 export const SetLectureTagsSchema = z.object({
-  lecture_id: z.string().uuid("Некорректный id лекции"),
+  lecture_id: z.uuid("Некорректный id лекции"),
   tag_ids: z
     .string()
     .min(1, "Пустое поле tag_ids")
@@ -42,7 +42,7 @@ export const SetLectureTagsSchema = z.object({
           )
         ) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: "tag_ids должен быть массивом целых положительных id",
           });
           return z.NEVER;
@@ -50,7 +50,7 @@ export const SetLectureTagsSchema = z.object({
         return parsed as number[];
       } catch {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Битый JSON в tag_ids",
         });
         return z.NEVER;

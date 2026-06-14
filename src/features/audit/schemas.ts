@@ -12,7 +12,7 @@ import { AUDIT_TARGET_TYPES } from "./target-types";
  * закладка) молча отбрасывается, страница не падает.
  */
 
-export const AuditActorSchema = z.string().uuid("Некорректный UUID актора");
+export const AuditActorSchema = z.uuid("Некорректный UUID актора");
 
 export const AuditTargetTypeSchema = z.enum(AUDIT_TARGET_TYPES);
 
@@ -31,7 +31,7 @@ export const AuditActionSchema = z
 export const AuditDateSchema = z.string().transform((s, ctx) => {
   const d = new Date(s);
   if (Number.isNaN(d.getTime())) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Некорректная дата" });
+    ctx.addIssue({ code: "custom", message: "Некорректная дата" });
     return z.NEVER;
   }
   return d.toISOString();

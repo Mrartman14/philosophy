@@ -2,7 +2,7 @@
 import "server-only";
 import { z } from "zod";
 
-const UUID = z.string().uuid("Некорректный идентификатор");
+const UUID = z.uuid("Некорректный идентификатор");
 
 const TitleSchema = z.string().trim().min(1, "Введите название").max(500, "До 500 символов");
 const VisibilityEnum = z.enum(["private", "public"]);
@@ -31,13 +31,13 @@ const FieldSchema = z
     const isChoice = f.type === "single_choice" || f.type === "multi_choice";
     const opts = f.options ?? [];
     if (isChoice && opts.length === 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Добавьте хотя бы один вариант" });
+      ctx.addIssue({ code: "custom", message: "Добавьте хотя бы один вариант" });
     }
     if (!isChoice && opts.length > 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Варианты только у полей выбора" });
+      ctx.addIssue({ code: "custom", message: "Варианты только у полей выбора" });
     }
     if (isChoice && new Set(opts).size !== opts.length) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Варианты не должны повторяться" });
+      ctx.addIssue({ code: "custom", message: "Варианты не должны повторяться" });
     }
   });
 
@@ -56,7 +56,7 @@ const FormPayloadShape = z
     p.fields.forEach((f, i) => {
       if (seen.has(f.sort_order)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: `Дублируется порядок поля #${i + 1}`,
         });
       }
@@ -73,13 +73,13 @@ function payloadField() {
     try {
       parsed = JSON.parse(s);
     } catch {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Битый JSON формы" });
+      ctx.addIssue({ code: "custom", message: "Битый JSON формы" });
       return z.NEVER;
     }
     const r = FormPayloadShape.safeParse(parsed);
     if (!r.success) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: r.error.issues[0]?.message ?? "Ошибка структуры формы",
       });
       return z.NEVER;
@@ -94,10 +94,10 @@ export const FormCreateSchema = z
   .transform(({ payload }) => payload)
   .superRefine((p, ctx) => {
     if (!p.visibility) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Не указана видимость", path: ["visibility"] });
+      ctx.addIssue({ code: "custom", message: "Не указана видимость", path: ["visibility"] });
     }
     if (!p.submission_mode) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Не указан режим", path: ["submission_mode"] });
+      ctx.addIssue({ code: "custom", message: "Не указан режим", path: ["submission_mode"] });
     }
   });
 
@@ -127,16 +127,16 @@ const AnswersJsonSchema = z
     try {
       parsed = JSON.parse(s);
     } catch {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Битый JSON ответов" });
+      ctx.addIssue({ code: "custom", message: "Битый JSON ответов" });
       return z.NEVER;
     }
     if (!Array.isArray(parsed)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Ответы должны быть массивом" });
+      ctx.addIssue({ code: "custom", message: "Ответы должны быть массивом" });
       return z.NEVER;
     }
     const r = z.array(AnswerWireSchema).safeParse(parsed);
     if (!r.success) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Некорректный ответ" });
+      ctx.addIssue({ code: "custom", message: "Некорректный ответ" });
       return z.NEVER;
     }
     return r.data;

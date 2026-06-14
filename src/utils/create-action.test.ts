@@ -18,7 +18,7 @@ describe("parseFormData", () => {
 
   it("throws ZodValidationError with fieldErrors map on invalid data", () => {
     const schema = z.object({
-      email: z.string().email(),
+      email: z.email(),
       name: z.string().min(2),
     });
     const fd = new FormData();
@@ -89,7 +89,7 @@ describe("createFormAction", () => {
   });
 
   it("returns code='validation' with fieldErrors on ZodValidationError", async () => {
-    const schema = z.object({ email: z.string().email() });
+    const schema = z.object({ email: z.email() });
     const action = createFormAction(async (fd: FormData) => {
       parseFormData(schema, fd);
       return null;

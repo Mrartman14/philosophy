@@ -4,7 +4,7 @@ import { z } from "zod";
 
 /** Валидация media_id перед DELETE. */
 export const MediaIdSchema = z.object({
-  id: z.string().uuid("Некорректный id медиа"),
+  id: z.uuid("Некорректный id медиа"),
 });
 
 /**
@@ -13,7 +13,7 @@ export const MediaIdSchema = z.object({
  * только private→public, но валидатор схемы остаётся общим.
  */
 export const MediaVisibilitySchema = z.object({
-  id: z.string().uuid("Некорректный id медиа"),
+  id: z.uuid("Некорректный id медиа"),
   visibility: z.enum(["private", "public"]),
 });
 

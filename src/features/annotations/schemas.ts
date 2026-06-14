@@ -15,7 +15,7 @@ const BlocksJsonSchema = z
       const parsed: unknown = JSON.parse(s);
       if (!Array.isArray(parsed) || parsed.length === 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Тело должно быть непустым массивом блоков",
         });
         return z.NEVER;
@@ -23,7 +23,7 @@ const BlocksJsonSchema = z
       return parsed as unknown[];
     } catch {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Битый JSON в теле аннотации",
       });
       return z.NEVER;
@@ -53,7 +53,7 @@ const AnchorJsonSchema = z
         Array.isArray(parsed)
       ) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Якорь должен быть объектом",
         });
         return z.NEVER;
@@ -61,7 +61,7 @@ const AnchorJsonSchema = z
       return parsed as Record<string, unknown>;
     } catch {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Битый JSON в якоре",
       });
       return z.NEVER;
@@ -70,7 +70,7 @@ const AnchorJsonSchema = z
 
 export const AnnotationCreateSchema = z.object({
   parent_entity_type: ParentEntityTypeSchema,
-  parent_entity_id: z.string().uuid("Некорректный id родительской сущности"),
+  parent_entity_id: z.uuid("Некорректный id родительской сущности"),
   visibility: VisibilitySchema.optional().default("private"),
   blocks: BlocksJsonSchema,
   anchor: AnchorJsonSchema,
@@ -78,7 +78,7 @@ export const AnnotationCreateSchema = z.object({
 
 export const AnnotationUpdateSchema = z
   .object({
-    id: z.string().uuid("Некорректный id аннотации"),
+    id: z.uuid("Некорректный id аннотации"),
     blocks: BlocksJsonSchema,
     anchor: AnchorJsonSchema,
   })
@@ -91,7 +91,7 @@ export const AnnotationUpdateSchema = z
   }));
 
 export const AnnotationIdSchema = z.object({
-  id: z.string().uuid("Некорректный id аннотации"),
+  id: z.uuid("Некорректный id аннотации"),
 });
 
 /** offset для локальной/серверной пагинации. */
@@ -106,8 +106,8 @@ export const AdminAnnotationFilterSchema = z.object({
     .enum(PARENT_ENTITY_TYPES)
     .optional()
     .catch(undefined),
-  parent_entity_id: z.string().uuid().optional().catch(undefined),
-  author_id: z.string().uuid().optional().catch(undefined),
+  parent_entity_id: z.uuid().optional().catch(undefined),
+  author_id: z.uuid().optional().catch(undefined),
   offset: AnnotationOffsetSchema.optional().catch(undefined),
 });
 

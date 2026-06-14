@@ -11,15 +11,15 @@ const BlocksJsonSchema = z
     try {
       parsed = JSON.parse(s);
     } catch {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Битый JSON в теле документа" });
+      ctx.addIssue({ code: "custom", message: "Битый JSON в теле документа" });
       return z.NEVER;
     }
     if (!Array.isArray(parsed)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Тело должно быть массивом блоков" });
+      ctx.addIssue({ code: "custom", message: "Тело должно быть массивом блоков" });
       return z.NEVER;
     }
     if (parsed.length === 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Добавьте хотя бы один блок" });
+      ctx.addIssue({ code: "custom", message: "Добавьте хотя бы один блок" });
       return z.NEVER;
     }
     return parsed as unknown[];
@@ -43,25 +43,25 @@ export const DocumentCreateSchema = z.object({
 
 /** PUT /api/documents/{id}/blocks. */
 export const DocumentBlocksSchema = z.object({
-  id: z.string().uuid("Некорректный id документа"),
+  id: z.uuid("Некорректный id документа"),
   blocks: BlocksJsonSchema,
 });
 
 /** PATCH /api/documents/{id} (метаданные — только title). */
 export const DocumentMetaSchema = z.object({
-  id: z.string().uuid("Некорректный id документа"),
+  id: z.uuid("Некорректный id документа"),
   title: TitleSchema,
 });
 
 /** PATCH /api/documents/{id}/visibility. UI предлагает только private→public. */
 export const DocumentVisibilitySchema = z.object({
-  id: z.string().uuid("Некорректный id документа"),
+  id: z.uuid("Некорректный id документа"),
   visibility: VisibilityEnum,
 });
 
 /** Для delete: только id. */
 export const DocumentIdSchema = z.object({
-  id: z.string().uuid("Некорректный id документа"),
+  id: z.uuid("Некорректный id документа"),
 });
 
 export type DocumentCreateInput = z.infer<typeof DocumentCreateSchema>;

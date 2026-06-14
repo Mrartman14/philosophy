@@ -14,7 +14,7 @@ const DescriptionSchema = z
 
 const VisibilityEnum = z.enum(["private", "public"]);
 
-const TrailIdField = z.string().uuid("Некорректный id маршрута");
+const TrailIdField = z.uuid("Некорректный id маршрута");
 
 /**
  * Парсит JSON-строку lecture_ids из скрытого поля формы в массив uuid лекций.
@@ -29,11 +29,11 @@ const LectureIdsJsonSchema = z
     try {
       parsed = JSON.parse(s);
     } catch {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Битый JSON в списке лекций" });
+      ctx.addIssue({ code: "custom", message: "Битый JSON в списке лекций" });
       return z.NEVER;
     }
     if (!Array.isArray(parsed)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Список должен быть массивом" });
+      ctx.addIssue({ code: "custom", message: "Список должен быть массивом" });
       return z.NEVER;
     }
     const ids = parsed as unknown[];
@@ -41,16 +41,16 @@ const LectureIdsJsonSchema = z
     const seen = new Set<string>();
     for (const item of ids) {
       if (typeof item !== "string") {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Элемент списка не строка" });
+        ctx.addIssue({ code: "custom", message: "Элемент списка не строка" });
         return z.NEVER;
       }
       // UUID v4 формат (как в остальных схемах слайса).
       if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Некорректный id лекции" });
+        ctx.addIssue({ code: "custom", message: "Некорректный id лекции" });
         return z.NEVER;
       }
       if (seen.has(item)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Лекция добавлена дважды" });
+        ctx.addIssue({ code: "custom", message: "Лекция добавлена дважды" });
         return z.NEVER;
       }
       seen.add(item);

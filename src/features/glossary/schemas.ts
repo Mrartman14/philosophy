@@ -7,7 +7,7 @@ export const TermCreateSchema = z.object({
 });
 
 export const TermBlocksUpdateSchema = z.object({
-  id: z.string().uuid("Некорректный id термина"),
+  id: z.uuid("Некорректный id термина"),
   blocks: z
     .string()
     .min(1, "Тело не может быть пустым")
@@ -16,7 +16,7 @@ export const TermBlocksUpdateSchema = z.object({
         const parsed: unknown = JSON.parse(s);
         if (!Array.isArray(parsed)) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: "Тело должно быть массивом блоков",
           });
           return z.NEVER;
@@ -24,7 +24,7 @@ export const TermBlocksUpdateSchema = z.object({
         return parsed as unknown[];
       } catch {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Битый JSON в теле формы",
         });
         return z.NEVER;
@@ -33,7 +33,7 @@ export const TermBlocksUpdateSchema = z.object({
 });
 
 export const TermIdSchema = z.object({
-  id: z.string().uuid("Некорректный id термина"),
+  id: z.uuid("Некорректный id термина"),
 });
 
 export type TermCreateInput = z.infer<typeof TermCreateSchema>;
