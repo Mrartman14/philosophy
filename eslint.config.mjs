@@ -3,6 +3,8 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import react from "eslint-plugin-react";
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import testingLibrary from "eslint-plugin-testing-library";
+import vitest from "eslint-plugin-vitest";
 
 const eslintConfig = [
   // Сгенерированные файлы не линтим: `pnpm generate:api` (openapi-typescript)
@@ -83,7 +85,53 @@ const eslintConfig = [
         },
       ],
       "import/no-duplicates": "error",
+      // Запрет циклических зависимостей — критично для слайс-архитектуры
+      // (циклы = скрытые баги + поломанный tree-shaking). На текущем коде 0 нарушений.
+      "import/no-cycle": ["error", { maxDepth: Infinity }],
     },
+  },
+  // Тест-линт: плагины testing-library и vitest НЕ регистрируются eslint-config-next,
+  // поэтому спред целого flat-пресета безопасен (нет "Cannot redefine plugin").
+  {
+    ...testingLibrary.configs["flat/react"],
+    files: ["src/**/*.test.{ts,tsx}"],
+  },
+  {
+    ...vitest.configs.recommended,
+    files: ["src/**/*.test.{ts,tsx}"],
+  },
+  // Осознанное послабление: no-container/no-node-access — про user-centric стиль
+  // (RTL-queries вместо прямого DOM). В тестах рендереров/редактора (ast-render,
+  // canvas-render, ast-editor) проверка DOM-структуры — это и есть предмет теста
+  // (AST-узел → конкретный DOM), RTL-queries там неприменимы. Остальные тест-правила
+  // остаются error везде.
+  {
+    files: [
+      "src/components/ast-render/**/*.test.{ts,tsx}",
+      "src/components/canvas-render/**/*.test.{ts,tsx}",
+      "src/components/ast-editor/**/*.test.{ts,tsx}",
+    ],
+    rules: {
+      "testing-library/no-node-access": "off",
+      "testing-library/no-container": "off",
+    },
+  },
+  // Тюнинг под фактический сетап проекта (документированные, не «глушилки»):
+  {
+    files: ["src/**/*.test.{ts,tsx}"],
+    rules: {
+      // vitest globals:false (см. vitest.config.ts) → RTL auto-cleanup НЕ активен,
+      // поэтому ручной afterEach(cleanup) обязателен, а не редундантен.
+      "testing-library/no-manual-cleanup": "off",
+      // vitest поддерживает второй аргумент-сообщение: expect(value, "message").
+      "vitest/valid-expect": ["error", { maxArgs: 2 }],
+    },
+  },
+  {
+    // canvasDataToRenderData — доменная map-функция, не RTL render(); правило
+    // render-result-naming-convention ложно матчит её по «render» в имени.
+    files: ["src/features/canvas/editor/render-map.test.ts"],
+    rules: { "testing-library/render-result-naming-convention": "off" },
   },
   // Guardrail 1: deep-imports into other features must go through their index.ts
   {
