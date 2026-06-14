@@ -9,8 +9,8 @@ describe("canPlaceholder", () => {
   });
 
   // Замените на реальные тесты после реализации:
-  // it("owner может удалить свой ресурс");
-  // it("owner не может удалить чужой без delete_any");
-  // it("status='inactive' блокирует");
-  // it("гость всегда false");
+  it.todo("owner может удалить свой ресурс");
+  it.todo("owner не может удалить чужой без delete_any");
+  it.todo("status='inactive' блокирует");
+  it.todo("гость всегда false");
 });

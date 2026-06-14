@@ -1,5 +1,5 @@
 // src/components/canvas-render/canvas-render.test.tsx
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 
 import { CanvasRender } from "./canvas-render";
@@ -12,8 +12,8 @@ const resolve: EntityRefResolver = (type, id) =>
 
 describe("CanvasRender", () => {
   it("пустой граф → плашка emptyText", () => {
-    const { getByText } = render(<CanvasRender data={{ nodes: [], edges: [] }} resolveEntityRef={resolve} />);
-    expect(getByText("Граф пуст.")).not.toBeNull();
+    render(<CanvasRender data={{ nodes: [], edges: [] }} resolveEntityRef={resolve} />);
+    expect(screen.getByText("Граф пуст.")).not.toBeNull();
   });
 
   it("рисует svg с узлами и ребром", () => {

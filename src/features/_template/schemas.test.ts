@@ -9,7 +9,7 @@ describe("PlaceholderSchema", () => {
   });
 
   // Замените на реальные тесты после реализации:
-  // it("rejects empty title");
-  // it("trims and accepts valid title");
-  // it("rejects description longer than max");
+  it.todo("rejects empty title");
+  it.todo("trims and accepts valid title");
+  it.todo("rejects description longer than max");
 });
