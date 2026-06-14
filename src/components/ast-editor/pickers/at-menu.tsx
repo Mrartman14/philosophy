@@ -1,7 +1,8 @@
 // src/components/ast-editor/pickers/at-menu.tsx
 "use client";
-import { useEffect, useState } from "react";
 import type { Editor } from "@tiptap/core";
+import { useEffect, useState } from "react";
+
 import {
   atSuggestionKey,
   closeAtSuggestion,

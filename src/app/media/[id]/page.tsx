@@ -1,6 +1,7 @@
 // src/app/media/[id]/page.tsx
 import { notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
+import { AnnotationsSection } from "@/features/annotations";
 import {
   MediaDetail,
   canDeleteMedia,
@@ -8,12 +9,12 @@ import {
   getMediaById,
   getMediaContainers,
 } from "@/features/media";
-import { AnnotationsSection } from "@/features/annotations";
 import {
   ShareButton,
   canCreateShareLink,
   getShareLinksFor,
 } from "@/features/share-links";
+import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;

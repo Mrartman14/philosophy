@@ -1,6 +1,6 @@
 // src/app/submissions/[id]/page.tsx
 import { notFound, redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   getSubmissionById,
   getFormById,
@@ -11,6 +11,7 @@ import {
   SubmissionEditForm,
   SubmissionActions,
 } from "@/features/forms";
+import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;

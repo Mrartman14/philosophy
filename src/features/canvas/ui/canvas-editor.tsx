@@ -1,25 +1,28 @@
 "use client";
 // src/features/canvas/ui/canvas-editor.tsx
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+
 import type { Point, RenderNode, Side } from "@/components/canvas-render";
+import { useToast } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
-import { resolveEntityRefView } from "../entity-ref";
+
 import { updateCanvas } from "../actions";
-import type { Canvas, CanvasRefEntityType } from "../types";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
-import { EditorToolbar } from "./editor-toolbar";
-import { EditorNodeLayer } from "./editor-node-layer";
-import { EditorEdgeLayer } from "./editor-edge-layer";
-import { EditorTextOverlay } from "./editor-text-overlay";
-import { EditorInspector } from "./editor-inspector";
-import { EntityRefDialog } from "./entity-ref-dialog";
+import { resolveEntityRefView } from "../entity-ref";
+import type { Canvas, CanvasRefEntityType } from "../types";
+
 import { CanvasEditForm } from "./canvas-edit-form";
+import { EditorEdgeLayer } from "./editor-edge-layer";
+import { EditorInspector } from "./editor-inspector";
+import { EditorNodeLayer } from "./editor-node-layer";
+import { EditorTextOverlay } from "./editor-text-overlay";
+import { EditorToolbar } from "./editor-toolbar";
+import { EntityRefDialog } from "./entity-ref-dialog";
 
 interface Props {
   canvas: Canvas;

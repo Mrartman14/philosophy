@@ -1,7 +1,9 @@
 // src/features/documents/ui/document-admin-row.tsx
 import Link from "next/link";
-import { DocumentDeleteButton } from "./document-delete-button";
+
 import type { Document } from "../types";
+
+import { DocumentDeleteButton } from "./document-delete-button";
 
 interface Props {
   document: Document;

@@ -1,8 +1,9 @@
 // src/components/ast-render/block-renderer.tsx
 import type { ReactNode } from "react";
-import type { AstBlock, AstRenderContext } from "./types";
+
 import { InlineRenderer } from "./inline-renderer";
 import { ImageNode } from "./nodes/image";
+import type { AstBlock, AstRenderContext } from "./types";
 
 interface Props {
   block: AstBlock;

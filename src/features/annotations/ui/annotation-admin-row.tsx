@@ -1,6 +1,8 @@
 // src/features/annotations/ui/annotation-admin-row.tsx
 import { AstRender } from "@/components/ast-render";
+
 import type { Annotation } from "../types";
+
 import { AnnotationDeleteButton } from "./annotation-delete-button";
 
 interface Props {

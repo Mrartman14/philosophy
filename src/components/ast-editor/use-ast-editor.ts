@@ -1,13 +1,14 @@
 "use client";
 
-import { useEditor } from "@tiptap/react";
-import type { Editor } from "@tiptap/react";
 import type { Extensions } from "@tiptap/core";
-import type { AstBlock, EntityContext, SchemaSnapshot } from "./types";
-import { buildExtensions } from "./extensions";
+import type { Editor } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
+
 import { deserialize } from "./deserializer";
+import { buildExtensions } from "./extensions";
 import { serialize } from "./serializer";
 import type { ProseMirrorJSON } from "./serializer";
+import type { AstBlock, EntityContext, SchemaSnapshot } from "./types";
 
 export interface UseAstEditorOptions {
   defaultValue?: AstBlock[] | undefined;

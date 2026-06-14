@@ -1,6 +1,6 @@
 // src/app/settings/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   PreferencesForm,
   PushSubscriptionToggle,
@@ -9,6 +9,7 @@ import {
   getVapidKey,
   type ReadingMode,
 } from "@/features/preferences";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Настройки" };
 

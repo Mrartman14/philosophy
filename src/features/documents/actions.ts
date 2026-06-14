@@ -2,7 +2,10 @@
 "use server";
 import "server-only";
 import { cookies } from "next/headers";
+
 import { createApiClient } from "@/api/client";
+import { Tags } from "@/api/tags";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -14,9 +17,8 @@ import {
   requireActive,
   requireCapability,
 } from "@/utils/permissions";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
-import { Tags } from "@/api/tags";
+
 import { canCreateDocument, canListAdminDocuments } from "./permissions";
 import {
   DocumentCreateSchema,

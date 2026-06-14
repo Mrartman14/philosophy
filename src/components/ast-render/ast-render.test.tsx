@@ -1,7 +1,7 @@
 // src/components/ast-render/ast-render.test.tsx
-import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
-import { AstRender } from "./ast-render";
+import { describe, it, expect } from "vitest";
+
 import {
   PARAGRAPH_PLAIN,
   PARAGRAPH_WITH_BOLD,
@@ -27,6 +27,7 @@ import {
   PARAGRAPH_WITH_MEDIA_REF,
   PARAGRAPH_WITH_COMMENT_REF,
 } from "./__fixtures__/blocks";
+import { AstRender } from "./ast-render";
 
 describe("AstRender — paragraph + inline marks", () => {
   it("рендерит plain paragraph", () => {

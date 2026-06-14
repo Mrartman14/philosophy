@@ -1,5 +1,6 @@
 // src/features/canvas/api.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { getCanvasById } from "./api";
 
 // createApiClient — единственная внешняя зависимость getCanvasById. Стабим её,

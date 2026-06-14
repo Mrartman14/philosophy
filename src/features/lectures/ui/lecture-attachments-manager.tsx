@@ -1,5 +1,6 @@
 "use client";
 import { useCallback } from "react";
+
 import {
   AttachmentsPanel,
   AttachTargetPicker,
@@ -8,6 +9,7 @@ import type {
   AttachmentItem,
   AttachmentActionResult,
 } from "@/components/attachments";
+
 import {
   attachToLecture,
   detachFromLecture,

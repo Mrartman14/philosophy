@@ -1,6 +1,7 @@
 // src/components/ast-render/types.ts
-import type { components } from "@/api/schema";
 import type { ReactNode } from "react";
+
+import type { components } from "@/api/schema";
 
 export type AstBlock = components["schemas"]["ast.Block"];
 export type AstNode = components["schemas"]["ast.Node"];

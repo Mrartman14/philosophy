@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, fireEvent, screen, waitFor, cleanup } from "@testing-library/react";
+import { describe, it, expect, vi, afterEach } from "vitest";
+
 import "@testing-library/jest-dom/vitest";
 import { AsyncCombobox } from "./async-combobox";
 

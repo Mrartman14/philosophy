@@ -20,10 +20,10 @@ export function CommentExportLinks({ kind, id }: Props) {
       : `${API_URL}/api/comments/${encodeURIComponent(id)}/subtree`;
   return (
     <span className="flex items-center gap-2 text-xs">
-      <a href={`${base}.md`} className="hover:underline" target="_blank" rel="noopener">
+      <a href={`${base}.md`} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .md
       </a>
-      <a href={`${base}.txt`} className="hover:underline" target="_blank" rel="noopener">
+      <a href={`${base}.txt`} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .txt
       </a>
     </span>

@@ -14,10 +14,10 @@ export function DocumentExportLinks({ id, className }: Props) {
   const urls = documentExportUrls(id);
   return (
     <span className={className ?? "flex items-center gap-2 text-xs"}>
-      <a href={urls.md} className="hover:underline" target="_blank" rel="noopener">
+      <a href={urls.md} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .md
       </a>
-      <a href={urls.txt} className="hover:underline" target="_blank" rel="noopener">
+      <a href={urls.txt} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .txt
       </a>
     </span>

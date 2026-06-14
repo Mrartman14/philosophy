@@ -3,11 +3,11 @@
 // Не используется в текущем root-layout (см. cleanup в d146bbd7).
 // Будет восстановлен фичей `features/lectures` — не удалять при cleanup.
 
-import Link from "next/link";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
+import Link from "next/link";
 
-import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 import type { Lecture } from "@/api/types";
+import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 
 export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
 

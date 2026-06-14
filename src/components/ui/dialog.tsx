@@ -2,6 +2,7 @@
 // src/components/ui/dialog.tsx
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { isValidElement, type ReactElement, type ReactNode } from "react";
+
 import { cn } from "./cn";
 
 interface DialogProps {

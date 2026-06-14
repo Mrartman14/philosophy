@@ -1,5 +1,6 @@
 // src/features/media/ui/media-containers.tsx
 import Link from "next/link";
+
 import type { MediaAttachment } from "../types";
 
 interface Props {

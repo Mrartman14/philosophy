@@ -1,7 +1,8 @@
 // src/app/admin/lectures/new/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { canCreateLecture, LectureCreateForm } from "@/features/lectures";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Новая лекция" };
 

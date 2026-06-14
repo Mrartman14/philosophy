@@ -1,7 +1,7 @@
 // src/features/users/errors.ts
 import "server-only";
-import { ForbiddenError } from "@/utils/permissions";
 import type { ApiError } from "@/utils/api-error";
+import { ForbiddenError } from "@/utils/permissions";
 
 /** Алиас общего {@link ApiError} — `code` типизирован сгенерированным
  * union `apperror.Code` (источник истины — `internal/apperror/codes.go`). */

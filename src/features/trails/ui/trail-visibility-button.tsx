@@ -1,8 +1,10 @@
 "use client";
 // src/features/trails/ui/trail-visibility-button.tsx
 import { useActionState } from "react";
+
 import { Form, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { setTrailVisibility } from "../actions";
 import type { Trail } from "../types";
 

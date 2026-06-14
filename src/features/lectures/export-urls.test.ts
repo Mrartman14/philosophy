@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { lectureExportUrls } from "./export-urls";
 
 describe("lectureExportUrls", () => {

@@ -12,10 +12,12 @@ vi.mock("./actions", () => ({
 }));
 
 import { Editor } from "@tiptap/core";
-import * as actions from "./actions";
-import { RefMenu } from "./ref-menu";
+
 import { buildExtensions } from "../extensions";
 import type { SchemaSnapshot } from "../types";
+
+import * as actions from "./actions";
+import { RefMenu } from "./ref-menu";
 
 const mocked = actions as unknown as { searchLectures: ReturnType<typeof vi.fn> };
 

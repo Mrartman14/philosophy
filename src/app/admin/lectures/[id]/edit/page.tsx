@@ -1,6 +1,6 @@
 // src/app/admin/lectures/[id]/edit/page.tsx
 import { forbidden, notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   canDeleteLecture,
   canManageCover,
@@ -16,6 +16,7 @@ import {
   getTags,
   LectureTagsForm,
 } from "@/features/tags";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Редактирование лекции" };
 

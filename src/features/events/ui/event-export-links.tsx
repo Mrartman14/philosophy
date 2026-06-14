@@ -17,7 +17,7 @@ export function EventExportLinks({ id }: Props) {
         href={`/admin/events/${id}/export?format=md`}
         className="hover:underline"
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
       >
         .md
       </a>
@@ -25,7 +25,7 @@ export function EventExportLinks({ id }: Props) {
         href={`/admin/events/${id}/export?format=txt`}
         className="hover:underline"
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
       >
         .txt
       </a>

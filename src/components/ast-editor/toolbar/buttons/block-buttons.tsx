@@ -1,10 +1,12 @@
 "use client";
-import type { Editor } from "@tiptap/core";
 import { Toolbar } from "@base-ui/react/toolbar";
-import { QuoteIcon } from "@/assets/icons/quote-icon";
+import type { Editor } from "@tiptap/core";
+
 import { CodeBlockIcon } from "@/assets/icons/code-block-icon";
 import { HorizontalRuleIcon } from "@/assets/icons/horizontal-rule-icon";
+import { QuoteIcon } from "@/assets/icons/quote-icon";
 import { TableIcon } from "@/assets/icons/table-icon";
+
 import type { SchemaSnapshot, EntityContext } from "../../types";
 
 interface Props {

@@ -1,6 +1,11 @@
 // src/app/trails/[id]/page.tsx
 import { notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
+import {
+  ShareButton,
+  canCreateShareLink,
+  getShareLinksFor,
+} from "@/features/share-links";
 import {
   canEditTrail,
   canDeleteTrail,
@@ -13,11 +18,7 @@ import {
   TrailDeleteButton,
 } from "@/features/trails";
 import type { TrailLectureSummary } from "@/features/trails";
-import {
-  ShareButton,
-  canCreateShareLink,
-  getShareLinksFor,
-} from "@/features/share-links";
+import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;

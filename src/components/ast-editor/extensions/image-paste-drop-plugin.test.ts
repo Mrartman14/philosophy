@@ -1,8 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Editor } from "@tiptap/core";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { buildExtensions } from "./index";
-import { makePngFile } from "../upload/__fixtures__/png-1x1";
+
 import type { SchemaSnapshot } from "../types";
+import { makePngFile } from "../upload/__fixtures__/png-1x1";
 
 vi.mock("../upload/upload-image", () => ({
   uploadImage: vi.fn(() => ({

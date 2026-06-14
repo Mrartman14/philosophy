@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { getLectureMedia } from "../api";
 
 interface Props {

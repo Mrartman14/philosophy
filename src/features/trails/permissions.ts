@@ -2,6 +2,7 @@
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
 import { can, isMutationAllowed, ownerOrCap } from "@/utils/permissions";
+
 import type { Trail } from "./types";
 
 /**

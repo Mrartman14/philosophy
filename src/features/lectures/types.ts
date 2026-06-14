@@ -1,6 +1,6 @@
 // src/features/lectures/types.ts
-import type { Lecture as LectureSchema } from "@/api/types";
 import type { components } from "@/api/schema";
+import type { Lecture as LectureSchema } from "@/api/types";
 
 export type Lecture = LectureSchema;
 export type LectureVisibility = components["schemas"]["lecture.Visibility"];

@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from "vitest";
 import { renderHook } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from "vitest";
+
 import { useDriftWarn } from "./drift-warn";
 import type { SchemaSnapshot } from "./types";
 

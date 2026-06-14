@@ -1,9 +1,11 @@
 "use client";
 // src/features/canvas/ui/canvas-visibility-button.tsx
-import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+
 import { Button, useToast } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { setCanvasVisibility } from "../actions";
 import type { Canvas } from "../types";
 

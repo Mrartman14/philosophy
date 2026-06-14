@@ -1,7 +1,9 @@
 // src/features/canvas/api.ts
 import "server-only";
 import { cache } from "react";
+
 import { createApiClient } from "@/api/client";
+
 import type {
   AttachmentDTO,
   Canvas,

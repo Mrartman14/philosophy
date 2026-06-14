@@ -1,13 +1,15 @@
 // src/features/media/permissions.test.ts
 import { describe, it, expect } from "vitest";
+
 import type { Me } from "@/utils/me";
-import type { Media } from "./types";
+
 import {
   canCreateMedia,
   canDeleteAnyMedia,
   canDeleteMedia,
   canChangeMediaVisibility,
 } from "./permissions";
+import type { Media } from "./types";
 
 const guest = null;
 

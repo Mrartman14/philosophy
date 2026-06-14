@@ -1,7 +1,7 @@
 // src/app/trails/page.tsx
 import { Pagination } from "@/components/ui";
-import { parseNonNegativeInt } from "@/utils/paging";
 import { getTrails, TrailPublicList } from "@/features/trails";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Маршруты" };
 

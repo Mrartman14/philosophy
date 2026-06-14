@@ -1,9 +1,11 @@
 "use client";
 // src/features/trails/ui/trail-create-form.tsx
-import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+
 import { Form, FormField, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { createTrail } from "../actions";
 import type { Trail } from "../types";
 

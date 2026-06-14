@@ -1,5 +1,6 @@
 // src/features/_template/schemas.test.ts
 import { describe, it, expect } from "vitest";
+
 import { PlaceholderSchema } from "./schemas";
 
 describe("PlaceholderSchema", () => {

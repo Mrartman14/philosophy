@@ -1,5 +1,6 @@
 // src/features/canvas/schemas.test.ts
 import { describe, it, expect } from "vitest";
+
 import {
   CanvasDataSchema,
   CanvasCreateSchema,

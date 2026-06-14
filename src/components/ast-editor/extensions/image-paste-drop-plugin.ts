@@ -1,5 +1,6 @@
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
+
 import { uploadImage } from "../upload/upload-image";
 
 export const imagePasteDropPluginKey = new PluginKey("ast-editor-image-paste-drop");

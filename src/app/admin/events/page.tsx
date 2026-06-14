@@ -1,8 +1,7 @@
 // src/app/admin/events/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { Pagination } from "@/components/ui";
-import { parseNonNegativeInt } from "@/utils/paging";
 import {
   canCreateEvent,
   canDeleteEvent,
@@ -12,6 +11,8 @@ import {
   EventAdminRow,
   EventCreateForm,
 } from "@/features/events";
+import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;

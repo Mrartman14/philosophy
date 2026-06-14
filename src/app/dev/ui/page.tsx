@@ -1,6 +1,7 @@
 // src/app/dev/ui/page.tsx
-import { notFound } from "next/navigation";
 import { Field } from "@base-ui/react/field";
+import { notFound } from "next/navigation";
+
 import {
   Button,
   IconButton,

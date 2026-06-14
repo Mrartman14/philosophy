@@ -1,5 +1,6 @@
 // src/features/documents/ui/document-detail.tsx
 import { AstRender } from "@/components/ast-render";
+
 import type { Document } from "../types";
 
 interface Props {

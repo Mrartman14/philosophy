@@ -1,12 +1,14 @@
 // src/components/ast-editor/toolbar/slash-menu.test.tsx
 import "@testing-library/jest-dom/vitest";
-import { describe, it, expect, afterEach } from "vitest";
-import { Editor, Extension } from "@tiptap/core";
 import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
-import { SlashMenu } from "./slash-menu";
-import { createSlashMenuPlugin, slashMenuKey } from "./slash-menu-plugin";
+import { Editor, Extension } from "@tiptap/core";
+import { describe, it, expect, afterEach } from "vitest";
+
 import { buildExtensions } from "../extensions";
 import type { SchemaSnapshot } from "../types";
+
+import { SlashMenu } from "./slash-menu";
+import { createSlashMenuPlugin, slashMenuKey } from "./slash-menu-plugin";
 
 afterEach(cleanup);
 

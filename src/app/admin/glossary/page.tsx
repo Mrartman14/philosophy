@@ -1,6 +1,5 @@
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
-import { parseNonNegativeInt } from "@/utils/paging";
+
 import {
   canCreateTerm,
   canUpdateTerm,
@@ -10,6 +9,8 @@ import {
   GlossaryCreateForm,
   GlossarySearchForm,
 } from "@/features/glossary";
+import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 interface Props {
   searchParams: Promise<{ q?: string; offset?: string }>;

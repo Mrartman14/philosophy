@@ -1,5 +1,6 @@
 // src/features/canvas/editor/render-map.ts
 import type { RenderData, RenderEdge, RenderNode } from "@/components/canvas-render";
+
 import type { CanvasData } from "../types";
 
 /**

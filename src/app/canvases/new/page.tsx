@@ -1,7 +1,8 @@
 // src/app/canvases/new/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { canCreateCanvas, CanvasCreateForm } from "@/features/canvas";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Новый канвас" };
 

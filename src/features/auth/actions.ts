@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 import { createFormAction, parseFormData } from "@/utils/create-action";
 
 import { setAuthCookie, clearAuthCookie } from "./cookie";
-import { LoginSchema, RegisterSchema } from "./schemas";
 import { safeNextPath } from "./safe-next";
+import { LoginSchema, RegisterSchema } from "./schemas";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 

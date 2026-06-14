@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { deserialize } from "./deserializer";
+
 import { fixtureParagraph, fixtureCodeBlock, fixtureLink } from "./__fixtures__/sample-blocks";
+import { deserialize } from "./deserializer";
 import type { SchemaSnapshot } from "./types";
 
 const fakeSnapshot: SchemaSnapshot = {

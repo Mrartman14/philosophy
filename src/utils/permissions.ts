@@ -1,5 +1,6 @@
-import type { MaybeMe } from "./me";
 import type { Capability } from "@/api/types";
+
+import type { MaybeMe } from "./me";
 
 /**
  * Реестр capability фронта — ре-экспорт сгенерированного `rbac.Capability`

@@ -1,5 +1,6 @@
 // src/components/ast-render/nodes/image.tsx
 import type { ReactNode } from "react";
+
 import { resolveStorageUrl } from "@/components/ast-editor/upload/storage-url";
 
 interface Props {

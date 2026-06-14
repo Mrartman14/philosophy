@@ -1,7 +1,7 @@
 // src/app/admin/lectures/page.tsx
 import Link from "next/link";
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   Button,
   EmptyState,
@@ -19,6 +19,7 @@ import {
   getLectures,
   LectureAdminRow,
 } from "@/features/lectures";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Админ — лекции" };
 

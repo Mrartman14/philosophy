@@ -1,12 +1,14 @@
 // src/components/ast-editor/toolbar/buttons/image-button.tsx
 "use client";
-import { useRef, useState, type ChangeEvent } from "react";
-import type { Editor } from "@tiptap/core";
 import { Toolbar } from "@base-ui/react/toolbar";
+import type { Editor } from "@tiptap/core";
+import { useRef, useState, type ChangeEvent } from "react";
+
 import { ImageIcon } from "@/assets/icons/image-icon";
 import { useToast } from "@/components/ui";
-import { uploadImage } from "../../upload/upload-image";
+
 import type { SchemaSnapshot, EntityContext } from "../../types";
+import { uploadImage } from "../../upload/upload-image";
 
 interface Props {
   editor: Editor;

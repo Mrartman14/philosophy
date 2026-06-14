@@ -2,12 +2,13 @@
 "use server";
 import "server-only";
 import { createApiClient } from "@/api/client";
+import { Tags } from "@/api/tags";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
-import { Tags } from "@/api/tags";
+
 import { canDeleteMedia, canChangeMediaVisibility } from "./permissions";
 import { MediaIdSchema, MediaVisibilitySchema } from "./schemas";
 import type { Media } from "./types";

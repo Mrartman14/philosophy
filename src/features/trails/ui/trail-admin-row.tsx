@@ -1,7 +1,9 @@
 // src/features/trails/ui/trail-admin-row.tsx
 import Link from "next/link";
-import { TrailDeleteButton } from "./trail-delete-button";
+
 import type { Trail } from "../types";
+
+import { TrailDeleteButton } from "./trail-delete-button";
 
 interface Props {
   trail: Trail;

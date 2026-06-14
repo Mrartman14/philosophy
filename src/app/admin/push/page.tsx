@@ -1,7 +1,8 @@
 // src/app/admin/push/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { PushSendForm, canSendPush } from "@/features/preferences";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Push-уведомления — админ" };
 

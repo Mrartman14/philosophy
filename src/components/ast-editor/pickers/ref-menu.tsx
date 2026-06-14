@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
 import type { Editor } from "@tiptap/core";
-import { LecturePicker } from "./lecture-picker";
-import { GlossaryPicker } from "./glossary-picker";
-import { DocumentPicker } from "./document-picker";
-import { MediaPicker } from "./media-picker";
+import { useState } from "react";
+
 import { Comment2StagePicker } from "./comment-2stage-picker";
+import { DocumentPicker } from "./document-picker";
+import { GlossaryPicker } from "./glossary-picker";
+import { LecturePicker } from "./lecture-picker";
+import { MediaPicker } from "./media-picker";
 
 // canvas вне скоупа программы покрытия (спека 2026-06-12 §4): CanvasPicker
 // остаётся в репо dormant (pickers/canvas-picker.tsx), в меню не подключён,

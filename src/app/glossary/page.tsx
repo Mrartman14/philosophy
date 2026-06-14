@@ -1,10 +1,10 @@
-import { parseNonNegativeInt } from "@/utils/paging";
 import {
   getTerms,
   GlossaryExportLinks,
   GlossaryList,
   GlossarySearchForm,
 } from "@/features/glossary";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 interface Props {
   searchParams: Promise<{ q?: string; offset?: string }>;

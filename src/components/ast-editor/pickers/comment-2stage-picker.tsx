@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { LecturePicker } from "./lecture-picker";
+
 import { CommentPicker } from "./comment-picker";
+import { LecturePicker } from "./lecture-picker";
 
 export interface Comment2StagePickerProps {
   defaultLectureId?: string | undefined;

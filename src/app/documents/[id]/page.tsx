@@ -1,7 +1,8 @@
 // src/app/documents/[id]/page.tsx
 import { notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { AnnotationsSection } from "@/features/annotations";
 import {
   canEditDocument,
   canDeleteDocument,
@@ -16,12 +17,12 @@ import {
   DocumentRevisions,
   DocumentContainers,
 } from "@/features/documents";
-import { AnnotationsSection } from "@/features/annotations";
 import {
   ShareButton,
   canCreateShareLink,
   getShareLinksFor,
 } from "@/features/share-links";
+import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;

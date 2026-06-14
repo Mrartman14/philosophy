@@ -1,8 +1,8 @@
 // src/app/canvases/page.tsx
-import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getMe } from "@/utils/me";
-import { parseNonNegativeInt } from "@/utils/paging";
+import { redirect } from "next/navigation";
+
+import { Button } from "@/components/ui";
 import {
   canCreateCanvas,
   getCanvases,
@@ -10,7 +10,8 @@ import {
   CanvasSearch,
   CanvasPagination,
 } from "@/features/canvas";
-import { Button } from "@/components/ui";
+import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Канвасы" };
 

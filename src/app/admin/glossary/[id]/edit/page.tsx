@@ -1,5 +1,6 @@
 import { forbidden, notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
+import { SchemaContextProvider } from "@/components/ast-editor";
 import {
   canUpdateTerm,
   canDeleteTerm,
@@ -8,7 +9,7 @@ import {
   GlossaryDeleteButton,
   GlossaryRevisions,
 } from "@/features/glossary";
-import { SchemaContextProvider } from "@/components/ast-editor";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Глоссарий — редактирование термина" };
 

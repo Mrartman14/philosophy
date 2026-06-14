@@ -1,6 +1,7 @@
 "use client";
-import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+
 import {
   Form,
   FormField,
@@ -8,6 +9,7 @@ import {
   TextInput,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { createTerm } from "../actions";
 import type { Term } from "../types";
 

@@ -1,5 +1,5 @@
 import { forbidden, notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   canAttachToLecture,
   canManageAttachments,
@@ -11,6 +11,7 @@ import {
   searchMediaForAttach,
 } from "@/features/lectures";
 import type { ManagedAttachment } from "@/features/lectures";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Прикрепления лекции" };
 

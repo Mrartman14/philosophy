@@ -1,11 +1,13 @@
 // src/features/annotations/ui/annotations-section.tsx
-import { getMe } from "@/utils/me";
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getMe } from "@/utils/me";
+
 import { getAnnotationsFor } from "../api";
 import { canCreateAnnotation, canEditAnnotation } from "../permissions";
 import type { ParentEntityType } from "../types";
-import { AnnotationCard } from "./annotation-card";
+
 import { AnnotationAnchorContext } from "./annotation-anchor-context";
+import { AnnotationCard } from "./annotation-card";
 import { AnnotationCreateForm } from "./annotation-create-form";
 import { AnnotationDeleteButton } from "./annotation-delete-button";
 import { AnnotationExportLinks } from "./annotation-export-links";

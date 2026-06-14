@@ -1,6 +1,7 @@
 // src/features/auth/ui/register-form.tsx
 "use client";
 import { useActionState } from "react";
+
 import {
   Form,
   FormField,
@@ -8,6 +9,7 @@ import {
   TextInput,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { registerAction } from "../actions";
 
 const initial: ActionResult<undefined> = { success: true, data: undefined };

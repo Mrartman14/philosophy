@@ -1,20 +1,24 @@
 // src/features/comments/ui/comment-section.tsx
 import type { ReactNode } from "react";
-import { getMe } from "@/utils/me";
+
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getMe } from "@/utils/me";
+
 import {
   getCommentSchema,
   getLectureComments,
   searchComments,
 } from "../api";
-import { canCreateComment, canSearchComments } from "../permissions";
-import { CommentTree } from "./comment-tree";
-import { CommentCreateForm } from "./comment-create-form";
-import { CommentSearch } from "./comment-search";
-import { CommentExportLinks } from "./comment-export-links";
-import { commentTypeLabel } from "./comment-type-badge";
 import type { CommentListResult, CommentSearchResult } from "../api";
+import { canCreateComment, canSearchComments } from "../permissions";
 import type { CommentSchema } from "../types";
+
+import { CommentCreateForm } from "./comment-create-form";
+import { CommentExportLinks } from "./comment-export-links";
+import { CommentSearch } from "./comment-search";
+import { CommentTree } from "./comment-tree";
+import { commentTypeLabel } from "./comment-type-badge";
+
 
 interface Props {
   lectureId: string;

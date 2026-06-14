@@ -1,6 +1,7 @@
 "use client";
-import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+
 import {
   Form,
   FormField,
@@ -10,6 +11,7 @@ import {
   Textarea,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { createLecture } from "../actions";
 import type { Lecture } from "../types";
 

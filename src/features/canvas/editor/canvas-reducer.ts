@@ -1,11 +1,12 @@
 // src/features/canvas/editor/canvas-reducer.ts
-import { canvasDataToRenderData } from "./render-map";
-import { applyResize } from "./geometry-editor";
-import { snapToGrid } from "./coords";
-import { newId } from "./id";
-import { GRID_SIZE, UNDO_LIMIT } from "./editor-types";
 import type { CanvasData, CanvasEdge, CanvasNode } from "../types";
+
+import { snapToGrid } from "./coords";
+import { GRID_SIZE, UNDO_LIMIT } from "./editor-types";
 import type { EditorCommand, EditorState, Viewport } from "./editor-types";
+import { applyResize } from "./geometry-editor";
+import { newId } from "./id";
+import { canvasDataToRenderData } from "./render-map";
 
 const DEFAULT_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 };
 

@@ -1,5 +1,6 @@
 // src/features/forms/ui/form-after-submit.tsx
 import { AstRender } from "@/components/ast-render";
+
 import type { AstBlock } from "../types";
 
 export function FormAfterSubmit({ blocks }: { blocks: AstBlock[] }) {

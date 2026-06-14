@@ -1,6 +1,7 @@
 "use client";
 // src/features/canvas/ui/canvas-search.tsx
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 import { TextInput } from "@/components/ui";
 
 /** Поиск по title через ?q=. Сбрасывает offset при изменении запроса. */

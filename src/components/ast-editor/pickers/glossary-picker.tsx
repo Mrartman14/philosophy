@@ -1,6 +1,6 @@
 "use client";
-import { AsyncCombobox } from "./async-combobox";
 import { searchGlossary, type GlossaryTerm } from "./actions";
+import { AsyncCombobox } from "./async-combobox";
 
 export interface GlossaryPickerProps { onSelect: (id: string, label: string) => void }
 

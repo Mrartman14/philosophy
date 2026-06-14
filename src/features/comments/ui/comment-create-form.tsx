@@ -1,12 +1,15 @@
 "use client";
 // src/features/comments/ui/comment-create-form.tsx
 import { useActionState, useState } from "react";
-import { Form, FormField, Select, SubmitButton } from "@/components/ui";
+
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
+import { Form, FormField, Select, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { createComment } from "../actions";
-import { commentTypeLabel } from "./comment-type-badge";
 import type { Comment, CommentType } from "../types";
+
+import { commentTypeLabel } from "./comment-type-badge";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
 

@@ -1,6 +1,8 @@
 // src/features/audit/permissions.test.ts
 import { describe, it, expect } from "vitest";
+
 import type { Me } from "@/utils/me";
+
 import { canReadAudit } from "./permissions";
 
 const guest = null;

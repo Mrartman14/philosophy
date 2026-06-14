@@ -1,8 +1,10 @@
 "use client";
 // src/features/users/ui/user-role-control.tsx
-import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+
 import { Button, Select, useToast } from "@/components/ui";
+
 import { setUserRole } from "../actions";
 import type { UserRole } from "../types";
 

@@ -1,5 +1,6 @@
-import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Mark as PMMark } from "@tiptap/pm/model";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
+
 import type { SchemaSnapshot, ExportedAttr } from "../types";
 
 export const attrPluginKey = new PluginKey("ast-editor-attrs");

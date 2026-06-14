@@ -2,7 +2,9 @@
 // src/features/media/ui/media-visibility-form.tsx
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+
 import { setMediaVisibility } from "../actions";
 
 interface Props {

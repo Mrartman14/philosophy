@@ -2,11 +2,12 @@
 "use server";
 import "server-only";
 import { createApiClient } from "@/api/client";
+import { Tags } from "@/api/tags";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
-import { Tags } from "@/api/tags";
+
 import { rethrowUserApiError } from "./errors";
 import { canModerateUsers } from "./permissions";
 import { UserRoleUpdateSchema, UserStatusUpdateSchema } from "./schemas";

@@ -1,8 +1,10 @@
 "use client";
 // src/features/documents/ui/document-visibility-button.tsx
 import { useActionState } from "react";
+
 import { Form, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { setDocumentVisibility } from "../actions";
 import type { Document } from "../types";
 

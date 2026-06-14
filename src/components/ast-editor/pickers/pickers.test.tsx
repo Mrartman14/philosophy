@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
-import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, afterEach } from "vitest";
 
 vi.mock("./actions", () => ({
   searchLectures: vi.fn(),
@@ -12,13 +12,13 @@ vi.mock("./actions", () => ({
 }));
 
 import * as actions from "./actions";
-import { LecturePicker } from "./lecture-picker";
-import { GlossaryPicker } from "./glossary-picker";
-import { DocumentPicker } from "./document-picker";
 import { CanvasPicker } from "./canvas-picker";
-import { MediaPicker } from "./media-picker";
-import { CommentPicker } from "./comment-picker";
 import { Comment2StagePicker } from "./comment-2stage-picker";
+import { CommentPicker } from "./comment-picker";
+import { DocumentPicker } from "./document-picker";
+import { GlossaryPicker } from "./glossary-picker";
+import { LecturePicker } from "./lecture-picker";
+import { MediaPicker } from "./media-picker";
 
 const mocked = actions as unknown as {
   searchLectures: ReturnType<typeof vi.fn>;

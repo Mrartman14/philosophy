@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { loadSchema, __resetSchemaCache } from "./schema-cache";
 
 describe("schema-cache", () => {

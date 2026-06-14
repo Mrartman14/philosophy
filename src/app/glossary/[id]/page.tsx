@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
+
+import { AnnotationsSection } from "@/features/annotations";
 import {
   getTermById,
   GlossaryDetail,
   GlossaryExportLinks,
 } from "@/features/glossary";
-import { AnnotationsSection } from "@/features/annotations";
 
 interface Props {
   params: Promise<{ id: string }>;

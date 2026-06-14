@@ -1,7 +1,8 @@
 "use client";
 // src/features/events/ui/event-create-form.tsx
-import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
+
 import {
   Checkbox,
   Form,
@@ -10,6 +11,7 @@ import {
   TextInput,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { createEvent } from "../actions";
 import type { CalendarEvent } from "../types";
 

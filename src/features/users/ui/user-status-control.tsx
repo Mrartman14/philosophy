@@ -1,8 +1,10 @@
 "use client";
 // src/features/users/ui/user-status-control.tsx
-import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+
 import { Button, ConfirmDialog, Select, useToast } from "@/components/ui";
+
 import { setUserStatus } from "../actions";
 import type { UserStatus } from "../types";
 

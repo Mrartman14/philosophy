@@ -1,7 +1,9 @@
 "use client";
 // src/features/canvas/ui/canvas-delete-button.tsx
 import { useRouter } from "next/navigation";
+
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+
 import { deleteCanvas } from "../actions";
 
 interface Props {

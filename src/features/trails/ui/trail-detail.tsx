@@ -1,5 +1,6 @@
 // src/features/trails/ui/trail-detail.tsx
 import Link from "next/link";
+
 import type { TrailWithItems, TrailLectureSummary } from "../types";
 
 interface Props {

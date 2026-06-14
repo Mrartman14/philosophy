@@ -1,6 +1,6 @@
 // src/app/admin/tags/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { EmptyState, Pagination } from "@/components/ui";
 import {
   canCreateTag,
@@ -10,6 +10,7 @@ import {
   TagAdminRow,
   TagCreateForm,
 } from "@/features/tags";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Теги — админ" };
 

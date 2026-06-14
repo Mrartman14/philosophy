@@ -1,12 +1,14 @@
 "use client";
 // src/features/canvas/ui/entity-ref-dialog.tsx
 import { useState } from "react";
-import { Dialog, Select, TextInput, Button } from "@/components/ui";
-import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker";
-import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
-import { GlossaryPicker } from "@/components/ast-editor/pickers/glossary-picker";
-import { MediaPicker } from "@/components/ast-editor/pickers/media-picker";
+
 import { CanvasPicker } from "@/components/ast-editor/pickers/canvas-picker";
+import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker";
+import { GlossaryPicker } from "@/components/ast-editor/pickers/glossary-picker";
+import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
+import { MediaPicker } from "@/components/ast-editor/pickers/media-picker";
+import { Dialog, Select, TextInput, Button } from "@/components/ui";
+
 import type { CanvasRefEntityType } from "../types";
 
 /** Все 10 типов entity_ref (порядок UI). */

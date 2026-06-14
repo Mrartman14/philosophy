@@ -1,5 +1,6 @@
 // src/features/audit/ui/audit-table.tsx
 import { EmptyState, Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui";
+
 import type { AuditRecord } from "../types";
 
 const dateFormat = new Intl.DateTimeFormat("ru-RU", {

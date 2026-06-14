@@ -2,6 +2,7 @@
 // src/features/canvas/ui/editor-node-layer.tsx
 import { NodeShapeRender, sidePoint } from "@/components/canvas-render";
 import type { RenderNode, Side, EntityRefResolver } from "@/components/canvas-render";
+
 import { resizeHandles } from "../editor";
 import type { ResizeHandle } from "../editor";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+
 import type { DenyReason } from "@/utils/permissions";
 
 interface ActionTooltipProps {

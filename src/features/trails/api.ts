@@ -1,7 +1,9 @@
 // src/features/trails/api.ts
 import "server-only";
 import { cache } from "react";
+
 import { createApiClient } from "@/api/client";
+
 import type { Trail, TrailWithItems, TrailLectureSummary } from "./types";
 
 export interface TrailListFilter {

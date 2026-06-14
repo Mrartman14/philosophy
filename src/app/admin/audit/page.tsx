@@ -1,6 +1,6 @@
 // src/app/admin/audit/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   AuditFilterForm,
   AuditLogFilterSchema,
@@ -9,6 +9,7 @@ import {
   canReadAudit,
   getAuditLog,
 } from "@/features/audit";
+import { getMe } from "@/utils/me";
 
 const PAGE_LIMIT = 50;
 

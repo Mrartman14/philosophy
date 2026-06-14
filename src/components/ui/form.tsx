@@ -2,6 +2,7 @@
 // src/components/ui/form.tsx
 import { Form as BaseForm } from "@base-ui/react/form";
 import type { ComponentProps, ReactNode } from "react";
+
 import { cn } from "./cn";
 
 interface FormProps extends Omit<ComponentProps<typeof BaseForm>, "children" | "errors"> {

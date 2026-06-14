@@ -2,6 +2,7 @@
 // src/components/ui/checkbox.tsx
 import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
 import { forwardRef } from "react";
+
 import { cn } from "./cn";
 
 export interface CheckboxProps {

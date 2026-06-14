@@ -1,12 +1,14 @@
 "use client";
 // src/features/trails/ui/trail-items-editor.tsx
-import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
+
+import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
 import { Button, SubmitButton, Form, useToast } from "@/components/ui";
 // LecturePicker — client-компонент из @/components (НЕ cross-feature). В index.ts
 // ast-editor он не реэкспортнут, поэтому импортируем напрямую (см. Задача 9 шаг 0).
-import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
 import type { ActionResult } from "@/utils/create-action";
+
 import { setTrailItems } from "../actions";
 import type { TrailWithItems, TrailLectureSummary } from "../types";
 

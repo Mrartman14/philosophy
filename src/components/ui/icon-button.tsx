@@ -1,7 +1,8 @@
 // src/components/ui/icon-button.tsx
 import { forwardRef, type ButtonHTMLAttributes } from "react";
-import { cn } from "./cn";
+
 import type { ButtonVariant } from "./button";
+import { cn } from "./cn";
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;

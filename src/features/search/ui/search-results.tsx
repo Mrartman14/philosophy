@@ -1,6 +1,8 @@
 // src/features/search/ui/search-results.tsx
 import Link from "next/link";
+
 import { EmptyState } from "@/components/ui";
+
 import type { SearchHit, SearchMatch } from "../types";
 
 const TYPE_LABEL: Record<string, string> = {

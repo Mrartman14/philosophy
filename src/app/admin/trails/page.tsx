@@ -1,14 +1,15 @@
 // src/app/admin/trails/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { Pagination } from "@/components/ui";
-import { parseNonNegativeInt } from "@/utils/paging";
 import {
   canListAdminTrails,
   canAdminDeleteTrail,
   getAdminTrails,
   TrailAdminRow,
 } from "@/features/trails";
+import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Маршруты — админ" };
 

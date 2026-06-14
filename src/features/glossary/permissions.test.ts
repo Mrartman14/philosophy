@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
+
 import type { Me } from "@/utils/me";
+
 import { canCreateTerm, canUpdateTerm, canDeleteTerm } from "./permissions";
 
 const guest = null;

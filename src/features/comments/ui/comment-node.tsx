@@ -1,19 +1,22 @@
 // src/features/comments/ui/comment-node.tsx
 import { AstRender } from "@/components/ast-render";
 import { getMe } from "@/utils/me";
+
 import {
   canDeleteComment,
   canEditComment,
   canReactToComment,
 } from "../permissions";
 import { axisAllowedForType } from "../reactions";
-import { CommentTypeBadge } from "./comment-type-badge";
+import type { Comment, CommentSchema, ReactionAxis } from "../types";
+
+import { CommentAnchorContext } from "./comment-anchor-context";
+import { CommentDeleteButton } from "./comment-delete-button";
+import { CommentEditForm } from "./comment-edit-form";
 import { CommentReactions } from "./comment-reactions";
 import { CommentReplyForm } from "./comment-reply-form";
-import { CommentEditForm } from "./comment-edit-form";
-import { CommentDeleteButton } from "./comment-delete-button";
-import { CommentAnchorContext } from "./comment-anchor-context";
-import type { Comment, CommentSchema, ReactionAxis } from "../types";
+import { CommentTypeBadge } from "./comment-type-badge";
+
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "short",

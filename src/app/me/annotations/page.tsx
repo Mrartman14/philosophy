@@ -1,6 +1,6 @@
 // src/app/me/annotations/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   getMyAnnotations,
   AnnotationCard,
@@ -9,6 +9,7 @@ import {
   AnnotationDeleteButton,
   AnnotationPagination,
 } from "@/features/annotations";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Мои аннотации" };
 

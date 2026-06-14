@@ -1,9 +1,11 @@
 // src/app/admin/layout.tsx
 import Link from "next/link";
 import { forbidden } from "next/navigation";
+
 import { getMe } from "@/utils/me";
-import { AdminSidebar } from "./admin-sidebar";
+
 import { buildNavItems, canAccessAdmin } from "./admin-access";
+import { AdminSidebar } from "./admin-sidebar";
 
 export const metadata = { title: "Админ-панель" };
 

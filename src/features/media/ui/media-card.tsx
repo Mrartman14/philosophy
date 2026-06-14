@@ -1,5 +1,6 @@
 // src/features/media/ui/media-card.tsx
 import Link from "next/link";
+
 import type { Media } from "../types";
 
 interface MediaCardProps {

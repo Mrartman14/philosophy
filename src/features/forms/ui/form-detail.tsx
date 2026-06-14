@@ -1,7 +1,9 @@
 // src/features/forms/ui/form-detail.tsx
 import { AstRender } from "@/components/ast-render";
-import { FormMeta } from "./form-meta";
+
 import type { Form } from "../types";
+
+import { FormMeta } from "./form-meta";
 
 export function FormDetail({ form }: { form: Form }) {
   const description = form.description ?? [];

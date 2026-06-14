@@ -1,6 +1,8 @@
 // src/features/glossary/ui/glossary-admin-row.tsx
 import Link from "next/link";
+
 import type { Term } from "../types";
+
 import { GlossaryDeleteButton } from "./glossary-delete-button";
 
 interface Props {

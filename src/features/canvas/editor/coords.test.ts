@@ -1,5 +1,6 @@
 // src/features/canvas/editor/coords.test.ts
 import { describe, it, expect } from "vitest";
+
 import { screenToWorld, worldToScreen, applyZoomAtPoint, snapToGrid, snapPoint } from "./coords";
 import type { Viewport } from "./editor-types";
 

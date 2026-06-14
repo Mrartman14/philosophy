@@ -1,7 +1,10 @@
 // src/features/lectures/ui/lecture-admin-row.tsx
 import Link from "next/link";
+
 import { Td, Tr } from "@/components/ui";
+
 import type { Lecture } from "../types";
+
 import { LectureDeleteButton } from "./lecture-delete-button";
 
 interface Props {

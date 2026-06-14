@@ -1,6 +1,7 @@
 // src/features/search/schemas.ts
 import "server-only";
 import { z } from "zod";
+
 import { SEARCH_TYPES } from "./types";
 
 /**

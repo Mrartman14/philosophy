@@ -1,6 +1,6 @@
 // src/app/admin/annotations/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   getAdminAnnotations,
   canModerateAnnotations,
@@ -9,6 +9,7 @@ import {
   AnnotationAdminFilterForm,
   AnnotationPagination,
 } from "@/features/annotations";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Аннотации — модерация" };
 

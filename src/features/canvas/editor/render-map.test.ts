@@ -1,7 +1,9 @@
 // src/features/canvas/editor/render-map.test.ts
 import { describe, it, expect } from "vitest";
-import { canvasDataToRenderData } from "./render-map";
+
 import type { CanvasData } from "../types";
+
+import { canvasDataToRenderData } from "./render-map";
 
 describe("canvasDataToRenderData", () => {
   it("пустой граф", () => {

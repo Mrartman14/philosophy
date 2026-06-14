@@ -1,7 +1,6 @@
 // src/app/documents/my/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
-import { parseNonNegativeInt } from "@/utils/paging";
+
 import { SchemaContextProvider } from "@/components/ast-editor";
 import {
   canCreateDocument,
@@ -10,6 +9,8 @@ import {
   DocumentUploadForm,
   DocumentMyList,
 } from "@/features/documents";
+import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Мои документы" };
 

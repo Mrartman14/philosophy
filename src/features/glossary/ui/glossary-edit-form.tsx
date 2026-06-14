@@ -1,13 +1,15 @@
 "use client";
 import { useActionState, useState } from "react";
+
+import { AstEditor } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
 import {
   Form,
   FormField,
   SubmitButton,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
-import { AstEditor } from "@/components/ast-editor";
-import type { AstBlock } from "@/components/ast-editor";
+
 import { updateTermBlocks } from "../actions";
 import type { Term } from "../types";
 

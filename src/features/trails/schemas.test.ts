@@ -1,5 +1,6 @@
 // src/features/trails/schemas.test.ts
 import { describe, expect, it } from "vitest";
+
 import {
   TrailCreateSchema,
   TrailMetaSchema,

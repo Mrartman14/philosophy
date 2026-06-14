@@ -1,5 +1,6 @@
 // src/features/lectures/schemas.test.ts
 import { describe, it, expect } from "vitest";
+
 import {
   LectureCreateSchema,
   LectureUpdateSchema,

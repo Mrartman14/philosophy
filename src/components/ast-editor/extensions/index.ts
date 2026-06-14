@@ -1,23 +1,25 @@
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
 import { Extension } from "@tiptap/core";
 import type { Extensions } from "@tiptap/core";
+import Placeholder from "@tiptap/extension-placeholder";
+import StarterKit from "@tiptap/starter-kit";
+
 import type { EntityContext, SchemaSnapshot } from "../types";
-import { createLimitsPlugin } from "../validation/limits-plugin";
 import { createAttrPlugin } from "../validation/attr-plugin";
+import { createLimitsPlugin } from "../validation/limits-plugin";
+
 import { createDedupBlockIdPlugin } from "./dedup-block-id-plugin";
 import { createImagePasteDropPlugin } from "./image-paste-drop-plugin";
-import { ParagraphExt } from "./nodes/paragraph";
-import { BlockquoteExt } from "./nodes/blockquote";
-import { ThematicBreakExt } from "./nodes/thematic-break";
-import { HeadingExt } from "./nodes/heading";
-import { CodeBlockExt } from "./nodes/code-block";
-import { ListExt, ListItemExt } from "./nodes/list";
-import { ImageExt } from "./nodes/image";
-import { TableExt, TableRowExt, TableCellExt } from "./nodes/table";
-import { HardBreakExt } from "./nodes/hard-break";
 import { LinkExt } from "./marks/link";
 import { navRefMarks } from "./marks/nav-ref";
+import { BlockquoteExt } from "./nodes/blockquote";
+import { CodeBlockExt } from "./nodes/code-block";
+import { HardBreakExt } from "./nodes/hard-break";
+import { HeadingExt } from "./nodes/heading";
+import { ImageExt } from "./nodes/image";
+import { ListExt, ListItemExt } from "./nodes/list";
+import { ParagraphExt } from "./nodes/paragraph";
+import { TableExt, TableRowExt, TableCellExt } from "./nodes/table";
+import { ThematicBreakExt } from "./nodes/thematic-break";
 
 interface BuildOpts {
   snapshot: SchemaSnapshot;

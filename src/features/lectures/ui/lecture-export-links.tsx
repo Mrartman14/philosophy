@@ -17,10 +17,10 @@ export function LectureExportLinks({ id, className }: Props) {
         className ?? "flex items-center gap-2 text-xs text-(--color-description)"
       }
     >
-      <a href={urls.md} className="hover:underline" target="_blank" rel="noopener">
+      <a href={urls.md} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .md
       </a>
-      <a href={urls.txt} className="hover:underline" target="_blank" rel="noopener">
+      <a href={urls.txt} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .txt
       </a>
     </span>

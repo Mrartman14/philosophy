@@ -1,7 +1,9 @@
 // src/features/lectures/ui/lecture-detail.tsx
 import Link from "next/link";
-import type { Lecture, LectureTag } from "../types";
+
 import { lectureCoverUrl } from "../cover-url";
+import type { Lecture, LectureTag } from "../types";
+
 import { LectureDescription } from "./lecture-description";
 
 export function LectureDetail({

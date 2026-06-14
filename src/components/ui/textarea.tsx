@@ -1,5 +1,6 @@
 // src/components/ui/textarea.tsx
 import { forwardRef, type TextareaHTMLAttributes } from "react";
+
 import { cn } from "./cn";
 
 export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement>;

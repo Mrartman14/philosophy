@@ -1,5 +1,6 @@
 // src/app/comments/[id]/page.tsx
 import { notFound } from "next/navigation";
+
 import { SchemaContextProvider } from "@/components/ast-editor";
 import {
   getCommentSchema,

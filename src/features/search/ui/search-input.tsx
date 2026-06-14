@@ -11,7 +11,9 @@ import {
   type KeyboardEvent,
   type SVGProps,
 } from "react";
+
 import { Button, Select, TextInput } from "@/components/ui";
+
 import { SEARCH_TYPES } from "../types";
 
 // Иконки поиска нет в src/assets (UI-kit — запретная зона). Inline-SVG,

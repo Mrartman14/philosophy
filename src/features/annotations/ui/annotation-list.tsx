@@ -1,5 +1,6 @@
 // src/features/annotations/ui/annotation-list.tsx
 import type { Annotation } from "../types";
+
 import { AnnotationCard } from "./annotation-card";
 
 interface Props {

@@ -1,7 +1,7 @@
 // src/app/lectures/page.tsx
+import { Pagination } from "@/components/ui";
 import { getLectures, LectureList, LectureSearchForm } from "@/features/lectures";
 import { getLectureTags, getTags } from "@/features/tags";
-import { Pagination } from "@/components/ui";
 
 export const metadata = { title: "Лекции" };
 

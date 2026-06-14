@@ -1,6 +1,6 @@
 // src/app/admin/share-links/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   ShareLookupForm,
   ShareLinkList,
@@ -8,6 +8,7 @@ import {
   canModerateShareLinks,
   ShareLinkLookupSchema,
 } from "@/features/share-links";
+import { getMe } from "@/utils/me";
 
 interface Props {
   searchParams: Promise<{ resource_type?: string; resource_id?: string }>;

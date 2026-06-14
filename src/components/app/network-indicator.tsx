@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+
 import { OfflineIcon } from "@/assets/icons/offline-icon";
 
 function subscribeToOnlineStatus(callback: () => void) {

@@ -1,8 +1,10 @@
 "use client";
 // src/features/trails/ui/trail-meta-form.tsx
 import { useActionState } from "react";
+
 import { Form, FormField, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { updateTrailMeta } from "../actions";
 import type { Trail, TrailWithItems } from "../types";
 

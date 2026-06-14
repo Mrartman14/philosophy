@@ -1,8 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
 import type { Editor } from "@tiptap/core";
-import { slashMenuKey, consumeSlashMarker, closeSlashMenu } from "./slash-menu-plugin";
+import { useEffect, useState } from "react";
+
 import type { SchemaSnapshot, EntityContext } from "../types";
+
+import { slashMenuKey, consumeSlashMarker, closeSlashMenu } from "./slash-menu-plugin";
+
 
 interface Cmd {
   id: string;

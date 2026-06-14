@@ -1,7 +1,8 @@
 // src/features/trails/permissions.test.ts
 import { describe, expect, it } from "vitest";
+
 import type { Me } from "@/utils/me";
-import type { Trail } from "./types";
+
 import {
   canCreateTrail,
   canEditTrail,
@@ -9,6 +10,7 @@ import {
   canAdminDeleteTrail,
   canListAdminTrails,
 } from "./permissions";
+import type { Trail } from "./types";
 
 function makeMe(over: Partial<Me> = {}): Me {
   return {

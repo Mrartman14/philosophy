@@ -1,6 +1,7 @@
 // src/features/lectures/schemas.ts
 import "server-only";
 import { z } from "zod";
+
 import type { AttachmentEntityType } from "./types";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;

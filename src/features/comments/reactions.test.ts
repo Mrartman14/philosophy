@@ -1,5 +1,6 @@
 // src/features/comments/reactions.test.ts
 import { describe, it, expect } from "vitest";
+
 import {
   axisAllowedForType,
   REACTION_AXES,

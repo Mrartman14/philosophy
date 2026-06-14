@@ -25,7 +25,7 @@ export function SearchExportLinks({ q, type, className }: Props) {
       }
     >
       Экспорт:
-      <a href={href} className="hover:underline" target="_blank" rel="noopener">
+      <a href={href} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .md
       </a>
     </p>

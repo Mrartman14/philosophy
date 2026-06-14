@@ -1,5 +1,6 @@
 // src/features/annotations/anchor.test.ts
 import { describe, it, expect } from "vitest";
+
 import {
   buildTextAnchor,
   buildMediaAnchor,

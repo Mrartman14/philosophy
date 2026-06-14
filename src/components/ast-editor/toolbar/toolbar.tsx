@@ -1,15 +1,18 @@
 "use client";
-import { Fragment } from "react";
-import type { Editor } from "@tiptap/core";
 import { Toolbar } from "@base-ui/react/toolbar";
-import { InlineMarksGroup } from "./buttons/inline-marks";
-import { HeadingSelect } from "./buttons/heading-select";
-import { BlockButtonsGroup } from "./buttons/block-buttons";
-import { ListButtonsGroup } from "./buttons/list-buttons";
-import { LinkPopover } from "./buttons/link-popover";
-import { RefPopover } from "./buttons/ref-popover";
-import { ImageButton } from "./buttons/image-button";
+import type { Editor } from "@tiptap/core";
+import { Fragment } from "react";
+
 import type { SchemaSnapshot, EntityContext } from "../types";
+
+import { BlockButtonsGroup } from "./buttons/block-buttons";
+import { HeadingSelect } from "./buttons/heading-select";
+import { ImageButton } from "./buttons/image-button";
+import { InlineMarksGroup } from "./buttons/inline-marks";
+import { LinkPopover } from "./buttons/link-popover";
+import { ListButtonsGroup } from "./buttons/list-buttons";
+import { RefPopover } from "./buttons/ref-popover";
+
 
 export interface EditorToolbarProps {
   editor: Editor;

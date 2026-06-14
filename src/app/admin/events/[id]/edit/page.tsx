@@ -1,6 +1,6 @@
 // src/app/admin/events/[id]/edit/page.tsx
 import { forbidden, notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { SchemaContextProvider } from "@/components/ast-editor";
 import {
   canDeleteEvent,
@@ -12,6 +12,7 @@ import {
   EventExportLinks,
   EventRevisions,
 } from "@/features/events";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "События — редактирование" };
 

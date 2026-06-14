@@ -14,7 +14,7 @@ export function AnnotationExportLinks({ id }: Props) {
         href={`/annotations/${id}/export?format=md`}
         className="hover:underline"
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
       >
         .md
       </a>
@@ -22,7 +22,7 @@ export function AnnotationExportLinks({ id }: Props) {
         href={`/annotations/${id}/export?format=txt`}
         className="hover:underline"
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
       >
         .txt
       </a>

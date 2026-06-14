@@ -1,6 +1,6 @@
 // src/app/media/my/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   MediaGrid,
   MediaUploadForm,
@@ -8,6 +8,7 @@ import {
   canCreateMedia,
   getMyMedia,
 } from "@/features/media";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Мои медиа" };
 

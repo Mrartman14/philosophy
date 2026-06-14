@@ -1,5 +1,6 @@
 // src/features/search/schemas.test.ts
 import { describe, it, expect } from "vitest";
+
 import {
   SearchQuerySchema,
   SearchTypeSchema,

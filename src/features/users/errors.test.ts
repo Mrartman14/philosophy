@@ -1,6 +1,8 @@
 // src/features/users/errors.test.ts
 import { describe, it, expect } from "vitest";
+
 import { ForbiddenError } from "@/utils/permissions";
+
 import { rethrowUserApiError } from "./errors";
 
 describe("rethrowUserApiError", () => {

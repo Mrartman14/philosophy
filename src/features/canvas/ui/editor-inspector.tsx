@@ -1,8 +1,9 @@
 "use client";
 // src/features/canvas/ui/editor-inspector.tsx
 import { Select, TextInput } from "@/components/ui";
-import type { CanvasData } from "../types";
+
 import type { EditorCommand, Side } from "../editor";
+import type { CanvasData } from "../types";
 
 const SIDE_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "авто" },

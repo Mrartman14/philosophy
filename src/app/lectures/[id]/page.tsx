@@ -1,6 +1,7 @@
 // src/app/lectures/[id]/page.tsx
 import { notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
+import { CommentSection } from "@/features/comments";
 import {
   getLectureById,
   LectureDetail,
@@ -8,13 +9,13 @@ import {
   LectureExportLinks,
   LectureMediaSection,
 } from "@/features/lectures";
-import { getLectureTags } from "@/features/tags";
-import { CommentSection } from "@/features/comments";
 import {
   ShareButton,
   canCreateShareLink,
   getShareLinksFor,
 } from "@/features/share-links";
+import { getLectureTags } from "@/features/tags";
+import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;

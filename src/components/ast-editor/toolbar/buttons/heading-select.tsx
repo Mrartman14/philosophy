@@ -1,6 +1,8 @@
 "use client";
 import type { Editor } from "@tiptap/core";
+
 import { Select } from "@/components/ui/select";
+
 import type { SchemaSnapshot, EntityContext } from "../../types";
 
 interface Props {

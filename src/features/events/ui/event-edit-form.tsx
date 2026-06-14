@@ -1,6 +1,9 @@
 "use client";
 // src/features/events/ui/event-edit-form.tsx
 import { useActionState, useState } from "react";
+
+import { AstEditor } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
 import {
   Checkbox,
   Form,
@@ -9,8 +12,7 @@ import {
   TextInput,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
-import { AstEditor } from "@/components/ast-editor";
-import type { AstBlock } from "@/components/ast-editor";
+
 import { updateEvent } from "../actions";
 import type { CalendarEvent } from "../types";
 

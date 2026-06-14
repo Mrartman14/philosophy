@@ -1,7 +1,9 @@
 // src/features/lectures/api.ts
 import "server-only";
 import { cache } from "react";
+
 import { createApiClient } from "@/api/client";
+
 import type {
   Lecture,
   LectureDocument,

@@ -1,5 +1,6 @@
 // src/features/canvas/editor/coords.ts
 import type { Point } from "@/components/canvas-render";
+
 import type { Viewport } from "./editor-types";
 import { GRID_SIZE } from "./editor-types";
 

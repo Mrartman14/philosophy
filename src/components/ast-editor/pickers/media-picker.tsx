@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useState } from "react";
-import { AsyncCombobox } from "./async-combobox";
+
 import { searchMedia, type MediaSummary } from "./actions";
+import { AsyncCombobox } from "./async-combobox";
 
 export interface MediaPickerProps { onSelect: (id: string, label: string) => void }
 

@@ -1,5 +1,6 @@
 // src/features/annotations/ui/annotation-card.tsx
 import { AstRender } from "@/components/ast-render";
+
 import type { Annotation } from "../types";
 
 interface Props {

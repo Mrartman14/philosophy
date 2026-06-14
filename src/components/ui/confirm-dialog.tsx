@@ -1,8 +1,9 @@
 "use client";
 // src/components/ui/confirm-dialog.tsx
 import { useState, type ReactNode } from "react";
-import { Dialog, DialogClose } from "./dialog";
+
 import { Button } from "./button";
+import { Dialog, DialogClose } from "./dialog";
 
 interface ConfirmDialogProps {
   trigger: ReactNode;

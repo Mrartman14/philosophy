@@ -1,6 +1,8 @@
 "use client";
 import { useActionState, type ChangeEvent } from "react";
+
 import type { ActionResult } from "@/utils/create-action";
+
 import { setLectureVisibility } from "../actions";
 import type { Lecture } from "../types";
 

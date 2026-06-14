@@ -1,8 +1,10 @@
 "use client";
-import type { Editor } from "@tiptap/core";
 import { Toolbar } from "@base-ui/react/toolbar";
+import type { Editor } from "@tiptap/core";
+
 import { ListBulletIcon } from "@/assets/icons/list-bullet-icon";
 import { ListOrderedIcon } from "@/assets/icons/list-ordered-icon";
+
 import type { SchemaSnapshot, EntityContext } from "../../types";
 
 interface Props {

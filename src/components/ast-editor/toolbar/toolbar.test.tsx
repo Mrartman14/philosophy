@@ -18,10 +18,12 @@ vi.mock("../pickers/actions", () => ({
 
 import { Editor } from "@tiptap/core";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import * as pickerActions from "../pickers/actions";
-import { EditorToolbar } from "./toolbar";
+
 import { buildExtensions } from "../extensions";
+import * as pickerActions from "../pickers/actions";
 import type { EntityContext, SchemaSnapshot } from "../types";
+
+import { EditorToolbar } from "./toolbar";
 
 const mockedActions = pickerActions as unknown as {
   searchCommentsByLecture: ReturnType<typeof vi.fn>;

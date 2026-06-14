@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { safeNextPath } from "./safe-next";
 
 describe("safeNextPath", () => {

@@ -1,11 +1,13 @@
 // src/features/banners/ui/banner-admin-row.tsx
 import Link from "next/link";
+
 import {
   audienceLabel,
   bannerPreviewText,
   formatBannerPeriod,
 } from "../display";
 import type { Banner } from "../types";
+
 import { BannerDeleteButton } from "./banner-delete-button";
 import { BannerExportLinks } from "./banner-export-links";
 

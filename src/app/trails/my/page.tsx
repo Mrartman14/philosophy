@@ -1,13 +1,14 @@
 // src/app/trails/my/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
-import { parseNonNegativeInt } from "@/utils/paging";
+
 import {
   canCreateTrail,
   getMyTrails,
   TrailCreateForm,
   TrailMyList,
 } from "@/features/trails";
+import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Мои маршруты" };
 

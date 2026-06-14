@@ -1,8 +1,10 @@
 // src/features/annotations/api.ts
 import "server-only";
-import { cache } from "react";
 import { cookies } from "next/headers";
+import { cache } from "react";
+
 import { createApiClient } from "@/api/client";
+
 import {
   PER_ENTITY_PATH,
   type Annotation,

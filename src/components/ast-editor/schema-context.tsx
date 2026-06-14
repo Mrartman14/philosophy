@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+
 import { createPublicApiClient } from "@/api/client";
+
 import { loadSchema } from "./schema-cache";
 import type { SchemaSnapshot, SchemaResponse } from "./types";
 

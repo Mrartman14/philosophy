@@ -1,5 +1,6 @@
 // src/components/ui/skeleton.tsx
 import { type HTMLAttributes } from "react";
+
 import { cn } from "./cn";
 
 export type SkeletonProps = HTMLAttributes<HTMLDivElement>;

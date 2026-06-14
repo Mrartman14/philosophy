@@ -1,8 +1,10 @@
 // src/features/banners/ui/active-banners.tsx
 import { AstRender } from "@/components/ast-render";
 import { getMe } from "@/utils/me";
+
 import { getActiveBanners } from "../api";
 import type { Banner } from "../types";
+
 import { BannerDismissButton } from "./banner-dismiss-button";
 
 /**

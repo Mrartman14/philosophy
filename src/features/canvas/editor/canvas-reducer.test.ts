@@ -1,7 +1,9 @@
 // src/features/canvas/editor/canvas-reducer.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { canvasReducer, initEditorState } from "./canvas-reducer";
+
 import type { CanvasData } from "../types";
+
+import { canvasReducer, initEditorState } from "./canvas-reducer";
 import * as idMod from "./id";
 
 const baseData: CanvasData = {

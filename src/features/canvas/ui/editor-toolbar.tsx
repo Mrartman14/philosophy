@@ -1,6 +1,7 @@
 "use client";
 // src/features/canvas/ui/editor-toolbar.tsx
 import { Button } from "@/components/ui";
+
 import type { EditorCommand } from "../editor";
 
 interface Props {

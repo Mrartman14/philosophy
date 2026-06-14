@@ -1,5 +1,8 @@
 // src/features/canvas/permissions.test.ts
 import { describe, it, expect } from "vitest";
+
+import type { MaybeMe } from "@/utils/me";
+
 import {
   canCreateCanvas,
   canEditCanvas,
@@ -7,7 +10,6 @@ import {
   canDeleteCanvas,
   canSeeRevisions,
 } from "./permissions";
-import type { MaybeMe } from "@/utils/me";
 import type { Canvas } from "./types";
 
 function me(over: Partial<NonNullable<MaybeMe>> = {}): NonNullable<MaybeMe> {

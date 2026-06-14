@@ -1,19 +1,20 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useRef } from "react";
-import { EditorContent } from "@tiptap/react";
 import { Extension } from "@tiptap/core";
-import { useAstEditor } from "./use-ast-editor";
+import { EditorContent } from "@tiptap/react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+
+import { useDriftWarn } from "./drift-warn";
+import { AtMenu } from "./pickers/at-menu";
+import { createAtSuggestionPlugin } from "./pickers/at-suggestion-plugin";
 import { useSchema } from "./schema-context";
 import { serialize } from "./serializer";
 import type { ProseMirrorJSON } from "./serializer";
-import type { AstBlock, EntityContext } from "./types";
-import { EditorToolbar } from "./toolbar/toolbar";
 import { SlashMenu } from "./toolbar/slash-menu";
 import { createSlashMenuPlugin } from "./toolbar/slash-menu-plugin";
-import { AtMenu } from "./pickers/at-menu";
-import { createAtSuggestionPlugin } from "./pickers/at-suggestion-plugin";
-import { useDriftWarn } from "./drift-warn";
+import { EditorToolbar } from "./toolbar/toolbar";
+import type { AstBlock, EntityContext } from "./types";
+import { useAstEditor } from "./use-ast-editor";
 
 const slashHost = Extension.create({
   name: "slash-menu-host",

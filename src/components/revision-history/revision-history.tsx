@@ -1,5 +1,6 @@
 // src/components/revision-history/revision-history.tsx
 import Link from "next/link";
+
 import type { RevisionHistoryProps } from "./types";
 
 const dateFormat = new Intl.DateTimeFormat("ru-RU", {

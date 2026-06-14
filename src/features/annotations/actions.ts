@@ -2,7 +2,10 @@
 "use server";
 import "server-only";
 import { cookies } from "next/headers";
+
 import { createApiClient } from "@/api/client";
+import { Tags } from "@/api/tags";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -10,9 +13,9 @@ import {
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
-import { Tags } from "@/api/tags";
+
+import { getAnnotationById } from "./api";
 import {
   canCreateAnnotation,
   canDeleteAnnotation,
@@ -24,7 +27,6 @@ import {
   AnnotationUpdateSchema,
   AnnotationIdSchema,
 } from "./schemas";
-import { getAnnotationById } from "./api";
 import { PER_ENTITY_PATH, type Annotation } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";

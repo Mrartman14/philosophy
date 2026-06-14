@@ -1,12 +1,13 @@
-import Link from "next/link";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
+import Link from "next/link";
 
-import { LogoIcon } from "@/assets/icons/logo-icon";
-import { NetworkIndicator } from "../network-indicator";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
+import { LogoIcon } from "@/assets/icons/logo-icon";
 import { LogoutForm } from "@/features/auth";
 import { SearchInput } from "@/features/search";
 import { getMe } from "@/utils/me";
+
+import { NetworkIndicator } from "../network-indicator";
 
 export const AppHeader = async () => {
   const me = await getMe();

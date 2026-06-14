@@ -6,6 +6,7 @@ vi.mock("next/cache", () => ({
 }));
 
 import { revalidateTag } from "next/cache";
+
 import { revalidateEntity } from "./revalidate";
 
 describe("revalidateEntity", () => {

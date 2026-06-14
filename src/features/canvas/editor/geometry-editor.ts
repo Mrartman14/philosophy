@@ -1,5 +1,6 @@
 // src/features/canvas/editor/geometry-editor.ts
 import type { Point, RenderNode } from "@/components/canvas-render";
+
 import type { ResizeHandle } from "./editor-types";
 
 /** Прямоугольник в мировых координатах. */

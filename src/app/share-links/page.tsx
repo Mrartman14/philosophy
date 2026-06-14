@@ -1,12 +1,13 @@
 // src/app/share-links/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import {
   ShareLookupForm,
   ShareLinkList,
   getShareLinksFor,
   ShareLinkLookupSchema,
 } from "@/features/share-links";
+import { getMe } from "@/utils/me";
 
 interface Props {
   searchParams: Promise<{ resource_type?: string; resource_id?: string }>;

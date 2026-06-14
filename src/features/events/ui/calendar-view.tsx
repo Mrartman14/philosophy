@@ -1,6 +1,8 @@
 // src/features/events/ui/calendar-view.tsx
 import Link from "next/link";
+
 import { AstRender } from "@/components/ast-render";
+
 import { groupOccurrencesByDate, type MonthRange } from "../calendar";
 import type { EventOccurrence } from "../types";
 

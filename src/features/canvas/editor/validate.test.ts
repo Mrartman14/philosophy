@@ -1,7 +1,9 @@
 // src/features/canvas/editor/validate.test.ts
 import { describe, it, expect } from "vitest";
-import { validateGraph } from "./validate";
+
 import type { CanvasData } from "../types";
+
+import { validateGraph } from "./validate";
 
 const textNode = (id: string): NonNullable<CanvasData["nodes"]>[number] => ({ id, type: "text", x: 0, y: 0, width: 100, height: 40, text: "hi" });
 

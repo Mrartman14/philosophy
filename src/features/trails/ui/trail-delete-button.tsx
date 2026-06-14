@@ -2,7 +2,9 @@
 // src/features/trails/ui/trail-delete-button.tsx
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+
 import { deleteTrail, adminDeleteTrail } from "../actions";
 
 interface Props {

@@ -1,6 +1,7 @@
 "use client";
 // src/features/canvas/ui/editor-text-overlay.tsx
 import { useEffect, useRef, useState } from "react";
+
 import { worldToScreen } from "../editor";
 import type { Viewport } from "../editor";
 import type { CanvasNode } from "../types";

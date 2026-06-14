@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
 import { getSchema } from "@tiptap/core";
 import { Node as PMNode, DOMSerializer, DOMParser as PMDOMParser } from "@tiptap/pm/model";
-import { buildExtensions } from "../index";
+import { describe, it, expect } from "vitest";
+
 import type { SchemaSnapshot } from "../../types";
+import { buildExtensions } from "../index";
 
 const fullSnapshot: SchemaSnapshot = {
   blockLevels: { full: ["paragraph", "image"] },

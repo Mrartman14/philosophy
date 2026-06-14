@@ -1,7 +1,8 @@
 // src/app/canvases/[id]/edit/page.tsx
 import { notFound, redirect, forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { canEditCanvas, getCanvasById, CanvasEditor } from "@/features/canvas";
+import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;

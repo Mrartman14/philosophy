@@ -1,5 +1,6 @@
 // src/features/canvas/entity-ref.test.ts
 import { describe, it, expect } from "vitest";
+
 import { resolveEntityRefView } from "./entity-ref";
 
 describe("resolveEntityRefView", () => {

@@ -1,5 +1,6 @@
 // src/features/glossary/ui/glossary-list.tsx
 import Link from "next/link";
+
 import type { Term } from "../types";
 
 interface Props {

@@ -1,5 +1,6 @@
 // src/components/ui/pagination.tsx
 import Link from "next/link";
+
 import { cn } from "./cn";
 
 interface PaginationProps {

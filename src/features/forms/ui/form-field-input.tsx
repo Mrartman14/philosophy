@@ -2,8 +2,9 @@
 // src/features/forms/ui/form-field-input.tsx
 import { AstRender } from "@/components/ast-render";
 import { TextInput, Textarea } from "@/components/ui";
-import type { FormField } from "../types";
+
 import type { AnswerInput } from "../answer-codec";
+import type { FormField } from "../types";
 
 interface Props {
   field: FormField;

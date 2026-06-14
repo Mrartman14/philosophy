@@ -1,14 +1,16 @@
 // src/components/ast-editor/pickers/at-suggestion-plugin.test.ts
-import { describe, it, expect } from "vitest";
 import { Editor, Extension } from "@tiptap/core";
 import { TextSelection } from "@tiptap/pm/state";
+import { describe, it, expect } from "vitest";
+
 import { buildExtensions } from "../extensions";
+import type { SchemaSnapshot } from "../types";
+
 import {
   createAtSuggestionPlugin,
   atSuggestionKey,
   consumeAtMarker,
 } from "./at-suggestion-plugin";
-import type { SchemaSnapshot } from "../types";
 
 const snapshot: SchemaSnapshot = {
   blockLevels: { full: ["paragraph"] },

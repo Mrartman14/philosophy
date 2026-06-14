@@ -1,6 +1,7 @@
 // src/features/glossary/ui/glossary-revisions.tsx
 import { AstRender } from "@/components/ast-render";
 import { RevisionHistory } from "@/components/revision-history";
+
 import { getTermRevision, getTermRevisions } from "../api";
 
 interface Props {

@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { serialize } from "./serializer";
-import { deserialize } from "./deserializer";
+
 import {
   fixtureParagraph,
   fixtureHeading,
@@ -16,6 +15,8 @@ import {
   fixtureLink,
   fixtureNavMarks,
 } from "./__fixtures__/sample-blocks";
+import { deserialize } from "./deserializer";
+import { serialize } from "./serializer";
 import type { AstBlock, SchemaSnapshot } from "./types";
 
 const fakeSnapshot: SchemaSnapshot = {

@@ -1,6 +1,6 @@
 // src/app/admin/users/page.tsx
 import { forbidden } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { Pagination } from "@/components/ui";
 import {
   canListUsers,
@@ -8,6 +8,7 @@ import {
   getUsers,
   UsersTable,
 } from "@/features/users";
+import { getMe } from "@/utils/me";
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;

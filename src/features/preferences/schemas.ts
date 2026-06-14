@@ -1,6 +1,7 @@
 // src/features/preferences/schemas.ts
 import "server-only";
 import { z } from "zod";
+
 import { READING_MODES } from "./types";
 
 /** PATCH /api/me/preferences — единственное поле reading_mode. */

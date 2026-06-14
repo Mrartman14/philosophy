@@ -1,6 +1,8 @@
 // src/features/canvas/ui/canvas-revisions.tsx
 import { RevisionHistory } from "@/components/revision-history";
+
 import { getCanvasRevision, getCanvasRevisions } from "../api";
+
 import { CanvasDetail } from "./canvas-detail";
 
 interface Props {

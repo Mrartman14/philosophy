@@ -1,6 +1,6 @@
 // src/app/admin/banners/[id]/edit/page.tsx
 import { forbidden, notFound } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { SchemaContextProvider } from "@/components/ast-editor";
 import {
   canDeleteBanner,
@@ -13,6 +13,7 @@ import {
   BannerExportLinks,
   BannerRevisions,
 } from "@/features/banners";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Баннеры — редактирование" };
 

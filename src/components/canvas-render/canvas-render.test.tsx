@@ -1,6 +1,7 @@
 // src/components/canvas-render/canvas-render.test.tsx
-import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+
 import { CanvasRender } from "./canvas-render";
 import type { RenderData, EntityRefResolver } from "./types";
 

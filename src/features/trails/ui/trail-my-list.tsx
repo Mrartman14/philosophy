@@ -1,5 +1,6 @@
 // src/features/trails/ui/trail-my-list.tsx
 import Link from "next/link";
+
 import type { Trail } from "../types";
 
 interface Props {

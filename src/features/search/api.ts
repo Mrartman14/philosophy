@@ -1,7 +1,9 @@
 // src/features/search/api.ts
 import "server-only";
 import { cache } from "react";
+
 import { createApiClient } from "@/api/client";
+
 import type { SearchHit, SearchType } from "./types";
 
 export interface SearchFilter {

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { uploadImage } from "./upload-image";
+
 import { makePngFile } from "./__fixtures__/png-1x1";
+import { uploadImage } from "./upload-image";
 
 vi.mock("next/headers", () => ({
   cookies: () => Promise.resolve({

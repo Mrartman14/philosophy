@@ -1,7 +1,8 @@
 // src/components/revision-history/revision-history.test.tsx
-import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import type { ComponentProps } from "react";
+import { describe, it, expect, vi, afterEach } from "vitest";
+
 import { RevisionHistory } from "./revision-history";
 import type { RevisionListItem } from "./types";
 

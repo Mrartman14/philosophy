@@ -1,6 +1,6 @@
 "use client";
-import { AsyncCombobox } from "./async-combobox";
 import { searchDocuments, type DocumentSummary } from "./actions";
+import { AsyncCombobox } from "./async-combobox";
 
 export interface DocumentPickerProps { onSelect: (id: string, label: string) => void }
 

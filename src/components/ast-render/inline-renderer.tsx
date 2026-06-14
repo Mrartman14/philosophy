@@ -1,18 +1,19 @@
 // src/components/ast-render/inline-renderer.tsx
 import type { ReactNode } from "react";
+
+import { defaultCanvasRef } from "./marks/canvas-ref";
+import { defaultCommentRef } from "./marks/comment-ref";
+import { defaultDocumentRef } from "./marks/document-ref";
+import { defaultGlossaryRef } from "./marks/glossary-ref";
+import { defaultLectureRef } from "./marks/lecture-ref";
+import { LinkMark } from "./marks/link";
+import { defaultMediaRef } from "./marks/media-ref";
 import type {
   AstMark,
   AstNode,
   AstRenderContext,
   RefLinkRenderer,
 } from "./types";
-import { LinkMark } from "./marks/link";
-import { defaultGlossaryRef } from "./marks/glossary-ref";
-import { defaultLectureRef } from "./marks/lecture-ref";
-import { defaultDocumentRef } from "./marks/document-ref";
-import { defaultMediaRef } from "./marks/media-ref";
-import { defaultCommentRef } from "./marks/comment-ref";
-import { defaultCanvasRef } from "./marks/canvas-ref";
 
 interface Props {
   nodes: AstNode[] | undefined;

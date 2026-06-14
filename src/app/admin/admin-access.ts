@@ -1,5 +1,6 @@
 import type { MaybeMe } from "@/utils/me";
 import { can } from "@/utils/permissions";
+
 import type { NavItem } from "./admin-sidebar";
 
 /**

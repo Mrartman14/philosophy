@@ -1,6 +1,7 @@
 // src/features/search/export-urls.ts
 // Ссылка на .md-выгрузку результатов поиска. Без "server-only": нужен тестам.
 import { trimApiBase } from "@/utils/export-urls";
+
 import type { SearchType } from "./types";
 
 export interface SearchExportParams {

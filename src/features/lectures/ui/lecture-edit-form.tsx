@@ -1,5 +1,6 @@
 "use client";
 import { useActionState } from "react";
+
 import {
   Form,
   FormField,
@@ -8,8 +9,10 @@ import {
   Textarea,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { updateLecture } from "../actions";
 import type { Lecture } from "../types";
+
 import { LectureDeleteButton } from "./lecture-delete-button";
 import { LectureVisibilityToggle } from "./lecture-visibility-toggle";
 

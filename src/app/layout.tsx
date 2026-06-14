@@ -1,16 +1,16 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 
 import { AppHeader } from "@/components/app/app-header/app-header";
-import { ActiveBanners } from "@/features/banners";
 import { InstallBanner } from "@/components/app/install-banner";
 import { UpdatePrompt } from "@/components/app/update-prompt";
-import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
-import { getMe, type MaybeMe } from "@/utils/me";
 import { StatusBanner } from "@/components/permission/status-banner";
 import { ToastProvider, Toaster } from "@/components/ui";
+import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
+import { ActiveBanners } from "@/features/banners";
+import { getMe, type MaybeMe } from "@/utils/me";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

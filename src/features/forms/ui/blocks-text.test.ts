@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+
 import type { AstBlock } from "../types";
+
 import { blocksToPlainText } from "./blocks-text";
 
 describe("blocksToPlainText", () => {

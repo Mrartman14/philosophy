@@ -1,6 +1,7 @@
 // src/features/canvas/ui/canvas-containers.tsx
 import { AttachmentsPanel } from "@/components/attachments";
 import type { AttachmentItem } from "@/components/attachments";
+
 import { getCanvasContainers } from "../api";
 
 interface Props {

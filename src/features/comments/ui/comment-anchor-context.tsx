@@ -1,5 +1,6 @@
 // src/features/comments/ui/comment-anchor-context.tsx
 import { AstRender } from "@/components/ast-render";
+
 import { getBlock } from "../api";
 import type { Comment } from "../types";
 

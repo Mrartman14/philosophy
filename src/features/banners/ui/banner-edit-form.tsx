@@ -1,6 +1,9 @@
 "use client";
 // src/features/banners/ui/banner-edit-form.tsx
 import { useActionState, useState } from "react";
+
+import { AstEditor } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
 import {
   Checkbox,
   Form,
@@ -10,8 +13,7 @@ import {
   TextInput,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
-import { AstEditor } from "@/components/ast-editor";
-import type { AstBlock } from "@/components/ast-editor";
+
 import { updateBanner } from "../actions";
 import { AUDIENCE_OPTIONS, toColorInputValue } from "../display";
 import type { Banner } from "../types";

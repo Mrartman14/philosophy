@@ -1,13 +1,16 @@
 "use client";
 // src/features/share-links/ui/share-button.tsx
-import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
+
 import { Button, Dialog, TextInput, useToast } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
+
 import { createShareLink } from "../actions";
-import { ShareLinkList } from "./share-link-list";
 import { RESOURCE_TYPE_LABELS } from "../types";
 import type { ShareLink, ResourceType } from "../types";
+
+import { ShareLinkList } from "./share-link-list";
 
 interface Props {
   resourceType: ResourceType;

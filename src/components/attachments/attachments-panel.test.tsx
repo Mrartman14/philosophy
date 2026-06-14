@@ -1,6 +1,7 @@
 // src/components/attachments/attachments-panel.test.tsx
-import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { AttachmentsPanel } from "./attachments-panel";
 import type { AttachmentItem } from "./types";
 

@@ -1,6 +1,7 @@
 // src/components/attachments/attachments-panel.tsx
 "use client";
 import { useMemo, useState, useTransition } from "react";
+
 import type { AttachmentsPanelProps } from "./types";
 
 /**

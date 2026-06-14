@@ -1,7 +1,9 @@
 "use client";
 import { useState, useTransition } from "react";
-import { Button } from "@/components/ui";
+
 import { uploadImage } from "@/components/ast-editor/upload/upload-image";
+import { Button } from "@/components/ui";
+
 import { setLectureCover, clearLectureCover } from "../actions";
 import { lectureCoverUrl } from "../cover-url";
 

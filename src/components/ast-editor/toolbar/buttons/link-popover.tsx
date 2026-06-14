@@ -1,9 +1,11 @@
 "use client";
-import { useState } from "react";
-import type { Editor } from "@tiptap/core";
 import { Popover } from "@base-ui/react/popover";
 import { Toolbar } from "@base-ui/react/toolbar";
+import type { Editor } from "@tiptap/core";
+import { useState } from "react";
+
 import { LinkIcon } from "@/assets/icons/link-icon";
+
 import type { SchemaSnapshot } from "../../types";
 
 interface Props {

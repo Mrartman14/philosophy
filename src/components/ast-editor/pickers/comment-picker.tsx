@@ -1,7 +1,8 @@
 "use client";
 import { useCallback } from "react";
-import { AsyncCombobox } from "./async-combobox";
+
 import { searchCommentsByLecture, type CommentSummary } from "./actions";
+import { AsyncCombobox } from "./async-combobox";
 
 export interface CommentPickerProps {
   lectureId: string;

@@ -1,7 +1,8 @@
 // src/features/forms/permissions.test.ts
 import { describe, expect, it } from "vitest";
+
 import type { Me } from "@/utils/me";
-import type { Form, Submission } from "./types";
+
 import {
   canCreateForm,
   canEditForm,
@@ -14,6 +15,7 @@ import {
   canAdminDeleteForm,
   canListAdminForms,
 } from "./permissions";
+import type { Form, Submission } from "./types";
 
 function makeMe(over: Partial<Me> = {}): Me {
   return {

@@ -1,5 +1,5 @@
-import type { AstBlock, AstNode, SchemaSnapshot } from "./types";
 import type { ProseMirrorJSON } from "./serializer";
+import type { AstBlock, AstNode, SchemaSnapshot } from "./types";
 
 const LEAF_BLOCK_TYPES = new Set(["code_block", "image", "thematic_break"]);
 

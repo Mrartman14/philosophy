@@ -1,4 +1,5 @@
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
+
 import { resolveStorageUrl } from "../../upload/storage-url";
 
 export function ImageNodeView({

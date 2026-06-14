@@ -1,9 +1,7 @@
-import { describe, it, expect } from "vitest";
 import { getSchema } from "@tiptap/core";
 import { Node as PMNode } from "@tiptap/pm/model";
-import { buildExtensions } from "./extensions";
-import { deserialize } from "./deserializer";
-import { serialize, type ProseMirrorJSON } from "./serializer";
+import { describe, it, expect } from "vitest";
+
 import {
   fixtureParagraph,
   fixtureHeading,
@@ -19,6 +17,9 @@ import {
   fixtureLink,
   fixtureNavMarks,
 } from "./__fixtures__/sample-blocks";
+import { deserialize } from "./deserializer";
+import { buildExtensions } from "./extensions";
+import { serialize, type ProseMirrorJSON } from "./serializer";
 import type { AstBlock, SchemaSnapshot } from "./types";
 
 /**

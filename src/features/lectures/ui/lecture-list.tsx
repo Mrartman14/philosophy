@@ -1,6 +1,8 @@
 // src/features/lectures/ui/lecture-list.tsx
 import { EmptyState } from "@/components/ui";
+
 import type { Lecture, LectureTag } from "../types";
+
 import { LectureCard } from "./lecture-card";
 
 export function LectureList({

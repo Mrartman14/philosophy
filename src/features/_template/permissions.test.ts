@@ -1,5 +1,6 @@
 // src/features/_template/permissions.test.ts
 import { describe, it, expect } from "vitest";
+
 import { canPlaceholder } from "./permissions";
 
 describe("canPlaceholder", () => {

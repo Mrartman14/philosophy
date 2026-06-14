@@ -1,7 +1,8 @@
 // src/app/me/submissions/page.tsx
 import { redirect } from "next/navigation";
-import { getMe } from "@/utils/me";
+
 import { getMySubmissions, MySubmissionsList } from "@/features/forms";
+import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Мои отклики" };
 

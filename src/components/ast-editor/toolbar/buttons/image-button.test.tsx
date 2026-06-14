@@ -13,13 +13,16 @@ vi.mock("../../upload/upload-image", () => ({
   uploadImage: vi.fn(),
 }));
 
-import { Editor } from "@tiptap/core";
 import { Toolbar } from "@base-ui/react/toolbar";
-import { ImageButton } from "./image-button";
-import { uploadImage } from "../../upload/upload-image";
+import { Editor } from "@tiptap/core";
+
+
 import { buildExtensions } from "../../extensions";
-import { makePngFile } from "../../upload/__fixtures__/png-1x1";
 import type { SchemaSnapshot } from "../../types";
+import { makePngFile } from "../../upload/__fixtures__/png-1x1";
+import { uploadImage } from "../../upload/upload-image";
+
+import { ImageButton } from "./image-button";
 
 const mockedUpload = uploadImage as unknown as ReturnType<typeof vi.fn>;
 

@@ -1,9 +1,11 @@
 // src/features/events/api.ts
 import "server-only";
-import { cache } from "react";
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
+
 import { createApiClient, createPublicApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+
 import type {
   CalendarEvent,
   EventOccurrence,

@@ -1,6 +1,8 @@
 // src/features/users/ui/users-table.tsx
 import { EmptyState, Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui";
+
 import type { AdminUser } from "../types";
+
 import { UserRoleControl } from "./user-role-control";
 import { UserStatusControl } from "./user-status-control";
 

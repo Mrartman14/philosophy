@@ -1,6 +1,8 @@
 // src/features/users/permissions.test.ts
 import { describe, it, expect } from "vitest";
+
 import type { Me } from "@/utils/me";
+
 import { canListUsers, canModerateUsers } from "./permissions";
 
 const guest = null;

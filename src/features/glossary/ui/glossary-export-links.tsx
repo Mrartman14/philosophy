@@ -1,5 +1,6 @@
 // src/features/glossary/ui/glossary-export-links.tsx
 import { API_URL } from "@/api/client";
+
 import { glossaryExportUrls } from "../export-urls";
 
 // API_URL — единый источник (src/api/client.ts). Серверный компонент:
@@ -25,10 +26,10 @@ export function GlossaryExportLinks({ termId, className }: Props) {
       }
     >
       Экспорт:
-      <a href={urls.md} className="hover:underline" target="_blank" rel="noopener">
+      <a href={urls.md} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .md
       </a>
-      <a href={urls.txt} className="hover:underline" target="_blank" rel="noopener">
+      <a href={urls.txt} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .txt
       </a>
     </p>

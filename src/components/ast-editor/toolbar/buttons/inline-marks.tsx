@@ -1,9 +1,11 @@
 "use client";
-import type { Editor } from "@tiptap/core";
 import { Toolbar } from "@base-ui/react/toolbar";
+import type { Editor } from "@tiptap/core";
+
 import { BoldIcon } from "@/assets/icons/bold-icon";
-import { ItalicIcon } from "@/assets/icons/italic-icon";
 import { CodeIcon } from "@/assets/icons/code-icon";
+import { ItalicIcon } from "@/assets/icons/italic-icon";
+
 import type { SchemaSnapshot } from "../../types";
 
 interface Props {

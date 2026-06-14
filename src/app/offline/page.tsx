@@ -1,5 +1,5 @@
-import { GoBack } from "@/components/shared/go-back";
 import { OfflineIcon } from "@/assets/icons/offline-icon";
+import { GoBack } from "@/components/shared/go-back";
 
 export default function Page() {
   return (

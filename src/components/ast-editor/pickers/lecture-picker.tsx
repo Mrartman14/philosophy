@@ -1,6 +1,6 @@
 "use client";
-import { AsyncCombobox } from "./async-combobox";
 import { searchLectures, type Lecture } from "./actions";
+import { AsyncCombobox } from "./async-combobox";
 
 export interface LecturePickerProps { onSelect: (id: string, label: string) => void }
 

@@ -1,9 +1,12 @@
 "use client";
 // src/features/forms/ui/form-builder.tsx
 import { useState } from "react";
+
 import { Button, TextInput, Textarea } from "@/components/ui";
-import { FormBuilderFieldRow, type BuilderField } from "./form-builder-field-row";
+
 import type { FieldType, SubmissionMode, Visibility } from "../types";
+
+import { FormBuilderFieldRow, type BuilderField } from "./form-builder-field-row";
 
 export interface BuilderInitial {
   title: string;

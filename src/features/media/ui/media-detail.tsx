@@ -1,9 +1,10 @@
 // src/features/media/ui/media-detail.tsx
 import type { Media, MediaAttachment } from "../types";
-import { MediaPlayer } from "./media-player";
-import { MediaDeleteButton } from "./media-delete-button";
-import { MediaVisibilityForm } from "./media-visibility-form";
+
 import { MediaContainers } from "./media-containers";
+import { MediaDeleteButton } from "./media-delete-button";
+import { MediaPlayer } from "./media-player";
+import { MediaVisibilityForm } from "./media-visibility-form";
 
 interface MediaDetailProps {
   media: Media;

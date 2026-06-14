@@ -1,5 +1,6 @@
 // src/features/canvas/ui/canvas-my-list.tsx
 import Link from "next/link";
+
 import type { CanvasSummary } from "../types";
 
 interface Props {

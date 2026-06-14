@@ -1,8 +1,10 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import type { DOMOutputSpec } from "@tiptap/pm/model";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { ImageNodeView } from "./image-node-view";
+
 import { resolveStorageUrl } from "../../upload/storage-url";
+
+import { ImageNodeView } from "./image-node-view";
 
 /**
  * AST `image` block. Atomic (no inline content). attrs:

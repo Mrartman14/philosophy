@@ -1,5 +1,6 @@
 // src/features/preferences/schemas.test.ts
 import { describe, it, expect } from "vitest";
+
 import {
   PreferencesUpdateSchema,
   PushSendSchema,

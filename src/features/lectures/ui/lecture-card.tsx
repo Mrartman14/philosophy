@@ -1,7 +1,8 @@
 // src/features/lectures/ui/lecture-card.tsx
 import Link from "next/link";
-import type { Lecture, LectureTag } from "../types";
+
 import { lectureCoverUrl } from "../cover-url";
+import type { Lecture, LectureTag } from "../types";
 
 export function LectureCard({
   lecture,

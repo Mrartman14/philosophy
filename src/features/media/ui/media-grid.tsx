@@ -1,6 +1,8 @@
 // src/features/media/ui/media-grid.tsx
 import { EmptyState } from "@/components/ui";
+
 import type { Media } from "../types";
+
 import { MediaCard } from "./media-card";
 
 interface MediaGridProps {

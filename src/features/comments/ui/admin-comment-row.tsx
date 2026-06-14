@@ -1,8 +1,10 @@
 // src/features/comments/ui/admin-comment-row.tsx
 import { AstRender } from "@/components/ast-render";
-import { CommentTypeBadge } from "./comment-type-badge";
-import { CommentDeleteButton } from "./comment-delete-button";
+
 import type { Comment } from "../types";
+
+import { CommentDeleteButton } from "./comment-delete-button";
+import { CommentTypeBadge } from "./comment-type-badge";
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", {
   dateStyle: "short",

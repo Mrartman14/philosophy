@@ -1,7 +1,9 @@
 // src/features/canvas/editor/geometry-editor.test.ts
 import { describe, it, expect } from "vitest";
-import { pointInRect, hitTestNode, resizeHandles, applyResize, marqueeHits, handleAtPoint } from "./geometry-editor";
+
 import type { RenderNode } from "@/components/canvas-render";
+
+import { pointInRect, hitTestNode, resizeHandles, applyResize, marqueeHits, handleAtPoint } from "./geometry-editor";
 
 const node = (over: Partial<RenderNode> = {}): RenderNode => ({
   id: "n", type: "shape", x: 0, y: 0, width: 100, height: 50, shapeKind: "rect", ...over,

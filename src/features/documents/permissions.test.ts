@@ -1,7 +1,8 @@
 // src/features/documents/permissions.test.ts
 import { describe, expect, it } from "vitest";
+
 import type { Me } from "@/utils/me";
-import type { Document } from "./types";
+
 import {
   canCreateDocument,
   canEditDocument,
@@ -10,6 +11,7 @@ import {
   canListAdminDocuments,
   canSeeRevisions,
 } from "./permissions";
+import type { Document } from "./types";
 
 function makeMe(over: Partial<Me> = {}): Me {
   return {

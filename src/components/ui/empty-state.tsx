@@ -1,5 +1,6 @@
 // src/components/ui/empty-state.tsx
 import type { ReactNode } from "react";
+
 import { cn } from "./cn";
 
 interface EmptyStateProps {

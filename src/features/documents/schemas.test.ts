@@ -1,5 +1,6 @@
 // src/features/documents/schemas.test.ts
 import { describe, expect, it } from "vitest";
+
 import {
   DocumentCreateSchema,
   DocumentBlocksSchema,

@@ -1,5 +1,6 @@
 import "server-only";
 import type { ApiErrorCode } from "@/api/types";
+
 import { ForbiddenError } from "./permissions";
 
 /** Форма ошибки бека (openapi-fetch error body / ручной JSON). `code`

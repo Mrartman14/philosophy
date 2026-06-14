@@ -1,6 +1,7 @@
 // src/features/documents/ui/document-containers.tsx
 import { AttachmentsPanel } from "@/components/attachments";
 import type { AttachmentItem } from "@/components/attachments";
+
 import { getDocumentContainers } from "../api";
 
 interface Props {

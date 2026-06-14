@@ -1,12 +1,13 @@
 // src/app/admin/comments/page.tsx
 import { forbidden } from "next/navigation";
+
 import { Button, TextInput } from "@/components/ui";
-import { getMe } from "@/utils/me";
 import {
   canModerateComments,
   getAdminLectureComments,
   AdminCommentRow,
 } from "@/features/comments";
+import { getMe } from "@/utils/me";
 
 interface Props {
   searchParams: Promise<{ lecture_id?: string }>;

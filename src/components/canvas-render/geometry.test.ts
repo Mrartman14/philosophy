@@ -1,5 +1,6 @@
 // src/components/canvas-render/geometry.test.ts
 import { describe, it, expect } from "vitest";
+
 import { boundingBox, sidePoint, boxBorderIntersection, edgePath } from "./geometry";
 import type { RenderNode } from "./types";
 

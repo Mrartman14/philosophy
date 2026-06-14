@@ -1,6 +1,7 @@
 // src/features/comments/ui/comment-tree.tsx
-import { CommentNode } from "./comment-node";
 import type { Comment, CommentSchema, RootSubtree } from "../types";
+
+import { CommentNode } from "./comment-node";
 
 /** Строит map parent_id → children из плоского списка узлов. */
 function groupByParent(nodes: Comment[]): Map<string | null, Comment[]> {

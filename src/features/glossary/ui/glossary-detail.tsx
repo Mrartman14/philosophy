@@ -1,5 +1,6 @@
 // src/features/glossary/ui/glossary-detail.tsx
 import { AstRender } from "@/components/ast-render";
+
 import type { Term } from "../types";
 
 interface Props {

@@ -1,6 +1,6 @@
 "use client";
-import { AsyncCombobox } from "./async-combobox";
 import { searchCanvases, type CanvasSummary } from "./actions";
+import { AsyncCombobox } from "./async-combobox";
 
 export interface CanvasPickerProps { onSelect: (id: string, label: string) => void }
 
