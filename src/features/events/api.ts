@@ -1,7 +1,9 @@
 // src/features/events/api.ts
 import "server-only";
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createApiClient, createPublicApiClient } from "@/api/client";
+import { Tags } from "@/api/tags";
 import type {
   CalendarEvent,
   EventOccurrence,
@@ -90,8 +92,16 @@ export const getEventRevision = cache(
  * Публичный календарь. from/to — YYYY-MM-DD; бек требует оба параметра,
  * to >= from, диапазон ≤ 366 дней. Мы всегда передаём границы одного месяца
  * (см. resolveMonthRange).
+ *
+ * Auth-free (createPublicApiClient) → единственный, помимо getCommentSchema,
+ * кандидат на cross-request кеш. Оборачиваем в unstable_cache с тегом EVENTS;
+ * from/to автоматически попадают в ключ (unstable_cache добавляет аргументы к
+ * keyParts), поэтому каждый месяц кешируется отдельно. Инвалидация:
+ * create/update/deleteEvent зовут revalidateEntity(Tags.EVENTS) (см.
+ * actions.ts) → пользовательский флоу всегда свежий. revalidate: 3600 —
+ * safety-net на изменения в обход наших server actions.
  */
-export const getCalendarOccurrences = cache(
+export const getCalendarOccurrences = unstable_cache(
   async (from: string, to: string): Promise<EventOccurrence[]> => {
     const api = createPublicApiClient();
     const { data, error } = await api.GET("/api/calendar", {
@@ -102,4 +112,6 @@ export const getCalendarOccurrences = cache(
     }
     return (data?.data ?? []) as EventOccurrence[];
   },
+  ["calendar-occurrences"],
+  { tags: [Tags.EVENTS], revalidate: 3600 },
 );
