@@ -20,7 +20,7 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
     setIsIOS(
       /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        // eslint-disable-next-line @typescript-eslint/no-deprecated -- TODO(foundation/eslint-strict): navigator.platform kept for iOS PWA detection; navigator.userAgentData.platform not yet universally supported
+        // navigator.platform kept for iOS PWA detection; navigator.userAgentData.platform not yet universally supported (no longer flagged @deprecated as of TS 6 lib.dom)
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
     );
 
