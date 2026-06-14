@@ -3,7 +3,7 @@ import { uploadImage } from "./upload-image";
 import { makePngFile } from "./__fixtures__/png-1x1";
 
 vi.mock("next/headers", () => ({
-  cookies: async () => ({
+  cookies: () => Promise.resolve({
     get: (name: string) => (name === "token" ? { value: "fake-jwt" } : undefined),
   }),
 }));
@@ -28,7 +28,7 @@ function jsonResponse(body: unknown, status: number): Response {
 
 describe("uploadImage server action", () => {
   it("201 → success { storage_key, upload_id }", async () => {
-    fetchMock.mockImplementation(async (url: string, init: RequestInit) => {
+    fetchMock.mockImplementation((url: string, init: RequestInit) => {
       expect(url).toBe("http://localhost:8080/api/uploads/images");
       expect(init.method).toBe("POST");
       const headers = new Headers(init.headers);
@@ -36,7 +36,7 @@ describe("uploadImage server action", () => {
       expect(init.body).toBeInstanceOf(FormData);
       const fd = init.body as FormData;
       expect(fd.get("file")).toBeInstanceOf(File);
-      return jsonResponse({ upload_id: "u-1", storage_key: "abc123" }, 201);
+      return Promise.resolve(jsonResponse({ upload_id: "u-1", storage_key: "abc123" }, 201));
     });
 
     const fd = new FormData();

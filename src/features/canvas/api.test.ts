@@ -7,7 +7,7 @@ import { getCanvasById } from "./api";
 // без реального бекенда. Источник истины по формату ETag — handler.go.
 const getMock = vi.fn();
 vi.mock("@/api/client", () => ({
-  createApiClient: async () => ({ GET: getMock }),
+  createApiClient: () => Promise.resolve({ GET: getMock }),
 }));
 
 /** Фейковый ответ openapi-fetch: { data, error, response: Response }. */

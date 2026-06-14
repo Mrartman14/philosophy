@@ -21,7 +21,7 @@ interface BranchProps {
   schema: CommentSchema;
 }
 
-async function Branch({ node, childrenMap, lectureId, schema }: BranchProps) {
+function Branch({ node, childrenMap, lectureId, schema }: BranchProps) {
   const kids = childrenMap.get(node.id) ?? [];
   return (
     <li className="flex flex-col gap-2">

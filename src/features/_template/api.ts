@@ -17,4 +17,4 @@ import { cache } from "react";
 //   return data;
 // });
 
-export const _placeholder = cache(async () => null);
+export const _placeholder = cache(() => Promise.resolve(null));

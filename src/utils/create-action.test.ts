@@ -73,7 +73,7 @@ describe("parseFormData", () => {
 
 describe("createFormAction", () => {
   it("returns success on happy path", async () => {
-    const action = createFormAction(async (fd: FormData) => fd.get("x") as string);
+    const action = createFormAction((fd: FormData) => Promise.resolve(fd.get("x") as string));
     const fd = new FormData();
     fd.set("x", "ok");
     const result = await action({ success: false, error: "" }, fd);
@@ -81,7 +81,7 @@ describe("createFormAction", () => {
   });
 
   it("returns code='forbidden' on ForbiddenError", async () => {
-    const action = createFormAction(async () => {
+    const action = createFormAction(() => {
       throw new ForbiddenError("role");
     });
     const result = await action({ success: false, error: "" }, new FormData());
@@ -90,9 +90,9 @@ describe("createFormAction", () => {
 
   it("returns code='validation' with fieldErrors on ZodValidationError", async () => {
     const schema = z.object({ email: z.email() });
-    const action = createFormAction(async (fd: FormData) => {
+    const action = createFormAction((fd: FormData) => {
       parseFormData(schema, fd);
-      return null;
+      return Promise.resolve(null);
     });
     const fd = new FormData();
     fd.set("email", "bad");
@@ -105,7 +105,7 @@ describe("createFormAction", () => {
   });
 
   it("returns generic error for unknown errors", async () => {
-    const action = createFormAction(async () => {
+    const action = createFormAction(() => {
       throw new Error("boom");
     });
     const result = await action({ success: false, error: "" }, new FormData());
@@ -116,7 +116,7 @@ describe("createFormAction", () => {
 
 describe("ZodValidationError", () => {
   it("is also caught directly by createFormAction (without parseFormData wrapping)", async () => {
-    const action = createFormAction(async () => {
+    const action = createFormAction(() => {
       throw new ZodValidationError({ x: "must be set" });
     });
     const result = await action({ success: false, error: "" }, new FormData());

@@ -5,7 +5,7 @@ import { makePngFile } from "../upload/__fixtures__/png-1x1";
 import type { SchemaSnapshot } from "../types";
 
 vi.mock("../upload/upload-image", () => ({
-  uploadImage: vi.fn(async () => ({
+  uploadImage: vi.fn(() => ({
     success: true,
     data: { storage_key: "abc-key", upload_id: "u-1" },
   })),

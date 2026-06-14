@@ -9,7 +9,7 @@ interface Item { id: string; name: string }
 
 describe("AsyncCombobox", () => {
   it("debounces fetcher and renders items", async () => {
-    const fetcher = vi.fn(async (q: string, _offset: number, _limit: number) => ({
+    const fetcher = vi.fn((q: string, _offset: number, _limit: number) => Promise.resolve({
       data: [{ id: "1", name: `match-${q}` }, { id: "2", name: "other" }],
       total: 2 as number | null,
     }));
@@ -29,7 +29,7 @@ describe("AsyncCombobox", () => {
 
   it("Enter selects active item", async () => {
     const onSelect = vi.fn();
-    const fetcher = vi.fn(async () => ({ data: [{ id: "x", name: "X" }], total: 1 as number | null }));
+    const fetcher = vi.fn(() => Promise.resolve({ data: [{ id: "x", name: "X" }], total: 1 as number | null }));
     render(
       <AsyncCombobox<Item>
         fetcher={fetcher}
@@ -45,7 +45,7 @@ describe("AsyncCombobox", () => {
   });
 
   it("shows empty state when fetcher returns no items", async () => {
-    const fetcher = vi.fn(async () => ({ data: [] as Item[], total: 0 as number | null }));
+    const fetcher = vi.fn(() => Promise.resolve({ data: [] as Item[], total: 0 as number | null }));
     render(
       <AsyncCombobox<Item>
         fetcher={fetcher}
@@ -58,7 +58,7 @@ describe("AsyncCombobox", () => {
   });
 
   it("error state shows retry", async () => {
-    const fetcher = vi.fn(async () => { throw new Error("boom"); });
+    const fetcher = vi.fn(() => { throw new Error("boom"); });
     render(
       <AsyncCombobox<Item>
         fetcher={fetcher}
@@ -73,7 +73,7 @@ describe("AsyncCombobox", () => {
   });
 
   it("Load more appends next page", async () => {
-    const fetcher = vi.fn(async (_q: string, offset: number) => ({
+    const fetcher = vi.fn((_q: string, offset: number) => Promise.resolve({
       data: [{ id: `${offset}-a`, name: `${offset}A` }, { id: `${offset}-b`, name: `${offset}B` }],
       total: 4 as number | null,
     }));
@@ -94,9 +94,9 @@ describe("AsyncCombobox", () => {
     expect(secondCall[1]).toBe(2);
   });
 
-  it("Esc calls onClose when provided", async () => {
+  it("Esc calls onClose when provided", () => {
     const onClose = vi.fn();
-    const fetcher = vi.fn(async () => ({ data: [] as Item[], total: 0 as number | null }));
+    const fetcher = vi.fn(() => Promise.resolve({ data: [] as Item[], total: 0 as number | null }));
     render(
       <AsyncCombobox<Item>
         fetcher={fetcher}
@@ -111,8 +111,8 @@ describe("AsyncCombobox", () => {
   });
 
   it("refetches when fetcher identity changes (filter-driven closures)", async () => {
-    const fetcherA = vi.fn(async () => ({ data: [{ id: "a", name: "A" }], total: 1 as number | null }));
-    const fetcherB = vi.fn(async () => ({ data: [{ id: "b", name: "B" }], total: 1 as number | null }));
+    const fetcherA = vi.fn(() => Promise.resolve({ data: [{ id: "a", name: "A" }], total: 1 as number | null }));
+    const fetcherB = vi.fn(() => Promise.resolve({ data: [{ id: "b", name: "B" }], total: 1 as number | null }));
     const { rerender } = render(
       <AsyncCombobox<Item>
         fetcher={fetcherA}

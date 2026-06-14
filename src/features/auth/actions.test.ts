@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const cookieSet = vi.fn();
 const cookieDelete = vi.fn();
 vi.mock("next/headers", () => ({
-  cookies: async () => ({ set: cookieSet, delete: cookieDelete }),
+  cookies: () => Promise.resolve({ set: cookieSet, delete: cookieDelete }),
 }));
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {
@@ -37,10 +37,10 @@ describe("loginAction", () => {
   it("200 OK + token → ставит cookie и делает redirect", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () =>
-        new Response(JSON.stringify({ data: { token: "jwt-abc" } }), {
+      vi.fn(() =>
+        Promise.resolve(new Response(JSON.stringify({ data: { token: "jwt-abc" } }), {
           status: 200,
-        })
+        }))
       )
     );
 
@@ -59,8 +59,8 @@ describe("loginAction", () => {
   it("200 OK + опасный next → redirect на /", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () =>
-        new Response(JSON.stringify({ data: { token: "jwt" } }), { status: 200 })
+      vi.fn(() =>
+        Promise.resolve(new Response(JSON.stringify({ data: { token: "jwt" } }), { status: 200 }))
       )
     );
     let thrown: Error & { digest?: string } = new Error("not thrown");
@@ -75,7 +75,7 @@ describe("loginAction", () => {
   it("200 без token в data → service_unavailable, cookie не выставлена", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify({ data: {} }), { status: 200 }))
+      vi.fn(() => Promise.resolve(new Response(JSON.stringify({ data: {} }), { status: 200 })))
     );
     const res = await loginAction(initial, fd(validCreds));
     expect(res.success).toBe(false);
@@ -86,7 +86,7 @@ describe("loginAction", () => {
   it("401 → invalid_credentials", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify({}), { status: 401 }))
+      vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 401 })))
     );
     const res = await loginAction(initial, fd(validCreds));
     expect(res.success).toBe(false);
@@ -97,7 +97,7 @@ describe("loginAction", () => {
   it("403 → account_blocked", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify({}), { status: 403 }))
+      vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 403 })))
     );
     const res = await loginAction(initial, fd(validCreds));
     expect(res.success).toBe(false);
@@ -107,7 +107,7 @@ describe("loginAction", () => {
   it("500 → service_unavailable", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify({}), { status: 500 }))
+      vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 500 })))
     );
     const res = await loginAction(initial, fd(validCreds));
     expect(res.success).toBe(false);
@@ -117,7 +117,7 @@ describe("loginAction", () => {
   it("network reject → service_unavailable", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => {
+      vi.fn(() => {
         throw new TypeError("fetch failed");
       })
     );
@@ -144,11 +144,11 @@ describe("registerAction", () => {
   it("201 + next → redirect на /login?registered=1&next=…, cookie не выставлена", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () =>
-        new Response(
+      vi.fn(() =>
+        Promise.resolve(new Response(
           JSON.stringify({ data: { id: "u1", username: "alice" } }),
           { status: 201 }
-        )
+        ))
       )
     );
     let thrown: Error & { digest?: string } = new Error("not thrown");
@@ -166,8 +166,8 @@ describe("registerAction", () => {
   it("201 без next → redirect на /login?registered=1", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () =>
-        new Response(JSON.stringify({ data: { id: "u1" } }), { status: 201 })
+      vi.fn(() =>
+        Promise.resolve(new Response(JSON.stringify({ data: { id: "u1" } }), { status: 201 }))
       )
     );
     let thrown: Error & { digest?: string } = new Error("not thrown");
@@ -182,8 +182,8 @@ describe("registerAction", () => {
   it("201 + опасный next → next отбрасывается (redirect без next)", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () =>
-        new Response(JSON.stringify({ data: { id: "u1" } }), { status: 201 })
+      vi.fn(() =>
+        Promise.resolve(new Response(JSON.stringify({ data: { id: "u1" } }), { status: 201 }))
       )
     );
     let thrown: Error & { digest?: string } = new Error("not thrown");
@@ -198,7 +198,7 @@ describe("registerAction", () => {
   it("409 → username_taken", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify({}), { status: 409 }))
+      vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 409 })))
     );
     const res = await registerAction(initial, fd(validReg));
     expect(res.success).toBe(false);
@@ -208,7 +208,7 @@ describe("registerAction", () => {
   it("422 → invalid_input", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify({}), { status: 422 }))
+      vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 422 })))
     );
     const res = await registerAction(initial, fd(validReg));
     expect(res.success).toBe(false);
@@ -218,7 +218,7 @@ describe("registerAction", () => {
   it("429 → too_many_requests", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response("rate limit exceeded", { status: 429 }))
+      vi.fn(() => Promise.resolve(new Response("rate limit exceeded", { status: 429 })))
     );
     const res = await registerAction(initial, fd(validReg));
     expect(res.success).toBe(false);
@@ -228,7 +228,7 @@ describe("registerAction", () => {
   it("500 → service_unavailable", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify({}), { status: 500 }))
+      vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 500 })))
     );
     const res = await registerAction(initial, fd(validReg));
     expect(res.success).toBe(false);
@@ -238,7 +238,7 @@ describe("registerAction", () => {
   it("network reject → service_unavailable", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => {
+      vi.fn(() => {
         throw new TypeError("fetch failed");
       })
     );
