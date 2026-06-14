@@ -1016,3 +1016,16 @@ git commit -m "feat(offline): persistent-storage and quota-estimate helpers"
 **Вне скоупа этого плана (следующие планы под спек v2):** `OfflineDescriptor`/registry (F3-контракт) + composition root (F4); репозиторий-контракт (server/IndexedDB-адаптеры); generic sync-драйвер (+ атомарный claim) + route handler `POST /api/offline/[entity]`; lecture-дескриптор + `/saved` + `SavedLectureView` (слайс L); annotation-дескриптор + офлайн-create + reconcile (слайс A); правки SW (F1: cache `/static/files/*`, app-shell `/saved*`); вынос shared-хелперов + рефактор CommentNode (F2).
 
 **Плейсхолдеры:** нет. **Согласованность типов/имён:** проверена между контрактом, реализацией и тестами (`SavedBundlePatch`/`OutboxPatch`/`updateSavedBundle`/`listOutbox`/`listSavedBundlesByStatus`/`MaybeStorageManager` и пр.).
+
+---
+
+## Post-execution note (исполнено 2026-06-14, на ветке main)
+
+Слой реализован субагентами (TDD, two-stage review). Коммиты: `a9b818d4` (Task 1), `c0847c98` (Task 2), `632a9b19` (Task 3), `c31861d7` (Task 4), `69f815d0` (Task 5), `fc041320` (lint-fix), `06277db2` (Task 6). Финальный гейт зелёный: `pnpm lint` 0, `pnpm typecheck` 0, `pnpm test` 1028 passed.
+
+**Два lint-фикса поверх дословного кода плана** (per-task verifier'ы ловили typecheck, но lint-провал поймал общий прогон на Task 5) — учесть при регенерации/переиспользовании:
+
+1. **import/order** в `saved-bundles.ts`/`.test.ts` и `outbox.ts`/`.test.ts`: parent-импорт (`../contract/storage`) должен идти **перед** sibling (`./db`/`./saved-bundles`/`./outbox`) — в исходных блоках плана порядок был обратный. Исправлено `eslint --fix`.
+2. **require-await** в `images.test.ts`: `FakeCache.put/match` не должны быть `async` без `await` — заменены на не-async методы, возвращающие `Promise.resolve(...)`.
+
+**Кросс-слойный seam (для F1/SW-PR):** картинки кэшируются в `flbz-offline-images`, а SW читает `flbz-images-${SW_VERSION}` — см. bucket-контракт в спеке §11 F1.

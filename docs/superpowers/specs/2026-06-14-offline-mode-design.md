@@ -201,7 +201,7 @@ interface OutboxCommand {
 
 | PR | Тип | Содержимое |
 |---|---|---|
-| **F1** | foundation | `src/sw.template.js` (cache `/static/files/*` + app-shell `/saved*`). NB: `idb` добавляется в F3-плане персистентности, НЕ здесь — чтобы два PR не трогали одну строку `package.json` |
+| **F1** | foundation | `src/sw.template.js` (cache `/static/files/*` + app-shell `/saved*`). NB: `idb` добавляется в F3-плане персистентности, НЕ здесь. **Bucket-контракт:** слой персистентности кладёт картинки в Cache Storage `flbz-offline-images` (не версионируется, под `persist()`), а текущий SW кэширует `/static/files` в `flbz-images-${SW_VERSION}` (версионируется, LRU-100) и НЕ матчит безрасширенные `/static/files/{key}`. В F1 решить: SW должен **читать** `flbz-offline-images` для офлайн-чтения сохранённых картинок (расхождение намеренное — офлайн-bucket переживает вытеснение) |
 | **F2** | prerequisite | вынос чистых хелперов рендера в shared; рефактор `CommentNode` → контейнер/view |
 | **F3** | infra (generic) | `src/services/offline/`: contract/descriptor, store (saved-bundles + outbox + images + persist), repository-контракт, generic sync-драйвер |
 | **F4** | infra | `app/_offline/registry.ts` (composition root) + generic `saveOffline` action + generic route handler `POST /api/offline/[entity]` |
