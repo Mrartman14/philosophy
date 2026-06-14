@@ -8,6 +8,7 @@ import { API_URL } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { canCreateMedia } from "./permissions";
 import type { Media } from "./types";
+import type { ApiError } from "@/utils/api-error";
 
 export type UploadMediaResult =
   | { success: true; data: Media }
@@ -17,11 +18,6 @@ export type UploadMediaResult =
       code: "forbidden" | "file_too_large" | "invalid_file";
     }
   | { success: false; error: string; code?: undefined };
-
-interface ApiError {
-  code?: string;
-  error?: string;
-}
 
 /**
  * POST /api/media — multipart-upload (поля type + file). Бек создаёт медиа

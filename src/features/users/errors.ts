@@ -1,9 +1,11 @@
 // src/features/users/errors.ts
 import "server-only";
 import { ForbiddenError } from "@/utils/permissions";
+import type { ApiError } from "@/utils/api-error";
 
-/** Форма ошибки бекенда (httputil.ErrorResponse): { code?, error?, detail? }. */
-export type UserApiError = { code?: string; error?: string };
+/** Алиас общего {@link ApiError} — `code` типизирован сгенерированным
+ * union `apperror.Code` (источник истины — `internal/apperror/codes.go`). */
+export type UserApiError = ApiError;
 
 /**
  * 409-гарды users-admin возвращают единый код "CONFLICT" — различаем по
