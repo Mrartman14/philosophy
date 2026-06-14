@@ -15,8 +15,32 @@ const eslintConfig = [
         tsconfigRootDir: import.meta.dirname,
       },
     },
+  },
+  // Строжайший официальный type-aware набор typescript-eslint, scoped на исходники.
+  // no-floating-promises входит сюда — отдельное правило больше не нужно.
+  ...tseslint.configs.strictTypeChecked.map((c) => ({
+    ...c,
+    files: ["src/**/*.{ts,tsx}"],
+  })),
+  ...tseslint.configs.stylisticTypeChecked.map((c) => ({
+    ...c,
+    files: ["src/**/*.{ts,tsx}"],
+  })),
+  // Осознанные послабления к strict — см.
+  // docs/superpowers/specs/2026-06-14-eslint-strict-preset-design.md
+  {
+    files: ["src/**/*.{ts,tsx}"],
     rules: {
-      "@typescript-eslint/no-floating-promises": "error",
+      // off: значительная часть срабатываний — легитимные defensive-проверки на границе
+      // с бекенд-API (тип обещает поле, рантайм-ответ может его не содержать). Чище
+      // отключить целиком, чем рассыпать eslint-disable по коду.
+      // Альтернатива на будущее: включить noUncheckedIndexedAccess в tsconfig и вернуть правило.
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      // числа и булевы в шаблонных строках — норм; защита от ${object}/${null} остаётся.
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        { allowNumber: true, allowBoolean: true },
+      ],
     },
   },
   {
@@ -81,6 +105,11 @@ const eslintConfig = [
         },
       ],
     },
+  },
+  // Type-aware правила нельзя гонять на файлах вне tsconfig (конфиги, скрипты).
+  {
+    ...tseslint.configs.disableTypeChecked,
+    files: ["**/*.{js,mjs,cjs}"],
   },
 ];
 
