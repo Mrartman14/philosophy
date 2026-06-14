@@ -1,16 +1,11 @@
 // src/features/comments/ui/admin-comment-row.tsx
 import { AstRender } from "@/components/ast-render";
 
+import { formatCommentDate } from "../comment-format";
 import type { Comment } from "../types";
 
 import { CommentDeleteButton } from "./comment-delete-button";
 import { CommentTypeBadge } from "./comment-type-badge";
-
-const dateFmt = new Intl.DateTimeFormat("ru-RU", {
-  dateStyle: "short",
-  timeStyle: "short",
-  timeZone: "UTC",
-});
 
 export function AdminCommentRow({ comment }: { comment: Comment }) {
   const deleted = comment.is_deleted;
@@ -20,7 +15,7 @@ export function AdminCommentRow({ comment }: { comment: Comment }) {
         <div className="flex items-center gap-2 text-xs text-(--color-description)">
           <CommentTypeBadge type={comment.type} />
           <span>{comment.author?.username ?? "—"}</span>
-          <span>{comment.created_at ? dateFmt.format(new Date(comment.created_at)) : ""}</span>
+          <span>{formatCommentDate(comment.created_at)}</span>
           {deleted && <span className="text-red-600">удалён</span>}
         </div>
         {!deleted && (

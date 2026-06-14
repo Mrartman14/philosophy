@@ -1,19 +1,8 @@
 // src/features/comments/ui/comment-tree.tsx
+import { groupByParent } from "../comment-tree-utils";
 import type { Comment, CommentSchema, RootSubtree } from "../types";
 
 import { CommentNode } from "./comment-node";
-
-/** Строит map parent_id → children из плоского списка узлов. */
-function groupByParent(nodes: Comment[]): Map<string | null, Comment[]> {
-  const map = new Map<string | null, Comment[]>();
-  for (const n of nodes) {
-    const key = n.parent_id ?? null;
-    const arr = map.get(key) ?? [];
-    arr.push(n);
-    map.set(key, arr);
-  }
-  return map;
-}
 
 interface BranchProps {
   node: Comment;
