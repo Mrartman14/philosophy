@@ -14,6 +14,7 @@ export { Checkbox, type CheckboxProps } from "./checkbox";
 export { Form } from "./form";
 export { FormField, type FormFieldProps } from "./form-field";
 export { SubmitButton } from "./submit-button";
+export { IdempotencyField } from "./idempotency-field";
 export { Dialog, DialogClose } from "./dialog";
 export { ConfirmDialog } from "./confirm-dialog";
 export { Table, Thead, Tbody, Tr, Th, Td } from "./table";
