@@ -31,7 +31,10 @@ export function SaveOfflineButton({
       setSaving(false);
       if (result.ok) {
         setSaved(true);
-        toast.add({ title: "Сохранено для офлайна" });
+        toast.add({
+          title: "Сохранено для офлайна",
+          description: result.warning,
+        });
       } else {
         toast.add({
           title: "Не удалось сохранить офлайн",

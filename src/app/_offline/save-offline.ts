@@ -14,9 +14,42 @@ import { assembleOfflineBundle } from "./save-offline-action";
 export interface SaveOfflineResult {
   ok: boolean;
   error?: string;
+  /** Сохранено, но хранилище хрупкое (persist() отказал) — данные могут вытесниться. */
+  warning?: string;
 }
 
 const OFFLINE_SCHEMA_VERSION = 1;
+
+const QUOTA_ERROR =
+  "Недостаточно места на устройстве для офлайн-сохранения.";
+const STORAGE_ERROR = "Не удалось сохранить офлайн.";
+// persist() отказан: на iOS/Safari origin вытесняется по LRU (целиком, после
+// ~7 дней без захода) — честно предупреждаем, что сохранённое не вечно.
+const NOT_PERSISTED_WARNING =
+  "Сохранено, но браузер может удалить офлайн-данные при нехватке места.";
+
+/** QuotaExceededError приходит как DOMException (не наследует Error) — матчим по name. */
+function isQuotaError(e: unknown): boolean {
+  return (
+    typeof e === "object" &&
+    e !== null &&
+    "name" in e &&
+    (e as { name?: unknown }).name === "QuotaExceededError"
+  );
+}
+
+async function markBundleError(
+  entity: string,
+  id: string,
+  error: string,
+): Promise<void> {
+  // no-op, если записи ещё нет (put упал на квоте до создания) — допустимо.
+  try {
+    await updateSavedBundle(entity, id, { status: "error", error });
+  } catch {
+    // best-effort: пометка статуса не должна перекрывать исходную ошибку.
+  }
+}
 
 /** Сохранить сущность офлайн: server-снимок → IndexedDB + картинки в Cache Storage. */
 export async function saveOffline(
@@ -30,33 +63,48 @@ export async function saveOffline(
   }
   const { snapshot, imageKeys } = result.data;
 
-  await requestPersistentStorage();
-  await putSavedBundle({
-    entity,
-    id,
-    savedAt: new Date().toISOString(),
-    schemaVersion: OFFLINE_SCHEMA_VERSION,
-    status: "saving",
-    snapshot,
-    imageKeys,
-  });
+  // persist() — главный (и единственный) рычаг durability. Берём результат:
+  // при отказе сохранение не блокируем, но предупреждаем о хрупкости хранилища.
+  const persisted = await requestPersistentStorage();
 
-  let failed = 0;
-  for (const key of imageKeys) {
-    // resolveStorageUrl — единая точка истины URL (та же, что рендерит view):
-    // Cache Storage матчит по полному URL, поэтому хардкодить /static/files
-    // нельзя — при NEXT_PUBLIC_STORAGE_URL (CDN) src разойдётся с кэшем.
-    const cached = await cacheImage(resolveStorageUrl(key));
-    if (!cached) failed++;
-  }
-
-  if (failed > 0) {
-    await updateSavedBundle(entity, id, {
-      status: "error",
-      error: `Не сохранилось картинок: ${failed} из ${imageKeys.length}`,
+  try {
+    await putSavedBundle({
+      entity,
+      id,
+      savedAt: new Date().toISOString(),
+      schemaVersion: OFFLINE_SCHEMA_VERSION,
+      status: "saving",
+      snapshot,
+      imageKeys,
     });
-    return { ok: false, error: "Сохранено частично — часть картинок недоступна." };
+
+    let failed = 0;
+    for (const key of imageKeys) {
+      // resolveStorageUrl — единая точка истины URL (та же, что рендерит view):
+      // Cache Storage матчит по полному URL, поэтому хардкодить /static/files
+      // нельзя — при NEXT_PUBLIC_STORAGE_URL (CDN) src разойдётся с кэшем.
+      const cached = await cacheImage(resolveStorageUrl(key));
+      if (!cached) failed++;
+    }
+
+    if (failed > 0) {
+      await markBundleError(
+        entity,
+        id,
+        `Не сохранилось картинок: ${failed} из ${imageKeys.length}`,
+      );
+      return {
+        ok: false,
+        error: "Сохранено частично — часть картинок недоступна.",
+      };
+    }
+    await updateSavedBundle(entity, id, { status: "complete" });
+    return persisted ? { ok: true } : { ok: true, warning: NOT_PERSISTED_WARNING };
+  } catch (e) {
+    // Квота/сбой записи: не роняем промис (кнопка иначе залипает без .catch) —
+    // помечаем снимок error и возвращаем понятную причину.
+    const error = isQuotaError(e) ? QUOTA_ERROR : STORAGE_ERROR;
+    await markBundleError(entity, id, error);
+    return { ok: false, error };
   }
-  await updateSavedBundle(entity, id, { status: "complete" });
-  return { ok: true };
 }

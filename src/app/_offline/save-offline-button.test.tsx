@@ -29,6 +29,17 @@ describe("SaveOfflineButton", () => {
     expect(saveOffline).toHaveBeenCalledWith("lectures", "l1");
   });
 
+  it("успех с предупреждением → тост с описанием о хрупкости", async () => {
+    saveOffline.mockResolvedValue({ ok: true, warning: "хрупко" });
+    render(<SaveOfflineButton entity="lectures" id="l1" />);
+    fireEvent.click(screen.getByText("Сохранить офлайн"));
+    await waitFor(() => {
+      expect(toastAdd).toHaveBeenCalledWith(
+        expect.objectContaining({ description: "хрупко" }),
+      );
+    });
+  });
+
   it("ошибка → тост с описанием, кнопка снова активна", async () => {
     saveOffline.mockResolvedValue({ ok: false, error: "нет сети" });
     render(<SaveOfflineButton entity="lectures" id="l1" />);

@@ -16,8 +16,9 @@ vi.mock("@/services/offline/store/images", () => ({
   cacheImage: cacheImageMock,
 }));
 
+const persistMock = vi.hoisted(() => vi.fn());
 vi.mock("@/services/offline/store/persistence", () => ({
-  requestPersistentStorage: () => Promise.resolve(true),
+  requestPersistentStorage: persistMock,
 }));
 
 import { getSavedBundle } from "@/services/offline/store/saved-bundles";
@@ -29,6 +30,7 @@ beforeEach(() => {
   globalThis.indexedDB = new IDBFactory();
   assembleMock.mockReset();
   cacheImageMock.mockReset();
+  persistMock.mockReset().mockResolvedValue(true);
 });
 
 describe("saveOffline", () => {
@@ -77,5 +79,34 @@ describe("saveOffline", () => {
     const res = await saveOffline("lectures", "l1");
 
     expect(res).toEqual({ ok: false, error: "boom" });
+  });
+
+  it("превышение квоты при кэшировании → ok:false (про место), статус error, без креша", async () => {
+    assembleMock.mockResolvedValue({
+      success: true,
+      data: { snapshot: {}, imageKeys: ["a"] },
+    });
+    cacheImageMock.mockRejectedValue(
+      Object.assign(new Error("quota"), { name: "QuotaExceededError" }),
+    );
+
+    const res = await saveOffline("lectures", "l1");
+
+    expect(res.ok).toBe(false);
+    expect(res.error).toMatch(/места/i);
+    expect((await getSavedBundle("lectures", "l1"))?.status).toBe("error");
+  });
+
+  it("persist() отказано → ok:true, но с предупреждением о хрупкости хранилища", async () => {
+    assembleMock.mockResolvedValue({
+      success: true,
+      data: { snapshot: {}, imageKeys: [] },
+    });
+    persistMock.mockResolvedValue(false);
+
+    const res = await saveOffline("lectures", "l1");
+
+    expect(res.ok).toBe(true);
+    expect(res.warning).toBeTruthy();
   });
 });
