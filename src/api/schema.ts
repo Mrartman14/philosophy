@@ -16,7 +16,7 @@ export interface paths {
             parameters: {
                 query?: {
                     /** @description Фильтр по типу сущности */
-                    parent_entity_type?: string;
+                    parent_entity_type?: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
                     /** @description Фильтр по ID сущности */
                     parent_entity_id?: string;
                     /** @description Фильтр по автору */
@@ -284,7 +284,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -326,6 +329,15 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -432,7 +444,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID баннера */
                     id: string;
@@ -493,6 +508,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -518,7 +542,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID баннера */
                     id: string;
@@ -563,6 +590,33 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1114,7 +1168,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID документа */
                     document_id: string;
@@ -1159,6 +1216,33 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description DOCUMENT_REFERENCED / BLOCKS_HAVE_ANCHORS / IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1227,11 +1311,21 @@ export interface paths {
             };
         };
         put?: never;
-        /** Создать событие */
+        /**
+         * Создать событие
+         * @description Доменные коды ошибок:
+         *     — 422 INVALID_DATE — некорректный формат/диапазон date/datetime (all_day → YYYY-MM-DD, иначе RFC3339; end_date >= start_date)
+         *     — 422 INVALID_RRULE — некорректное правило повторения RRULE
+         *     — 422 BLOCKS_INVALID — нарушена структура AST-блоков описания
+         *     — 422 REF_NOT_FOUND — entity_ref-узел ссылается на несуществующую/невидимую сущность
+         */
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -1273,6 +1367,15 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1375,11 +1478,21 @@ export interface paths {
                 };
             };
         };
-        /** Обновить событие */
+        /**
+         * Обновить событие
+         * @description Доменные коды ошибок:
+         *     — 422 INVALID_DATE — некорректный формат/диапазон date/datetime (all_day → YYYY-MM-DD, иначе RFC3339; end_date >= start_date)
+         *     — 422 INVALID_RRULE — некорректное правило повторения RRULE
+         *     — 422 BLOCKS_INVALID — нарушена структура AST-блоков описания
+         *     — 422 REF_NOT_FOUND — entity_ref-узел ссылается на несуществующую/невидимую сущность
+         */
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID события */
                     id: string;
@@ -1440,6 +1553,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -1465,7 +1587,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID события */
                     id: string;
@@ -1510,6 +1635,33 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1906,7 +2058,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -1955,7 +2110,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description CONFLICT / IDEMPOTENCY_KEY_IN_USE */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -2004,7 +2159,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID термина */
                     id: string;
@@ -2056,8 +2214,26 @@ export interface paths {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description GLOSSARY_REFERENCED / BLOCKS_HAVE_ANCHORS / IDEMPOTENCY_KEY_IN_USE */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2094,7 +2270,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID термина */
                     id: string;
@@ -2155,7 +2334,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description BLOCKS_HAVE_ANCHORS / BLOCK_REFERENCED / IDEMPOTENCY_KEY_IN_USE */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -2204,7 +2383,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -2246,6 +2428,15 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2447,7 +2638,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -2485,6 +2679,15 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2546,7 +2749,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.Response"] & {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["sharelink.ShareLink"][];
                         };
                     };
@@ -2674,7 +2877,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -2723,7 +2929,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description CONFLICT / IDEMPOTENCY_KEY_IN_USE */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -3333,7 +3539,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасного повтора офлайн-правки; реплей возвращает представление на момент первого применения — за актуальным состоянием возьмите GET */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID пометки */
                     id: string;
@@ -3394,6 +3603,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -3419,7 +3637,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасного повтора офлайн-удаления; повтор с тем же ключом возвращает 204, а не 404 */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID пометки */
                     id: string;
@@ -3464,6 +3685,33 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4166,7 +4414,7 @@ export interface paths {
                         };
                     };
                 };
-                /** @description Bad Request */
+                /** @description MISSING_PARAMS / INVALID_QUERY_DATE */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -4175,13 +4423,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Unprocessable Entity */
+                /** @description INVALID_RANGE / RANGE_TOO_LARGE */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -4212,9 +4460,9 @@ export interface paths {
                 query?: {
                     /** @description Поиск по title */
                     q?: string;
-                    /** @description Offset (default 0) */
+                    /** @description Смещение */
                     offset?: number;
-                    /** @description Limit (default 20, max 100) */
+                    /** @description Лимит */
                     limit?: number;
                 };
                 header?: never;
@@ -4264,7 +4512,11 @@ export interface paths {
             };
         };
         put?: never;
-        /** Создать canvas */
+        /**
+         * Создать canvas
+         * @description Доменные коды ошибок:
+         *     — 422 REF_NOT_FOUND — entity_ref-узел ссылается на несуществующую/невидимую сущность
+         */
         post: {
             parameters: {
                 query?: never;
@@ -4410,7 +4662,11 @@ export interface paths {
                 };
             };
         };
-        /** Обновить canvas (полная замена данных) */
+        /**
+         * Обновить canvas (полная замена данных)
+         * @description Доменные коды ошибок:
+         *     — 422 REF_NOT_FOUND — entity_ref-узел ссылается на несуществующую/невидимую сущность
+         */
         put: {
             parameters: {
                 query?: never;
@@ -4879,13 +5135,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description PUBLIC_IMMUTABLE */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -4944,7 +5200,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID комментария */
                     id: string;
@@ -4996,8 +5255,26 @@ export interface paths {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description COMMENT_REFERENCED / BLOCKS_HAVE_ANCHORS / IDEMPOTENCY_KEY_IN_USE */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5034,7 +5311,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID комментария */
                     id: string;
@@ -5095,7 +5375,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description BLOCKS_HAVE_ANCHORS / BLOCK_REFERENCED / IDEMPOTENCY_KEY_IN_USE */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -5295,13 +5575,13 @@ export interface paths {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Unprocessable Entity */
+                /** @description AXIS_NOT_ALLOWED / COMMENT_DELETED */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["httputil.ValidationErrorResponse"];
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -5705,7 +5985,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -5745,7 +6028,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description FORBIDDEN / ATTACH_FORBIDDEN */
+                /** @description Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -5754,8 +6037,17 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description NOT_FOUND / LECTURE_NOT_FOUND */
+                /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5814,8 +6106,11 @@ export interface paths {
                          * @description Файл документа (.md)
                          */
                         file: string;
-                        /** @description private | public (default private) */
-                        visibility?: string;
+                        /**
+                         * @description private | public (default private)
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public";
                     };
                 };
             };
@@ -5849,7 +6144,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description FORBIDDEN / ATTACH_FORBIDDEN */
+                /** @description Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -5858,8 +6153,17 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description NOT_FOUND / LECTURE_NOT_FOUND */
+                /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5953,7 +6257,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID документа */
                     document_id: string;
@@ -5998,6 +6305,33 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description DOCUMENT_REFERENCED / BLOCKS_HAVE_ANCHORS / IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -6056,7 +6390,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description FORBIDDEN / ATTACH_FORBIDDEN */
+                /** @description Forbidden */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -6065,7 +6399,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description NOT_FOUND / LECTURE_NOT_FOUND */
+                /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -6239,7 +6573,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID документа */
                     document_id: string;
@@ -6300,7 +6637,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description BLOCKS_HAVE_ANCHORS / BLOCK_REFERENCED / IDEMPOTENCY_KEY_IN_USE */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -6737,7 +7074,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description Тип родительской сущности */
                     type: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
@@ -6800,6 +7140,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -6839,7 +7188,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -6881,6 +7233,15 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -7145,7 +7506,12 @@ export interface paths {
         /** Список откликов формы (только владелец) */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
                 header?: never;
                 path: {
                     /** @description ID формы */
@@ -7161,7 +7527,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.Response"] & {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["form.SubmissionListItem"][];
                         };
                     };
@@ -7212,7 +7578,10 @@ export interface paths {
                     /** @description Share-token для доступа к приватному ресурсу */
                     token?: string;
                 };
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID формы */
                     id: string;
@@ -7273,7 +7642,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description ALREADY_SUBMITTED / IDEMPOTENCY_KEY_IN_USE */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -7457,7 +7826,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -7499,6 +7871,15 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8378,7 +8759,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID лекции */
                     id: string;
@@ -8432,6 +8816,15 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9498,7 +9891,7 @@ export interface paths {
             parameters: {
                 query?: {
                     /** @description Фильтр по типу родительской сущности */
-                    parent_entity_type?: string;
+                    parent_entity_type?: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
                     /** @description Смещение */
                     offset?: number;
                     /** @description Записей на странице */
@@ -9523,6 +9916,82 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/canvases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Мои canvas'ы
+         * @description Owner-scoped листинг всех canvas'ов актора (любой видимости),
+         *     в отличие от picker-Search (GET /api/canvases), который ищет по
+         *     всем видимым canvas'ам с фильтром по title. Peer-симметрия с
+         *     /api/me/documents.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Лимит */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["canvas.CanvasSummary"][];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9613,7 +10082,12 @@ export interface paths {
         /** Мои формы */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -9626,7 +10100,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.Response"] & {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["form.FormListItem"][];
                         };
                     };
@@ -9654,6 +10128,504 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Личная история просмотров (лента) */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Offset */
+                    offset?: number;
+                    /** @description Limit */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["history.HistoryItem"][];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Записать просмотр в личную историю
+         * @description Безопасный beacon: no-op (204), если трекинг выключен; повторные вызовы добавляют записи (повторы — сигнал статистики). Требует видимости цели актором.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    /** @description Share-токен, под которым цель была открыта */
+                    token?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Цель просмотра */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["history.RecordViewRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Request Entity Too Large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        /** Очистить личную историю (трекинг остаётся) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/history/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Выгрузить личную историю файлом */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description json|csv (csv returns text/csv) */
+                    format?: "json" | "csv";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description attachment file (json or csv) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": string;
+                        "text/csv": string;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "text/csv": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "text/csv": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "text/csv": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/history/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Состояние трекинга истории */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["history.Settings"];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /** Включить/выключить трекинг (выключение = безвозвратное удаление) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Новое состояние */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["history.SetTrackingRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["history.Settings"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Request Entity Too Large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/history/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Личная статистика просмотров */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["history.Stats"];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/history/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удалить одну запись истории */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID записи */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -9828,27 +10800,39 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Unprocessable Entity */
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description VALIDATION_ERROR */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
         };
         trace?: never;
     };
-    "/api/me/submissions": {
+    "/api/me/production": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Мои отклики */
+        /**
+         * Производственная статистика (инвентарь)
+         * @description Счётчики живых сущностей, которыми владеет пользователь, по типам и видимости. Self-only, read-only.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -9865,6 +10849,67 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["productionstats.Inventory"];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Мои отклики */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["form.SubmissionListItem"][];
                         };
                     };
@@ -9988,8 +11033,11 @@ export interface paths {
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** @description Тип файла (video|audio) */
-                        type: string;
+                        /**
+                         * @description Тип файла
+                         * @enum {string}
+                         */
+                        type: "video" | "audio";
                         /**
                          * Format: binary
                          * @description Файл
@@ -10700,7 +11748,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.Response"] & {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["sharelink.ShareLink"][];
                         };
                     };
@@ -10739,7 +11787,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -10790,6 +11841,15 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -11297,7 +12357,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
                 path?: never;
                 cookie?: never;
             };
@@ -11339,6 +12402,15 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -12113,7 +13185,7 @@ export interface components {
         /** @enum {string} */
         "annotation.Visibility": "private" | "public";
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -12658,6 +13730,41 @@ export interface components {
         "glossary.UpdateRequest": {
             blocks: components["schemas"]["ast.Block"][];
         };
+        "history.HistoryItem": {
+            available?: boolean;
+            id?: string;
+            target_id?: string;
+            target_type?: components["schemas"]["history.TargetType"];
+            title?: string;
+            viewed_at?: string;
+        };
+        "history.RecordViewRequest": {
+            target_id: string;
+            target_type: string;
+        };
+        "history.SetTrackingRequest": {
+            tracking_enabled?: boolean;
+        };
+        "history.Settings": {
+            tracking_enabled?: boolean;
+        };
+        "history.StatItem": {
+            available?: boolean;
+            count?: number;
+            last_viewed_at?: string;
+            target_id?: string;
+            target_type?: components["schemas"]["history.TargetType"];
+            title?: string;
+        };
+        "history.Stats": {
+            count_by_type?: {
+                [key: string]: number;
+            };
+            top?: components["schemas"]["history.StatItem"][];
+            total?: number;
+        };
+        /** @enum {string} */
+        "history.TargetType": "lecture" | "document" | "trail" | "canvas" | "form";
         "httputil.ErrorResponse": {
             code?: components["schemas"]["apperror.Code"];
             detail?: {
@@ -12750,6 +13857,23 @@ export interface components {
         };
         /** @enum {string} */
         "preference.ReadingMode": "full" | "focused";
+        "productionstats.EntityInventory": {
+            entity_type?: components["schemas"]["productionstats.EntityType"];
+            private?: number;
+            public?: number;
+            total?: number;
+        };
+        /** @enum {string} */
+        "productionstats.EntityType": "lecture" | "document" | "canvas" | "form" | "trail" | "media" | "annotation" | "comment";
+        "productionstats.Inventory": {
+            by_type?: components["schemas"]["productionstats.EntityInventory"][];
+            totals?: components["schemas"]["productionstats.Totals"];
+        };
+        "productionstats.Totals": {
+            private?: number;
+            public?: number;
+            total?: number;
+        };
         "push.SendRequest": {
             body?: string;
             title: string;
@@ -12908,6 +14032,10 @@ export interface components {
             username?: string;
         };
         "user.RegisterRequest": {
+            /**
+             * @description min=8 follows NIST SP 800-63B / OWASP ASVS V2.1 (8-char floor); no max
+             *     (bcrypt's 72-byte input limit is the only ceiling and well above this).
+             */
             password: string;
             username: string;
         };
