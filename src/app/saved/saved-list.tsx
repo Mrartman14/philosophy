@@ -1,11 +1,10 @@
 // src/app/saved/saved-list.tsx
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descriptor";
-import { Skeleton } from "@/components/ui";
+import { RouterLink, Skeleton } from "@/components/ui";
 import type { SavedBundleRecord } from "@/services/offline/contract/storage";
 import {
   listSavedBundles,
@@ -74,12 +73,12 @@ export function SavedList() {
         <ul className="flex flex-col gap-2">
           {items.map((it) => (
             <li key={it.id}>
-              <Link
+              <RouterLink
                 href={`/saved/${it.id}`}
                 className="block rounded border border-(--color-border) p-3 hover:bg-(--color-text-pane)"
               >
                 <span className="font-medium">{it.title}</span>
-              </Link>
+              </RouterLink>
             </li>
           ))}
         </ul>
