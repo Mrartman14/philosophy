@@ -57,26 +57,26 @@ function toResult<T>(error: unknown): ActionResult<T> {
   return { success: false, error: message };
 }
 
+/** Контекст, который `createAction` / `createFormAction` прокидывают обработчику
+ * вторым аргументом. Существующие обработчики `(input) => …` его игнорируют
+ * (функция, принимающая меньше аргументов, совместима по типу). */
+export interface FormActionContext {
+  /** Ключ идемпотентности из аргумента вызова или скрытого поля формы (или `undefined`). */
+  idempotencyKey: string | undefined;
+}
+
 export function createAction<TInput, TOutput>(
-  fn: (input: TInput) => Promise<TOutput>
-): (input: TInput) => Promise<ActionResult<TOutput>> {
-  return async (input: TInput) => {
+  fn: (input: TInput, ctx: FormActionContext) => Promise<TOutput>
+): (input: TInput, idempotencyKey?: string) => Promise<ActionResult<TOutput>> {
+  return async (input: TInput, idempotencyKey?: string) => {
     try {
-      const data = await fn(input);
+      const data = await fn(input, { idempotencyKey });
       return { success: true, data };
     } catch (error) {
       if (isNextInternalError(error)) throw error;
       return toResult<TOutput>(error);
     }
   };
-}
-
-/** Контекст, который `createFormAction` прокидывает обработчику вторым
- * аргументом. Существующие обработчики `(formData) => …` его игнорируют
- * (функция, принимающая меньше аргументов, совместима по типу). */
-export interface FormActionContext {
-  /** Ключ идемпотентности из скрытого поля формы (или `undefined`). */
-  idempotencyKey: string | undefined;
 }
 
 export function createFormAction<TOutput>(

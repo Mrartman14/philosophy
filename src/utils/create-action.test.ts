@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { z } from "zod";
 
 import {
+  createAction,
   createFormAction,
   parseFormData,
   ZodValidationError,
@@ -127,6 +128,27 @@ describe("ZodValidationError", () => {
       code: "validation",
       fieldErrors: { x: "must be set" },
     });
+  });
+});
+
+describe("createAction idempotency context", () => {
+  it("passes idempotencyKey to the handler when provided", async () => {
+    let received: string | undefined = "UNSET";
+    const action = createAction((_input: number, ctx) => {
+      received = ctx.idempotencyKey;
+      return Promise.resolve(null);
+    });
+    await action(1, "key-7");
+    expect(received).toBe("key-7");
+  });
+  it("passes undefined when no key is provided", async () => {
+    let received: string | undefined = "UNSET";
+    const action = createAction((_input: number, ctx) => {
+      received = ctx.idempotencyKey;
+      return Promise.resolve(null);
+    });
+    await action(1);
+    expect(received).toBeUndefined();
   });
 });
 
