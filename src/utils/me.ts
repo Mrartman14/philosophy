@@ -27,37 +27,48 @@ export type MaybeMe = Me | null;
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
+interface AuthState {
+  me: Me | null;
+  /** true ТОЛЬКО когда бэк явно вернул 403 + code "BANNED". */
+  banned: boolean;
+}
+
+const NO_AUTH: AuthState = { me: null, banned: false };
+
 /**
- * Возвращает текущего пользователя или `null` (гость).
+ * Единый источник: один fetch `/api/me` на запрос (дедуп через React.cache),
+ * из него выводятся и `getMe()`, и `getBanSignal()`.
  *
- * Различает три случая:
- * 1. Нет токена → `null` (гость, тихая деградация).
- * 2. Токен есть, ответ `401` (токен невалиден / истёк) → `null` (тоже гость).
- * 3. Токен есть, бэк не ответил / 5xx → `throw` (пусть error.tsx покажется,
- *    мы не должны молча выгонять реального пользователя в гостя).
- *
- * Кейс #3 критичен для admin layout'а: если бы `getMe` глотал 5xx и
- * возвращал `null`, админа выкинуло бы на 403 при любом мигании бэка.
- *
- * Дедуплицируется через `React.cache()` в рамках одного запроса.
+ * - нет токена → гость;
+ * - 200 → Me;
+ * - 403 + code "BANNED" → { me: null, banned: true } (форс-логаут);
+ * - 401 / 404 / прочий 403 → гость (токен отозван/протух — тихая деградация);
+ * - 5xx → throw (инцидент, не выгоняем реального пользователя в гостя).
  */
-export const getMe = cache(async (): Promise<MaybeMe> => {
+const getAuthState = cache(async (): Promise<AuthState> => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  if (!token) return null;
+  if (!token) return NO_AUTH;
 
   const res = await fetch(`${API_URL}/api/me`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });
 
-  if (res.status === 401 || res.status === 403 || res.status === 404) {
-    // Токен есть, но бэк его не принял — обычный «истёк / отозван».
-    return null;
+  if (res.status === 403) {
+    let code: string | undefined;
+    try {
+      const body = (await res.json()) as { code?: string };
+      code = body.code;
+    } catch {
+      // тело не JSON / пустое — трактуем как небанный 403 (обычный гость)
+    }
+    return { me: null, banned: code === "BANNED" };
+  }
+  if (res.status === 401 || res.status === 404) {
+    return NO_AUTH;
   }
   if (!res.ok) {
-    // 5xx / неожиданное — это инцидент, не «гость». Бросаем,
-    // ближайший error.tsx покажет пользователю фолбэк.
     throw new Error(`getMe(): backend returned ${res.status}`);
   }
 
@@ -67,7 +78,6 @@ export const getMe = cache(async (): Promise<MaybeMe> => {
       ? (json as { data: unknown }).data
       : json;
 
-  // Минимальная валидация формы — без неё `as Me` — это ложь.
   if (
     !candidate ||
     typeof candidate !== "object" ||
@@ -80,5 +90,12 @@ export const getMe = cache(async (): Promise<MaybeMe> => {
     throw new Error("getMe(): backend returned malformed payload");
   }
 
-  return candidate as Me;
+  return { me: candidate as Me, banned: false };
 });
+
+/** Текущий пользователь или `null` (гость). Контракт не изменился. */
+export const getMe = async (): Promise<MaybeMe> => (await getAuthState()).me;
+
+/** `true`, только если бэк явно вернул бан (403 + code "BANNED") на этом запросе. */
+export const getBanSignal = async (): Promise<boolean> =>
+  (await getAuthState()).banned;
