@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { createFormAction, parseFormData } from "@/utils/create-action";
 
-import { setAuthCookie, clearAuthCookie } from "./cookie";
+import { setAuthCookie, clearAuthCookie, getAuthToken } from "./cookie";
 import { safeNextPath } from "./safe-next";
 import { LoginSchema, RegisterSchema } from "./schemas";
 
@@ -97,7 +97,30 @@ export const registerAction = createFormAction<undefined>(async (formData) => {
   redirect(loginUrl);
 });
 
+/**
+ * Выход. Дёргает `POST /api/auth/logout` (бэк отзывает ВСЕ токены пользователя,
+ * logout-everywhere; идемпотентно), затем чистит локальную cookie и редиректит.
+ *
+ * Вызов бэка — best-effort: логаут ОБЯЗАН разлогинить локально даже если бэк
+ * недоступен или ответил ошибкой, иначе сетевой сбой запер бы пользователя в
+ * сессии. 401/403 для логаута неактуальны (токен и так невалиден), показывать
+ * нечего — поэтому ошибки/таймаут глотаем. Худший случай при сбое: токен живёт
+ * до своего expiry на сервере — не хуже прежнего поведения (бэк не звался вовсе).
+ */
 export async function logoutAction(): Promise<void> {
+  const token = await getAuthToken();
+  if (token) {
+    try {
+      await fetch(`${API_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+    } catch {
+      // best-effort: см. JSDoc выше
+    }
+  }
+
   await clearAuthCookie();
   redirect("/");
 }

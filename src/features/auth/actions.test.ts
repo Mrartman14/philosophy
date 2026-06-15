@@ -4,8 +4,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // Мокаем next/headers и next/navigation до импорта actions.
 const cookieSet = vi.fn();
 const cookieDelete = vi.fn();
+const cookieGet = vi.fn();
 vi.mock("next/headers", () => ({
-  cookies: () => Promise.resolve({ set: cookieSet, delete: cookieDelete }),
+  cookies: () =>
+    Promise.resolve({ set: cookieSet, delete: cookieDelete, get: cookieGet }),
 }));
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {
@@ -16,7 +18,7 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-import { loginAction, registerAction } from "./actions";
+import { loginAction, registerAction, logoutAction } from "./actions";
 
 function fd(input: Record<string, string>): FormData {
   const f = new FormData();
@@ -30,6 +32,7 @@ const initial = { success: true as const, data: undefined };
 beforeEach(() => {
   cookieSet.mockReset();
   cookieDelete.mockReset();
+  cookieGet.mockReset();
   vi.unstubAllGlobals();
 });
 
@@ -260,5 +263,91 @@ describe("registerAction", () => {
     }
     expect(res.fieldErrors.password_confirm).toBe("Пароли не совпадают");
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("logoutAction", () => {
+  it("есть токен → POST /api/auth/logout с Bearer, чистит cookie, redirect на /", async () => {
+    cookieGet.mockReturnValue({ value: "jwt-xyz" });
+    const fetchSpy = vi.fn(() =>
+      Promise.resolve(new Response(null, { status: 204 }))
+    );
+    vi.stubGlobal("fetch", fetchSpy);
+
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await logoutAction();
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+
+    expect(thrown.digest).toBe("NEXT_REDIRECT;/");
+    expect(fetchSpy).toHaveBeenCalledOnce();
+    const call = fetchSpy.mock.calls[0] as [string, RequestInit] | undefined;
+    if (call === undefined) throw new Error("fetch не был вызван");
+    const [url, init] = call;
+    expect(url).toMatch(/\/api\/auth\/logout$/);
+    expect(init.method).toBe("POST");
+    expect((init.headers as Record<string, string>).Authorization).toBe(
+      "Bearer jwt-xyz"
+    );
+    expect(cookieDelete).toHaveBeenCalledWith("token");
+  });
+
+  it("бэк недоступен (network reject) → всё равно чистит cookie и redirect", async () => {
+    cookieGet.mockReturnValue({ value: "jwt-xyz" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => {
+        throw new TypeError("fetch failed");
+      })
+    );
+
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await logoutAction();
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+
+    expect(thrown.digest).toBe("NEXT_REDIRECT;/");
+    expect(cookieDelete).toHaveBeenCalledWith("token");
+  });
+
+  it("бэк ответил 401 (токен уже невалиден) → всё равно чистит cookie и redirect", async () => {
+    cookieGet.mockReturnValue({ value: "stale-jwt" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve(new Response(JSON.stringify({}), { status: 401 }))
+      )
+    );
+
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await logoutAction();
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+
+    expect(thrown.digest).toBe("NEXT_REDIRECT;/");
+    expect(cookieDelete).toHaveBeenCalledWith("token");
+  });
+
+  it("нет токена → бэк не зовём, но cookie чистим и redirect на /", async () => {
+    cookieGet.mockReturnValue(undefined);
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
+
+    let thrown: Error & { digest?: string } = new Error("not thrown");
+    try {
+      await logoutAction();
+    } catch (e) {
+      thrown = e as Error & { digest?: string };
+    }
+
+    expect(thrown.digest).toBe("NEXT_REDIRECT;/");
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(cookieDelete).toHaveBeenCalledWith("token");
   });
 });

@@ -19,3 +19,8 @@ export async function clearAuthCookie(): Promise<void> {
   const store = await cookies();
   store.delete(COOKIE_NAME);
 }
+
+export async function getAuthToken(): Promise<string | undefined> {
+  const store = await cookies();
+  return store.get(COOKIE_NAME)?.value;
+}
