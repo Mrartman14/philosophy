@@ -1,7 +1,7 @@
 // src/components/ui/pagination.tsx
-import Link from "next/link";
-
 import { cn } from "./cn";
+import { RouterLink } from "./router-link";
+
 
 interface PaginationProps {
   basePath: string;
@@ -17,7 +17,7 @@ interface PaginationProps {
  * Простая offset/limit пагинация на URL searchParams. SSR-friendly: просто
  * рендерит ссылки, никакого client state. `basePath` — путь без query.
  * Существующие searchParams сохраняются автоматически на стороне Next.js
- * при использовании `<Link>` с относительным href; если нужно сохранить
+ * при использовании `<RouterLink>` с относительным href; если нужно сохранить
  * дополнительные фильтры — переключить на `searchParams.toString()` на
  * стороне страницы.
  */
@@ -40,12 +40,12 @@ export function Pagination({
       className={cn("flex items-center gap-2 text-sm", className)}
     >
       {hasPrev ? (
-        <Link
+        <RouterLink
           href={`${basePath}?${offsetParam}=${prev}`}
           className="rounded border border-(--color-border) px-3 py-1 hover:bg-(--color-text-pane)"
         >
           ← Назад
-        </Link>
+        </RouterLink>
       ) : (
         <span className="rounded border border-(--color-border) px-3 py-1 opacity-40">
           ← Назад
@@ -55,12 +55,12 @@ export function Pagination({
         {offset + 1}–{Math.min(offset + limit, total)} из {total}
       </span>
       {hasNext ? (
-        <Link
+        <RouterLink
           href={`${basePath}?${offsetParam}=${next}`}
           className="rounded border border-(--color-border) px-3 py-1 hover:bg-(--color-text-pane)"
         >
           Вперёд →
-        </Link>
+        </RouterLink>
       ) : (
         <span className="rounded border border-(--color-border) px-3 py-1 opacity-40">
           Вперёд →
