@@ -191,6 +191,34 @@ const eslintConfig = [
       ],
     },
   },
+  // Guardrail 4: client.ts — публичный CLIENT-safe entry слайса (для импорта из "use client"-кода).
+  // (a) ПОВТОР cross-feature-запрета G2: ESLint flat-config НЕ мержит опции одного правила —
+  //     последний матчнувший блок перезаписывает; client.ts матчат и G2, и G4 → без повтора
+  //     G4 снял бы G2 с client.ts.
+  // (b) запрет реэкспорта server-only-модулей слайса — иначе утекут в client-бандл
+  //     (next build: «server-only cannot be imported from a Client Component»).
+  {
+    files: ["src/features/*/client.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/features/*"],
+              message:
+                "Cross-feature импорты запрещены. Данные ходят через бекенд, общий код — через @/components, @/utils, @/hooks.",
+            },
+            {
+              group: ["./api", "./actions", "./permissions", "./schemas"],
+              message:
+                "client.ts — публичный client-safe entry: НЕ реэкспортируй api/actions/permissions/schemas (server-only). Только изоморфные view, чистые утилиты, типы; server-данные — пропами/слотами.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Type-aware правила нельзя гонять на файлах вне tsconfig (конфиги, скрипты).
   {
     ...tseslint.configs.disableTypeChecked,
