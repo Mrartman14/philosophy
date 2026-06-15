@@ -10,6 +10,8 @@
 
 **Дизайн-спека:** [docs/superpowers/specs/2026-06-15-banned-user-forced-logout-design.md](../specs/2026-06-15-banned-user-forced-logout-design.md). Scope — **только `banned`** (`suspended` не трогаем).
 
+**PR-тип:** foundation-update — трогает frozen-зоны (`src/utils/*`, `src/services/*`, `src/app/layout.tsx`). НЕ фича-слайс: `src/features/<entity>/` не создаётся, `_template` не копируется.
+
 ---
 
 ## Файловая структура
@@ -19,6 +21,7 @@
 | `src/utils/permissions.ts` | modify | новый класс `BannedError` |
 | `src/utils/api-error.ts` | modify | `BANNED` → `BannedError` (отделить от `SUSPENDED`) |
 | `src/utils/api-error.test.ts` | modify | обновить тест BANNED |
+| `src/features/users/errors.test.ts` | modify | обновить тест BANNED (второй потребитель `rethrowApiError`) |
 | `src/utils/create-action.ts` | modify | catch `BannedError` → `redirect("/auth/forced-logout")` |
 | `src/utils/create-action.test.ts` | modify | тесты banned-redirect |
 | `src/utils/me.ts` | modify | `getAuthState()` + `getBanSignal()`; `getMe` контракт цел |
@@ -42,15 +45,17 @@
 - Modify: `src/utils/permissions.ts` (после класса `ForbiddenError`, ~строка 83)
 - Modify: `src/utils/api-error.ts:33-36, 74-90`
 - Test: `src/utils/api-error.test.ts:42-46`
+- Test: `src/features/users/errors.test.ts:78-83` (ВТОРОЙ потребитель `rethrowApiError` — иначе `pnpm test` упадёт)
 
-- [ ] **Step 1: Обновить тест на BANNED (красный)**
+- [ ] **Step 1: Обновить тесты на BANNED в ОБОИХ файлах (красный)**
 
-В `src/utils/api-error.test.ts` заменить существующий блок (строки 42-46):
+(a) В `src/utils/api-error.test.ts` заменить существующий блок (строки 42-46):
 
 ```ts
   it("BANNED → BannedError", () => {
     const err = caught(() => rethrowApiError({ code: "BANNED" }));
     expect(err).toBeInstanceOf(BannedError);
+    expect((err as BannedError).message).toBe("account banned");
   });
 ```
 
@@ -59,6 +64,30 @@
 ```ts
 import { BannedError, ForbiddenError } from "./permissions";
 ```
+
+Заметь: `caught(() => rethrowApiError({ code: "BANNED" }))` без `error` даст `message === "Account banned"` (дефолт). Чтобы проверить проброс текста бэка, передаём `{ code: "BANNED" }` → ассерт на дефолт ИЛИ обнови вызов на `rethrowApiError({ code: "BANNED", error: "account banned" })`. Используй второй вариант (см. ассерт `message` выше).
+
+(b) В `src/features/users/errors.test.ts` заменить блок «BANNED → ForbiddenError('status')» (строки 78-83) на:
+
+```ts
+  it("BANNED → BannedError", () => {
+    let thrown: unknown;
+    try {
+      rethrowUserApiError({ code: "BANNED", error: "account banned" });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).toBeInstanceOf(BannedError);
+  });
+```
+
+И добавить импорт `BannedError` в шапку (рядом со `import { ForbiddenError } from "@/utils/permissions";`):
+
+```ts
+import { BannedError, ForbiddenError } from "@/utils/permissions";
+```
+
+Кейс `SUSPENDED → ForbiddenError('status')` (строки 67-76) НЕ трогать — поведение сохраняется.
 
 - [ ] **Step 2: Запустить — убедиться, что падает**
 
@@ -112,15 +141,15 @@ const STATUS_FORBIDDEN_CODES: ReadonlySet<ApiErrorCode> = new Set([
     }
 ```
 
-- [ ] **Step 5: Запустить — зелёный**
+- [ ] **Step 5: Запустить — зелёный (оба теста)**
 
-Run: `pnpm vitest run src/utils/api-error.test.ts`
-Expected: PASS (включая «SUSPENDED → ForbiddenError('status')», который не изменился).
+Run: `pnpm vitest run src/utils/api-error.test.ts src/features/users/errors.test.ts`
+Expected: PASS (включая «SUSPENDED → ForbiddenError('status')» в обоих файлах — он не изменился).
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/utils/permissions.ts src/utils/api-error.ts src/utils/api-error.test.ts
+git add src/utils/permissions.ts src/utils/api-error.ts src/utils/api-error.test.ts src/features/users/errors.test.ts
 git commit -m "feat(auth): BannedError, route BANNED separately from SUSPENDED"
 ```
 
@@ -609,19 +638,28 @@ git commit -m "feat(offline): ForcedLogoutCleanup client component"
 - Create: `src/app/auth/forced-logout/route.ts`
 - Test: `src/app/auth/forced-logout/route.test.ts`
 
-- [ ] **Step 1: Написать падающий тест**
+> **CSRF-защита (обязательна):** endpoint — GET, достижимый cross-site (ссылка/`<img>`/префетч/`window.location`). Без проверки он бы разлогинивал и **безвозвратно стирал офлайн-данные** ЛЮБОГО зашедшего, не только забаненного (хуже обычного logout-CSRF — уничтожает данные). Поэтому handler СНАЧАЛА проверяет `getBanSignal()` и чистит/редиректит в blocked ТОЛЬКО для реально забаненного токена; иначе — тихо уводит на `/`, ничего не трогая. Это же ломает редирект-цикл и сужает поверхность ложного бана.
+
+- [ ] **Step 1: Написать падающие тесты (две ветки: забанен / не забанен)**
 
 `src/app/auth/forced-logout/route.test.ts`:
 
 ```ts
 import { NextRequest } from "next/server";
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+
+const { banSignalMock } = vi.hoisted(() => ({ banSignalMock: vi.fn() }));
+vi.mock("@/utils/me", () => ({ getBanSignal: banSignalMock }));
 
 import { GET } from "./route";
 
+beforeEach(() => banSignalMock.mockReset());
+afterEach(() => vi.clearAllMocks());
+
 describe("GET /auth/forced-logout", () => {
-  it("303 на /login?blocked=1, чистит token-cookie, ставит Clear-Site-Data", () => {
-    const res = GET(new NextRequest("https://app.test/some/page"));
+  it("забанен → 303 /login?blocked=1, чистит token-cookie, ставит Clear-Site-Data", async () => {
+    banSignalMock.mockResolvedValue(true);
+    const res = await GET(new NextRequest("https://app.test/some/page"));
 
     expect(res.status).toBe(303);
     expect(res.headers.get("location")).toBe(
@@ -633,6 +671,16 @@ describe("GET /auth/forced-logout", () => {
     expect(setCookie).toMatch(/token=/);
     expect(setCookie).toMatch(/Max-Age=0/i);
     expect(setCookie).toMatch(/Path=\//);
+  });
+
+  it("НЕ забанен (CSRF/случайный заход) → 303 на /, ничего не трогает", async () => {
+    banSignalMock.mockResolvedValue(false);
+    const res = await GET(new NextRequest("https://app.test/some/page"));
+
+    expect(res.status).toBe(303);
+    expect(res.headers.get("location")).toBe("https://app.test/");
+    expect(res.headers.get("clear-site-data")).toBeNull();
+    expect(res.headers.get("set-cookie")).toBeNull();
   });
 });
 ```
@@ -655,13 +703,22 @@ Expected: FAIL — модуль не найден.
 // /login?blocked=1, где ForcedLogoutCleanup добивает локальные сторы.
 import { NextResponse, type NextRequest } from "next/server";
 
+import { getBanSignal } from "@/utils/me";
+
 // Источник истины имени cookie — features/auth/cookie.ts (COOKIE_NAME="token").
 // Литерал продублирован намеренно: route handler в app/ не может делать
 // deep-import во внутренности фичи (ESLint-гард), а barrel @/features/auth
 // тянет server-only-модуль.
 const TOKEN_COOKIE = "token";
 
-export function GET(request: NextRequest): NextResponse {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  // CSRF-защита: деструктив (чистка cookie + Clear-Site-Data + последующий
+  // wipe на /login?blocked=1) запускаем ТОЛЬКО для реально забаненного токена.
+  // Не-забаненного (или гостя), которого завели сюда cross-site, тихо уводим
+  // на главную — его сессия и офлайн-данные не трогаются.
+  if (!(await getBanSignal())) {
+    return NextResponse.redirect(new URL("/", request.url), { status: 303 });
+  }
   const response = NextResponse.redirect(
     new URL("/login?blocked=1", request.url),
     { status: 303 },
@@ -675,7 +732,7 @@ export function GET(request: NextRequest): NextResponse {
 - [ ] **Step 4: Запустить — зелёный**
 
 Run: `pnpm vitest run src/app/auth/forced-logout/route.test.ts`
-Expected: PASS.
+Expected: PASS (обе ветки).
 
 - [ ] **Step 5: Commit**
 
@@ -751,7 +808,7 @@ git commit -m "feat(auth): force logout banned users from root layout"
 
 - [ ] **Step 1: Добавить импорт компонента зачистки**
 
-После строки 5 (`import { getMe } from "@/utils/me";`) добавить:
+Вставить МЕЖДУ `import { LoginForm, safeNextPath } from "@/features/auth";` (строка 4) и `import { getMe } from "@/utils/me";` (строка 5) — `@/services/*` идёт по алфавиту ДО `@/utils/*`, иначе `import/order` (ESLint `alphabetize: asc`) покраснеет:
 
 ```ts
 import { ForcedLogoutCleanup } from "@/services/offline/forced-logout-cleanup";
@@ -828,7 +885,7 @@ git commit -m "docs(auth): implementation plan for banned-user forced logout"
 **Spec coverage:**
 - Детект на навигации (B1) → Task 3 + Task 7. ✓
 - Детект на действии (B2) → Task 1 + Task 2. ✓
-- Route handler `/auth/forced-logout` + Clear-Site-Data (C) → Task 6. ✓
+- Route handler `/auth/forced-logout` + Clear-Site-Data (C) → Task 6 (с CSRF-ban-guard). ✓
 - Клиентская несущая зачистка `wipeOfflineData` + `clearOfflineOwner` (D) → Task 4 + Task 5. ✓
 - Брендированный `/login?blocked=1` (E) → Task 8. ✓
 - Scope banned-only, `SUSPENDED` не трогаем → Task 1 (Step 4 оставляет SUSPENDED в STATUS_FORBIDDEN_CODES) + регресс-тест в Task 2. ✓
@@ -836,10 +893,26 @@ git commit -m "docs(auth): implementation plan for banned-user forced logout"
 
 **Placeholder scan:** код приведён целиком в каждом шаге; «TBD»/«handle edge cases» отсутствуют. Ручные смоуки в Task 7/9 помечены как опциональные при отсутствии забаненного аккаунта — это явная инструкция, не плейсхолдер.
 
-**Type consistency:** `BannedError` (permissions.ts) ← throw в api-error.ts ← `instanceof` в create-action.ts — одно имя. `getBanSignal`/`getAuthState`/`AuthState` согласованы между me.ts и me.test.ts. `clearOfflineOwner` — owner.ts ↔ owner.test.ts ↔ forced-logout-cleanup.tsx. Путь `/auth/forced-logout` идентичен в create-action.ts, layout.tsx и тестах; `/login?blocked=1` — в route.ts и login/page.tsx. ✓
+**Type consistency:** `BannedError` (permissions.ts) ← throw в api-error.ts ← `instanceof` в create-action.ts — одно имя. `getBanSignal`/`getAuthState`/`AuthState` согласованы между me.ts, me.test.ts и route.ts. `clearOfflineOwner` — owner.ts ↔ owner.test.ts ↔ forced-logout-cleanup.tsx. Путь `/auth/forced-logout` идентичен в create-action.ts, layout.tsx и тестах; `/login?blocked=1` — в route.ts и login/page.tsx. ✓
 
-## Известные ограничения (перенесены из спеки)
+**Резолюция агентского ревью плана (4 линзы: баги / консистентность / регрессии / edge-cases+security):**
+- ✅ **[blocker] CSRF + деструктивный wipe** на незащищённом `GET /auth/forced-logout` → Task 6 теперь СНАЧАЛА проверяет `getBanSignal()`, чистит/редиректит в blocked только для забаненного; иначе → `/` (ничего не трогает).
+- ✅ **[blocker] пропущен второй тест** `src/features/users/errors.test.ts:78` (`BANNED → ForbiddenError('status')`) → добавлен в Task 1 (Step 1b/5/6 + file structure), иначе `pnpm test` красный.
+- ✅ **[minor] import/order** в login/page.tsx → Task 8 Step 1: вставка `@/services/*` ДО `@/utils/me`.
+- ✅ **[major/minor] прочее** (ложный бан, семантика BANNED=актор verify-with-backend, SW переживает logout, Clear-Site-Data scope, stale `?blocked=1`) → раздел «Известные ограничения и осознанные риски».
+- ✔️ Подтверждено агентами как корректное: getMe-рефактор дедуп/контракт цел (~120 callsites), `redirect()`-в-catch, NextResponse set-cookie/303 читаемы в тесте, `react.cache` passthrough-мок валиден, отсутствие redirect-цикла, ActionResult не расширяется (формы не ломаются), suspended не затронут.
 
+## Известные ограничения и осознанные риски
+
+Из спеки:
 - Idle-юзер разлогинивается на следующем запросе/действии (reactive-only — осознанно).
 - Окно офлайн-`/saved` до ближайшего взаимодействия (свои данные; чужое устройство закрывает `OfflineIdentityGuard`).
 - Без heartbeat/push.
+
+Добавлено по итогам агентского ревью плана:
+- **Ложный бан → необратимый wipe.** `getBanSignal`/`BannedError` доверяют `403 + code "BANNED"` от бэка. При баге/мисконфиге бэка, отдавшем ложный BANNED валидному юзеру, его офлайн-данные и outbox сотрутся необратимо (в отличие от обычного 401/403 — там тихая деградация, данные целы). Это плата за «бэк = источник истины»; вероятность низкая (generic-middleware, BANNED явный). Зафиксировано как осознанный риск.
+- **Семантика `403 BANNED` = актор, не объект (verify-with-backend).** План считает, что `BANNED` всегда про текущего пользователя (generic auth-middleware). На users-admin ручках это важно: если бэк когда-либо вернёт `BANNED` про *целевую* сущность, админ получит ложный форс-логаут. По текущему контракту (generic middleware — см. memory) это актор-scoped; **подтвердить с бэком перед мержем**. Раньше тот же BANNED давал лишь branded «ограничен» (недеструктивно) — изменение поднимает ставки мисинтерпретации.
+- **Остаточный CSRF на `/login?blocked=1`.** Route handler защищён ban-чеком; залогиненный не-banned защищён `if (me) redirect(next)` на /login. Остаётся узкий вектор: гость со «осиротевшими» офлайн-данными, заведённый cross-site ссылкой прямо на `/login?blocked=1`, получит wipe вхолостую. Severity низкий (свои уже-разлогиненные данные).
+- **Stale `?blocked=1` в URL.** После редиректа пользователь остаётся на `/login?blocked=1`; повторный заход (история/разбан) снова покажет notice + холостой идемпотентный wipe. Косметика; при желании — `history.replaceState` после cleanup (вне scope v1).
+- **SW переживает форс-логаут.** `wipeOfflineData()` чистит IndexedDB + Cache Storage (`flbz-offline-images`, `flbz-images-*`, `flbz-api-*`) + owner-маркер, но НЕ разрегистрирует Service Worker и НЕ трогает `flbz-shell` (app-shell `/saved`, общий скелет без приватных данных). До завершения асинхронного `wipeOfflineData()` SW может отдать уже закэшированные картинки лекций (content-addressed, свои данные, окно — мс).
+- **`Clear-Site-Data "cookies"`** чистит cookies на всём registrable-домене вкл. сабдомены — приемлемо (прод в корне origin); при появлении `*.domain` с отдельными сессиями пересмотреть. `"storage"`/303-применение — defense-in-depth, несущая зачистка в JS.
