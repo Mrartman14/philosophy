@@ -128,3 +128,27 @@ describe("ZodValidationError", () => {
     });
   });
 });
+
+describe("createFormAction idempotency context", () => {
+  it("passes idempotencyKey from the hidden field to the handler", async () => {
+    let received: string | undefined = "UNSET";
+    const action = createFormAction((_fd: FormData, ctx) => {
+      received = ctx.idempotencyKey;
+      return Promise.resolve(null);
+    });
+    const fd = new FormData();
+    fd.set("__idempotency_key", "key-42");
+    await action({ success: false, error: "" }, fd);
+    expect(received).toBe("key-42");
+  });
+
+  it("passes undefined when the field is absent", async () => {
+    let received: string | undefined = "UNSET";
+    const action = createFormAction((_fd: FormData, ctx) => {
+      received = ctx.idempotencyKey;
+      return Promise.resolve(null);
+    });
+    await action({ success: false, error: "" }, new FormData());
+    expect(received).toBeUndefined();
+  });
+});

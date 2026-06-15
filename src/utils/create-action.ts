@@ -10,6 +10,7 @@
 import { z, type ZodType } from "zod";
 
 import { ForbiddenError } from "./permissions";
+import { readIdempotencyKey } from "./idempotency";
 
 export type ActionResult<T = void> =
   | { success: true; data: T }
@@ -70,15 +71,26 @@ export function createAction<TInput, TOutput>(
   };
 }
 
+/** Контекст, который `createFormAction` прокидывает обработчику вторым
+ * аргументом. Существующие обработчики `(formData) => …` его игнорируют
+ * (функция, принимающая меньше аргументов, совместима по типу). */
+export interface FormActionContext {
+  /** Ключ идемпотентности из скрытого поля формы (или `undefined`). */
+  idempotencyKey: string | undefined;
+}
+
 export function createFormAction<TOutput>(
-  fn: (formData: FormData) => Promise<TOutput>
+  fn: (formData: FormData, ctx: FormActionContext) => Promise<TOutput>
 ): (
   prevState: ActionResult<TOutput>,
   formData: FormData
 ) => Promise<ActionResult<TOutput>> {
   return async (_prevState: ActionResult<TOutput>, formData: FormData) => {
     try {
-      const data = await fn(formData);
+      const ctx: FormActionContext = {
+        idempotencyKey: readIdempotencyKey(formData),
+      };
+      const data = await fn(formData, ctx);
       return { success: true, data };
     } catch (error) {
       if (isNextInternalError(error)) throw error;
