@@ -4,6 +4,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { IDBFactory } from "fake-indexeddb";
 import { afterEach, beforeEach, describe, it, expect } from "vitest";
 
+import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { putSavedBundle, getSavedBundle } from "@/services/offline/store/saved-bundles";
 
 import { SavedList } from "./saved-list";
@@ -13,12 +14,17 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-function seed(id: string, status: "complete" | "saving", snapshot: unknown) {
+function seed(
+  id: string,
+  status: "complete" | "saving",
+  snapshot: unknown,
+  schemaVersion: number = OFFLINE_SCHEMA_VERSION,
+) {
   return putSavedBundle({
     entity: "lectures",
     id,
     savedAt: "2026-06-14T00:00:00.000Z",
-    schemaVersion: 1,
+    schemaVersion,
     status,
     snapshot,
     imageKeys: [],
@@ -48,6 +54,24 @@ describe("SavedList", () => {
     await seed("ok", "complete", { lecture: { title: "Норм" }, tags: [], documents: [], comments: [] });
     render(<SavedList />);
     expect(await screen.findByText("Норм")).toBeTruthy();
+  });
+
+  it("complete-снимок несовместимой версии схемы скрыт из списка", async () => {
+    await seed(
+      "oldver",
+      "complete",
+      { lecture: { title: "Старая схема" }, tags: [], documents: [], comments: [] },
+      OFFLINE_SCHEMA_VERSION + 1,
+    );
+    await seed("ok", "complete", {
+      lecture: { title: "Норм" },
+      tags: [],
+      documents: [],
+      comments: [],
+    });
+    render(<SavedList />);
+    expect(await screen.findByText("Норм")).toBeTruthy();
+    expect(screen.queryByText("Старая схема")).toBeNull();
   });
 
   it("пусто → подсказка", async () => {

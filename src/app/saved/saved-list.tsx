@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 
 import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descriptor";
 import { RouterLink, Skeleton } from "@/components/ui";
-import type { SavedBundleRecord } from "@/services/offline/contract/storage";
+import {
+  OFFLINE_SCHEMA_VERSION,
+  type SavedBundleRecord,
+} from "@/services/offline/contract/storage";
 import { whenIdentityReconciled } from "@/services/offline/identity-gate";
 import {
   listSavedBundles,
@@ -47,7 +50,12 @@ export function SavedList() {
       }
       const all = await listSavedBundles();
       const complete = all
-        .filter((r) => r.status === "complete" && r.entity === "lectures")
+        .filter(
+          (r) =>
+            r.status === "complete" &&
+            r.entity === "lectures" &&
+            r.schemaVersion === OFFLINE_SCHEMA_VERSION,
+        )
         .map(toItem)
         .filter((it): it is SavedItem => it !== null);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup

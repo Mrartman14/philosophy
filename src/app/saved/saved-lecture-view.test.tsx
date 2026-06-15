@@ -4,6 +4,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { IDBFactory } from "fake-indexeddb";
 import { afterEach, beforeEach, describe, it, expect } from "vitest";
 
+import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { putSavedBundle } from "@/services/offline/store/saved-bundles";
 
 import { SavedLectureView } from "./saved-lecture-view";
@@ -44,12 +45,17 @@ const SNAPSHOT = {
   ],
 };
 
-function seed(id: string, status: "complete" | "saving", snapshot: unknown) {
+function seed(
+  id: string,
+  status: "complete" | "saving",
+  snapshot: unknown,
+  schemaVersion: number = OFFLINE_SCHEMA_VERSION,
+) {
   return putSavedBundle({
     entity: "lectures",
     id,
     savedAt: "2026-06-14T00:00:00.000Z",
-    schemaVersion: 1,
+    schemaVersion,
     status,
     snapshot,
     imageKeys: [],
@@ -81,5 +87,12 @@ describe("SavedLectureView", () => {
     await seed("bad", "complete", { foo: 1 });
     render(<SavedLectureView id="bad" />);
     expect(await screen.findByText(/повреждён/)).toBeTruthy();
+  });
+
+  it("снимок несовместимой версии схемы → «устарел», не рендерим как валидный", async () => {
+    await seed("oldver", "complete", SNAPSHOT, OFFLINE_SCHEMA_VERSION + 1);
+    render(<SavedLectureView id="oldver" />);
+    expect(await screen.findByText(/устарел/)).toBeTruthy();
+    expect(screen.queryByText("Заголовок лекции")).toBeNull();
   });
 });

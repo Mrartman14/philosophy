@@ -1,6 +1,7 @@
 // src/app/_offline/save-offline.ts
 "use client";
 
+import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { cacheImage } from "@/services/offline/store/images";
 import { requestPersistentStorage } from "@/services/offline/store/persistence";
 import {
@@ -17,8 +18,6 @@ export interface SaveOfflineResult {
   /** Сохранено, но хранилище хрупкое (persist() отказал) — данные могут вытесниться. */
   warning?: string;
 }
-
-const OFFLINE_SCHEMA_VERSION = 1;
 
 const QUOTA_ERROR =
   "Недостаточно места на устройстве для офлайн-сохранения.";

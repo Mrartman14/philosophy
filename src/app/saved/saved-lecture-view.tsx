@@ -7,6 +7,7 @@ import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descrip
 import { AstRender } from "@/components/ast-render";
 import { Skeleton } from "@/components/ui";
 import { CommentTreeView } from "@/features/comments/client";
+import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { whenIdentityReconciled } from "@/services/offline/identity-gate";
 import { getSavedBundle } from "@/services/offline/store/saved-bundles";
 import { resolveStorageUrl } from "@/utils/storage-url";
@@ -50,7 +51,12 @@ export function SavedLectureView({ id }: { id: string }) {
         setState({ kind: "missing" });
       } else if (rec.status !== "complete") {
         setState({ kind: "incomplete", status: rec.status, error: rec.error });
-      } else if (!isLectureSnapshot(rec.snapshot)) {
+      } else if (
+        rec.schemaVersion !== OFFLINE_SCHEMA_VERSION ||
+        !isLectureSnapshot(rec.snapshot)
+      ) {
+        // Несовместимая версия формы или битый снимок → один и тот же экран
+        // «повреждён или устарел — сохраните заново».
         setState({ kind: "corrupt" });
       } else {
         setState({ kind: "ready", snapshot: rec.snapshot });

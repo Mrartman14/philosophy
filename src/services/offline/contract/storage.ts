@@ -4,6 +4,14 @@
 
 export const OFFLINE_DB_NAME = "flbz-offline";
 export const OFFLINE_DB_VERSION = 1;
+/**
+ * Версия ФОРМЫ снимка (`SavedBundleRecord.snapshot`), не путать с версией БД.
+ * Пишется в каждый снимок при сохранении и проверяется на чтении: снимок с иной
+ * версией считается несовместимым (устаревшим) и не рендерится. Бамп здесь —
+ * способ разом инвалидировать все старые снимки при несовместимом изменении формы
+ * (дешевле полноценной миграции данных в Cache Storage/IndexedDB).
+ */
+export const OFFLINE_SCHEMA_VERSION = 1;
 export const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
 /**
  * Префикс ВЕРСИОНИРОВАННЫХ LRU-кэшей просмотренных картинок в Cache Storage
