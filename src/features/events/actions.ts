@@ -3,7 +3,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -17,30 +17,17 @@ import { canCreateEvent, canUpdateEvent, canDeleteEvent } from "./permissions";
 import { EventCreateSchema, EventUpdateSchema, EventIdSchema } from "./schemas";
 import type { CalendarEvent } from "./types";
 
-function rethrowApiError(err: ApiError | undefined): never {
-  // Бек пишет code в UPPER_SNAKE_CASE (internal/apperror, middleware/auth.go).
-  switch (err?.code) {
-    case "INVALID_DATE":
-      throw new Error(
-        "Бекенд отклонил дату: проверьте формат и порядок дат начала/окончания.",
-      );
-    case "INVALID_RRULE":
-      throw new Error("Бекенд отклонил правило повторения (RRULE).");
-    case "BLOCKS_INVALID":
-      throw new Error("Описание события не прошло валидацию AST.");
-    case "REF_NOT_FOUND":
-      throw new Error("Одна из ссылок указывает на несуществующий объект.");
-    case "BLOCK_REFERENCED":
-      throw new Error(
-        "На блок события ссылаются другие материалы. Удалите ссылки или оставьте блок.",
-      );
-    case "BLOCKS_HAVE_ANCHORS":
-      throw new Error(
-        "Нельзя удалить блок с привязанными комментариями. Удалите комментарии или оставьте блок.",
-      );
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды событий → русский текст. Бек пишет code в UPPER_SNAKE_CASE
+ * (internal/apperror, middleware/auth.go). REF_NOT_FOUND и BLOCKS_HAVE_ANCHORS —
+ * из DEFAULT_MESSAGES api-error.ts (текст совпадал). */
+const ERRORS: ApiErrorMessages = {
+  INVALID_DATE:
+    "Бекенд отклонил дату: проверьте формат и порядок дат начала/окончания.",
+  INVALID_RRULE: "Бекенд отклонил правило повторения (RRULE).",
+  BLOCKS_INVALID: "Описание события не прошло валидацию AST.",
+  BLOCK_REFERENCED:
+    "На блок события ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+};
 
 export const createEvent = createFormAction(async (formData) => {
   const me = await getMe();
@@ -56,7 +43,7 @@ export const createEvent = createFormAction(async (formData) => {
       ...(input.rrule ? { rrule: input.rrule } : {}),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS);
   return (data.data ?? null) as CalendarEvent | null;
 });
@@ -81,7 +68,7 @@ export const updateEvent = createFormAction(async (formData) => {
       ...(input.rrule ? { rrule: input.rrule } : {}),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS, input.id);
   revalidateEntity(Tags.EVENTS);
   return (data.data ?? null) as CalendarEvent | null;
@@ -95,7 +82,7 @@ export const deleteEvent = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/events/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS);
   return undefined;
 });

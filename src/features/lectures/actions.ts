@@ -2,7 +2,11 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -34,27 +38,16 @@ import {
 } from "./schemas";
 import type { Lecture, AttachmentEntityType } from "./types";
 
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    // Доменные 403-коды лекций; общий "FORBIDDEN" ловит handleCommonApiError.
-    case "ATTACH_FORBIDDEN":
-    case "UPLOAD_FOREIGN":
-      throw new ForbiddenError("role", err.error);
-    // Свой текст-fallback (общий хелпер дал бы "Аккаунт ограничен.").
-    case "SUSPENDED":
-      throw new ForbiddenError("status", err.error);
-    case "UPLOAD_NOT_FOUND":
-      throw new Error("Загруженное изображение не найдено. Попробуйте ещё раз.");
-    case "ALREADY_ATTACHED":
-      throw new Error("Эта сущность уже прикреплена к лекции.");
-    case "INVALID_ENTITY_TYPE":
-      throw new Error("Недопустимый тип сущности.");
-    case "NOT_FOUND":
-    case "LECTURE_NOT_FOUND":
-      throw new Error("Лекция не найдена.");
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды лекций → русский текст. role-403 (ATTACH_FORBIDDEN/
+ * UPLOAD_FOREIGN/FORBIDDEN), SUSPENDED/BANNED и REF_NOT_FOUND обрабатывает
+ * централизованный `rethrowApiError`. */
+const ERRORS: ApiErrorMessages = {
+  UPLOAD_NOT_FOUND: "Загруженное изображение не найдено. Попробуйте ещё раз.",
+  ALREADY_ATTACHED: "Эта сущность уже прикреплена к лекции.",
+  INVALID_ENTITY_TYPE: "Недопустимый тип сущности.",
+  NOT_FOUND: "Лекция не найдена.",
+  LECTURE_NOT_FOUND: "Лекция не найдена.",
+};
 
 /** Грузит лекцию для owner-aware гейта. 404 → ForbiddenError (secure). */
 async function loadLectureForGate(id: string): Promise<Lecture> {
@@ -76,7 +69,7 @@ export const createLecture = createFormAction(async (formData) => {
       ...(input.visibility !== undefined && { visibility: input.visibility }),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES);
   return (data.data ?? null) as Lecture | null;
 });
@@ -89,7 +82,7 @@ export const updateLecture = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { title: input.title, description: input.description, date: input.date },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
   return (data.data ?? null) as Lecture | null;
@@ -102,7 +95,7 @@ export const setLectureVisibility = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { visibility: input.visibility },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
   return (data.data ?? null) as Lecture | null;
@@ -116,7 +109,7 @@ export const deleteLecture = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/lectures/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES);
   return undefined;
 });
@@ -140,7 +133,7 @@ export const setLectureCover = createAction(
         ...(input.alt_text !== undefined && { alt_text: input.alt_text }),
       },
     });
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     revalidateEntity(Tags.LECTURES, input.id);
     revalidateEntity(Tags.LECTURES);
     return undefined;
@@ -157,7 +150,7 @@ export const clearLectureCover = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/lectures/{id}/cover", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.LECTURES, id);
   revalidateEntity(Tags.LECTURES);
   return undefined;
@@ -187,7 +180,7 @@ export const attachToLecture = createAction(
         ...(input.sort_order !== undefined && { sort_order: input.sort_order }),
       },
     });
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
@@ -220,7 +213,7 @@ export const detachFromLecture = createAction(
         },
       },
     );
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
@@ -239,7 +232,7 @@ export const suggestGlossaryTerms = createAction(
     const { data, error } = await api.POST("/api/glossary/suggest", {
       body: { blocks: input.blocks },
     });
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     return data.data?.suggestions ?? [];
   },
 );
@@ -325,7 +318,7 @@ export const reorderLectureAttachment = createAction(
         body: { sort_order: input.sort_order },
       },
     );
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },

@@ -1,7 +1,10 @@
 // src/features/users/errors.ts
 import "server-only";
-import type { ApiError } from "@/utils/api-error";
-import { ForbiddenError } from "@/utils/permissions";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 
 /** Алиас общего {@link ApiError} — `code` типизирован сгенерированным
  * union `apperror.Code` (источник истины — `internal/apperror/codes.go`). */
@@ -22,24 +25,24 @@ const CONFLICT_MESSAGES: Record<string, string> = {
     "Нельзя понизить роль последнего активного администратора.",
 };
 
+/** Доменные коды users-admin. FORBIDDEN/SUSPENDED/BANNED обрабатывает
+ * централизованный {@link rethrowApiError} (branded ForbiddenError). */
+const ERRORS: ApiErrorMessages = {
+  NOT_FOUND: "Пользователь не найден.",
+};
+
 /**
  * Переводит ошибку бекенда в throw с понятным русским текстом.
  * ForbiddenError ловится createAction → { success: false, code: "forbidden" },
  * клиент показывает branded-текст «У вас нет прав на …».
+ *
+ * CONFLICT с под-маппингом по message обрабатывается локально (общая карта
+ * умеет только code→текст), остальное делегируется в {@link rethrowApiError}.
  */
 export function rethrowUserApiError(err: UserApiError | undefined): never {
-  if (err?.code === "FORBIDDEN") {
-    throw new ForbiddenError("role", err.error);
-  }
-  if (err?.code === "SUSPENDED" || err?.code === "BANNED") {
-    throw new Error("Ваш аккаунт ограничен — действие недоступно.");
-  }
   if (err?.code === "CONFLICT") {
     const friendly = err.error ? CONFLICT_MESSAGES[err.error] : undefined;
     throw new Error(friendly ?? "Операция отклонена сервером (конфликт).");
   }
-  if (err?.code === "NOT_FOUND") {
-    throw new Error("Пользователь не найден.");
-  }
-  throw new Error(err?.error ?? "Ошибка сервера");
+  rethrowApiError(err, ERRORS);
 }

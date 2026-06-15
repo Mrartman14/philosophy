@@ -3,7 +3,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
 import { createAction, createFormAction, parseFormData } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { requireActive, requireCapability } from "@/utils/permissions";
@@ -18,22 +18,18 @@ import {
 } from "./schemas";
 import type { Canvas, CanvasData } from "./types";
 
-/** Маппинг UPPER_SNAKE_CASE кодов бека в понятный русский текст. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    case "PUBLIC_IMMUTABLE":
-      throw new Error("Публичный канвас нельзя сделать приватным.");
-    case "PRECONDITION_FAILED":
-      throw new Error("Канвас изменён в другом месте — обновите страницу и повторите.");
-    case "PAYLOAD_TOO_LARGE":
-    case "REQUEST_BODY_TOO_LARGE":
-      throw new Error("Данные графа слишком большие (лимит 1 МиБ).");
-    case "VALIDATION_ERROR":
-    case "BAD_REQUEST":
-      throw new Error("Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).");
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды canvas → русский текст. role-403/SUSPENDED/BANNED и REF_NOT_FOUND
+ * обрабатывает централизованный `rethrowApiError`. VALIDATION_ERROR/BAD_REQUEST —
+ * фиксированный текст (не `err.error ??`). */
+const ERRORS: ApiErrorMessages = {
+  PUBLIC_IMMUTABLE: "Публичный канвас нельзя сделать приватным.",
+  PRECONDITION_FAILED:
+    "Канвас изменён в другом месте — обновите страницу и повторите.",
+  PAYLOAD_TOO_LARGE: "Данные графа слишком большие (лимит 1 МиБ).",
+  REQUEST_BODY_TOO_LARGE: "Данные графа слишком большие (лимит 1 МиБ).",
+  VALIDATION_ERROR: "Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).",
+  BAD_REQUEST: "Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).",
+};
 
 /** POST /api/canvases (JSON). Гейт — canvas.create. */
 export const createCanvas = createFormAction(async (formData) => {
@@ -48,7 +44,7 @@ export const createCanvas = createFormAction(async (formData) => {
       data: input.data as CanvasData,
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES);
   return (data.data ?? null) as Canvas | null;
 });
@@ -79,7 +75,7 @@ export const updateCanvas = createFormAction(async (formData) => {
     },
     body: { title: input.title, data: input.data as CanvasData },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES, input.id);
   revalidateEntity(Tags.CANVASES);
   return (data.data ?? null) as Canvas | null;
@@ -95,7 +91,7 @@ export const setCanvasVisibility = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { visibility: input.visibility },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES, input.id);
   revalidateEntity(Tags.CANVASES);
   return (data.data ?? null) as Canvas | null;
@@ -108,7 +104,7 @@ export const deleteCanvas = createAction(async (rawId: string) => {
   const { id } = CanvasIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/canvases/{id}", { params: { path: { id } } });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES);
   return undefined;
 });

@@ -3,7 +3,11 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
@@ -13,22 +17,13 @@ import { canDeleteMedia, canChangeMediaVisibility } from "./permissions";
 import { MediaIdSchema, MediaVisibilitySchema } from "./schemas";
 import type { Media } from "./types";
 
-/** Маппинг UPPER_SNAKE_CASE-кодов бекенда на доменные ошибки фронта. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    // SUSPENDED оставлен локально: без дефолтного текста "Аккаунт ограничен."
-    // — поведение 1:1 (handleCommonApiError подставил бы фоллбек).
-    case "SUSPENDED":
-      throw new ForbiddenError("status", err.error);
-    case "PUBLIC_IMMUTABLE":
-      throw new Error(
-        "Публичное медиа нельзя сделать приватным. Удалите и загрузите заново.",
-      );
-    case "NOT_FOUND":
-      throw new Error("Медиа не найдено.");
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды media → русский текст. role-403/SUSPENDED/BANNED и REF_NOT_FOUND
+ * обрабатывает централизованный `rethrowApiError`. */
+const ERRORS: ApiErrorMessages = {
+  PUBLIC_IMMUTABLE:
+    "Публичное медиа нельзя сделать приватным. Удалите и загрузите заново.",
+  NOT_FOUND: "Медиа не найдено.",
+};
 
 /** Загружает media-запись для owner-aware RBAC. 404 → ForbiddenError (secure). */
 async function loadMediaForGate(id: string): Promise<Media> {
@@ -40,7 +35,7 @@ async function loadMediaForGate(id: string): Promise<Media> {
     // Не видно ≡ не существует. Для гейта это отказ.
     throw new ForbiddenError("owner", "Медиа не найдено");
   }
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   return (data.data ?? null) as Media;
 }
 
@@ -58,7 +53,7 @@ export const deleteMedia = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/media/{media_id}", {
     params: { path: { media_id: id } },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.MEDIA, id);
   revalidateEntity(Tags.MEDIA);
   return undefined;
@@ -79,7 +74,7 @@ export const setMediaVisibility = createAction(
       params: { path: { media_id: input.id } },
       body: { visibility: input.visibility },
     });
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     revalidateEntity(Tags.MEDIA, input.id);
     revalidateEntity(Tags.MEDIA);
     return undefined;

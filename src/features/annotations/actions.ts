@@ -5,14 +5,18 @@ import { cookies } from "next/headers";
 
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import { getAnnotationById } from "./api";
@@ -32,25 +36,13 @@ import { PER_ENTITY_PATH, type Annotation } from "./types";
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 /** Маппинг UPPER_SNAKE-кодов бекенда на доменные ошибки фронта. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    case "SUSPENDED":
-      throw new ForbiddenError("status", err.error);
-    case "BLOCKS_EMPTY":
-      throw new Error("Тело аннотации не может быть пустым.");
-    case "BLOCKS_INVALID":
-      throw new Error("Тело аннотации не прошло валидацию AST.");
-    case "ANCHOR_INVALID":
-      throw new Error("Некорректная привязка (якорь) аннотации.");
-    case "INVALID_PARENT_TYPE":
-      throw new Error("Аннотации недоступны для этого типа сущности.");
-    case "REF_NOT_FOUND":
-      throw new Error("Одна из ссылок указывает на несуществующий объект.");
-    case "REQUEST_BODY_TOO_LARGE":
-      throw new Error("Аннотация слишком большая.");
-  }
-  handleCommonApiError(err);
-}
+const ERRORS: ApiErrorMessages = {
+  BLOCKS_EMPTY: "Тело аннотации не может быть пустым.",
+  BLOCKS_INVALID: "Тело аннотации не прошло валидацию AST.",
+  ANCHOR_INVALID: "Некорректная привязка (якорь) аннотации.",
+  INVALID_PARENT_TYPE: "Аннотации недоступны для этого типа сущности.",
+  REQUEST_BODY_TOO_LARGE: "Аннотация слишком большая.",
+};
 
 /**
  * Создание аннотации. Реальный роут — пер-сущностный POST
@@ -86,7 +78,7 @@ export const createAnnotation = createFormAction(async (formData) => {
   );
   if (!res.ok) {
     const errBody = (await res.json().catch(() => ({}))) as ApiError;
-    rethrowApiError(errBody);
+    rethrowApiError(errBody, ERRORS);
   }
   const json = (await res.json()) as { data?: Annotation };
   revalidateEntity(Tags.ANNOTATIONS);
@@ -114,7 +106,7 @@ export const updateAnnotation = createFormAction(async (formData) => {
       ...(input.anchor !== undefined ? { anchor: input.anchor as never } : {}),
     },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, input.id);
   revalidateEntity(Tags.ANNOTATIONS);
   return (data.data ?? null) as Annotation | null;
@@ -132,7 +124,7 @@ export const deleteAnnotation = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/annotations/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, id);
   revalidateEntity(Tags.ANNOTATIONS);
   return undefined;
@@ -154,7 +146,7 @@ export const adminDeleteAnnotation = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/annotations/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, id);
   revalidateEntity(Tags.ANNOTATIONS);
   return undefined;

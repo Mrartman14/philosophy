@@ -64,10 +64,26 @@ describe("rethrowUserApiError", () => {
     ).toThrow("Пользователь не найден.");
   });
 
-  it("SUSPENDED → понятный текст про ограниченный аккаунт", () => {
-    expect(() =>
-      rethrowUserApiError({ code: "SUSPENDED", error: "account suspended" }),
-    ).toThrow("Ваш аккаунт ограничен — действие недоступно.");
+  it("SUSPENDED → ForbiddenError('status') (createAction даст code=forbidden)", () => {
+    let thrown: unknown;
+    try {
+      rethrowUserApiError({ code: "SUSPENDED", error: "account suspended" });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).toBeInstanceOf(ForbiddenError);
+    expect((thrown as ForbiddenError).reason).toBe("status");
+  });
+
+  it("BANNED → ForbiddenError('status')", () => {
+    let thrown: unknown;
+    try {
+      rethrowUserApiError({ code: "BANNED", error: "account banned" });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).toBeInstanceOf(ForbiddenError);
+    expect((thrown as ForbiddenError).reason).toBe("status");
   });
 
   it("неизвестный код → пробрасывает error-текст", () => {

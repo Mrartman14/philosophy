@@ -3,7 +3,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -31,18 +31,10 @@ import type { Tag } from "./types";
  * Коды бекенда — UPPERCASE (internal/apperror, internal/middleware/auth.go,
  * internal/httputil/require_actor.go). Сверено с кодом, не со swagger.
  */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    // Свой текст для SUSPENDED — общий хелпер дал бы другой fallback.
-    case "SUSPENDED":
-      throw new Error("Аккаунт приостановлен — действие недоступно.");
-    case "CONFLICT":
-      throw new Error("Тег с таким именем уже существует.");
-    case "NOT_FOUND":
-      throw new Error("Объект не найден — возможно, уже удалён. Обновите страницу.");
-  }
-  handleCommonApiError(err);
-}
+const ERRORS: ApiErrorMessages = {
+  CONFLICT: "Тег с таким именем уже существует.",
+  NOT_FOUND: "Объект не найден — возможно, уже удалён. Обновите страницу.",
+};
 
 export const createTag = createFormAction(async (formData) => {
   const me = await getMe();
@@ -52,7 +44,7 @@ export const createTag = createFormAction(async (formData) => {
   const { data, error } = await api.POST("/api/admin/tags", {
     body: { name: input.name },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.TAGS);
   return (data.data ?? null) as Tag | null;
 });
@@ -66,7 +58,7 @@ export const updateTag = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { name: input.name },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.TAGS);
   // Имя тега показывается на карточках/страницах лекций.
   revalidateEntity(Tags.LECTURES);
@@ -81,7 +73,7 @@ export const deleteTag = createAction(async (rawId: number) => {
   const { error } = await api.DELETE("/api/admin/tags/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.TAGS);
   // ON DELETE CASCADE снимает тег с лекций — их отображение тоже устарело.
   revalidateEntity(Tags.LECTURES);
@@ -97,7 +89,7 @@ export const setLectureTags = createFormAction(async (formData) => {
     params: { path: { id: input.lecture_id } },
     body: { tag_ids: input.tag_ids },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, input.lecture_id);
   revalidateEntity(Tags.LECTURES);
   // Tag[] | null — чтобы initial state формы (data: null) совпал по типам

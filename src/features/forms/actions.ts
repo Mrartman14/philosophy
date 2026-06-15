@@ -3,7 +3,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -25,37 +25,27 @@ import {
 } from "./schemas";
 import type { Form, SubmitResponse } from "./types";
 
-/** UPPER_SNAKE_CASE коды бека → понятный русский (internal/apperror, form/service.go). */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    case "FORM_PUBLISHED":
-      throw new Error("Форма опубликована — её структуру нельзя менять.");
-    case "PUBLIC_IMMUTABLE":
-      throw new Error("Публичную форму нельзя вернуть в приватную.");
-    case "MODE_CHANGE_FORBIDDEN":
-      throw new Error("Режим «без изменений» нельзя сменить на «редактируемый».");
-    case "FORM_IMMUTABLE_MODE":
-      throw new Error("Эта форма не разрешает редактировать или удалять отклик — только отозвать.");
-    case "RETRACT_NOT_APPLICABLE":
-      throw new Error("Отзыв доступен только в формах без редактирования отклика.");
-    case "ALREADY_SUBMITTED":
-      throw new Error("Вы уже отправляли отклик на эту форму.");
-    case "ALREADY_RETRACTED":
-      throw new Error("Отклик уже отозван.");
-    case "INVALID_FORM_SCHEMA":
-      throw new Error("Структура формы не прошла проверку на сервере.");
-    case "INVALID_SUBMISSION":
-      throw new Error("Ответы не прошли проверку. Заполните обязательные поля корректно.");
-    case "BLOCKS_INVALID":
-    case "REF_NOT_FOUND":
-      throw new Error("Описание формы не прошло валидацию.");
-    case "FORM_NOT_FOUND":
-      throw new Error("Форма не найдена.");
-    case "SUBMISSION_NOT_FOUND":
-      throw new Error("Отклик не найден.");
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды бека → понятный русский (internal/apperror, form/service.go).
+ * role-403/SUSPENDED/BANNED и дефолтный REF_NOT_FOUND обрабатывает
+ * централизованный rethrowApiError. */
+const ERRORS: ApiErrorMessages = {
+  FORM_PUBLISHED: "Форма опубликована — её структуру нельзя менять.",
+  PUBLIC_IMMUTABLE: "Публичную форму нельзя вернуть в приватную.",
+  MODE_CHANGE_FORBIDDEN:
+    "Режим «без изменений» нельзя сменить на «редактируемый».",
+  FORM_IMMUTABLE_MODE:
+    "Эта форма не разрешает редактировать или удалять отклик — только отозвать.",
+  RETRACT_NOT_APPLICABLE:
+    "Отзыв доступен только в формах без редактирования отклика.",
+  ALREADY_SUBMITTED: "Вы уже отправляли отклик на эту форму.",
+  ALREADY_RETRACTED: "Отклик уже отозван.",
+  INVALID_FORM_SCHEMA: "Структура формы не прошла проверку на сервере.",
+  INVALID_SUBMISSION:
+    "Ответы не прошли проверку. Заполните обязательные поля корректно.",
+  BLOCKS_INVALID: "Описание формы не прошло валидацию.",
+  FORM_NOT_FOUND: "Форма не найдена.",
+  SUBMISSION_NOT_FOUND: "Отклик не найден.",
+};
 
 /** Собирает тело CreateFormRequest из payload (опускает undefined-ключи: exactOptionalPropertyTypes). */
 function buildFieldsBody(
@@ -96,7 +86,7 @@ export const createForm = createFormAction(async (formData) => {
       ...(input.after_submit ? { after_submit: input.after_submit } : {}),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS);
   return (data.data ?? null) as Form | null;
 });
@@ -119,7 +109,7 @@ export const updateForm = createFormAction(async (formData) => {
       after_submit: payload.after_submit ?? "",
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
   return (data.data ?? null) as Form | null;
@@ -135,7 +125,7 @@ export const publishForm = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { visibility: input.visibility },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
   return (data.data ?? null) as Form | null;
@@ -148,7 +138,7 @@ export const deleteForm = createAction(async (rawId: string) => {
   const { id } = FormIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/forms/{id}", { params: { path: { id } } });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS);
   return undefined;
 });
@@ -165,7 +155,7 @@ export const submitForm = createFormAction(async (formData) => {
     params: { path: { id: input.formId }, query },
     body: { answers: input.answers as never },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS);
   revalidateEntity(Tags.FORMS, input.formId);
   return (data.data ?? null) as SubmitResponse | null;
@@ -181,7 +171,7 @@ export const editSubmission = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { answers: input.answers as never },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS, input.id);
   revalidateEntity(Tags.SUBMISSIONS);
   return (data.data ?? null) as SubmitResponse | null;
@@ -194,7 +184,7 @@ export const deleteSubmission = createAction(async (rawId: string) => {
   const { id } = SubmissionIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/submissions/{id}", { params: { path: { id } } });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS);
   return undefined;
 });
@@ -208,7 +198,7 @@ export const retractSubmission = createAction(async (rawId: string) => {
   const { error } = await api.POST("/api/submissions/{id}/retract", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS, id);
   revalidateEntity(Tags.SUBMISSIONS);
   return undefined;

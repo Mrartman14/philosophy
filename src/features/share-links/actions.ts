@@ -3,7 +3,11 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -17,25 +21,13 @@ import { canManageOwnLinks, canModerateShareLinks } from "./permissions";
 import { ShareLinkCreateSchema, RevokeTokenSchema } from "./schemas";
 import type { ShareLink } from "./types";
 
-/** Маппинг кодов apperror бекенда на доменные ошибки фронта. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    // Свой текст (общий хелпер дал бы "Аккаунт ограничен." при пустом err.error).
-    case "SUSPENDED":
-      throw new ForbiddenError("status", err.error);
-    case "NOT_FOUND":
-      // Создать ссылку может только владелец; бек маскирует отказ под 404.
-      throw new Error("Ресурс не найден или вы не его владелец.");
-    case "RESOURCE_NOT_PRIVATE":
-      throw new Error("Ссылку можно создать только для приватного ресурса.");
-    // Бек на этих эндпоинтах валит вход через apperror.Validation(...) →
-    // код "BAD_REQUEST" (sharelink/handler.go, service.go). Кода
-    // "VALIDATION_ERROR" здесь не бывает.
-    case "BAD_REQUEST":
-      throw new Error(err.error ?? "Сервер отклонил данные.");
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды apperror этого слайса. SUSPENDED/FORBIDDEN/REF_NOT_FOUND и
+ * фоллбек "err.error ?? Ошибка сервера" (бывший BAD_REQUEST) — в rethrowApiError. */
+const ERRORS: ApiErrorMessages = {
+  // Создать ссылку может только владелец; бек маскирует отказ под 404.
+  NOT_FOUND: "Ресурс не найден или вы не его владелец.",
+  RESOURCE_NOT_PRIVATE: "Ссылку можно создать только для приватного ресурса.",
+};
 
 /**
  * Создать share-ссылку. Гейт ownership делает бек (404 на чужой/публичный),
@@ -60,7 +52,7 @@ export const createShareLink = createFormAction(async (formData) => {
         : {}),
     },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.SHARE_LINKS, input.resource_id);
   return (data.data ?? null) as ShareLink | null;
 });
@@ -80,7 +72,7 @@ export const revokeShareLink = createAction(
     const { error } = await api.DELETE("/api/share-links/{token}", {
       params: { path: { token } },
     });
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     revalidateEntity(Tags.SHARE_LINKS, input.resourceId);
     return true;
   },
@@ -101,7 +93,7 @@ export const adminRevokeShareLink = createAction(
     const { error } = await api.DELETE("/api/admin/share-links/{token}", {
       params: { path: { token } },
     });
-    if (error) rethrowApiError(error as ApiError);
+    if (error) rethrowApiError(error as ApiError, ERRORS);
     revalidateEntity(Tags.SHARE_LINKS, input.resourceId);
     return true;
   },

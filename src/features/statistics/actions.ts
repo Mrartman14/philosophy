@@ -2,26 +2,14 @@
 "use server";
 import "server-only";
 import { createApiClient } from "@/api/client";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiError } from "@/utils/api-error";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireCapability } from "@/utils/permissions";
 
 import { canManageOwnHistory } from "./permissions";
 import { HistoryTrackingSchema } from "./schemas";
 import type { HistorySettings } from "./types";
-
-/** Маппинг кодов httputil/apperror бекенда на доменные ошибки фронта. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    case "SUSPENDED":
-      throw new ForbiddenError("status", err.error);
-    case "BAD_REQUEST":
-    case "VALIDATION_ERROR":
-      throw new Error(err.error ?? "Сервер отклонил запрос.");
-  }
-  handleCommonApiError(err);
-}
 
 /**
  * Включает/выключает трекинг просмотров. Выключение на бэке безвозвратно

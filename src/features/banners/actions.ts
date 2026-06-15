@@ -3,7 +3,11 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -26,32 +30,18 @@ import {
 } from "./schemas";
 import type { Banner } from "./types";
 
-function rethrowApiError(err: ApiError | undefined): never {
-  // Бек пишет code в UPPER_SNAKE_CASE (internal/apperror, middleware/auth.go).
-  switch (err?.code) {
-    case "INVALID_COLOR":
-      throw new Error("Бекенд отклонил цвет фона: нужен hex вида #RGB или #RRGGBB.");
-    case "INVALID_DATE":
-      throw new Error(
-        "Бекенд отклонил даты показа: проверьте формат и порядок начала/окончания.",
-      );
-    case "INVALID_EVENT":
-      throw new Error("Событие с таким id не найдено.");
-    case "BLOCKS_INVALID":
-      throw new Error("Текст баннера не прошёл валидацию AST.");
-    case "REF_NOT_FOUND":
-      throw new Error("Одна из ссылок указывает на несуществующий объект.");
-    case "BLOCK_REFERENCED":
-      throw new Error(
-        "На блок баннера ссылаются другие материалы. Удалите ссылки или оставьте блок.",
-      );
-    case "BLOCKS_HAVE_ANCHORS":
-      throw new Error(
-        "Нельзя удалить блок с привязанными комментариями. Удалите комментарии или оставьте блок.",
-      );
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды баннеров → русский текст. Бек пишет code в UPPER_SNAKE_CASE
+ * (internal/apperror, middleware/auth.go). REF_NOT_FOUND и BLOCKS_HAVE_ANCHORS —
+ * из DEFAULT_MESSAGES api-error.ts (текст совпадал). */
+const ERRORS: ApiErrorMessages = {
+  INVALID_COLOR: "Бекенд отклонил цвет фона: нужен hex вида #RGB или #RRGGBB.",
+  INVALID_DATE:
+    "Бекенд отклонил даты показа: проверьте формат и порядок начала/окончания.",
+  INVALID_EVENT: "Событие с таким id не найдено.",
+  BLOCKS_INVALID: "Текст баннера не прошёл валидацию AST.",
+  BLOCK_REFERENCED:
+    "На блок баннера ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+};
 
 export const createBanner = createFormAction(async (formData) => {
   const me = await getMe();
@@ -68,7 +58,7 @@ export const createBanner = createFormAction(async (formData) => {
       ...(input.event_id ? { event_id: input.event_id } : {}),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS);
   return (data.data ?? null) as Banner | null;
 });
@@ -95,7 +85,7 @@ export const updateBanner = createFormAction(async (formData) => {
       ...(input.end_at ? { end_at: input.end_at } : {}),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS, input.id);
   revalidateEntity(Tags.BANNERS);
   return (data.data ?? null) as Banner | null;
@@ -109,7 +99,7 @@ export const deleteBanner = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/banners/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS);
   return undefined;
 });
@@ -128,7 +118,7 @@ export const dismissBanner = createAction(async (rawId: string) => {
     if (err.code === "CONFLICT") {
       throw new Error("Этот баннер нельзя скрыть.");
     }
-    rethrowApiError(err);
+    rethrowApiError(err, ERRORS);
   }
   revalidateEntity(Tags.BANNERS);
   return undefined;

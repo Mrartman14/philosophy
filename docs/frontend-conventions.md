@@ -120,7 +120,7 @@ revalidateEntity("comments", "abc-123"); // плюс "comments:abc-123"
 import "server-only";
 import { createFormAction, parseFormData } from "@/utils/create-action";
 import { requireCapability } from "@/utils/permissions";
-import { handleCommonApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
 import { revalidateEntity } from "@/utils/revalidate";
 import { getMe } from "@/utils/me";
 import { createApiClient } from "@/api/client";
@@ -128,13 +128,20 @@ import { Tags } from "@/api/tags";
 import { canCreateComment } from "./permissions";
 import { CommentCreateSchema } from "./schemas";
 
+/** Доменные коды слайса → русский текст (декларативно, не switch). Общие
+ * 403/account-коды и дефолты (REF_NOT_FOUND, …) обрабатывает rethrowApiError. */
+const ERRORS: ApiErrorMessages = {
+  COMMENT_DELETED: "Комментарий удалён.",
+  MAX_DEPTH_EXCEEDED: "Превышена максимальная глубина ветки.",
+};
+
 export const createComment = createFormAction(async (formData) => {
   const me = await getMe();
   requireCapability(me, canCreateComment);        // гейт ДО парсинга (capability-only)
   const input = parseFormData(CommentCreateSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/comments", { body: input });
-  if (error) handleCommonApiError(error);         // FORBIDDEN/SUSPENDED/fallback
+  if (error) rethrowApiError(error, ERRORS);      // доменные коды + общий fallback
   revalidateEntity(Tags.COMMENTS);                // тег из реестра, не литерал
   return data;
 });
@@ -151,10 +158,19 @@ export const createComment = createFormAction(async (formData) => {
 `parseFormData` (нужен `id` из формы), затем загрузка сущности и
 `requireCapability(me, () => canEditX(me, entity))`.
 
-**Обработка ошибок бека.** Общие коды (`FORBIDDEN`/`SUSPENDED`) и fallback —
-через `handleCommonApiError(error, fallback?)` из `@/utils/api-error`; доменные
-коды слайс обрабатывает в своём `switch` ДО вызова хелпера. Тип `code` —
-сгенерированный union `ApiErrorCode` (drift-guard).
+**Обработка ошибок бека.** Единая точка — `rethrowApiError(error, overrides?)`
+из `@/utils/api-error`. Слайс описывает только свои доменные коды декларативной
+картой `const ERRORS: ApiErrorMessages = { CODE: "текст" }` и передаёт её вторым
+аргументом. Сам `rethrowApiError` обрабатывает: role-403 (`FORBIDDEN`/
+`ATTACH_FORBIDDEN`/`UPLOAD_FOREIGN` → `ForbiddenError("role")`), account-коды
+(`SUSPENDED`/`BANNED` → `ForbiddenError("status")`), дефолтные тексты для общих
+кодов (`REF_NOT_FOUND`, `BLOCKS_HAVE_ANCHORS` — в `DEFAULT_MESSAGES`), и фоллбек
+`err.error ?? "Ошибка сервера"`. Новый общий код добавляется в `DEFAULT_MESSAGES`
+ОДНОЙ строкой, а не копипастой по слайсам. Тип ключей — сгенерированный union
+`ApiErrorCode` (drift-guard: удалённый на беке код краснеет после regen). Если у
+слайса есть распознавание ошибок по тексту (без UPPER_SNAKE-кода) — оставь тонкую
+локальную обёртку, которая в конце делегирует в `rethrowApiError` (см.
+`trails/actions.ts`).
 
 ### 3.4. Форма с `useActionState`
 

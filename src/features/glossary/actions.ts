@@ -3,7 +3,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -25,25 +25,11 @@ import {
 } from "./schemas";
 import type { Term } from "./types";
 
-function rethrowApiError(err: ApiError | undefined): never {
-  // Бек пишет code в UPPER_SNAKE_CASE (internal/apperror, middleware/auth.go) —
-  // сравнение с lowercase "forbidden" не срабатывало (паттерн — events/actions.ts).
-  switch (err?.code) {
-    case "BLOCKS_EMPTY":
-      throw new Error("Тело термина не может быть пустым.");
-    case "BLOCKS_HAVE_ANCHORS":
-      throw new Error(
-        "Нельзя удалить блок с привязанными комментариями. Удалите комментарии или оставьте блок."
-      );
-    case "BLOCK_REFERENCED":
-      throw new Error(
-        "На блок ссылаются другие материалы. Удалите ссылки или оставьте блок."
-      );
-    case "REF_NOT_FOUND":
-      throw new Error("Одна из ссылок указывает на несуществующий объект.");
-  }
-  handleCommonApiError(err);
-}
+const ERRORS: ApiErrorMessages = {
+  BLOCKS_EMPTY: "Тело термина не может быть пустым.",
+  BLOCK_REFERENCED:
+    "На блок ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+};
 
 export const createTerm = createFormAction(async (formData) => {
   const me = await getMe();
@@ -62,7 +48,7 @@ export const createTerm = createFormAction(async (formData) => {
       ],
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY);
   return (data.data ?? null) as Term | null;
 });
@@ -76,7 +62,7 @@ export const updateTermBlocks = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { blocks: input.blocks as never },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY, input.id);
   revalidateEntity(Tags.GLOSSARY);
   return (data.data ?? null) as Term | null;
@@ -90,7 +76,7 @@ export const deleteTerm = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/glossary/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY);
   return undefined;
 });

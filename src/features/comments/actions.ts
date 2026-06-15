@@ -3,14 +3,14 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import {
@@ -26,52 +26,31 @@ import {
 } from "./schemas";
 import type { Comment, ReactionAxis } from "./types";
 
-/** Маппинг UPPER_SNAKE_CASE-кодов бека в понятные русские тексты. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    case "SUSPENDED":
-      throw new ForbiddenError("status", "Аккаунт ограничен: вы не можете писать.");
-    case "SELF_REACTION":
-      throw new Error("Нельзя реагировать на собственный комментарий.");
-    case "AXIS_NOT_ALLOWED":
-      throw new Error("Эта реакция недоступна для данного типа комментария.");
-    case "INVALID_INSIGHT_VALUE":
-      throw new Error("Реакция «Инсайт» возможна только со знаком плюс.");
-    case "COMMENT_DELETED":
-      throw new Error("Комментарий удалён.");
-    case "PARENT_NOT_AVAILABLE":
-    case "PARENT_WRONG_LECTURE":
-      throw new Error("Родительский комментарий недоступен.");
-    case "INVALID_ROOT_TYPE":
-      throw new Error("Этот тип комментария нельзя использовать как корневой.");
-    case "INVALID_TYPE_FOR_PARENT":
-      throw new Error("Этот тип комментария недопустим как ответ на выбранный узел.");
-    case "MAX_DEPTH_EXCEEDED":
-      throw new Error("Превышена максимальная глубина ветки.");
-    case "BLOCKS_EMPTY":
-      throw new Error("Комментарий не может быть пустым.");
-    case "BLOCKS_INVALID":
-      throw new Error("Тело комментария не прошло проверку AST.");
-    case "REF_NOT_FOUND":
-      throw new Error("Одна из ссылок указывает на несуществующий объект.");
-    case "BLOCK_ID_UNKNOWN":
-    case "DUPLICATE_BLOCK_ID":
-      throw new Error("Ошибка идентификаторов блоков. Перезагрузите редактор.");
-    case "COMMENT_REFERENCED":
-      throw new Error(
-        "На этот комментарий ссылаются другие материалы. Сначала удалите ссылки.",
-      );
-    case "BLOCK_REFERENCED":
-      throw new Error(
-        "На блок этого комментария ссылаются извне. Сначала удалите ссылки.",
-      );
-    case "BLOCKS_HAVE_ANCHORS":
-      throw new Error(
-        "К блокам этого комментария привязаны другие комментарии. Сначала открепите их.",
-      );
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды бека → русский текст. role-403/SUSPENDED/BANNED и дефолтный
+ * REF_NOT_FOUND обрабатывает централизованный rethrowApiError. BLOCKS_HAVE_ANCHORS
+ * у комментариев отличается от дефолта, поэтому переопределён локально. */
+const ERRORS: ApiErrorMessages = {
+  SELF_REACTION: "Нельзя реагировать на собственный комментарий.",
+  AXIS_NOT_ALLOWED: "Эта реакция недоступна для данного типа комментария.",
+  INVALID_INSIGHT_VALUE: "Реакция «Инсайт» возможна только со знаком плюс.",
+  COMMENT_DELETED: "Комментарий удалён.",
+  PARENT_NOT_AVAILABLE: "Родительский комментарий недоступен.",
+  PARENT_WRONG_LECTURE: "Родительский комментарий недоступен.",
+  INVALID_ROOT_TYPE: "Этот тип комментария нельзя использовать как корневой.",
+  INVALID_TYPE_FOR_PARENT:
+    "Этот тип комментария недопустим как ответ на выбранный узел.",
+  MAX_DEPTH_EXCEEDED: "Превышена максимальная глубина ветки.",
+  BLOCKS_EMPTY: "Комментарий не может быть пустым.",
+  BLOCKS_INVALID: "Тело комментария не прошло проверку AST.",
+  BLOCK_ID_UNKNOWN: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
+  DUPLICATE_BLOCK_ID: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
+  COMMENT_REFERENCED:
+    "На этот комментарий ссылаются другие материалы. Сначала удалите ссылки.",
+  BLOCK_REFERENCED:
+    "На блок этого комментария ссылаются извне. Сначала удалите ссылки.",
+  BLOCKS_HAVE_ANCHORS:
+    "К блокам этого комментария привязаны другие комментарии. Сначала открепите их.",
+};
 
 /** Создать комментарий (корень или ответ). FormData: type, blocks(JSON), parent_id?. */
 export const createComment = createFormAction(async (formData) => {
@@ -90,7 +69,7 @@ export const createComment = createFormAction(async (formData) => {
       ...(input.parent_id ? { parent_id: input.parent_id } : {}),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, lectureId);
   revalidateEntity(Tags.COMMENTS);
   return (data.data ?? null) as Comment | null;
@@ -106,7 +85,7 @@ export const updateCommentBlocks = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: { blocks: input.blocks as never },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, input.id);
   revalidateEntity(Tags.COMMENTS);
   return (data.data ?? null) as Comment | null;
@@ -121,7 +100,7 @@ export const deleteComment = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/comments/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, id);
   revalidateEntity(Tags.COMMENTS);
   return undefined;
@@ -136,7 +115,7 @@ export const adminDeleteComment = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/comments/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, id);
   revalidateEntity(Tags.COMMENTS);
   return undefined;
@@ -153,7 +132,7 @@ export const setReaction = createAction(
       params: { path: { id: input.id } },
       body: { axis: input.axis, value: input.value as -1 | 1 },
     });
-    if (error) rethrowApiError(error);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.COMMENTS, input.id);
     return undefined;
   },
@@ -169,7 +148,7 @@ export const removeReaction = createAction(
     const { error } = await api.DELETE("/api/comments/{id}/reactions/{axis}", {
       params: { path: { id: input.id, axis: input.axis } },
     });
-    if (error) rethrowApiError(error);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.COMMENTS, input.id);
     return undefined;
   },

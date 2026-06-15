@@ -5,7 +5,11 @@ import { cookies } from "next/headers";
 
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
@@ -31,36 +35,23 @@ import type { Document } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
-/** Маппинг UPPER_SNAKE_CASE кодов бека в понятный русский текст. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    case "PUBLIC_IMMUTABLE":
-      throw new Error("Публичный документ нельзя сделать приватным.");
-    case "DOCUMENT_REFERENCED":
-      throw new Error(
-        "На документ ссылаются другие материалы. Удалите ссылки, затем повторите.",
-      );
-    case "BLOCK_REFERENCED":
-      throw new Error(
-        "На блок документа ссылаются извне. Удалите ссылки или оставьте блок.",
-      );
-    case "BLOCKS_HAVE_ANCHORS":
-      throw new Error(
-        "Нельзя удалить блок с привязанными комментариями. Сначала удалите комментарии.",
-      );
-    case "BLOCKS_EMPTY":
-      throw new Error("Документ должен содержать хотя бы один блок.");
-    case "BLOCKS_INVALID":
-    case "DUPLICATE_BLOCK_ID":
-    case "BLOCK_ID_UNKNOWN":
-      throw new Error("Тело документа не прошло валидацию AST.");
-    case "REF_NOT_FOUND":
-      throw new Error("Одна из ссылок указывает на несуществующий объект.");
-    case "IMAGE_UNKNOWN_KEY":
-      throw new Error("В документе есть изображение с неизвестным ключом.");
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды бека → русский текст. role-403/SUSPENDED/BANNED и дефолтный
+ * REF_NOT_FOUND обрабатывает централизованный rethrowApiError. BLOCKS_HAVE_ANCHORS
+ * у документов отличается от дефолта, поэтому переопределён локально. */
+const ERRORS: ApiErrorMessages = {
+  PUBLIC_IMMUTABLE: "Публичный документ нельзя сделать приватным.",
+  DOCUMENT_REFERENCED:
+    "На документ ссылаются другие материалы. Удалите ссылки, затем повторите.",
+  BLOCK_REFERENCED:
+    "На блок документа ссылаются извне. Удалите ссылки или оставьте блок.",
+  BLOCKS_HAVE_ANCHORS:
+    "Нельзя удалить блок с привязанными комментариями. Сначала удалите комментарии.",
+  BLOCKS_EMPTY: "Документ должен содержать хотя бы один блок.",
+  BLOCKS_INVALID: "Тело документа не прошло валидацию AST.",
+  BLOCK_ID_UNKNOWN: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
+  DUPLICATE_BLOCK_ID: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
+  IMAGE_UNKNOWN_KEY: "В документе есть изображение с неизвестным ключом.",
+};
 
 /** POST /api/documents (JSON). Гейт — document.create. */
 export const createDocument = createFormAction(async (formData) => {
@@ -75,7 +66,7 @@ export const createDocument = createFormAction(async (formData) => {
       ...(input.visibility ? { visibility: input.visibility } : {}),
     },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
   return (data.data ?? null) as Document | null;
 });
@@ -120,7 +111,10 @@ export const uploadDocument = createFormAction(async (formData) => {
     } catch {
       /* non-JSON */
     }
-    rethrowApiError(body.code ? body : { error: `Ошибка загрузки: ${res.status}` });
+    rethrowApiError(
+      body.code ? body : { error: `Ошибка загрузки: ${res.status}` },
+      ERRORS,
+    );
   }
   const json = (await res.json()) as { data?: Document };
   revalidateEntity(Tags.DOCUMENTS);
@@ -137,7 +131,7 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
     params: { path: { document_id: input.id } },
     body: { title: input.title },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
   return (data.data ?? null) as Document | null;
@@ -153,7 +147,7 @@ export const updateDocumentBlocks = createFormAction(async (formData) => {
     params: { path: { document_id: input.id } },
     body: { blocks: input.blocks as never },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
   return (data.data ?? null) as Document | null;
@@ -169,7 +163,7 @@ export const setDocumentVisibility = createFormAction(async (formData) => {
     params: { path: { document_id: input.id } },
     body: { visibility: input.visibility },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
   return (data.data ?? null) as Document | null;
@@ -184,7 +178,7 @@ export const deleteDocument = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/documents/{document_id}", {
     params: { path: { document_id: id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
   return undefined;
 });
@@ -198,7 +192,7 @@ export const adminDeleteDocument = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/documents/{document_id}", {
     params: { path: { document_id: id } },
   });
-  if (error) rethrowApiError(error);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
   return undefined;
 });

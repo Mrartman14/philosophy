@@ -3,14 +3,18 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import {
+  rethrowApiError,
+  type ApiError,
+  type ApiErrorMessages,
+} from "@/utils/api-error";
 import {
   createAction,
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireCapability } from "@/utils/permissions";
+import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import {
@@ -26,24 +30,12 @@ import {
 } from "./schemas";
 import type { Preferences } from "./types";
 
-/** Маппинг кодов httputil/apperror бекенда на доменные ошибки фронта. */
-function rethrowApiError(err: ApiError | undefined): never {
-  switch (err?.code) {
-    // SUSPENDED оставлен локально: без дефолтного текста "Аккаунт ограничен."
-    // — поведение 1:1 (handleCommonApiError подставил бы фоллбек).
-    case "SUSPENDED":
-      throw new ForbiddenError("status", err.error);
-    case "NOT_CONFIGURED":
-      throw new Error("Push-уведомления не настроены на сервере.");
-    // preference/service.go валит и тем и другим: 400 BAD_REQUEST
-    // (apperror.Validation — невалидный JSON) и 422 VALIDATION_ERROR
-    // (prefs.Validate). Push-схемы тоже отдают BAD_REQUEST. UX одинаковый.
-    case "BAD_REQUEST":
-    case "VALIDATION_ERROR":
-      throw new Error(err.error ?? "Сервер отклонил данные формы.");
-  }
-  handleCommonApiError(err);
-}
+/** Доменные коды apperror этого слайса. SUSPENDED/FORBIDDEN и фоллбек
+ * "err.error ?? Ошибка сервера" (бывшие BAD_REQUEST/VALIDATION_ERROR, которые
+ * предпочитали сообщение бека) — в централизованном rethrowApiError. */
+const ERRORS: ApiErrorMessages = {
+  NOT_CONFIGURED: "Push-уведомления не настроены на сервере.",
+};
 
 export const updatePreferences = createFormAction(async (formData) => {
   const me = await getMe();
@@ -58,7 +50,7 @@ export const updatePreferences = createFormAction(async (formData) => {
   const { data, error } = await api.PATCH("/api/me/preferences", {
     body: { reading_mode: input.reading_mode } as never,
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.PREFERENCES);
   return (data.data ?? null) as Preferences | null;
 });
@@ -73,7 +65,7 @@ export const subscribePush = createAction(async (rawSubscription: unknown) => {
   const input = PushSubscribeSchema.parse(rawSubscription);
   const api = await createApiClient();
   const { error } = await api.POST("/api/push/subscribe", { body: input });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   return undefined;
 });
 
@@ -85,7 +77,7 @@ export const unsubscribePush = createAction(async (rawEndpoint: string) => {
   const { error } = await api.DELETE("/api/push/subscribe", {
     body: { endpoint },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   return undefined;
 });
 
@@ -101,7 +93,7 @@ export const sendPushBroadcast = createFormAction(async (formData) => {
       ...(input.url !== undefined ? { url: input.url } : {}),
     },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   // Бекенд отвечает 202 Accepted — рассылка асинхронная.
   return true;
 });
