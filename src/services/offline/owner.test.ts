@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("./wipe", () => ({ wipeOfflineData: vi.fn() }));
 
 import { OFFLINE_OWNER_KEY } from "./contract/storage";
-import { reconcileOfflineOwner, getOfflineOwner } from "./owner";
+import { reconcileOfflineOwner, getOfflineOwner, clearOfflineOwner } from "./owner";
 import { wipeOfflineData } from "./wipe";
 
 beforeEach(() => {
@@ -46,5 +46,18 @@ describe("reconcileOfflineOwner", () => {
     await reconcileOfflineOwner("bob");
     expect(wipeOfflineData).toHaveBeenCalledOnce();
     expect(getOfflineOwner()).toBe("alice");
+  });
+});
+
+describe("clearOfflineOwner", () => {
+  it("удаляет маркер владельца из localStorage", () => {
+    localStorage.setItem(OFFLINE_OWNER_KEY, "alice");
+    clearOfflineOwner();
+    expect(getOfflineOwner()).toBeNull();
+  });
+
+  it("не бросает, если маркера нет", () => {
+    expect(() => clearOfflineOwner()).not.toThrow();
+    expect(getOfflineOwner()).toBeNull();
   });
 });
