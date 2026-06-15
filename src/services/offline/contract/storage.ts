@@ -5,6 +5,8 @@
 export const OFFLINE_DB_NAME = "flbz-offline";
 export const OFFLINE_DB_VERSION = 1;
 export const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
+/** localStorage-ключ: id владельца офлайн-кеша (для сверки личности при логауте). */
+export const OFFLINE_OWNER_KEY = "flbz-offline-owner";
 
 /** Ключ снимка в сторе saved-bundles. */
 export function bundleKey(entity: string, id: string): string {

@@ -1,8 +1,7 @@
 // src/services/offline/owner.ts
 // Browser-only: маркер «владельца» офлайн-кеша (localStorage) + сверка личности.
+import { OFFLINE_OWNER_KEY } from "./contract/storage";
 import { wipeOfflineData } from "./wipe";
-
-export const OFFLINE_OWNER_KEY = "flbz-offline-owner";
 
 export function getOfflineOwner(): string | null {
   try {

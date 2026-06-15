@@ -2,11 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("./wipe", () => ({ wipeOfflineData: vi.fn() }));
 
-import {
-  reconcileOfflineOwner,
-  getOfflineOwner,
-  OFFLINE_OWNER_KEY,
-} from "./owner";
+import { OFFLINE_OWNER_KEY } from "./contract/storage";
+import { reconcileOfflineOwner, getOfflineOwner } from "./owner";
 import { wipeOfflineData } from "./wipe";
 
 beforeEach(() => {
