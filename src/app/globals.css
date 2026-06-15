@@ -72,6 +72,42 @@ body:has(dialog[open]) {
   }
 }
 
+@keyframes router-link-wave {
+  0% {
+    background-position: -50% 0;
+  }
+
+  60%,
+  100% {
+    background-position: 150% 0;
+  }
+}
+
+/* Self-paint шиммер in-flight навигации. Цвета — на currentColor ссылки, чтобы
+   работать в light/dark без зависимости от --color-* токенов проекта (они
+   резолвятся только под forced-colors). Меняются только paint-свойства → клик
+   без reflow. Задержка 250ms гасит шиммер на мгновенных/кешированных переходах. */
+.router-link:has([data-link-pending]) {
+  animation: router-link-wave 1250ms linear 250ms infinite;
+  background-color: color-mix(in srgb, currentColor 7%, transparent);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, currentColor 14%, transparent),
+    transparent
+  );
+  background-repeat: no-repeat;
+  background-size: 40% 100%;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .router-link:has([data-link-pending]) {
+    animation: none;
+    background-image: none; /* остаётся статичный currentColor-тинт как feedback */
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .sensitive-image {
     filter: brightness(75%);
