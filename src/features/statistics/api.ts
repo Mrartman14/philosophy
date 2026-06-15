@@ -1,20 +1,40 @@
-// src/features/_template/api.ts
+// src/features/statistics/api.ts
 import "server-only";
 import { cache } from "react";
-// import { unstable_cache } from "next/cache";
-// import { createApiClient } from "@/api/client";
+
+import { createApiClient } from "@/api/client";
+
+import type { HistorySettings, Inventory, ViewStats } from "./types";
 
 /**
- * Серверные fetchers сущности. Дедуплицируются через React.cache внутри одного
- * запроса. Для cross-request кеширования — обернуть в unstable_cache с тегом
- * `entity` (для list) или `entity:<id>` (для item).
+ * Self-only статистика текущего пользователя. Данные пер-юзерные — НЕ
+ * оборачивать в unstable_cache: cross-request кеш протёк бы между
+ * пользователями. React.cache дедуплицирует вызовы в рамках запроса.
+ * Вызывать только после getMe() !== null.
  */
+export const getProductionStats = cache(async (): Promise<Inventory> => {
+  const api = await createApiClient();
+  const { data, error } = await api.GET("/api/me/production");
+  if (error) {
+    throw new Error(error.error ?? "Не удалось загрузить статистику.");
+  }
+  return data.data ?? {};
+});
 
-// export const getEntities = cache(async () => {
-//   const api = await createApiClient();
-//   const { data, error } = await api.GET("/...");
-//   if (error) throw new Error(error.message);
-//   return data;
-// });
+export const getViewStats = cache(async (): Promise<ViewStats> => {
+  const api = await createApiClient();
+  const { data, error } = await api.GET("/api/me/history/stats");
+  if (error) {
+    throw new Error(error.error ?? "Не удалось загрузить статистику просмотров.");
+  }
+  return data.data ?? {};
+});
 
-export const _placeholder = cache(() => Promise.resolve(null));
+export const getHistorySettings = cache(async (): Promise<HistorySettings> => {
+  const api = await createApiClient();
+  const { data, error } = await api.GET("/api/me/history/settings");
+  if (error) {
+    throw new Error(error.error ?? "Не удалось загрузить настройки истории.");
+  }
+  return data.data ?? {};
+});
