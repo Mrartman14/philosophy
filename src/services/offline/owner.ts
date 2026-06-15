@@ -31,12 +31,17 @@ function setOfflineOwner(userId: string): void {
  *
  * Случай «маркера нет, но данные есть» (доисторические данные до появления
  * маркера) трактуется как смена владельца → одноразовая зачистка.
+ *
+ * Маркер двигаем ТОЛЬКО при успешной зачистке: если `wipeOfflineData()` не
+ * добил все подсистемы, оставляем старый маркер — расхождение личностей снова
+ * сработает на следующем заходе и зачистка повторится. Иначе частично-стёртые
+ * приватные данные навсегда осели бы под новым владельцем.
  */
 export async function reconcileOfflineOwner(
   currentUserId: string | null,
 ): Promise<void> {
   if (currentUserId === null) return;
   if (getOfflineOwner() === currentUserId) return;
-  await wipeOfflineData();
-  setOfflineOwner(currentUserId);
+  const wiped = await wipeOfflineData();
+  if (wiped) setOfflineOwner(currentUserId);
 }

@@ -24,16 +24,20 @@ describe("wipeOfflineData", () => {
     expect(clearBrowsedImageCaches).toHaveBeenCalledOnce();
   });
 
-  it("best-effort: сбой IndexedDB не мешает чистке кэшей и не бросает", async () => {
+  it("возвращает true, когда все три подсистемы отработали без сбоя", async () => {
+    await expect(wipeOfflineData()).resolves.toBe(true);
+  });
+
+  it("best-effort: сбой IndexedDB не мешает чистке кэшей, не бросает, возвращает false", async () => {
     vi.mocked(wipeOfflineDb).mockRejectedValue(new Error("idb fail"));
-    await expect(wipeOfflineData()).resolves.toBeUndefined();
+    await expect(wipeOfflineData()).resolves.toBe(false);
     expect(clearImageCache).toHaveBeenCalledOnce();
     expect(clearBrowsedImageCaches).toHaveBeenCalledOnce();
   });
 
-  it("best-effort: сбой кэша не мешает чистке IndexedDB и не бросает", async () => {
+  it("best-effort: сбой кэша не мешает чистке IndexedDB, не бросает, возвращает false", async () => {
     vi.mocked(clearImageCache).mockRejectedValue(new Error("cache fail"));
-    await expect(wipeOfflineData()).resolves.toBeUndefined();
+    await expect(wipeOfflineData()).resolves.toBe(false);
     expect(wipeOfflineDb).toHaveBeenCalledOnce();
     expect(clearBrowsedImageCaches).toHaveBeenCalledOnce();
   });

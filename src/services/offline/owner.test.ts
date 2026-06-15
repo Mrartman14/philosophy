@@ -7,7 +7,7 @@ import { reconcileOfflineOwner, getOfflineOwner } from "./owner";
 import { wipeOfflineData } from "./wipe";
 
 beforeEach(() => {
-  vi.mocked(wipeOfflineData).mockReset().mockResolvedValue();
+  vi.mocked(wipeOfflineData).mockReset().mockResolvedValue(true);
   localStorage.clear();
 });
 
@@ -36,6 +36,14 @@ describe("reconcileOfflineOwner", () => {
   it("нет маркера + есть пользователь → чистит (миграция) и ставит владельца", async () => {
     expect(getOfflineOwner()).toBeNull();
     await reconcileOfflineOwner("alice");
+    expect(wipeOfflineData).toHaveBeenCalledOnce();
+    expect(getOfflineOwner()).toBe("alice");
+  });
+
+  it("сбой зачистки → маркер НЕ двигаем, чтобы повторить на следующем заходе", async () => {
+    vi.mocked(wipeOfflineData).mockResolvedValue(false);
+    localStorage.setItem(OFFLINE_OWNER_KEY, "alice");
+    await reconcileOfflineOwner("bob");
     expect(wipeOfflineData).toHaveBeenCalledOnce();
     expect(getOfflineOwner()).toBe("alice");
   });
