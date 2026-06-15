@@ -5,15 +5,11 @@ import { fileURLToPath } from "node:url";
 
 import { describe, it, expect } from "vitest";
 
-import {
-  OFFLINE_IMAGE_CACHE as STORAGE_OFFLINE_IMAGE_CACHE,
-  BROWSED_IMAGE_CACHE_PREFIX,
-} from "../contract/storage";
+import { OFFLINE_IMAGE_CACHE as STORAGE_OFFLINE_IMAGE_CACHE } from "../contract/storage";
 
 import {
   OFFLINE_IMAGE_CACHE,
   SAVED_SHELL_CACHE,
-  BROWSED_IMAGE_CACHE,
   PRESERVED_CACHES,
   selectCachesToDelete,
   isOfflineFileRequest,
@@ -25,14 +21,10 @@ describe("sw-logic: имена кэшей", () => {
     expect(OFFLINE_IMAGE_CACHE).toBe(STORAGE_OFFLINE_IMAGE_CACHE);
   });
 
-  it("BROWSED_IMAGE_CACHE совпадает с wipe-префиксом contract/storage.ts (защита от дрейфа)", () => {
-    expect(BROWSED_IMAGE_CACHE).toBe(BROWSED_IMAGE_CACHE_PREFIX);
-  });
-
-  it("preserved-набор включает офлайн-бакет картинок, shell и неверсионируемый кэш просмотренных", () => {
+  it("preserved-набор — только офлайн-бакет картинок и shell (картинки кешируются лишь для сохранённых лекций)", () => {
     expect(PRESERVED_CACHES).toContain(OFFLINE_IMAGE_CACHE);
     expect(PRESERVED_CACHES).toContain(SAVED_SHELL_CACHE);
-    expect(PRESERVED_CACHES).toContain(BROWSED_IMAGE_CACHE);
+    expect(PRESERVED_CACHES).not.toContain("flbz-images");
   });
 });
 
@@ -48,7 +40,7 @@ describe("sw-logic: инлайн-инвариант", () => {
 });
 
 describe("selectCachesToDelete", () => {
-  const active = ["flbz-static-v2", "flbz-next-v2", "flbz-api-v2", "flbz-images-v2"];
+  const active = ["flbz-static-v2", "flbz-next-v2", "flbz-api-v2"];
 
   it("удаляет устаревшие версионированные flbz-кэши", () => {
     const existing = [...active, "flbz-static-v1", "flbz-images-v1"];
@@ -68,10 +60,14 @@ describe("selectCachesToDelete", () => {
     expect(selectCachesToDelete(existing, active)).toEqual([]);
   });
 
-  it("НЕ удаляет неверсионируемый кэш просмотренных картинок (переживает деплой), но чистит легаси версионированные", () => {
-    const existing = [...active, BROWSED_IMAGE_CACHE, "flbz-images-v1"];
-    // flbz-images (новый, preserved) остаётся; flbz-images-v1 (легаси) — под снос.
-    expect(selectCachesToDelete(existing, active)).toEqual(["flbz-images-v1"]);
+  it("удаляет ВСЕ кэши просмотренных картинок (flbz-images*) — браузерный кэш убран, не preserved", () => {
+    const existing = [...active, "flbz-images", "flbz-images-v1"];
+    // Картинки кешируются только для сохранённых лекций (flbz-offline-images);
+    // оппортунистический browsed-кэш убран → его остатки сметаются на activate.
+    expect(selectCachesToDelete(existing, active)).toEqual([
+      "flbz-images",
+      "flbz-images-v1",
+    ]);
   });
 
   it("не трогает чужие кэши без префикса flbz", () => {

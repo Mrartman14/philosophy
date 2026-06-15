@@ -19,19 +19,12 @@ export const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
 export const SAVED_SHELL_CACHE = "flbz-shell";
 
 /**
- * Неверсионируемый бакет просмотренных (онлайн) картинок. Раньше версионировался
- * (`flbz-images-<SW_VERSION>`) и сбрасывался КАЖДЫМ деплоем — теперь единый,
- * переживает обновления SW (в PRESERVED_CACHES). Размер ограничен FIFO-вытеснением
- * в шаблоне. Чистится при смене аккаунта (см. BROWSED_IMAGE_CACHE_PREFIX в contract).
+ * Кэши, которые activate-cleanup НЕ должен удалять (живут под persist(), не
+ * версионируются). Картинки кешируются ТОЛЬКО для явно сохранённых лекций
+ * (`OFFLINE_IMAGE_CACHE`) — оппортунистического браузерного кэша картинок нет,
+ * поэтому его остатки (`flbz-images*`) в preserved не входят и сметаются.
  */
-export const BROWSED_IMAGE_CACHE = "flbz-images";
-
-/** Кэши, которые activate-cleanup НЕ должен удалять (живут под persist(), не версионируются). */
-export const PRESERVED_CACHES: string[] = [
-  OFFLINE_IMAGE_CACHE,
-  SAVED_SHELL_CACHE,
-  BROWSED_IMAGE_CACHE,
-];
+export const PRESERVED_CACHES: string[] = [OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE];
 
 /**
  * Какие существующие кэши удалить при активации нового SW: только наши (`flbz-*`),

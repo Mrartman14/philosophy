@@ -14,11 +14,12 @@ export const OFFLINE_DB_VERSION = 1;
 export const OFFLINE_SCHEMA_VERSION = 1;
 export const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
 /**
- * Префикс кэша просмотренных (онлайн) картинок в Cache Storage. Бакет теперь
- * НЕверсионируемый — единый `flbz-images` (заводится в public/sw.js, переживает
- * деплой). Префикс ловит и его, и легаси версионированные `flbz-images-<SW_VERSION>`
- * от прежних сборок — обе формы чистятся при смене аккаунта. Не путать с
- * `OFFLINE_IMAGE_CACHE` (`flbz-offline-images`): другой префикс, под фильтр не попадает.
+ * Префикс ЛЕГАСИ-кэшей просмотренных картинок (`flbz-images` + версионированные
+ * `flbz-images-<SW_VERSION>` от прежних сборок). Браузерное кеширование убрано —
+ * картинки кешируются только для явно сохранённых лекций (`OFFLINE_IMAGE_CACHE`).
+ * Префикс нужен лишь для зачистки этих остатков при смене аккаунта (если новый SW
+ * ещё не активировался и не снёс их в activate). Не путать с `OFFLINE_IMAGE_CACHE`
+ * (`flbz-offline-images`): другой префикс, под фильтр не попадает.
  */
 export const BROWSED_IMAGE_CACHE_PREFIX = "flbz-images";
 /**

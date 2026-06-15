@@ -1,13 +1,13 @@
-/* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, BROWSED_IMAGE_CACHE, PRESERVED_CACHES */
+/* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, PRESERVED_CACHES */
 const BASE_PATH = '';
-const SW_VERSION = 'mqfebb1d';
+const SW_VERSION = 'mqffjhxt';
 
 const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;
 const NEXT_ASSETS_CACHE = `${CACHE_PREFIX}-next-${SW_VERSION}`;
 const API_CACHE = `${CACHE_PREFIX}-api-${SW_VERSION}`;
-// Кэш просмотренных картинок (BROWSED_IMAGE_CACHE = 'flbz-images') НЕверсионируемый
-// и живёт в PRESERVED_CACHES (sw-logic.ts) — не сбрасывается на каждый деплой.
+// Картинки НЕ кешируются оппортунистически: образы хранятся только для явно
+// сохранённых лекций — в OFFLINE_IMAGE_CACHE (flbz-offline-images, sw-logic.ts).
 
 const ALL_CACHES = [STATIC_CACHE, NEXT_ASSETS_CACHE, API_CACHE];
 
@@ -19,7 +19,6 @@ const STATIC_ASSETS = [
 ];
 
 const OFFLINE_URL = `${BASE_PATH}/offline.html`;
-const IMAGE_CACHE_LIMIT = 100;
 
 // Чистая маршрутизация/очистка кэшей инлайнится из src/services/offline/sw/sw-logic.ts
 // на этапе build (scripts/generate-sw-assets.mjs). Здесь НЕ редактировать.
@@ -40,18 +39,12 @@ const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
 /** Неверсионируемый бакет app-shell офлайн-раздела /saved. */
 const SAVED_SHELL_CACHE = "flbz-shell";
 /**
- * Неверсионируемый бакет просмотренных (онлайн) картинок. Раньше версионировался
- * (`flbz-images-<SW_VERSION>`) и сбрасывался КАЖДЫМ деплоем — теперь единый,
- * переживает обновления SW (в PRESERVED_CACHES). Размер ограничен FIFO-вытеснением
- * в шаблоне. Чистится при смене аккаунта (см. BROWSED_IMAGE_CACHE_PREFIX в contract).
+ * Кэши, которые activate-cleanup НЕ должен удалять (живут под persist(), не
+ * версионируются). Картинки кешируются ТОЛЬКО для явно сохранённых лекций
+ * (`OFFLINE_IMAGE_CACHE`) — оппортунистического браузерного кэша картинок нет,
+ * поэтому его остатки (`flbz-images*`) в preserved не входят и сметаются.
  */
-const BROWSED_IMAGE_CACHE = "flbz-images";
-/** Кэши, которые activate-cleanup НЕ должен удалять (живут под persist(), не версионируются). */
-const PRESERVED_CACHES = [
-    OFFLINE_IMAGE_CACHE,
-    SAVED_SHELL_CACHE,
-    BROWSED_IMAGE_CACHE,
-];
+const PRESERVED_CACHES = [OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE];
 /**
  * Какие существующие кэши удалить при активации нового SW: только наши (`flbz-*`),
  * не входящие в активный версионированный набор и не из preserved-набора.
@@ -141,11 +134,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Просмотренные картинки — cache-first, с FIFO-ограничением размера.
-  if (url.pathname.match(/\.(jpeg|jpg|png|webp)$/)) {
-    event.respondWith(cacheFirstWithLimit(request, BROWSED_IMAGE_CACHE, IMAGE_CACHE_LIMIT));
-    return;
-  }
+  // Картинки НЕ кешируем оппортунистически: образы хранятся только для явно
+  // сохранённых лекций (offlineFileFirst → OFFLINE_IMAGE_CACHE). Просмотренные
+  // онлайн картинки идут в сеть через общий fallback ниже.
 
   // Everything else — network with offline fallback
   event.respondWith(
@@ -183,47 +174,14 @@ async function cacheFirst(request, cacheName) {
   }
 }
 
-async function cacheFirstWithLimit(request, cacheName, limit) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-  if (cached) return cached;
-
-  try {
-    const response = await fetch(request);
-    if (response && response.status === 200) {
-      cache.put(request, response.clone());
-      trimCache(cacheName, limit);
-    }
-    return response;
-  } catch {
-    return caches.match(OFFLINE_URL);
-  }
-}
-
-// FIFO-вытеснение (НЕ LRU): cache.keys() в порядке вставки, попадания не «трогаются»,
-// поэтому уходят самые СТАРЫЕ по добавлению, не наименее используемые. Достаточно
-// для best-effort кэша картинок; реальный LRU потребовал бы метаданных доступа.
-async function trimCache(cacheName, limit) {
-  const cache = await caches.open(cacheName);
-  const keys = await cache.keys();
-  const excess = keys.length - limit;
-  for (let i = 0; i < excess; i++) {
-    await cache.delete(keys[i]);
-  }
-}
-
 async function offlineFileFirst(request) {
+  // Сохранённый офлайн-файл — из бакета явных сохранений; иначе из сети без
+  // кеширования (оппортунистического browsed-кэша больше нет).
   const offlineCache = await caches.open(OFFLINE_IMAGE_CACHE);
   const saved = await offlineCache.match(request);
   if (saved) return saved;
   try {
-    const response = await fetch(request);
-    if (response && response.status === 200) {
-      const browsed = await caches.open(BROWSED_IMAGE_CACHE);
-      browsed.put(request, response.clone());
-      trimCache(BROWSED_IMAGE_CACHE, IMAGE_CACHE_LIMIT);
-    }
-    return response;
+    return await fetch(request);
   } catch {
     // Для картинки возвращаем 504, а не offline.html (HTML в <img> бессмыслен).
     return new Response(null, { status: 504, statusText: 'Offline' });
