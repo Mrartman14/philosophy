@@ -1,6 +1,7 @@
 // src/app/settings/page.tsx
 import { redirect } from "next/navigation";
 
+import { RouterLink } from "@/components/ui";
 import {
   PreferencesForm,
   PushSubscriptionToggle,
@@ -9,6 +10,11 @@ import {
   getVapidKey,
   type ReadingMode,
 } from "@/features/preferences";
+import {
+  HistoryTrackingToggle,
+  canManageOwnHistory,
+  getHistorySettings,
+} from "@/features/statistics";
 import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Настройки" };
@@ -17,9 +23,10 @@ export default async function SettingsPage() {
   const me = await getMe();
   if (!me) redirect("/login?next=/settings");
 
-  const [prefs, vapidPublicKey] = await Promise.all([
+  const [prefs, vapidPublicKey, historySettings] = await Promise.all([
     getPreferences(),
     getVapidKey(),
+    getHistorySettings(),
   ]);
   // reading_mode в schema.ts — string|undefined; сужаем с фоллбеком на
   // дефолт бекенда (internal/preference/model.go: DefaultPreferences).
@@ -41,6 +48,17 @@ export default async function SettingsPage() {
           vapidPublicKey={vapidPublicKey}
           canSubscribe={canSubscribePush(me)}
         />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">История просмотров</h2>
+        <HistoryTrackingToggle
+          initialEnabled={historySettings.tracking_enabled ?? false}
+          canManage={canManageOwnHistory(me)}
+        />
+        <RouterLink href="/me/stats" className="text-sm">
+          Посмотреть мою статистику →
+        </RouterLink>
       </section>
     </div>
   );
