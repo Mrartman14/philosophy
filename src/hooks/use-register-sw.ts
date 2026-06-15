@@ -46,10 +46,19 @@ export function useRegisterSW(): UseRegisterSWReturn {
       })
       .catch((err: unknown) => { console.error("[SW] registration failed:", err); });
 
-    // Reload on controller change (after SKIP_WAITING)
+    // Перезагружаемся при смене контроллера (после SKIP_WAITING), НО пропускаем
+    // первый claim() на ранее неконтролируемой вкладке (первая установка SW) —
+    // иначе свежая вкладка делает лишний reload без апдейта. Все последующие смены
+    // контроллера — это уже применённый апдейт, на них перезагружаемся.
     let refreshing = false;
+    let controlled = Boolean(navigator.serviceWorker.controller);
     const onControllerChange = () => {
       if (refreshing) return;
+      if (!controlled) {
+        // Первая установка: контроллера не было, claim() его только что выдал — не апдейт.
+        controlled = true;
+        return;
+      }
       refreshing = true;
       window.location.reload();
     };

@@ -25,11 +25,14 @@ const IMAGE_CACHE_LIMIT = 100;
 //__SW_LOGIC__
 
 self.addEventListener('install', (event) => {
+  // НЕ вызываем self.skipWaiting() здесь: новый SW должен оставаться в состоянии
+  // `waiting`, чтобы UI ([UpdatePrompt]) показал «Доступно обновление» и пользователь
+  // сам применил его кнопкой. skipWaiting() триггерится только из обработчика message
+  // 'SKIP_WAITING' ниже (по клику → applyUpdate в use-register-sw.ts).
   event.waitUntil(
     caches
       .open(STATIC_CACHE)
       .then((cache) => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
       .catch((e) => console.error('[SW] install error:', e))
   );
 });

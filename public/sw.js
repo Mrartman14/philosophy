@@ -1,6 +1,6 @@
 /* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, PRESERVED_CACHES */
 const BASE_PATH = '';
-const SW_VERSION = 'mqe6tqn7';
+const SW_VERSION = 'mqfb9vla';
 
 const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;
@@ -65,11 +65,14 @@ function isSavedShellNavigation(mode, pathname) {
 
 
 self.addEventListener('install', (event) => {
+  // НЕ вызываем self.skipWaiting() здесь: новый SW должен оставаться в состоянии
+  // `waiting`, чтобы UI ([UpdatePrompt]) показал «Доступно обновление» и пользователь
+  // сам применил его кнопкой. skipWaiting() триггерится только из обработчика message
+  // 'SKIP_WAITING' ниже (по клику → applyUpdate в use-register-sw.ts).
   event.waitUntil(
     caches
       .open(STATIC_CACHE)
       .then((cache) => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
       .catch((e) => console.error('[SW] install error:', e))
   );
 });
