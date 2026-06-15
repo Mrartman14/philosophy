@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import "./globals.css";
 
@@ -11,7 +12,7 @@ import { ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
-import { getMe, type MaybeMe } from "@/utils/me";
+import { getBanSignal, getMe, type MaybeMe } from "@/utils/me";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,11 +41,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   let me: MaybeMe = null;
+  let banned = false;
   try {
     me = await getMe();
+    banned = await getBanSignal();
   } catch {
     // допустимая деградация: header покажет «Войти», StatusBanner ничего не нарисует
   }
+  // Бан ловим вне try: redirect() бросает NEXT_REDIRECT, его нельзя глотать.
+  if (banned) redirect("/auth/forced-logout");
 
   return (
     <html lang="ru">
