@@ -14,17 +14,21 @@ import "server-only";
  * 1. await getMe()
  * 2. requireCapability(me, canX) — для capability-чека
  * 3. parseFormData(Schema, formData) — для Zod-валидации (если форма)
- * 4. createApiClient() + вызов бекенда
+ * 4. createApiClient() + вызов бекенда (для мутаций — headers: idempotencyHeaders(ctx.idempotencyKey))
  * 5. revalidateEntity("entity", id?) после успешной мутации
  */
 
-// export const createEntity = createFormAction(async (formData) => {
+// export const createEntity = createFormAction(async (formData, ctx) => {
 //   const me = await getMe();
 //   const input = parseFormData(EntityCreateSchema, formData);
 //   requireCapability(me, canCreateEntity);
 //   const api = await createApiClient();
-//   const { data, error } = await api.POST("/entities", { body: input });
-//   if (error) throw new Error(error.message);
+//   const { data, error } = await api.POST("/entities", {
+//     body: input,
+//     // идемпотентность: ключ приходит из <IdempotencyField/> в форме.
+//     headers: idempotencyHeaders(ctx.idempotencyKey),
+//   });
+//   if (error) rethrowApiError(error);
 //   revalidateEntity("entities");
 //   return data;
 // });
