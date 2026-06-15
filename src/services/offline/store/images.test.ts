@@ -8,6 +8,7 @@ import {
   hasCachedImage,
   matchCachedImage,
   clearImageCache,
+  clearBrowsedImageCaches,
 } from "./images";
 
 class FakeCache {
@@ -22,12 +23,16 @@ class FakeCache {
 }
 
 const cachesDelete = vi.fn().mockResolvedValue(true);
+const cachesKeys = vi.fn().mockResolvedValue([]);
 
 beforeEach(() => {
   const cache = new FakeCache();
+  cachesDelete.mockClear();
+  cachesKeys.mockReset().mockResolvedValue([]);
   vi.stubGlobal("caches", {
     open: vi.fn().mockResolvedValue(cache),
     delete: cachesDelete,
+    keys: cachesKeys,
   });
 });
 
@@ -70,5 +75,27 @@ describe("images cache", () => {
   it("clearImageCache удаляет кэш картинок целиком", async () => {
     await clearImageCache();
     expect(cachesDelete).toHaveBeenCalledWith(OFFLINE_IMAGE_CACHE);
+  });
+
+  it("clearBrowsedImageCaches удаляет только LRU-кэши картинок (flbz-images-*), не трогая чужие", async () => {
+    cachesKeys.mockResolvedValueOnce([
+      "flbz-images-abc123",
+      "flbz-images-def456",
+      "flbz-offline-images",
+      "flbz-static-abc123",
+      "flbz-shell",
+    ]);
+    await clearBrowsedImageCaches();
+    expect(cachesDelete).toHaveBeenCalledWith("flbz-images-abc123");
+    expect(cachesDelete).toHaveBeenCalledWith("flbz-images-def456");
+    expect(cachesDelete).not.toHaveBeenCalledWith("flbz-offline-images");
+    expect(cachesDelete).not.toHaveBeenCalledWith("flbz-static-abc123");
+    expect(cachesDelete).not.toHaveBeenCalledWith("flbz-shell");
+  });
+
+  it("clearBrowsedImageCaches без подходящих кэшей ничего не удаляет", async () => {
+    cachesKeys.mockResolvedValueOnce(["flbz-offline-images", "flbz-shell"]);
+    await clearBrowsedImageCaches();
+    expect(cachesDelete).not.toHaveBeenCalled();
   });
 });

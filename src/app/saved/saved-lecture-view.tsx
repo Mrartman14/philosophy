@@ -7,6 +7,7 @@ import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descrip
 import { AstRender } from "@/components/ast-render";
 import { Skeleton } from "@/components/ui";
 import { CommentTreeView } from "@/features/comments/client";
+import { whenIdentityReconciled } from "@/services/offline/identity-gate";
 import { getSavedBundle } from "@/services/offline/store/saved-bundles";
 import { resolveStorageUrl } from "@/utils/storage-url";
 
@@ -38,6 +39,10 @@ export function SavedLectureView({ id }: { id: string }) {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
+      // Не показываем снимок прежнего владельца до сверки личности (см. identity-gate).
+      await whenIdentityReconciled();
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
+      if (cancelled) return;
       const rec = await getSavedBundle("lectures", id);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
       if (cancelled) return;

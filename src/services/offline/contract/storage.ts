@@ -5,6 +5,13 @@
 export const OFFLINE_DB_NAME = "flbz-offline";
 export const OFFLINE_DB_VERSION = 1;
 export const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
+/**
+ * Префикс ВЕРСИОНИРОВАННЫХ LRU-кэшей просмотренных картинок в Cache Storage
+ * (`flbz-images-<SW_VERSION>`, заводится в public/sw.js). Не путать с
+ * `OFFLINE_IMAGE_CACHE` (`flbz-offline-images`): у того другой префикс, под фильтр
+ * по этой строке он НЕ попадает — проверять при изменении любого из имён.
+ */
+export const LRU_IMAGE_CACHE_PREFIX = "flbz-images-";
 /** localStorage-ключ: id владельца офлайн-кеша (для сверки личности при логауте). */
 export const OFFLINE_OWNER_KEY = "flbz-offline-owner";
 

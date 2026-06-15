@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descriptor";
 import { RouterLink, Skeleton } from "@/components/ui";
 import type { SavedBundleRecord } from "@/services/offline/contract/storage";
+import { whenIdentityReconciled } from "@/services/offline/identity-gate";
 import {
   listSavedBundles,
   listSavedBundlesByStatus,
@@ -31,6 +32,11 @@ export function SavedList() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
+      // Не показываем библиотеку прежнего владельца, пока identity-guard не сверит
+      // личность (и при смене аккаунта не зачистит кеш).
+      await whenIdentityReconciled();
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
+      if (cancelled) return;
       // Подмести зависшие "saving" (процесс умер между put и финальным update).
       const stale = await listSavedBundlesByStatus("saving");
       for (const rec of stale) {
