@@ -1,5 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { z } from "zod";
+
+vi.mock("next/navigation", () => ({
+  redirect: vi.fn((url: string) => {
+    const err = new Error("NEXT_REDIRECT") as Error & { digest: string };
+    err.digest = `NEXT_REDIRECT;${url}`;
+    throw err;
+  }),
+}));
 
 import {
   createAction,
@@ -8,7 +16,7 @@ import {
   ZodValidationError,
 } from "./create-action";
 import { IDEMPOTENCY_FIELD } from "./idempotency";
-import { ForbiddenError } from "./permissions";
+import { BannedError, ForbiddenError } from "./permissions";
 
 describe("parseFormData", () => {
   it("returns parsed object on valid FormData", () => {
@@ -173,5 +181,41 @@ describe("createFormAction idempotency context", () => {
     });
     await action({ success: false, error: "" }, new FormData());
     expect(received).toBeUndefined();
+  });
+});
+
+describe("forced logout on BannedError", () => {
+  it("createFormAction: BannedError → redirect на /auth/forced-logout", async () => {
+    const action = createFormAction(() => {
+      throw new BannedError();
+    });
+    let digest: string | undefined;
+    try {
+      await action({ success: false, error: "" }, new FormData());
+    } catch (e) {
+      digest = (e as { digest?: string }).digest;
+    }
+    expect(digest).toBe("NEXT_REDIRECT;/auth/forced-logout");
+  });
+
+  it("createAction: BannedError → redirect на /auth/forced-logout", async () => {
+    const action = createAction(() => {
+      throw new BannedError();
+    });
+    let digest: string | undefined;
+    try {
+      await action(undefined);
+    } catch (e) {
+      digest = (e as { digest?: string }).digest;
+    }
+    expect(digest).toBe("NEXT_REDIRECT;/auth/forced-logout");
+  });
+
+  it("ForbiddenError по-прежнему → code=forbidden (не редиректит)", async () => {
+    const action = createFormAction(() => {
+      throw new ForbiddenError("role");
+    });
+    const result = await action({ success: false, error: "" }, new FormData());
+    expect(result).toMatchObject({ success: false, code: "forbidden" });
   });
 });

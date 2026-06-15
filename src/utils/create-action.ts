@@ -7,10 +7,11 @@
  * Остальные ошибки превращаются в ActionResult с `success: false`.
  */
 
+import { redirect } from "next/navigation";
 import { z, type ZodType } from "zod";
 
 import { readIdempotencyKey } from "./idempotency";
-import { ForbiddenError } from "./permissions";
+import { BannedError, ForbiddenError } from "./permissions";
 
 export type ActionResult<T = void> =
   | { success: true; data: T }
@@ -73,6 +74,7 @@ export function createAction<TInput, TOutput>(
       const data = await fn(input, { idempotencyKey });
       return { success: true, data };
     } catch (error) {
+      if (error instanceof BannedError) redirect("/auth/forced-logout");
       if (isNextInternalError(error)) throw error;
       return toResult<TOutput>(error);
     }
@@ -93,6 +95,7 @@ export function createFormAction<TOutput>(
       const data = await fn(formData, ctx);
       return { success: true, data };
     } catch (error) {
+      if (error instanceof BannedError) redirect("/auth/forced-logout");
       if (isNextInternalError(error)) throw error;
       return toResult<TOutput>(error);
     }
