@@ -65,6 +65,7 @@ export function EventEditForm({ event }: Props) {
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={event.id ?? ""} />
+      <input type="hidden" name="version" value={event.version ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 

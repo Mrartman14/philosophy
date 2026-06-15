@@ -301,6 +301,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -394,6 +396,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -444,7 +448,9 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: {
+                header: {
+                    /** @description Version ETag from previous GET */
+                    "If-Match": string;
                     /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
                     "Idempotency-Key"?: string;
                 };
@@ -464,6 +470,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -517,6 +525,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -533,6 +550,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -1339,6 +1365,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1432,6 +1460,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1489,7 +1519,9 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: {
+                header: {
+                    /** @description Version ETag from previous GET */
+                    "If-Match": string;
                     /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
                     "Idempotency-Key"?: string;
                 };
@@ -1509,6 +1541,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1562,6 +1596,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -1578,6 +1621,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -3522,6 +3574,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -3563,7 +3617,9 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: {
+                header: {
+                    /** @description Version ETag from previous GET */
+                    "If-Match": string;
                     /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасного повтора офлайн-правки; реплей возвращает представление на момент первого применения — за актуальным состоянием возьмите GET */
                     "Idempotency-Key"?: string;
                 };
@@ -3583,6 +3639,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -3636,6 +3694,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -3652,6 +3719,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -7242,6 +7318,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13318,6 +13396,14 @@ export interface components {
             parent_entity_id?: string;
             parent_entity_type?: components["schemas"]["annotation.ParentEntityType"];
             updated_at?: string;
+            /**
+             * @description Version is the optimistic-lock counter (annotations.version, migration
+             *     008). The single GET surfaces it both as a body field and as a strong
+             *     ETag; the client echoes it back in If-Match on the Update PUT. Every full
+             *     read shape (single, list, /me, admin, lecture) carries it. See
+             *     docs/conventions/optimistic-locking.md.
+             */
+            version?: number;
             visibility?: components["schemas"]["annotation.Visibility"];
         };
         "annotation.CreateRequest": {
@@ -13470,6 +13556,14 @@ export interface components {
             start_at?: string;
             target_audience?: components["schemas"]["banner.TargetAudience"];
             updated_at?: string;
+            /**
+             * @description Version is the optimistic-lock counter (banners.version, migration 008).
+             *     The single GET (and POST 201) surface it both as a body field and as a
+             *     strong ETag; the client echoes it back in If-Match on the Update PUT. Every
+             *     full read shape (single, list, active) carries it. See
+             *     docs/conventions/optimistic-locking.md.
+             */
+            version?: number;
         };
         "banner.CreateRequest": {
             background_color: string;
@@ -13754,6 +13848,14 @@ export interface components {
             start_date?: string;
             title?: string;
             updated_at?: string;
+            /**
+             * @description Version is the optimistic-lock counter (events.version, migration 008).
+             *     The single GET (and POST 201) surface it both as a body field and as a
+             *     strong ETag; the client echoes it back in If-Match on the Update PUT. Every
+             *     full read shape (single, list) carries it. See
+             *     docs/conventions/optimistic-locking.md.
+             */
+            version?: number;
         };
         "event.Occurrence": {
             all_day?: boolean;

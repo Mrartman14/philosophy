@@ -11,6 +11,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
+import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
@@ -50,13 +51,22 @@ export const createEvent = createFormAction(async (formData, ctx) => {
   return (data.data ?? null) as CalendarEvent | null;
 });
 
+/**
+ * PUT /api/admin/events/{id}. Content-edit PUT требует `If-Match: "<version>"`
+ * (optimistic lock, см. docs/conventions/optimistic-locking.md). Версия берётся
+ * из `event.version` (тело single-GET) через hidden-поле формы. Отсутствие →
+ * 428, расхождение → 412.
+ */
 export const updateEvent = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateEvent);
   const input = parseFormData(EventUpdateSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/events/{id}", {
-    params: { path: { id: input.id } },
+    params: {
+      path: { id: input.id },
+      header: ifMatchHeader(formData, "события"),
+    },
     body: {
       title: input.title,
       start_date: input.start_date,

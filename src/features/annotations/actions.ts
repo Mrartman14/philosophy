@@ -17,6 +17,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
+import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
@@ -89,7 +90,11 @@ export const createAnnotation = createFormAction(async (formData, ctx) => {
 
 /**
  * Редактирование. Только автор (бек owner-only). blocks обязательны, anchor
- * опционален. visibility менять нельзя — её нет в UpdateRequest.
+ * опционален. visibility менять нельзя — её нет в UpdateRequest. Content-edit
+ * PUT требует `If-Match: "<version>"` (optimistic lock, см.
+ * docs/conventions/optimistic-locking.md). Версия берётся из
+ * `annotation.version` (тело single-GET) через hidden-поле формы.
+ * Отсутствие → 428, расхождение → 412.
  */
 export const updateAnnotation = createFormAction(async (formData, ctx) => {
   const me = await getMe();
@@ -102,7 +107,10 @@ export const updateAnnotation = createFormAction(async (formData, ctx) => {
 
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/annotations/{id}", {
-    params: { path: { id: input.id } },
+    params: {
+      path: { id: input.id },
+      header: ifMatchHeader(formData, "аннотации"),
+    },
     body: {
       blocks: input.blocks as never,
       ...(input.anchor !== undefined ? { anchor: input.anchor as never } : {}),

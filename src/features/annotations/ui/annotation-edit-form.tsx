@@ -33,6 +33,7 @@ export function AnnotationEditForm({ annotation }: Props) {
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
       <input type="hidden" name="id" value={annotation.id ?? ""} />
+      <input type="hidden" name="version" value={annotation.version ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
