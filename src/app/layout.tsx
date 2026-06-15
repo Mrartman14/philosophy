@@ -10,6 +10,7 @@ import { StatusBanner } from "@/components/permission/status-banner";
 import { ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
+import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
 import { getMe, type MaybeMe } from "@/utils/me";
 
 const geistSans = Geist({
@@ -68,6 +69,7 @@ export default async function RootLayout({
           `}
       >
         <ToastProvider>
+          <OfflineIdentityGuard userId={me?.id ?? null} />
           <AppHeader />
           <StatusBanner me={me} />
           <ActiveBanners />
