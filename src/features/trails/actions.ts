@@ -13,6 +13,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireActive, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -48,7 +49,7 @@ function rethrowTrailApiError(err: ApiError | undefined): never {
 }
 
 /** POST /api/trails. Гейт — trail.create. */
-export const createTrail = createFormAction(async (formData) => {
+export const createTrail = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateTrail);
   const input = parseFormData(TrailCreateSchema, formData);
@@ -59,6 +60,7 @@ export const createTrail = createFormAction(async (formData) => {
       ...(input.description !== undefined ? { description: input.description } : {}),
       ...(input.visibility ? { visibility: input.visibility } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS);

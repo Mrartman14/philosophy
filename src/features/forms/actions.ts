@@ -9,6 +9,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireActive } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -69,7 +70,7 @@ function buildFieldsBody(
 }
 
 /** POST /api/forms. Гейт — form.create. */
-export const createForm = createFormAction(async (formData) => {
+export const createForm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   if (!canCreateForm(me)) throw new ForbiddenError(me ? (me.status !== "active" ? "status" : "role") : "guest");
   const input = parseFormData(FormCreateSchema, formData);
@@ -85,6 +86,7 @@ export const createForm = createFormAction(async (formData) => {
       ...(input.description ? { description: input.description } : {}),
       ...(input.after_submit ? { after_submit: input.after_submit } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS);
@@ -144,7 +146,7 @@ export const deleteForm = createAction(async (rawId: string) => {
 });
 
 /** POST /api/forms/{id}/submissions. token — для приватной формы (share-link). */
-export const submitForm = createFormAction(async (formData) => {
+export const submitForm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
   const input = parseFormData(SubmitSchema, formData);
@@ -154,6 +156,7 @@ export const submitForm = createFormAction(async (formData) => {
   const { data, error } = await api.POST("/api/forms/{id}/submissions", {
     params: { path: { id: input.formId }, query },
     body: { answers: input.answers as never },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS);

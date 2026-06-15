@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { Button, Dialog, TextInput, useToast } from "@/components/ui";
+import { Button, Dialog, IdempotencyField, TextInput, useToast } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createShareLink } from "../actions";
@@ -79,6 +79,7 @@ export function ShareButton({
         <form action={formAction} className="flex items-end gap-2">
           <input type="hidden" name="resource_type" value={resourceType} />
           <input type="hidden" name="resource_id" value={resourceId} />
+          <IdempotencyField result={state} />
           <label htmlFor="expires_at" className="flex flex-1 flex-col gap-1">
             <span className="text-xs text-(--color-description)">
               Срок действия (необязательно)

@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import {
   Form,
   FormField,
+  IdempotencyField,
   SubmitButton,
   TextInput,
   Textarea,
@@ -29,6 +30,7 @@ export function PushSendForm() {
       errors={fieldErrors}
       className="flex max-w-xl flex-col gap-4"
     >
+      <IdempotencyField result={state} />
       <FormField name="title" label="Заголовок" required>
         <TextInput
           name="title"

@@ -13,6 +13,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { ForbiddenError } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -34,7 +35,7 @@ const ERRORS: ApiErrorMessages = {
  * фронт лишь проверяет «вообще может мутировать» (active). FormData:
  * resource_type, resource_id, expires_at?.
  */
-export const createShareLink = createFormAction(async (formData) => {
+export const createShareLink = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   // Defense-in-depth: создание — только для active. Реальный ownership-гейт
   // на беке (canCreateShareLink в UI решает, показывать ли кнопку).
@@ -51,6 +52,7 @@ export const createShareLink = createFormAction(async (formData) => {
         ? { expires_at: input.expires_at }
         : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.SHARE_LINKS, input.resource_id);

@@ -13,6 +13,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -81,7 +82,7 @@ export const unsubscribePush = createAction(async (rawEndpoint: string) => {
   return undefined;
 });
 
-export const sendPushBroadcast = createFormAction(async (formData) => {
+export const sendPushBroadcast = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canSendPush);
   const input = parseFormData(PushSendSchema, formData);
@@ -92,6 +93,7 @@ export const sendPushBroadcast = createFormAction(async (formData) => {
       ...(input.body !== undefined ? { body: input.body } : {}),
       ...(input.url !== undefined ? { url: input.url } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error as ApiError, ERRORS);
   // Бекенд отвечает 202 Accepted — рассылка асинхронная.

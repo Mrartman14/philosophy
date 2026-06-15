@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormField, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { Form, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTrail } from "../actions";
@@ -26,6 +26,7 @@ export function TrailCreateForm() {
 
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
+      <IdempotencyField result={state} />
       <FormField name="title" label="Название" required>
         <TextInput name="title" required maxLength={200} placeholder="Название маршрута" />
       </FormField>
