@@ -20,6 +20,13 @@ export type LectureProbe =
  * - 404 → `getLectureById` вернёт `null` → `{ status: "gone" }`
  * - сетевой/5xx сбой → бросок → `createAction` вернёт `{ success: false }`,
  *   вызыватель трактует как «пропустить» (best-effort).
+ *
+ * ИНВАРИАНТ: `getLectureById` НЕ бросает `BannedError` (на не-404 кидает обычный
+ * Error). Благодаря этому фоновая сверка забаненного читателя даёт
+ * `{ success: false }` → skip, а НЕ `redirect("/auth/forced-logout")` из уже
+ * показанной офлайн-копии. При переводе read-фетчеров лекций на централизованный
+ * error-handling (`rethrowApiError`) — сохранить это поведение или явно глушить
+ * `BannedError` здесь.
  */
 export const probeLectureForOffline = createAction(
   async (input: { id: string }): Promise<LectureProbe> => {
