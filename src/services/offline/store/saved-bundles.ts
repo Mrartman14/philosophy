@@ -94,3 +94,13 @@ export async function deleteSavedBundle(
     db.close();
   }
 }
+
+/** Число сохранённых снимков (без загрузки самих записей). */
+export async function countSavedBundles(): Promise<number> {
+  const db = await openOfflineDb();
+  try {
+    return await db.count("saved-bundles");
+  } finally {
+    db.close();
+  }
+}

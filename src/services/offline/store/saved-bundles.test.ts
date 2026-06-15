@@ -13,6 +13,7 @@ import {
   listSavedBundlesByStatus,
   updateSavedBundle,
   deleteSavedBundle,
+  countSavedBundles,
 } from "./saved-bundles";
 
 beforeEach(() => {
@@ -88,5 +89,12 @@ describe("saved-bundles store", () => {
   it("update на несуществующей — no-op", async () => {
     await updateSavedBundle("lectures", "nope", { status: "complete" });
     expect(await getSavedBundle("lectures", "nope")).toBeUndefined();
+  });
+
+  it("count: 0 на пустом сторе, растёт с числом записей", async () => {
+    expect(await countSavedBundles()).toBe(0);
+    await putSavedBundle(makeInput("lectures", "l1"));
+    await putSavedBundle(makeInput("documents", "d1"));
+    expect(await countSavedBundles()).toBe(2);
   });
 });
