@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 
 import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descriptor";
+import { revalidateSavedLecture } from "@/app/_offline/revalidate-saved-lecture";
 import { saveOffline } from "@/app/_offline/save-offline";
 import { AstRender } from "@/components/ast-render";
 import { Button, Skeleton } from "@/components/ui";
@@ -18,7 +19,12 @@ type LoadState =
   | { kind: "missing" }
   | { kind: "incomplete"; status: string; error: string | undefined }
   | { kind: "corrupt" }
-  | { kind: "ready"; snapshot: LectureSnapshot; savedAt: string };
+  | {
+      kind: "ready";
+      snapshot: LectureSnapshot;
+      savedAt: string;
+      remoteStatus?: "stale" | "gone";
+    };
 
 // Снимок в сторе — unknown; рантайм-валидация минимальной формы перед рендером.
 function isLectureSnapshot(s: unknown): s is LectureSnapshot {
@@ -49,7 +55,14 @@ async function loadState(id: string): Promise<LoadState> {
   ) {
     return { kind: "corrupt" };
   }
-  return { kind: "ready", snapshot: rec.snapshot, savedAt: rec.savedAt };
+  return {
+    kind: "ready",
+    snapshot: rec.snapshot,
+    savedAt: rec.savedAt,
+    // условный spread: под exactOptionalPropertyTypes нельзя присвоить
+    // optional-полю значение, которое может быть undefined.
+    ...(rec.remoteStatus ? { remoteStatus: rec.remoteStatus } : {}),
+  };
 }
 
 export function SavedLectureView({ id }: { id: string }) {
@@ -68,6 +81,17 @@ export function SavedLectureView({ id }: { id: string }) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
       if (cancelled) return;
       setState(next);
+      // Фоновая ревалидация (SWR): снимок уже показан выше, сверка его не
+      // блокирует. Один раз на id; офлайн — не сверяем (best-effort).
+      if (next.kind === "ready" && navigator.onLine) {
+        const outcome = await revalidateSavedLecture(id);
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
+        if (cancelled) return;
+        if (outcome !== "skip") {
+          // Перечитываем запись, чтобы отразить проставленную/снятую пометку.
+          setState(await loadState(id));
+        }
+      }
     })();
     return () => {
       cancelled = true;
@@ -122,12 +146,29 @@ export function SavedLectureView({ id }: { id: string }) {
   }
 
   const { lecture, tags, documents, comments } = state.snapshot;
+  const remoteStatus = state.remoteStatus;
   const coverUrl = lecture.cover_image_key
     ? resolveStorageUrl(lecture.cover_image_key)
     : null;
 
   return (
     <article className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+      {remoteStatus === "gone" && (
+        <p
+          className="rounded-md border border-(--color-border) p-3 text-sm text-(--color-description)"
+          role="status"
+        >
+          Эта лекция удалена с платформы. У вас осталась сохранённая копия.
+        </p>
+      )}
+      {remoteStatus === "stale" && (
+        <p
+          className="rounded-md border border-(--color-border) p-3 text-sm text-(--color-description)"
+          role="status"
+        >
+          Доступна обновлённая версия — нажмите «Обновить».
+        </p>
+      )}
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-(--color-description)">
           Сохранено офлайн:{" "}
@@ -135,14 +176,16 @@ export function SavedLectureView({ id }: { id: string }) {
             timeZone: "UTC",
           })}
         </span>
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={refreshing}
-          onClick={onRefresh}
-        >
-          {refreshing ? "Обновление…" : "Обновить"}
-        </Button>
+        {remoteStatus !== "gone" && (
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={refreshing}
+            onClick={onRefresh}
+          >
+            {refreshing ? "Обновление…" : "Обновить"}
+          </Button>
+        )}
       </div>
       {refreshError && (
         <p className="text-sm text-(--color-description)" role="alert">
