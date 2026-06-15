@@ -1,6 +1,6 @@
 // src/components/ui/router-link.tsx
-import type { ComponentProps } from "react";
 import NextLink from "next/link";
+import type { ComponentProps } from "react";
 
 import { cn } from "./cn";
 import { RouterLinkBusy } from "./router-link-busy";
