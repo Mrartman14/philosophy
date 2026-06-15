@@ -1,5 +1,5 @@
 // src/features/canvas/ui/canvas-my-list.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { CanvasSummary } from "../types";
 
@@ -18,9 +18,9 @@ export function CanvasMyList({ canvases }: Props) {
         c.id
           ? [
               <li key={c.id} className="rounded border border-(--color-border) p-3">
-                <Link href={`/canvases/${c.id}`} className="font-medium hover:text-(--color-primary)">
+                <RouterLink href={`/canvases/${c.id}`} className="font-medium hover:text-(--color-primary)">
                   {c.title ?? "Без названия"}
-                </Link>
+                </RouterLink>
                 <span className="ml-2 text-xs text-(--color-description)">
                   {c.visibility === "public" ? "публичный" : "приватный"}
                 </span>

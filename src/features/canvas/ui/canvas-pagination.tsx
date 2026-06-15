@@ -1,7 +1,8 @@
 "use client";
 // src/features/canvas/ui/canvas-pagination.tsx
-import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+
+import { RouterLink } from "@/components/ui";
 
 interface Props {
   offset: number;
@@ -31,7 +32,7 @@ export function CanvasPagination({ offset, limit, total }: Props) {
   return (
     <nav aria-label="Пагинация" className="flex items-center gap-2 text-sm">
       {hasPrev ? (
-        <Link href={makeHref(Math.max(0, offset - limit))} className={linkCls}>← Назад</Link>
+        <RouterLink href={makeHref(Math.max(0, offset - limit))} className={linkCls}>← Назад</RouterLink>
       ) : (
         <span className={disabledCls}>← Назад</span>
       )}
@@ -39,7 +40,7 @@ export function CanvasPagination({ offset, limit, total }: Props) {
         {total === 0 ? "0 из 0" : `${offset + 1}–${Math.min(offset + limit, total)} из ${total}`}
       </span>
       {hasNext ? (
-        <Link href={makeHref(offset + limit)} className={linkCls}>Вперёд →</Link>
+        <RouterLink href={makeHref(offset + limit)} className={linkCls}>Вперёд →</RouterLink>
       ) : (
         <span className={disabledCls}>Вперёд →</span>
       )}

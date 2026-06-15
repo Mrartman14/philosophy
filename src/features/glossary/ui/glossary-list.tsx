@@ -1,5 +1,5 @@
 // src/features/glossary/ui/glossary-list.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { Term } from "../types";
 
@@ -26,12 +26,12 @@ export function GlossaryList({ items, total }: Props) {
         {sorted.map((term, i) => (
           <li key={term.id ?? `idx-${i}`} className="py-2">
             {term.id ? (
-              <Link
+              <RouterLink
                 href={`/glossary/${term.id}`}
                 className="text-base hover:underline"
               >
                 {term.title}
-              </Link>
+              </RouterLink>
             ) : (
               <span className="text-base">{term.title}</span>
             )}

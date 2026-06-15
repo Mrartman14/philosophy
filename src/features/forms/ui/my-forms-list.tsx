@@ -1,5 +1,5 @@
 // src/features/forms/ui/my-forms-list.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { FormListItem } from "../types";
 
@@ -18,9 +18,9 @@ export function MyFormsList({ forms }: Props) {
     <ul className="flex flex-col divide-y divide-(--color-border)">
       {forms.map((f) => (
         <li key={f.id} className="flex items-center justify-between gap-2 py-2">
-          <Link href={`/forms/${f.id}`} className="text-sm hover:underline">
+          <RouterLink href={`/forms/${f.id}`} className="text-sm hover:underline">
             {f.title ?? "Без названия"}
-          </Link>
+          </RouterLink>
           <span className="text-xs text-(--color-description)">
             {visLabel[f.visibility ?? "private"] ?? f.visibility}
             {" · "}

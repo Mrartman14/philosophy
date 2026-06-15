@@ -1,5 +1,5 @@
 // src/features/glossary/ui/glossary-admin-row.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { Term } from "../types";
 
@@ -17,12 +17,12 @@ export function GlossaryAdminRow({ term, canEdit, canDelete }: Props) {
       <span className="flex-1 truncate">{term.title}</span>
       <div className="flex items-center gap-2">
         {canEdit && term.id && (
-          <Link
+          <RouterLink
             href={`/admin/glossary/${term.id}/edit`}
             className="text-sm hover:underline"
           >
             Редактировать
-          </Link>
+          </RouterLink>
         )}
         {canDelete && term.id && (
           <GlossaryDeleteButton id={term.id} />

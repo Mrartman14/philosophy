@@ -1,5 +1,5 @@
 // src/features/forms/ui/my-submissions-list.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { SubmissionListItem } from "../types";
 
@@ -15,9 +15,9 @@ export function MySubmissionsList({ submissions }: Props) {
     <ul className="flex flex-col divide-y divide-(--color-border)">
       {submissions.map((s) => (
         <li key={s.id} className="flex items-center justify-between gap-2 py-2">
-          <Link href={`/submissions/${s.id}`} className="text-sm hover:underline">
+          <RouterLink href={`/submissions/${s.id}`} className="text-sm hover:underline">
             Форма {s.form_id?.slice(0, 8)}
-          </Link>
+          </RouterLink>
           <span className="text-xs text-(--color-description)">
             {s.retracted_at ? "отозван" : new Date(s.submitted_at ?? "").toLocaleString("ru-RU")}
           </span>

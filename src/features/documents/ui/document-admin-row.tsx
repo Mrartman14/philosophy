@@ -1,5 +1,5 @@
 // src/features/documents/ui/document-admin-row.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { Document } from "../types";
 
@@ -15,9 +15,9 @@ export function DocumentAdminRow({ document, canDelete }: Props) {
   return (
     <li className="flex items-center justify-between gap-3 py-2">
       <div className="flex flex-col">
-        <Link href={`/documents/${document.id}`} className="text-sm hover:underline">
+        <RouterLink href={`/documents/${document.id}`} className="text-sm hover:underline">
           {document.filename ?? "Без названия"}
-        </Link>
+        </RouterLink>
         <span className="text-xs text-(--color-description)">
           {document.visibility} · автор {document.owner_id}
         </span>

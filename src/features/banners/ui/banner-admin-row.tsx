@@ -1,5 +1,5 @@
 // src/features/banners/ui/banner-admin-row.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import {
   audienceLabel,
@@ -42,12 +42,12 @@ export function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
       <div className="flex items-center gap-3">
         {banner.id && <BannerExportLinks id={banner.id} />}
         {canEdit && banner.id && (
-          <Link
+          <RouterLink
             href={`/admin/banners/${banner.id}/edit`}
             className="text-sm hover:underline"
           >
             Редактировать
-          </Link>
+          </RouterLink>
         )}
         {canDelete && banner.id && <BannerDeleteButton id={banner.id} />}
       </div>

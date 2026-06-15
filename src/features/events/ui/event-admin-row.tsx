@@ -1,5 +1,5 @@
 // src/features/events/ui/event-admin-row.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import { formatEventDate } from "../calendar";
 import type { CalendarEvent } from "../types";
@@ -30,12 +30,12 @@ export function EventAdminRow({ event, canEdit, canDelete }: Props) {
       <div className="flex items-center gap-3">
         {event.id && <EventExportLinks id={event.id} />}
         {canEdit && event.id && (
-          <Link
+          <RouterLink
             href={`/admin/events/${event.id}/edit`}
             className="text-sm hover:underline"
           >
             Редактировать
-          </Link>
+          </RouterLink>
         )}
         {canDelete && event.id && <EventDeleteButton id={event.id} />}
       </div>

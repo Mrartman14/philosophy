@@ -1,10 +1,9 @@
 "use client";
 // src/features/forms/ui/form-admin-row.tsx
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { Button, ConfirmDialog, RouterLink, useToast } from "@/components/ui";
 
 import { deleteForm } from "../actions";
 import type { FormListItem } from "../types";
@@ -21,9 +20,9 @@ export function FormAdminRow({ form, canDelete }: Props) {
 
   return (
     <li className="flex items-center justify-between gap-2 py-2">
-      <Link href={`/forms/${form.id}`} className="text-sm hover:underline">
+      <RouterLink href={`/forms/${form.id}`} className="text-sm hover:underline">
         {form.title ?? "Без названия"}
-      </Link>
+      </RouterLink>
       <div className="flex items-center gap-2">
         <span className="text-xs text-(--color-description)">{form.visibility}</span>
         {canDelete && form.id && (
