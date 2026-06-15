@@ -1,16 +1,25 @@
-// src/features/_template/permissions.test.ts
 import { describe, it, expect } from "vitest";
 
-import { canPlaceholder } from "./permissions";
+import type { Me } from "@/utils/me";
 
-describe("canPlaceholder", () => {
-  it("returns false for guest (placeholder)", () => {
-    expect(canPlaceholder(null)).toBe(false);
+import { canManageOwnHistory } from "./permissions";
+
+const active: Me = {
+  id: "u1",
+  username: "alice",
+  role: "user",
+  status: "active",
+  capabilities: [],
+};
+
+describe("canManageOwnHistory", () => {
+  it("active-пользователь → true", () => {
+    expect(canManageOwnHistory(active)).toBe(true);
   });
-
-  // Замените на реальные тесты после реализации:
-  it.todo("owner может удалить свой ресурс");
-  it.todo("owner не может удалить чужой без delete_any");
-  it.todo("status='inactive' блокирует");
-  it.todo("гость всегда false");
+  it("suspended → false", () => {
+    expect(canManageOwnHistory({ ...active, status: "suspended" })).toBe(false);
+  });
+  it("гость (null) → false", () => {
+    expect(canManageOwnHistory(null)).toBe(false);
+  });
 });

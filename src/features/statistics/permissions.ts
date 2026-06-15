@@ -1,21 +1,13 @@
-// src/features/_template/permissions.ts
+// src/features/statistics/permissions.ts
 import "server-only";
 import type { MaybeMe } from "@/utils/me";
-// import { can } from "@/utils/permissions";
+import { isMutationAllowed } from "@/utils/permissions";
 
 /**
- * Доменные permission-хелперы. Каждая функция возвращает boolean.
- * Status-чек уже включён в can() — не дублируйте.
- *
- * Owner-aware-проверки делаются здесь, например:
- *   export function canDeleteX(me: MaybeMe, x: { user_id: string }): boolean {
- *     if (!me) return false;
- *     if (x.user_id === me.id) return can(me, "x.delete_own");
- *     return can(me, "x.delete_any");
- *   }
+ * Изменение собственных настроек истории просмотров: любой залогиненный
+ * active-пользователь. Бэк гейтит только RequireMutator (suspended → 403
+ * SUSPENDED), специальной capability нет.
  */
-
-export function canPlaceholder(me: MaybeMe): boolean {
-  void me; // template placeholder — real implementations use me for capability checks
-  return false;
+export function canManageOwnHistory(me: MaybeMe): boolean {
+  return isMutationAllowed(me);
 }
