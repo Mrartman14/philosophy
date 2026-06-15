@@ -9,6 +9,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -53,7 +54,7 @@ const ERRORS: ApiErrorMessages = {
 };
 
 /** Создать комментарий (корень или ответ). FormData: type, blocks(JSON), parent_id?. */
-export const createComment = createFormAction(async (formData) => {
+export const createComment = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateComment);
   const rawLectureId = formData.get("lecture_id");
@@ -68,6 +69,7 @@ export const createComment = createFormAction(async (formData) => {
       blocks: input.blocks as never,
       ...(input.parent_id ? { parent_id: input.parent_id } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, lectureId);

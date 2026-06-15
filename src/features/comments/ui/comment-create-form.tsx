@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
-import { Form, FormField, Select, SubmitButton } from "@/components/ui";
+import { Form, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
@@ -31,6 +31,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
       <input type="hidden" name="lecture_id" value={lectureId} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="type" label="Тип комментария" required>
         <Select name="type" options={options} defaultValue={rootTypes[0] ?? ""} aria-label="Тип комментария" />
