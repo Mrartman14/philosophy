@@ -3,7 +3,7 @@ import "fake-indexeddb/auto";
 import { IDBFactory } from "fake-indexeddb";
 import { describe, it, expect, beforeEach } from "vitest";
 
-import { openOfflineDb } from "./db";
+import { openOfflineDb, wipeOfflineDb } from "./db";
 
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory();
@@ -37,5 +37,38 @@ describe("openOfflineDb", () => {
       "by-status",
     ]);
     db.close();
+  });
+});
+
+describe("wipeOfflineDb", () => {
+  it("очищает оба стора (saved-bundles и outbox)", async () => {
+    const db = await openOfflineDb();
+    await db.put("saved-bundles", {
+      key: "lectures:1",
+      entity: "lectures",
+      id: "1",
+      savedAt: "2026-01-01T00:00:00.000Z",
+      schemaVersion: 1,
+      status: "complete",
+      snapshot: {},
+      imageKeys: [],
+    });
+    await db.put("outbox", {
+      clientId: "c1",
+      entity: "annotations",
+      op: "create",
+      payload: {},
+      createdAt: "2026-01-01T00:00:00.000Z",
+      status: "pending",
+      attempts: 0,
+    });
+    db.close();
+
+    await wipeOfflineDb();
+
+    const db2 = await openOfflineDb();
+    expect(await db2.getAll("saved-bundles")).toEqual([]);
+    expect(await db2.getAll("outbox")).toEqual([]);
+    db2.close();
   });
 });

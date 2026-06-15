@@ -1,7 +1,14 @@
 // src/services/offline/store/images.test.ts
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-import { cacheImage, hasCachedImage, matchCachedImage } from "./images";
+import { OFFLINE_IMAGE_CACHE } from "../contract/storage";
+
+import {
+  cacheImage,
+  hasCachedImage,
+  matchCachedImage,
+  clearImageCache,
+} from "./images";
 
 class FakeCache {
   store = new Map<string, Response>();
@@ -14,9 +21,14 @@ class FakeCache {
   }
 }
 
+const cachesDelete = vi.fn().mockResolvedValue(true);
+
 beforeEach(() => {
   const cache = new FakeCache();
-  vi.stubGlobal("caches", { open: vi.fn().mockResolvedValue(cache) });
+  vi.stubGlobal("caches", {
+    open: vi.fn().mockResolvedValue(cache),
+    delete: cachesDelete,
+  });
 });
 
 afterEach(() => {
@@ -53,5 +65,10 @@ describe("images cache", () => {
     expect(res).toBeInstanceOf(Response);
     if (!res) throw new Error("ожидали Response из кэша");
     expect(await res.text()).toBe("img-bytes");
+  });
+
+  it("clearImageCache удаляет кэш картинок целиком", async () => {
+    await clearImageCache();
+    expect(cachesDelete).toHaveBeenCalledWith(OFFLINE_IMAGE_CACHE);
   });
 });

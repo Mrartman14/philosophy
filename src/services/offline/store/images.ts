@@ -22,3 +22,8 @@ export async function matchCachedImage(
   const cache = await caches.open(OFFLINE_IMAGE_CACHE);
   return cache.match(url);
 }
+
+/** Удаляет кэш офлайн-картинок целиком. Вызывается при логауте. */
+export async function clearImageCache(): Promise<void> {
+  await caches.delete(OFFLINE_IMAGE_CACHE);
+}

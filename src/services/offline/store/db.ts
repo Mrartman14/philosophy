@@ -43,3 +43,22 @@ export function openOfflineDb(): Promise<IDBPDatabase<OfflineDB>> {
     },
   });
 }
+
+/**
+ * Полностью очищает офлайн-БД (оба стора) в одной транзакции. Схему/индексы
+ * сохраняет — стирает только данные. Вызывается при логауте, чтобы приватные
+ * снимки лекций и очередь мутаций не пережили смену пользователя на устройстве.
+ */
+export async function wipeOfflineDb(): Promise<void> {
+  const db = await openOfflineDb();
+  try {
+    const tx = db.transaction(["saved-bundles", "outbox"], "readwrite");
+    await Promise.all([
+      tx.objectStore("saved-bundles").clear(),
+      tx.objectStore("outbox").clear(),
+      tx.done,
+    ]);
+  } finally {
+    db.close();
+  }
+}
