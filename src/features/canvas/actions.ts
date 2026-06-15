@@ -23,7 +23,9 @@ import type { Canvas, CanvasData } from "./types";
  * фиксированный текст (не `err.error ??`). */
 const ERRORS: ApiErrorMessages = {
   PUBLIC_IMMUTABLE: "Публичный канвас нельзя сделать приватным.",
-  PRECONDITION_FAILED:
+  // optimistic lock: бек шлёт VERSION_MISMATCH (412) на устаревший If-Match.
+  // Прежний generic PRECONDITION_FAILED для этого потока больше не эмитится.
+  VERSION_MISMATCH:
     "Канвас изменён в другом месте — обновите страницу и повторите.",
   PAYLOAD_TOO_LARGE: "Данные графа слишком большие (лимит 1 МиБ).",
   REQUEST_BODY_TOO_LARGE: "Данные графа слишком большие (лимит 1 МиБ).",
@@ -51,13 +53,14 @@ export const createCanvas = createFormAction(async (formData) => {
 
 /**
  * PUT /api/canvases/{id} (полная замена title+data). Owner-only enforce'ит бек.
- * Требует If-Match — берётся из заголовка ETag ответа GET (скрытое поле `etag`
- * формы), а НЕ из JSON canvas.updated_at: Go сериализует updated_at как
- * RFC3339Nano и обрезает хвостовые нули мс (`.000Z` → `Z`), тогда как бек
- * сравнивает по фиксированному `.000Z` — это давало ложный 412 (см. api.ts /
- * handler.go). Значение шлётся как есть (кавычки включены, бек снимает их сам).
+ * Требует If-Match — это strong-ETag `"<version>"` (монотонный version-токен,
+ * см. docs/conventions/optimistic-locking.md). Берётся из заголовка ETag ответа
+ * GET (скрытое поле `etag` формы) и шлётся как есть, кавычки включены — бек
+ * снимает их сам. Поток формат-агностичен (эхо сырого заголовка), поэтому
+ * миграция бека с updated_at-as-ETag на version-as-ETag прозрачна для фронта.
  * If-Match типизирован в schema.ts как обязательный header-параметр PUT —
  * передаём через params.header (type-safe, без кастомного fetch-fallback).
+ * Устаревшее значение → 412 VERSION_MISMATCH.
  */
 export const updateCanvas = createFormAction(async (formData) => {
   const me = await getMe();

@@ -43,6 +43,14 @@ const DEFAULT_MESSAGES: ApiErrorMessages = {
   REF_NOT_FOUND: "Одна из ссылок указывает на несуществующий объект.",
   BLOCKS_HAVE_ANCHORS:
     "Нельзя удалить блок с привязанными комментариями. Удалите комментарии или оставьте блок.",
+  // Optimistic locking (If-Match/version) — общие для всех lock-protected
+  // сущностей (canvas/comment/document/glossary). 412 = чужая правка обогнала,
+  // 428 = клиент не приложил версию (не должно случаться — формы шлют hidden
+  // version; защитный дефолт). Слайс может переопределить entity-текстом.
+  VERSION_MISMATCH:
+    "Объект изменён в другом месте. Обновите страницу и повторите.",
+  IF_MATCH_REQUIRED:
+    "Не удалось определить версию объекта. Обновите страницу и повторите.",
   IDEMPOTENCY_KEY_IN_USE:
     "Запрос уже обрабатывается. Подождите, не отправляйте повторно.",
   IDEMPOTENCY_KEY_REUSED:

@@ -2075,6 +2075,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2270,7 +2272,9 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: {
+                header: {
+                    /** @description Version ETag from previous GET */
+                    "If-Match": string;
                     /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
                     "Idempotency-Key"?: string;
                 };
@@ -2290,6 +2294,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2343,6 +2349,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -2359,6 +2374,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -4591,7 +4615,7 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
-                        /** @description updated_at as strong ETag */
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
                         ETag?: string;
                         [name: string]: unknown;
                     };
@@ -4680,7 +4704,7 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
-                        /** @description updated_at as strong ETag */
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
                         ETag?: string;
                         [name: string]: unknown;
                     };
@@ -4728,7 +4752,7 @@ export interface paths {
             parameters: {
                 query?: never;
                 header: {
-                    /** @description ETag from previous Get */
+                    /** @description Version ETag from previous GET/POST */
                     "If-Match": string;
                 };
                 path: {
@@ -4747,7 +4771,7 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
-                        /** @description updated_at as strong ETag */
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
                         ETag?: string;
                         [name: string]: unknown;
                     };
@@ -4793,7 +4817,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Precondition Failed */
+                /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
                         [name: string]: unknown;
@@ -4818,6 +4842,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -5139,6 +5172,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (bumps on visibility change too) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -5368,7 +5403,9 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: {
+                header: {
+                    /** @description Version ETag from the comment's version field */
+                    "If-Match": string;
                     /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
                     "Idempotency-Key"?: string;
                 };
@@ -5388,6 +5425,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -5441,6 +5480,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -5457,6 +5505,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -6059,6 +6116,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6175,6 +6234,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6271,6 +6332,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on blocks update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6421,6 +6484,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6630,7 +6695,9 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: {
+                header: {
+                    /** @description Version ETag from previous GET */
+                    "If-Match": string;
                     /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
                     "Idempotency-Key"?: string;
                 };
@@ -6650,6 +6717,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -6703,6 +6772,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -6719,6 +6797,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -6764,6 +6851,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (bumps on visibility change too) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7993,6 +8082,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on blocks update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -8836,6 +8927,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13242,7 +13335,7 @@ export interface components {
         /** @enum {string} */
         "annotation.Visibility": "private" | "public";
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -13408,6 +13501,7 @@ export interface components {
             schema_version?: number;
             title?: string;
             updated_at?: string;
+            version?: number;
             visibility?: components["schemas"]["access.Visibility"];
         };
         "canvas.CanvasSummary": {
@@ -13415,6 +13509,7 @@ export interface components {
             owner_id?: string;
             title?: string;
             updated_at?: string;
+            version?: number;
             visibility?: components["schemas"]["access.Visibility"];
         };
         "canvas.CreateRequest": {
@@ -13525,6 +13620,15 @@ export interface components {
             type: components["schemas"]["comment.CommentType"];
             updated_at: string;
             user_id?: string;
+            /**
+             * @description Version is the optimistic-lock counter. Comment has NO single-GET
+             *     endpoint, so this body field — present on every read shape (subtree
+             *     root + descendants, lecture list, admin list) — is the load-bearing
+             *     source the client echoes into If-Match on PUT /api/comments/{id}/blocks.
+             *     The PUT response also emits it as a strong ETag, but the body field is
+             *     the authoritative way to obtain it in a multi-item response.
+             */
+            version?: number;
         };
         "comment.CommentSummary": {
             author?: components["schemas"]["comment.Author"];
@@ -13534,6 +13638,12 @@ export interface components {
             snippet?: string;
             type?: components["schemas"]["comment.CommentType"];
             user_id?: string;
+            /**
+             * @description Version mirrors the comment's optimistic-lock counter so the picker can
+             *     seed an If-Match without a follow-up read (per docs/conventions/optimistic-locking.md:
+             *     version on every full read-DTO, including summary/picker).
+             */
+            version?: number;
         };
         /** @enum {string} */
         "comment.CommentType": "claim" | "grounds" | "rebuttal" | "qualifier" | "question" | "answer" | "offtop" | "summary";
@@ -13596,6 +13706,12 @@ export interface components {
             id?: string;
             owner_id?: string;
             updated_at?: string;
+            /**
+             * @description Version is the optimistic-locking counter (documents.version, migration
+             *     007). The single GET surfaces it both as a body field and as a strong
+             *     ETag; the client echoes it back in If-Match on the blocks-update PUT.
+             */
+            version?: number;
             visibility?: components["schemas"]["access.Visibility"];
         };
         "document.DocumentSummary": {
@@ -13603,6 +13719,11 @@ export interface components {
             id?: string;
             owner_id?: string;
             updated_at?: string;
+            /**
+             * @description Version mirrors Document.Version so the picker can seed an optimistic-lock
+             *     If-Match without a follow-up single GET.
+             */
+            version?: number;
             visibility?: components["schemas"]["access.Visibility"];
         };
         "document.SetVisibilityRequest": {
@@ -13783,6 +13904,7 @@ export interface components {
             id?: string;
             title?: string;
             updated_at?: string;
+            version?: number;
         };
         "glossary.UpdateRequest": {
             blocks: components["schemas"]["ast.Block"][];

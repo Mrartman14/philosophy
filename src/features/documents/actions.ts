@@ -17,6 +17,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
+import { ifMatchHeader } from "@/utils/optimistic-lock";
 import {
   ForbiddenError,
   requireActive,
@@ -139,14 +140,22 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
   return (data.data ?? null) as Document | null;
 });
 
-/** PUT /api/documents/{id}/blocks. Owner-only enforce'ит бек. */
+/**
+ * PUT /api/documents/{id}/blocks. Owner-only enforce'ит бек. Content-edit PUT
+ * требует `If-Match: "<version>"` (optimistic lock, см.
+ * docs/conventions/optimistic-locking.md). Версия берётся из `document.version`
+ * (тело single-GET) через hidden-поле формы. Отсутствие → 428, расхождение → 412.
+ */
 export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
   const input = parseFormData(DocumentBlocksSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/documents/{document_id}/blocks", {
-    params: { path: { document_id: input.id } },
+    params: {
+      path: { document_id: input.id },
+      header: ifMatchHeader(formData, "документа"),
+    },
     body: { blocks: input.blocks as never },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });

@@ -11,6 +11,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
+import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
@@ -77,14 +78,23 @@ export const createComment = createFormAction(async (formData, ctx) => {
   return (data.data ?? null) as Comment | null;
 });
 
-/** Редактировать blocks комментария (owner-only — бек проверит). FormData: id, blocks(JSON). */
+/**
+ * Редактировать blocks комментария (owner-only — бек проверит). FormData: id,
+ * blocks(JSON), version. Content-edit PUT требует `If-Match: "<version>"`
+ * (optimistic lock, см. docs/conventions/optimistic-locking.md). У комментария
+ * нет single-GET — версия берётся из body-поля `comment.version` узла дерева и
+ * кладётся в hidden-поле формы. Отсутствие → 428, расхождение → 412.
+ */
 export const updateCommentBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateComment); // active+create — точную owner-проверку делает бек
   const input = parseFormData(CommentBlocksUpdateSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/comments/{id}/blocks", {
-    params: { path: { id: input.id } },
+    params: {
+      path: { id: input.id },
+      header: ifMatchHeader(formData, "комментария"),
+    },
     body: { blocks: input.blocks as never },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });

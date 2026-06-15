@@ -32,6 +32,7 @@ export function GlossaryEditForm({ term }: Props) {
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={term.id ?? ""} />
+      <input type="hidden" name="version" value={term.version ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 

@@ -11,6 +11,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
+import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
@@ -55,13 +56,22 @@ export const createTerm = createFormAction(async (formData, ctx) => {
   return (data.data ?? null) as Term | null;
 });
 
+/**
+ * PUT /api/admin/glossary/{id}/blocks. Content-edit PUT требует
+ * `If-Match: "<version>"` (optimistic lock, см.
+ * docs/conventions/optimistic-locking.md). Версия берётся из `term.version`
+ * (тело single-GET) через hidden-поле формы. Отсутствие → 428, расхождение → 412.
+ */
 export const updateTermBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateTerm);
   const input = parseFormData(TermBlocksUpdateSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/glossary/{id}/blocks", {
-    params: { path: { id: input.id } },
+    params: {
+      path: { id: input.id },
+      header: ifMatchHeader(formData, "термина"),
+    },
     body: { blocks: input.blocks as never },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });

@@ -58,6 +58,7 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
               commentId={comment.id}
               lectureId={lectureId}
               initialBlocks={comment.blocks ?? []}
+              version={comment.version}
             />
           )}
           {canDeleteComment(me, comment) && (

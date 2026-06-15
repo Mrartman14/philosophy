@@ -15,9 +15,11 @@ interface Props {
   commentId: string;
   lectureId: string;
   initialBlocks: AstBlock[];
+  /** Версия для optimistic-lock (`comment.version`) → hidden → If-Match. */
+  version: number | undefined;
 }
 
-export function CommentEditForm({ commentId, lectureId, initialBlocks }: Props) {
+export function CommentEditForm({ commentId, lectureId, initialBlocks, version }: Props) {
   const [open, setOpen] = useState(false);
   const [blocks, setBlocks] = useState<AstBlock[]>(initialBlocks);
   const [state, action] = useActionState(updateCommentBlocks, initial);
@@ -35,6 +37,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks }: Props) 
   return (
     <Form action={action} errors={fieldErrors} className="mt-2 flex flex-col gap-2">
       <input type="hidden" name="id" value={commentId} />
+      <input type="hidden" name="version" value={version ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
       <FormField name="blocks" label="Текст">

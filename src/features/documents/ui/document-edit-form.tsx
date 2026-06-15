@@ -23,6 +23,7 @@ export function DocumentEditForm({ document }: Props) {
   return (
     <Form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={document.id ?? ""} />
+      <input type="hidden" name="version" value={document.version ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
