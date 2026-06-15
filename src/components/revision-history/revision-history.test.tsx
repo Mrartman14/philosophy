@@ -14,6 +14,7 @@ vi.mock("next/link", () => ({
   default: ({ children, ...props }: ComponentProps<"a">) => (
     <a {...props}>{children}</a>
   ),
+  useLinkStatus: () => ({ pending: false }),
 }));
 
 const revisions: RevisionListItem[] = [

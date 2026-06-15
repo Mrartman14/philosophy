@@ -1,5 +1,5 @@
 // src/components/revision-history/revision-history.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { RevisionHistoryProps } from "./types";
 
@@ -47,7 +47,7 @@ export function RevisionHistory({
             const selected = rev.id === selectedId;
             return (
               <li key={rev.id} className="py-1.5">
-                <Link
+                <RouterLink
                   href={buildHref(rev.id)}
                   aria-current={selected ? "true" : undefined}
                   className={
@@ -58,7 +58,7 @@ export function RevisionHistory({
                 >
                   {formatCreatedAt(rev.createdAt)}
                   {rev.label ? ` — ${rev.label}` : ""}
-                </Link>
+                </RouterLink>
               </li>
             );
           })}
