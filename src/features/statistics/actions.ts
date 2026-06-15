@@ -1,33 +1,41 @@
-// src/features/_template/actions.ts
+// src/features/statistics/actions.ts
 "use server";
 import "server-only";
-// import { createFormAction, parseFormData } from "@/utils/create-action";
-// import { requireCapability } from "@/utils/permissions";
-// import { revalidateEntity } from "@/utils/revalidate";
-// import { getMe } from "@/utils/me";
-// import { createApiClient } from "@/api/client";
-// import { canCreateEntity } from "./permissions";
-// import { EntityCreateSchema } from "./schemas";
+import { createApiClient } from "@/api/client";
+import { handleCommonApiError, type ApiError } from "@/utils/api-error";
+import { createAction } from "@/utils/create-action";
+import { getMe } from "@/utils/me";
+import { ForbiddenError, requireCapability } from "@/utils/permissions";
+
+import { canManageOwnHistory } from "./permissions";
+import { HistoryTrackingSchema } from "./schemas";
+import type { HistorySettings } from "./types";
+
+/** Маппинг кодов httputil/apperror бекенда на доменные ошибки фронта. */
+function rethrowApiError(err: ApiError | undefined): never {
+  switch (err?.code) {
+    case "SUSPENDED":
+      throw new ForbiddenError("status", err.error);
+    case "BAD_REQUEST":
+    case "VALIDATION_ERROR":
+      throw new Error(err.error ?? "Сервер отклонил запрос.");
+  }
+  handleCommonApiError(err);
+}
 
 /**
- * Server actions сущности. Каждое действие:
- * 1. await getMe()
- * 2. requireCapability(me, canX) — для capability-чека
- * 3. parseFormData(Schema, formData) — для Zod-валидации (если форма)
- * 4. createApiClient() + вызов бекенда
- * 5. revalidateEntity("entity", id?) после успешной мутации
+ * Включает/выключает трекинг просмотров. Выключение на бэке безвозвратно
+ * удаляет всю историю просмотров (DisableAndPurgeTx) — предупреждение в UI
+ * (ConfirmDialog в history-tracking-toggle).
  */
-
-// export const createEntity = createFormAction(async (formData) => {
-//   const me = await getMe();
-//   const input = parseFormData(EntityCreateSchema, formData);
-//   requireCapability(me, canCreateEntity);
-//   const api = await createApiClient();
-//   const { data, error } = await api.POST("/entities", { body: input });
-//   if (error) throw new Error(error.message);
-//   revalidateEntity("entities");
-//   return data;
-// });
-
-// eslint-disable-next-line @typescript-eslint/require-await -- placeholder; will be replaced by a real async server action before use
-export const _placeholder = async () => null;
+export const setHistoryTracking = createAction(async (raw: unknown) => {
+  const me = await getMe();
+  requireCapability(me, canManageOwnHistory);
+  const enabled = HistoryTrackingSchema.parse(raw);
+  const api = await createApiClient();
+  const { data, error } = await api.PUT("/api/me/history/settings", {
+    body: { tracking_enabled: enabled },
+  });
+  if (error) rethrowApiError(error as ApiError);
+  return (data.data ?? null) as HistorySettings | null;
+});
