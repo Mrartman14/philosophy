@@ -4,7 +4,7 @@ import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
 
-import type { HistorySettings, Inventory, ViewStats } from "./types";
+import type { HistorySettings, Inventory, ViewStatsData } from "./types";
 
 /**
  * Self-only статистика текущего пользователя. Данные пер-юзерные — НЕ
@@ -21,7 +21,7 @@ export const getProductionStats = cache(async (): Promise<Inventory> => {
   return data.data ?? {};
 });
 
-export const getViewStats = cache(async (): Promise<ViewStats> => {
+export const getViewStats = cache(async (): Promise<ViewStatsData> => {
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/me/history/stats");
   if (error) {

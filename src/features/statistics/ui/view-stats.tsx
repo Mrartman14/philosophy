@@ -1,7 +1,7 @@
 // src/features/statistics/ui/view-stats.tsx
 import { EmptyState, RouterLink } from "@/components/ui";
 
-import type { ViewStatItem, ViewStats as ViewStatsData } from "../types";
+import type { ViewStatItem, ViewStatsData } from "../types";
 
 const LABELS: Record<string, string> = {
   lecture: "Лекции",

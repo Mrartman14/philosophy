@@ -5,9 +5,6 @@ export { canManageOwnHistory } from "./permissions";
 export { ProductionStatsTable } from "./ui/production-stats-table";
 export { ViewStats } from "./ui/view-stats";
 export { HistoryTrackingToggle } from "./ui/history-tracking-toggle";
-export type {
-  EntityInventory,
-  HistorySettings,
-  Inventory,
-  ViewStatItem,
-} from "./types";
+// Публичные доменные data-типы (по одному на компонент/фетчер). Внутренние
+// детали (EntityInventory, ViewStatItem) наружу не экспонируем.
+export type { HistorySettings, Inventory, ViewStatsData } from "./types";

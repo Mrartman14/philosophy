@@ -6,8 +6,9 @@ export type Inventory = components["schemas"]["productionstats.Inventory"];
 export type EntityInventory =
   components["schemas"]["productionstats.EntityInventory"];
 
-/** GET /api/me/history/stats. Бэк: internal/history */
-export type ViewStats = components["schemas"]["history.Stats"];
+/** GET /api/me/history/stats. Бэк: internal/history.
+ *  Имя с суффиксом Data, чтобы не коллизировать с компонентом `ViewStats`. */
+export type ViewStatsData = components["schemas"]["history.Stats"];
 export type ViewStatItem = components["schemas"]["history.StatItem"];
 
 /** GET/PUT /api/me/history/settings. */

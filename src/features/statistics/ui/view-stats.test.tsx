@@ -11,7 +11,7 @@ vi.mock("next/link", () => ({
   useLinkStatus: () => ({ pending: false }),
 }));
 
-import type { ViewStats as ViewStatsData } from "../types";
+import type { ViewStatsData } from "../types";
 
 import { ViewStats } from "./view-stats";
 

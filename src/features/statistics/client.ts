@@ -1,4 +1,4 @@
-// src/features/_template/client.ts
+// src/features/statistics/client.ts
 // Публичный CLIENT-safe entry слайса — для импорта из "use client"-кода (напр. офлайн-view).
 // Только изоморфные/client view, чистые утилиты, типы. ЗАПРЕЩЕНО реэкспортировать
 // ./api / ./actions / ./permissions / ./schemas (server-only) и cross-feature — форсит Guardrail 4.
