@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@import "../styles/themes/rebus.css";
+
 @theme {
   --color-primary: var(--color-primary);
   --color-background: var(--color-background);
