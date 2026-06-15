@@ -71,6 +71,27 @@ describe("LogoutForm", () => {
     expect(wipeMock).toHaveBeenCalledOnce();
   });
 
+  it("повторный клик «Выйти» во время подсчёта игнорируется (кнопка disabled)", async () => {
+    let resolveCount!: (n: number) => void;
+    countMock.mockImplementation(
+      () =>
+        new Promise<number>((r) => {
+          resolveCount = r;
+        }),
+    );
+    render(<LogoutForm username="alice" />);
+
+    const btn = screen.getByRole("button", { name: "Выйти" });
+    fireEvent.click(btn);
+    fireEvent.click(btn); // после первого клика кнопка disabled → игнор
+
+    resolveCount(0);
+    await waitFor(() => {
+      expect(logoutMock).toHaveBeenCalledOnce();
+    });
+    expect(countMock).toHaveBeenCalledOnce();
+  });
+
   it("непустая библиотека → «Отмена» → логаут не вызывается", async () => {
     countMock.mockResolvedValue(3);
     render(<LogoutForm username="alice" />);

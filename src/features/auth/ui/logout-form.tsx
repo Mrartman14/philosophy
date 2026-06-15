@@ -14,6 +14,9 @@ interface LogoutFormProps {
 
 export function LogoutForm({ username }: LogoutFormProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  // pending защищает от повторных кликов, пока считаем библиотеку / выходим
+  // (иначе двойной клик = лишние запросы logout + wipe, хоть и идемпотентные).
+  const [pending, setPending] = useState(false);
 
   // Сначала чистим офлайн-кеш (IndexedDB-снимки лекций + Cache Storage
   // картинок), затем серверный логаут (отзыв токенов + redirect). Чистка ДО
@@ -22,28 +25,40 @@ export function LogoutForm({ username }: LogoutFormProps) {
   // случае. Логаут требует JS (клиентский action) — приемлемо: офлайн и так
   // работает только с JS/Service Worker.
   async function doLogout() {
+    setPending(true);
     await wipeOfflineData();
-    await logoutAction();
+    await logoutAction(); // redirect уводит со страницы
   }
 
   // Если на устройстве есть сохранённая офлайн-библиотека — предупреждаем, что
   // выход её сотрёт (убираем «молчаливый» сюрприз). Подсчёт на момент клика, а
   // не на mount: отражает реальное состояние именно в момент выхода.
   async function onLogoutClick() {
-    const count = await countSavedBundles().catch(() => 0);
-    if (count > 0) {
-      setConfirmOpen(true);
-    } else {
-      await doLogout();
+    if (pending) return;
+    setPending(true);
+    try {
+      const count = await countSavedBundles().catch(() => 0);
+      if (count > 0) {
+        setConfirmOpen(true);
+        setPending(false); // дальше решает пользователь в диалоге
+      } else {
+        await doLogout(); // pending остаётся true до редиректа
+      }
+    } catch {
+      setPending(false);
     }
   }
 
+  // Почему обычный Dialog, а не ConfirmDialog: ConfirmDialog открывается сразу
+  // по триггеру, а нам нужно СПЕРВА дождаться countSavedBundles и решить,
+  // показывать ли предупреждение вообще (пустая библиотека → выход без трения).
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm text-(--color-description)">{username}</span>
       <Button
         variant="ghost"
         size="sm"
+        disabled={pending}
         onClick={() => {
           void onLogoutClick();
         }}
@@ -60,8 +75,11 @@ export function LogoutForm({ username }: LogoutFormProps) {
           <DialogClose render={<Button variant="ghost">Отмена</Button>} />
           <Button
             variant="danger"
+            disabled={pending}
             onClick={() => {
-              void doLogout();
+              void doLogout().catch(() => {
+                setPending(false);
+              });
             }}
           >
             Выйти и удалить
