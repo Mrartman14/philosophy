@@ -1,15 +1,15 @@
-// src/features/_template/schemas.test.ts
 import { describe, it, expect } from "vitest";
 
-import { PlaceholderSchema } from "./schemas";
+import { HistoryTrackingSchema } from "./schemas";
 
-describe("PlaceholderSchema", () => {
-  it("accepts an empty object (placeholder)", () => {
-    expect(PlaceholderSchema.safeParse({}).success).toBe(true);
+describe("HistoryTrackingSchema", () => {
+  it("принимает boolean", () => {
+    expect(HistoryTrackingSchema.parse(true)).toBe(true);
+    expect(HistoryTrackingSchema.parse(false)).toBe(false);
   });
-
-  // Замените на реальные тесты после реализации:
-  it.todo("rejects empty title");
-  it.todo("trims and accepts valid title");
-  it.todo("rejects description longer than max");
+  it("отклоняет не-boolean", () => {
+    expect(() => HistoryTrackingSchema.parse("yes")).toThrow();
+    expect(() => HistoryTrackingSchema.parse(1)).toThrow();
+    expect(() => HistoryTrackingSchema.parse(null)).toThrow();
+  });
 });
