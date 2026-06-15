@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
-import { Form, FormField, Select, SubmitButton, Button } from "@/components/ui";
+import { Button, Form, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
@@ -43,6 +43,7 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
       <input type="hidden" name="lecture_id" value={lectureId} />
       <input type="hidden" name="parent_id" value={parentId} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="type" label="Тип ответа" required>
         <Select name="type" options={options} defaultValue={childTypes[0] ?? ""} aria-label="Тип ответа" />

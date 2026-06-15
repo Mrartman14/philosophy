@@ -275,6 +275,22 @@ export function CreateCommentForm() {
 **Кому НЕ нужно:** PUT/DELETE-by-id уже идемпотентны по эффекту; ручки, которые бэк
 ещё не покрыл (заголовок безвреден, но смысла нет — включать по мере покрытия).
 
+**Вариант 3 — ручная `FormData` (без `<Form>`):** для client-компонентов, которые строят
+`FormData` вручную и вызывают `createFormAction`-экшен напрямую (не через Base UI `<Form>`,
+напр. `form-fill.tsx`), поле ставится вручную:
+
+```ts
+import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { IDEMPOTENCY_FIELD } from "@/utils/idempotency";
+
+const { key: idempotencyKey, rotate } = useIdempotencyKey();
+
+// при сабмите:
+fd.set(IDEMPOTENCY_FIELD, idempotencyKey);
+const result = await submitForm(prev, fd);
+if (result.success) rotate();  // ротировать только после успеха
+```
+
 ### 3.5. Filter / search через `searchParams`
 
 Для списков используем server-side фильтрацию через URL. Page получает
