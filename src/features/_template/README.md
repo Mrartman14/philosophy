@@ -6,6 +6,7 @@
 ## Чеклист (до open PR)
 
 - [ ] `index.ts` экспортирует только то, что нужно снаружи
+- [ ] client-видимые экспорты (для `"use client"`/офлайн) — в `client.ts`, НЕ в `index.ts` (server-only/cross-feature не реэкспортить — форсит Guardrail 4)
 - [ ] `api.ts`, `actions.ts`, `permissions.ts`, `schemas.ts` начинаются с `import "server-only";`
 - [ ] Каждая `canXxx` в `permissions.ts` покрыта тестом
 - [ ] Каждая Zod-схема имеет минимум 1 success + 1 failure тест

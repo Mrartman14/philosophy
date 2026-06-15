@@ -43,6 +43,15 @@ src/features/<entity>/
 `src/features/<entity>/`, переименуй и наполни. Чеклист — в
 `src/features/_template/README.md`.
 
+### 2.1. Client-safe entry фичи (RSC-граница)
+
+Публичный `index.ts` фичи реэкспортит `./api`/`./actions` (server-only) — поэтому его НЕЛЬЗЯ импортировать из `"use client"`-кода: server-only утечёт в client-бандл и `next build` упадёт («server-only cannot be imported from a Client Component»). Для client-потребителей (офлайн-view в `app/saved/**` и т. п.) у фичи есть второй публичный вход:
+
+- **`src/features/<entity>/client.ts`** — реэкспортит ТОЛЬКО изоморфные/client-safe view, чистые утилиты и типы. НЕ реэкспортит `./api`/`./actions`/`./permissions`/`./schemas` и НЕ делает cross-feature импортов (форсит Guardrail 4 в `eslint.config.mjs`).
+- Импорт из client-кода: `import { XView } from "@/features/<entity>/client"`.
+- **Слот-паттерн:** client-safe view не тянут server-данные/RBAC напрямую — server-контейнер инжектит их пропами/слотами (образец — `CommentNodeView` с `anchorSlot`/`reactionsSlot`/`actionsSlot`).
+- server-страницы и server-композиция продолжают брать `getX`/actions из обычного `index.ts`.
+
 ---
 
 ## 3. Паттерны
