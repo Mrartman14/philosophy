@@ -6,6 +6,7 @@ import type { AstBlock } from "@/components/ast-editor";
 import {
   Form,
   FormField,
+  IdempotencyField,
   SubmitButton,
 } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
@@ -32,6 +33,7 @@ export function GlossaryEditForm({ term }: Props) {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={term.id ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="blocks" label="Тело термина">
         <AstEditor

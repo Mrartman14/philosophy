@@ -5,6 +5,7 @@ import { useActionState, useEffect } from "react";
 import {
   Form,
   FormField,
+  IdempotencyField,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -31,6 +32,7 @@ export function GlossaryCreateForm() {
 
   return (
     <Form action={action} errors={fieldErrors} className="max-w-xl">
+      <IdempotencyField result={state} />
       <FormField name="title" label="Название" required>
         <TextInput name="title" required maxLength={300} placeholder="Например: «Эпистемология»" />
       </FormField>

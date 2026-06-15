@@ -8,6 +8,7 @@ import {
   Checkbox,
   Form,
   FormField,
+  IdempotencyField,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -65,6 +66,7 @@ export function EventEditForm({ event }: Props) {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={event.id ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="title" label="Название" required>
         <TextInput

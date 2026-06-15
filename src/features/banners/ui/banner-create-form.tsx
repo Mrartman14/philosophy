@@ -7,6 +7,7 @@ import {
   Checkbox,
   Form,
   FormField,
+  IdempotencyField,
   Select,
   SubmitButton,
   TextInput,
@@ -46,6 +47,7 @@ export function BannerCreateForm() {
         name="dismissible"
         value={dismissible ? "true" : "false"}
       />
+      <IdempotencyField result={state} />
 
       <FormField name="background_color" label="Цвет фона" required>
         <TextInput

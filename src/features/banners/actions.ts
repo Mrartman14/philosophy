@@ -13,6 +13,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -43,7 +44,7 @@ const ERRORS: ApiErrorMessages = {
     "На блок баннера ссылаются другие материалы. Удалите ссылки или оставьте блок.",
 };
 
-export const createBanner = createFormAction(async (formData) => {
+export const createBanner = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateBanner);
   const input = parseFormData(BannerCreateSchema, formData);
@@ -57,13 +58,14 @@ export const createBanner = createFormAction(async (formData) => {
       ...(input.end_at ? { end_at: input.end_at } : {}),
       ...(input.event_id ? { event_id: input.event_id } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS);
   return (data.data ?? null) as Banner | null;
 });
 
-export const updateBanner = createFormAction(async (formData) => {
+export const updateBanner = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateBanner);
   const input = parseFormData(BannerUpdateSchema, formData);
@@ -84,6 +86,7 @@ export const updateBanner = createFormAction(async (formData) => {
       // RFC3339-парсинг. Очистка end_at невозможна — см. секцию рисков плана.
       ...(input.end_at ? { end_at: input.end_at } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS, input.id);

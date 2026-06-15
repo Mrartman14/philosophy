@@ -2,7 +2,7 @@
 "use client";
 import { useActionState } from "react";
 
-import { Form, FormField, SubmitButton, TextInput } from "@/components/ui";
+import { Form, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTag } from "../actions";
@@ -19,6 +19,7 @@ export function TagCreateForm() {
 
   return (
     <Form action={action} errors={fieldErrors} className="flex max-w-xl flex-col gap-3">
+      <IdempotencyField result={state} />
       <FormField name="name" label="Новый тег" required>
         <TextInput name="name" required maxLength={100} placeholder="Например: «этика»" />
       </FormField>

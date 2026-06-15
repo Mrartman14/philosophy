@@ -9,6 +9,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -29,7 +30,7 @@ const ERRORS: ApiErrorMessages = {
     "На блок события ссылаются другие материалы. Удалите ссылки или оставьте блок.",
 };
 
-export const createEvent = createFormAction(async (formData) => {
+export const createEvent = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateEvent);
   const input = parseFormData(EventCreateSchema, formData);
@@ -42,13 +43,14 @@ export const createEvent = createFormAction(async (formData) => {
       ...(input.end_date ? { end_date: input.end_date } : {}),
       ...(input.rrule ? { rrule: input.rrule } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS);
   return (data.data ?? null) as CalendarEvent | null;
 });
 
-export const updateEvent = createFormAction(async (formData) => {
+export const updateEvent = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateEvent);
   const input = parseFormData(EventUpdateSchema, formData);
@@ -67,6 +69,7 @@ export const updateEvent = createFormAction(async (formData) => {
       ...(input.end_date ? { end_date: input.end_date } : {}),
       ...(input.rrule ? { rrule: input.rrule } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS, input.id);

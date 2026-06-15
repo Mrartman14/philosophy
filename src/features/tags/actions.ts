@@ -9,6 +9,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -36,13 +37,14 @@ const ERRORS: ApiErrorMessages = {
   NOT_FOUND: "Объект не найден — возможно, уже удалён. Обновите страницу.",
 };
 
-export const createTag = createFormAction(async (formData) => {
+export const createTag = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateTag);
   const input = parseFormData(TagCreateSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/tags", {
     body: { name: input.name },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.TAGS);

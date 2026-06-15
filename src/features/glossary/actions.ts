@@ -9,6 +9,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -31,7 +32,7 @@ const ERRORS: ApiErrorMessages = {
     "На блок ссылаются другие материалы. Удалите ссылки или оставьте блок.",
 };
 
-export const createTerm = createFormAction(async (formData) => {
+export const createTerm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateTerm);
   const input = parseFormData(TermCreateSchema, formData);
@@ -47,13 +48,14 @@ export const createTerm = createFormAction(async (formData) => {
         },
       ],
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY);
   return (data.data ?? null) as Term | null;
 });
 
-export const updateTermBlocks = createFormAction(async (formData) => {
+export const updateTermBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateTerm);
   const input = parseFormData(TermBlocksUpdateSchema, formData);
@@ -61,6 +63,7 @@ export const updateTermBlocks = createFormAction(async (formData) => {
   const { data, error } = await api.PUT("/api/admin/glossary/{id}/blocks", {
     params: { path: { id: input.id } },
     body: { blocks: input.blocks as never },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY, input.id);

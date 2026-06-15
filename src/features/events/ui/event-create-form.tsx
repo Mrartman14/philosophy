@@ -7,6 +7,7 @@ import {
   Checkbox,
   Form,
   FormField,
+  IdempotencyField,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -38,6 +39,7 @@ export function EventCreateForm() {
 
   return (
     <Form action={action} errors={fieldErrors} className="max-w-xl">
+      <IdempotencyField result={state} />
       <FormField name="title" label="Название" required>
         <TextInput
           name="title"
