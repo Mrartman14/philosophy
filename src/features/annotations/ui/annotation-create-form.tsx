@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
-import { Form, FormField, SubmitButton } from "@/components/ui";
+import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createAnnotation } from "../actions";
@@ -48,6 +48,7 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
       <input type="hidden" name="parent_entity_type" value={parentEntityType} />
       <input type="hidden" name="parent_entity_id" value={parentId} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="blocks" label="Текст аннотации">
         <AstEditor

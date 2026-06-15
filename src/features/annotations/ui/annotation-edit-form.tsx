@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
-import { Form, FormField, SubmitButton } from "@/components/ui";
+import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateAnnotation } from "../actions";
@@ -34,6 +34,7 @@ export function AnnotationEditForm({ annotation }: Props) {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
       <input type="hidden" name="id" value={annotation.id ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="blocks" label="Текст аннотации">
         <AstEditor

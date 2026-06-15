@@ -15,6 +15,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -51,7 +52,7 @@ const ERRORS: ApiErrorMessages = {
  * с токеном из cookie. Тело — annotation.CreateRequest (тип валиден).
  * visibility ФИКСИРУЕТСЯ здесь и не меняется (§6.8).
  */
-export const createAnnotation = createFormAction(async (formData) => {
+export const createAnnotation = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateAnnotation);
   const input = parseFormData(AnnotationCreateSchema, formData);
@@ -71,6 +72,7 @@ export const createAnnotation = createFormAction(async (formData) => {
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...idempotencyHeaders(ctx.idempotencyKey),
       },
       body: JSON.stringify(body),
       cache: "no-store",
@@ -89,7 +91,7 @@ export const createAnnotation = createFormAction(async (formData) => {
  * Редактирование. Только автор (бек owner-only). blocks обязательны, anchor
  * опционален. visibility менять нельзя — её нет в UpdateRequest.
  */
-export const updateAnnotation = createFormAction(async (formData) => {
+export const updateAnnotation = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   const input = parseFormData(AnnotationUpdateSchema, formData);
 
@@ -105,6 +107,7 @@ export const updateAnnotation = createFormAction(async (formData) => {
       blocks: input.blocks as never,
       ...(input.anchor !== undefined ? { anchor: input.anchor as never } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, input.id);
