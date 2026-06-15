@@ -1,5 +1,5 @@
 // src/features/trails/ui/trail-admin-row.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { Trail } from "../types";
 
@@ -15,9 +15,9 @@ export function TrailAdminRow({ trail, canDelete }: Props) {
   return (
     <li className="flex items-center justify-between gap-3 py-2">
       <div className="flex flex-col">
-        <Link href={`/trails/${trail.id}`} className="text-sm hover:underline">
+        <RouterLink href={`/trails/${trail.id}`} className="text-sm hover:underline">
           {trail.title || "Без названия"}
-        </Link>
+        </RouterLink>
         <span className="text-xs text-(--color-description)">
           {trail.visibility} · автор {trail.owner_id}
         </span>

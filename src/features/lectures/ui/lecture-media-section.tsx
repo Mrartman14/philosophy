@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import { getLectureMedia } from "../api";
 
@@ -21,12 +21,12 @@ export async function LectureMediaSection({ lectureId }: Props) {
       <ul className="flex flex-col gap-1">
         {items.map((m) => (
           <li key={m.id}>
-            <Link
+            <RouterLink
               href={`/media/${m.id}`}
               className="text-sm underline hover:no-underline"
             >
               {m.filename}
-            </Link>
+            </RouterLink>
           </li>
         ))}
       </ul>

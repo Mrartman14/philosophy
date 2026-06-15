@@ -1,7 +1,5 @@
 // src/features/search/ui/search-results.tsx
-import Link from "next/link";
-
-import { EmptyState } from "@/components/ui";
+import { EmptyState, RouterLink } from "@/components/ui";
 
 import type { SearchHit, SearchMatch } from "../types";
 
@@ -66,9 +64,9 @@ function HitCard({ hit }: { hit: SearchHit }) {
         <span className="rounded bg-(--color-text-pane) px-2 py-0.5 text-xs text-(--color-description)">
           {label}
         </span>
-        <Link href={href} className="text-lg font-semibold hover:underline">
+        <RouterLink href={href} className="text-lg font-semibold hover:underline">
           {title}
-        </Link>
+        </RouterLink>
         {date && (
           <time className="text-xs text-(--color-description)">{date}</time>
         )}

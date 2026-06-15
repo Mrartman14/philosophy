@@ -1,5 +1,5 @@
 // src/features/media/ui/media-containers.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { MediaAttachment } from "../types";
 
@@ -28,12 +28,12 @@ export function MediaContainers({ containers }: Props) {
     <ul className="flex flex-col gap-1 text-sm">
       {lectures.map((c) => (
         <li key={`${c.container_id ?? ""}-${c.entity_id ?? ""}`}>
-          <Link
+          <RouterLink
             href={`/lectures/${c.container_id ?? ""}`}
             className="underline hover:no-underline"
           >
             Лекция {(c.container_id ?? "").slice(0, 8)}…
-          </Link>
+          </RouterLink>
         </li>
       ))}
     </ul>

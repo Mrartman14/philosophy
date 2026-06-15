@@ -1,5 +1,5 @@
 // src/features/media/ui/media-card.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { Media } from "../types";
 
@@ -16,7 +16,7 @@ const typeLabel: Record<string, string> = {
 export function MediaCard({ media }: MediaCardProps) {
   const isPublic = media.visibility === "public";
   return (
-    <Link
+    <RouterLink
       href={`/media/${media.id}`}
       className="flex flex-col gap-2 rounded border border-(--color-border) p-4 hover:bg-(--color-text-pane) focus:outline-0"
     >
@@ -37,6 +37,6 @@ export function MediaCard({ media }: MediaCardProps) {
           {isPublic ? "Опубликовано" : "Приватно"}
         </span>
       </span>
-    </Link>
+    </RouterLink>
   );
 }

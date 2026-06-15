@@ -1,5 +1,5 @@
 // src/features/lectures/ui/lecture-detail.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import { lectureCoverUrl } from "../cover-url";
 import type { Lecture, LectureTag } from "../types";
@@ -31,12 +31,12 @@ export function LectureDetail({
           <ul className="mt-1 flex flex-wrap gap-1">
             {tags.map((tag) => (
               <li key={tag.name}>
-                <Link
+                <RouterLink
                   href={`/lectures?tag=${encodeURIComponent(tag.name)}`}
                   className="rounded-full border border-(--color-border) px-2 py-0.5 text-xs text-(--color-description) hover:bg-(--color-text-pane)"
                 >
                   {tag.name}
-                </Link>
+                </RouterLink>
               </li>
             ))}
           </ul>

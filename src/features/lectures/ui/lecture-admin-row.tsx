@@ -1,7 +1,5 @@
 // src/features/lectures/ui/lecture-admin-row.tsx
-import Link from "next/link";
-
-import { Td, Tr } from "@/components/ui";
+import { RouterLink, Td, Tr } from "@/components/ui";
 
 import type { Lecture } from "../types";
 
@@ -22,12 +20,12 @@ export function LectureAdminRow({ lecture, canEdit, canDelete }: Props) {
       <Td>
         <div className="flex gap-2">
           {canEdit && (
-            <Link
+            <RouterLink
               href={`/admin/lectures/${lecture.id}/edit`}
               className="text-sm underline hover:no-underline"
             >
               Редактировать
-            </Link>
+            </RouterLink>
           )}
           {canDelete && <LectureDeleteButton lectureId={lecture.id} />}
         </div>

@@ -1,5 +1,5 @@
 // src/features/trails/ui/trail-my-list.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { Trail } from "../types";
 
@@ -22,9 +22,9 @@ export function TrailMyList({ trails }: Props) {
     <ul className="flex flex-col divide-y divide-(--color-border)">
       {trails.map((trail) => (
         <li key={trail.id} className="flex items-center justify-between gap-2 py-2">
-          <Link href={`/trails/${trail.id}`} className="text-sm hover:underline">
+          <RouterLink href={`/trails/${trail.id}`} className="text-sm hover:underline">
             {trail.title || "Без названия"}
-          </Link>
+          </RouterLink>
           <span className="text-xs text-(--color-description)">
             {visibilityLabel[trail.visibility ?? "private"] ?? trail.visibility}
           </span>

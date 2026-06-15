@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import { getLectureDocuments } from "../api";
 
@@ -21,12 +21,12 @@ export async function LectureDocumentsSection({ lectureId }: Props) {
       <ul className="flex flex-col gap-1">
         {docs.map((d) => (
           <li key={d.id}>
-            <Link
+            <RouterLink
               href={`/documents/${d.id}`}
               className="text-sm underline hover:no-underline"
             >
               {d.filename ?? d.id}
-            </Link>
+            </RouterLink>
           </li>
         ))}
       </ul>

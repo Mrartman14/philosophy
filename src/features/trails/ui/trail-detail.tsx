@@ -1,5 +1,5 @@
 // src/features/trails/ui/trail-detail.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { TrailWithItems, TrailLectureSummary } from "../types";
 
@@ -27,9 +27,9 @@ export function TrailDetail({ trail, lectures }: Props) {
             {lectures.map((lecture, index) => (
               <li key={lecture.id} className="text-sm">
                 {index + 1}.{" "}
-                <Link href={`/lectures/${lecture.id}`} className="hover:underline">
+                <RouterLink href={`/lectures/${lecture.id}`} className="hover:underline">
                   {lecture.title}
-                </Link>
+                </RouterLink>
               </li>
             ))}
           </ol>

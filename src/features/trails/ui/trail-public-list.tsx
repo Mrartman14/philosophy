@@ -1,5 +1,5 @@
 // src/features/trails/ui/trail-public-list.tsx
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 import type { Trail } from "../types";
 
@@ -18,7 +18,7 @@ export function TrailPublicList({ trails }: Props) {
           key={trail.id}
           className="rounded border border-(--color-border) p-4 hover:bg-(--color-text-pane)"
         >
-          <Link href={`/trails/${trail.id}`} className="block">
+          <RouterLink href={`/trails/${trail.id}`} className="block">
             <span className="text-base font-semibold hover:underline">
               {trail.title || "Без названия"}
             </span>
@@ -27,7 +27,7 @@ export function TrailPublicList({ trails }: Props) {
                 {trail.description}
               </span>
             )}
-          </Link>
+          </RouterLink>
         </li>
       ))}
     </ul>
