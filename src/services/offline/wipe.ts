@@ -1,7 +1,11 @@
 // src/services/offline/wipe.ts
 // Browser-only: полная зачистка офлайн-данных текущего origin.
 import { wipeOfflineDb } from "./store/db";
-import { clearImageCache, clearBrowsedImageCaches } from "./store/images";
+import {
+  clearImageCache,
+  clearBrowsedImageCaches,
+  clearApiCaches,
+} from "./store/images";
 
 /**
  * Best-effort полная зачистка офлайн-кеша: IndexedDB-сторы (saved-bundles +
@@ -26,6 +30,7 @@ export async function wipeOfflineData(): Promise<boolean> {
     wipeOfflineDb(),
     clearImageCache(),
     clearBrowsedImageCaches(),
+    clearApiCaches(),
   ]);
   return results.every((r) => r.status === "fulfilled");
 }

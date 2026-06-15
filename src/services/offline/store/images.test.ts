@@ -9,6 +9,7 @@ import {
   matchCachedImage,
   clearImageCache,
   clearBrowsedImageCaches,
+  clearApiCaches,
 } from "./images";
 
 class FakeCache {
@@ -97,5 +98,21 @@ describe("images cache", () => {
     cachesKeys.mockResolvedValueOnce(["flbz-offline-images", "flbz-shell"]);
     await clearBrowsedImageCaches();
     expect(cachesDelete).not.toHaveBeenCalled();
+  });
+
+  it("clearApiCaches удаляет только версионированные API-кэши (flbz-api-*), не трогая чужие", async () => {
+    cachesKeys.mockResolvedValueOnce([
+      "flbz-api-abc123",
+      "flbz-api-def456",
+      "flbz-offline-images",
+      "flbz-images-abc123",
+      "flbz-shell",
+    ]);
+    await clearApiCaches();
+    expect(cachesDelete).toHaveBeenCalledWith("flbz-api-abc123");
+    expect(cachesDelete).toHaveBeenCalledWith("flbz-api-def456");
+    expect(cachesDelete).not.toHaveBeenCalledWith("flbz-offline-images");
+    expect(cachesDelete).not.toHaveBeenCalledWith("flbz-images-abc123");
+    expect(cachesDelete).not.toHaveBeenCalledWith("flbz-shell");
   });
 });

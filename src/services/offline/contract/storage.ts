@@ -12,6 +12,13 @@ export const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
  * по этой строке он НЕ попадает — проверять при изменении любого из имён.
  */
 export const LRU_IMAGE_CACHE_PREFIX = "flbz-images-";
+/**
+ * Префикс ВЕРСИОНИРОВАННЫХ кэшей ответов `/api/*` (`flbz-api-<SW_VERSION>`,
+ * заводится в public/sw.js). Чистится при смене владельца как defense-in-depth:
+ * на общем устройстве приватные ответы прошлого аккаунта не должны пережить
+ * логаут. Менять синхронно с именем API_CACHE в src/sw.template.js.
+ */
+export const API_CACHE_PREFIX = "flbz-api-";
 /** localStorage-ключ: id владельца офлайн-кеша (для сверки личности при логауте). */
 export const OFFLINE_OWNER_KEY = "flbz-offline-owner";
 

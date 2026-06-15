@@ -1,7 +1,11 @@
 // src/services/offline/store/images.ts
 // Browser-only: кэш картинок офлайна в Cache Storage.
 // `<img src="/static/files/{key}">` отдаётся прозрачно из кэша через SW.
-import { OFFLINE_IMAGE_CACHE, LRU_IMAGE_CACHE_PREFIX } from "../contract/storage";
+import {
+  OFFLINE_IMAGE_CACHE,
+  LRU_IMAGE_CACHE_PREFIX,
+  API_CACHE_PREFIX,
+} from "../contract/storage";
 
 export async function cacheImage(url: string): Promise<boolean> {
   const res = await fetch(url, { credentials: "same-origin" });
@@ -39,6 +43,23 @@ export async function clearBrowsedImageCaches(): Promise<void> {
   await Promise.all(
     keys
       .filter((key) => key.startsWith(LRU_IMAGE_CACHE_PREFIX))
+      .map((key) => caches.delete(key)),
+  );
+}
+
+/**
+ * Defense-in-depth: удаляет ВЕРСИОНИРОВАННЫЕ кэши ответов `/api/*`
+ * (`flbz-api-*`, network-first в public/sw.js). Сегодня браузер same-origin GET
+ * к `/api` не делает (бэкенд — отдельный origin, SW cross-origin пропускает), так
+ * что кэш фактически пуст; чистим на случай переезда бэкенда на тот же origin или
+ * появления Next-route под `/api` с приватными данными — чтобы они не пережили
+ * смену аккаунта на общем устройстве.
+ */
+export async function clearApiCaches(): Promise<void> {
+  const keys = await caches.keys();
+  await Promise.all(
+    keys
+      .filter((key) => key.startsWith(API_CACHE_PREFIX))
       .map((key) => caches.delete(key)),
   );
 }

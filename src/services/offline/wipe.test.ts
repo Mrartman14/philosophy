@@ -4,24 +4,31 @@ vi.mock("./store/db", () => ({ wipeOfflineDb: vi.fn() }));
 vi.mock("./store/images", () => ({
   clearImageCache: vi.fn(),
   clearBrowsedImageCaches: vi.fn(),
+  clearApiCaches: vi.fn(),
 }));
 
 import { wipeOfflineDb } from "./store/db";
-import { clearImageCache, clearBrowsedImageCaches } from "./store/images";
+import {
+  clearImageCache,
+  clearBrowsedImageCaches,
+  clearApiCaches,
+} from "./store/images";
 import { wipeOfflineData } from "./wipe";
 
 beforeEach(() => {
   vi.mocked(wipeOfflineDb).mockReset().mockResolvedValue();
   vi.mocked(clearImageCache).mockReset().mockResolvedValue();
   vi.mocked(clearBrowsedImageCaches).mockReset().mockResolvedValue();
+  vi.mocked(clearApiCaches).mockReset().mockResolvedValue();
 });
 
 describe("wipeOfflineData", () => {
-  it("чистит IndexedDB-сторы, офлайн-картинки и LRU-кэши картинок", async () => {
+  it("чистит IndexedDB-сторы, офлайн-картинки, LRU- и API-кэши", async () => {
     await wipeOfflineData();
     expect(wipeOfflineDb).toHaveBeenCalledOnce();
     expect(clearImageCache).toHaveBeenCalledOnce();
     expect(clearBrowsedImageCaches).toHaveBeenCalledOnce();
+    expect(clearApiCaches).toHaveBeenCalledOnce();
   });
 
   it("возвращает true, когда все три подсистемы отработали без сбоя", async () => {
