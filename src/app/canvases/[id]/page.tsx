@@ -1,7 +1,7 @@
 // src/app/canvases/[id]/page.tsx
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { RouterLink } from "@/components/ui";
 import {
   canEditCanvas,
   canDeleteCanvas,
@@ -59,12 +59,12 @@ export default async function CanvasPage({ params, searchParams }: Props) {
       {canEdit && (
         <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
           <h2 className="text-lg font-semibold">Редактирование</h2>
-          <Link
+          <RouterLink
             href={`/canvases/${canvas.id}/edit`}
             className="inline-flex h-10 w-fit items-center rounded bg-(--color-primary) px-4 text-sm font-medium text-(--color-background)"
           >
             Открыть редактор
-          </Link>
+          </RouterLink>
           {canPublish && canvas.id && <CanvasVisibilityButton id={canvas.id} />}
         </section>
       )}

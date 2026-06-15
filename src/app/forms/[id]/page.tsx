@@ -1,7 +1,7 @@
 // src/app/forms/[id]/page.tsx
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { RouterLink } from "@/components/ui";
 import {
   getFormById,
   canEditForm,
@@ -59,12 +59,12 @@ export default async function FormPage({ params, searchParams }: Props) {
             />
           )}
           {canSeeSubmissions && form.id && (
-            <Link
+            <RouterLink
               href={`/forms/${form.id}/submissions`}
               className="text-sm text-(--color-link) hover:underline"
             >
               Отклики
-            </Link>
+            </RouterLink>
           )}
           {canPublish && form.id && <FormPublishButton formId={form.id} />}
           {canDelete && form.id && <FormDeleteButton id={form.id} />}

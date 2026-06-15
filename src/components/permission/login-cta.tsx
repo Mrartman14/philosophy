@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RouterLink } from "@/components/ui";
 
 interface LoginCtaProps {
   /** Текст CTA. По умолчанию — нейтральный. */
@@ -23,12 +23,12 @@ export const LoginCta: React.FC<LoginCtaProps> = ({
   return (
     <p className="text-sm text-(--color-description)">
       {message}.{" "}
-      <Link
+      <RouterLink
         href={href}
         className="text-(--color-primary) hover:underline"
       >
         Войти
-      </Link>
+      </RouterLink>
     </p>
   );
 };

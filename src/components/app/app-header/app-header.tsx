@@ -1,8 +1,9 @@
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
-import Link from "next/link";
+
 
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { LogoIcon } from "@/assets/icons/logo-icon";
+import { RouterLink } from "@/components/ui";
 import { LogoutForm } from "@/features/auth";
 import { SearchInput } from "@/features/search";
 import { getMe } from "@/utils/me";
@@ -16,74 +17,74 @@ export const AppHeader = async () => {
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--color-border) bg-(--color-background) pl-4 pr-4">
         <NavigationMenu.List className="relative grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 w-full h-full items-stretch">
           <NavigationMenu.Item className="flex items-stretch">
-            <Link href="/" className="flex group">
+            <RouterLink href="/" className="flex group">
               <LogoIcon className="text-3xl text-(--color-description) group-hover:text-(--color-primary) self-center" />
-            </Link>
+            </RouterLink>
           </NavigationMenu.Item>
           <NavigationMenu.Item className="flex items-center gap-4">
-            <Link
+            <RouterLink
               href="/calendar"
               className="text-sm text-(--color-description) hover:text-(--color-primary)"
             >
               Календарь
-            </Link>
-            <Link
+            </RouterLink>
+            <RouterLink
               href="/trails"
               className="text-sm text-(--color-description) hover:text-(--color-primary)"
             >
               Маршруты
-            </Link>
+            </RouterLink>
           </NavigationMenu.Item>
           <div className="flex gap-2 items-center">
             <SearchInput variant="header" />
             <NetworkIndicator className="text-xl" />
             {me ? (
               <>
-                <Link
+                <RouterLink
                   href="/documents/my"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Мои документы
-                </Link>
-                <Link
+                </RouterLink>
+                <RouterLink
                   href="/media/my"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Мои медиа
-                </Link>
-                <Link
+                </RouterLink>
+                <RouterLink
                   href="/canvases"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Канвасы
-                </Link>
-                <Link
+                </RouterLink>
+                <RouterLink
                   href="/me/annotations"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Мои аннотации
-                </Link>
-                <Link
+                </RouterLink>
+                <RouterLink
                   href="/me/forms"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Мои формы
-                </Link>
-                <Link
+                </RouterLink>
+                <RouterLink
                   href="/settings"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Настройки
-                </Link>
+                </RouterLink>
                 <LogoutForm username={me.username} />
               </>
             ) : (
-              <Link
+              <RouterLink
                 href="/login"
                 className="text-sm text-(--color-description) hover:text-(--color-primary)"
               >
                 Войти
-              </Link>
+              </RouterLink>
             )}
           </div>
         </NavigationMenu.List>

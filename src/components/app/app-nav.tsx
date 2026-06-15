@@ -4,10 +4,11 @@
 // Будет восстановлен фичей `features/lectures` — не удалять при cleanup.
 
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
-import Link from "next/link";
+
 
 import type { Lecture } from "@/api/types";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
+import { RouterLink } from "@/components/ui";
 
 export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
 
@@ -25,7 +26,7 @@ export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
             const href = `/lectures/${item.id}`;
             return (
               <li key={item.id}>
-                <Link
+                <RouterLink
                   href={href}
                   className="group block p-2 hover:bg-(--color-text-pane) font-semibold focus:outline-0"
                 >
@@ -37,7 +38,7 @@ export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
                       {item.description}
                     </span>
                   )}
-                </Link>
+                </RouterLink>
               </li>
             );
           })}

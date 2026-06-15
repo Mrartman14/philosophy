@@ -1,7 +1,7 @@
 // src/app/admin/layout.tsx
-import Link from "next/link";
 import { forbidden } from "next/navigation";
 
+import { RouterLink } from "@/components/ui";
 import { getMe } from "@/utils/me";
 
 import { buildNavItems, canAccessAdmin } from "./admin-access";
@@ -23,12 +23,12 @@ export default async function AdminLayout({
     <div className="flex min-h-[calc(100vh-var(--header-height))] w-full">
       <aside className="w-56 shrink-0 border-r border-(--color-border) bg-(--color-text-pane) p-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <Link
+          <RouterLink
             href="/"
             className="text-xs text-(--color-description) hover:underline"
           >
             ← На сайт
-          </Link>
+          </RouterLink>
           <h2 className="text-lg font-bold">Админ-панель</h2>
           {me && (
             <span className="text-xs text-(--color-description) break-all">

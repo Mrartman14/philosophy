@@ -1,11 +1,11 @@
 // src/app/admin/lectures/page.tsx
-import Link from "next/link";
 import { forbidden } from "next/navigation";
 
 import {
   Button,
   EmptyState,
   Pagination,
+  RouterLink,
   Table,
   Tbody,
   Th,
@@ -49,9 +49,9 @@ export default async function AdminLecturesPage({ searchParams }: Props) {
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Лекции</h1>
         {canCreateLecture(me) && (
-          <Link href="/admin/lectures/new">
+          <RouterLink href="/admin/lectures/new">
             <Button>Создать</Button>
-          </Link>
+          </RouterLink>
         )}
       </header>
 
@@ -61,9 +61,9 @@ export default async function AdminLecturesPage({ searchParams }: Props) {
           description="Создайте первую."
           action={
             canCreateLecture(me) ? (
-              <Link href="/admin/lectures/new">
+              <RouterLink href="/admin/lectures/new">
                 <Button>Создать</Button>
-              </Link>
+              </RouterLink>
             ) : undefined
           }
         />

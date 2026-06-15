@@ -1,9 +1,8 @@
 "use client";
 // src/app/admin/admin-sidebar.tsx
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { cn } from "@/components/ui";
+import { cn, RouterLink } from "@/components/ui";
 
 export interface NavItem {
   href: string;
@@ -18,7 +17,7 @@ export function AdminSidebar({ items }: { items: NavItem[] }) {
         const active =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
-          <Link
+          <RouterLink
             key={item.href}
             href={item.href}
             className={cn(
@@ -29,7 +28,7 @@ export function AdminSidebar({ items }: { items: NavItem[] }) {
             )}
           >
             {item.label}
-          </Link>
+          </RouterLink>
         );
       })}
     </nav>

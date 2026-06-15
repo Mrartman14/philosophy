@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { RouterLink } from "@/components/ui";
 import { LoginForm, safeNextPath } from "@/features/auth";
 import { getMe } from "@/utils/me";
 
@@ -32,9 +32,9 @@ export default async function LoginPage({ searchParams }: PageProps) {
       <LoginForm next={next} />
       <p className="text-sm text-(--color-description)">
         Нет аккаунта?{" "}
-        <Link href={registerHref} className="underline">
+        <RouterLink href={registerHref} className="underline">
           Зарегистрируйтесь
-        </Link>
+        </RouterLink>
       </p>
     </div>
   );

@@ -1,7 +1,7 @@
 // src/app/register/page.tsx
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { RouterLink } from "@/components/ui";
 import { RegisterForm, safeNextPath } from "@/features/auth";
 import { getMe } from "@/utils/me";
 
@@ -28,9 +28,9 @@ export default async function RegisterPage({ searchParams }: PageProps) {
       <RegisterForm next={next} />
       <p className="text-sm text-(--color-description)">
         Уже есть аккаунт?{" "}
-        <Link href={loginHref} className="underline">
+        <RouterLink href={loginHref} className="underline">
           Войдите
-        </Link>
+        </RouterLink>
       </p>
     </div>
   );

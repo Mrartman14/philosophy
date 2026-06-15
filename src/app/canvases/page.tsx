@@ -1,8 +1,7 @@
 // src/app/canvases/page.tsx
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui";
+import { Button, RouterLink } from "@/components/ui";
 import {
   canCreateCanvas,
   getCanvases,
@@ -41,9 +40,9 @@ export default async function CanvasesPage({ searchParams }: Props) {
           <p className="text-sm text-(--color-description)">Всего: {result.total}</p>
         </div>
         {canCreate && (
-          <Link href="/canvases/new">
+          <RouterLink href="/canvases/new">
             <Button>Создать канвас</Button>
-          </Link>
+          </RouterLink>
         )}
       </header>
 
