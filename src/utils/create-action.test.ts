@@ -6,6 +6,7 @@ import {
   parseFormData,
   ZodValidationError,
 } from "./create-action";
+import { IDEMPOTENCY_FIELD } from "./idempotency";
 import { ForbiddenError } from "./permissions";
 
 describe("parseFormData", () => {
@@ -137,7 +138,7 @@ describe("createFormAction idempotency context", () => {
       return Promise.resolve(null);
     });
     const fd = new FormData();
-    fd.set("__idempotency_key", "key-42");
+    fd.set(IDEMPOTENCY_FIELD, "key-42");
     await action({ success: false, error: "" }, fd);
     expect(received).toBe("key-42");
   });
