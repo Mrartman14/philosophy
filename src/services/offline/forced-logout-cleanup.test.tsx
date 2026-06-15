@@ -20,7 +20,7 @@ afterEach(cleanup);
 describe("ForcedLogoutCleanup", () => {
   it("на mount стирает офлайн-данные и маркер владельца", async () => {
     const { container } = render(<ForcedLogoutCleanup />);
-    await waitFor(() => expect(wipeMock).toHaveBeenCalledOnce());
+    await waitFor(() => { expect(wipeMock).toHaveBeenCalledOnce(); });
     expect(clearOwnerMock).toHaveBeenCalledOnce();
     expect(container).toBeEmptyDOMElement();
   });

@@ -57,7 +57,7 @@ describe("clearOfflineOwner", () => {
   });
 
   it("не бросает, если маркера нет", () => {
-    expect(() => clearOfflineOwner()).not.toThrow();
+    expect(() => { clearOfflineOwner(); }).not.toThrow();
     expect(getOfflineOwner()).toBeNull();
   });
 });
