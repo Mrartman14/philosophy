@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 
 import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
-import { Form, FormField, SubmitButton } from "@/components/ui";
+import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateDocumentBlocks } from "../actions";
@@ -24,6 +24,7 @@ export function DocumentEditForm({ document }: Props) {
     <Form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={document.id ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="blocks" label="Содержимое">
         <AstEditor

@@ -5,6 +5,7 @@ import { useActionState, useEffect } from "react";
 import {
   Form,
   FormField,
+  IdempotencyField,
   Select,
   SubmitButton,
   TextInput,
@@ -31,6 +32,7 @@ export function LectureCreateForm() {
 
   return (
     <Form action={action} errors={fieldErrors} className="max-w-xl">
+      <IdempotencyField result={state} />
       <FormField name="title" label="Название" required>
         <TextInput name="title" required maxLength={200} />
       </FormField>

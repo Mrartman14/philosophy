@@ -5,7 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
-import { Form, FormField, SubmitButton, TextInput } from "@/components/ui";
+import { Form, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createDocument } from "../actions";
@@ -30,6 +30,7 @@ export function DocumentCreateForm() {
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
 
       <FormField name="title" label="Название" required>
         <TextInput name="title" required maxLength={500} placeholder="Название документа" />

@@ -78,7 +78,7 @@ export const createComment = createFormAction(async (formData, ctx) => {
 });
 
 /** Редактировать blocks комментария (owner-only — бек проверит). FormData: id, blocks(JSON). */
-export const updateCommentBlocks = createFormAction(async (formData) => {
+export const updateCommentBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateComment); // active+create — точную owner-проверку делает бек
   const input = parseFormData(CommentBlocksUpdateSchema, formData);
@@ -86,6 +86,7 @@ export const updateCommentBlocks = createFormAction(async (formData) => {
   const { data, error } = await api.PUT("/api/comments/{id}/blocks", {
     params: { path: { id: input.id } },
     body: { blocks: input.blocks as never },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, input.id);

@@ -15,6 +15,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import {
   ForbiddenError,
@@ -54,7 +55,7 @@ const ERRORS: ApiErrorMessages = {
 };
 
 /** POST /api/documents (JSON). Гейт — document.create. */
-export const createDocument = createFormAction(async (formData) => {
+export const createDocument = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateDocument);
   const input = parseFormData(DocumentCreateSchema, formData);
@@ -65,6 +66,7 @@ export const createDocument = createFormAction(async (formData) => {
       blocks: input.blocks as never,
       ...(input.visibility ? { visibility: input.visibility } : {}),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
@@ -138,7 +140,7 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
 });
 
 /** PUT /api/documents/{id}/blocks. Owner-only enforce'ит бек. */
-export const updateDocumentBlocks = createFormAction(async (formData) => {
+export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
   const input = parseFormData(DocumentBlocksSchema, formData);
@@ -146,6 +148,7 @@ export const updateDocumentBlocks = createFormAction(async (formData) => {
   const { data, error } = await api.PUT("/api/documents/{document_id}/blocks", {
     params: { path: { document_id: input.id } },
     body: { blocks: input.blocks as never },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS, input.id);

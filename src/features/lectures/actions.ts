@@ -12,6 +12,7 @@ import {
   createFormAction,
   parseFormData,
 } from "@/utils/create-action";
+import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -56,7 +57,7 @@ async function loadLectureForGate(id: string): Promise<Lecture> {
   return lecture;
 }
 
-export const createLecture = createFormAction(async (formData) => {
+export const createLecture = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   const input = parseFormData(LectureCreateSchema, formData);
   requireCapability(me, canCreateLecture);
@@ -68,6 +69,7 @@ export const createLecture = createFormAction(async (formData) => {
       date: input.date,
       ...(input.visibility !== undefined && { visibility: input.visibility }),
     },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES);

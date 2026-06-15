@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
-import { Form, FormField, SubmitButton, Button } from "@/components/ui";
+import { Button, Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCommentBlocks } from "../actions";
@@ -36,6 +36,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks }: Props) 
     <Form action={action} errors={fieldErrors} className="mt-2 flex flex-col gap-2">
       <input type="hidden" name="id" value={commentId} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+      <IdempotencyField result={state} />
       <FormField name="blocks" label="Текст">
         <AstEditor
           defaultValue={initialBlocks}
