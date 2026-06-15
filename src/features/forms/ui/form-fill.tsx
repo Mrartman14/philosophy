@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { IDEMPOTENCY_FIELD } from "@/utils/idempotency";
 
 import { submitForm } from "../actions";
 import { encodeAnswerValue, emptyAnswerValue, type AnswerInput } from "../answer-codec";
@@ -19,6 +21,7 @@ interface Props {
 
 export function FormFill({ form, token }: Props) {
   const toast = useToast();
+  const { key: idempotencyKey, rotate } = useIdempotencyKey();
   const fields: FormField[] = (form.fields ?? [])
     .slice()
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
@@ -63,6 +66,7 @@ export function FormFill({ form, token }: Props) {
     fd.set("formId", form.id ?? "");
     fd.set("answers", JSON.stringify(answers));
     if (token) fd.set("token", token);
+    fd.set(IDEMPOTENCY_FIELD, idempotencyKey);
     const result = await submitForm({ success: true, data: null }, fd);
     setPending(false);
 
@@ -73,6 +77,7 @@ export function FormFill({ form, token }: Props) {
       });
       return;
     }
+    rotate();
     setAfterBlocks((result.data?.after_submit_blocks ?? []));
     setDone(true);
   }

@@ -228,11 +228,12 @@ export const detachFromLecture = createAction(
  * suggest-highlight.ts конверсию). Возвращаем suggestions как есть.
  */
 export const suggestGlossaryTerms = createAction(
-  async (raw: { blocks: { block_id: string; text: string }[] }) => {
+  async (raw: { blocks: { block_id: string; text: string }[] }, ctx) => {
     const input = LectureSuggestSchema.parse(raw);
     const api = await createApiClient();
     const { data, error } = await api.POST("/api/glossary/suggest", {
       body: { blocks: input.blocks },
+      headers: idempotencyHeaders(ctx.idempotencyKey),
     });
     if (error) rethrowApiError(error as ApiError, ERRORS);
     return data.data?.suggestions ?? [];

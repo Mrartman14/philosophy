@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
+import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+
 import { suggestGlossaryTerms } from "../actions";
 import {
   byteRangeToCodeUnits,
@@ -25,16 +27,19 @@ export function LectureDescription({
   blockId = "lecture-description",
 }: Props) {
   const [ranges, setRanges] = useState<HighlightRange[]>([]);
+  const { key: idempotencyKey, rotate } = useIdempotencyKey();
 
   useEffect(() => {
     if (!description) return;
     let cancelled = false;
     void (async () => {
-      const r = await suggestGlossaryTerms({
-        blocks: [{ block_id: blockId, text: description }],
-      });
+      const r = await suggestGlossaryTerms(
+        { blocks: [{ block_id: blockId, text: description }] },
+        idempotencyKey,
+      );
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- cancelled мутируется в cleanup эффекта (race guard), TS не отслеживает closure-мутацию
       if (cancelled || !r.success) return;
+      rotate();
       const next: HighlightRange[] = [];
       for (const sug of r.data) {
         for (const occ of sug.occurrences ?? []) {
@@ -62,6 +67,7 @@ export function LectureDescription({
     return () => {
       cancelled = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- idempotencyKey/rotate intentionally omitted: adding them would cause an infinite loop (rotate → key change → effect re-fires → rotate…). Key is captured at effect-trigger time, which is the correct Stripe-idempotency semantics.
   }, [description, blockId]);
 
   const segments = segmentWithHighlights(description, ranges);
