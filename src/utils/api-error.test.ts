@@ -107,3 +107,23 @@ describe("rethrowApiError — фоллбек", () => {
     );
   });
 });
+
+describe("rethrowApiError idempotency codes", () => {
+  it("maps IDEMPOTENCY_KEY_IN_USE to a wait message", () => {
+    expect(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_IN_USE" })).toThrow(
+      /уже обрабатывается/i,
+    );
+  });
+
+  it("maps IDEMPOTENCY_KEY_REUSED to a conflict message", () => {
+    expect(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_REUSED" })).toThrow(
+      /конфликтует/i,
+    );
+  });
+
+  it("maps IDEMPOTENCY_KEY_INVALID to a refresh message", () => {
+    expect(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_INVALID" })).toThrow(
+      /ключ идемпотентности/i,
+    );
+  });
+});
