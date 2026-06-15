@@ -8,7 +8,7 @@ import { createAction } from "@/utils/create-action";
 
 /** Лёгкая сверка статуса лекции для офлайн-ревалидации. */
 export type LectureProbe =
-  | { status: "present"; updatedAt: string | null }
+  | { status: "present"; updatedAt: string }
   | { status: "gone" };
 
 /**
@@ -25,9 +25,9 @@ export const probeLectureForOffline = createAction(
   async (input: { id: string }): Promise<LectureProbe> => {
     const lecture = await getLectureById(input.id);
     if (!lecture) return { status: "gone" };
-    // Явно приводим к `string | undefined` — защита от будущего регена схемы,
-    // когда updated_at может стать опциональным (сейчас required).
-    const updatedAt = (lecture.updated_at as string | undefined) ?? null;
-    return { status: "present", updatedAt };
+    // updated_at — required string в схеме; строгий eslint (no-unnecessary-
+    // condition) запрещает мёртвую защиту `?? null`. Если бэк когда-то сделает
+    // поле опциональным — реген + typecheck/lint заставят обновить здесь.
+    return { status: "present", updatedAt: lecture.updated_at };
   },
 );
