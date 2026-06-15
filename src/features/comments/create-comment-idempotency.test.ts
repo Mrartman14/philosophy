@@ -40,16 +40,17 @@ describe("createComment idempotency wiring", () => {
   it("forwards Idempotency-Key header from the hidden field", async () => {
     await createComment(initial, commentForm({ __idempotency_key: "key-123" }));
     expect(post).toHaveBeenCalledTimes(1);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(post.mock.calls[0]![1]).toMatchObject({
-      headers: { "Idempotency-Key": "key-123" },
-    });
+    expect(post).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ headers: { "Idempotency-Key": "key-123" } }),
+    );
   });
 
   it("sends no idempotency header when the field is absent", async () => {
     await createComment(initial, commentForm({}));
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const opts = post.mock.calls[0]![1] as { headers?: Record<string, string> };
-    expect(opts.headers?.["Idempotency-Key"]).toBeUndefined();
+    expect(post).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ headers: {} }),
+    );
   });
 });
