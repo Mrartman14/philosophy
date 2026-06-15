@@ -291,6 +291,8 @@ describe("logoutAction", () => {
     expect((init.headers as Record<string, string>).Authorization).toBe(
       "Bearer jwt-xyz"
     );
+    // запрос ограничен таймаутом через AbortController
+    expect(init.signal).toBeInstanceOf(AbortSignal);
     expect(cookieDelete).toHaveBeenCalledWith("token");
   });
 

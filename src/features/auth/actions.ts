@@ -106,18 +106,30 @@ export const registerAction = createFormAction<undefined>(async (formData) => {
  * сессии. 401/403 для логаута неактуальны (токен и так невалиден), показывать
  * нечего — поэтому ошибки/таймаут глотаем. Худший случай при сбое: токен живёт
  * до своего expiry на сервере — не хуже прежнего поведения (бэк не звался вовсе).
+ *
+ * Запрос ограничен таймаутом: зависший бэк не должен держать логаут открытым —
+ * по абортy мы всё равно чистим cookie и редиректим.
  */
+const LOGOUT_TIMEOUT_MS = 3000;
+
 export async function logoutAction(): Promise<void> {
   const token = await getAuthToken();
   if (token) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      controller.abort();
+    }, LOGOUT_TIMEOUT_MS);
     try {
       await fetch(`${API_URL}/api/auth/logout`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
+        signal: controller.signal,
       });
     } catch {
-      // best-effort: см. JSDoc выше
+      // best-effort: сеть / таймаут (AbortError) / любой статус — см. JSDoc выше
+    } finally {
+      clearTimeout(timer);
     }
   }
 
