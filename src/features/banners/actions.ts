@@ -94,13 +94,14 @@ export const updateBanner = createFormAction(async (formData, ctx) => {
   return (data.data ?? null) as Banner | null;
 });
 
-export const deleteBanner = createAction(async (rawId: string) => {
+export const deleteBanner = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canDeleteBanner);
   const { id } = BannerIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/banners/{id}", {
     params: { path: { id } },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS);

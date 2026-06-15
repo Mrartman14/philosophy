@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
 
 import { deleteComment, adminDeleteComment } from "../actions";
 
@@ -15,6 +16,7 @@ interface Props {
 export function CommentDeleteButton({ commentId, admin = false }: Props) {
   const [done, setDone] = useState(false);
   const toast = useToast();
+  const { key } = useIdempotencyKey();
   if (done) return <span className="text-xs text-(--color-description)">Удалено</span>;
   return (
     <ConfirmDialog
@@ -30,7 +32,7 @@ export function CommentDeleteButton({ commentId, admin = false }: Props) {
       onConfirm={async () => {
         const result = admin
           ? await adminDeleteComment(commentId)
-          : await deleteComment(commentId);
+          : await deleteComment(commentId, key);
         if (result.success) {
           setDone(true);
         } else {

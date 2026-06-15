@@ -116,7 +116,7 @@ export const updateAnnotation = createFormAction(async (formData, ctx) => {
 });
 
 /** Удаление своей аннотации (DELETE /api/annotations/{id}). */
-export const deleteAnnotation = createAction(async (rawId: string) => {
+export const deleteAnnotation = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   const { id } = AnnotationIdSchema.parse({ id: rawId });
   const existing = await getAnnotationById(id);
@@ -126,6 +126,7 @@ export const deleteAnnotation = createAction(async (rawId: string) => {
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/annotations/{id}", {
     params: { path: { id } },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, id);

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
 
 import { deleteAnnotation, adminDeleteAnnotation } from "../actions";
 
@@ -22,6 +23,7 @@ export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [, startTransition] = useTransition();
+  const { key } = useIdempotencyKey();
 
   return (
     <ConfirmDialog
@@ -33,7 +35,7 @@ export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
       onConfirm={async () => {
         const result = admin
           ? await adminDeleteAnnotation(annotationId)
-          : await deleteAnnotation(annotationId);
+          : await deleteAnnotation(annotationId, key);
         if (!result.success) {
           toast.add(
             result.code === "forbidden"

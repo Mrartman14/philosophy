@@ -95,13 +95,14 @@ export const updateCommentBlocks = createFormAction(async (formData, ctx) => {
 });
 
 /** Удалить свой комментарий (owner). Аргумент — id (uuid). */
-export const deleteComment = createAction(async (rawId: string) => {
+export const deleteComment = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateComment);
   const { id } = CommentIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/comments/{id}", {
     params: { path: { id } },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, id);
