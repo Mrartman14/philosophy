@@ -1,6 +1,7 @@
 // src/app/lectures/[id]/page.tsx
 import { notFound } from "next/navigation";
 
+import { SaveOfflineButton } from "@/app/_offline/save-offline-button";
 import { CommentSection } from "@/features/comments";
 import {
   getLectureById,
@@ -45,6 +46,9 @@ export default async function LecturePage({ params, searchParams }: Props) {
           Каждая сама возвращает null, если список пуст. */}
       <LectureDocumentsSection lectureId={id} />
       <LectureMediaSection lectureId={id} />
+      <div className="flex justify-end">
+        <SaveOfflineButton entity="lectures" id={id} />
+      </div>
       {/* === slot: share-кнопка (share-links, волна 3) === */}
       {canShare && (
         <div className="flex justify-end">
