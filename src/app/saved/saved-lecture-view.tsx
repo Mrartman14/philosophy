@@ -4,8 +4,9 @@
 import { useEffect, useState } from "react";
 
 import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descriptor";
+import { saveOffline } from "@/app/_offline/save-offline";
 import { AstRender } from "@/components/ast-render";
-import { Skeleton } from "@/components/ui";
+import { Button, Skeleton } from "@/components/ui";
 import { CommentTreeView } from "@/features/comments/client";
 import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { whenIdentityReconciled } from "@/services/offline/identity-gate";
@@ -17,7 +18,7 @@ type LoadState =
   | { kind: "missing" }
   | { kind: "incomplete"; status: string; error: string | undefined }
   | { kind: "corrupt" }
-  | { kind: "ready"; snapshot: LectureSnapshot };
+  | { kind: "ready"; snapshot: LectureSnapshot; savedAt: string };
 
 // Снимок в сторе — unknown; рантайм-валидация минимальной формы перед рендером.
 function isLectureSnapshot(s: unknown): s is LectureSnapshot {
@@ -34,8 +35,27 @@ function isLectureSnapshot(s: unknown): s is LectureSnapshot {
   );
 }
 
+async function loadState(id: string): Promise<LoadState> {
+  const rec = await getSavedBundle("lectures", id);
+  if (!rec) return { kind: "missing" };
+  if (rec.status !== "complete") {
+    return { kind: "incomplete", status: rec.status, error: rec.error };
+  }
+  // Несовместимая версия формы или битый снимок → один и тот же экран
+  // «повреждён или устарел — сохраните заново».
+  if (
+    rec.schemaVersion !== OFFLINE_SCHEMA_VERSION ||
+    !isLectureSnapshot(rec.snapshot)
+  ) {
+    return { kind: "corrupt" };
+  }
+  return { kind: "ready", snapshot: rec.snapshot, savedAt: rec.savedAt };
+}
+
 export function SavedLectureView({ id }: { id: string }) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,28 +64,30 @@ export function SavedLectureView({ id }: { id: string }) {
       await whenIdentityReconciled();
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
       if (cancelled) return;
-      const rec = await getSavedBundle("lectures", id);
+      const next = await loadState(id);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
       if (cancelled) return;
-      if (!rec) {
-        setState({ kind: "missing" });
-      } else if (rec.status !== "complete") {
-        setState({ kind: "incomplete", status: rec.status, error: rec.error });
-      } else if (
-        rec.schemaVersion !== OFFLINE_SCHEMA_VERSION ||
-        !isLectureSnapshot(rec.snapshot)
-      ) {
-        // Несовместимая версия формы или битый снимок → один и тот же экран
-        // «повреждён или устарел — сохраните заново».
-        setState({ kind: "corrupt" });
-      } else {
-        setState({ kind: "ready", snapshot: rec.snapshot });
-      }
+      setState(next);
     })();
     return () => {
       cancelled = true;
     };
   }, [id]);
+
+  // «Обновить» — пере-сохранить свежий снимок из сети (работает только онлайн);
+  // при сбое показываем инлайн-сообщение, не теряя уже показанный снимок.
+  const onRefresh = (): void => {
+    setRefreshing(true);
+    setRefreshError(null);
+    void saveOffline("lectures", id).then(async (res) => {
+      if (res.ok) {
+        setState(await loadState(id));
+      } else {
+        setRefreshError(res.error ?? "Не удалось обновить — проверьте подключение.");
+      }
+      setRefreshing(false);
+    });
+  };
 
   if (state.kind === "loading") {
     return (
@@ -106,6 +128,28 @@ export function SavedLectureView({ id }: { id: string }) {
 
   return (
     <article className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm text-(--color-description)">
+          Сохранено офлайн:{" "}
+          {new Date(state.savedAt).toLocaleDateString("ru-RU", {
+            timeZone: "UTC",
+          })}
+        </span>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={refreshing}
+          onClick={onRefresh}
+        >
+          {refreshing ? "Обновление…" : "Обновить"}
+        </Button>
+      </div>
+      {refreshError && (
+        <p className="text-sm text-(--color-description)" role="alert">
+          {refreshError}
+        </p>
+      )}
+
       <header className="flex flex-col gap-2">
         {coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element
