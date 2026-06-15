@@ -1,4 +1,4 @@
-/* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, PRESERVED_CACHES */
+/* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, BROWSED_IMAGE_CACHE, PRESERVED_CACHES */
 const BASE_PATH = '__BASE_PATH__';
 const SW_VERSION = '__SW_VERSION__';
 
@@ -6,9 +6,10 @@ const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;
 const NEXT_ASSETS_CACHE = `${CACHE_PREFIX}-next-${SW_VERSION}`;
 const API_CACHE = `${CACHE_PREFIX}-api-${SW_VERSION}`;
-const IMAGE_CACHE = `${CACHE_PREFIX}-images-${SW_VERSION}`;
+// Кэш просмотренных картинок (BROWSED_IMAGE_CACHE = 'flbz-images') НЕверсионируемый
+// и живёт в PRESERVED_CACHES (sw-logic.ts) — не сбрасывается на каждый деплой.
 
-const ALL_CACHES = [STATIC_CACHE, NEXT_ASSETS_CACHE, API_CACHE, IMAGE_CACHE];
+const ALL_CACHES = [STATIC_CACHE, NEXT_ASSETS_CACHE, API_CACHE];
 
 const STATIC_ASSETS = [
   `${BASE_PATH}/`,
@@ -89,9 +90,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Images — cache-first with LRU
+  // Просмотренные картинки — cache-first, с FIFO-ограничением размера.
   if (url.pathname.match(/\.(jpeg|jpg|png|webp)$/)) {
-    event.respondWith(cacheFirstWithLimit(request, IMAGE_CACHE, IMAGE_CACHE_LIMIT));
+    event.respondWith(cacheFirstWithLimit(request, BROWSED_IMAGE_CACHE, IMAGE_CACHE_LIMIT));
     return;
   }
 
@@ -148,6 +149,9 @@ async function cacheFirstWithLimit(request, cacheName, limit) {
   }
 }
 
+// FIFO-вытеснение (НЕ LRU): cache.keys() в порядке вставки, попадания не «трогаются»,
+// поэтому уходят самые СТАРЫЕ по добавлению, не наименее используемые. Достаточно
+// для best-effort кэша картинок; реальный LRU потребовал бы метаданных доступа.
 async function trimCache(cacheName, limit) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
@@ -164,9 +168,9 @@ async function offlineFileFirst(request) {
   try {
     const response = await fetch(request);
     if (response && response.status === 200) {
-      const lru = await caches.open(IMAGE_CACHE);
-      lru.put(request, response.clone());
-      trimCache(IMAGE_CACHE, IMAGE_CACHE_LIMIT);
+      const browsed = await caches.open(BROWSED_IMAGE_CACHE);
+      browsed.put(request, response.clone());
+      trimCache(BROWSED_IMAGE_CACHE, IMAGE_CACHE_LIMIT);
     }
     return response;
   } catch {

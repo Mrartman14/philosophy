@@ -78,15 +78,17 @@ describe("images cache", () => {
     expect(cachesDelete).toHaveBeenCalledWith(OFFLINE_IMAGE_CACHE);
   });
 
-  it("clearBrowsedImageCaches удаляет только LRU-кэши картинок (flbz-images-*), не трогая чужие", async () => {
+  it("clearBrowsedImageCaches удаляет кэш просмотренных картинок (flbz-images + легаси flbz-images-*), не трогая чужие", async () => {
     cachesKeys.mockResolvedValueOnce([
-      "flbz-images-abc123",
+      "flbz-images", // неверсионируемый (текущий)
+      "flbz-images-abc123", // легаси версионированный
       "flbz-images-def456",
       "flbz-offline-images",
       "flbz-static-abc123",
       "flbz-shell",
     ]);
     await clearBrowsedImageCaches();
+    expect(cachesDelete).toHaveBeenCalledWith("flbz-images");
     expect(cachesDelete).toHaveBeenCalledWith("flbz-images-abc123");
     expect(cachesDelete).toHaveBeenCalledWith("flbz-images-def456");
     expect(cachesDelete).not.toHaveBeenCalledWith("flbz-offline-images");

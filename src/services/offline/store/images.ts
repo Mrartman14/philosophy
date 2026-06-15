@@ -3,7 +3,7 @@
 // `<img src="/static/files/{key}">` отдаётся прозрачно из кэша через SW.
 import {
   OFFLINE_IMAGE_CACHE,
-  LRU_IMAGE_CACHE_PREFIX,
+  BROWSED_IMAGE_CACHE_PREFIX,
   API_CACHE_PREFIX,
 } from "../contract/storage";
 
@@ -33,16 +33,15 @@ export async function clearImageCache(): Promise<void> {
 }
 
 /**
- * Defense-in-depth: удаляет ВЕРСИОНИРОВАННЫЕ LRU-кэши просмотренных картинок
- * (`flbz-images-*`). Сейчас offlineFileFirst из них не читает (content-addressed
- * файлы отдаются только из OFFLINE_IMAGE_CACHE), но не оставляем картинки прежнего
- * владельца на общем устройстве при смене аккаунта.
+ * Удаляет кэш просмотренных картинок: неверсионируемый `flbz-images` И легаси
+ * версионированные `flbz-images-*` от прежних сборок (префикс ловит обе формы).
+ * Не оставляем картинки прежнего владельца на общем устройстве при смене аккаунта.
  */
 export async function clearBrowsedImageCaches(): Promise<void> {
   const keys = await caches.keys();
   await Promise.all(
     keys
-      .filter((key) => key.startsWith(LRU_IMAGE_CACHE_PREFIX))
+      .filter((key) => key.startsWith(BROWSED_IMAGE_CACHE_PREFIX))
       .map((key) => caches.delete(key)),
   );
 }

@@ -14,12 +14,13 @@ export const OFFLINE_DB_VERSION = 1;
 export const OFFLINE_SCHEMA_VERSION = 1;
 export const OFFLINE_IMAGE_CACHE = "flbz-offline-images";
 /**
- * Префикс ВЕРСИОНИРОВАННЫХ LRU-кэшей просмотренных картинок в Cache Storage
- * (`flbz-images-<SW_VERSION>`, заводится в public/sw.js). Не путать с
- * `OFFLINE_IMAGE_CACHE` (`flbz-offline-images`): у того другой префикс, под фильтр
- * по этой строке он НЕ попадает — проверять при изменении любого из имён.
+ * Префикс кэша просмотренных (онлайн) картинок в Cache Storage. Бакет теперь
+ * НЕверсионируемый — единый `flbz-images` (заводится в public/sw.js, переживает
+ * деплой). Префикс ловит и его, и легаси версионированные `flbz-images-<SW_VERSION>`
+ * от прежних сборок — обе формы чистятся при смене аккаунта. Не путать с
+ * `OFFLINE_IMAGE_CACHE` (`flbz-offline-images`): другой префикс, под фильтр не попадает.
  */
-export const LRU_IMAGE_CACHE_PREFIX = "flbz-images-";
+export const BROWSED_IMAGE_CACHE_PREFIX = "flbz-images";
 /**
  * Префикс ВЕРСИОНИРОВАННЫХ кэшей ответов `/api/*` (`flbz-api-<SW_VERSION>`,
  * заводится в public/sw.js). Чистится при смене владельца как defense-in-depth:
