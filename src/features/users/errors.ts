@@ -25,8 +25,9 @@ const CONFLICT_MESSAGES: Record<string, string> = {
     "Нельзя понизить роль последнего активного администратора.",
 };
 
-/** Доменные коды users-admin. FORBIDDEN/SUSPENDED/BANNED обрабатывает
- * централизованный {@link rethrowApiError} (branded ForbiddenError). */
+/** Доменные коды users-admin. FORBIDDEN/SUSPENDED обрабатывает централизованный
+ * {@link rethrowApiError} (branded ForbiddenError); BANNED → BannedError
+ * (форс-логаут актора, ловится в createAction → redirect). */
 const ERRORS: ApiErrorMessages = {
   NOT_FOUND: "Пользователь не найден.",
 };

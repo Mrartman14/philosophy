@@ -79,6 +79,16 @@ describe("getMe / getBanSignal", () => {
     expect(await getBanSignal()).toBe(false);
   });
 
+  it("403 с не-JSON телом → null, не забанен (best-effort)", async () => {
+    cookieGet.mockReturnValue({ value: "tok" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(new Response("<html>nope", { status: 403 }))),
+    );
+    expect(await getMe()).toBeNull();
+    expect(await getBanSignal()).toBe(false);
+  });
+
   it("500 → throw (инцидент, не гость)", async () => {
     cookieGet.mockReturnValue({ value: "tok" });
     stubFetch(500, {});
