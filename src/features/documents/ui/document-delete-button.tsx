@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
 
 import { deleteDocument, adminDeleteDocument } from "../actions";
 
@@ -26,6 +27,7 @@ export function DocumentDeleteButton({
   const router = useRouter();
   const toast = useToast();
   const [, startTransition] = useTransition();
+  const { key } = useIdempotencyKey();
 
   return (
     <ConfirmDialog
@@ -35,7 +37,7 @@ export function DocumentDeleteButton({
       destructive
       confirmLabel="Удалить"
       onConfirm={async () => {
-        const result = admin ? await adminDeleteDocument(id) : await deleteDocument(id);
+        const result = admin ? await adminDeleteDocument(id, key) : await deleteDocument(id, key);
         if (!result.success) {
           if (result.code === "forbidden") {
             toast.add({

@@ -71,13 +71,14 @@ export const updateTermBlocks = createFormAction(async (formData, ctx) => {
   return (data.data ?? null) as Term | null;
 });
 
-export const deleteTerm = createAction(async (rawId: string) => {
+export const deleteTerm = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canDeleteTerm);
   const { id } = TermIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/glossary/{id}", {
     params: { path: { id } },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY);

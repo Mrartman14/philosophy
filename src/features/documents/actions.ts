@@ -173,13 +173,14 @@ export const setDocumentVisibility = createFormAction(async (formData) => {
 });
 
 /** DELETE /api/documents/{id}. Owner или admin (delete_any, не-private) — enforce'ит бек. */
-export const deleteDocument = createAction(async (rawId: string) => {
+export const deleteDocument = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireActive(me);
   const { id } = DocumentIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/documents/{document_id}", {
     params: { path: { document_id: id } },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
@@ -187,13 +188,14 @@ export const deleteDocument = createAction(async (rawId: string) => {
 });
 
 /** DELETE /api/admin/documents/{id}. Гейт — document.delete_any (только public). */
-export const adminDeleteDocument = createAction(async (rawId: string) => {
+export const adminDeleteDocument = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canListAdminDocuments);
   const { id } = DocumentIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/documents/{document_id}", {
     params: { path: { document_id: id } },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);

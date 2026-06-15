@@ -77,13 +77,14 @@ export const updateEvent = createFormAction(async (formData, ctx) => {
   return (data.data ?? null) as CalendarEvent | null;
 });
 
-export const deleteEvent = createAction(async (rawId: string) => {
+export const deleteEvent = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canDeleteEvent);
   const { id } = EventIdSchema.parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/events/{id}", {
     params: { path: { id } },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS);

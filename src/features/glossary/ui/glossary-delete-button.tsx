@@ -3,6 +3,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
 
 import { deleteTerm } from "../actions";
 
@@ -15,6 +16,7 @@ export function GlossaryDeleteButton({ id }: Props) {
   const pathname = usePathname();
   const toast = useToast();
   const [, startTransition] = useTransition();
+  const { key } = useIdempotencyKey();
 
   return (
     <ConfirmDialog
@@ -24,7 +26,7 @@ export function GlossaryDeleteButton({ id }: Props) {
       destructive
       confirmLabel="Удалить"
       onConfirm={async () => {
-        const result = await deleteTerm(id);
+        const result = await deleteTerm(id, key);
         if (!result.success) {
           if (result.code === "forbidden") {
             toast.add({
