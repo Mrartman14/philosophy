@@ -89,7 +89,10 @@ export function SavedLectureView({ id }: { id: string }) {
         if (cancelled) return;
         if (outcome !== "skip") {
           // Перечитываем запись, чтобы отразить проставленную/снятую пометку.
-          setState(await loadState(id));
+          const refreshed = await loadState(id);
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
+          if (cancelled) return;
+          setState(refreshed);
         }
       }
     })();
