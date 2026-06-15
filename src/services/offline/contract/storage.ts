@@ -52,6 +52,12 @@ export interface SavedBundleRecord<TSnapshot = unknown> {
   schemaVersion: number;
   status: SavedBundleStatus;
   error?: string;
+  /**
+   * Результат последней фоновой сверки с платформой (SWR-ревалидация): помечает
+   * изменённый/удалённый на платформе снимок. Отсутствует = свежо или ещё не
+   * сверяли. Снимок при этом НЕ стирается — пометка чисто информационная.
+   */
+  remoteStatus?: "stale" | "gone";
   snapshot: TSnapshot;
   imageKeys: string[]; // sha256-ключи картинок для Cache Storage
 }
