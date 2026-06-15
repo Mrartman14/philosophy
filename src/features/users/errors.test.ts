@@ -1,7 +1,7 @@
 // src/features/users/errors.test.ts
 import { describe, it, expect } from "vitest";
 
-import { ForbiddenError } from "@/utils/permissions";
+import { BannedError, ForbiddenError } from "@/utils/permissions";
 
 import { rethrowUserApiError } from "./errors";
 
@@ -75,15 +75,14 @@ describe("rethrowUserApiError", () => {
     expect((thrown as ForbiddenError).reason).toBe("status");
   });
 
-  it("BANNED → ForbiddenError('status')", () => {
+  it("BANNED → BannedError", () => {
     let thrown: unknown;
     try {
       rethrowUserApiError({ code: "BANNED", error: "account banned" });
     } catch (e) {
       thrown = e;
     }
-    expect(thrown).toBeInstanceOf(ForbiddenError);
-    expect((thrown as ForbiddenError).reason).toBe("status");
+    expect(thrown).toBeInstanceOf(BannedError);
   });
 
   it("неизвестный код → пробрасывает error-текст", () => {

@@ -83,6 +83,21 @@ export class ForbiddenError extends Error {
 }
 
 /**
+ * Бросается, когда бэк сообщил, что аккаунт ЗАБАНЕН (код `BANNED`). В отличие
+ * от `ForbiddenError` (отказ в праве) это сигнал форс-логаута: ловится в
+ * `createAction`/`createFormAction` и приводит к `redirect("/auth/forced-logout")`,
+ * а не к `{ code: "forbidden" }`. `suspended` сюда НЕ относится — он остаётся
+ * `ForbiddenError("status")`.
+ */
+export class BannedError extends Error {
+  readonly code = "banned" as const;
+  constructor(message = "Account banned") {
+    super(message);
+    this.name = "BannedError";
+  }
+}
+
+/**
  * Хелпер для server actions: проверяет предикат `check(me)` и бросает
  * `ForbiddenError` с правильно вычисленным `DenyReason`. Используется в
  * `src/features/{name}/actions.ts` для defense-in-depth, чтобы не повторять

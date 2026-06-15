@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { rethrowApiError } from "./api-error";
-import { ForbiddenError } from "./permissions";
+import { BannedError, ForbiddenError } from "./permissions";
 
 /** Ловит брошенную ошибку для проверки её класса/полей. */
 function caught(fn: () => never): unknown {
@@ -39,10 +39,10 @@ describe("rethrowApiError — ограничение аккаунта", () => {
     expect((err as ForbiddenError).reason).toBe("status");
   });
 
-  it("BANNED → ForbiddenError('status')", () => {
-    const err = caught(() => rethrowApiError({ code: "BANNED" }));
-    expect(err).toBeInstanceOf(ForbiddenError);
-    expect((err as ForbiddenError).reason).toBe("status");
+  it("BANNED → BannedError", () => {
+    const err = caught(() => rethrowApiError({ code: "BANNED", error: "account banned" }));
+    expect(err).toBeInstanceOf(BannedError);
+    expect((err as BannedError).message).toBe("account banned");
   });
 
   it("SUSPENDED с error → пробрасывает текст бека", () => {

@@ -1,7 +1,7 @@
 import "server-only";
 import type { ApiErrorCode } from "@/api/types";
 
-import { ForbiddenError } from "./permissions";
+import { BannedError, ForbiddenError } from "./permissions";
 
 /** Форма ошибки бека (openapi-fetch error body / ручной JSON). `code`
  * типизирован сгенерированным union `apperror.Code` — опечатка в ключе
@@ -27,12 +27,12 @@ const ROLE_FORBIDDEN_CODES: ReadonlySet<ApiErrorCode> = new Set([
 ]);
 
 /** Коды ограничения аккаунта → `ForbiddenError("status")` (branded-ветка
- * «Аккаунт ограничен»). Централизованы здесь, чтобы слайсы не дублировали
- * SUSPENDED/BANNED и не расходились (раньше часть слайсов бросала обычный
+ * «Аккаунт ограничен»). Только `SUSPENDED`: `BANNED` обрабатывается выше
+ * отдельной веткой как `BannedError` (форс-логаут). Централизованы здесь, чтобы
+ * слайсы не дублировали и не расходились (раньше часть слайсов бросала обычный
  * `Error`, теряя `code: "forbidden"`). */
 const STATUS_FORBIDDEN_CODES: ReadonlySet<ApiErrorCode> = new Set([
   "SUSPENDED",
-  "BANNED",
 ]);
 
 /** Базовые тексты для доменных кодов с каноничной формулировкой в большинстве
@@ -55,11 +55,13 @@ const DEFAULT_MESSAGES: ApiErrorMessages = {
  * Единая точка маппинга кода ошибки бека в throw. Никогда не возвращает.
  *
  * Порядок разрешения:
- * 1. role-403 коды (`FORBIDDEN`/`ATTACH_FORBIDDEN`/`UPLOAD_FOREIGN`) →
+ * 1. `BANNED` → `BannedError` (сигнал форс-логаута, ловится в createAction →
+ *    `redirect("/auth/forced-logout")`).
+ * 2. role-403 коды (`FORBIDDEN`/`ATTACH_FORBIDDEN`/`UPLOAD_FOREIGN`) →
  *    `ForbiddenError("role")`.
- * 2. account-коды (`SUSPENDED`/`BANNED`) → `ForbiddenError("status")`.
- * 3. `overrides[code]` слайса → дефолт `DEFAULT_MESSAGES[code]` → `Error(text)`.
- * 4. фоллбек: `Error(err.error ?? "Ошибка сервера")`.
+ * 3. account-код `SUSPENDED` → `ForbiddenError("status")`.
+ * 4. `overrides[code]` слайса → дефолт `DEFAULT_MESSAGES[code]` → `Error(text)`.
+ * 5. фоллбек: `Error(err.error ?? "Ошибка сервера")`.
  *
  * Слайс описывает только свои доменные коды декларативной картой:
  *
@@ -77,6 +79,9 @@ export function rethrowApiError(
 ): never {
   const code = err?.code;
   if (code) {
+    if (code === "BANNED") {
+      throw new BannedError(err.error ?? "Account banned");
+    }
     if (ROLE_FORBIDDEN_CODES.has(code)) {
       throw new ForbiddenError("role", err.error);
     }
