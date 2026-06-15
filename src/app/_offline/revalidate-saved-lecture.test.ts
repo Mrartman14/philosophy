@@ -62,6 +62,13 @@ describe("revalidateSavedLecture", () => {
     expect((await getSavedBundle("lectures", "l1"))?.remoteStatus).toBeUndefined();
   });
 
+  it("probe success:false при существующей пометке → пометка сохраняется", async () => {
+    await seed({ remoteStatus: "stale" });
+    probeMock.mockResolvedValue({ success: false, error: "network" });
+    expect(await revalidateSavedLecture("l1")).toBe("skip");
+    expect((await getSavedBundle("lectures", "l1"))?.remoteStatus).toBe("stale");
+  });
+
   it("gone → пометка remoteStatus=gone, снимок цел", async () => {
     await seed({});
     probeMock.mockResolvedValue({ success: true, data: { status: "gone" } });
@@ -89,5 +96,11 @@ describe("revalidateSavedLecture", () => {
     });
     expect(await revalidateSavedLecture("l1")).toBe("fresh");
     expect((await getSavedBundle("lectures", "l1"))?.remoteStatus).toBeUndefined();
+  });
+
+  it("probe бросает → skip, наружу не пробрасывает (best-effort)", async () => {
+    await seed({});
+    probeMock.mockRejectedValue(new Error("db error"));
+    expect(await revalidateSavedLecture("l1")).toBe("skip");
   });
 });
