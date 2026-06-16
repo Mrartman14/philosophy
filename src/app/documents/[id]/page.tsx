@@ -1,7 +1,9 @@
 // src/app/documents/[id]/page.tsx
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { Skeleton } from "@/components/ui";
 import { AnnotationsSection } from "@/features/annotations";
 import {
   canEditDocument,
@@ -77,14 +79,23 @@ export default async function DocumentPage({ params, searchParams }: Props) {
 
       <DocumentDetail document={document} />
 
-      <DocumentContainers documentId={id} />
+      {/* DocumentContainers рендерит AttachmentsPanel с пустым-состоянием
+          (не возвращает null) — fallback={null}, т.к. пустой случай распространён
+          и скелетон, который исчезает, создаёт CLS. */}
+      <Suspense fallback={null}>
+        <DocumentContainers documentId={id} />
+      </Suspense>
 
       {/* Аннотации на документе. Композиция через страницу (не cross-feature
           импорт): слайс annotations экспонирует AnnotationsSection из своего
           index.ts. Видимые аннотации фетчатся внутри секции (матрица
           видимости — на беке). */}
+      {/* AnnotationsSection всегда рендерит заголовок «Аннотации» + контент
+          (список или пустое-состояние) + форму создания — используем Skeleton. */}
       {document.id && (
-        <AnnotationsSection parentEntityType="document" parentId={document.id} />
+        <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+          <AnnotationsSection parentEntityType="document" parentId={document.id} />
+        </Suspense>
       )}
 
       {canEdit && (
@@ -100,8 +111,11 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         </section>
       )}
 
+      {/* DocumentRevisions всегда рендерит контент (история ревизий) — Skeleton. */}
       {showRevisions && document.id && (
-        <DocumentRevisions documentId={document.id} selectedRevisionId={revision} />
+        <Suspense fallback={<Skeleton className="h-24 w-full" />}>
+          <DocumentRevisions documentId={document.id} selectedRevisionId={revision} />
+        </Suspense>
       )}
 
       {canDelete && document.id && (

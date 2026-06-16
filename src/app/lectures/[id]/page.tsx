@@ -1,7 +1,9 @@
 // src/app/lectures/[id]/page.tsx
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { SaveOfflineButton } from "@/app/_offline/save-offline-button";
+import { Skeleton } from "@/components/ui";
 import { CommentSection } from "@/features/comments";
 import {
   getLectureById,
@@ -43,9 +45,14 @@ export default async function LecturePage({ params, searchParams }: Props) {
       <LectureDetail lecture={lecture} tags={tags} />
       <LectureExportLinks id={id} />
       {/* Секции документов/медиа лекции (lecture-enrichment, волна 3).
-          Каждая сама возвращает null, если список пуст. */}
-      <LectureDocumentsSection lectureId={id} />
-      <LectureMediaSection lectureId={id} />
+          Каждая сама возвращает null, если список пуст — fallback={null},
+          чтобы не было скелетона, который пропадает в пустом случае (CLS). */}
+      <Suspense fallback={null}>
+        <LectureDocumentsSection lectureId={id} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <LectureMediaSection lectureId={id} />
+      </Suspense>
       <div className="flex justify-end">
         <SaveOfflineButton entity="lectures" id={id} />
       </div>
@@ -60,7 +67,11 @@ export default async function LecturePage({ params, searchParams }: Props) {
           />
         </div>
       )}
-      <CommentSection lectureId={id} query={cq} />
+      {/* CommentSection всегда рендерит контент (заголовок «Обсуждение» +
+          форму/дерево) — используем Skeleton как fallback. */}
+      <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+        <CommentSection lectureId={id} query={cq} />
+      </Suspense>
     </div>
   );
 }
