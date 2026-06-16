@@ -1,4 +1,6 @@
 // src/features/comments/ui/comment-type-badge.tsx
+import { chipClass } from "@/components/ui";
+
 import type { CommentType } from "../types";
 
 const TYPE_LABELS: Record<CommentType, string> = {
@@ -18,7 +20,7 @@ export function commentTypeLabel(type: CommentType): string {
 
 export function CommentTypeBadge({ type }: { type: CommentType }) {
   return (
-    <span className="rounded-full border border-(--color-border) px-2 py-0.5 text-xs text-(--color-description)">
+    <span className={chipClass()}>
       {commentTypeLabel(type)}
     </span>
   );

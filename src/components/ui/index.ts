@@ -24,3 +24,4 @@ export { EmptyState } from "./empty-state";
 export { Pagination } from "./pagination";
 export { Skeleton, type SkeletonProps } from "./skeleton";
 export { RouterLink, type RouterLinkProps } from "./router-link";
+export { chipClass } from "./chip";

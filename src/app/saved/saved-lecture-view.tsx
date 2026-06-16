@@ -7,7 +7,7 @@ import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descrip
 import { revalidateSavedLecture } from "@/app/_offline/revalidate-saved-lecture";
 import { saveOffline } from "@/app/_offline/save-offline";
 import { AstRender } from "@/components/ast-render";
-import { Button, Skeleton } from "@/components/ui";
+import { Button, chipClass, Skeleton } from "@/components/ui";
 import { CommentTreeView } from "@/features/comments/client";
 import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { whenIdentityReconciled } from "@/services/offline/identity-gate";
@@ -212,7 +212,7 @@ export function SavedLectureView({ id }: { id: string }) {
             {tags.map((t) => (
               <li
                 key={t.name}
-                className="rounded-full border border-(--color-border) px-2 py-0.5 text-xs text-(--color-description)"
+                className={chipClass()}
               >
                 {t.name}
               </li>

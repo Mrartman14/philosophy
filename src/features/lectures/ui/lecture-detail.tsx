@@ -1,5 +1,5 @@
 // src/features/lectures/ui/lecture-detail.tsx
-import { RouterLink } from "@/components/ui";
+import { chipClass, RouterLink } from "@/components/ui";
 
 import { lectureCoverUrl } from "../cover-url";
 import type { Lecture, LectureTag } from "../types";
@@ -33,7 +33,7 @@ export function LectureDetail({
               <li key={tag.name}>
                 <RouterLink
                   href={`/lectures?tag=${encodeURIComponent(tag.name)}`}
-                  className="rounded-full border border-(--color-border) px-2 py-0.5 text-xs text-(--color-description) hover:bg-(--color-text-pane)"
+                  className={chipClass({ interactive: true })}
                 >
                   {tag.name}
                 </RouterLink>
