@@ -117,7 +117,7 @@ export const updateAnnotation = createFormAction(async (formData, ctx) => {
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, input.id);
   revalidateEntity(Tags.ANNOTATIONS);
   return (data.data ?? null) as Annotation | null;
@@ -136,7 +136,7 @@ export const deleteAnnotation = createAction(async (rawId: string, ctx) => {
     params: { path: { id } },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, id);
   revalidateEntity(Tags.ANNOTATIONS);
   return undefined;
@@ -158,7 +158,7 @@ export const adminDeleteAnnotation = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/admin/annotations/{id}", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, id);
   revalidateEntity(Tags.ANNOTATIONS);
   return undefined;

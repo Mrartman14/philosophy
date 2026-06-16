@@ -5,7 +5,6 @@ import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import {
   rethrowApiError,
-  type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
 import { createAction } from "@/utils/create-action";
@@ -53,7 +52,7 @@ export const deleteMedia = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/media/{media_id}", {
     params: { path: { media_id: id } },
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.MEDIA, id);
   revalidateEntity(Tags.MEDIA);
   return undefined;
@@ -74,7 +73,7 @@ export const setMediaVisibility = createAction(
       params: { path: { media_id: input.id } },
       body: { visibility: input.visibility },
     });
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.MEDIA, input.id);
     revalidateEntity(Tags.MEDIA);
     return undefined;

@@ -4,7 +4,6 @@ import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import {
   rethrowApiError,
-  type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
 import {
@@ -144,7 +143,7 @@ export const setLectureCover = createAction(
         ...(input.alt_text !== undefined && { alt_text: input.alt_text }),
       },
     });
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.LECTURES, input.id);
     revalidateEntity(Tags.LECTURES);
     return undefined;
@@ -161,7 +160,7 @@ export const clearLectureCover = createAction(async (rawId: string) => {
   const { error } = await api.DELETE("/api/lectures/{id}/cover", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, id);
   revalidateEntity(Tags.LECTURES);
   return undefined;
@@ -191,7 +190,7 @@ export const attachToLecture = createAction(
         ...(input.sort_order !== undefined && { sort_order: input.sort_order }),
       },
     });
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
@@ -224,7 +223,7 @@ export const detachFromLecture = createAction(
         },
       },
     );
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
@@ -244,7 +243,7 @@ export const suggestGlossaryTerms = createAction(
       body: { blocks: input.blocks },
       headers: idempotencyHeaders(ctx.idempotencyKey),
     });
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     return data.data?.suggestions ?? [];
   },
 );
@@ -330,7 +329,7 @@ export const reorderLectureAttachment = createAction(
         body: { sort_order: input.sort_order },
       },
     );
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },

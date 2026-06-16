@@ -5,7 +5,6 @@ import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import {
   rethrowApiError,
-  type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
 import {
@@ -51,7 +50,7 @@ export const updatePreferences = createFormAction(async (formData) => {
   const { data, error } = await api.PATCH("/api/me/preferences", {
     body: { reading_mode: input.reading_mode } as never,
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.PREFERENCES);
   return (data.data ?? null) as Preferences | null;
 });
@@ -66,7 +65,7 @@ export const subscribePush = createAction(async (rawSubscription: unknown) => {
   const input = PushSubscribeSchema.parse(rawSubscription);
   const api = await createApiClient();
   const { error } = await api.POST("/api/push/subscribe", { body: input });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   return undefined;
 });
 
@@ -78,7 +77,7 @@ export const unsubscribePush = createAction(async (rawEndpoint: string) => {
   const { error } = await api.DELETE("/api/push/subscribe", {
     body: { endpoint },
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   return undefined;
 });
 
@@ -95,7 +94,7 @@ export const sendPushBroadcast = createFormAction(async (formData, ctx) => {
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   // Бекенд отвечает 202 Accepted — рассылка асинхронная.
   return true;
 });

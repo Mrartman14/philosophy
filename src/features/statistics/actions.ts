@@ -2,7 +2,7 @@
 "use server";
 import "server-only";
 import { createApiClient } from "@/api/client";
-import { rethrowApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError } from "@/utils/api-error";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
@@ -24,6 +24,6 @@ export const setHistoryTracking = createAction(async (raw: unknown) => {
   const { data, error } = await api.PUT("/api/me/history/settings", {
     body: { tracking_enabled: enabled },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error);
   return (data.data ?? null) as HistorySettings | null;
 });

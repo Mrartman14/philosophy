@@ -3,7 +3,7 @@
 import "server-only";
 
 import { createApiClient } from "@/api/client";
-import { rethrowApiError, type ApiError } from "@/utils/api-error";
+import { rethrowApiError } from "@/utils/api-error";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireActive } from "@/utils/permissions";
@@ -24,7 +24,7 @@ export const markRead = createAction(async (id: string) => {
   const { error } = await api.POST("/api/me/notifications/{id}/read", {
     params: { path: { id } },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error);
   return undefined;
 });
 
@@ -40,7 +40,7 @@ export const markAllRead = createAction<void, void>(async () => {
   requireActive(me);
   const api = await createApiClient();
   const { error } = await api.POST("/api/me/notifications/read-all", {});
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error);
   return undefined;
 });
 
@@ -50,7 +50,7 @@ export const markAllSeen = createAction<void, void>(async () => {
   requireActive(me);
   const api = await createApiClient();
   const { error } = await api.POST("/api/me/notifications/seen-all", {});
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error);
   return undefined;
 });
 
@@ -61,7 +61,7 @@ export const subscribeDocument = createAction(async (documentId: string) => {
   const { error } = await api.POST("/api/documents/{id}/subscribe", {
     params: { path: { id: documentId } },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error);
   return undefined;
 });
 
@@ -72,7 +72,7 @@ export const unsubscribeDocument = createAction(async (documentId: string) => {
   const { error } = await api.DELETE("/api/documents/{id}/subscribe", {
     params: { path: { id: documentId } },
   });
-  if (error) rethrowApiError(error as ApiError);
+  if (error) rethrowApiError(error);
   return undefined;
 });
 

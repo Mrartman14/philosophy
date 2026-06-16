@@ -5,7 +5,6 @@ import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import {
   rethrowApiError,
-  type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
 import {
@@ -54,7 +53,7 @@ export const createShareLink = createFormAction(async (formData, ctx) => {
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });
-  if (error) rethrowApiError(error as ApiError, ERRORS);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SHARE_LINKS, input.resource_id);
   return (data.data ?? null) as ShareLink | null;
 });
@@ -74,7 +73,7 @@ export const revokeShareLink = createAction(
     const { error } = await api.DELETE("/api/share-links/{token}", {
       params: { path: { token } },
     });
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.SHARE_LINKS, input.resourceId);
     return true;
   },
@@ -95,7 +94,7 @@ export const adminRevokeShareLink = createAction(
     const { error } = await api.DELETE("/api/admin/share-links/{token}", {
       params: { path: { token } },
     });
-    if (error) rethrowApiError(error as ApiError, ERRORS);
+    if (error) rethrowApiError(error, ERRORS);
     revalidateEntity(Tags.SHARE_LINKS, input.resourceId);
     return true;
   },
