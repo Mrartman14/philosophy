@@ -1,10 +1,8 @@
 // src/features/media/api.ts
 import "server-only";
-import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
-import { Tags } from "@/api/tags";
 
 import type { Media, MediaAttachment } from "./types";
 
@@ -56,47 +54,30 @@ export const getMyMedia = cache(
 /**
  * GET /api/media/{media_id} — одно медиа с подписанным url. 404 →
  * возвращаем null (secure-by-obscurity: «не видно» ≡ «не существует»).
- * Кешируется per-id; инвалидация — revalidateEntity(Tags.MEDIA, id) после
- * смены видимости. unstable_cache требует, чтобы id попал и в keyParts, и в
- * tags — иначе все id делят один кеш.
+ *
+ * Намеренно НЕ используем unstable_cache: медиа бывает приватным, а
+ * unstable_cache — глобальный кеш без измерения actor'а в ключе. Ответ
+ * содержит подписанный URL хранилища — кешировать его между пользователями
+ * означало бы отдавать приватное медиа владельца A чужому пользователю B.
+ * Единственный уровень кеширования — React.cache (per-request, per-actor),
+ * который дедуплицирует повторные вызовы внутри одного серверного рендера.
  */
 export const getMediaById = cache(
   async (id: string, token?: string): Promise<Media | null> => {
-    // С токеном (viewer share-link) обходим cross-request unstable_cache:
-    // приватный ответ не должен кешироваться между держателями ссылок.
     // shareTokenMW (philosophy-api cmd/server/main.go:944) принимает ?token=,
     // schema.ts его не объявляет (§10.5) → cast `as never`.
-    if (token) {
-      const api = await createApiClient();
-      const { data, error, response } = await api.GET("/api/media/{media_id}", {
-        params: {
-          path: { media_id: id },
-          query: { token } as never,
-        },
-      });
-      if (response.status === 404) return null;
-      if (error) {
-        throw new Error(error.error ?? "Не удалось загрузить медиа");
-      }
-      return (data.data ?? null) as Media | null;
-    }
-    const fetcher = unstable_cache(
-      async (mediaId: string): Promise<Media | null> => {
-        const api = await createApiClient();
-        const { data, error, response } = await api.GET(
-          "/api/media/{media_id}",
-          { params: { path: { media_id: mediaId } } },
-        );
-        if (response.status === 404) return null;
-        if (error) {
-          throw new Error(error.error ?? "Не удалось загрузить медиа");
-        }
-        return (data.data ?? null) as Media | null;
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/media/{media_id}", {
+      params: {
+        path: { media_id: id },
+        ...(token ? { query: { token } as never } : {}),
       },
-      ["media-by-id", id],
-      { tags: [`${Tags.MEDIA}:${id}`] },
-    );
-    return fetcher(id);
+    });
+    if (response.status === 404) return null;
+    if (error) {
+      throw new Error(error.error ?? "Не удалось загрузить медиа");
+    }
+    return (data.data ?? null) as Media | null;
   },
 );
 
