@@ -4,7 +4,15 @@ import { getSubscriptions } from "../api";
 import { SubscriptionRow } from "./subscription-row";
 
 export async function SubscriptionsSection() {
-  const { items } = await getSubscriptions();
+  let result;
+  try {
+    result = await getSubscriptions();
+  } catch {
+    return (
+      <p className="text-sm text-(--color-description)">Не удалось загрузить подписки.</p>
+    );
+  }
+  const { items } = result;
 
   if (items.length === 0) {
     return (

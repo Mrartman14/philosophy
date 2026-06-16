@@ -87,12 +87,17 @@ export const getSubscriptions = cache(
  * backend-ask (Task 16): N+1 при большом числе подписок, деградирует мягко.
  */
 export const getDocumentSubscription = cache(async (documentId: string): Promise<boolean> => {
-  const api = await createApiClient();
-  const { data, error } = await api.GET("/api/me/subscriptions", {
-    params: { query: { offset: 0, limit: 100 } },
-  });
-  if (error) return false; // некритично: покажем «Подписаться»
-  return (data.data ?? []).some(
-    (s) => s.target_type === "document" && s.target_id === documentId,
-  );
+  try {
+    const api = await createApiClient();
+    const { data, error } = await api.GET("/api/me/subscriptions", {
+      params: { query: { offset: 0, limit: 100 } },
+    });
+    if (error) return false;
+    return (data.data ?? []).some(
+      (s) => s.target_type === "document" && s.target_id === documentId,
+    );
+  } catch {
+    // Сетевой сбой (fetch reject) — тоже мягкая деградация: показываем «Подписаться».
+    return false;
+  }
 });
