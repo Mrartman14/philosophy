@@ -2,7 +2,7 @@
 // src/features/notifications/ui/notification-bell.tsx
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { fetchCounts } from "../actions";
+import { fetchNotificationCounts } from "../actions";
 import type { NotificationCounts } from "../types";
 
 import { BellIcon } from "./bell-icon";
@@ -22,12 +22,19 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
   /** Момент последнего локального «всё просмотрено» — против гонки с poll'ом. */
   const lastSeenRef = useRef(0);
 
+  // router.refresh() (напр. "Просмотреть все" на /notifications) перерисовывает
+  // хедер с новыми initialCounts — пересеваем, иначе бейдж висит устаревшим до
+  // следующего poll'а. Гонку с poll'ом по-прежнему закрывает lastSeenRef.
+  useEffect(() => {
+    setCounts(initialCounts);
+  }, [initialCounts]);
+
   // Polling счётчиков + рефреш при возврате фокуса/вкладки.
   useEffect(() => {
     let cancelled = false;
     async function refresh() {
       const startedAt = Date.now();
-      const result = await fetchCounts();
+      const result = await fetchNotificationCounts();
       if (cancelled || !result.success) return;
       setCounts((prev) => ({
         unread: result.data.unread,
