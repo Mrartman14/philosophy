@@ -44,7 +44,7 @@ export function DocumentSubscribeButton({
 
   return (
     <Button
-      variant={subscribed ? "secondary" : undefined}
+      {...(subscribed ? { variant: "secondary" as const } : {})}
       disabled={pending}
       onClick={() => {
         void toggle();

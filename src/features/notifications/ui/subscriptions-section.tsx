@@ -1,5 +1,6 @@
 // src/features/notifications/ui/subscriptions-section.tsx
 import { getSubscriptions } from "../api";
+
 import { SubscriptionRow } from "./subscription-row";
 
 export async function SubscriptionsSection() {
