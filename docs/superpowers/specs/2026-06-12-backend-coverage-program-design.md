@@ -11,7 +11,7 @@
 
 **Уже реализовано:** auth (без регистрации), glossary (без ревизий/выгрузок), lectures (без cover, тегов и attachments), AST-редактор Phase 1, ast-render.
 
-**Готовые планы (выполняются в этой программе):** AST Editor Phase 2a (image), 2b (pickers), 2c (toolbar) — `docs/superpowers/plans/2026-05-01-ast-editor-phase-2*.md`.
+**Готовые планы (выполняются в этой программе):** AST Editor Phase 2a (image), 2b (pickers), 2c (toolbar) — `docs/superpowers/archive/2026-05-01-ast-editor-phase-2*.md` (перемещены в архив как выполненные).
 
 **Нормативные документы (обязательны для каждого плана и исполнителя):**
 
