@@ -12,7 +12,7 @@ export {
   markAllSeen,
   subscribeDocument,
   unsubscribeDocument,
-  fetchCounts,
+  fetchNotificationCounts,
   fetchNotifications,
 } from "./actions";
 export { canUseNotifications, canManageSubscriptions } from "./permissions";
