@@ -5,6 +5,7 @@ import { cache } from "react";
 
 import { createApiClient, createPublicApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
   CalendarEvent,
@@ -37,12 +38,7 @@ export const getAdminEvents = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить события");
     }
-    return {
-      items: (data.data ?? []) as CalendarEvent[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -56,7 +52,7 @@ export const getAdminEventById = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить событие");
     }
-    return (data.data ?? null) as CalendarEvent | null;
+    return unwrap(data);
   },
 );
 
@@ -71,7 +67,7 @@ export const getEventRevisions = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизии");
     }
-    return (data.data ?? []) as EventRevisionMeta[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -86,7 +82,7 @@ export const getEventRevision = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизию");
     }
-    return (data.data ?? null) as EventRevision | null;
+    return unwrap(data);
   },
 );
 
@@ -112,7 +108,7 @@ export const getCalendarOccurrences = unstable_cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить календарь");
     }
-    return (data.data ?? []) as EventOccurrence[];
+    return unwrap(data) ?? [];
   },
   ["calendar-occurrences"],
   { tags: [Tags.EVENTS], revalidate: 3600 },

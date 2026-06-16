@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import {
   PER_ENTITY_PATH,
@@ -74,7 +75,7 @@ export const getAnnotationById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить аннотацию");
-    return (data.data ?? null) as Annotation | null;
+    return unwrap(data);
   },
 );
 
@@ -96,12 +97,7 @@ export const getMyAnnotations = cache(
       },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить мои аннотации");
-    return {
-      items: (data.data ?? []) as Annotation[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -125,12 +121,7 @@ export const getLectureAnnotations = cache(
       },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить аннотации лекции");
-    return {
-      items: (data.data ?? []) as Annotation[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -168,12 +159,7 @@ export const getAdminAnnotations = cache(
       },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить список аннотаций");
-    return {
-      items: (data.data ?? []) as Annotation[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -185,7 +171,7 @@ export const getAnnotationRevisions = cache(
       params: { path: { id } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
-    return (data.data ?? []) as AnnotationRevisionMeta[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -199,7 +185,7 @@ export const getAnnotationRevision = cache(
     );
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
-    return (data.data ?? null) as AnnotationRevision | null;
+    return unwrap(data);
   },
 );
 

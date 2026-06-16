@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Trail, TrailWithItems, TrailLectureSummary } from "./types";
 
@@ -34,12 +35,7 @@ export const getTrails = cache(
       params: { query: { offset, limit } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
-    return {
-      items: (data.data ?? []) as Trail[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -53,12 +49,7 @@ export const getMyTrails = cache(
       params: { query: { offset, limit } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
-    return {
-      items: (data.data ?? []) as Trail[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -79,7 +70,7 @@ export const getTrailById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршрут");
-    return (data.data ?? null) as TrailWithItems | null;
+    return unwrap(data);
   },
 );
 
@@ -93,12 +84,7 @@ export const getAdminTrails = cache(
     if (filter.ownerId) query.owner_id = filter.ownerId;
     const { data, error } = await api.GET("/api/admin/trails", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
-    return {
-      items: (data.data ?? []) as Trail[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 

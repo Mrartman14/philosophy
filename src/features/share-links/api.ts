@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap } from "@/utils/api-unwrap";
 
 import type { ShareLink, ResourceType } from "./types";
 
@@ -30,7 +31,7 @@ export const getShareLinksFor = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ссылки");
     }
-    return (data.data ?? []) as ShareLink[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -54,6 +55,6 @@ export const getAdminShareLinksFor = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ссылки");
     }
-    return (data.data ?? []) as ShareLink[];
+    return unwrap(data) ?? [];
   },
 );

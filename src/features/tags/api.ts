@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Tag } from "./types";
 
@@ -37,12 +38,7 @@ export const getTags = cache(
       // схеме) — пробросить error.error нельзя, отдаём фиксированный текст.
       throw new Error("Не удалось загрузить теги");
     }
-    return {
-      items: (data.data ?? []) as Tag[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -58,5 +54,5 @@ export const getLectureTags = cache(async (lectureId: string): Promise<Tag[]> =>
   if (error) {
     throw new Error(error.error ?? "Не удалось загрузить теги лекции");
   }
-  return (data.data ?? []) as Tag[];
+  return unwrap(data) ?? [];
 });

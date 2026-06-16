@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrapList } from "@/utils/api-unwrap";
 
 import type { SearchHit, SearchType } from "./types";
 
@@ -51,11 +52,6 @@ export const getSearchResults = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось выполнить поиск");
     }
-    return {
-      items: (data.data ?? []) as SearchHit[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );

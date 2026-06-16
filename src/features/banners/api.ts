@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Banner, BannerRevision, BannerRevisionMeta } from "./types";
 
@@ -30,12 +31,7 @@ export const getAdminBanners = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить баннеры");
     }
-    return {
-      items: (data.data ?? []) as Banner[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -49,7 +45,7 @@ export const getAdminBannerById = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить баннер");
     }
-    return (data.data ?? null) as Banner | null;
+    return unwrap(data);
   },
 );
 
@@ -64,7 +60,7 @@ export const getBannerRevisions = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизии");
     }
-    return (data.data ?? []) as BannerRevisionMeta[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -79,7 +75,7 @@ export const getBannerRevision = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизию");
     }
-    return (data.data ?? null) as BannerRevision | null;
+    return unwrap(data);
   },
 );
 
@@ -98,5 +94,5 @@ export const getActiveBanners = cache(async (): Promise<Banner[]> => {
   if (error) {
     throw new Error("Не удалось загрузить баннеры");
   }
-  return (data.data ?? []) as Banner[];
+  return unwrap(data) ?? [];
 });

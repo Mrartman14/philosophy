@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
   AttachmentDTO,
@@ -49,12 +50,7 @@ export const getCanvases = cache(
     if (filter.q) query.q = filter.q;
     const { data, error } = await api.GET("/api/canvases", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить канвасы");
-    return {
-      items: (data.data ?? []) as CanvasSummary[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -77,7 +73,7 @@ export const getCanvasById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить канвас");
-    const canvas = (data.data ?? null) as Canvas | null;
+    const canvas = unwrap(data);
     if (!canvas) return null;
     return { canvas, etag: response.headers.get("ETag") };
   },
@@ -96,7 +92,7 @@ export const getCanvasRevisions = cache(
       params: { path: { id }, query },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
-    return (data.data ?? []) as CanvasRevisionMeta[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -111,7 +107,7 @@ export const getCanvasRevision = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
-    return (data.data ?? null) as CanvasRevision | null;
+    return unwrap(data);
   },
 );
 
@@ -125,6 +121,6 @@ export const getCanvasContainers = cache(
       params: { path: { id }, query },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить привязки");
-    return (data.data ?? []) as AttachmentDTO[];
+    return unwrap(data) ?? [];
   },
 );

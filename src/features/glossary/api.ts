@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Term, TermRevision, TermRevisionMeta } from "./types";
 
@@ -31,12 +32,7 @@ export const getTerms = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить термины");
     }
-    return {
-      items: (data.data ?? []) as Term[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -49,7 +45,7 @@ export const getTermById = cache(async (id: string): Promise<Term | null> => {
   if (error) {
     throw new Error(error.error ?? "Не удалось загрузить термин");
   }
-  return (data.data ?? null) as Term | null;
+  return unwrap(data);
 });
 
 /**
@@ -70,7 +66,7 @@ export const getTermRevisions = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизии термина");
     }
-    return (data.data ?? []) as TermRevisionMeta[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -90,6 +86,6 @@ export const getTermRevision = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить ревизию термина");
     }
-    return (data.data ?? null) as TermRevision | null;
+    return unwrap(data);
   },
 );

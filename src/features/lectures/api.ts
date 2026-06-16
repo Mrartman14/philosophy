@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
   Lecture,
@@ -40,12 +41,7 @@ export const getLectures = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить лекции");
     }
-    return {
-      items: (data.data ?? []) as Lecture[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -68,8 +64,7 @@ export const getLectureById = cache(
     if (error) {
       throw new Error(error.error ?? "Не удалось загрузить лекцию");
     }
-    const lecture = data.data;
-    return (lecture ?? null) as Lecture | null;
+    return unwrap(data);
   },
 );
 
@@ -82,7 +77,7 @@ export const getLectureDocuments = cache(
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? "Не удалось загрузить документы лекции");
-    return (data.data ?? []) as LectureDocument[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -95,6 +90,6 @@ export const getLectureMedia = cache(
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? "Не удалось загрузить медиа лекции");
-    return (data.data ?? []) as LectureMediaItem[];
+    return unwrap(data) ?? [];
   },
 );

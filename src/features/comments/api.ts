@@ -5,6 +5,7 @@ import { cache } from "react";
 
 import { createApiClient, createPublicApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
   Comment,
@@ -38,7 +39,7 @@ export const getCommentSchema = unstable_cache(
     const { data, error } = await api.GET("/api/comments/schema");
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- openapi types this route error as never, but openapi-fetch sets it at runtime on network/non-2xx failures
     if (error) throw new Error("Не удалось загрузить схему комментариев");
-    return (data.data ?? null) as CommentSchema | null;
+    return unwrap(data);
   },
   ["comments-schema"],
   { tags: [Tags.COMMENT_SCHEMA] },
@@ -63,7 +64,7 @@ export const getLectureComments = cache(
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить комментарии");
     return {
-      subtrees: (data.data ?? []) as RootSubtree[],
+      subtrees: data.data ?? [],
       total: data.pagination?.total ?? 0,
       offset: data.pagination?.offset ?? offset,
       limit: data.pagination?.limit ?? limit,
@@ -80,7 +81,7 @@ export const getCommentSubtree = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ветку");
-    return (data.data ?? null) as RootSubtree | null;
+    return unwrap(data);
   },
 );
 
@@ -102,7 +103,7 @@ export const searchComments = cache(
     });
     if (error) throw new Error(error.error ?? "Не удалось выполнить поиск");
     return {
-      items: (data.data ?? []) as CommentSummary[],
+      items: data.data ?? [],
       total: data.pagination?.total ?? 0,
     };
   },
@@ -116,7 +117,7 @@ export const getCommentRevisions = cache(
       params: { path: { id: commentId } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
-    return (data.data ?? []) as CommentRevisionMeta[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -129,7 +130,7 @@ export const getCommentRevision = cache(
     );
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
-    return (data.data ?? null) as CommentRevision | null;
+    return unwrap(data);
   },
 );
 
@@ -162,11 +163,6 @@ export const getAdminLectureComments = cache(
       params: { query: { lecture_id: lectureId, offset, limit } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить комментарии");
-    return {
-      items: (data.data ?? []) as Comment[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );

@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
   AttachmentDTO,
@@ -43,12 +44,7 @@ export const getMyDocuments = cache(
     if (filter.freeFloating) query.free_floating = true;
     const { data, error } = await api.GET("/api/me/documents", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить документы");
-    return {
-      items: (data.data ?? []) as Document[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
 
@@ -69,7 +65,7 @@ export const getDocumentById = cache(
     });
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить документ");
-    return (data.data ?? null) as Document | null;
+    return unwrap(data);
   },
 );
 
@@ -81,7 +77,7 @@ export const getDocumentContainers = cache(
       params: { path: { id } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить привязки");
-    return (data.data ?? []) as AttachmentDTO[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -97,7 +93,7 @@ export const getDocumentRevisions = cache(
       params: { path: { id } },
     });
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
-    return (data.data ?? []) as DocumentRevisionMeta[];
+    return unwrap(data) ?? [];
   },
 );
 
@@ -111,7 +107,7 @@ export const getDocumentRevision = cache(
     );
     if (response.status === 404) return null;
     if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
-    return (data.data ?? null) as DocumentRevision | null;
+    return unwrap(data);
   },
 );
 
@@ -125,11 +121,6 @@ export const getAdminDocuments = cache(
     if (filter.ownerId) query.owner_id = filter.ownerId;
     const { data, error } = await api.GET("/api/admin/documents", { params: { query } });
     if (error) throw new Error(error.error ?? "Не удалось загрузить документы");
-    return {
-      items: (data.data ?? []) as Document[],
-      total: data.pagination?.total ?? 0,
-      offset: data.pagination?.offset ?? offset,
-      limit: data.pagination?.limit ?? limit,
-    };
+    return unwrapList(data, { offset, limit });
   },
 );
