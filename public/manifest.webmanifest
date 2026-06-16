@@ -4,7 +4,7 @@
   "description": "Архив занятий курса Философия-ликбез",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#f8f8f8",
+  "theme_color": "#f6f2eb",
   "background_color": "#111a20",
   "icons": [
     {

@@ -56,7 +56,7 @@ export default async function RootLayout({
       <head>
         <meta
           name="theme-color"
-          content="#f8f8f8"
+          content="#f6f2eb"
           media="(prefers-color-scheme: light)"
         />
         <meta
