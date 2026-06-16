@@ -1,10 +1,11 @@
 // src/features/search/ui/search-export-links.tsx
+import { API_URL } from "@/api/client";
+
 import { searchExportMdUrl } from "../export-urls";
 import type { SearchType } from "../types";
 
-// Тот же env и fallback, что в src/api/client.ts. Серверный компонент:
+// API_URL — единый источник (src/api/client.ts). Серверный компонент:
 // process.env читается при SSR — рендерить ТОЛЬКО из server components.
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 interface Props {
   q: string;

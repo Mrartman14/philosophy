@@ -1,11 +1,12 @@
 // src/features/comments/ui/comment-export-links.tsx
+import { API_URL } from "@/api/client";
+
 /**
  * Прямые ссылки на .md/.txt выгрузки. В отличие от events, эти роуты бека
  * ПУБЛИЧНЫЕ (cmd/server/main.go:995-998 — только publicRL, без auth), поэтому
  * прокси не нужен — ссылаемся прямо на API. API_URL доступен только на сервере;
  * компонент серверный, читает env и кладёт готовый абсолютный href.
  */
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 interface Props {
   /** "lecture" → .../lectures/{id}/comments.*, "subtree" → .../comments/{id}/subtree.* */
