@@ -7,9 +7,13 @@ interface UseRegisterSWReturn {
   applyUpdate: () => void;
 }
 
+/** Интервал фоновой проверки обновлений SW (мс). Час — чтобы долгоживущие вкладки замечали деплой. */
+const SW_UPDATE_INTERVAL_MS = 60 * 60 * 1000;
+
 export function useRegisterSW(): UseRegisterSWReturn {
   const [needsUpdate, setNeedsUpdate] = useState(false);
   const waitingRef = useRef<ServiceWorker | null>(null);
+  const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -22,6 +26,8 @@ export function useRegisterSW(): UseRegisterSWReturn {
         updateViaCache: "none",
       })
       .then((registration) => {
+        registrationRef.current = registration;
+
         // Check if there's already a waiting SW
         if (registration.waiting) {
           waitingRef.current = registration.waiting;
@@ -46,6 +52,22 @@ export function useRegisterSW(): UseRegisterSWReturn {
       })
       .catch((err: unknown) => { console.error("[SW] registration failed:", err); });
 
+    // Периодически проверяем обновления SW, чтобы долгоживущие вкладки
+    // замечали новый деплой. update() отклоняется офлайн — глушим через .catch.
+    // Проверяем только когда вкладка видима, чтобы не гонять сеть вхолостую.
+    function checkForUpdate() {
+      if (document.visibilityState !== "visible") return;
+      registrationRef.current?.update().catch(() => { /* offline — ignore */ });
+    }
+
+    const interval = setInterval(checkForUpdate, SW_UPDATE_INTERVAL_MS);
+
+    function onVisible() {
+      checkForUpdate();
+    }
+    window.addEventListener("focus", onVisible);
+    document.addEventListener("visibilitychange", onVisible);
+
     // Перезагружаемся при смене контроллера (после SKIP_WAITING), НО пропускаем
     // первый claim() на ранее неконтролируемой вкладке (первая установка SW) —
     // иначе свежая вкладка делает лишний reload без апдейта. Все последующие смены
@@ -65,6 +87,9 @@ export function useRegisterSW(): UseRegisterSWReturn {
     navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
 
     return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", onVisible);
+      document.removeEventListener("visibilitychange", onVisible);
       navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
     };
   }, []);

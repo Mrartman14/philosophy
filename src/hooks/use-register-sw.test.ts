@@ -30,6 +30,7 @@ class FakeWorker {
 class FakeRegistration {
   waiting: FakeWorker | null = null;
   installing: FakeWorker | null = null;
+  update = vi.fn().mockResolvedValue(undefined);
   private cbs: Cbs = new Map();
   addEventListener(type: string, cb: () => void): void {
     listen(this.cbs, type, cb);
@@ -96,6 +97,7 @@ afterEach(() => {
   // Чистим serviceWorker, чтобы тест «нет поддержки» видел голый navigator.
   Reflect.deleteProperty(navigator as object, "serviceWorker");
   vi.clearAllMocks();
+  vi.useRealTimers();
 });
 
 describe("useRegisterSW", () => {
@@ -188,5 +190,213 @@ describe("useRegisterSW", () => {
     unmount();
     act(() => { c.emit("controllerchange"); });
     expect(reloadMock).not.toHaveBeenCalled();
+  });
+
+  // ── Периодическая проверка обновлений SW ─────────────────────────────────
+
+  describe("checkForUpdate — периодический вызов", () => {
+    it("registration.update() вызывается при тике интервала (вкладка видима)", async () => {
+      vi.useFakeTimers();
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      renderHook(() => useRegisterSW());
+
+      // Ждём завершения промиса register()
+      await act(async () => { await Promise.resolve(); });
+
+      expect(reg.update).not.toHaveBeenCalled();
+
+      // Прокручиваем 60 минут — один тик интервала
+      await act(async () => {
+        vi.advanceTimersByTime(60 * 60 * 1000);
+        await Promise.resolve();
+      });
+
+      expect(reg.update).toHaveBeenCalledTimes(1);
+    });
+
+    it("registration.update() НЕ вызывается на тике когда вкладка скрыта", async () => {
+      vi.useFakeTimers();
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "hidden",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      await act(async () => {
+        vi.advanceTimersByTime(60 * 60 * 1000);
+        await Promise.resolve();
+      });
+
+      expect(reg.update).not.toHaveBeenCalled();
+    });
+
+    it("registration.update() вызывается второй раз после второго тика", async () => {
+      vi.useFakeTimers();
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      await act(async () => {
+        vi.advanceTimersByTime(2 * 60 * 60 * 1000);
+        await Promise.resolve();
+      });
+
+      expect(reg.update).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("checkForUpdate — событийный вызов", () => {
+    it("registration.update() вызывается при window focus (вкладка видима)", async () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      expect(reg.update).not.toHaveBeenCalled();
+      act(() => { window.dispatchEvent(new Event("focus")); });
+      expect(reg.update).toHaveBeenCalledTimes(1);
+    });
+
+    it("registration.update() вызывается при visibilitychange когда вкладка видима", async () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      act(() => { document.dispatchEvent(new Event("visibilitychange")); });
+      expect(reg.update).toHaveBeenCalledTimes(1);
+    });
+
+    it("registration.update() НЕ вызывается при visibilitychange когда вкладка скрыта", async () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "hidden",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      act(() => { document.dispatchEvent(new Event("visibilitychange")); });
+      expect(reg.update).not.toHaveBeenCalled();
+    });
+
+    it("отклонение update() (офлайн) не приводит к unhandled rejection", async () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      // Симулируем офлайн — update() отклоняется
+      reg.update.mockRejectedValue(new TypeError("Failed to fetch"));
+      installContainer({ registration: reg });
+      renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      // Не должно бросать необработанное исключение
+      await act(async () => {
+        window.dispatchEvent(new Event("focus"));
+        await Promise.resolve();
+      });
+
+      expect(reg.update).toHaveBeenCalledTimes(1);
+      // Тест пройдёт если не было unhandled rejection (vitest поймал бы его)
+    });
+  });
+
+  describe("cleanup после размонтирования", () => {
+    it("после размонтирования focus не вызывает registration.update()", async () => {
+      vi.useFakeTimers();
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      const { unmount } = renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      unmount();
+
+      act(() => { window.dispatchEvent(new Event("focus")); });
+      expect(reg.update).not.toHaveBeenCalled();
+    });
+
+    it("после размонтирования visibilitychange не вызывает registration.update()", async () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      const { unmount } = renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      unmount();
+
+      act(() => { document.dispatchEvent(new Event("visibilitychange")); });
+      expect(reg.update).not.toHaveBeenCalled();
+    });
+
+    it("после размонтирования тик интервала не вызывает registration.update()", async () => {
+      vi.useFakeTimers();
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+
+      const reg = new FakeRegistration();
+      installContainer({ registration: reg });
+      const { unmount } = renderHook(() => useRegisterSW());
+
+      await act(async () => { await Promise.resolve(); });
+
+      unmount();
+
+      await act(async () => {
+        vi.advanceTimersByTime(60 * 60 * 1000);
+        await Promise.resolve();
+      });
+
+      expect(reg.update).not.toHaveBeenCalled();
+    });
   });
 });
