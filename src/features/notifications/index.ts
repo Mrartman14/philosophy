@@ -28,4 +28,6 @@ export type {
   AppNotification,
   NotificationCounts,
   DocumentSubscription,
+  NotificationListResult,
+  SubscriptionListResult,
 } from "./types";

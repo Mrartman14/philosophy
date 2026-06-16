@@ -11,10 +11,9 @@ import { ForbiddenError, requireActive } from "@/utils/permissions";
 import {
   getNotifications,
   getNotificationCounts,
-  type NotificationListResult,
 } from "./api";
 import { canUseNotifications } from "./permissions";
-import type { NotificationCounts } from "./types";
+import type { NotificationCounts, NotificationListResult } from "./types";
 
 // --- Мутации (залогинен + active) ---
 

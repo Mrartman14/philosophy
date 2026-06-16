@@ -44,4 +44,22 @@ describe("renderNotification", () => {
   it("нет targetId → href null", () => {
     expect(renderNotification(make({ type: "document.updated", targetType: "document" })).href).toBeNull();
   });
+  it("comment.created с groupCount=1 → единственное число", () => {
+    expect(renderNotification(make({ type: "comment.created" })).text).toBe("Новый комментарий");
+  });
+  it("ссылка по target_type=lecture", () => {
+    expect(
+      renderNotification(make({ type: "document.updated", targetType: "lecture", targetId: "l1" })).href,
+    ).toBe("/lectures/l1");
+  });
+  it("ссылка по target_type=annotation игнорирует targetId", () => {
+    expect(
+      renderNotification(make({ type: "document.updated", targetType: "annotation", targetId: "a1" })).href,
+    ).toBe("/me/annotations");
+  });
+  it("неизвестный target_type → href null", () => {
+    expect(
+      renderNotification(make({ type: "document.updated", targetType: "comment", targetId: "c1" })).href,
+    ).toBeNull();
+  });
 });

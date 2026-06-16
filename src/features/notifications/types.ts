@@ -31,3 +31,17 @@ export interface DocumentSubscription {
   targetType: string;
   createdAt: string | null;
 }
+
+export interface NotificationListResult {
+  items: AppNotification[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface SubscriptionListResult {
+  items: DocumentSubscription[];
+  total: number;
+  offset: number;
+  limit: number;
+}

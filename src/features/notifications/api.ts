@@ -9,22 +9,10 @@ import type {
   DocumentSubscription,
   NotificationCounts,
   NotificationDTO,
+  NotificationListResult,
   SubscriptionDTO,
+  SubscriptionListResult,
 } from "./types";
-
-export interface NotificationListResult {
-  items: AppNotification[];
-  total: number;
-  offset: number;
-  limit: number;
-}
-
-export interface SubscriptionListResult {
-  items: DocumentSubscription[];
-  total: number;
-  offset: number;
-  limit: number;
-}
 
 function normalizeNotification(dto: NotificationDTO): AppNotification {
   return {
