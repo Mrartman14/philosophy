@@ -30,7 +30,7 @@ export function MediaCard({ media }: MediaCardProps) {
         <span
           className={
             isPublic
-              ? "rounded px-2 py-0.5 text-green-700"
+              ? "rounded px-2 py-0.5 text-(--color-success)"
               : "rounded px-2 py-0.5 text-(--color-description)"
           }
         >

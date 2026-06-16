@@ -23,7 +23,7 @@ export function Toaster() {
             toast={toast}
             className={cn(
               "rounded border border-(--color-border) bg-(--color-background) p-3 shadow-lg",
-              "data-[type=error]:border-red-500",
+              "data-[type=error]:border-(--color-danger)",
             )}
           >
             {toast.title !== undefined && (

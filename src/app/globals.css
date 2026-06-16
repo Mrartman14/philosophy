@@ -12,6 +12,13 @@
   --color-text-pane: var(--color-text-pane);
   --color-foreground: var(--color-foreground);
 
+  /* Semantic feedback tokens */
+  --color-danger: var(--color-danger);
+  --color-danger-bg: var(--color-danger-bg);
+  --color-danger-fill: var(--color-danger-fill);
+  --color-danger-fill-hover: var(--color-danger-fill-hover);
+  --color-success: var(--color-success);
+
   --spacing-header: 50px;
 }
 

@@ -16,7 +16,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           "block w-full px-3 py-2 text-sm",
           "placeholder:text-(--color-description)",
           FOCUS_RING_INPUT,
-          "disabled:opacity-50 data-[invalid]:border-red-500",
+          "disabled:opacity-50 data-[invalid]:border-(--color-danger)",
           className,
         )}
         {...rest}

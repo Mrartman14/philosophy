@@ -48,7 +48,7 @@ export function EditorNodeLayer({
               <rect
                 x={n.x - 2} y={n.y - 2} width={n.width + 4} height={n.height + 4}
                 fill="none"
-                stroke={invalid ? "#dc2626" : "var(--color-primary)"}
+                stroke={invalid ? "var(--color-danger)" : "var(--color-primary)"}
                 strokeWidth={1.5}
                 strokeDasharray={invalid ? "4 2" : undefined}
                 pointerEvents="none"

@@ -6,6 +6,13 @@
   --color-link: oklch(50% 0.15 250);
   --color-description: #6f798d;
   --color-text-pane: #c8cdd6ae;
+
+  /* Semantic feedback tokens (values = Tailwind v4 theme.css; dark re-tuning is a later task) */
+  --color-danger: oklch(57.7% 0.245 27.325);       /* = red-600 */
+  --color-danger-bg: oklch(97.1% 0.013 17.38);     /* = red-50  */
+  --color-danger-fill: oklch(57.7% 0.245 27.325);  /* = red-600 */
+  --color-danger-fill-hover: oklch(50.5% 0.213 27.518); /* = red-700 */
+  --color-success: oklch(62.7% 0.194 149.214);     /* = green-600 */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,5 +23,12 @@
     --color-link: oklch(70% 0.12 250);
     --color-description: #8b98b2;
     --color-text-pane: #00000092;
+
+    /* Same values as light for now — dark re-tuning is a later task */
+    --color-danger: oklch(57.7% 0.245 27.325);
+    --color-danger-bg: oklch(97.1% 0.013 17.38);
+    --color-danger-fill: oklch(57.7% 0.245 27.325);
+    --color-danger-fill-hover: oklch(50.5% 0.213 27.518);
+    --color-success: oklch(62.7% 0.194 149.214);
   }
 }

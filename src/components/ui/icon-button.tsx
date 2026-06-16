@@ -21,7 +21,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   secondary:
     "border border-(--color-border) hover:bg-(--color-text-pane) disabled:opacity-50",
   ghost: "hover:bg-(--color-text-pane) disabled:opacity-50",
-  danger: "text-red-600 hover:bg-red-50 disabled:opacity-50",
+  danger: "text-(--color-danger) hover:bg-(--color-danger-bg) disabled:opacity-50",
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
