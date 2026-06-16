@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui";
+
 export default function RouteError({
   reset,
 }: {
@@ -12,13 +14,9 @@ export default function RouteError({
       <p className="text-(--color-description)">
         Произошла ошибка при загрузке страницы.
       </p>
-      <button
-        type="button"
-        onClick={reset}
-        className="px-4 py-2 rounded border border-(--color-border) hover:bg-(--color-text-pane)"
-      >
-        Повторить
-      </button>
+      <Button variant="secondary" onClick={reset}>
+        Попробовать снова
+      </Button>
     </div>
   );
 }
