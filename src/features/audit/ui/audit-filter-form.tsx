@@ -1,9 +1,10 @@
 "use client";
 // src/features/audit/ui/audit-filter-form.tsx
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useTransition, type FormEvent, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
+import { type FormEvent, type ReactNode } from "react";
 
 import { Button, Select, TextInput } from "@/components/ui";
+import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 
 import { AUDIT_TARGET_TYPES } from "../target-types";
 
@@ -34,10 +35,8 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 export function AuditFilterForm() {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [pending, startTransition] = useTransition();
+  const { navigate, pending } = useQueryFormSubmit();
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -50,12 +49,11 @@ export function AuditFilterForm() {
       else params.delete(field);
     }
     params.delete("offset");
-    const qs = params.toString();
-    startTransition(() => { router.replace(qs ? `${pathname}?${qs}` : pathname); });
+    navigate(params);
   }
 
   function onReset() {
-    startTransition(() => { router.replace(pathname); });
+    navigate(new URLSearchParams());
   }
 
   return (

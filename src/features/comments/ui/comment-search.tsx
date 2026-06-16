@@ -1,9 +1,10 @@
 "use client";
 // src/features/comments/ui/comment-search.tsx
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useTransition, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
+import { type FormEvent } from "react";
 
 import { Button, TextInput } from "@/components/ui";
+import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 
 interface Props {
   /** Текущее значение из searchParams (?cq=). */
@@ -16,10 +17,8 @@ interface Props {
  * Показывается только залогиненным (бек: requiredAuth) — гейт на странице.
  */
 export function CommentSearch({ defaultQuery = "" }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [pending, startTransition] = useTransition();
+  const { navigate, pending } = useQueryFormSubmit();
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,8 +28,8 @@ export function CommentSearch({ defaultQuery = "" }: Props) {
     const params = new URLSearchParams(searchParams.toString());
     if (q) params.set("cq", q);
     else params.delete("cq");
-    const qs = params.toString();
-    startTransition(() => { router.replace(qs ? `${pathname}?${qs}` : pathname); });
+    // Deliberately does NOT delete offset — comment-search policy.
+    navigate(params);
   }
 
   return (

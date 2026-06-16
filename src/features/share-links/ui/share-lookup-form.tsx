@@ -1,9 +1,10 @@
 "use client";
 // src/features/share-links/ui/share-lookup-form.tsx
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useTransition, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
+import { type FormEvent } from "react";
 
 import { Button, Select, TextInput } from "@/components/ui";
+import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 
 import {
   SHARE_RESOURCE_TYPES,
@@ -22,10 +23,8 @@ interface Props {
  * глобальный «список всех моих ссылок», поэтому управление — per-resource.
  */
 export function ShareLookupForm({ admin = false }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [pending, startTransition] = useTransition();
+  const { navigate, pending } = useQueryFormSubmit();
 
   const types = admin ? ALL_RESOURCE_TYPES : SHARE_RESOURCE_TYPES;
   const options = types.map((t) => ({
@@ -40,13 +39,11 @@ export function ShareLookupForm({ admin = false }: Props) {
     const rawRid = fd.get("resource_id");
     const rt = (typeof rawRt === "string" ? rawRt : "").trim();
     const rid = (typeof rawRid === "string" ? rawRid : "").trim();
+    // Fresh URLSearchParams — intentionally drops all other params.
     const params = new URLSearchParams();
     if (rt) params.set("resource_type", rt);
     if (rid) params.set("resource_id", rid);
-    const qs = params.toString();
-    startTransition(() =>
-      { router.replace(qs ? `${pathname}?${qs}` : pathname); },
-    );
+    navigate(params);
   }
 
   return (

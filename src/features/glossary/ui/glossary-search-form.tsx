@@ -1,19 +1,18 @@
 // src/features/glossary/ui/glossary-search-form.tsx
 "use client";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTransition, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
+import { type FormEvent } from "react";
 
 import { Button, TextInput } from "@/components/ui";
+import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 
 interface Props {
   defaultQ: string;
 }
 
 export function GlossarySearchForm({ defaultQ }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [pending, startTransition] = useTransition();
+  const { navigate, pending } = useQueryFormSubmit();
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,7 +23,7 @@ export function GlossarySearchForm({ defaultQ }: Props) {
     if (q) params.set("q", q);
     else params.delete("q");
     params.delete("offset");
-    startTransition(() => { router.replace(`${pathname}?${params.toString()}`); });
+    navigate(params);
   }
 
   return (

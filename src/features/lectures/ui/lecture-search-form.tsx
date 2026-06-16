@@ -1,9 +1,10 @@
 // src/features/lectures/ui/lecture-search-form.tsx
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
+import { type FormEvent } from "react";
 
 import { Button, Select, TextInput } from "@/components/ui";
+import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 
 interface Props {
   basePath: string;
@@ -12,9 +13,8 @@ interface Props {
 }
 
 export function LectureSearchForm({ basePath, tagOptions }: Props) {
-  const router = useRouter();
   const params = useSearchParams();
-  const [pending, startTransition] = useTransition();
+  const { navigate, pending } = useQueryFormSubmit();
   const initialQ = params.get("q") ?? "";
   const initialTag = params.get("tag") ?? "";
   const hasTagFilter = !!tagOptions && tagOptions.length > 0;
@@ -34,9 +34,7 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
       else next.delete("tag");
     }
     next.delete("offset");
-    startTransition(() => {
-      router.replace(`${basePath}?${next.toString()}`);
-    });
+    navigate(next, basePath);
   }
 
   return (

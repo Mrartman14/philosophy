@@ -6,13 +6,13 @@ import {
   useEffect,
   useRef,
   useState,
-  useTransition,
   type FormEvent,
   type KeyboardEvent,
   type SVGProps,
 } from "react";
 
 import { Button, Select, TextInput } from "@/components/ui";
+import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 
 import { SEARCH_TYPES } from "../types";
 
@@ -49,9 +49,8 @@ const TYPE_OPTIONS = [
 
 /** Полная форма для страницы /search: строка + фильтр типа + кнопка. */
 function PageForm() {
-  const router = useRouter();
   const params = useSearchParams();
-  const [pending, startTransition] = useTransition();
+  const { navigate, pending } = useQueryFormSubmit();
   const initialQ = params.get("q") ?? "";
   const initialType = params.get("type") ?? "";
 
@@ -62,12 +61,11 @@ function PageForm() {
     const rawType = fd.get("type");
     const q = (typeof rawQ === "string" ? rawQ : "").trim();
     const type = (typeof rawType === "string" ? rawType : "").trim();
+    // Fresh URLSearchParams — intentionally drops all other params and offset.
     const next = new URLSearchParams();
     if (q) next.set("q", q);
     if (type) next.set("type", type);
-    // offset сбрасываем при новом запросе (его просто не переносим)
-    const qs = next.toString();
-    startTransition(() => { router.replace(qs ? `/search?${qs}` : "/search"); });
+    navigate(next, "/search");
   }
 
   return (
