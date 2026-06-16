@@ -1,6 +1,6 @@
 "use client";
 
-export default function Error({
+export default function RouteError({
   reset,
 }: {
   error: Error & { digest?: string };
@@ -13,10 +13,11 @@ export default function Error({
         Произошла ошибка при загрузке страницы.
       </p>
       <button
+        type="button"
         onClick={reset}
         className="px-4 py-2 rounded border border-(--color-border) hover:bg-(--color-text-pane)"
       >
-        Попробовать снова
+        Повторить
       </button>
     </div>
   );
