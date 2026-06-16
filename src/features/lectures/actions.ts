@@ -24,6 +24,8 @@ import {
   canDeleteLecture,
   canManageAttachments,
   canManageCover,
+  canSetLectureVisibility,
+  canUpdateLecture,
 } from "./permissions";
 import {
   LectureAttachSchema,
@@ -76,13 +78,16 @@ export const createLecture = createFormAction(async (formData, ctx) => {
   return (data.data ?? null) as Lecture | null;
 });
 
-export const updateLecture = createFormAction(async (formData) => {
+export const updateLecture = createFormAction(async (formData, ctx) => {
+  const me = await getMe();
   const input = parseFormData(LectureUpdateSchema, formData);
-  // Owner-чек делает бэк (см. spec §8). Маппим 403/404 → ForbiddenError/Error.
+  const lecture = await loadLectureForGate(input.id);
+  requireCapability(me, (m) => canUpdateLecture(m, lecture));
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/lectures/{id}", {
     params: { path: { id: input.id } },
     body: { title: input.title, description: input.description, date: input.date },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, input.id);
@@ -90,12 +95,16 @@ export const updateLecture = createFormAction(async (formData) => {
   return (data.data ?? null) as Lecture | null;
 });
 
-export const setLectureVisibility = createFormAction(async (formData) => {
+export const setLectureVisibility = createFormAction(async (formData, ctx) => {
+  const me = await getMe();
   const input = parseFormData(LectureVisibilitySchema, formData);
+  const lecture = await loadLectureForGate(input.id);
+  requireCapability(me, (m) => canSetLectureVisibility(m, lecture));
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/lectures/{id}/visibility", {
     params: { path: { id: input.id } },
     body: { visibility: input.visibility },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, input.id);
