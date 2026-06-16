@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteTag } from "../actions";
 
@@ -27,11 +28,7 @@ export function TagDeleteButton({ id, name }: Props) {
       onConfirm={async () => {
         const result = await deleteTag(id);
         if (!result.success) {
-          toast.add(
-            result.code === "forbidden"
-              ? { title: "Нет прав", description: "У вас нет прав на удаление тега." }
-              : { title: "Ошибка", description: result.error },
-          );
+          toastActionError(toast, result, { action: "удаление тега" });
           return;
         }
         startTransition(() => { router.refresh(); });

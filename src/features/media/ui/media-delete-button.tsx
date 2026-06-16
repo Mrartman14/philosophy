@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteMedia } from "../actions";
 
@@ -33,14 +34,7 @@ export function MediaDeleteButton({ id, isAdminDelete = false }: Props) {
       onConfirm={async () => {
         const result = await deleteMedia(id);
         if (!result.success) {
-          if (result.code === "forbidden") {
-            toast.add({
-              title: "Нет прав",
-              description: "У вас нет прав на удаление медиа.",
-            });
-          } else {
-            toast.add({ title: "Ошибка", description: result.error });
-          }
+          toastActionError(toast, result, { action: "удаление медиа" });
           return;
         }
         if (pathname === `/media/${id}`) {

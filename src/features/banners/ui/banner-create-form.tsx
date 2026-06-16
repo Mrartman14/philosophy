@@ -6,6 +6,7 @@ import { useActionState, useEffect, useState } from "react";
 import {
   Checkbox,
   Form,
+  FormFeedback,
   FormField,
   IdempotencyField,
   Select,
@@ -85,21 +86,7 @@ export function BannerCreateForm() {
         <TextInput name="event_id" placeholder="UUID события из /admin/events" />
       </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          У вас нет прав на создание баннера.
-        </p>
-      )}
-      {!state.success &&
-        state.code === "validation" &&
-        fieldErrors._form && (
-          <p role="alert" className="text-sm text-red-600">
-            {fieldErrors._form}
-          </p>
-        )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание баннера" />
 
       <div>
         <SubmitButton>Создать</SubmitButton>

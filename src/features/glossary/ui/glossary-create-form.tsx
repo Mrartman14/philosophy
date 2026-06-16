@@ -5,6 +5,7 @@ import { useActionState, useEffect } from "react";
 import {
   Form,
   FormField,
+  FormFeedback,
   IdempotencyField,
   SubmitButton,
   TextInput,
@@ -37,12 +38,7 @@ export function GlossaryCreateForm() {
         <TextInput name="title" required maxLength={300} placeholder="Например: «Эпистемология»" />
       </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на создание термина.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание термина" />
 
       <div>
         <SubmitButton>Создать</SubmitButton>

@@ -4,6 +4,7 @@ import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteTerm } from "../actions";
 
@@ -28,14 +29,7 @@ export function GlossaryDeleteButton({ id }: Props) {
       onConfirm={async () => {
         const result = await deleteTerm(id, key);
         if (!result.success) {
-          if (result.code === "forbidden") {
-            toast.add({
-              title: "Нет прав",
-              description: "У вас нет прав на удаление термина.",
-            });
-          } else {
-            toast.add({ title: "Ошибка", description: result.error });
-          }
+          toastActionError(toast, result, { action: "удаление термина" });
           return;
         }
         // Если мы на edit-странице термина — редирект на список; иначе refresh.

@@ -5,6 +5,7 @@ import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteBanner } from "../actions";
 
@@ -29,14 +30,7 @@ export function BannerDeleteButton({ id }: Props) {
       onConfirm={async () => {
         const result = await deleteBanner(id, key);
         if (!result.success) {
-          if (result.code === "forbidden") {
-            toast.add({
-              title: "Нет прав",
-              description: "У вас нет прав на удаление баннера.",
-            });
-          } else {
-            toast.add({ title: "Ошибка", description: result.error });
-          }
+          toastActionError(toast, result, { action: "удаление баннера" });
           return;
         }
         // С edit-страницы — на список; из списка — refresh.

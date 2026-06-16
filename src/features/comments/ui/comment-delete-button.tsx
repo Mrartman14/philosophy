@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteComment, adminDeleteComment } from "../actions";
 
@@ -36,12 +37,10 @@ export function CommentDeleteButton({ commentId, admin = false }: Props) {
         if (result.success) {
           setDone(true);
         } else {
-          toast.add({
-            title: "Не удалось удалить",
-            description:
-              result.code === "forbidden"
-                ? "У вас нет прав на удаление комментария."
-                : result.error,
+          toastActionError(toast, result, {
+            action: "удаление комментария",
+            forbiddenTitle: "Не удалось удалить",
+            failureTitle: "Не удалось удалить",
           });
         }
       }}

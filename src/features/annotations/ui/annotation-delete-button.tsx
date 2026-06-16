@@ -5,6 +5,7 @@ import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteAnnotation, adminDeleteAnnotation } from "../actions";
 
@@ -37,14 +38,7 @@ export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
           ? await adminDeleteAnnotation(annotationId)
           : await deleteAnnotation(annotationId, key);
         if (!result.success) {
-          toast.add(
-            result.code === "forbidden"
-              ? {
-                  title: "Нет прав",
-                  description: "У вас нет прав на удаление аннотации.",
-                }
-              : { title: "Ошибка", description: result.error },
-          );
+          toastActionError(toast, result, { action: "удаление аннотации" });
           return;
         }
         startTransition(() => { router.refresh(); });

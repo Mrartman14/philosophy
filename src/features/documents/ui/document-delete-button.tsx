@@ -5,6 +5,7 @@ import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteDocument, adminDeleteDocument } from "../actions";
 
@@ -39,14 +40,7 @@ export function DocumentDeleteButton({
       onConfirm={async () => {
         const result = admin ? await adminDeleteDocument(id, key) : await deleteDocument(id, key);
         if (!result.success) {
-          if (result.code === "forbidden") {
-            toast.add({
-              title: "Нет прав",
-              description: "У вас нет прав на удаление документа.",
-            });
-          } else {
-            toast.add({ title: "Ошибка", description: result.error });
-          }
+          toastActionError(toast, result, { action: "удаление документа" });
           return;
         }
         startTransition(() => { router.push(redirectTo); });

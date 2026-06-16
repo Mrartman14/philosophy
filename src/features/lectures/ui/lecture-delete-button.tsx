@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteLecture } from "../actions";
 
@@ -26,11 +27,7 @@ export function LectureDeleteButton({ lectureId, redirectTo }: Props) {
       onConfirm={async () => {
         const result = await deleteLecture(lectureId);
         if (!result.success) {
-          if (result.code === "forbidden") {
-            toast.add({ title: "Нет прав", description: "У вас нет прав на удаление лекции." });
-          } else {
-            toast.add({ title: "Ошибка", description: result.error });
-          }
+          toastActionError(toast, result, { action: "удаление лекции" });
           return;
         }
         if (redirectTo) {

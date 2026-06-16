@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteForm } from "../actions";
 
@@ -28,10 +29,7 @@ export function FormDeleteButton({ id, redirectTo = "/me/forms", label = "Уда
       onConfirm={async () => {
         const result = await deleteForm(id);
         if (!result.success) {
-          toast.add({
-            title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
-            description: result.code === "forbidden" ? "У вас нет прав на удаление формы." : result.error,
-          });
+          toastActionError(toast, result, { action: "удаление формы" });
           return;
         }
         startTransition(() => { router.push(redirectTo); });

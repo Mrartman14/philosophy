@@ -6,6 +6,7 @@ import { useActionState, useEffect, useState } from "react";
 import {
   Checkbox,
   Form,
+  FormFeedback,
   FormField,
   IdempotencyField,
   SubmitButton,
@@ -81,14 +82,7 @@ export function EventCreateForm() {
         <TextInput name="rrule" placeholder="FREQ=WEEKLY;BYDAY=MO" />
       </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          У вас нет прав на создание события.
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание события" />
 
       <div>
         <SubmitButton>Создать</SubmitButton>

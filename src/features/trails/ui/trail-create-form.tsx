@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTrail } from "../actions";
@@ -49,12 +49,7 @@ export function TrailCreateForm() {
         Публичный маршрут нельзя будет вернуть в приватный — только удалить.
       </p>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на создание маршрута.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание маршрута" />
 
       <div>
         <SubmitButton>Создать</SubmitButton>

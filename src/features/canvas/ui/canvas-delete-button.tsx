@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteCanvas } from "../actions";
 
@@ -28,8 +29,7 @@ export function CanvasDeleteButton({ id }: Props) {
           toast.add({ title: "Канвас удалён" });
           router.push("/canvases");
         } else {
-          const msg = result.code === "forbidden" ? "У вас нет прав на удаление канваса." : result.error;
-          toast.add({ title: "Ошибка", description: msg });
+          toastActionError(toast, result, { action: "удаление канваса", forbiddenTitle: "Ошибка" });
         }
       }}
     />
