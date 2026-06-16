@@ -80,10 +80,14 @@ export async function updateOutboxCommand(
 ): Promise<void> {
   const db = await openOfflineDb();
   try {
-    const existing = await db.get("outbox", clientId);
-    if (existing) {
-      await db.put("outbox", { ...existing, ...patch });
+    const tx = db.transaction("outbox", "readwrite");
+    const existing = await tx.store.get(clientId);
+    if (!existing) {
+      await tx.done;
+      return;
     }
+    await tx.store.put({ ...existing, ...patch });
+    await tx.done;
   } finally {
     db.close();
   }
