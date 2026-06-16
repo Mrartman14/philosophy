@@ -19,7 +19,7 @@ export function NotificationListActions() {
       const result = await action();
       if (!result.success) {
         toast.add({
-          title: "Ошибка",
+          title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
           description: result.code === "forbidden" ? "У вас нет прав." : result.error,
         });
         return;

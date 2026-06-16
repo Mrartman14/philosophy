@@ -41,7 +41,9 @@ export default async function NotificationsPage({ searchParams }: Props) {
         </div>
       )}
 
-      <Pagination basePath="/notifications" offset={offset} limit={limit} total={total} />
+      {total > 0 && (
+        <Pagination basePath="/notifications" offset={offset} limit={limit} total={total} />
+      )}
     </div>
   );
 }
