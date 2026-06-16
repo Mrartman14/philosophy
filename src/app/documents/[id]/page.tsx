@@ -18,6 +18,10 @@ import {
   DocumentContainers,
 } from "@/features/documents";
 import {
+  DocumentSubscribeButton,
+  getDocumentSubscription,
+} from "@/features/notifications";
+import {
   ShareButton,
   canCreateShareLink,
   getShareLinksFor,
@@ -42,10 +46,12 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   const isPrivateOwned = canEdit && document.visibility === "private";
 
   const canShare = canCreateShareLink(me, document);
-  const shareLinks =
+  const [shareLinks, subscribed] = await Promise.all([
     canShare && document.id
-      ? await getShareLinksFor("document", document.id)
-      : [];
+      ? getShareLinksFor("document", document.id)
+      : Promise.resolve([]),
+    me && document.id ? getDocumentSubscription(document.id) : Promise.resolve(false),
+  ]);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
@@ -61,6 +67,12 @@ export default async function DocumentPage({ params, searchParams }: Props) {
             />
           )}
           {document.id && <DocumentExportLinks id={document.id} />}
+          {me && document.id && (
+            <DocumentSubscribeButton
+              documentId={document.id}
+              initialSubscribed={subscribed}
+            />
+          )}
         </div>
       </header>
 
