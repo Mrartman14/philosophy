@@ -30,7 +30,20 @@ export const NetworkIndicator: React.FC<{ className?: string }> = ({
     getServerSnapshot,
   );
 
-  return !isOnline ? (
-    <OfflineIcon className={`text-amber-600 ${className}`} />
-  ) : null;
+  return (
+    <>
+      {/* Always-mounted live region: announces offline transition to screen readers */}
+      <span role="status" aria-live="polite" aria-atomic="true">
+        {!isOnline && <span className="sr-only">Нет сети</span>}
+      </span>
+
+      {/* Visual indicator for sighted users; aria-hidden because sr-only text carries the name */}
+      {!isOnline && (
+        <OfflineIcon
+          aria-hidden="true"
+          className={`text-amber-600 ${className}`}
+        />
+      )}
+    </>
+  );
 };

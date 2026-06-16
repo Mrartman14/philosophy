@@ -1,11 +1,15 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
+import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Мок лист-иконки: тестируем логику индикатора (показ/скрытие + проброс className),
 // а не внутренности OfflineIcon. data-testid → testing-library-совместимые запросы.
 vi.mock("@/assets/icons/offline-icon", () => ({
-  OfflineIcon: ({ className }: { className?: string }) => (
-    <span data-testid="offline-icon" className={className} />
+  OfflineIcon: ({
+    className,
+    ...props
+  }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) => (
+    <span data-testid="offline-icon" className={className} {...props} />
   ),
 }));
 
@@ -34,10 +38,13 @@ describe("NetworkIndicator", () => {
     expect(screen.getByTestId("offline-icon")).toBeTruthy();
   });
 
-  it("онлайн → ничего не рендерит", () => {
+  it("онлайн → иконка не рендерится, но live-регион присутствует", () => {
     online = true;
     render(<NetworkIndicator />);
     expect(screen.queryByTestId("offline-icon")).toBeNull();
+    // Live-регион всегда смонтирован, чтобы объявлять переход «онлайн → офлайн»
+    expect(screen.getByRole("status")).toBeTruthy();
+    expect(screen.queryByText("Нет сети")).toBeNull();
   });
 
   it("реагирует на событие offline → иконка появляется", () => {
@@ -57,5 +64,46 @@ describe("NetworkIndicator", () => {
     expect(screen.getByTestId("offline-icon").className).toContain(
       "indicator-cls",
     );
+  });
+
+  // a11y: live-регион и sr-only текст
+  it("a11y: live-регион role=status всегда смонтирован", () => {
+    online = true;
+    render(<NetworkIndicator />);
+    const region = screen.getByRole("status");
+    expect(region).toBeTruthy();
+    expect(region.getAttribute("aria-live")).toBe("polite");
+  });
+
+  it("a11y: офлайн → sr-only текст «Нет сети» в live-регионе", () => {
+    online = false;
+    render(<NetworkIndicator />);
+    const region = screen.getByRole("status");
+    expect(region.textContent).toContain("Нет сети");
+  });
+
+  it("a11y: офлайн → иконка помечена aria-hidden (не несёт доступного имени)", () => {
+    online = false;
+    render(<NetworkIndicator />);
+    const icon = screen.getByTestId("offline-icon");
+    expect(icon.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("a11y: онлайн → live-регион пуст (нет текста «Нет сети»)", () => {
+    online = true;
+    render(<NetworkIndicator />);
+    const region = screen.getByRole("status");
+    expect(region.textContent).not.toContain("Нет сети");
+  });
+
+  it("a11y: переход офлайн → online убирает sr-only текст из live-региона", () => {
+    online = false;
+    render(<NetworkIndicator />);
+    expect(screen.getByRole("status").textContent).toContain("Нет сети");
+    act(() => {
+      online = true;
+      window.dispatchEvent(new Event("online"));
+    });
+    expect(screen.getByRole("status").textContent).not.toContain("Нет сети");
   });
 });
