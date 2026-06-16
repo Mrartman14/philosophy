@@ -46,6 +46,12 @@ export async function revalidateSavedLecture(
     // Помечаем stale только когда дата снимка известна и отличается от текущей —
     // иначе не мусорим ложным сигналом (best-effort). res.data.updatedAt — string.
     if (savedUpdatedAt !== null && res.data.updatedAt !== savedUpdatedAt) {
+      // CAS против гонки с ручным «Обновить»: пока шёл probe, пользователь мог
+      // перезаписать снимок свежим (putSavedBundle с новым updated_at). Если
+      // дата снимка уже не та, что мы сравнивали, — НЕ штампуем stale, иначе на
+      // только что обновлённой копии вспыхнула бы ложная плашка.
+      const current = await getSavedBundle("lectures", id);
+      if (snapshotUpdatedAt(current?.snapshot) !== savedUpdatedAt) return "skip";
       await updateSavedBundle("lectures", id, { remoteStatus: "stale" });
       return "stale";
     }

@@ -88,6 +88,29 @@ describe("revalidateSavedLecture", () => {
     expect((await getSavedBundle("lectures", "l1"))?.remoteStatus).toBe("stale");
   });
 
+  it("снимок обновлён во время probe (ручной «Обновить») → CAS не штампует stale", async () => {
+    await seed({ updatedAt: "2026-06-10T00:00:00Z" });
+    // Симуляция гонки: пока шёл probe, ручной «Обновить» перезаписал снимок
+    // свежим (updated_at=12) — таким же, как вернёт probe. Копия уже актуальна.
+    probeMock.mockImplementation(async () => {
+      await putSavedBundle({
+        entity: "lectures",
+        id: "l1",
+        savedAt: "2026-06-12T00:00:00.000Z",
+        schemaVersion: OFFLINE_SCHEMA_VERSION,
+        status: "complete",
+        snapshot: snap("2026-06-12T00:00:00Z"),
+        imageKeys: [],
+      });
+      return {
+        success: true,
+        data: { status: "present", updatedAt: "2026-06-12T00:00:00Z" },
+      };
+    });
+    expect(await revalidateSavedLecture("l1")).toBe("skip");
+    expect((await getSavedBundle("lectures", "l1"))?.remoteStatus).toBeUndefined();
+  });
+
   it("present + тот же updated_at → fresh, снимает прежнюю пометку", async () => {
     await seed({ updatedAt: "2026-06-10T00:00:00Z", remoteStatus: "stale" });
     probeMock.mockResolvedValue({
