@@ -22,7 +22,7 @@ export { NotificationBell } from "./ui/notification-bell";
 export { NotificationItem } from "./ui/notification-item";
 export { NotificationListActions } from "./ui/notification-list-actions";
 export { DocumentSubscribeButton } from "./ui/document-subscribe-button";
-// export { SubscriptionsSection } from "./ui/subscriptions-section";
+export { SubscriptionsSection } from "./ui/subscriptions-section";
 
 export type {
   AppNotification,

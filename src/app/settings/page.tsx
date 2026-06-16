@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 
 import { RouterLink } from "@/components/ui";
+import { SubscriptionsSection } from "@/features/notifications";
 import {
   PreferencesForm,
   PushSubscriptionToggle,
@@ -48,6 +49,11 @@ export default async function SettingsPage() {
           vapidPublicKey={vapidPublicKey}
           canSubscribe={canSubscribePush(me)}
         />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Подписки на документы</h2>
+        <SubscriptionsSection />
       </section>
 
       <section className="flex flex-col gap-3">
