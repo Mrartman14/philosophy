@@ -18,6 +18,8 @@
 2. **Колокольчик — самодостаточный dropdown** (кнопка + абсолютная панель + click-outside/Escape), без Base UI Popover (его API не верифицирован) и без новых UI-kit примитивов (`components/ui/*` заморожены).
 3. **Семантика счётчиков:** бейдж = `unseen`; открытие поповера → `markAllSeen()` гасит бейдж; «прочитано» (`read_at`) — отдельно, per-item клик / «Прочитать все».
 4. **Гейты:** чтение (read-actions) — нужен залогиненный (`canUseNotifications`); мутации (mark/subscribe) — залогинен + active (`requireActive`). 403/BANNED централизованно ловит `rethrowApiError`/`createAction`.
+5. **Инвариант идемпотентности `read-all`/`seen-all`.** Поповер вызывает `markAllSeen()` на КАЖДОМ открытии (и dev-StrictMode прогонит эффект дважды) — это безопасно при условии, что бэк трактует повторный `seen-all`/`read-all` как no-op (повторная установка `seen_at`/`read_at` на уже отмеченных). Считаем это контрактом; если бэк не идемпотентен — поднять в backend-ask (Task 16) и добавить guard «уже гасили в этой сессии бейджа».
+6. **Принцип обработки ошибок (симметрия осознанная).** Фоновые некритичные мутации (`markRead` per-item при клике, `markAllSeen` при открытии) — ошибка проглатывается тихо (повторится на следующем тике/открытии, тост был бы шумом). Явные пользовательские действия (кнопки «Прочитать все», subscribe/unsubscribe) — ошибка показывается тостом + откат оптимизма. Это не недосмотр, а правило.
 
 ---
 
@@ -498,7 +500,13 @@ export const markRead = createAction(async (id: string) => {
   return undefined;
 });
 
-export const markAllRead = createAction(async () => {
+// ВАЖНО: для action'ов БЕЗ входа указываем дженерики `<void, TOutput>` явно.
+// Без них `createAction(async () => …)` выводит `TInput = unknown`, и
+// возвращаемая функция требует обязательный аргумент → `markAllSeen()` /
+// `fetchCounts()` и передача в `run` (ждёт `() => …`) НЕ компилируются
+// («Expected 1-2 arguments, but got 0»). `TInput = void` делает параметр
+// опускаемым (правило void-параметров TS) и совместимым с `() => …`.
+export const markAllRead = createAction<void, void>(async () => {
   const me = await getMe();
   requireActive(me);
   const api = await createApiClient();
@@ -507,7 +515,7 @@ export const markAllRead = createAction(async () => {
   return undefined;
 });
 
-export const markAllSeen = createAction(async () => {
+export const markAllSeen = createAction<void, void>(async () => {
   const me = await getMe();
   requireActive(me);
   const api = await createApiClient();
@@ -540,7 +548,7 @@ export const unsubscribeDocument = createAction(async (documentId: string) => {
 
 // --- Read-actions для клиентских островков (нужен залогиненный) ---
 
-export const fetchCounts = createAction(async (): Promise<NotificationCounts> => {
+export const fetchCounts = createAction<void, NotificationCounts>(async () => {
   const me = await getMe();
   if (!canUseNotifications(me)) throw new ForbiddenError("guest");
   return getNotificationCounts();
@@ -558,7 +566,7 @@ export const fetchNotifications = createAction(
 - [ ] **Step 2: Проверить типы**
 
 Run: `pnpm typecheck`
-Expected: PASS. (Эндпоинты read-all/seen-all имеют `requestBody?: never` — пустой `{}` валиден. Если openapi-fetch потребует иной формат для no-body POST — оставить `{}`.)
+Expected: PASS. (Дженерики `<void, …>` у `markAllRead`/`markAllSeen`/`fetchCounts` обязательны — без них zero-arg вызовы не компилируются, см. комментарий в коде. Эндпоинты read-all/seen-all имеют `requestBody?: never` — пустой `{}` валиден.)
 
 - [ ] **Step 3: Commit**
 
@@ -874,13 +882,22 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
   const [counts, setCounts] = useState(initialCounts);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  /** Момент последнего локального «всё просмотрено» — против гонки с poll'ом. */
+  const lastSeenRef = useRef(0);
 
   // Polling счётчиков + рефреш при возврате фокуса/вкладки.
   useEffect(() => {
     let cancelled = false;
     async function refresh() {
+      const startedAt = Date.now();
       const result = await fetchCounts();
-      if (!cancelled && result.success) setCounts(result.data);
+      if (cancelled || !result.success) return;
+      setCounts((prev) => ({
+        unread: result.data.unread,
+        // Если пользователь погасил бейдж (markAllSeen) ПОКА летел этот запрос —
+        // не поднимаем unseen обратно устаревшим ответом (бэк ещё не применил seen).
+        unseen: lastSeenRef.current > startedAt ? prev.unseen : result.data.unseen,
+      }));
     }
     const interval = setInterval(() => {
       void refresh();
@@ -917,10 +934,10 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
     };
   }, [open]);
 
-  const handleSeen = useCallback(
-    () => setCounts((c) => ({ ...c, unseen: 0 })),
-    [],
-  );
+  const handleSeen = useCallback(() => {
+    lastSeenRef.current = Date.now();
+    setCounts((c) => ({ ...c, unseen: 0 }));
+  }, []);
 
   const badge =
     counts.unseen > 0 ? (counts.unseen > 99 ? "99+" : String(counts.unseen)) : null;
@@ -964,6 +981,8 @@ git commit -m "feat(notifications): header bell island (badge + polling + dropdo
 - Modify: `src/components/app/app-header/app-header.tsx`
 
 > Заморожённая зона — изменение минимальное: импорт + один fetch + один монтаж.
+
+**Trade-off (осознанный):** `getNotificationCounts()` добавляет один сетевой запрос в SSR-путь хедера для залогиненного на КАЖДОЙ странице (`React.cache` дедуплит в рамках запроса). Выбрано ради корректного бейджа без мерцания на первом пейнте — согласуется с SSR-first паттерном хедера (он уже `await getMe()`). `.catch` деградирует к `{0,0}` при ошибке. Эндпоинт counts дешёвый; если профилирование покажет проблему — альтернатива убрать SSR-инициализацию и положиться на первый клиентский `fetchCounts` (потребует немедленного refresh на mount в bell).
 
 - [ ] **Step 1: Добавить импорт**
 
@@ -1220,10 +1239,16 @@ import {
 } from "@/features/notifications";
 ```
 
-(b) После `const document = await getDocumentById(id, token);` и `if (!document) notFound();` добавить вычисление состояния:
+(b) Заменить существующее вычисление `shareLinks` (page.tsx, строки ~44-48: `const canShare = …` + `const shareLinks = canShare && document.id ? await getShareLinksFor(…) : [];`) на параллельную загрузку — `getShareLinksFor` и `getDocumentSubscription` независимы, последовательный `await` даёт лишний водопад:
 
 ```tsx
-  const subscribed = me && document.id ? await getDocumentSubscription(document.id) : false;
+  const canShare = canCreateShareLink(me, document);
+  const [shareLinks, subscribed] = await Promise.all([
+    canShare && document.id
+      ? getShareLinksFor("document", document.id)
+      : Promise.resolve([]),
+    me && document.id ? getDocumentSubscription(document.id) : Promise.resolve(false),
+  ]);
 ```
 
 (c) В `<div className="flex items-center gap-2">` (шапка, после `DocumentExportLinks`) добавить:
@@ -1469,3 +1494,17 @@ git commit -m "docs(notifications): backend-ask — subscribed flag + subscripti
 - `onSeen` через `useCallback` (Task 10) — иначе эффект поповера зациклится.
 - openapi-fetch no-body POST: `{}` — при ошибке типов см. примечания в Task 4/5.
 - `index.ts` ссылается на UI вперёд — порядок Task 6 vs Task 9/12/13/14 описан в Task 6.
+
+---
+
+## Правки по ревью агентов (4 параллельных ревьюера)
+
+Применено после аудита плана (конвенции/RBAC, контракт схемы, рантайм-баги, регрессии/симметрия):
+
+1. **[было High] zero-arg `createAction` не компилировался.** `markAllRead`/`markAllSeen`/`fetchCounts` получили явные дженерики `createAction<void, …>` (Task 5) + комментарий-объяснение. Чинит и заявленный «typecheck PASS», и mismatch `ActionResult<void>` в `run` (Task 12).
+2. **[было Medium] гонка polling vs локальный `unseen:0`** (Task 10): добавлен `lastSeenRef` (timestamp) — устаревший ответ poll'а не поднимает бейдж обратно после `markAllSeen`.
+3. **[было Medium] водопад на странице документа** (Task 13): `getShareLinksFor` + `getDocumentSubscription` объединены в `Promise.all` (минус один RTT).
+4. **Инварианты зафиксированы** (раздел «Важные решения» #5/#6): идемпотентность `seen-all`/`read-all` (поповер re-marks на каждом открытии + StrictMode); принцип «фоновые мутации — тихо, явные действия — тост».
+5. **Trade-off SSR-await** в хедере (Task 11) задокументирован как осознанный выбор + альтернатива.
+
+**Подтверждено корректным (правок не потребовало):** пути/path-параметры схемы (включая `id` ≠ `document_id` — не перепутано), поля DTO нормализаторов, `httputil.ListResponse.pagination`, RBAC-гейты и асимметрия read/mutation, ESLint-guardrails (cross-feature/deep-import/client.ts/server-only), сигнатуры `Button`/`Pagination`/`RouterLink`/`useToast`/`createAction`/`requireActive`/`rethrowApiError`, сериализация через RSC-границу, server/client-границы компонентов, no-body POST `{}`, оптимистичный toggle, разбор `offset` из searchParams.
