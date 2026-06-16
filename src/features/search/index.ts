@@ -16,3 +16,4 @@ export { SearchInput } from "./ui/search-input";
 export { SearchResults } from "./ui/search-results";
 export { SearchPagination } from "./ui/search-pagination";
 export { SearchExportLinks } from "./ui/search-export-links";
+export { SearchResultsSkeleton } from "./ui/search-results-skeleton";

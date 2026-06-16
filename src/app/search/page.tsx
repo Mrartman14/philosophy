@@ -1,4 +1,6 @@
 // src/app/search/page.tsx
+import { Suspense } from "react";
+
 import {
   getSearchResults,
   SearchExportLinks,
@@ -6,6 +8,7 @@ import {
   SearchPagination,
   SearchParamsSchema,
   SearchResults,
+  SearchResultsSkeleton,
 } from "@/features/search";
 
 const PAGE_LIMIT = 20;
@@ -38,11 +41,16 @@ export default async function SearchPage({ searchParams }: Props) {
       <SearchInput variant="page" />
 
       {params.q ? (
-        <SearchBody
-          q={params.q}
-          type={params.type}
-          offset={params.offset ?? 0}
-        />
+        <Suspense
+          key={`${params.q}|${params.type ?? ""}|${params.offset ?? 0}`}
+          fallback={<SearchResultsSkeleton />}
+        >
+          <SearchBody
+            q={params.q}
+            type={params.type}
+            offset={params.offset ?? 0}
+          />
+        </Suspense>
       ) : (
         <p className="text-sm text-(--color-description)">
           Введите запрос, чтобы начать поиск.
