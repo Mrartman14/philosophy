@@ -36,3 +36,18 @@ export function axisValueLabel(axis: ReactionAxis, value: number): string | null
   if (axis === "insight") return value === 1 ? "★" : null;
   return value === 1 ? "+" : value === -1 ? "−" : null;
 }
+
+/**
+ * Accessible aria-label для кнопки реакции.
+ * Возвращает ось-корректное направление (не универсальное «согласен»/«не согласен»).
+ *
+ * - agreement: «согласен» / «не согласен»
+ * - quality:   «высокое качество» / «низкое качество»
+ * - insight:   «отметить как инсайт» (единственное значение +1)
+ */
+export function axisValueAriaLabel(axis: ReactionAxis, value: number): string {
+  if (axis === "agreement") return value === 1 ? "согласен" : "не согласен";
+  if (axis === "quality") return value === 1 ? "высокое качество" : "низкое качество";
+  // insight — единственное значение, смысл однозначен
+  return "отметить как инсайт";
+}

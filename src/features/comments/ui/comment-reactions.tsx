@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { setReaction, removeReaction } from "../actions";
-import { axisLabel } from "../reactions";
+import { axisLabel, axisValueAriaLabel } from "../reactions";
 import type { CommentType, MyReactions, ReactionAxis, ReactionSummary } from "../types";
 
 interface Props {
@@ -101,13 +101,14 @@ export function CommentReactions({
                     disabled={!canReact || pending}
                     onClick={() => { toggle(axis, v); }}
                     aria-pressed={active}
+                    aria-label={`${axisLabel(axis)}: ${axisValueAriaLabel(axis, v)}`}
                     className={
                       active
                         ? "rounded border border-(--color-border) bg-(--color-text-pane) px-1.5"
                         : "rounded border border-(--color-border) px-1.5 hover:bg-(--color-text-pane) disabled:opacity-40"
                     }
                   >
-                    {axis === "insight" ? "★" : v === 1 ? "+" : "−"}
+                    <span aria-hidden="true">{axis === "insight" ? "★" : v === 1 ? "+" : "−"}</span>
                   </button>
                 );
               })}

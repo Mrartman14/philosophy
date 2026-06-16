@@ -6,6 +6,7 @@ import {
   REACTION_AXES,
   axisLabel,
   axisValueLabel,
+  axisValueAriaLabel,
 } from "./reactions";
 import type { CommentSchema } from "./types";
 
@@ -52,4 +53,27 @@ describe("axisLabel / axisValueLabel", () => {
     expect(axisValueLabel("agreement", 1)).toBe("+");
     expect(axisValueLabel("agreement", -1)).toBe("−");
   });
+});
+
+describe("axisValueAriaLabel", () => {
+  it("agreement +1 → «согласен»", () =>
+    { expect(axisValueAriaLabel("agreement", 1)).toBe("согласен"); });
+  it("agreement -1 → «не согласен»", () =>
+    { expect(axisValueAriaLabel("agreement", -1)).toBe("не согласен"); });
+  it("quality +1 → «высокое качество»", () =>
+    { expect(axisValueAriaLabel("quality", 1)).toBe("высокое качество"); });
+  it("quality -1 → «низкое качество»", () =>
+    { expect(axisValueAriaLabel("quality", -1)).toBe("низкое качество"); });
+  it("insight +1 → «отметить как инсайт»", () =>
+    { expect(axisValueAriaLabel("insight", 1)).toBe("отметить как инсайт"); });
+  it("составной aria-label согласен", () =>
+    { expect(`${axisLabel("agreement")}: ${axisValueAriaLabel("agreement", 1)}`).toBe("Согласие: согласен"); });
+  it("составной aria-label не согласен", () =>
+    { expect(`${axisLabel("agreement")}: ${axisValueAriaLabel("agreement", -1)}`).toBe("Согласие: не согласен"); });
+  it("составной aria-label качество высокое", () =>
+    { expect(`${axisLabel("quality")}: ${axisValueAriaLabel("quality", 1)}`).toBe("Качество: высокое качество"); });
+  it("составной aria-label качество низкое", () =>
+    { expect(`${axisLabel("quality")}: ${axisValueAriaLabel("quality", -1)}`).toBe("Качество: низкое качество"); });
+  it("составной aria-label инсайт", () =>
+    { expect(`${axisLabel("insight")}: ${axisValueAriaLabel("insight", 1)}`).toBe("Инсайт: отметить как инсайт"); });
 });
