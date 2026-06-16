@@ -5,6 +5,7 @@ import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { RouterLink } from "@/components/ui";
 import { LogoutForm } from "@/features/auth";
+import { NotificationBell, getNotificationCounts } from "@/features/notifications";
 import { SearchInput } from "@/features/search";
 import { getMe } from "@/utils/me";
 
@@ -12,6 +13,9 @@ import { NetworkIndicator } from "../network-indicator";
 
 export const AppHeader = async () => {
   const me = await getMe();
+  const counts = me
+    ? await getNotificationCounts().catch(() => ({ unread: 0, unseen: 0 }))
+    : null;
   return (
     <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--color-background) border-t-0 border-b md:border-t border-(--color-border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:left-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--color-border) bg-(--color-background) pl-4 pr-4">
@@ -40,6 +44,7 @@ export const AppHeader = async () => {
             <NetworkIndicator className="text-xl" />
             {me ? (
               <>
+                <NotificationBell initialCounts={counts ?? { unread: 0, unseen: 0 }} />
                 <RouterLink
                   href="/documents/my"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
