@@ -3,7 +3,7 @@
 import { Select as BaseSelect } from "@base-ui/react/select";
 import type { ReactNode } from "react";
 
-import { cn } from "./cn";
+import { cn, FOCUS_RING_INPUT, SHELL_BASE } from "./cn";
 
 interface SelectOption {
   value: string;
@@ -50,8 +50,9 @@ export function Select({
       <BaseSelect.Trigger
         aria-label={ariaLabel}
         className={cn(
-          "inline-flex h-10 w-full items-center justify-between gap-2 rounded border border-(--color-border) bg-(--color-background) px-3 text-sm",
-          "focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-(--color-foreground)",
+          SHELL_BASE,
+          "inline-flex h-10 w-full items-center justify-between gap-2 px-3 text-sm",
+          FOCUS_RING_INPUT,
           "data-[disabled]:opacity-50",
           className,
         )}

@@ -2,7 +2,7 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 
 import type { ButtonVariant } from "./button";
-import { cn } from "./cn";
+import { cn, FOCUS_RING_CONTROL } from "./cn";
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -32,7 +32,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         type={type}
         className={cn(
           "inline-flex h-9 w-9 items-center justify-center rounded transition",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-foreground)",
+          FOCUS_RING_CONTROL,
           variantClasses[variant],
           className,
         )}

@@ -1,7 +1,7 @@
 // src/components/ui/button.tsx
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 
-import { cn } from "./cn";
+import { cn, FOCUS_RING_CONTROL } from "./cn";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -36,7 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       type={type}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded font-medium transition",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-foreground)",
+        FOCUS_RING_CONTROL,
         variantClasses[variant],
         sizeClasses[size],
         className,
