@@ -2,12 +2,14 @@
 // src/features/comments/ui/comment-edit-form.tsx
 import { useActionState, useState } from "react";
 
-import { AstEditor, type AstBlock } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
 import { Button, Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCommentBlocks } from "../actions";
 import type { Comment } from "../types";
+
+import { LazyAstEditor } from "./lazy-ast-editor";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
 
@@ -41,7 +43,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
       <FormField name="blocks" label="Текст">
-        <AstEditor
+        <LazyAstEditor
           defaultValue={initialBlocks}
           entityContext="comment"
           defaultLectureId={lectureId}

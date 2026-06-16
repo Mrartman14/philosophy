@@ -2,7 +2,7 @@
 // src/features/comments/ui/comment-create-form.tsx
 import { useActionState, useState } from "react";
 
-import { AstEditor, type AstBlock } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
 import { Form, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -10,6 +10,7 @@ import { createComment } from "../actions";
 import type { Comment, CommentType } from "../types";
 
 import { commentTypeLabel } from "./comment-type-badge";
+import { LazyAstEditor } from "./lazy-ast-editor";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
 
@@ -38,7 +39,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
       </FormField>
 
       <FormField name="blocks" label="Текст">
-        <AstEditor
+        <LazyAstEditor
           entityContext="comment"
           defaultLectureId={lectureId}
           onChange={(next: AstBlock[]) => { setBlocks(next); }}
