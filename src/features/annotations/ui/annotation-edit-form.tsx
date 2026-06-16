@@ -1,6 +1,6 @@
 "use client";
 // src/features/annotations/ui/annotation-edit-form.tsx
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
 import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
@@ -13,13 +13,18 @@ const initial: ActionResult<Annotation | null> = { success: true, data: null };
 
 interface Props {
   annotation: Annotation;
+  /**
+   * Вызывается после успешного сохранения. Родитель (кнопка-диалог) закрывает
+   * диалог и делает router.refresh(), чтобы список перечитался на сервере.
+   */
+  onSuccess?: () => void;
 }
 
 /**
  * Форма редактирования. Меняются только blocks (visibility иммутабельна —
  * её нет в форме, §6.8). Монтируется под <SchemaContextProvider>.
  */
-export function AnnotationEditForm({ annotation }: Props) {
+export function AnnotationEditForm({ annotation, onSuccess }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>(
     (annotation.blocks ?? []),
   );
@@ -29,6 +34,11 @@ export function AnnotationEditForm({ annotation }: Props) {
     !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
+
+  useEffect(() => {
+    // initial.data === null → срабатывает только после реального сохранения.
+    if (state.success && state.data) onSuccess?.();
+  }, [state, onSuccess]);
 
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">

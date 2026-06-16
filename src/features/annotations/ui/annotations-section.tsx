@@ -10,6 +10,7 @@ import { AnnotationAnchorContext } from "./annotation-anchor-context";
 import { AnnotationCard } from "./annotation-card";
 import { AnnotationCreateForm } from "./annotation-create-form";
 import { AnnotationDeleteButton } from "./annotation-delete-button";
+import { AnnotationEditButton } from "./annotation-edit-button";
 import { AnnotationExportLinks } from "./annotation-export-links";
 
 interface Props {
@@ -50,7 +51,10 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
                     <>
                       {a.id && <AnnotationExportLinks id={a.id} />}
                       {ownEditable && a.id && (
-                        <AnnotationDeleteButton annotationId={a.id} />
+                        <>
+                          <AnnotationEditButton annotation={a} />
+                          <AnnotationDeleteButton annotationId={a.id} />
+                        </>
                       )}
                     </>
                   }

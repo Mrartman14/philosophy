@@ -33,6 +33,7 @@ export { AnnotationCard } from "./ui/annotation-card";
 export { AnnotationList } from "./ui/annotation-list";
 export { AnnotationCreateForm } from "./ui/annotation-create-form";
 export { AnnotationEditForm } from "./ui/annotation-edit-form";
+export { AnnotationEditButton } from "./ui/annotation-edit-button";
 export { AnnotationDeleteButton } from "./ui/annotation-delete-button";
 export { AnnotationVisibilityField } from "./ui/annotation-visibility-field";
 export { AnnotationExportLinks } from "./ui/annotation-export-links";
