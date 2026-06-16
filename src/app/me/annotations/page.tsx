@@ -1,11 +1,11 @@
 // src/app/me/annotations/page.tsx
+import { Pagination } from "@/components/ui";
 import {
   getMyAnnotations,
   AnnotationCard,
   AnnotationAnchorContext,
   AnnotationExportLinks,
   AnnotationDeleteButton,
-  AnnotationPagination,
 } from "@/features/annotations";
 import { requireUserOrRedirect } from "@/utils/me";
 
@@ -20,8 +20,8 @@ const LIMIT = 20;
 export default async function MyAnnotationsPage({ searchParams }: Props) {
   await requireUserOrRedirect("/me/annotations");
 
-  const { offset: rawOffset } = await searchParams;
-  const offset = Math.max(0, Number(rawOffset ?? 0) || 0);
+  const sp = await searchParams;
+  const offset = Math.max(0, Number(sp.offset ?? 0) || 0);
   const { items, total } = await getMyAnnotations(offset, LIMIT);
 
   return (
@@ -49,7 +49,7 @@ export default async function MyAnnotationsPage({ searchParams }: Props) {
           ))}
         </ul>
       )}
-      <AnnotationPagination offset={offset} limit={LIMIT} total={total} />
+      <Pagination basePath="/me/annotations" offset={offset} limit={LIMIT} total={total} searchParams={sp} />
     </div>
   );
 }

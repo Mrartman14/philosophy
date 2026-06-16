@@ -1,10 +1,10 @@
 // src/app/admin/audit/page.tsx
 import { forbidden } from "next/navigation";
 
+import { Pagination } from "@/components/ui";
 import {
   AuditFilterForm,
   AuditLogFilterSchema,
-  AuditPagination,
   AuditTable,
   canReadAudit,
   getAuditLog,
@@ -58,10 +58,12 @@ export default async function AdminAuditPage({ searchParams }: Props) {
 
       <AuditTable records={result.items} />
 
-      <AuditPagination
+      <Pagination
+        basePath="/admin/audit"
         offset={result.offset}
         limit={result.limit}
         total={result.total}
+        searchParams={raw}
       />
     </section>
   );

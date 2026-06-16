@@ -39,7 +39,6 @@ export { resolveEntityRefView } from "./entity-ref";
 
 export { CanvasMyList } from "./ui/canvas-my-list";
 export { CanvasSearch } from "./ui/canvas-search";
-export { CanvasPagination } from "./ui/canvas-pagination";
 export { CanvasCreateForm } from "./ui/canvas-create-form";
 export { CanvasEditForm } from "./ui/canvas-edit-form";
 export { CanvasVisibilityButton } from "./ui/canvas-visibility-button";

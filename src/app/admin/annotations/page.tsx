@@ -1,13 +1,13 @@
 // src/app/admin/annotations/page.tsx
 import { forbidden } from "next/navigation";
 
+import { Pagination } from "@/components/ui";
 import {
   getAdminAnnotations,
   canModerateAnnotations,
   canAdminDeleteAnnotation,
   AnnotationAdminRow,
   AnnotationAdminFilterForm,
-  AnnotationPagination,
 } from "@/features/annotations";
 import { getMe } from "@/utils/me";
 
@@ -58,7 +58,7 @@ export default async function AdminAnnotationsPage({ searchParams }: Props) {
           ))}
         </ul>
       )}
-      <AnnotationPagination offset={offset} limit={LIMIT} total={total} />
+      <Pagination basePath="/admin/annotations" offset={offset} limit={LIMIT} total={total} searchParams={sp} />
     </section>
   );
 }

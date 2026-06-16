@@ -1,11 +1,10 @@
 // src/app/canvases/page.tsx
-import { Button, RouterLink } from "@/components/ui";
+import { Button, Pagination, RouterLink } from "@/components/ui";
 import {
   canCreateCanvas,
   getCanvases,
   CanvasMyList,
   CanvasSearch,
-  CanvasPagination,
 } from "@/features/canvas";
 import { requireActiveUserOrRedirect } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
@@ -20,7 +19,8 @@ export default async function CanvasesPage({ searchParams }: Props) {
   // Список канвасов требует auth (бек: requiredAuth) — гостя на логин.
   const me = await requireActiveUserOrRedirect("/canvases");
 
-  const { q, offset } = await searchParams;
+  const sp = await searchParams;
+  const { q, offset } = sp;
   const limit = 20;
   const result = await getCanvases({
     ...(q ? { q } : {}),
@@ -45,7 +45,7 @@ export default async function CanvasesPage({ searchParams }: Props) {
 
       <CanvasSearch />
       <CanvasMyList canvases={result.items} />
-      <CanvasPagination offset={result.offset} limit={result.limit} total={result.total} />
+      <Pagination basePath="/canvases" offset={result.offset} limit={result.limit} total={result.total} searchParams={sp} />
     </div>
   );
 }

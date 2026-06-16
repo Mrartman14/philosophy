@@ -11,15 +11,54 @@ interface PaginationProps {
   limit: number;
   total: number;
   className?: string;
+  /**
+   * Уже ожидённые searchParams страницы (Record из Next.js
+   * `Promise<searchParams>`). Когда переданы — offset вмержается в эти
+   * параметры (прочие фильтры сохраняются); при offset === 0 параметр
+   * удаляется (не добавляется `?offset=0`). Когда не переданы — используется
+   * старое поведение: `basePath?<offsetParam>=<value>`.
+   */
+  searchParams?: Record<string, string | string[] | undefined>;
+}
+
+function buildHref(
+  basePath: string,
+  offsetParam: string,
+  nextOffset: number,
+  searchParams: Record<string, string | string[] | undefined> | undefined,
+): string {
+  if (searchParams !== undefined) {
+    const p = new URLSearchParams();
+    for (const [k, v] of Object.entries(searchParams)) {
+      if (v === undefined) continue;
+      if (Array.isArray(v)) {
+        for (const s of v) p.append(k, s);
+      } else {
+        p.set(k, v);
+      }
+    }
+    if (nextOffset > 0) {
+      p.set(offsetParam, String(nextOffset));
+    } else {
+      p.delete(offsetParam);
+    }
+    const qs = p.toString();
+    return qs ? `${basePath}?${qs}` : basePath;
+  }
+  // Старое поведение — backward-compat для существующих потребителей.
+  return `${basePath}?${offsetParam}=${nextOffset}`;
 }
 
 /**
  * Простая offset/limit пагинация на URL searchParams. SSR-friendly: просто
  * рендерит ссылки, никакого client state. `basePath` — путь без query.
- * Существующие searchParams сохраняются автоматически на стороне Next.js
- * при использовании `<RouterLink>` с относительным href; если нужно сохранить
- * дополнительные фильтры — переключить на `searchParams.toString()` на
- * стороне страницы.
+ *
+ * Для сохранения прочих фильтров передайте `searchParams` (уже ожидённый
+ * объект из пропа страницы). Тогда offset вмержается в текущие параметры, а
+ * при offset === 0 он опускается (нет `?offset=0`). Без `searchParams` — старое
+ * поведение: href = `basePath?offset=N`.
+ *
+ * При `total === 0` рендерится «0 из 0» вместо «1–0 из 0».
  */
 export function Pagination({
   basePath,
@@ -28,11 +67,15 @@ export function Pagination({
   limit,
   total,
   className,
+  searchParams,
 }: PaginationProps) {
   const hasPrev = offset > 0;
   const hasNext = offset + limit < total;
   const prev = Math.max(0, offset - limit);
   const next = offset + limit;
+
+  const linkCls = "rounded border border-(--color-border) px-3 py-1 hover:bg-(--color-text-pane)";
+  const disabledCls = "rounded border border-(--color-border) px-3 py-1 opacity-40";
 
   return (
     <nav
@@ -41,28 +84,30 @@ export function Pagination({
     >
       {hasPrev ? (
         <RouterLink
-          href={`${basePath}?${offsetParam}=${prev}`}
-          className="rounded border border-(--color-border) px-3 py-1 hover:bg-(--color-text-pane)"
+          href={buildHref(basePath, offsetParam, prev, searchParams)}
+          className={linkCls}
         >
           ← Назад
         </RouterLink>
       ) : (
-        <span className="rounded border border-(--color-border) px-3 py-1 opacity-40">
+        <span className={disabledCls}>
           ← Назад
         </span>
       )}
       <span className="text-(--color-description)">
-        {offset + 1}–{Math.min(offset + limit, total)} из {total}
+        {total === 0
+          ? "0 из 0"
+          : `${offset + 1}–${Math.min(offset + limit, total)} из ${total}`}
       </span>
       {hasNext ? (
         <RouterLink
-          href={`${basePath}?${offsetParam}=${next}`}
-          className="rounded border border-(--color-border) px-3 py-1 hover:bg-(--color-text-pane)"
+          href={buildHref(basePath, offsetParam, next, searchParams)}
+          className={linkCls}
         >
           Вперёд →
         </RouterLink>
       ) : (
-        <span className="rounded border border-(--color-border) px-3 py-1 opacity-40">
+        <span className={disabledCls}>
           Вперёд →
         </span>
       )}

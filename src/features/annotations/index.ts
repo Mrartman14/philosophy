@@ -41,7 +41,6 @@ export { AnnotationRevisions } from "./ui/annotation-revisions";
 export { AnnotationAnchorContext } from "./ui/annotation-anchor-context";
 export { AnnotationAdminRow } from "./ui/annotation-admin-row";
 export { AnnotationAdminFilterForm } from "./ui/annotation-admin-filter-form";
-export { AnnotationPagination } from "./ui/annotation-pagination";
 export type {
   Annotation,
   AnnotationVisibility,

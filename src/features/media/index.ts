@@ -19,7 +19,6 @@ export {
 
 export { MediaGrid } from "./ui/media-grid";
 export { MediaCard } from "./ui/media-card";
-export { MediaPagination } from "./ui/media-pagination";
 export { MediaUploadForm } from "./ui/media-upload-form";
 export { MediaDetail } from "./ui/media-detail";
 export { MediaPlayer } from "./ui/media-player";

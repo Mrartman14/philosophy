@@ -1,10 +1,10 @@
 // src/app/lectures/[id]/annotations/page.tsx
+import { Pagination } from "@/components/ui";
 import {
   getLectureAnnotations,
   AnnotationCard,
   AnnotationAnchorContext,
   AnnotationExportLinks,
-  AnnotationPagination,
 } from "@/features/annotations";
 
 export const metadata = { title: "Аннотации лекции" };
@@ -26,8 +26,8 @@ export default async function LectureAnnotationsPage({
   searchParams,
 }: Props) {
   const { id } = await params;
-  const { offset: rawOffset } = await searchParams;
-  const offset = Math.max(0, Number(rawOffset ?? 0) || 0);
+  const sp = await searchParams;
+  const offset = Math.max(0, Number(sp.offset ?? 0) || 0);
   const { items, total } = await getLectureAnnotations(id, offset, LIMIT);
 
   return (
@@ -50,7 +50,7 @@ export default async function LectureAnnotationsPage({
           ))}
         </ul>
       )}
-      <AnnotationPagination offset={offset} limit={LIMIT} total={total} />
+      <Pagination basePath={`/lectures/${id}/annotations`} offset={offset} limit={LIMIT} total={total} searchParams={sp} />
     </div>
   );
 }

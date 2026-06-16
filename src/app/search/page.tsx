@@ -1,11 +1,11 @@
 // src/app/search/page.tsx
 import { Suspense } from "react";
 
+import { Pagination } from "@/components/ui";
 import {
   getSearchResults,
   SearchExportLinks,
   SearchInput,
-  SearchPagination,
   SearchParamsSchema,
   SearchResults,
   SearchResultsSkeleton,
@@ -49,6 +49,7 @@ export default async function SearchPage({ searchParams }: Props) {
             q={params.q}
             type={params.type}
             offset={params.offset ?? 0}
+            searchParams={raw}
           />
         </Suspense>
       ) : (
@@ -64,10 +65,12 @@ async function SearchBody({
   q,
   type,
   offset,
+  searchParams,
 }: {
   q: string;
   type?: "lecture" | "glossary" | undefined;
   offset: number;
+  searchParams: Record<string, string | string[] | undefined>;
 }) {
   let result;
   try {
@@ -89,10 +92,12 @@ async function SearchBody({
     <>
       <SearchResults hits={result.items} total={result.total} />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <SearchPagination
+        <Pagination
+          basePath="/search"
           offset={result.offset}
           limit={result.limit}
           total={result.total}
+          searchParams={searchParams}
         />
         <SearchExportLinks q={q} type={type} />
       </div>
