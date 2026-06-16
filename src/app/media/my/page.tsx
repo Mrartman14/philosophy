@@ -9,6 +9,7 @@ import {
   getMyMedia,
 } from "@/features/media";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Мои медиа" };
 
@@ -21,7 +22,7 @@ export default async function MyMediaPage({ searchParams }: Props) {
   if (me?.status !== "active") redirect("/login?next=/media/my");
 
   const { offset: rawOffset, free_floating } = await searchParams;
-  const offset = Number.parseInt(rawOffset ?? "0", 10) || 0;
+  const offset = parseNonNegativeInt(rawOffset, 0);
   const freeFloating = free_floating === "true";
 
   const { items, total, limit } = await getMyMedia({ offset, freeFloating });

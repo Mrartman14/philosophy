@@ -11,6 +11,7 @@ import {
   TagCreateForm,
 } from "@/features/tags";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Теги — админ" };
 
@@ -26,8 +27,7 @@ export default async function AdminTagsPage({ searchParams }: Props) {
   if (!canCreate && !canUpdate && !canDelete) forbidden();
 
   const { offset } = await searchParams;
-  const parsed = offset ? Number.parseInt(offset, 10) : 0;
-  const safeOffset = Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+  const safeOffset = parseNonNegativeInt(offset, 0);
 
   // Admin-GET на беке не существует — список из публичного GET /api/tags.
   const result = await getTags({ offset: safeOffset, limit: 100 });

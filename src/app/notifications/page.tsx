@@ -8,6 +8,7 @@ import {
   NotificationListActions,
 } from "@/features/notifications";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Уведомления" };
 
@@ -21,7 +22,7 @@ export default async function NotificationsPage({ searchParams }: Props) {
 
   const { offset: offsetParam } = await searchParams;
   const limit = 20;
-  const offset = Math.max(0, Number.parseInt(offsetParam ?? "0", 10) || 0);
+  const offset = parseNonNegativeInt(offsetParam, 0);
   const { items, total } = await getNotifications(offset, limit);
 
   return (

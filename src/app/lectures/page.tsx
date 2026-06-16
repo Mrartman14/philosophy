@@ -2,6 +2,7 @@
 import { Pagination } from "@/components/ui";
 import { getLectures, LectureList, LectureSearchForm } from "@/features/lectures";
 import { getLectureTags, getTags } from "@/features/tags";
+import { parsePaging } from "@/utils/paging";
 
 export const metadata = { title: "Лекции" };
 
@@ -14,19 +15,11 @@ function pickString(v: string | string[] | undefined): string | undefined {
   return v;
 }
 
-function pickInt(v: string | string[] | undefined): number | undefined {
-  const s = pickString(v);
-  if (!s) return undefined;
-  const n = Number.parseInt(s, 10);
-  return Number.isFinite(n) && n >= 0 ? n : undefined;
-}
-
 export default async function LecturesPage({ searchParams }: Props) {
   const sp = await searchParams;
   const q = pickString(sp.q);
   const tag = pickString(sp.tag);
-  const offset = pickInt(sp.offset) ?? 0;
-  const limit = pickInt(sp.limit) ?? 20;
+  const { offset, limit } = parsePaging({ offset: sp.offset, limit: sp.limit }, { limit: 20 });
 
   const filter: Parameters<typeof getLectures>[0] = { offset, limit };
   if (q) filter.q = q;

@@ -20,6 +20,7 @@ import {
   LectureAdminRow,
 } from "@/features/lectures";
 import { getMe } from "@/utils/me";
+import { parsePaging } from "@/utils/paging";
 
 export const metadata = { title: "Админ — лекции" };
 
@@ -27,20 +28,12 @@ interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-function pickInt(v: string | string[] | undefined): number | undefined {
-  const s = Array.isArray(v) ? v[0] : v;
-  if (!s) return undefined;
-  const n = Number.parseInt(s, 10);
-  return Number.isFinite(n) && n >= 0 ? n : undefined;
-}
-
 export default async function AdminLecturesPage({ searchParams }: Props) {
   const me = await getMe();
   if (!canCreateLecture(me) && !canDeleteLecture(me)) forbidden();
 
   const sp = await searchParams;
-  const offset = pickInt(sp.offset) ?? 0;
-  const limit = pickInt(sp.limit) ?? 20;
+  const { offset, limit } = parsePaging({ offset: sp.offset, limit: sp.limit }, { limit: 20 });
 
   const { items, total } = await getLectures({ offset, limit });
 
