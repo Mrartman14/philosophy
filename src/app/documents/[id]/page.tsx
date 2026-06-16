@@ -79,10 +79,9 @@ export default async function DocumentPage({ params, searchParams }: Props) {
 
       <DocumentDetail document={document} />
 
-      {/* DocumentContainers рендерит AttachmentsPanel с пустым-состоянием
-          (не возвращает null) — fallback={null}, т.к. пустой случай распространён
-          и скелетон, который исчезает, создаёт CLS. */}
-      <Suspense fallback={null}>
+      {/* DocumentContainers всегда рендерит AttachmentsPanel с заголовком
+          «Включён в лекции» + список или пустое-состояние — используем Skeleton. */}
+      <Suspense fallback={<Skeleton className="h-24 w-full" />}>
         <DocumentContainers documentId={id} />
       </Suspense>
 
