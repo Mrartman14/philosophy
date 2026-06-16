@@ -44,9 +44,10 @@ const DEFAULT_MESSAGES: ApiErrorMessages = {
   BLOCKS_HAVE_ANCHORS:
     "Нельзя удалить блок с привязанными комментариями. Удалите комментарии или оставьте блок.",
   // Optimistic locking (If-Match/version) — общие для всех lock-protected
-  // сущностей (canvas/comment/document/glossary). 412 = чужая правка обогнала,
-  // 428 = клиент не приложил версию (не должно случаться — формы шлют hidden
-  // version; защитный дефолт). Слайс может переопределить entity-текстом.
+  // сущностей (optlock-волны 1+2: canvas/comment/document/glossary +
+  // annotation/event/banner). 412 = чужая правка обогнала, 428 = клиент не
+  // приложил версию (не должно случаться — формы шлют hidden version; защитный
+  // дефолт). Слайс может переопределить entity-текстом.
   VERSION_MISMATCH:
     "Объект изменён в другом месте. Обновите страницу и повторите.",
   IF_MATCH_REQUIRED:
