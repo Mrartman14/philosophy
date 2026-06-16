@@ -9,7 +9,6 @@ import { saveOffline } from "@/app/_offline/save-offline";
 import { AstRender } from "@/components/ast-render";
 import { Button, Skeleton } from "@/components/ui";
 import { CommentTreeView } from "@/features/comments/client";
-import { LectureHeaderView } from "@/features/lectures/client";
 import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { whenIdentityReconciled } from "@/services/offline/identity-gate";
 import { getSavedBundle } from "@/services/offline/store/saved-bundles";
@@ -198,12 +197,16 @@ export function SavedLectureView({ id }: { id: string }) {
       )}
 
       <header className="flex flex-col gap-2">
-        <LectureHeaderView
-          coverSrc={coverUrl}
-          coverAlt={lecture.cover_image_alt ?? ""}
-          title={lecture.title}
-          date={lecture.date}
-        />
+        {coverUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={coverUrl}
+            alt={lecture.cover_image_alt ?? ""}
+            className="max-h-80 w-full rounded-lg object-cover"
+          />
+        )}
+        <h1 className="text-3xl font-bold">{lecture.title}</h1>
+        <p className="text-sm text-(--color-description)">{lecture.date}</p>
         {tags.length > 0 && (
           <ul className="flex flex-wrap gap-1">
             {tags.map((t) => (
