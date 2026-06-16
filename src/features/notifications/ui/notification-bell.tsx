@@ -8,7 +8,7 @@ import type { NotificationCounts } from "../types";
 import { BellIcon } from "./bell-icon";
 import { NotificationPopover } from "./notification-popover";
 
-/** Интервал опроса счётчиков (мс). <60с → кэш Anthropic не при чём; это сетевой poll. */
+/** Интервал опроса счётчиков непрочитанных (мс). 50с — ощущение realtime без нагрузки на сервер. */
 const POLL_MS = 50_000;
 
 interface NotificationBellProps {
@@ -85,6 +85,7 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
         type="button"
         aria-label="Уведомления"
         aria-expanded={open}
+        aria-haspopup="dialog"
         onClick={() => { setOpen((v) => !v); }}
         className="relative flex size-8 items-center justify-center text-(--color-description) hover:text-(--color-primary)"
       >

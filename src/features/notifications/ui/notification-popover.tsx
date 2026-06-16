@@ -11,7 +11,7 @@ import { NotificationItem } from "./notification-item";
 
 interface NotificationPopoverProps {
   onClose: () => void;
-  /** Вызывается после успешного markAllSeen — родитель гасит бейдж. */
+  /** Вызывается после попытки markAllSeen (оптимистично) — родитель гасит бейдж. */
   onSeen: () => void;
 }
 
@@ -41,7 +41,7 @@ export function NotificationPopover({ onClose, onSeen }: NotificationPopoverProp
   }, [onSeen]);
 
   return (
-    <div className="absolute right-0 top-full z-50 mt-2 flex w-80 max-w-[90vw] flex-col rounded border border-(--color-border) bg-(--color-background) shadow-lg">
+    <div role="dialog" aria-label="Уведомления" className="absolute right-0 top-full z-50 mt-2 flex w-80 max-w-[90vw] flex-col rounded border border-(--color-border) bg-(--color-background) shadow-lg">
       <div className="flex items-center justify-between border-b border-(--color-border) px-3 py-2">
         <span className="text-sm font-semibold">Уведомления</span>
         <RouterLink
