@@ -2,13 +2,12 @@
 import { redirect } from "next/navigation";
 
 import { canCreateCanvas, CanvasCreateForm } from "@/features/canvas";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 
 export const metadata = { title: "Новый канвас" };
 
 export default async function NewCanvasPage() {
-  const me = await getMe();
-  if (me?.status !== "active") redirect("/login?next=/canvases/new");
+  const me = await requireActiveUserOrRedirect("/canvases/new");
   if (!canCreateCanvas(me)) redirect("/canvases");
 
   return (

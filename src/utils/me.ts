@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { cache } from "react";
 
 import type { components } from "@/api/schema";
@@ -99,3 +100,26 @@ export const getMe = async (): Promise<MaybeMe> => (await getAuthState()).me;
 /** `true`, только если бэк явно вернул бан (403 + code "BANNED") на этом запросе. */
 export const getBanSignal = async (): Promise<boolean> =>
   (await getAuthState()).banned;
+
+/**
+ * Требует активного пользователя (status === "active").
+ * Гость и suspended-пользователь → redirect на /login?next=<nextPath>.
+ * Возвращает суженный Me (non-null, status гарантированно "active").
+ */
+export async function requireActiveUserOrRedirect(nextPath: string): Promise<Me> {
+  const me = await getMe();
+  if (me?.status !== "active") redirect(`/login?next=${encodeURIComponent(nextPath)}`);
+  // After the redirect guard, me is non-null and status is "active".
+  return me;
+}
+
+/**
+ * Требует залогиненного пользователя (suspended допустим).
+ * Только гость → redirect на /login?next=<nextPath>.
+ * Возвращает Me (non-null).
+ */
+export async function requireUserOrRedirect(nextPath: string): Promise<Me> {
+  const me = await getMe();
+  if (!me) redirect(`/login?next=${encodeURIComponent(nextPath)}`);
+  return me;
+}

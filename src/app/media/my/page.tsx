@@ -1,6 +1,4 @@
 // src/app/media/my/page.tsx
-import { redirect } from "next/navigation";
-
 import {
   MediaGrid,
   MediaUploadForm,
@@ -8,7 +6,7 @@ import {
   canCreateMedia,
   getMyMedia,
 } from "@/features/media";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Мои медиа" };
@@ -18,8 +16,7 @@ interface Props {
 }
 
 export default async function MyMediaPage({ searchParams }: Props) {
-  const me = await getMe();
-  if (me?.status !== "active") redirect("/login?next=/media/my");
+  const me = await requireActiveUserOrRedirect("/media/my");
 
   const { offset: rawOffset, free_floating } = await searchParams;
   const offset = parseNonNegativeInt(rawOffset, 0);

@@ -1,5 +1,5 @@
 // src/app/submissions/[id]/page.tsx
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import {
   getSubmissionById,
@@ -11,7 +11,7 @@ import {
   SubmissionEditForm,
   SubmissionActions,
 } from "@/features/forms";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -31,9 +31,8 @@ export const metadata = { title: "Отклик" };
  */
 export default async function SubmissionPage({ params }: Props) {
   const { id } = await params;
-  const me = await getMe();
   // Аноним всё равно получит 404 от бека, но логин-редирект — лучше UX.
-  if (me?.status !== "active") redirect(`/login?next=/submissions/${id}`);
+  const me = await requireActiveUserOrRedirect(`/submissions/${id}`);
 
   const submission = await getSubmissionById(id);
   if (!submission) notFound();

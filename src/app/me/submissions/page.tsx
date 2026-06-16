@@ -1,14 +1,11 @@
 // src/app/me/submissions/page.tsx
-import { redirect } from "next/navigation";
-
 import { getMySubmissions, MySubmissionsList } from "@/features/forms";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 
 export const metadata = { title: "Мои отклики" };
 
 export default async function MySubmissionsPage() {
-  const me = await getMe();
-  if (me?.status !== "active") redirect("/login?next=/me/submissions");
+  await requireActiveUserOrRedirect("/me/submissions");
 
   const submissions = await getMySubmissions();
 

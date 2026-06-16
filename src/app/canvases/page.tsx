@@ -1,6 +1,4 @@
 // src/app/canvases/page.tsx
-import { redirect } from "next/navigation";
-
 import { Button, RouterLink } from "@/components/ui";
 import {
   canCreateCanvas,
@@ -9,7 +7,7 @@ import {
   CanvasSearch,
   CanvasPagination,
 } from "@/features/canvas";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Канвасы" };
@@ -19,9 +17,8 @@ interface Props {
 }
 
 export default async function CanvasesPage({ searchParams }: Props) {
-  const me = await getMe();
   // Список канвасов требует auth (бек: requiredAuth) — гостя на логин.
-  if (me?.status !== "active") redirect("/login?next=/canvases");
+  const me = await requireActiveUserOrRedirect("/canvases");
 
   const { q, offset } = await searchParams;
   const limit = 20;

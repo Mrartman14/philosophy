@@ -1,13 +1,11 @@
 // src/app/notifications/page.tsx
-import { redirect } from "next/navigation";
-
 import { Pagination } from "@/components/ui";
 import {
   getNotifications,
   NotificationItem,
   NotificationListActions,
 } from "@/features/notifications";
-import { getMe } from "@/utils/me";
+import { requireUserOrRedirect } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Уведомления" };
@@ -17,8 +15,7 @@ interface Props {
 }
 
 export default async function NotificationsPage({ searchParams }: Props) {
-  const me = await getMe();
-  if (!me) redirect("/login?next=/notifications");
+  await requireUserOrRedirect("/notifications");
 
   const { offset: offsetParam } = await searchParams;
   const limit = 20;

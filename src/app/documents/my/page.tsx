@@ -1,6 +1,4 @@
 // src/app/documents/my/page.tsx
-import { redirect } from "next/navigation";
-
 import { SchemaContextProvider } from "@/components/ast-editor";
 import {
   canCreateDocument,
@@ -9,7 +7,7 @@ import {
   DocumentUploadForm,
   DocumentMyList,
 } from "@/features/documents";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Мои документы" };
@@ -19,9 +17,8 @@ interface Props {
 }
 
 export default async function MyDocumentsPage({ searchParams }: Props) {
-  const me = await getMe();
   // Документы — приватная зона: гостя отправляем на логин.
-  if (me?.status !== "active") redirect("/login?next=/documents/my");
+  const me = await requireActiveUserOrRedirect("/documents/my");
 
   const { offset } = await searchParams;
   const result = await getMyDocuments({ offset: parseNonNegativeInt(offset, 0), limit: 20 });

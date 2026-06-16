@@ -1,23 +1,18 @@
 // src/app/share-links/page.tsx
-import { redirect } from "next/navigation";
-
 import {
   ShareLookupForm,
   ShareLinkList,
   getShareLinksFor,
   ShareLinkLookupSchema,
 } from "@/features/share-links";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 
 interface Props {
   searchParams: Promise<{ resource_type?: string; resource_id?: string }>;
 }
 
 export default async function MyShareLinksPage({ searchParams }: Props) {
-  const me = await getMe();
-  if (me?.status !== "active") {
-    redirect("/login?next=/share-links");
-  }
+  await requireActiveUserOrRedirect("/share-links");
 
   const raw = await searchParams;
   const parsed = ShareLinkLookupSchema.safeParse(raw);

@@ -1,6 +1,4 @@
 // src/app/me/annotations/page.tsx
-import { redirect } from "next/navigation";
-
 import {
   getMyAnnotations,
   AnnotationCard,
@@ -9,7 +7,7 @@ import {
   AnnotationDeleteButton,
   AnnotationPagination,
 } from "@/features/annotations";
-import { getMe } from "@/utils/me";
+import { requireUserOrRedirect } from "@/utils/me";
 
 export const metadata = { title: "Мои аннотации" };
 
@@ -20,8 +18,7 @@ interface Props {
 const LIMIT = 20;
 
 export default async function MyAnnotationsPage({ searchParams }: Props) {
-  const me = await getMe();
-  if (!me) redirect("/login?next=/me/annotations");
+  await requireUserOrRedirect("/me/annotations");
 
   const { offset: rawOffset } = await searchParams;
   const offset = Math.max(0, Number(rawOffset ?? 0) || 0);

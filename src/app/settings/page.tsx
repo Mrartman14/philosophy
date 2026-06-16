@@ -1,6 +1,4 @@
 // src/app/settings/page.tsx
-import { redirect } from "next/navigation";
-
 import { RouterLink } from "@/components/ui";
 import { SubscriptionsSection } from "@/features/notifications";
 import {
@@ -16,13 +14,12 @@ import {
   canManageOwnHistory,
   getHistorySettings,
 } from "@/features/statistics";
-import { getMe } from "@/utils/me";
+import { requireUserOrRedirect } from "@/utils/me";
 
 export const metadata = { title: "Настройки" };
 
 export default async function SettingsPage() {
-  const me = await getMe();
-  if (!me) redirect("/login?next=/settings");
+  const me = await requireUserOrRedirect("/settings");
 
   const [prefs, vapidPublicKey, historySettings] = await Promise.all([
     getPreferences(),

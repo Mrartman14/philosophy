@@ -1,13 +1,11 @@
 // src/app/trails/my/page.tsx
-import { redirect } from "next/navigation";
-
 import {
   canCreateTrail,
   getMyTrails,
   TrailCreateForm,
   TrailMyList,
 } from "@/features/trails";
-import { getMe } from "@/utils/me";
+import { requireActiveUserOrRedirect } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Мои маршруты" };
@@ -17,9 +15,8 @@ interface Props {
 }
 
 export default async function MyTrailsPage({ searchParams }: Props) {
-  const me = await getMe();
   // Маршруты «мои» — приватная зона: гостя на логин.
-  if (me?.status !== "active") redirect("/login?next=/trails/my");
+  const me = await requireActiveUserOrRedirect("/trails/my");
 
   const { offset } = await searchParams;
   const result = await getMyTrails({ offset: parseNonNegativeInt(offset, 0), limit: 20 });

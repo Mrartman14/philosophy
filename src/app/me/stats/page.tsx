@@ -1,6 +1,4 @@
 // src/app/me/stats/page.tsx
-import { redirect } from "next/navigation";
-
 import {
   ProductionStatsTable,
   ViewStats,
@@ -8,13 +6,12 @@ import {
   getProductionStats,
   getViewStats,
 } from "@/features/statistics";
-import { getMe } from "@/utils/me";
+import { requireUserOrRedirect } from "@/utils/me";
 
 export const metadata = { title: "Моя статистика" };
 
 export default async function MyStatsPage() {
-  const me = await getMe();
-  if (!me) redirect("/login?next=/me/stats");
+  await requireUserOrRedirect("/me/stats");
 
   const [inventory, viewStats, settings] = await Promise.all([
     getProductionStats(),
