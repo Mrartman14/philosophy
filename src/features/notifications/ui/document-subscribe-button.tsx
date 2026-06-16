@@ -30,7 +30,7 @@ export function DocumentSubscribeButton({
       if (!result.success) {
         setSubscribed(!next); // откат
         toast.add({
-          title: "Ошибка",
+          title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
           description:
             result.code === "forbidden"
               ? "У вас нет прав на подписку."

@@ -24,7 +24,7 @@ export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
       const result = await unsubscribeDocument(subscription.targetId);
       if (!result.success) {
         toast.add({
-          title: "Ошибка",
+          title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
           description: result.code === "forbidden" ? "У вас нет прав." : result.error,
         });
         return;
