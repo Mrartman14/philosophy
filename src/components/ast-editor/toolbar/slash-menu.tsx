@@ -1,6 +1,6 @@
 "use client";
 import type { Editor } from "@tiptap/core";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import type { SchemaSnapshot, EntityContext } from "../types";
 
@@ -110,6 +110,7 @@ interface Props {
 }
 
 export function SlashMenu({ editor, schema, context }: Props) {
+  const listboxId = useId();
   const [state, setState] = useState({ open: false, from: -1, query: "" });
   const [active, setActive] = useState(0);
 
@@ -136,6 +137,25 @@ export function SlashMenu({ editor, schema, context }: Props) {
 
   // Clamp active in case cmds list shrinks below the current index.
   const safeActive = cmds.length > 0 ? Math.min(active, cmds.length - 1) : 0;
+
+  // Bridge the listbox to the focused contenteditable so screen readers announce
+  // when the menu opens and each time the active item changes.
+  // aria-activedescendant is only honoured on the focused element, so we set it
+  // directly on editor.view.dom (the ProseMirror contenteditable) while open.
+  useEffect(() => {
+    const dom = editor.view.dom;
+    if (state.open && cmds.length > 0) {
+      dom.setAttribute("aria-controls", listboxId);
+      dom.setAttribute("aria-activedescendant", `${listboxId}-opt-${String(safeActive)}`);
+    } else {
+      dom.removeAttribute("aria-controls");
+      dom.removeAttribute("aria-activedescendant");
+    }
+    return () => {
+      dom.removeAttribute("aria-controls");
+      dom.removeAttribute("aria-activedescendant");
+    };
+  }, [state.open, safeActive, cmds.length, listboxId, editor]);
 
   const apply = (cmd: Cmd) => {
     consumeSlashMarker(editor.view, state.from);
@@ -181,10 +201,11 @@ export function SlashMenu({ editor, schema, context }: Props) {
   }
 
   return (
-    <div role="listbox" aria-label="Команды блока" className="ast-slash-menu">
+    <div id={listboxId} role="listbox" aria-label="Команды блока" className="ast-slash-menu">
       {cmds.map((c, i) => (
         <button
           key={c.id}
+          id={`${listboxId}-opt-${String(i)}`}
           type="button"
           role="option"
           aria-selected={safeActive === i}
