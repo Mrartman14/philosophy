@@ -1,6 +1,7 @@
 :root {
   --color-primary: oklch(72% 0.14 55);
   --color-background: #f6f2eb;
+  --color-foreground: #1a1a1a;
   --color-border: #c4cde0c6;
   --color-link: oklch(50% 0.15 250);
   --color-description: #6f798d;
@@ -10,6 +11,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: #111a20;
+    --color-foreground: #e6ebf0;
     --color-border: #555c6a71;
     --color-link: oklch(70% 0.12 250);
     --color-description: #8b98b2;

@@ -76,7 +76,7 @@ function HitCard({ hit }: { hit: SearchHit }) {
           {snippets.map((s, i) => (
             <li
               key={i}
-              className="rounded px-2 py-1 text-sm text-(--color-text) hover:bg-(--color-text-pane)"
+              className="rounded px-2 py-1 text-sm hover:bg-(--color-text-pane)"
             >
               {s}
             </li>
