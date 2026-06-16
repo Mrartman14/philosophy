@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { Button, Dialog, IdempotencyField, TextInput, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createShareLink } from "../actions";
@@ -51,11 +52,7 @@ export function ShareButton({
       toast.add({ title: "Ссылка создана" });
       router.refresh();
     } else if (!state.success) {
-      const msg =
-        state.code === "forbidden"
-          ? "У вас нет прав на создание ссылки."
-          : state.error;
-      toast.add({ title: "Ошибка", description: msg });
+      toastActionError(toast, state, { action: "создание ссылки", forbiddenTitle: "Ошибка" });
     }
     // state — единственный триггер; toast/router стабильны
     // eslint-disable-next-line react-hooks/exhaustive-deps

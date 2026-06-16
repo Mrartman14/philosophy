@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { setHistoryTracking } from "../actions";
 
@@ -24,13 +25,7 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
     try {
       const result = await setHistoryTracking(next);
       if (!result.success) {
-        toast.add({
-          title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
-          description:
-            result.code === "forbidden"
-              ? "У вас нет прав на изменение настроек."
-              : result.error,
-        });
+        toastActionError(toast, result, { action: "изменение настроек" });
         return;
       }
       setEnabled(next);

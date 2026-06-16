@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { toastActionError } from "@/utils/action-toast";
 import { IDEMPOTENCY_FIELD } from "@/utils/idempotency";
 
 import { submitForm } from "../actions";
@@ -71,10 +72,7 @@ export function FormFill({ form, token }: Props) {
     setPending(false);
 
     if (!result.success) {
-      toast.add({
-        title: result.code === "forbidden" ? "Нет прав" : "Не удалось отправить",
-        description: result.code === "forbidden" ? "У вас нет прав на отправку отклика." : result.error,
-      });
+      toastActionError(toast, result, { action: "отправку отклика", failureTitle: "Не удалось отправить" });
       return;
     }
     rotate();

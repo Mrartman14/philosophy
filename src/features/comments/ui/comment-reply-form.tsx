@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Button, Form, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
+import { Button, Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
@@ -59,12 +59,7 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
         />
       </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на ответ.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="ответ" />
 
       <div className="flex gap-2">
         <SubmitButton>Ответить</SubmitButton>

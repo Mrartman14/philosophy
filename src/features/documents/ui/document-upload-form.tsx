@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormField, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { uploadDocument } from "../actions";
@@ -44,12 +44,7 @@ export function DocumentUploadForm() {
         </select>
       </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на загрузку документа.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="загрузку документа" />
 
       <div>
         <SubmitButton>Загрузить</SubmitButton>

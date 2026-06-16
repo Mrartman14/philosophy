@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { editSubmission } from "../actions";
 import { encodeAnswerValue, emptyAnswerValue, type AnswerInput } from "../answer-codec";
@@ -73,10 +74,7 @@ export function SubmissionEditForm({ form, submission }: Props) {
     const result = await editSubmission({ success: true, data: null }, fd);
     setPending(false);
     if (!result.success) {
-      toast.add({
-        title: result.code === "forbidden" ? "Нет прав" : "Не удалось сохранить",
-        description: result.code === "forbidden" ? "У вас нет прав на изменение отклика." : result.error,
-      });
+      toastActionError(toast, result, { action: "изменение отклика", failureTitle: "Не удалось сохранить" });
       return;
     }
     router.refresh();

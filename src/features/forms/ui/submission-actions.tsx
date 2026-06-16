@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { deleteSubmission, retractSubmission } from "../actions";
 
@@ -37,13 +38,7 @@ export function SubmissionActions({ submissionId, kind, redirectTo = "/me/submis
           ? await deleteSubmission(submissionId)
           : await retractSubmission(submissionId);
         if (!result.success) {
-          toast.add({
-            title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
-            description:
-              result.code === "forbidden"
-                ? `У вас нет прав на ${isDelete ? "удаление" : "отзыв"} отклика.`
-                : result.error,
-          });
+          toastActionError(toast, result, { action: `${isDelete ? "удаление" : "отзыв"} отклика` });
           return;
         }
         startTransition(() => { router.push(redirectTo); });

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { subscribeDocument, unsubscribeDocument } from "../actions";
 
@@ -29,13 +30,7 @@ export function DocumentSubscribeButton({
         : await unsubscribeDocument(documentId);
       if (!result.success) {
         setSubscribed(!next); // откат
-        toast.add({
-          title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
-          description:
-            result.code === "forbidden"
-              ? "У вас нет прав на подписку."
-              : result.error,
-        });
+        toastActionError(toast, result, { action: "подписку" });
       }
     } finally {
       setPending(false);

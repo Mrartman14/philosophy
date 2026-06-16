@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
-import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createAnnotation } from "../actions";
@@ -61,14 +61,7 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
 
       <AnnotationVisibilityField />
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          У вас нет прав на создание аннотации.
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание аннотации" />
 
       <div>
         <SubmitButton>Добавить аннотацию</SubmitButton>

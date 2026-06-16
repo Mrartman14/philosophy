@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { IconButton, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { dismissBanner } from "../actions";
 
@@ -31,12 +32,10 @@ export function BannerDismissButton({ id }: Props) {
         startTransition(async () => {
           const result = await dismissBanner(id);
           if (!result.success) {
-            toast.add({
-              title: "Не удалось скрыть баннер",
-              description:
-                result.code === "forbidden"
-                  ? "У вас нет прав на скрытие баннера."
-                  : result.error,
+            toastActionError(toast, result, {
+              action: "скрытие баннера",
+              forbiddenTitle: "Не удалось скрыть баннер",
+              failureTitle: "Не удалось скрыть баннер",
             });
             return;
           }

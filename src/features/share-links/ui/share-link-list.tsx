@@ -14,6 +14,7 @@ import {
   Tr,
   useToast,
 } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { revokeShareLink, adminRevokeShareLink } from "../actions";
 import { buildShareUrl } from "../share-url";
@@ -69,11 +70,7 @@ export function ShareLinkList({
         toast.add({ title: "Ссылка отозвана" });
         router.refresh();
       } else {
-        const msg =
-          result.code === "forbidden"
-            ? "У вас нет прав на отзыв ссылки."
-            : result.error;
-        toast.add({ title: "Ошибка", description: msg });
+        toastActionError(toast, result, { action: "отзыв ссылки", forbiddenTitle: "Ошибка" });
       }
     });
   }

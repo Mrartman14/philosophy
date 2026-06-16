@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateForm } from "../actions";
@@ -54,13 +54,7 @@ export function FormEditForm({ form }: Props) {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={form.id ?? ""} />
       <FormBuilder mode="edit" initial={toBuilderInitial(form)} />
-      {fieldErrors._form && <p className="text-sm text-red-600" role="alert">{fieldErrors._form}</p>}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на изменение формы.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="изменение формы" />
       <div><SubmitButton>Сохранить структуру</SubmitButton></div>
     </Form>
   );

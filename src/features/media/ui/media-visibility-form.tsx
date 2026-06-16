@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { setMediaVisibility } from "../actions";
 
@@ -34,14 +35,7 @@ export function MediaVisibilityForm({ id, canChange }: Props) {
       onConfirm={async () => {
         const result = await setMediaVisibility({ id, visibility: "public" });
         if (!result.success) {
-          if (result.code === "forbidden") {
-            toast.add({
-              title: "Нет прав",
-              description: "У вас нет прав на публикацию медиа.",
-            });
-          } else {
-            toast.add({ title: "Ошибка", description: result.error });
-          }
+          toastActionError(toast, result, { action: "публикацию медиа" });
           return;
         }
         toast.add({ title: "Опубликовано" });

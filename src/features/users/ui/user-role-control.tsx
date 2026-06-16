@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button, Select, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { setUserRole } from "../actions";
 import type { UserRole } from "../types";
@@ -29,12 +30,10 @@ export function UserRoleControl({ userId, username, current }: Props) {
   async function apply() {
     const result = await setUserRole({ id: userId, role: value });
     if (!result.success) {
-      toast.add({
-        title: "Не удалось изменить роль",
-        description:
-          result.code === "forbidden"
-            ? "У вас нет прав на изменение роли пользователя."
-            : result.error,
+      toastActionError(toast, result, {
+        action: "изменение роли пользователя",
+        forbiddenTitle: "Не удалось изменить роль",
+        failureTitle: "Не удалось изменить роль",
       });
       return;
     }

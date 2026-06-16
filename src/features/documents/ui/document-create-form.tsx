@@ -5,7 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
-import { Form, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createDocument } from "../actions";
@@ -58,12 +58,7 @@ export function DocumentCreateForm() {
         />
       </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на создание документа.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание документа" />
 
       <div>
         <SubmitButton>Создать</SubmitButton>

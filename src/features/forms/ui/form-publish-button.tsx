@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { publishForm } from "../actions";
 
@@ -28,10 +29,7 @@ export function FormPublishButton({ formId }: Props) {
         fd.set("visibility", "public");
         const result = await publishForm({ success: true, data: null }, fd);
         if (!result.success) {
-          toast.add({
-            title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
-            description: result.code === "forbidden" ? "У вас нет прав на публикацию формы." : result.error,
-          });
+          toastActionError(toast, result, { action: "публикацию формы" });
           return;
         }
         startTransition(() => { router.refresh(); });

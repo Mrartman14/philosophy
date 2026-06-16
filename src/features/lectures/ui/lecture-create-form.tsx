@@ -4,6 +4,7 @@ import { useActionState, useEffect } from "react";
 
 import {
   Form,
+  FormFeedback,
   FormField,
   IdempotencyField,
   Select,
@@ -56,12 +57,7 @@ export function LectureCreateForm() {
         />
       </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на создание лекции.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание лекции" />
 
       <div>
         <SubmitButton>Создать</SubmitButton>

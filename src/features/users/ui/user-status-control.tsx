@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button, ConfirmDialog, Select, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { setUserStatus } from "../actions";
 import type { UserStatus } from "../types";
@@ -30,12 +31,10 @@ export function UserStatusControl({ userId, username, current }: Props) {
   async function apply() {
     const result = await setUserStatus({ id: userId, status: value });
     if (!result.success) {
-      toast.add({
-        title: "Не удалось изменить статус",
-        description:
-          result.code === "forbidden"
-            ? "У вас нет прав на изменение статуса пользователя."
-            : result.error,
+      toastActionError(toast, result, {
+        action: "изменение статуса пользователя",
+        forbiddenTitle: "Не удалось изменить статус",
+        failureTitle: "Не удалось изменить статус",
       });
       return;
     }
