@@ -1,6 +1,6 @@
 /* global selectCachesToDelete, isOfflineFileRequest, isSavedShellNavigation, OFFLINE_IMAGE_CACHE, SAVED_SHELL_CACHE, PRESERVED_CACHES */
 const BASE_PATH = '';
-const SW_VERSION = 'mqffjhxt';
+const SW_VERSION = 'ab8ac14eff';
 
 const CACHE_PREFIX = 'flbz';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${SW_VERSION}`;

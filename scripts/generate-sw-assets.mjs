@@ -1,12 +1,11 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { createHash } from 'node:crypto';
 import ts from 'typescript';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
-
-const version = Date.now().toString(36);
 
 // Инлайним чистую SW-логику из единого TS-источника (покрыт юнит-тестами).
 // Транспилируем в JS и срезаем import/export — в SW нет модульной системы.
@@ -29,6 +28,15 @@ const inlinedLogic = logicJs
 
 // Generate sw.js (replace-функцией, чтобы $-последовательности в коде не интерпретировались)
 const swTemplate = readFileSync(resolve(root, 'src/sw.template.js'), 'utf-8');
+
+// Версия — sha256 от исходного содержимого (template + inlined logic) ДО подстановки версии,
+// чтобы хэш не был самореферентным. Одинаковый источник → одинаковый хэш на любой машине.
+const version = createHash('sha256')
+  .update(swTemplate)
+  .update(inlinedLogic)
+  .digest('hex')
+  .slice(0, 10);
+
 const sw = swTemplate
   .replace('//__SW_LOGIC__', () => inlinedLogic)
   .replaceAll('__BASE_PATH__', '')
