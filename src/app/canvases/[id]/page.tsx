@@ -25,8 +25,7 @@ interface Props {
 export default async function CanvasPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { revision, token } = await searchParams;
-  const me = await getMe();
-  const result = await getCanvasById(id, token);
+  const [me, result] = await Promise.all([getMe(), getCanvasById(id, token)]);
   if (!result) notFound();
   const { canvas } = result;
 

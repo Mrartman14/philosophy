@@ -26,8 +26,7 @@ interface Props {
 
 export default async function EditLecturePage({ params }: Props) {
   const { id } = await params;
-  const me = await getMe();
-  const lecture = await getLectureById(id);
+  const [me, lecture] = await Promise.all([getMe(), getLectureById(id)]);
   if (!lecture) notFound();
 
   const canUpdate = canUpdateLecture(me, lecture);

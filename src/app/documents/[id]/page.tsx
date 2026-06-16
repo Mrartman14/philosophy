@@ -36,8 +36,7 @@ interface Props {
 export default async function DocumentPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { revision, token } = await searchParams;
-  const me = await getMe();
-  const document = await getDocumentById(id, token);
+  const [me, document] = await Promise.all([getMe(), getDocumentById(id, token)]);
   if (!document) notFound();
 
   const canEdit = canEditDocument(me, document);

@@ -29,8 +29,7 @@ interface Props {
 export default async function FormPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { token } = await searchParams;
-  const me = await getMe();
-  const form = await getFormById(id, token);
+  const [me, form] = await Promise.all([getMe(), getFormById(id, token)]);
   if (!form) notFound();
 
   const isOwner = !!me && me.status === "active" && me.id === form.owner_id;

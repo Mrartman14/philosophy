@@ -28,8 +28,7 @@ interface Props {
 export default async function TrailPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { token } = await searchParams;
-  const me = await getMe();
-  const trail = await getTrailById(id, token);
+  const [me, trail] = await Promise.all([getMe(), getTrailById(id, token)]);
   if (!trail) notFound();
 
   // Резолвим заголовки лекций items в порядке position (items приходят

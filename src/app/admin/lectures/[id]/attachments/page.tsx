@@ -21,8 +21,7 @@ interface Props {
 
 export default async function LectureAttachmentsPage({ params }: Props) {
   const { id } = await params;
-  const me = await getMe();
-  const lecture = await getLectureById(id);
+  const [me, lecture] = await Promise.all([getMe(), getLectureById(id)]);
   if (!lecture) notFound();
   if (!canManageAttachments(me, lecture)) forbidden();
 

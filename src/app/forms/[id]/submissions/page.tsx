@@ -17,8 +17,7 @@ export const metadata = { title: "Отклики формы" };
 
 export default async function FormSubmissionsPage({ params }: Props) {
   const { id } = await params;
-  const me = await getMe();
-  const form = await getFormById(id);
+  const [me, form] = await Promise.all([getMe(), getFormById(id)]);
   if (!form) notFound();
   // Только владелец видит отклики (бек 403/404 для остальных).
   if (!canListFormSubmissions(me, form)) notFound();
