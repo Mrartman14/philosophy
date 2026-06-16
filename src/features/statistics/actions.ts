@@ -3,13 +3,14 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { rethrowApiError } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
 
 import { canManageOwnHistory } from "./permissions";
 import { HistoryTrackingSchema } from "./schemas";
-import type { HistorySettings } from "./types";
+
 
 /**
  * Включает/выключает трекинг просмотров. Выключение на бэке безвозвратно
@@ -25,5 +26,5 @@ export const setHistoryTracking = createAction(async (raw: unknown) => {
     body: { tracking_enabled: enabled },
   });
   if (error) rethrowApiError(error);
-  return (data.data ?? null) as HistorySettings | null;
+  return unwrap(data);
 });

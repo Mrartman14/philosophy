@@ -10,6 +10,7 @@ import {
   type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -120,7 +121,7 @@ export const updateAnnotation = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS, input.id);
   revalidateEntity(Tags.ANNOTATIONS);
-  return (data.data ?? null) as Annotation | null;
+  return unwrap(data);
 });
 
 /** Удаление своей аннотации (DELETE /api/annotations/{id}). */

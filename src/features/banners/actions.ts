@@ -8,6 +8,7 @@ import {
   type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -30,7 +31,6 @@ import {
   BannerUpdateSchema,
   BannerIdSchema,
 } from "./schemas";
-import type { Banner } from "./types";
 
 /** Доменные коды баннеров → русский текст. Бек пишет code в UPPER_SNAKE_CASE
  * (internal/apperror, middleware/auth.go). REF_NOT_FOUND и BLOCKS_HAVE_ANCHORS —
@@ -63,7 +63,7 @@ export const createBanner = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS);
-  return (data.data ?? null) as Banner | null;
+  return unwrap(data);
 });
 
 /**
@@ -101,7 +101,7 @@ export const updateBanner = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS, input.id);
   revalidateEntity(Tags.BANNERS);
-  return (data.data ?? null) as Banner | null;
+  return unwrap(data);
 });
 
 export const deleteBanner = createAction(async (rawId: string, ctx) => {

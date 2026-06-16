@@ -7,6 +7,7 @@ import {
   rethrowApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -19,7 +20,7 @@ import { revalidateEntity } from "@/utils/revalidate";
 
 import { canManageOwnLinks, canModerateShareLinks } from "./permissions";
 import { ShareLinkCreateSchema, RevokeTokenSchema } from "./schemas";
-import type { ShareLink } from "./types";
+
 
 /** Доменные коды apperror этого слайса. SUSPENDED/FORBIDDEN/REF_NOT_FOUND и
  * фоллбек "err.error ?? Ошибка сервера" (бывший BAD_REQUEST) — в rethrowApiError. */
@@ -55,7 +56,7 @@ export const createShareLink = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SHARE_LINKS, input.resource_id);
-  return (data.data ?? null) as ShareLink | null;
+  return unwrap(data);
 });
 
 /**

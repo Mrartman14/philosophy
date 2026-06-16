@@ -7,6 +7,7 @@ import {
   rethrowApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -28,7 +29,7 @@ import {
   PushSubscribeSchema,
   PushUnsubscribeSchema,
 } from "./schemas";
-import type { Preferences } from "./types";
+
 
 /** Доменные коды apperror этого слайса. SUSPENDED/FORBIDDEN и фоллбек
  * "err.error ?? Ошибка сервера" (бывшие BAD_REQUEST/VALIDATION_ERROR, которые
@@ -52,7 +53,7 @@ export const updatePreferences = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.PREFERENCES);
-  return (data.data ?? null) as Preferences | null;
+  return unwrap(data);
 });
 
 /**

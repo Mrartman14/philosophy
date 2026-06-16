@@ -4,6 +4,7 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -26,7 +27,7 @@ import {
   ReactionSchema,
   RemoveReactionSchema,
 } from "./schemas";
-import type { Comment, ReactionAxis } from "./types";
+import type { ReactionAxis } from "./types";
 
 /** Доменные коды бека → русский текст. role-403/SUSPENDED/BANNED и дефолтный
  * REF_NOT_FOUND обрабатывает централизованный rethrowApiError. BLOCKS_HAVE_ANCHORS
@@ -75,7 +76,7 @@ export const createComment = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, lectureId);
   revalidateEntity(Tags.COMMENTS);
-  return (data.data ?? null) as Comment | null;
+  return unwrap(data);
 });
 
 /**
@@ -101,7 +102,7 @@ export const updateCommentBlocks = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.COMMENTS, input.id);
   revalidateEntity(Tags.COMMENTS);
-  return (data.data ?? null) as Comment | null;
+  return unwrap(data);
 });
 
 /** Удалить свой комментарий (owner). Аргумент — id (uuid). */

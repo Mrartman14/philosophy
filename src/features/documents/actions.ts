@@ -10,6 +10,7 @@ import {
   type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -71,7 +72,7 @@ export const createDocument = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data.data ?? null) as Document | null;
+  return unwrap(data);
 });
 
 /**
@@ -137,7 +138,7 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data.data ?? null) as Document | null;
+  return unwrap(data);
 });
 
 /**
@@ -162,7 +163,7 @@ export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data.data ?? null) as Document | null;
+  return unwrap(data);
 });
 
 /** PATCH /api/documents/{id}/visibility. UI шлёт только private→public. */
@@ -178,7 +179,7 @@ export const setDocumentVisibility = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
-  return (data.data ?? null) as Document | null;
+  return unwrap(data);
 });
 
 /** DELETE /api/documents/{id}. Owner или admin (delete_any, не-private) — enforce'ит бек. */

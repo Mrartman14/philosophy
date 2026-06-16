@@ -4,6 +4,7 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -25,7 +26,7 @@ import {
   TermBlocksUpdateSchema,
   TermIdSchema,
 } from "./schemas";
-import type { Term } from "./types";
+
 
 const ERRORS: ApiErrorMessages = {
   BLOCKS_EMPTY: "Тело термина не может быть пустым.",
@@ -53,7 +54,7 @@ export const createTerm = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY);
-  return (data.data ?? null) as Term | null;
+  return unwrap(data);
 });
 
 /**
@@ -78,7 +79,7 @@ export const updateTermBlocks = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY, input.id);
   revalidateEntity(Tags.GLOSSARY);
-  return (data.data ?? null) as Term | null;
+  return unwrap(data);
 });
 
 export const deleteTerm = createAction(async (rawId: string, ctx) => {

@@ -8,6 +8,7 @@ import {
   type ApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -26,7 +27,7 @@ import {
   TrailItemsSchema,
   TrailIdSchema,
 } from "./schemas";
-import type { Trail, TrailWithItems } from "./types";
+
 
 /** Доменные коды маршрутов → русский текст. */
 const ERRORS: ApiErrorMessages = {
@@ -64,7 +65,7 @@ export const createTrail = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS);
-  return (data.data ?? null) as Trail | null;
+  return unwrap(data);
 });
 
 /** PUT /api/trails/{id} (метаданные: title + description). Owner-only enforce'ит бек. */
@@ -80,7 +81,7 @@ export const updateTrailMeta = createFormAction(async (formData) => {
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
-  return (data.data ?? null) as Trail | null;
+  return unwrap(data);
 });
 
 /** PUT /api/trails/{id}/items (bulk-replace упорядоченного списка лекций). Owner-only. */
@@ -96,7 +97,7 @@ export const setTrailItems = createFormAction(async (formData) => {
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
-  return (data.data ?? null) as TrailWithItems | null;
+  return unwrap(data);
 });
 
 /** PATCH /api/trails/{id}/visibility. UI шлёт только private→public. Owner-only. */
@@ -112,7 +113,7 @@ export const setTrailVisibility = createFormAction(async (formData) => {
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
-  return (data.data ?? null) as Trail | null;
+  return unwrap(data);
 });
 
 /** DELETE /api/trails/{id}. Owner (любая видимость) или admin delete_any (public) — enforce'ит бек. */

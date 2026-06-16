@@ -6,6 +6,7 @@ import {
   rethrowApiError,
   type ApiErrorMessages,
 } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -74,7 +75,7 @@ export const createLecture = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES);
-  return (data.data ?? null) as Lecture | null;
+  return unwrap(data);
 });
 
 export const updateLecture = createFormAction(async (formData, ctx) => {
@@ -91,7 +92,7 @@ export const updateLecture = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
-  return (data.data ?? null) as Lecture | null;
+  return unwrap(data);
 });
 
 export const setLectureVisibility = createFormAction(async (formData, ctx) => {
@@ -108,7 +109,7 @@ export const setLectureVisibility = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
-  return (data.data ?? null) as Lecture | null;
+  return unwrap(data);
 });
 
 export const deleteLecture = createAction(async (rawId: string) => {

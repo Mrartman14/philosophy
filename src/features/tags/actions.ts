@@ -4,6 +4,7 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -26,7 +27,7 @@ import {
   TagIdSchema,
   TagUpdateSchema,
 } from "./schemas";
-import type { Tag } from "./types";
+
 
 /**
  * Коды бекенда — UPPERCASE (internal/apperror, internal/middleware/auth.go,
@@ -48,7 +49,7 @@ export const createTag = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.TAGS);
-  return (data.data ?? null) as Tag | null;
+  return unwrap(data);
 });
 
 export const updateTag = createFormAction(async (formData) => {
@@ -64,7 +65,7 @@ export const updateTag = createFormAction(async (formData) => {
   revalidateEntity(Tags.TAGS);
   // Имя тега показывается на карточках/страницах лекций.
   revalidateEntity(Tags.LECTURES);
-  return (data.data ?? null) as Tag | null;
+  return unwrap(data);
 });
 
 export const deleteTag = createAction(async (rawId: number) => {
@@ -96,5 +97,5 @@ export const setLectureTags = createFormAction(async (formData) => {
   revalidateEntity(Tags.LECTURES);
   // Tag[] | null — чтобы initial state формы (data: null) совпал по типам
   // с useActionState (паттерн glossary: Term | null).
-  return (data.data ?? null) as Tag[] | null;
+  return unwrap(data);
 });

@@ -4,6 +4,7 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import { createAction, createFormAction, parseFormData } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { requireActive, requireCapability } from "@/utils/permissions";
@@ -16,7 +17,7 @@ import {
   CanvasVisibilitySchema,
   CanvasIdSchema,
 } from "./schemas";
-import type { Canvas, CanvasData } from "./types";
+import type { CanvasData } from "./types";
 
 /** Доменные коды canvas → русский текст. role-403/SUSPENDED/BANNED и REF_NOT_FOUND
  * обрабатывает централизованный `rethrowApiError`. VALIDATION_ERROR/BAD_REQUEST —
@@ -48,7 +49,7 @@ export const createCanvas = createFormAction(async (formData) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES);
-  return (data.data ?? null) as Canvas | null;
+  return unwrap(data);
 });
 
 /**
@@ -81,7 +82,7 @@ export const updateCanvas = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES, input.id);
   revalidateEntity(Tags.CANVASES);
-  return (data.data ?? null) as Canvas | null;
+  return unwrap(data);
 });
 
 /** PATCH /api/canvases/{id}/visibility. UI шлёт только private→public. */
@@ -97,7 +98,7 @@ export const setCanvasVisibility = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES, input.id);
   revalidateEntity(Tags.CANVASES);
-  return (data.data ?? null) as Canvas | null;
+  return unwrap(data);
 });
 
 /** DELETE /api/canvases/{id}. Owner (любая) или admin delete_any (public) — enforce'ит бек. */

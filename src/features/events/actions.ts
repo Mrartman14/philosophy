@@ -4,6 +4,7 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -17,7 +18,7 @@ import { revalidateEntity } from "@/utils/revalidate";
 
 import { canCreateEvent, canUpdateEvent, canDeleteEvent } from "./permissions";
 import { EventCreateSchema, EventUpdateSchema, EventIdSchema } from "./schemas";
-import type { CalendarEvent } from "./types";
+
 
 /** Доменные коды событий → русский текст. Бек пишет code в UPPER_SNAKE_CASE
  * (internal/apperror, middleware/auth.go). REF_NOT_FOUND и BLOCKS_HAVE_ANCHORS —
@@ -48,7 +49,7 @@ export const createEvent = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS);
-  return (data.data ?? null) as CalendarEvent | null;
+  return unwrap(data);
 });
 
 /**
@@ -84,7 +85,7 @@ export const updateEvent = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS, input.id);
   revalidateEntity(Tags.EVENTS);
-  return (data.data ?? null) as CalendarEvent | null;
+  return unwrap(data);
 });
 
 export const deleteEvent = createAction(async (rawId: string, ctx) => {

@@ -4,6 +4,7 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -24,7 +25,7 @@ import {
   SubmissionEditSchema,
   SubmissionIdSchema,
 } from "./schemas";
-import type { Form, SubmitResponse } from "./types";
+
 
 /** Доменные коды бека → понятный русский (internal/apperror, form/service.go).
  * role-403/SUSPENDED/BANNED и дефолтный REF_NOT_FOUND обрабатывает
@@ -90,7 +91,7 @@ export const createForm = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS);
-  return (data.data ?? null) as Form | null;
+  return unwrap(data);
 });
 
 /** PATCH /api/forms/{id} — замена структуры. Owner-only + не опубликована (enforce бек). */
@@ -114,7 +115,7 @@ export const updateForm = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
-  return (data.data ?? null) as Form | null;
+  return unwrap(data);
 });
 
 /** PATCH /api/forms/{id} visibility-only → publish (private→public). */
@@ -130,7 +131,7 @@ export const publishForm = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
-  return (data.data ?? null) as Form | null;
+  return unwrap(data);
 });
 
 /** DELETE /api/forms/{id}. Owner или delete_any(public) — enforce бек. */
@@ -161,7 +162,7 @@ export const submitForm = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS);
   revalidateEntity(Tags.FORMS, input.formId);
-  return (data.data ?? null) as SubmitResponse | null;
+  return unwrap(data);
 });
 
 /** PATCH /api/submissions/{id} (editable). Автор — enforce бек. */
@@ -177,7 +178,7 @@ export const editSubmission = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS, input.id);
   revalidateEntity(Tags.SUBMISSIONS);
-  return (data.data ?? null) as SubmitResponse | null;
+  return unwrap(data);
 });
 
 /** DELETE /api/submissions/{id} (editable, освобождает слот). */
