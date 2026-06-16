@@ -3,10 +3,9 @@ import "server-only";
 import { z } from "zod";
 
 import { VISIBILITY } from "@/api/enums";
+import { DATE_ONLY as ISO_DATE } from "@/utils/datetime-form";
 
 import type { AttachmentEntityType } from "./types";
-
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export const LectureCreateSchema = z.object({
   title: z.string().trim().min(1, "Введите название").max(200, "До 200 символов"),

@@ -2,19 +2,7 @@
 import "server-only";
 import { z } from "zod";
 
-const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-/**
- * datetime-local ("YYYY-MM-DDTHH:mm[:ss]") → RFC3339 с суффиксом Z.
- * Бек для all_day=false требует RFC3339 (internal/event/service.go
- * validateDates). Введённое время трактуется как UTC — осознанное
- * упрощение MVP (см. секцию рисков плана); формы подписаны «(UTC)».
- */
-function toRfc3339(value: string): string {
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return `${value}:00Z`;
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value)) return `${value}Z`;
-  return value;
-}
+import { toRfc3339, DATE_ONLY as DATE_ONLY_RE } from "@/utils/datetime-form";
 
 const EventFieldsSchema = z.object({
   title: z

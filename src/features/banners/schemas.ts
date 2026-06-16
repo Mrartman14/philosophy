@@ -3,23 +3,12 @@ import "server-only";
 import { z } from "zod";
 
 import { BANNER_TARGET_AUDIENCES } from "@/api/enums";
+import { toRfc3339 } from "@/utils/datetime-form";
 
 /** Регекс бекенда (internal/banner/service.go hexColorRe) — повторяем 1:1. */
 const HEX_COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/**
- * datetime-local ("YYYY-MM-DDTHH:mm[:ss]") → RFC3339 с суффиксом Z.
- * Бек требует RFC3339 для start_at/end_at (internal/banner/service.go).
- * Введённое время трактуется как UTC — осознанное упрощение MVP (как в
- * слайсе events); формы подписаны «(UTC)».
- */
-function toRfc3339(value: string): string {
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return `${value}:00Z`;
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value)) return `${value}Z`;
-  return value;
-}
 
 const BannerFieldsSchema = z.object({
   background_color: z
