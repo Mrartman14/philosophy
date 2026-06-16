@@ -322,12 +322,21 @@ export function CanvasEditor({ canvas, etag }: Props) {
         {/* холст */}
         {/*
           role="application" — корректная WAI-ARIA роль для самодостаточного
-          холста-редактора, который сам управляет клавиатурой (Delete/Esc/Undo)
-          и колесом (zoom). jsx-a11y берёт классификацию ролей из aria-query,
+          холста-редактора. jsx-a11y берёт классификацию ролей из aria-query,
           где application наследуется от structure, а не widget, поэтому
           no-noninteractive-* считают её неинтерактивной — ложное срабатывание
-          именно для этого паттерна. tabIndex + onKeyDown обеспечивают полный
-          интерактивный контракт.
+          именно для этого паттерна.
+
+          Текущая клавиатурная модель (tabIndex + onKeyDown):
+            Delete/Backspace — удалить выбранный элемент;
+            Escape          — снять выделение;
+            Ctrl+Z / Ctrl+Y — Undo/Redo истории холста.
+          Колесо мыши управляет зумом.
+
+          KNOWN A11Y LIMITATION: навигация между узлами, перемещение узлов
+          клавишами-стрелками, создание рёбер без указателя — не реализованы.
+          Полная клавиатурная авторизация отложена до основной работы над canvas
+          (деferred scope).
         */}
         {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
         <div

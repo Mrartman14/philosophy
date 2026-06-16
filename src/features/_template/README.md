@@ -13,6 +13,7 @@
 - [ ] Использует `createFormAction` + `parseFormData` + `requireCapability` + `revalidateEntity`
 - [ ] Не импортит другие `@/features/*` (запрещено ESLint'ом)
 - [ ] Удалён `ui/.gitkeep`, добавлены реальные UI-файлы
+- [ ] Удалён scaffolded `client.ts`, если в слайсе нет `"use client"`-кода или офлайн-потребителей (пустой re-export только засоряет дерево)
 - [ ] `pnpm lint && pnpm test && pnpm build` зелёные локально
 
 См. конвенции: `docs/frontend-conventions.md`.
