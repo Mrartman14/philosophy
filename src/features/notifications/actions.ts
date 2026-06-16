@@ -35,6 +35,7 @@ export const markRead = createAction(async (id: string) => {
 // `fetchCounts()` и передача в `run` (ждёт `() => …`) НЕ компилируются
 // («Expected 1-2 arguments, but got 0»). `TInput = void` делает параметр
 // опускаемым (правило void-параметров TS) и совместимым с `() => …`.
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- void-параметр нужен для zero-arg вызова (см. комментарий выше)
 export const markAllRead = createAction<void, void>(async () => {
   const me = await getMe();
   requireActive(me);
@@ -44,6 +45,7 @@ export const markAllRead = createAction<void, void>(async () => {
   return undefined;
 });
 
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- void-параметр нужен для zero-arg вызова (см. комментарий выше)
 export const markAllSeen = createAction<void, void>(async () => {
   const me = await getMe();
   requireActive(me);
@@ -77,6 +79,7 @@ export const unsubscribeDocument = createAction(async (documentId: string) => {
 
 // --- Read-actions для клиентских островков (нужен залогиненный) ---
 
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- void-параметр нужен для zero-arg вызова (см. комментарий выше)
 export const fetchCounts = createAction<void, NotificationCounts>(async () => {
   const me = await getMe();
   if (!canUseNotifications(me)) throw new ForbiddenError("guest");
