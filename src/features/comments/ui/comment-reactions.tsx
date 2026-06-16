@@ -1,6 +1,6 @@
 "use client";
 // src/features/comments/ui/comment-reactions.tsx
-import { useState, useTransition } from "react";
+import { useState, useOptimistic, startTransition } from "react";
 
 import { setReaction, removeReaction } from "../actions";
 import { axisLabel, axisValueAriaLabel } from "../reactions";
@@ -15,6 +15,12 @@ interface Props {
   allowedAxes: ReactionAxis[];
   /** Можно ли вообще реагировать (active, не свой, не удалённый). */
   canReact: boolean;
+}
+
+interface ReactionPatch {
+  axis: ReactionAxis;
+  value: number;
+  isSame: boolean;
 }
 
 /** Текущее значение моей реакции по оси (number для agreement/quality, 1|undefined для insight). */
@@ -34,6 +40,38 @@ function axisCount(summary: ReactionSummary | undefined, axis: ReactionAxis): st
   return `+${pos} / −${neg}`;
 }
 
+/** Apply a reaction patch to the current MyReactions state, respecting exactOptionalPropertyTypes. */
+function applyReactionPatch(state: MyReactions | undefined, patch: ReactionPatch): MyReactions {
+  const { axis, value, isSame } = patch;
+  if (axis === "insight") {
+    const next: MyReactions = {};
+    // Rebuild without spreading undefined — exactOptionalPropertyTypes requires explicit keys.
+    if (state?.agreement !== undefined) next.agreement = state.agreement;
+    if (state?.quality !== undefined) next.quality = state.quality;
+    next.insight = !isSame;
+    return next;
+  }
+  if (isSame) {
+    // Remove the axis key entirely (no undefined spread).
+    const next: MyReactions = {};
+    if (state?.insight !== undefined) next.insight = state.insight;
+    if (axis !== "agreement" && state?.agreement !== undefined) next.agreement = state.agreement;
+    if (axis !== "quality" && state?.quality !== undefined) next.quality = state.quality;
+    return next;
+  }
+  // Set new value for the axis.
+  const next: MyReactions = {};
+  if (state?.insight !== undefined) next.insight = state.insight;
+  if (axis === "agreement") {
+    next.agreement = value;
+    if (state?.quality !== undefined) next.quality = state.quality;
+  } else {
+    if (state?.agreement !== undefined) next.agreement = state.agreement;
+    next.quality = value;
+  }
+  return next;
+}
+
 export function CommentReactions({
   commentId,
   reactions,
@@ -41,39 +79,29 @@ export function CommentReactions({
   allowedAxes,
   canReact,
 }: Props) {
-  const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  // Локальное зеркало моих реакций для оптимистичного UI.
-  const [my, setMy] = useState<MyReactions | undefined>(myReactions);
+  const [optimisticReactions, applyOptimistic] = useOptimistic(
+    myReactions,
+    (state: MyReactions | undefined, patch: ReactionPatch) => applyReactionPatch(state, patch),
+  );
 
   if (allowedAxes.length === 0) return null;
 
   function toggle(axis: ReactionAxis, value: number) {
-    if (!canReact || pending) return;
+    // Only gate on canReact — NOT on pending — so a second axis can be toggled while the first is in flight.
+    if (!canReact) return;
     setError(null);
-    const current = myValue(my, axis);
+    const current = myValue(optimisticReactions, axis);
     const isSame = current === value;
-    // Оптимистично. При снятии — пересобираем объект без ключа (exactOptionalPropertyTypes:
-    // нельзя присваивать undefined в optional number-поле, поэтому не delete).
-    if (axis === "insight") {
-      setMy({ ...my, insight: !isSame });
-    } else if (isSame) {
-      // Rebuild without the axis key to satisfy exactOptionalPropertyTypes.
-      const next: MyReactions = {};
-      if (my?.insight !== undefined) next.insight = my.insight;
-      if (axis !== "agreement" && my?.agreement !== undefined) next.agreement = my.agreement;
-      if (axis !== "quality" && my?.quality !== undefined) next.quality = my.quality;
-      setMy(next);
-    } else {
-      setMy({ ...my, [axis]: value });
-    }
+    const patch: ReactionPatch = { axis, value, isSame };
 
     startTransition(async () => {
+      applyOptimistic(patch);
       const result = isSame
         ? await removeReaction({ id: commentId, axis })
         : await setReaction({ id: commentId, axis, value });
       if (!result.success) {
-        setMy(myReactions); // откат
+        // useOptimistic reverts automatically when the transition settles — no manual rollback needed.
         setError(
           result.code === "forbidden"
             ? "У вас нет прав на реакцию."
@@ -87,7 +115,7 @@ export function CommentReactions({
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-3 text-xs">
         {allowedAxes.map((axis) => {
-          const current = myValue(my, axis);
+          const current = myValue(optimisticReactions, axis);
           const values = axis === "insight" ? [1] : [1, -1];
           return (
             <span key={axis} className="flex items-center gap-1">
@@ -98,7 +126,7 @@ export function CommentReactions({
                   <button
                     key={v}
                     type="button"
-                    disabled={!canReact || pending}
+                    disabled={!canReact}
                     onClick={() => { toggle(axis, v); }}
                     aria-pressed={active}
                     aria-label={`${axisLabel(axis)}: ${axisValueAriaLabel(axis, v)}`}
