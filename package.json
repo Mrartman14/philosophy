@@ -12,7 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "generate:api": "pnpm dlx swagger2openapi ${SWAGGER_URL:-../philosophy-api/docs/swagger/swagger.json} -o /tmp/openapi3.json && pnpm exec openapi-typescript /tmp/openapi3.json -o src/api/schema.ts"
+    "generate:api": "pnpm exec swagger2openapi ${SWAGGER_URL:-../philosophy-api/docs/swagger/swagger.json} -o /tmp/openapi3.json && pnpm exec openapi-typescript /tmp/openapi3.json -o src/api/schema.ts"
   },
   "packageManager": "pnpm@8.14.3",
   "pnpm": {
@@ -37,7 +37,6 @@
     "openapi-fetch": "^0.17.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-yandex-metrika": "^2.6.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -58,6 +57,7 @@
     "fake-indexeddb": "^6.0.0",
     "jsdom": "^29.0.2",
     "openapi-typescript": "^7.13.0",
+    "swagger2openapi": "7.0.8",
     "tailwindcss": "^4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5"

@@ -353,6 +353,14 @@ Vitest с `jsdom`. Конфиг — `vitest.config.ts`. `server-only` алиас
 Список запретных зон. Если кажется, что нужно — сначала спроси.
 
 - **`src/api/schema.ts`** — генерируется из OpenAPI. Не редактируй вручную.
+
+  **Регенерация типов (`pnpm generate:api`):**
+  Скрипт запускает `swagger2openapi` (pinned devDep) → `openapi-typescript`.
+  По умолчанию берёт `../philosophy-api/docs/swagger/swagger.json` (сиблинг-репо).
+  Для другого источника: `SWAGGER_URL=http://localhost:8080/swagger.json pnpm generate:api`.
+  `src/api/schema.ts` — **координированный/заморожен**: перегенерацию согласовывай
+  с командой (бэк должен быть доступен, фронт-изменения — отдельным PR).
+
 - **`src/app/layout.tsx`** (root layout) — Toaster, ThemeProvider и т.п.
   уже подключены, добавление — отдельной задачей.
 - **`src/app/admin/layout.tsx`** и `admin-sidebar.tsx` — capability-gated
