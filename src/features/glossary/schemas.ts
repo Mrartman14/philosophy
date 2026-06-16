@@ -2,34 +2,21 @@
 import "server-only";
 import { z } from "zod";
 
+import { blocksJsonField } from "@/utils/blocks-json";
+
 export const TermCreateSchema = z.object({
   title: z.string().trim().min(1, "Введите название").max(300, "До 300 символов"),
 });
 
 export const TermBlocksUpdateSchema = z.object({
   id: z.uuid("Некорректный id термина"),
-  blocks: z
-    .string()
-    .min(1, "Тело не может быть пустым")
-    .transform((s, ctx) => {
-      try {
-        const parsed: unknown = JSON.parse(s);
-        if (!Array.isArray(parsed)) {
-          ctx.addIssue({
-            code: "custom",
-            message: "Тело должно быть массивом блоков",
-          });
-          return z.NEVER;
-        }
-        return parsed as unknown[];
-      } catch {
-        ctx.addIssue({
-          code: "custom",
-          message: "Битый JSON в теле формы",
-        });
-        return z.NEVER;
-      }
-    }),
+  blocks: blocksJsonField({
+    allowEmpty: true,
+    messages: {
+      invalidJson: "Битый JSON в теле формы",
+      notArray: "Тело должно быть массивом блоков",
+    },
+  }),
 });
 
 export const TermIdSchema = z.object({

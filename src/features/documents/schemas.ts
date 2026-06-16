@@ -3,29 +3,18 @@ import "server-only";
 import { z } from "zod";
 
 import { VISIBILITY } from "@/api/enums";
+import { blocksJsonField } from "@/utils/blocks-json";
 
 /** Парсит JSON-строку blocks из скрытого поля формы в непустой массив. */
-const BlocksJsonSchema = z
-  .string()
-  .min(1, "Тело документа не может быть пустым")
-  .transform((s, ctx) => {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(s);
-    } catch {
-      ctx.addIssue({ code: "custom", message: "Битый JSON в теле документа" });
-      return z.NEVER;
-    }
-    if (!Array.isArray(parsed)) {
-      ctx.addIssue({ code: "custom", message: "Тело должно быть массивом блоков" });
-      return z.NEVER;
-    }
-    if (parsed.length === 0) {
-      ctx.addIssue({ code: "custom", message: "Добавьте хотя бы один блок" });
-      return z.NEVER;
-    }
-    return parsed as unknown[];
-  });
+const BlocksJsonSchema = blocksJsonField({
+  allowEmpty: false,
+  messages: {
+    minLength: "Тело документа не может быть пустым",
+    invalidJson: "Битый JSON в теле документа",
+    notArray: "Тело должно быть массивом блоков",
+    empty: "Добавьте хотя бы один блок",
+  },
+});
 
 const TitleSchema = z
   .string()

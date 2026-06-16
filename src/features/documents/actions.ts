@@ -65,7 +65,7 @@ export const createDocument = createFormAction(async (formData, ctx) => {
   const { data, error } = await api.POST("/api/documents", {
     body: {
       title: input.title,
-      blocks: input.blocks as never,
+      blocks: input.blocks,
       ...(input.visibility ? { visibility: input.visibility } : {}),
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),
@@ -157,7 +157,7 @@ export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
       path: { document_id: input.id },
       header: ifMatchHeader(formData, "документа"),
     },
-    body: { blocks: input.blocks as never },
+    body: { blocks: input.blocks },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);

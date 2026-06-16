@@ -73,7 +73,7 @@ export const updateTermBlocks = createFormAction(async (formData, ctx) => {
       path: { id: input.id },
       header: ifMatchHeader(formData, "термина"),
     },
-    body: { blocks: input.blocks as never },
+    body: { blocks: input.blocks },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);

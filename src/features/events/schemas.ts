@@ -2,6 +2,7 @@
 import "server-only";
 import { z } from "zod";
 
+import { blocksJsonField } from "@/utils/blocks-json";
 import { toRfc3339, DATE_ONLY as DATE_ONLY_RE } from "@/utils/datetime-form";
 
 const EventFieldsSchema = z.object({
@@ -91,28 +92,13 @@ export const EventCreateSchema = EventFieldsSchema.transform(
   normalizeFields,
 ).superRefine(validateFields);
 
-const BlocksJsonSchema = z
-  .string()
-  .min(1, "Тело не может быть пустым")
-  .transform((s, ctx) => {
-    try {
-      const parsed: unknown = JSON.parse(s);
-      if (!Array.isArray(parsed)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Тело должно быть массивом блоков",
-        });
-        return z.NEVER;
-      }
-      return parsed as unknown[];
-    } catch {
-      ctx.addIssue({
-        code: "custom",
-        message: "Битый JSON в теле формы",
-      });
-      return z.NEVER;
-    }
-  });
+const BlocksJsonSchema = blocksJsonField({
+  allowEmpty: true,
+  messages: {
+    invalidJson: "Битый JSON в теле формы",
+    notArray: "Тело должно быть массивом блоков",
+  },
+});
 
 export const EventUpdateSchema = EventFieldsSchema.extend({
   id: z.uuid("Некорректный id события"),

@@ -3,6 +3,7 @@ import "server-only";
 import { z } from "zod";
 
 import { BANNER_TARGET_AUDIENCES } from "@/api/enums";
+import { blocksJsonField } from "@/utils/blocks-json";
 import { toRfc3339 } from "@/utils/datetime-form";
 
 /** Регекс бекенда (internal/banner/service.go hexColorRe) — повторяем 1:1. */
@@ -97,28 +98,13 @@ export const BannerCreateSchema = BannerFieldsSchema.transform((raw) => {
   return { ...v, event_id: v.event_id || undefined };
 }).superRefine(validateFields);
 
-const BlocksJsonSchema = z
-  .string()
-  .min(1, "Тело не может быть пустым")
-  .transform((s, ctx) => {
-    try {
-      const parsed: unknown = JSON.parse(s);
-      if (!Array.isArray(parsed)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Тело должно быть массивом блоков",
-        });
-        return z.NEVER;
-      }
-      return parsed as unknown[];
-    } catch {
-      ctx.addIssue({
-        code: "custom",
-        message: "Битый JSON в теле формы",
-      });
-      return z.NEVER;
-    }
-  });
+const BlocksJsonSchema = blocksJsonField({
+  allowEmpty: true,
+  messages: {
+    invalidJson: "Битый JSON в теле формы",
+    notArray: "Тело должно быть массивом блоков",
+  },
+});
 
 export const BannerUpdateSchema = BannerFieldsSchema.extend({
   id: z.uuid("Некорректный id баннера"),

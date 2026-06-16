@@ -3,31 +3,23 @@ import "server-only";
 import { z } from "zod";
 
 import { COMMENT_TYPES, REACTION_AXES as AXES } from "@/api/enums";
+import { blocksJsonField } from "@/utils/blocks-json";
 
 /**
  * blocks приходит из скрытого input формы как JSON-строка (AstEditor
  * сериализует blocks в hidden input). Парсим в непустой массив.
  * Пустой массив → 422 BLOCKS_EMPTY на беке; ловим раньше.
  */
-const BlocksJsonSchema = z
-  .string()
-  .min(1, "Тело не может быть пустым")
-  .transform((s, ctx) => {
-    try {
-      const parsed: unknown = JSON.parse(s);
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Комментарий не может быть пустым",
-        });
-        return z.NEVER;
-      }
-      return parsed as unknown[];
-    } catch {
-      ctx.addIssue({ code: "custom", message: "Битый JSON в теле" });
-      return z.NEVER;
-    }
-  });
+const BlocksJsonSchema = blocksJsonField({
+  allowEmpty: false,
+  messages: {
+    invalidJson: "Битый JSON в теле",
+    // Оригинал объединял !Array.isArray и length===0 в одно условие с одним
+    // сообщением. Передаём то же сообщение в оба поля — поведение идентично.
+    notArray: "Комментарий не может быть пустым",
+    empty: "Комментарий не может быть пустым",
+  },
+});
 
 export const CommentCreateSchema = z
   .object({

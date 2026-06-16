@@ -68,7 +68,7 @@ export const createComment = createFormAction(async (formData, ctx) => {
     params: { path: { id: lectureId } },
     body: {
       type: input.type,
-      blocks: input.blocks as never,
+      blocks: input.blocks,
       ...(input.parent_id ? { parent_id: input.parent_id } : {}),
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),
@@ -96,7 +96,7 @@ export const updateCommentBlocks = createFormAction(async (formData, ctx) => {
       path: { id: input.id },
       header: ifMatchHeader(formData, "комментария"),
     },
-    body: { blocks: input.blocks as never },
+    body: { blocks: input.blocks },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowApiError(error, ERRORS);

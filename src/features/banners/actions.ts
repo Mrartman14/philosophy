@@ -87,7 +87,7 @@ export const updateBanner = createFormAction(async (formData, ctx) => {
       target_audience: input.target_audience,
       dismissible: input.dismissible,
       start_at: input.start_at,
-      blocks: input.blocks as never,
+      blocks: input.blocks,
       // event_id отправляем ВСЕГДА: пустая строка = «отвязать событие»
       // (repo.Update бекенда: "" → SQL NULL).
       event_id: input.event_id,

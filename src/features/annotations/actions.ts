@@ -113,7 +113,7 @@ export const updateAnnotation = createFormAction(async (formData, ctx) => {
       header: ifMatchHeader(formData, "аннотации"),
     },
     body: {
-      blocks: input.blocks as never,
+      blocks: input.blocks,
       ...(input.anchor !== undefined ? { anchor: input.anchor as never } : {}),
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),

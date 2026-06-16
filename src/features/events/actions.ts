@@ -72,7 +72,7 @@ export const updateEvent = createFormAction(async (formData, ctx) => {
       title: input.title,
       start_date: input.start_date,
       all_day: input.all_day,
-      blocks: input.blocks as never,
+      blocks: input.blocks,
       // Известное ограничение бекенда: omitted-поле НЕ очищает значение
       // (UpdateRequest — частичный апдейт), а пустая строка не проходит
       // validateDates/validateRRule. Очистка end_date/rrule невозможна —

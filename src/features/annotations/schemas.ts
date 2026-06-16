@@ -3,6 +3,7 @@ import "server-only";
 import { z } from "zod";
 
 import { VISIBILITY } from "@/api/enums";
+import { blocksJsonField } from "@/utils/blocks-json";
 
 import { PARENT_ENTITY_TYPES } from "./types";
 
@@ -10,28 +11,17 @@ import { PARENT_ENTITY_TYPES } from "./types";
  * JSON-строка AST-блоков из hidden-input формы (паттерн comments/events:
  * BlocksJsonSchema). Парсит и проверяет, что результат — непустой массив.
  */
-const BlocksJsonSchema = z
-  .string()
-  .min(1, "Тело аннотации не может быть пустым")
-  .transform((s, ctx) => {
-    try {
-      const parsed: unknown = JSON.parse(s);
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Тело должно быть непустым массивом блоков",
-        });
-        return z.NEVER;
-      }
-      return parsed as unknown[];
-    } catch {
-      ctx.addIssue({
-        code: "custom",
-        message: "Битый JSON в теле аннотации",
-      });
-      return z.NEVER;
-    }
-  });
+const BlocksJsonSchema = blocksJsonField({
+  allowEmpty: false,
+  messages: {
+    minLength: "Тело аннотации не может быть пустым",
+    invalidJson: "Битый JSON в теле аннотации",
+    // Оригинал объединял !Array.isArray и length===0 в одно условие с одним
+    // сообщением. Передаём то же сообщение в оба поля — поведение идентично.
+    notArray: "Тело должно быть непустым массивом блоков",
+    empty: "Тело должно быть непустым массивом блоков",
+  },
+});
 
 /** Подмножество parent-типов с UI (banner/event/canvas не покрываем — §4). */
 const ParentEntityTypeSchema = z.enum(PARENT_ENTITY_TYPES);
