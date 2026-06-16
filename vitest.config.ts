@@ -7,6 +7,24 @@ export default defineConfig({
     environment: "jsdom",
     globals: false,
     include: ["src/**/*.test.{ts,tsx}"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json-summary"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "src/api/schema.ts",
+        "src/**/*.test.{ts,tsx}",
+        "src/features/_template/**",
+        "src/test/**",
+        "**/*.d.ts",
+      ],
+      thresholds: {
+        statements: 41,
+        branches: 30,
+        functions: 40,
+        lines: 42,
+      },
+    },
   },
   resolve: {
     alias: {

@@ -25,5 +25,5 @@ jobs:
       # Fail-fast: дешёвые проверки раньше дорогой сборки.
       - run: pnpm typecheck
       - run: pnpm lint
-      - run: pnpm test
+      - run: pnpm test:coverage
       - run: pnpm build
