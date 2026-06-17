@@ -1,5 +1,6 @@
 import "server-only";
 import type { ApiErrorCode } from "@/api/types";
+import { errors, metrics, M } from "@/services/observability";
 
 import { BannedError, ForbiddenError } from "./permissions";
 
@@ -88,6 +89,8 @@ export function rethrowApiError(
 ): never {
   const code = err?.code;
   if (code) {
+    // Метрика по доменному коду — до любого throw, чтобы попадали все ветки.
+    metrics.increment(M.backendError, { code });
     if (code === "BANNED") {
       throw new BannedError(err.error ?? "Account banned");
     }
@@ -99,6 +102,13 @@ export function rethrowApiError(
     }
     const text = overrides?.[code] ?? DEFAULT_MESSAGES[code];
     if (text) throw new Error(text);
+    // Код есть, но нигде не сопоставлен — это дрифт контракта, не юзер-ошибка.
+    errors.capture(new Error(err.error ?? `Unmapped backend code: ${code}`), {
+      errorClass: "unexpected",
+      backendCode: code,
+      handled: true,
+      attributes: { reason: "unmapped_backend_code" },
+    });
   }
   throw new Error(err?.error ?? "Ошибка сервера");
 }
