@@ -10,7 +10,7 @@ import {
 } from "../store/outbox";
 
 import { claimPending, drainOutbox } from "./drain";
-import type { DrainResult, SyncTransport } from "./transport";
+import type { DrainResult, SyncSendResult, SyncTransport } from "./transport";
 
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory();
@@ -217,7 +217,7 @@ describe("drainOutbox onOutcome callback", () => {
       payload: { text: "x" },
     });
     const onOutcome = vi.fn();
-    const send = vi.fn(() => Promise.resolve({ ok: true, serverId: "srv-1" }) as const);
+    const send: SyncTransport = vi.fn(() => Promise.resolve<SyncSendResult>({ ok: true, serverId: "srv-1" }));
     await drainOutbox({ send, onOutcome });
     expect(onOutcome).toHaveBeenCalledWith(
       expect.objectContaining({ kind: "done", serverId: "srv-1" }),
@@ -237,9 +237,7 @@ describe("drainOutbox onOutcome callback", () => {
     // Simulate 2 prior attempts
     await updateOutboxCommand("c1-deferred", { attempts: 2 });
     const onOutcome = vi.fn();
-    const send = vi.fn(
-      () => Promise.resolve({ ok: false, retriable: true, error: "offline" }) as const,
-    );
+    const send: SyncTransport = vi.fn(() => Promise.resolve<SyncSendResult>({ ok: false, retriable: true, error: "offline" }));
     await drainOutbox({ send, onOutcome });
     expect(onOutcome).toHaveBeenCalledWith(
       expect.objectContaining({ kind: "deferred", attempts: 3, error: "offline" }),
@@ -253,9 +251,7 @@ describe("drainOutbox onOutcome callback", () => {
       payload: {},
     });
     const onOutcome = vi.fn();
-    const send = vi.fn(
-      () => Promise.resolve({ ok: false, retriable: false, error: "422 invalid" }) as const,
-    );
+    const send: SyncTransport = vi.fn(() => Promise.resolve<SyncSendResult>({ ok: false, retriable: false, error: "422 invalid" }));
     await drainOutbox({ send, onOutcome });
     expect(onOutcome).toHaveBeenCalledWith(
       expect.objectContaining({ kind: "failed", attempts: 1, error: "422 invalid" }),
@@ -271,7 +267,7 @@ describe("drainOutbox onOutcome callback", () => {
     const onOutcome = vi.fn(() => {
       throw new Error("boom");
     });
-    const send = vi.fn(() => Promise.resolve({ ok: true, serverId: "srv-1" }) as const);
+    const send: SyncTransport = vi.fn(() => Promise.resolve<SyncSendResult>({ ok: true, serverId: "srv-1" }));
     const result = await drainOutbox({ send, onOutcome });
     expect(result.done).toBe(1);
   });
