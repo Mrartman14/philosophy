@@ -288,9 +288,7 @@ describe("logoutAction", () => {
     const [url, init] = call;
     expect(url).toMatch(/\/api\/auth\/logout$/);
     expect(init.method).toBe("POST");
-    expect((init.headers as Record<string, string>).Authorization).toBe(
-      "Bearer jwt-xyz"
-    );
+    expect(new Headers(init.headers).get("Authorization")).toBe("Bearer jwt-xyz");
     // запрос ограничен таймаутом через AbortController
     expect(init.signal).toBeInstanceOf(AbortSignal);
     expect(cookieDelete).toHaveBeenCalledWith("token");
