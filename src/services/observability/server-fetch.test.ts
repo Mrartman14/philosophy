@@ -32,14 +32,16 @@ describe("instrumentedFetch", () => {
   });
 
   it("stamps X-Request-Id and records api.duration on success", async () => {
-    const fetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 204 })));
+    const fetchMock = vi.fn<(input: string | URL | Request, init?: RequestInit) => Promise<Response>>(
+      () => Promise.resolve(new Response(null, { status: 204 })),
+    );
     vi.stubGlobal("fetch", fetchMock);
 
     const res = await instrumentedFetch("http://x/y", { method: "POST" }, { surface: "media.upload" });
 
     expect(res.status).toBe(204);
-    const passedInit = fetchMock.mock.calls[0]?.[1] as RequestInit;
-    const headers = new Headers(passedInit.headers);
+    const passedInit = fetchMock.mock.calls[0]?.[1];
+    const headers = new Headers(passedInit?.headers);
     expect(headers.get("X-Request-Id")).toBe("req-7");
     expect(histogram).toHaveBeenCalledWith(
       M.apiDuration,
@@ -75,13 +77,15 @@ describe("instrumentedFetch", () => {
   });
 
   it("сохраняет переданные вызывающим заголовки и добавляет X-Request-Id", async () => {
-    const fetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 200 })));
+    const fetchMock = vi.fn<(input: string | URL | Request, init?: RequestInit) => Promise<Response>>(
+      () => Promise.resolve(new Response(null, { status: 200 })),
+    );
     vi.stubGlobal("fetch", fetchMock);
 
     await instrumentedFetch("https://api.test/x", { headers: { Authorization: "Bearer tok" } }, { surface: "me" });
 
-    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
-    const headers = new Headers(init.headers);
+    const init = fetchMock.mock.calls[0]?.[1];
+    const headers = new Headers(init?.headers);
     expect(headers.get("Authorization")).toBe("Bearer tok");
     expect(headers.get("X-Request-Id")).toBe("req-7");
   });
