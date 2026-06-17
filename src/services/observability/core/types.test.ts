@@ -1,5 +1,5 @@
 // src/services/observability/core/types.test.ts
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 
 import type {
   Attributes,
@@ -77,9 +77,4 @@ describe("observability record types", () => {
     expect(r).toBeDefined();
     expect(r?.kind).toBe("log");
   });
-});
-
-// beforeEach/vi импортированы для единообразия test-преамбулы (globals:false).
-beforeEach(() => {
-  vi.clearAllMocks();
 });
