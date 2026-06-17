@@ -24,6 +24,13 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ back: vi.fn(), refresh: vi.fn() }),
 }));
 
+const captureBoundary = vi.fn();
+vi.mock("@/services/observability/use-report-boundary-error", () => ({
+  useReportBoundaryError: (error: unknown) => {
+    captureBoundary(error);
+  },
+}));
+
 // ---------------------------------------------------------------------------
 // Import the actual boundary components AFTER mocks are registered.
 // (vitest hoists vi.mock() calls, so this order is fine.)
@@ -131,5 +138,23 @@ describe("NotFound (src/app/not-found.tsx)", () => {
   it("renders link back to home", () => {
     render(<NotFound />);
     expect(screen.getByRole("link", { name: "На главную" })).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Boundary error reporting — RouteError + GlobalError forward `error` to the
+// observability hook on mount (handled:false capture happens inside the hook).
+// ---------------------------------------------------------------------------
+describe("boundary error reporting", () => {
+  afterEach(() => captureBoundary.mockClear());
+
+  it("RouteError reports the error on mount", () => {
+    render(<RouteError error={stubError} reset={vi.fn()} />);
+    expect(captureBoundary).toHaveBeenCalledWith(stubError);
+  });
+
+  it("GlobalError reports the error on mount", () => {
+    render(<GlobalError error={stubError} reset={vi.fn()} />);
+    expect(captureBoundary).toHaveBeenCalledWith(stubError);
   });
 });

@@ -1,11 +1,15 @@
 "use client";
 
+import { useReportBoundaryError } from "@/services/observability/use-report-boundary-error";
+
 export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useReportBoundaryError(error);
   return (
     <html lang="ru">
       <body>
