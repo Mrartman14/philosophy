@@ -28,18 +28,18 @@ export function createIngestHandler(deps?: {
     const key = sessionId ?? "anon";
     if (!bucket.allow(key)) return { status: 429, emitted: 0 };
 
+    const byteLength =
+      typeof TextEncoder !== "undefined"
+        ? new TextEncoder().encode(rawText).length
+        : rawText.length;
+    if (byteLength > MAX_BYTES) return { status: 413, emitted: 0 };
+
     let parsed: unknown;
     try {
       parsed = JSON.parse(rawText);
     } catch {
       return { status: 400, emitted: 0 };
     }
-
-    const byteLength =
-      typeof TextEncoder !== "undefined"
-        ? new TextEncoder().encode(rawText).length
-        : rawText.length;
-    if (byteLength > MAX_BYTES) return { status: 413, emitted: 0 };
 
     const result = validateBatch(parsed, byteLength);
     if (!result.ok) {

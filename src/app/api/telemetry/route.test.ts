@@ -51,10 +51,11 @@ describe("POST /api/telemetry", () => {
     expect(res.status).toBe(413);
   });
 
-  it("propagates a 429 when rate-limited", async () => {
+  it("propagates a 429 when rate-limited and sets Retry-After header", async () => {
     handle.mockReturnValue({ status: 429, emitted: 0 });
     const res = await POST(req("[]", "s-1"));
     expect(res.status).toBe(429);
+    expect(res.headers.get("Retry-After")).toBe("1");
   });
 
   it("ensures the server sink is initialized before handling", async () => {

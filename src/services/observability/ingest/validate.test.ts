@@ -56,4 +56,34 @@ describe("validateBatch", () => {
     const res = validateBatch([{ ...logRec({}), kind: "bogus" }], 80);
     expect(res).toEqual({ ok: false, reason: "invalid" });
   });
+
+  it("accepts a valid error record and re-redacts PII attributes", () => {
+    const errRec = {
+      kind: "error" as const,
+      errorClass: "network" as const,
+      message: "fetch failed",
+      backendCode: null,
+      fingerprint: "abc123",
+      handled: false,
+      cause: {
+        name: "TypeError",
+        message: "Failed to fetch",
+        stack: null,
+      },
+      attributes: { retries: 2, token: "secret" },
+      context: ctx,
+      timestamp: 2,
+    };
+    const res = validateBatch([errRec], 200);
+    expect(res.ok).toBe(true);
+    if (!res.ok) throw new Error("unreachable");
+    expect(res.records).toHaveLength(1);
+    const rec = res.records[0];
+    if (rec?.kind !== "error") throw new Error("not an error record");
+    expect(rec.errorClass).toBe("network");
+    expect(rec.handled).toBe(false);
+    // PII-keyed attribute must be stripped by server-side re-redaction
+    expect(rec.attributes).toEqual({ retries: 2 });
+    expect("token" in rec.attributes).toBe(false);
+  });
 });

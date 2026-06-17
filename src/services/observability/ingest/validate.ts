@@ -30,7 +30,7 @@ const context = z.object({
 const logRecord = z.object({
   kind: z.literal("log"),
   level: z.enum(["debug", "info", "warn", "error"]),
-  message: z.string(),
+  message: z.string().max(2048),
   attributes,
   context,
   timestamp: z.number(),
@@ -38,16 +38,30 @@ const logRecord = z.object({
 
 const errorRecord = z.object({
   kind: z.literal("error"),
-  errorClass: z.string(),
-  message: z.string(),
-  backendCode: z.string().nullable(),
-  fingerprint: z.string().nullable(),
+  errorClass: z.enum([
+    "forbidden.role",
+    "forbidden.status",
+    "forbidden.owner",
+    "forbidden.guest",
+    "validation",
+    "banned",
+    "conflict.version",
+    "conflict.idempotency",
+    "rate_limited",
+    "not_found",
+    "backend.5xx",
+    "network",
+    "unexpected",
+  ]),
+  message: z.string().max(2048),
+  backendCode: z.string().max(256).nullable(),
+  fingerprint: z.string().max(256).nullable(),
   handled: z.boolean(),
   cause: z
     .object({
-      name: z.string(),
-      message: z.string(),
-      stack: z.string().nullable(),
+      name: z.string().max(256),
+      message: z.string().max(2048),
+      stack: z.string().max(8192).nullable(),
     })
     .nullable(),
   attributes,
@@ -57,7 +71,7 @@ const errorRecord = z.object({
 
 const metricRecord = z.object({
   kind: z.literal("metric"),
-  metric: z.string(),
+  metric: z.string().max(256),
   metricKind: z.enum(["counter", "histogram"]),
   value: z.number(),
   unit: z.enum(["ms", "count"]).nullable(),

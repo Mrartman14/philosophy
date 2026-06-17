@@ -12,5 +12,8 @@ export async function POST(req: Request): Promise<Response> {
   const sessionId = req.headers.get("x-session-id");
   const rawText = await req.text();
   const { status } = handle({ sessionId, rawText });
+  if (status === 429) {
+    return new Response(null, { status, headers: { "Retry-After": "1" } });
+  }
   return new Response(null, { status });
 }
