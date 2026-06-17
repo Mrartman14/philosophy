@@ -2,7 +2,6 @@
 import "server-only";
 
 // Серверный контекст наблюдаемости: per-request холдер, мемоизированный React cache().
-import { createHmac, randomUUID } from "node:crypto";
 
 import { cache } from "react";
 
@@ -16,11 +15,16 @@ function resolveEnv(): ContextSnapshot["env"] {
   return "development";
 }
 
-// HMAC-SHA256(id, salt), усечённый. Без соли — псевдоним «anon».
-export function hashActor(id: string): string {
+// HMAC-SHA256(id, salt) via Web Crypto (runtime-agnostic), усечённый. Без соли — «anon».
+export async function hashActor(id: string): Promise<string> {
   const salt = process.env.OBSERVABILITY_ACTOR_SALT;
   if (!salt) return "anon";
-  return createHmac("sha256", salt).update(id).digest("hex").slice(0, 16);
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw", enc.encode(salt), { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(id));
+  return Array.from(new Uint8Array(sig), (b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
 }
 
 // Per-request holder. React cache() returns the SAME object within one request,
@@ -28,7 +32,7 @@ export function hashActor(id: string): string {
 // request gets a fresh object (no cross-request leak).
 const holder = cache((): ContextSnapshot => ({
   ...baseContext(resolveEnv(), "server"),
-  requestId: randomUUID(),
+  requestId: crypto.randomUUID(),
   release: process.env.OBSERVABILITY_RELEASE ?? null,
 }));
 
@@ -36,9 +40,9 @@ export function getServerContext(): ContextSnapshot {
   return holder();
 }
 
-export function setServerActor(id: string, role: string): void {
+export async function setServerActor(id: string, role: string): Promise<void> {
   const ctx = holder();
-  ctx.actorHash = hashActor(id);
+  ctx.actorHash = await hashActor(id);
   ctx.actorRole = role;
 }
 

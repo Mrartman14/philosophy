@@ -29,23 +29,23 @@ beforeEach(() => {
 });
 
 describe("hashActor", () => {
-  it("без соли → 'anon'", () => {
+  it("без соли → 'anon'", async () => {
     vi.stubEnv("OBSERVABILITY_ACTOR_SALT", "");
-    expect(hashActor("user-1")).toBe("anon");
+    expect(await hashActor("user-1")).toBe("anon");
   });
 
-  it("с солью → детерминированный псевдоним, не равный сырому id", () => {
+  it("с солью → детерминированный псевдоним, не равный сырому id", async () => {
     vi.stubEnv("OBSERVABILITY_ACTOR_SALT", "pepper");
-    const a = hashActor("user-1");
-    const b = hashActor("user-1");
+    const a = await hashActor("user-1");
+    const b = await hashActor("user-1");
     expect(a).toBe(b);
     expect(a).not.toBe("user-1");
     expect(a.length).toBeGreaterThan(0);
   });
 
-  it("разные id → разные хеши", () => {
+  it("разные id → разные хеши", async () => {
     vi.stubEnv("OBSERVABILITY_ACTOR_SALT", "pepper");
-    expect(hashActor("a")).not.toBe(hashActor("b"));
+    expect(await hashActor("a")).not.toBe(await hashActor("b"));
   });
 });
 
@@ -58,12 +58,12 @@ describe("getServerContext + mutators", () => {
     expect(ctx.route).toBeNull();
   });
 
-  it("setServerActor мутирует actorHash/actorRole в держателе контекста", () => {
+  it("setServerActor мутирует actorHash/actorRole в держателе контекста", async () => {
     vi.stubEnv("OBSERVABILITY_ACTOR_SALT", "pepper");
-    setServerActor("user-1", "admin");
+    await setServerActor("user-1", "admin");
     const ctx = getServerContext();
     expect(ctx.actorRole).toBe("admin");
-    expect(ctx.actorHash).toBe(hashActor("user-1"));
+    expect(ctx.actorHash).toBe(await hashActor("user-1"));
   });
 
   it("setServerRoute мутирует route", () => {

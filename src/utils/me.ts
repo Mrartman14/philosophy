@@ -108,7 +108,7 @@ const getAuthState = cache(async (): Promise<AuthState> => {
   }
 
   const me = candidate as Me;
-  setServerActor(me.id, me.role);
+  await setServerActor(me.id, me.role);
   metrics.increment(M.authResolve, {
     result: me.status === "active" ? "active" : "suspended",
   });
