@@ -1,6 +1,8 @@
 // src/components/ast-render/block-renderer.tsx
 import type { ReactNode } from "react";
 
+import { log } from "@/services/observability/client";
+
 import { InlineRenderer } from "./inline-renderer";
 import { ImageNode } from "./nodes/image";
 import type { AstBlock, AstRenderContext } from "./types";
@@ -52,9 +54,9 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       // @ts-expect-error — drift-detector: при добавлении нового block.type в схему,
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = block.type;
-      if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-        console.warn(`AstRender: unsupported block type "${String(_exhaustive)}"`);
-      }
+      log.warn(`AstRender: unsupported block type "${String(_exhaustive)}"`, {
+        blockType: String(_exhaustive),
+      });
       return (
         <div data-unsupported={block.type ?? "unknown"}>
           <InlineRenderer nodes={block.content} ctx={ctx} />

@@ -1,6 +1,8 @@
 // src/components/ast-render/inline-renderer.tsx
 import type { ReactNode } from "react";
 
+import { log } from "@/services/observability/client";
+
 import { defaultCanvasRef } from "./marks/canvas-ref";
 import { defaultCommentRef } from "./marks/comment-ref";
 import { defaultDocumentRef } from "./marks/document-ref";
@@ -72,9 +74,9 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
       // @ts-expect-error — drift-detector: при добавлении нового mark.type в схему,
       // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
       const _exhaustive: never = mark.type;
-      if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-        console.warn(`AstRender: unsupported mark type "${String(_exhaustive)}"`);
-      }
+      log.warn(`AstRender: unsupported mark type "${String(_exhaustive)}"`, {
+        markType: String(_exhaustive),
+      });
       return <span data-unsupported-mark={(mark.type as string | undefined) ?? "unknown"}>{children}</span>;
     }
   }

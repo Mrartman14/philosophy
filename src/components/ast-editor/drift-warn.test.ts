@@ -1,6 +1,12 @@
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from "vitest";
 
+vi.mock("@/services/observability/client", () => ({
+  log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+}));
+
+import { log } from "@/services/observability/client";
+
 import { useDriftWarn } from "./drift-warn";
 import type { SchemaSnapshot } from "./types";
 
@@ -16,9 +22,15 @@ const baseSnapshot = (nodes: string[], marks: string[]): SchemaSnapshot => ({
 });
 
 describe("useDriftWarn", () => {
+  // warnSpy suppresses console.warn noise; assertions use logWarn (the facade).
   let warnSpy: MockInstance<(...args: unknown[]) => void>;
-  // Suppress console.warn during test — warnSpy captures calls for assertions.
-  beforeEach(() => { warnSpy = vi.spyOn(console, "warn").mockImplementation(() => { /* suppress */ }); });
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const logWarn = vi.mocked(log).warn;
+
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => { /* suppress */ });
+    logWarn.mockClear();
+  });
   afterEach(() => { warnSpy.mockRestore(); });
 
   it("warns when runtime schema has a node missing from hardcode", () => {
@@ -27,8 +39,9 @@ describe("useDriftWarn", () => {
       ["bold", "italic", "code", "link", "lecture_ref", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
     );
     renderHook(() => { useDriftWarn(schema); });
-    expect(warnSpy).toHaveBeenCalled();
-    const allArgs = warnSpy.mock.calls[0]?.map((a) => JSON.stringify(a)).join(" ") ?? "";
+    expect(logWarn).toHaveBeenCalled();
+    const call = logWarn.mock.calls[0];
+    const allArgs = (call ?? []).map((a) => JSON.stringify(a)).join(" ");
     expect(allArgs).toMatch(/future_block/);
   });
 
@@ -38,7 +51,7 @@ describe("useDriftWarn", () => {
       ["bold", "italic"], // missing several
     );
     renderHook(() => { useDriftWarn(schema); });
-    expect(warnSpy).toHaveBeenCalled();
+    expect(logWarn).toHaveBeenCalled();
   });
 
   it("no warn when sets match", () => {
@@ -47,6 +60,6 @@ describe("useDriftWarn", () => {
       ["bold", "italic", "code", "link", "lecture_ref", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
     );
     renderHook(() => { useDriftWarn(schema); });
-    expect(warnSpy).not.toHaveBeenCalled();
+    expect(logWarn).not.toHaveBeenCalled();
   });
 });

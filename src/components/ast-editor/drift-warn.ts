@@ -1,6 +1,8 @@
 "use client";
 import { useEffect } from "react";
 
+import { log } from "@/services/observability/client";
+
 import type { SchemaSnapshot } from "./types";
 
 /**
@@ -43,9 +45,14 @@ export function useDriftWarn(schema: SchemaSnapshot) {
     const droppedMarks = diffSet(HARDCODE_MARKS, runtimeMarks);
 
     if (newNodes.length || droppedNodes.length || newMarks.length || droppedMarks.length) {
-      console.warn(
-        "[ast-editor] schema drift detected — regenerate src/api/schema.ts and update extensions:",
-        { newNodes, droppedNodes, newMarks, droppedMarks },
+      log.warn(
+        "[ast-editor] schema drift detected — regenerate src/api/schema.ts and update extensions",
+        {
+          newNodes: newNodes.join(",") || null,
+          droppedNodes: droppedNodes.join(",") || null,
+          newMarks: newMarks.join(",") || null,
+          droppedMarks: droppedMarks.join(",") || null,
+        },
       );
     }
   }, [schema]);

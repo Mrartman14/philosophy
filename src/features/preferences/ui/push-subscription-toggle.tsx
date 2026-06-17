@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui";
+import { log } from "@/services/observability/client";
 
 import { subscribePush, unsubscribePush } from "../actions";
 import { urlBase64ToUint8Array } from "../vapid";
@@ -109,7 +110,7 @@ export function PushSubscriptionToggle({
           // Браузерная подписка уже снята; мёртвый endpoint бекенд зачистит
           // сам после неудачных доставок (fail_count / 410 Gone) —
           // пользователю это не показываем.
-          console.error("[push] server unsubscribe failed:", result.error);
+          log.error("[push] server unsubscribe failed", { error: result.error });
         }
       }
       setState({ phase: "ready", subscribed: false });

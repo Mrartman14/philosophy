@@ -1,6 +1,8 @@
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
 
+import { log } from "@/services/observability/client";
+
 import { uploadImage } from "../upload/upload-image";
 
 export const imagePasteDropPluginKey = new PluginKey("ast-editor-image-paste-drop");
@@ -9,7 +11,7 @@ export const imagePasteDropPluginKey = new PluginKey("ast-editor-image-paste-dro
  * Captures pasted/dropped image files, uploads them, and inserts an `image`
  * block at the drop / paste position. Async upload — we do NOT insert a
  * placeholder; user sees the result when the response comes back. Failures
- * are logged via console.warn (no UI toast in MVP).
+ * are logged via log.warn (no UI toast in MVP).
  *
  * Plugin is wired conditionally — only when `image` is in the allowed-block
  * set for the current entityContext (see extensions/index.ts).
@@ -58,7 +60,7 @@ async function insertUploaded(view: EditorView, file: File, pos: number) {
   fd.set("file", file);
   const res = await uploadImage(fd);
   if (!res.success) {
-    console.warn("[ast-editor] image upload failed:", res.error);
+    log.warn("[ast-editor] image upload failed", { error: res.error });
     return;
   }
   const imageType = view.state.schema.nodes.image;

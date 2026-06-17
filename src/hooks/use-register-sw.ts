@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { log } from "@/services/observability/client";
+
 interface UseRegisterSWReturn {
   needsUpdate: boolean;
   applyUpdate: () => void;
@@ -50,7 +52,11 @@ export function useRegisterSW(): UseRegisterSWReturn {
           });
         });
       })
-      .catch((err: unknown) => { console.error("[SW] registration failed:", err); });
+      .catch((err: unknown) => {
+          log.error("[SW] registration failed", {
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
 
     // Периодически проверяем обновления SW, чтобы долгоживущие вкладки
     // замечали новый деплой. update() отклоняется офлайн — глушим через .catch.
