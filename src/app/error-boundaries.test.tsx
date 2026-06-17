@@ -157,4 +157,9 @@ describe("boundary error reporting", () => {
     render(<GlobalError error={stubError} reset={vi.fn()} />);
     expect(captureBoundary).toHaveBeenCalledWith(stubError);
   });
+
+  it("AdminError reports the error on mount", () => {
+    render(<AdminError error={stubError} reset={vi.fn()} />);
+    expect(captureBoundary).toHaveBeenCalledWith(stubError);
+  });
 });

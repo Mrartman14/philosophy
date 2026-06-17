@@ -1,11 +1,16 @@
 // src/app/admin/error.tsx
 "use client";
+
+import { useReportBoundaryError } from "@/services/observability/use-report-boundary-error";
+
 export default function AdminError({
+  error,
   reset,
 }: {
-  error: Error;
+  error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useReportBoundaryError(error);
   return (
     <div className="flex min-h-[40vh] flex-col items-center justify-center gap-2 text-center">
       <h1 className="text-xl font-semibold">Что-то пошло не так</h1>
