@@ -23,11 +23,11 @@ describe("instrumentation", () => {
     expect(initServerObservability).toHaveBeenCalledTimes(1);
   });
 
-  it("onRequestError captures unhandled error with route + renderSource attrs", () => {
+  it("onRequestError captures unhandled error with route + renderSource + method attrs", () => {
     const err = new Error("boom");
     onRequestError(
       err,
-      { path: "/x", method: "GET", headers: {} },
+      { path: "/x", method: "POST", headers: {} },
       {
         routerKind: "App Router",
         routePath: "/documents/[id]",
@@ -41,6 +41,7 @@ describe("instrumentation", () => {
       attributes: {
         route: "/documents/[id]",
         renderSource: "react-server-components",
+        method: "POST",
       },
     });
   });

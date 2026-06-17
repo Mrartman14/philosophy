@@ -16,7 +16,7 @@ export function register(): void {
  */
 export function onRequestError(
   error: unknown,
-  _request: { path: string; method: string; headers: Record<string, string> },
+  request: { path: string; method: string; headers: Record<string, string> },
   context: {
     routerKind: string;
     routePath: string;
@@ -30,6 +30,7 @@ export function onRequestError(
     attributes: {
       route: context.routePath,
       renderSource: context.renderSource,
+      method: request.method,
     },
   });
 }
