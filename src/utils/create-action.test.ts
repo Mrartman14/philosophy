@@ -280,4 +280,78 @@ describe("createAction observability", () => {
       outcome: "forbidden.role",
     });
   });
+
+  // Named Risk #1: isNextInternalError → re-throw, NO error capture
+  it("isNextInternalError → re-throws без capture (контроль-флоу не пишется как ошибка)", async () => {
+    const action = createAction(() => {
+      const err = new Error("NEXT_REDIRECT") as Error & { digest: string };
+      err.digest = "NEXT_REDIRECT;replace;/x;307;";
+      throw err;
+    }, "nextInternalAction");
+
+    let thrownDigest: string | undefined;
+    try {
+      await action(undefined);
+    } catch (e) {
+      thrownDigest = (e as { digest?: string }).digest;
+    }
+
+    expect(thrownDigest).toBe("NEXT_REDIRECT;replace;/x;307;");
+    const errorRecords = mem.records.filter((r) => r.kind === "error");
+    expect(errorRecords).toHaveLength(0);
+  });
+
+  // Named Risk #2: BannedError → capture with errorClass "banned", then redirect
+  it("BannedError → capture{errorClass:'banned', handled:true} перед redirect", async () => {
+    const action = createAction(() => {
+      throw new BannedError();
+    }, "bannedAction");
+
+    let thrownDigest: string | undefined;
+    try {
+      await action(undefined);
+    } catch (e) {
+      thrownDigest = (e as { digest?: string }).digest;
+    }
+
+    // The redirect fires (as in the forced-logout tests)
+    expect(thrownDigest).toBe("NEXT_REDIRECT;/auth/forced-logout");
+
+    // But the error was captured BEFORE the redirect
+    const errorRecords = mem.records.filter((r) => r.kind === "error");
+    expect(errorRecords).toHaveLength(1);
+    expect(errorRecords[0]).toMatchObject({
+      kind: "error",
+      errorClass: "banned",
+      handled: true,
+    });
+  });
+
+  // Named Risk #3: ZodValidationError → outcome metric "validation" + error capture
+  it("ZodValidationError → outcome=validation в метрике и capture ошибки", async () => {
+    const action = createAction(() => {
+      throw new ZodValidationError({ field: "обязательно" });
+    }, "validationAction");
+
+    const result = await action(undefined);
+    expect(result).toMatchObject({
+      success: false,
+      code: "validation",
+      fieldErrors: { field: "обязательно" },
+    });
+
+    const errorRecords = mem.records.filter((r) => r.kind === "error");
+    expect(errorRecords).toHaveLength(1);
+    expect(errorRecords[0]).toMatchObject({
+      kind: "error",
+      errorClass: "validation",
+    });
+
+    const completed = metricsOf(mem.records, "action.completed");
+    expect(completed).toHaveLength(1);
+    expect(completed[0]?.attributes).toMatchObject({
+      action: "validationAction",
+      outcome: "validation",
+    });
+  });
 });
