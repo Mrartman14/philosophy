@@ -11,6 +11,7 @@ import { StatusBanner } from "@/components/permission/status-banner";
 import { ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
+import { WebVitalsReporter } from "@/services/observability/web-vitals-reporter";
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
 import { getBanSignal, getMe, type MaybeMe } from "@/utils/me";
 
@@ -82,6 +83,7 @@ export default async function RootLayout({
           <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
             {children}
           </main>
+          <WebVitalsReporter />
           <UpdatePrompt />
           <Suspense>
             <YandexMetrika />
