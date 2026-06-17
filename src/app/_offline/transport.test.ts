@@ -1,6 +1,19 @@
 // src/app/_offline/transport.test.ts
-import { describe, it, expect, afterEach, vi } from "vitest";
+import { describe, it, expect, afterEach, vi, beforeEach } from "vitest";
 
+const { histogram, increment } = vi.hoisted(() => ({
+  histogram: vi.fn(),
+  increment: vi.fn(),
+}));
+
+vi.mock("@/services/observability/core/facade", () => ({
+  metrics: {
+    histogram,
+    increment,
+  },
+}));
+
+import { M } from "@/services/observability/core/names";
 import type { OutboxCommand } from "@/services/offline/contract/storage";
 
 import { offlineTransport } from "./transport";
@@ -107,6 +120,51 @@ describe("offlineTransport", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/offline/annotations",
       expect.objectContaining({ method: "POST", credentials: "same-origin" }),
+    );
+  });
+});
+
+const obsCmd = {
+  clientId: "c1",
+  entity: "annotation",
+  op: "create",
+  payload: { x: 1 },
+} as unknown as Parameters<typeof offlineTransport>[0];
+
+describe("offlineTransport observability", () => {
+  beforeEach(() => {
+    histogram.mockClear();
+    increment.mockClear();
+  });
+
+  it("records api.duration on success", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(JSON.stringify({ data: { id: "s1" } }), { status: 200 }),
+        ),
+      ),
+    );
+    const res = await offlineTransport(obsCmd);
+    expect(res).toEqual({ ok: true, serverId: "s1" });
+    expect(histogram).toHaveBeenCalledWith(
+      M.apiDuration,
+      expect.any(Number),
+      { surface: "offline.transport", status: 200 },
+    );
+  });
+
+  it("records api.error and rethrows on network throw", async () => {
+    const boom = new TypeError("fetch failed");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.reject(boom)),
+    );
+    await expect(offlineTransport(obsCmd)).rejects.toBe(boom);
+    expect(increment).toHaveBeenCalledWith(
+      M.apiError,
+      { surface: "offline.transport", class: "network" },
     );
   });
 });
