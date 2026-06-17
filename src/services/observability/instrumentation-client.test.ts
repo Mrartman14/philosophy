@@ -15,7 +15,7 @@ function makeTarget() {
   return {
     handlers,
     addEventListener: (type: string, h: Handler) => handlers.set(type, h),
-  };
+  } as unknown as Window & { handlers: Map<string, Handler> };
 }
 
 beforeEach(() => capture.mockClear());
@@ -35,7 +35,7 @@ describe("registerClientErrorHandlers", () => {
     const handler = t.handlers.get("error");
     expect(handler).toBeDefined();
     handler?.({ error: err, message: "window-boom" });
-    expect(capture).toHaveBeenCalledWith(err, { handled: false });
+    expect(capture).toHaveBeenCalledWith(err, { handled: false, attributes: { kind: "window.error" } });
   });
 
   it("falls back to the event message when error is absent", () => {
@@ -44,7 +44,7 @@ describe("registerClientErrorHandlers", () => {
     const handler = t.handlers.get("error");
     expect(handler).toBeDefined();
     handler?.({ error: null, message: "msg-only" });
-    expect(capture).toHaveBeenCalledWith("msg-only", { handled: false });
+    expect(capture).toHaveBeenCalledWith("msg-only", { handled: false, attributes: { kind: "window.error" } });
   });
 
   it("captures unhandled promise rejections via reason", () => {
@@ -54,6 +54,6 @@ describe("registerClientErrorHandlers", () => {
     const handler = t.handlers.get("unhandledrejection");
     expect(handler).toBeDefined();
     handler?.({ reason });
-    expect(capture).toHaveBeenCalledWith(reason, { handled: false });
+    expect(capture).toHaveBeenCalledWith(reason, { handled: false, attributes: { kind: "unhandledrejection" } });
   });
 });
