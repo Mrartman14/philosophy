@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 
 import type { components } from "@/api/schema";
+import { errors, metrics, M, setServerActor } from "@/services/observability";
 
 /**
  * Источник истины о текущем пользователе.
@@ -49,7 +50,10 @@ const NO_AUTH: AuthState = { me: null, banned: false };
 const getAuthState = cache(async (): Promise<AuthState> => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  if (!token) return NO_AUTH;
+  if (!token) {
+    metrics.increment(M.authResolve, { result: "guest" });
+    return NO_AUTH;
+  }
 
   const res = await fetch(`${API_URL}/api/me`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -64,13 +68,18 @@ const getAuthState = cache(async (): Promise<AuthState> => {
     } catch {
       // тело не JSON / пустое — трактуем как небанный 403 (обычный гость)
     }
-    return { me: null, banned: code === "BANNED" };
+    const banned = code === "BANNED";
+    metrics.increment(M.authResolve, { result: banned ? "banned" : "guest" });
+    return { me: null, banned };
   }
   if (res.status === 401 || res.status === 404) {
+    metrics.increment(M.authResolve, { result: "guest" });
     return NO_AUTH;
   }
   if (!res.ok) {
-    throw new Error(`getMe(): backend returned ${res.status}`);
+    const err = new Error(`getMe(): backend returned ${res.status}`);
+    errors.capture(err, { errorClass: "backend.5xx", handled: false });
+    throw err;
   }
 
   const json: unknown = await res.json();
@@ -88,10 +97,17 @@ const getAuthState = cache(async (): Promise<AuthState> => {
     !("status" in candidate) ||
     !("capabilities" in candidate)
   ) {
-    throw new Error("getMe(): backend returned malformed payload");
+    const err = new Error("getMe(): backend returned malformed payload");
+    errors.capture(err, { errorClass: "unexpected", handled: false });
+    throw err;
   }
 
-  return { me: candidate as Me, banned: false };
+  const me = candidate as Me;
+  setServerActor(me.id, me.role);
+  metrics.increment(M.authResolve, {
+    result: me.status === "active" ? "active" : "suspended",
+  });
+  return { me, banned: false };
 });
 
 /** Текущий пользователь или `null` (гость). Контракт не изменился. */
