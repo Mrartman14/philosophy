@@ -1,5 +1,5 @@
 // src/services/observability/core/types.ts
-// Изоморфные типы наблюдаемости. НЕТ 'server-only' — общий для server/client/sw.
+// Изоморфные типы наблюдаемости. Без server-only — общий для server/client/sw.
 // «Отсутствие» поля моделируется как `| null` (exactOptionalPropertyTypes).
 
 export type Attributes = Record<string, string | number | boolean | null>;
