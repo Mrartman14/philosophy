@@ -17,7 +17,7 @@ interface Props {
   canReact: boolean;
 }
 
-interface ReactionPatch {
+export interface ReactionPatch {
   axis: ReactionAxis;
   value: number;
   isSame: boolean;
@@ -41,7 +41,7 @@ function axisCount(summary: ReactionSummary | undefined, axis: ReactionAxis): st
 }
 
 /** Apply a reaction patch to the current MyReactions state, respecting exactOptionalPropertyTypes. */
-function applyReactionPatch(state: MyReactions | undefined, patch: ReactionPatch): MyReactions {
+export function applyReactionPatch(state: MyReactions | undefined, patch: ReactionPatch): MyReactions {
   const { axis, value, isSame } = patch;
   if (axis === "insight") {
     const next: MyReactions = {};
