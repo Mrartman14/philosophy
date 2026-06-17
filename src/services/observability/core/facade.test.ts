@@ -2,9 +2,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { createMemorySink } from "../adapters/memory-adapter";
+
+import { errors, log, metrics } from "./facade";
 import { setContextProvider, setSink, baseContext } from "./registry";
 import type { ErrorRecord, LogRecord, MetricRecord } from "./types";
-import { errors, log, metrics } from "./facade";
 
 const mem = createMemorySink();
 
@@ -34,6 +35,8 @@ describe("log", () => {
   });
 
   it("уровни debug/warn/error прокидываются", () => {
+    // log.debug — это наш Logger, не RTL debug(); правило ложно срабатывает.
+    // eslint-disable-next-line testing-library/no-debugging-utils
     log.debug("d");
     log.warn("w");
     log.error("e");

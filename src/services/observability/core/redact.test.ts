@@ -1,8 +1,8 @@
 // src/services/observability/core/redact.test.ts
 import { describe, it, expect } from "vitest";
 
-import type { Attributes } from "./types";
 import { DENY_KEY_PATTERNS, redactAttributes } from "./redact";
+import type { Attributes } from "./types";
 
 describe("redactAttributes", () => {
   it("выбрасывает PII-ключи (case-insensitive), сохраняет примитивы", () => {

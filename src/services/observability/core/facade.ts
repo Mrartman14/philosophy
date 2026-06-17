@@ -1,7 +1,7 @@
 // src/services/observability/core/facade.ts
 // Потребительский API наблюдаемости: log / errors / metrics. Изоморфен.
 import { readServerConfig } from "../config";
-import type { Attributes, Level } from "./types";
+
 import type {
   CaptureOptions,
   EndTimer,
@@ -9,9 +9,10 @@ import type {
   Logger,
   Metrics,
 } from "./ports";
-import { getContext, getSink } from "./registry";
 import { redactAttributes } from "./redact";
+import { getContext, getSink } from "./registry";
 import { classifyError } from "./taxonomy";
+import type { Attributes, Level } from "./types";
 
 // sampleRate читаем лениво на каждый emit — конфиг может меняться в тестах через env.
 function sampleRate(): number {
@@ -34,10 +35,10 @@ function emitLog(level: Level, message: string, attributes?: Attributes): void {
 }
 
 export const log: Logger = {
-  debug: (m, a) => emitLog("debug", m, a),
-  info: (m, a) => emitLog("info", m, a),
-  warn: (m, a) => emitLog("warn", m, a),
-  error: (m, a) => emitLog("error", m, a),
+  debug: (m, a) => { emitLog("debug", m, a); },
+  info: (m, a) => { emitLog("info", m, a); },
+  warn: (m, a) => { emitLog("warn", m, a); },
+  error: (m, a) => { emitLog("error", m, a); },
 };
 
 function causeOf(
@@ -97,9 +98,9 @@ function emitMetric(
 
 export const metrics: Metrics = {
   increment: (metric, attributes, value) =>
-    emitMetric(metric, "counter", value ?? 1, "count", attributes),
+    { emitMetric(metric, "counter", value ?? 1, "count", attributes); },
   histogram: (metric, value, attributes) =>
-    emitMetric(metric, "histogram", value, "ms", attributes),
+    { emitMetric(metric, "histogram", value, "ms", attributes); },
   startTimer: (metric, attributes): EndTimer => {
     const start = Date.now();
     return (extra?: Attributes) => {

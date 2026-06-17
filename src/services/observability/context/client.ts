@@ -1,7 +1,7 @@
 // src/services/observability/context/client.ts
 // Клиентский контекст: модульный синглтон на загрузку страницы. Без server-only.
-import type { ContextSnapshot } from "../core/types";
 import { baseContext, type ContextProvider } from "../core/registry";
+import type { ContextSnapshot } from "../core/types";
 
 function resolveEnv(): ContextSnapshot["env"] {
   const raw = process.env.NODE_ENV;

@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ObservabilityConfig } from "../config";
 import { baseContext } from "../core/registry";
 import type { ErrorRecord, LogRecord } from "../core/types";
+
 import { createConsoleSink } from "./console-adapter";
 
 function cfg(env: ObservabilityConfig["env"]): ObservabilityConfig {
@@ -68,14 +69,14 @@ describe("createConsoleSink prod", () => {
 
 describe("createConsoleSink dev", () => {
   it("error-запись идёт в console.error", () => {
-    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const err = vi.spyOn(console, "error").mockImplementation((..._args) => { void _args; });
     const sink = createConsoleSink(cfg("development"));
     sink.emit(errRec);
     expect(err).toHaveBeenCalledTimes(1);
   });
 
   it("log-запись уровня info идёт в console.info", () => {
-    const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    const info = vi.spyOn(console, "info").mockImplementation((..._args) => { void _args; });
     const sink = createConsoleSink(cfg("development"));
     sink.emit(logRec);
     expect(info).toHaveBeenCalledTimes(1);

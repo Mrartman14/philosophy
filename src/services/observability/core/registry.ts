@@ -1,7 +1,7 @@
 // src/services/observability/core/registry.ts
 // Реестр активного sink и провайдера контекста. Изоморфный модуль-синглтон.
-import type { ContextSnapshot } from "./types";
 import type { ObservabilitySink } from "./ports";
+import type { ContextSnapshot } from "./types";
 
 export interface ContextProvider {
   getContext(): ContextSnapshot;
@@ -34,7 +34,7 @@ function resolveEnv(): ContextSnapshot["env"] {
 // Дефолтный sink — безопасный no-op (до initServer/Client он не должен бросать).
 const defaultSink: ObservabilitySink = {
   name: "noop",
-  emit: () => {},
+  emit(_record) { /* no-op */ void _record; },
 };
 
 const defaultProvider: ContextProvider = {

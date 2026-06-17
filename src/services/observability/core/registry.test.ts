@@ -1,7 +1,6 @@
 // src/services/observability/core/registry.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import type { ObservabilityRecord } from "./types";
 import type { ObservabilitySink } from "./ports";
 import {
   baseContext,
@@ -11,6 +10,7 @@ import {
   setSink,
   type ContextProvider,
 } from "./registry";
+import type { ObservabilityRecord } from "./types";
 
 function makeSink(): ObservabilitySink {
   const records: ObservabilityRecord[] = [];
@@ -46,14 +46,14 @@ describe("sink registry", () => {
   it("по умолчанию getSink() безопасен (no-op emit не бросает)", () => {
     const sink = getSink();
     expect(() =>
-      sink.emit({
+      { sink.emit({
         kind: "log",
         level: "info",
         message: "m",
         attributes: {},
         context: baseContext("test", "server"),
         timestamp: 0,
-      }),
+      }); },
     ).not.toThrow();
     expect(typeof sink.name).toBe("string");
   });

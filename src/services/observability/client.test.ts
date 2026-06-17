@@ -1,7 +1,8 @@
 // src/services/observability/client.test.ts
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("./core/registry", async (orig) => {
   const actual = await orig<typeof import("./core/registry")>();
@@ -9,12 +10,12 @@ vi.mock("./core/registry", async (orig) => {
 });
 
 vi.mock("./adapters/beacon-adapter", () => ({
-  createBeaconSink: vi.fn(() => ({ name: "beacon", emit: () => {} })),
+  createBeaconSink: vi.fn(() => ({ name: "beacon", emit(_r: unknown) { void _r; } })),
 }));
 
-import { setContextProvider, setSink } from "./core/registry";
-import { clientContextProvider } from "./context/client";
 import * as barrel from "./client";
+import { clientContextProvider } from "./context/client";
+import { setContextProvider, setSink } from "./core/registry";
 
 const HERE = path.resolve(__dirname);
 

@@ -4,5 +4,5 @@ import type { ObservabilitySink } from "../core/ports";
 
 export const noopSink: ObservabilitySink = {
   name: "noop",
-  emit: () => {},
+  emit(_record) { /* no-op */ void _record; },
 };

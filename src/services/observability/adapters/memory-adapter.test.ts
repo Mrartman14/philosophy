@@ -3,8 +3,9 @@ import { describe, it, expect } from "vitest";
 
 import { baseContext } from "../core/registry";
 import type { LogRecord } from "../core/types";
-import { noopSink } from "./noop-adapter";
+
 import { createMemorySink } from "./memory-adapter";
+import { noopSink } from "./noop-adapter";
 
 const rec: LogRecord = {
   kind: "log",
@@ -18,7 +19,7 @@ const rec: LogRecord = {
 describe("noopSink", () => {
   it("имеет имя и не бросает на emit", () => {
     expect(noopSink.name).toBe("noop");
-    expect(() => noopSink.emit(rec)).not.toThrow();
+    expect(() => { noopSink.emit(rec); }).not.toThrow();
   });
 });
 
@@ -32,6 +33,7 @@ describe("createMemorySink", () => {
   });
 
   it("clear() очищает буфер на месте", () => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const { sink, records, clear } = createMemorySink();
     sink.emit(rec);
     clear();
