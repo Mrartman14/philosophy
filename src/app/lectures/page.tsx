@@ -46,7 +46,7 @@ export default async function LecturesPage({ searchParams }: Props) {
       />
       <LectureList items={items} tagsByLectureId={tagsByLectureId} />
       {total > limit && (
-        <Pagination basePath="/lectures" offset={offset} limit={limit} total={total} />
+        <Pagination basePath="/lectures" offset={offset} limit={limit} total={total} searchParams={sp} />
       )}
     </div>
   );
