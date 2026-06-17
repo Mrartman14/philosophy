@@ -10,6 +10,8 @@
 import { redirect } from "next/navigation";
 import { z, type ZodType } from "zod";
 
+import { errors, metrics, M, classifyError } from "@/services/observability";
+
 import { readIdempotencyKey } from "./idempotency";
 import { BannedError, ForbiddenError } from "./permissions";
 
@@ -66,38 +68,67 @@ export interface FormActionContext {
   idempotencyKey: string | undefined;
 }
 
+/** Инструментирует ветку catch: re-throw Next-внутренних ошибок, capture
+ * остальных с классификацией. Возвращает outcome-строку для action.completed.
+ * Контроль-флоу повторяет исходный: Banned → redirect, Next-internal → throw. */
+function captureActionError(error: unknown, name: string): string {
+  if (error instanceof BannedError) {
+    errors.capture(error, { errorClass: "banned", handled: true, attributes: { action: name } });
+    redirect("/auth/forced-logout");
+  }
+  if (isNextInternalError(error)) throw error;
+  const { errorClass, backendCode } = classifyError(error);
+  errors.capture(error, {
+    errorClass,
+    ...(backendCode !== null ? { backendCode } : {}),
+    handled: true,
+    attributes: { action: name },
+  });
+  return errorClass;
+}
+
 export function createAction<TInput, TOutput>(
-  fn: (input: TInput, ctx: FormActionContext) => Promise<TOutput>
+  fn: (input: TInput, ctx: FormActionContext) => Promise<TOutput>,
+  name = "anonymous"
 ): (input: TInput, idempotencyKey?: string) => Promise<ActionResult<TOutput>> {
   return async (input: TInput, idempotencyKey?: string) => {
+    const end = metrics.startTimer(M.actionDuration, { action: name });
     try {
       const data = await fn(input, { idempotencyKey });
+      metrics.increment(M.actionCompleted, { action: name, outcome: "success" });
       return { success: true, data };
     } catch (error) {
-      if (error instanceof BannedError) redirect("/auth/forced-logout");
-      if (isNextInternalError(error)) throw error;
+      const outcome = captureActionError(error, name);
+      metrics.increment(M.actionCompleted, { action: name, outcome });
       return toResult<TOutput>(error);
+    } finally {
+      end();
     }
   };
 }
 
 export function createFormAction<TOutput>(
-  fn: (formData: FormData, ctx: FormActionContext) => Promise<TOutput>
+  fn: (formData: FormData, ctx: FormActionContext) => Promise<TOutput>,
+  name = "anonymous"
 ): (
   prevState: ActionResult<TOutput>,
   formData: FormData
 ) => Promise<ActionResult<TOutput>> {
   return async (_prevState: ActionResult<TOutput>, formData: FormData) => {
+    const end = metrics.startTimer(M.actionDuration, { action: name });
     try {
       const ctx: FormActionContext = {
         idempotencyKey: readIdempotencyKey(formData),
       };
       const data = await fn(formData, ctx);
+      metrics.increment(M.actionCompleted, { action: name, outcome: "success" });
       return { success: true, data };
     } catch (error) {
-      if (error instanceof BannedError) redirect("/auth/forced-logout");
-      if (isNextInternalError(error)) throw error;
+      const outcome = captureActionError(error, name);
+      metrics.increment(M.actionCompleted, { action: name, outcome });
       return toResult<TOutput>(error);
+    } finally {
+      end();
     }
   };
 }

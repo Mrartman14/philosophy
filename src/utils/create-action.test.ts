@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { z } from "zod";
 
 vi.mock("next/navigation", () => ({
@@ -8,6 +8,11 @@ vi.mock("next/navigation", () => ({
     throw err;
   }),
 }));
+
+import { createMemorySink } from "@/services/observability/adapters/memory-adapter";
+import { noopSink } from "@/services/observability/adapters/noop-adapter";
+import { setSink } from "@/services/observability/core/registry";
+import type { ObservabilityRecord } from "@/services/observability/core/types";
 
 import {
   createAction,
@@ -217,5 +222,62 @@ describe("forced logout on BannedError", () => {
     });
     const result = await action({ success: false, error: "" }, new FormData());
     expect(result).toMatchObject({ success: false, code: "forbidden" });
+  });
+});
+
+// ---------- Observability tests ----------
+
+const mem = createMemorySink();
+
+beforeEach(() => {
+  mem.clear();
+  setSink(mem.sink);
+});
+
+afterAll(() => {
+  setSink(noopSink);
+});
+
+function metricsOf(records: ObservabilityRecord[], metric: string) {
+  return records.filter((r) => r.kind === "metric" && r.metric === metric);
+}
+
+describe("createAction observability", () => {
+  it("эмитит action.duration и action.completed{outcome:success} при успехе", async () => {
+    const action = createAction((n: number) => Promise.resolve(n + 1), "bumpNumber");
+    const result = await action(41);
+    expect(result).toEqual({ success: true, data: 42 });
+
+    const completed = metricsOf(mem.records, "action.completed");
+    expect(completed).toHaveLength(1);
+    expect(completed[0]?.attributes).toMatchObject({
+      action: "bumpNumber",
+      outcome: "success",
+    });
+    expect(metricsOf(mem.records, "action.duration")).toHaveLength(1);
+  });
+
+  it("captures классифицированную ошибку и эмитит outcome=errorClass при отказе", async () => {
+    const action = createAction(() => {
+      throw new ForbiddenError("role");
+    }, "denyAction");
+    const result = await action(undefined);
+    expect(result).toEqual({
+      success: false,
+      error: "Forbidden: role",
+      code: "forbidden",
+    });
+
+    const captured = mem.records.filter((r) => r.kind === "error");
+    expect(captured).toHaveLength(1);
+    expect(captured[0]).toMatchObject({
+      kind: "error",
+      errorClass: "forbidden.role",
+    });
+    const completed = metricsOf(mem.records, "action.completed");
+    expect(completed[0]?.attributes).toMatchObject({
+      action: "denyAction",
+      outcome: "forbidden.role",
+    });
   });
 });

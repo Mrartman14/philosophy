@@ -9,6 +9,7 @@ import { serverContextProvider } from "./context/server";
 import { setContextProvider, setSink } from "./core/registry";
 
 export { log, errors, metrics } from "./core/facade";
+export { classifyError } from "./core/taxonomy";
 export * from "./core/types";
 export { M, webVital } from "./core/names";
 export { setServerActor, setServerRoute } from "./context/server";
