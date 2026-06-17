@@ -17,5 +17,5 @@ export { setServerActor, setServerRoute } from "./context/server";
 export function initServerObservability(): void {
   const cfg = readServerConfig();
   setContextProvider(serverContextProvider);
-  setSink(cfg.adapter === "console" ? createConsoleSink(cfg) : noopSink);
+  setSink(cfg.enabled && cfg.adapter === "console" ? createConsoleSink(cfg) : noopSink);
 }

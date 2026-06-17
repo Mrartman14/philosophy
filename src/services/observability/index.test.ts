@@ -12,8 +12,9 @@ vi.mock("./core/registry", async (orig) => {
   return { ...actual, setSink: vi.fn(actual.setSink), setContextProvider: vi.fn() };
 });
 
-import { setContextProvider, setSink } from "./core/registry";
 import { serverContextProvider } from "./context/server";
+import { setContextProvider, setSink } from "./core/registry";
+
 import * as barrel from "./index";
 
 beforeEach(() => {
@@ -36,6 +37,7 @@ describe("server barrel exports", () => {
 
 describe("initServerObservability", () => {
   it("adapter=console → подключает console-sink + serverContextProvider", () => {
+    vi.stubEnv("OBSERVABILITY_ENABLED", "true");
     vi.stubEnv("OBSERVABILITY_ADAPTER", "console");
     vi.stubEnv("NODE_ENV", "production");
     barrel.initServerObservability();
@@ -46,6 +48,14 @@ describe("initServerObservability", () => {
 
   it("adapter=noop → подключает noop-sink", () => {
     vi.stubEnv("OBSERVABILITY_ADAPTER", "noop");
+    barrel.initServerObservability();
+    const sink = vi.mocked(setSink).mock.calls.at(-1)?.[0];
+    expect(sink?.name).toBe("noop");
+  });
+
+  it("enabled=false + adapter=console → noop sink (мастер-флаг)", () => {
+    vi.stubEnv("OBSERVABILITY_ENABLED", "");
+    vi.stubEnv("OBSERVABILITY_ADAPTER", "console");
     barrel.initServerObservability();
     const sink = vi.mocked(setSink).mock.calls.at(-1)?.[0];
     expect(sink?.name).toBe("noop");
