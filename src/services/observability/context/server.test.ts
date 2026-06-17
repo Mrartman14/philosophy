@@ -1,10 +1,19 @@
 // src/services/observability/context/server.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// React cache() в Vitest заменяем на identity — мемоизация-холдер работает как обычная функция.
+// Реальный мемоайзер (не identity): один слот на модуль-инстанс. В Vitest модули
+// изолированы по файлу, поэтому это эмулирует один per-request scope для всего файла.
 vi.mock("react", async (orig) => {
   const actual = await orig<typeof import("react")>();
-  return { ...actual, cache: <T,>(fn: T): T => fn };
+  const cache = <A extends unknown[], R>(fn: (...a: A) => R): ((...a: A) => R) => {
+    let value: R;
+    let has = false;
+    return (...a: A): R => {
+      if (!has) { value = fn(...a); has = true; }
+      return value;
+    };
+  };
+  return { ...actual, cache };
 });
 
 import {

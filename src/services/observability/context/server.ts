@@ -2,11 +2,12 @@
 import "server-only";
 
 // Серверный контекст наблюдаемости: per-request холдер, мемоизированный React cache().
-import { cache } from "react";
 import { createHmac, randomUUID } from "node:crypto";
 
-import type { ContextSnapshot } from "../core/types";
+import { cache } from "react";
+
 import { baseContext, type ContextProvider } from "../core/registry";
+import type { ContextSnapshot } from "../core/types";
 
 function resolveEnv(): ContextSnapshot["env"] {
   const raw = process.env.NODE_ENV;
@@ -22,25 +23,14 @@ export function hashActor(id: string): string {
   return createHmac("sha256", salt).update(id).digest("hex").slice(0, 16);
 }
 
-// Держатель per-request контекста. cache() гарантирует один объект на запрос.
-// Внутренняя функция самомемоизируется через замыкание: первый вызов строит объект,
-// последующие — возвращают тот же. В продакшне cache() сбрасывает замыкание на каждый
-// новый запрос; в тестах (cache = identity) работает как модульный синглтон.
-const holder = cache(
-  (() => {
-    let snapshot: ContextSnapshot | undefined;
-    return (): ContextSnapshot => {
-      if (!snapshot) {
-        snapshot = {
-          ...baseContext(resolveEnv(), "server"),
-          requestId: randomUUID(),
-          release: process.env.OBSERVABILITY_RELEASE ?? null,
-        };
-      }
-      return snapshot;
-    };
-  })(),
-);
+// Per-request holder. React cache() returns the SAME object within one request,
+// so setServerActor/setServerRoute mutations stick for that request; a fresh
+// request gets a fresh object (no cross-request leak).
+const holder = cache((): ContextSnapshot => ({
+  ...baseContext(resolveEnv(), "server"),
+  requestId: randomUUID(),
+  release: process.env.OBSERVABILITY_RELEASE ?? null,
+}));
 
 export function getServerContext(): ContextSnapshot {
   return holder();
