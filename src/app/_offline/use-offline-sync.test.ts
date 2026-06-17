@@ -1,10 +1,8 @@
 // src/app/_offline/use-offline-sync.test.ts
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-import { createMemorySink } from "@/services/observability/adapters/memory-adapter";
 import { M } from "@/services/observability/core/names";
-import { setSink } from "@/services/observability/core/registry";
-import type { ObservabilityRecord, MetricRecord } from "@/services/observability/core/types";
+import { withMemorySink } from "@/test/observability";
 
 // drainOutbox мокаем: тест проверяет ИНСТРУМЕНТАЦИЮ root'а, а не ядро дренажа.
 const drainMock = vi.hoisted(() => vi.fn());
@@ -16,14 +14,9 @@ vi.mock("@/services/offline/store/outbox", () => ({ listOutboxByStatus: listMock
 
 import { startOfflineSync } from "./use-offline-sync";
 
-let records: ObservabilityRecord[];
-const metricsOf = (name: string): MetricRecord[] =>
-  records.filter((r): r is MetricRecord => r.kind === "metric" && r.metric === name);
+const { metricsOf } = withMemorySink();
 
 beforeEach(() => {
-  const mem = createMemorySink();
-  records = mem.records;
-  setSink(mem.sink);
   drainMock.mockReset();
   listMock.mockReset();
   listMock.mockReturnValue(Promise.resolve([]));

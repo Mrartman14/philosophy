@@ -4,7 +4,9 @@ import { getSink } from "../core/registry";
 import type { ObservabilityRecord } from "../core/types";
 
 import { createTokenBucket } from "./rate-limit";
-import { validateBatch, MAX_BYTES } from "./validate";
+import { validateBatch } from "./validate";
+
+const MAX_BYTES = 64 * 1024;
 
 export interface IngestInput {
   sessionId: string | null;

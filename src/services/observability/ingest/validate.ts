@@ -7,7 +7,7 @@ import { redactAttributes } from "../core/redact";
 import type { Attributes, ObservabilityRecord } from "../core/types";
 
 export const MAX_BATCH = 50;
-export const MAX_BYTES = 64 * 1024;
+const MAX_BYTES = 64 * 1024;
 
 export type IngestResult =
   | { ok: true; records: ObservabilityRecord[] }

@@ -1,17 +1,12 @@
 import { describe, it, expect } from "vitest";
 
+import { baseContext } from "@/services/observability/core/registry";
+
 import { validateBatch, MAX_BATCH } from "./validate";
 
-const ctx = {
-  env: "test" as const,
-  runtime: "client" as const,
-  release: null,
-  requestId: null,
-  sessionId: "s-1",
-  route: "/x",
-  actorHash: null,
-  actorRole: null,
-};
+const MAX_BYTES = 64 * 1024; // mirrors the private constant in validate.ts
+
+const ctx = { ...baseContext("test", "client"), sessionId: "s-1", route: "/x" };
 
 function logRec(attributes: Record<string, string | number | boolean | null>) {
   return {

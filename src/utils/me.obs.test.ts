@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { createMemorySink } from "@/services/observability/adapters/memory-adapter";
-import { setSink } from "@/services/observability/core/registry";
+import { withMemorySink } from "@/test/observability";
 
 const setServerActor = vi.fn();
 vi.mock("@/services/observability/server", () => ({
@@ -17,18 +16,16 @@ vi.mock("react", async (importOriginal) => {
   return { ...actual, cache: <T,>(fn: T) => fn };
 });
 
-const mem = createMemorySink();
+const { metricsOf, records } = withMemorySink();
 
 beforeEach(() => {
-  mem.clear();
-  setSink(mem.sink);
   setServerActor.mockClear();
   cookieGet.mockReset();
   vi.unstubAllGlobals();
 });
 
 function metric(name: string) {
-  return mem.records.filter((r) => r.kind === "metric" && r.metric === name);
+  return metricsOf(name);
 }
 
 describe("getAuthState observability", () => {
@@ -76,7 +73,7 @@ describe("getAuthState observability", () => {
     );
     const { getMe } = await import("./me");
     await expect(getMe()).rejects.toThrow(/503/);
-    const errs = mem.records.filter((r) => r.kind === "error");
+    const errs = records.filter((r) => r.kind === "error");
     expect(errs[0]).toMatchObject({ errorClass: "backend.5xx", handled: false });
   });
 
@@ -94,7 +91,7 @@ describe("getAuthState observability", () => {
     );
     const { getMe } = await import("./me");
     await expect(getMe()).rejects.toThrow(/malformed/);
-    const errs = mem.records.filter((r) => r.kind === "error");
+    const errs = records.filter((r) => r.kind === "error");
     expect(errs[0]).toMatchObject({ errorClass: "unexpected", handled: false, attributes: { reason: "malformed_me_payload" } });
   });
 

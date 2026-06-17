@@ -1,20 +1,12 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
-import type { ObservabilityRecord } from "../core/types";
+import { baseContext } from "@/services/observability/core/registry";
+import type { ObservabilityRecord } from "@/services/observability/core/types";
 
 import { createIngestHandler } from "./handle-ingest";
 import { MAX_BATCH } from "./validate";
 
-const ctx = {
-  env: "test" as const,
-  runtime: "client" as const,
-  release: null,
-  requestId: null,
-  sessionId: "s-1",
-  route: "/x",
-  actorHash: null,
-  actorRole: null,
-};
+const ctx = { ...baseContext("test", "client"), sessionId: "s-1", route: "/x" };
 
 function logText(attributes: Record<string, string | number | boolean | null>) {
   return JSON.stringify([

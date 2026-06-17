@@ -1,20 +1,14 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 
-import { createMemorySink } from "@/services/observability/adapters/memory-adapter";
-import { setSink } from "@/services/observability/core/registry";
+import { withMemorySink } from "@/test/observability";
 
 import type { Me } from "./me";
 import { requireActive, requireCapability, ForbiddenError } from "./permissions";
 
-const mem = createMemorySink();
-
-beforeEach(() => {
-  mem.clear();
-  setSink(mem.sink);
-});
+const { metricsOf } = withMemorySink();
 
 function denied() {
-  return mem.records.filter((r) => r.kind === "metric" && r.metric === "rbac.denied");
+  return metricsOf("rbac.denied");
 }
 
 const activeMe: Me = {
