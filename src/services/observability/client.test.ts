@@ -53,8 +53,14 @@ describe("initClientObservability", () => {
   });
 });
 
+// Поверхностный ранний предупреждающий guard: матчит прямой `import "server-only"`
+// в перечисленных модулях client-графа. НАСТОЯЩАЯ гарантия client-safe — `next build`
+// (server-only бросает при попадании в client-бандл) + ESLint G4. Полную транзитивную
+// проверку здесь не делаем.
 describe("client safety", () => {
   it("ни client.ts, ни его прямые импорты НЕ тянут server-only", () => {
+    // matches:  import "server-only";   /   import 'server-only'   /   from "server-only"
+    const SERVER_ONLY_IMPORT = /(?:import|from)\s+["']server-only["']/;
     // Файлы, которые client-барель импортирует (статически).
     const files = [
       "client.ts",
@@ -73,7 +79,7 @@ describe("client safety", () => {
     for (const rel of files) {
       const src = readFileSync(path.join(HERE, rel), "utf8");
       expect(src, `${rel} must NOT import server-only`).not.toMatch(
-        /["']server-only["']/,
+        SERVER_ONLY_IMPORT,
       );
     }
   });
