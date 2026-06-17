@@ -1,5 +1,6 @@
 // src/app/documents/my/page.tsx
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
   canCreateDocument,
   getMyDocuments,
@@ -23,6 +24,7 @@ export default async function MyDocumentsPage({ searchParams }: Props) {
   const { offset } = await searchParams;
   const result = await getMyDocuments({ offset: parseNonNegativeInt(offset, 0), limit: 20 });
   const canCreate = canCreateDocument(me);
+  const astSchema = canCreate ? await getAstSchema() : null;
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
@@ -38,7 +40,7 @@ export default async function MyDocumentsPage({ searchParams }: Props) {
               Создать документ
             </summary>
             <div className="mt-3">
-              <SchemaContextProvider>
+              <SchemaContextProvider initial={astSchema ?? undefined}>
                 <DocumentCreateForm />
               </SchemaContextProvider>
             </div>

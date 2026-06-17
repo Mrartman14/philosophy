@@ -2,38 +2,41 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { createPublicApiClient } from "@/api/client";
-
-import { loadSchema } from "./schema-cache";
+import { getAstSchemaAction } from "./schema-action";
+import { loadSchema, normalizeSchema } from "./schema-cache";
 import type { SchemaSnapshot, SchemaResponse } from "./types";
 
 const SchemaContext = createContext<SchemaSnapshot | null>(null);
 
-async function defaultFetcher(): Promise<SchemaResponse> {
-  const api = createPublicApiClient();
-  // /api/ast/schema only declares 200 in the OpenAPI schema,
-  // so openapi-fetch's typed `error` is `never` here.
-  const { data } = await api.GET("/api/ast/schema");
-  if (!data) throw new Error("schema fetch failed");
-  return data;
-}
-
 interface ProviderProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
-  /** Test seam — overrides the default api fetcher. */
+  /**
+   * Серверно-загруженная схема (предпочтительный путь). Когда передана —
+   * контекст гидрируется синхронно из неё, клиентского фетча нет.
+   */
+  initial?: SchemaResponse | undefined;
+  /**
+   * Фетчер для чисто-клиентских маунтов (диалоги без серверного родителя) и
+   * тест-шов. По умолчанию — server action getAstSchemaAction: даже без
+   * `initial` запрос уходит через сервер, а не браузер→бек.
+   */
   fetcher?: () => Promise<SchemaResponse>;
 }
 
 export function SchemaContextProvider({
   children,
   fallback = null,
-  fetcher = defaultFetcher,
+  initial,
+  fetcher = getAstSchemaAction,
 }: ProviderProps) {
-  const [snapshot, setSnapshot] = useState<SchemaSnapshot | null>(null);
+  const [snapshot, setSnapshot] = useState<SchemaSnapshot | null>(() =>
+    initial ? normalizeSchema(initial) : null,
+  );
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (initial) return; // уже гидрировано из серверного пропа
     let cancelled = false;
     loadSchema(fetcher)
       .then((s) => {
@@ -45,7 +48,7 @@ export function SchemaContextProvider({
     return () => {
       cancelled = true;
     };
-  }, [fetcher]);
+  }, [initial, fetcher]);
 
   if (error) {
     return <div role="alert">AST schema недоступна: {error.message}</div>;

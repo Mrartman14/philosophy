@@ -13,6 +13,10 @@
 
 export const Tags = {
   ANNOTATIONS: "annotations",
+  // Quasi-static схема AST-редактора (/api/ast/schema). Аналогично COMMENT_SCHEMA:
+  // меняется крайне редко, бек отдаёт с Cache-Control 1h — кешируем cross-request
+  // и инвалидируем отдельным тегом, не привязанным к мутациям контента.
+  AST_SCHEMA: "ast:schema",
   BANNERS: "banners",
   CANVASES: "canvas",
   COMMENTS: "comments",

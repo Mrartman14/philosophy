@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { Skeleton } from "@/components/ui";
 import { AnnotationsSection } from "@/features/annotations";
 import {
@@ -45,6 +46,8 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   const canDelete = canDeleteDocument(me, document);
   const showRevisions = canSeeRevisions(document);
   const isPrivateOwned = canEdit && document.visibility === "private";
+
+  const astSchema = canEdit ? await getAstSchema() : null;
 
   const canShare = canCreateShareLink(me, document);
   const [shareLinks, subscribed] = await Promise.all([
@@ -101,7 +104,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
           <h2 className="text-lg font-semibold">Редактирование</h2>
           <DocumentMetaForm document={document} />
-          <SchemaContextProvider>
+          <SchemaContextProvider initial={astSchema ?? undefined}>
             <DocumentEditForm document={document} />
           </SchemaContextProvider>
           {isPrivateOwned && document.id && (

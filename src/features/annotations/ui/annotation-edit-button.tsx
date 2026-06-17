@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import type { SchemaResponse } from "@/components/ast-editor";
 import { Button, Dialog } from "@/components/ui";
 
 import type { Annotation } from "../types";
@@ -12,17 +13,19 @@ import { AnnotationEditForm } from "./annotation-edit-form";
 
 interface Props {
   annotation: Annotation;
+  /** Серверно-загруженная схема AST: гидрируем провайдер без похода в бек. */
+  initial?: SchemaResponse | undefined;
 }
 
 /**
  * Кнопка «Редактировать» → модальный диалог с AnnotationEditForm. Версия для
  * optimistic-lock берётся из переданной аннотации (зафиксирована на момент
  * рендера секции; расхождение → 412 на сохранении). AstEditor требует
- * SchemaContextProvider — монтируем его внутри диалога (loadSchema кеширует
- * запрос между экземплярами). После успеха форма зовёт onSuccess → закрываем
- * диалог и router.refresh() (секция перечитывается на сервере).
+ * SchemaContextProvider — монтируем его внутри диалога; схему секция грузит
+ * серверно и передаёт пропом `initial` (браузер за ней не ходит). После успеха
+ * форма зовёт onSuccess → закрываем диалог и router.refresh().
  */
-export function AnnotationEditButton({ annotation }: Props) {
+export function AnnotationEditButton({ annotation, initial }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -34,6 +37,7 @@ export function AnnotationEditButton({ annotation }: Props) {
       title="Редактировать аннотацию"
     >
       <SchemaContextProvider
+        initial={initial}
         fallback={<p className="text-sm">Загрузка редактора…</p>}
       >
         <AnnotationEditForm

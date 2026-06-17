@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { getMe } from "@/utils/me";
 
 import {
@@ -83,9 +84,10 @@ export async function CommentSection({ lectureId, query }: Props) {
   const trimmed = (query ?? "").trim();
   const searching = trimmed.length > 0 && canSearchComments(me);
 
-  const [list, search] = await Promise.all([
+  const [list, search, astSchema] = await Promise.all([
     searching ? Promise.resolve(null) : getLectureComments(lectureId),
     searching ? searchComments(lectureId, trimmed) : Promise.resolve(null),
+    getAstSchema(),
   ]);
 
   const content = renderContent(searching, search, list, lectureId, schema);
@@ -106,8 +108,9 @@ export async function CommentSection({ lectureId, query }: Props) {
         получит схему после client-фетча. Чтобы read-only-контент был виден
         сразу (SSR + до загрузки схемы), тот же контент передаём как fallback.
         Provider — client component, дети — server (допустимо в App Router).
+        Схема гидрируется серверно (initial) — браузер за ней не ходит.
       */}
-      <SchemaContextProvider fallback={content}>
+      <SchemaContextProvider initial={astSchema} fallback={content}>
         {content}
         {canCreate ? (
           <CommentCreateForm lectureId={lectureId} rootTypes={rootTypes} />

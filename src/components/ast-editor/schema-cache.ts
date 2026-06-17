@@ -5,7 +5,7 @@ let cached: Promise<SchemaSnapshot> | null = null;
 export function loadSchema(
   fetcher: () => Promise<SchemaResponse>,
 ): Promise<SchemaSnapshot> {
-  cached ??= fetcher().then(normalize).catch((err: unknown) => {
+  cached ??= fetcher().then(normalizeSchema).catch((err: unknown) => {
     cached = null;
     throw err;
   });
@@ -16,7 +16,13 @@ export function __resetSchemaCache(): void {
   cached = null;
 }
 
-function normalize(resp: SchemaResponse): SchemaSnapshot {
+/**
+ * Чистая нормализация ответа /api/ast/schema → SchemaSnapshot (массивы nodes/
+ * elements сворачиваются в Map). Вынесена в экспорт, чтобы серверно-
+ * гидрированный провайдер мог нормализовать переданный пропом `SchemaResponse`
+ * без обращения к client-side кешу (`loadSchema`).
+ */
+export function normalizeSchema(resp: SchemaResponse): SchemaSnapshot {
   const nodes = new Map<string, ExportedNode>();
   for (const n of resp.nodes ?? []) {
     if (n.type) nodes.set(n.type, n);

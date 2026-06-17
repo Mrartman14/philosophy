@@ -2,6 +2,7 @@
 import { notFound } from "next/navigation";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
   getCommentSchema,
   getCommentSubtree,
@@ -20,9 +21,10 @@ export const metadata = { title: "Комментарий" };
 export default async function CommentSubtreePage({ params, searchParams }: Props) {
   const { id } = await params;
   const { revision } = await searchParams;
-  const [subtree, schema] = await Promise.all([
+  const [subtree, schema, astSchema] = await Promise.all([
     getCommentSubtree(id),
     getCommentSchema(),
+    getAstSchema(),
   ]);
   if (!subtree?.root || !schema) notFound();
 
@@ -35,7 +37,7 @@ export default async function CommentSubtreePage({ params, searchParams }: Props
         <CommentExportLinks kind="subtree" id={id} />
       </header>
 
-      <SchemaContextProvider fallback={<CommentTree subtrees={[subtree]} lectureId={lectureId} schema={schema} />}>
+      <SchemaContextProvider initial={astSchema} fallback={<CommentTree subtrees={[subtree]} lectureId={lectureId} schema={schema} />}>
         <CommentTree subtrees={[subtree]} lectureId={lectureId} schema={schema} />
       </SchemaContextProvider>
 

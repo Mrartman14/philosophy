@@ -1,5 +1,6 @@
 // src/features/annotations/ui/annotations-section.tsx
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { getMe } from "@/utils/me";
 
 import { getAnnotationsFor } from "../api";
@@ -32,6 +33,13 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
   const { items } = await getAnnotationsFor(parentEntityType, parentId);
   const canCreate = canCreateAnnotation(me);
 
+  // Схема нужна, если пользователь может создать аннотацию или редактировать
+  // хотя бы одну существующую (диалог редактирования монтирует AstEditor).
+  // Грузим серверно один раз и прокидываем пропом — браузер за ней не ходит.
+  const needsSchema =
+    canCreate || items.some((a) => Boolean(a.id) && canEditAnnotation(me, a));
+  const astSchema = needsSchema ? await getAstSchema() : null;
+
   return (
     <section className="flex flex-col gap-4" aria-label="Аннотации">
       <h2 className="text-lg font-semibold">Аннотации</h2>
@@ -52,7 +60,10 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
                       {a.id && <AnnotationExportLinks id={a.id} />}
                       {ownEditable && a.id && (
                         <>
-                          <AnnotationEditButton annotation={a} />
+                          <AnnotationEditButton
+                            annotation={a}
+                            initial={astSchema ?? undefined}
+                          />
                           <AnnotationDeleteButton annotationId={a.id} />
                         </>
                       )}
@@ -67,6 +78,7 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
 
       {canCreate && (
         <SchemaContextProvider
+          initial={astSchema ?? undefined}
           fallback={<p className="text-sm">Загрузка редактора…</p>}
         >
           <AnnotationCreateForm

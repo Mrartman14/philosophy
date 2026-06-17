@@ -2,6 +2,7 @@
 import { forbidden, notFound } from "next/navigation";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
   canDeleteEvent,
   canReadEvents,
@@ -35,6 +36,8 @@ export default async function AdminEventEditPage({
   const event = await getAdminEventById(id);
   if (!event) notFound();
 
+  const astSchema = canUpdate ? await getAstSchema() : null;
+
   return (
     <section className="flex flex-col gap-8">
       <header className="flex items-center justify-between gap-4">
@@ -43,7 +46,7 @@ export default async function AdminEventEditPage({
       </header>
 
       {canUpdate && (
-        <SchemaContextProvider>
+        <SchemaContextProvider initial={astSchema ?? undefined}>
           <EventEditForm event={event} />
         </SchemaContextProvider>
       )}

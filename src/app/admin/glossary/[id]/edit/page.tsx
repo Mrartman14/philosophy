@@ -1,6 +1,7 @@
 import { forbidden, notFound } from "next/navigation";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
   canUpdateTerm,
   canDeleteTerm,
@@ -32,6 +33,8 @@ export default async function AdminGlossaryEditPage({
   const term = await getTermById(id);
   if (!term) notFound();
 
+  const astSchema = canUpdate ? await getAstSchema() : null;
+
   return (
     <section className="flex flex-col gap-6">
       <header>
@@ -42,7 +45,7 @@ export default async function AdminGlossaryEditPage({
       </header>
 
       {canUpdate && (
-        <SchemaContextProvider>
+        <SchemaContextProvider initial={astSchema ?? undefined}>
           <GlossaryEditForm term={term} />
         </SchemaContextProvider>
       )}

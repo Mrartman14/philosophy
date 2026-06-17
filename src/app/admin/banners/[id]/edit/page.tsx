@@ -2,6 +2,7 @@
 import { forbidden, notFound } from "next/navigation";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
   canDeleteBanner,
   canReadBanners,
@@ -36,6 +37,8 @@ export default async function AdminBannerEditPage({
   const banner = await getAdminBannerById(id);
   if (!banner) notFound();
 
+  const astSchema = canUpdate ? await getAstSchema() : null;
+
   return (
     <section className="flex flex-col gap-8">
       <header className="flex items-center justify-between gap-4">
@@ -46,7 +49,7 @@ export default async function AdminBannerEditPage({
       </header>
 
       {canUpdate && (
-        <SchemaContextProvider>
+        <SchemaContextProvider initial={astSchema ?? undefined}>
           <BannerEditForm banner={banner} />
         </SchemaContextProvider>
       )}
