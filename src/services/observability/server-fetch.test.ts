@@ -73,4 +73,16 @@ describe("instrumentedFetch", () => {
       { surface: "fetch", status: 200 },
     );
   });
+
+  it("сохраняет переданные вызывающим заголовки и добавляет X-Request-Id", async () => {
+    const fetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 200 })));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await instrumentedFetch("https://api.test/x", { headers: { Authorization: "Bearer tok" } }, { surface: "me" });
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const headers = new Headers(init.headers);
+    expect(headers.get("Authorization")).toBe("Bearer tok");
+    expect(headers.get("X-Request-Id")).toBe("req-7");
+  });
 });
