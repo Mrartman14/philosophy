@@ -2,6 +2,8 @@
 import "server-only";
 import { cookies } from "next/headers";
 
+import { instrumentedFetch } from "@/services/observability/server-fetch";
+
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 export type UploadImageResult =
@@ -29,11 +31,11 @@ export async function uploadImage(formData: FormData): Promise<UploadImageResult
 
   let res: Response;
   try {
-    res = await fetch(`${API_URL}/api/uploads/images`, {
+    res = await instrumentedFetch(`${API_URL}/api/uploads/images`, {
       method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
-    });
+    }, { surface: "image.upload" });
   } catch (e) {
     return {
       success: false,

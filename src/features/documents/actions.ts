@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { instrumentedFetch } from "@/services/observability/server-fetch";
 import {
   rethrowApiError,
   type ApiError,
@@ -97,11 +98,11 @@ export const uploadDocument = createFormAction(async (formData) => {
 
   let res: Response;
   try {
-    res = await fetch(`${API_URL}/api/documents/upload`, {
+    res = await instrumentedFetch(`${API_URL}/api/documents/upload`, {
       method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: upstream,
-    });
+    }, { surface: "document.upload" });
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : "Сетевая ошибка при загрузке");
   }

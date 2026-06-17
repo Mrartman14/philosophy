@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 import { API_URL } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { instrumentedFetch } from "@/services/observability/server-fetch";
 import type { ApiError } from "@/utils/api-error";
 import { getMe } from "@/utils/me";
 import { revalidateEntity } from "@/utils/revalidate";
@@ -59,11 +60,11 @@ export async function uploadMedia(
 
   let res: Response;
   try {
-    res = await fetch(`${API_URL}/api/media`, {
+    res = await instrumentedFetch(`${API_URL}/api/media`, {
       method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
-    });
+    }, { surface: "media.upload" });
   } catch (e) {
     return {
       success: false,
