@@ -17,7 +17,9 @@ export function createBeaconSink(cfg: ObservabilityConfig): ObservabilitySink {
     const blob = new Blob([JSON.stringify(batch)], {
       type: "application/json",
     });
-    navigator.sendBeacon(cfg.ingestPath, blob);
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+      navigator.sendBeacon(cfg.ingestPath, blob);
+    }
     return Promise.resolve();
   }
 

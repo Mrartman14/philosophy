@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { ObservabilityConfig } from "../config";
 import { baseContext } from "../core/registry";
 import type { LogRecord } from "../core/types";
+
 import { createBeaconSink } from "./beacon-adapter";
 
 function cfg(): ObservabilityConfig {
@@ -60,7 +61,8 @@ describe("createBeaconSink", () => {
     sink.emit(rec);
     await sink.flush?.();
     expect(sendBeacon).toHaveBeenCalledTimes(1);
-    const [path, body] = sendBeacon.mock.calls[0] ?? [];
+    const call = sendBeacon.mock.calls[0] ?? [];
+    const [path, body] = call as [string, { type: string }];
     expect(path).toBe("/api/telemetry");
     expect((body as { type: string }).type).toBe("application/json");
     // Повторный flush без новых записей — ничего не шлёт.
@@ -70,6 +72,13 @@ describe("createBeaconSink", () => {
 
   it("имя sink — beacon", () => {
     expect(createBeaconSink(cfg()).name).toBe("beacon");
+  });
+
+  it("flush() деградирует без throw, когда navigator.sendBeacon недоступен", async () => {
+    vi.stubGlobal("navigator", {}); // нет sendBeacon
+    const sink = createBeaconSink(cfg());
+    sink.emit(rec);
+    await expect(sink.flush?.()).resolves.not.toThrow();
   });
 
   it("ring buffer: при переполнении хранит только последние N (старые вытесняются)", async () => {
