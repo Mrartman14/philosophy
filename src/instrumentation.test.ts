@@ -6,7 +6,7 @@ vi.mock("@/services/observability/server", () => ({
 }));
 
 const capture = vi.fn();
-vi.mock("@/services/observability/core/facade", () => ({
+vi.mock("@/services/observability", () => ({
   errors: { capture: (...a: unknown[]) => capture(...a) as unknown },
 }));
 

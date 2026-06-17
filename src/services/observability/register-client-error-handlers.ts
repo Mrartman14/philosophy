@@ -13,7 +13,7 @@ export function registerClientErrorHandlers(target: Window): void {
   target.addEventListener("unhandledrejection", (ev: PromiseRejectionEvent) => {
     errors.capture(ev.reason ?? "unhandled rejection", {
       handled: false,
-      attributes: { kind: "unhandledrejection" },
+      attributes: { kind: "window.unhandledrejection" },
     });
   });
 }

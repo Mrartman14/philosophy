@@ -10,9 +10,13 @@ vi.mock("next/cache", () => ({
 }));
 
 const increment = vi.fn();
-vi.mock("@/services/observability/core/facade", () => ({
-  metrics: { increment: (...a: unknown[]): unknown => increment(...a) },
-}));
+vi.mock("@/services/observability", async (importActual) => {
+  const actual = await importActual<typeof import("@/services/observability")>();
+  return {
+    ...actual,
+    metrics: { increment: (...a: unknown[]): unknown => increment(...a) },
+  };
+});
 
 describe("revalidateEntity", () => {
   beforeEach(() => {

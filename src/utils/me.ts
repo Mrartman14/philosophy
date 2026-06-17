@@ -53,7 +53,7 @@ const getAuthState = cache(async (): Promise<AuthState> => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) {
-    metrics.increment(M.authResolve, { result: "guest" });
+    metrics.increment(M.authResolve, { outcome: "guest" });
     return NO_AUTH;
   }
 
@@ -75,11 +75,11 @@ const getAuthState = cache(async (): Promise<AuthState> => {
       // тело не JSON / пустое — трактуем как небанный 403 (обычный гость)
     }
     const banned = code === "BANNED";
-    metrics.increment(M.authResolve, { result: banned ? "banned" : "guest" });
+    metrics.increment(M.authResolve, { outcome: banned ? "banned" : "guest" });
     return { me: null, banned };
   }
   if (res.status === 401 || res.status === 404) {
-    metrics.increment(M.authResolve, { result: "guest" });
+    metrics.increment(M.authResolve, { outcome: "guest" });
     return NO_AUTH;
   }
   if (!res.ok) {
@@ -111,7 +111,7 @@ const getAuthState = cache(async (): Promise<AuthState> => {
   const me = candidate as Me;
   await setServerActor(me.id, me.role);
   metrics.increment(M.authResolve, {
-    result: me.status === "active" ? "active" : "suspended",
+    outcome: me.status === "active" ? "active" : "suspended",
   });
   return { me, banned: false };
 });

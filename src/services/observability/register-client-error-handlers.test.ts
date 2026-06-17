@@ -54,6 +54,6 @@ describe("registerClientErrorHandlers", () => {
     const handler = t.handlers.get("unhandledrejection");
     expect(handler).toBeDefined();
     handler?.({ reason });
-    expect(capture).toHaveBeenCalledWith(reason, { handled: false, attributes: { kind: "unhandledrejection" } });
+    expect(capture).toHaveBeenCalledWith(reason, { handled: false, attributes: { kind: "window.unhandledrejection" } });
   });
 });

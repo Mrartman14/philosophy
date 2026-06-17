@@ -32,15 +32,15 @@ function metric(name: string) {
 }
 
 describe("getAuthState observability", () => {
-  it("guest без токена → auth.resolve{result:guest}, без setServerActor", async () => {
+  it("guest без токена → auth.resolve{outcome:guest}, без setServerActor", async () => {
     cookieGet.mockReturnValue(undefined);
     const { getMe } = await import("./me");
     expect(await getMe()).toBeNull();
-    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ result: "guest" });
+    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ outcome: "guest" });
     expect(setServerActor).not.toHaveBeenCalled();
   });
 
-  it("active me → auth.resolve{result:active} + setServerActor(id, role)", async () => {
+  it("active me → auth.resolve{outcome:active} + setServerActor(id, role)", async () => {
     cookieGet.mockReturnValue({ value: "tok" });
     vi.stubGlobal(
       "fetch",
@@ -64,7 +64,7 @@ describe("getAuthState observability", () => {
     const { getMe } = await import("./me");
     const me = await getMe();
     expect(me?.id).toBe("u1");
-    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ result: "active" });
+    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ outcome: "active" });
     expect(setServerActor).toHaveBeenCalledWith("u1", "user");
   });
 
@@ -98,7 +98,7 @@ describe("getAuthState observability", () => {
     expect(errs[0]).toMatchObject({ errorClass: "unexpected", handled: false, attributes: { reason: "malformed_me_payload" } });
   });
 
-  it("suspended me → auth.resolve{result:suspended}", async () => {
+  it("suspended me → auth.resolve{outcome:suspended}", async () => {
     cookieGet.mockReturnValue({ value: "tok" });
     vi.stubGlobal(
       "fetch",
@@ -121,10 +121,10 @@ describe("getAuthState observability", () => {
     );
     const { getMe } = await import("./me");
     await getMe();
-    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ result: "suspended" });
+    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ outcome: "suspended" });
   });
 
-  it("banned (403 + BANNED) → auth.resolve{result:banned}", async () => {
+  it("banned (403 + BANNED) → auth.resolve{outcome:banned}", async () => {
     cookieGet.mockReturnValue({ value: "tok" });
     vi.stubGlobal(
       "fetch",
@@ -138,6 +138,6 @@ describe("getAuthState observability", () => {
     );
     const { getMe } = await import("./me");
     expect(await getMe()).toBeNull();
-    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ result: "banned" });
+    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ outcome: "banned" });
   });
 });

@@ -3,7 +3,10 @@ import { render, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const { histogram } = vi.hoisted(() => ({ histogram: vi.fn() }));
-vi.mock("./client", () => ({ metrics: { histogram } }));
+vi.mock("./client", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./client")>();
+  return { ...actual, metrics: { histogram } };
+});
 
 // Захватываем callback, который компонент передаёт в useReportWebVitals,
 // и сразу дёргаем его синтетической метрикой.

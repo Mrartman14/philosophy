@@ -4,8 +4,7 @@
 // как гистограммы web_vitals.<NAME> с rating-атрибутом. Client-safe barrel.
 import { useReportWebVitals } from "next/web-vitals";
 
-import { metrics } from "./client";
-import { webVital } from "./core/names";
+import { metrics, webVital } from "./client";
 
 interface WebVitalMetric {
   name: string;

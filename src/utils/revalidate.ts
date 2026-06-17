@@ -2,8 +2,7 @@
 import "server-only";
 import { revalidateTag } from "next/cache";
 
-import { metrics } from "@/services/observability/core/facade";
-import { M } from "@/services/observability/core/names";
+import { metrics, M } from "@/services/observability";
 
 /**
  * Сбрасывает Next.js cache по конвенции тегов: `<entity>` для списков и
