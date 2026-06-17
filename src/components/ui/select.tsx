@@ -64,7 +64,7 @@ export function Select({
       </BaseSelect.Trigger>
       <BaseSelect.Portal>
         <BaseSelect.Positioner sideOffset={4} className="outline-none">
-          <BaseSelect.Popup className="min-w-(--anchor-width) rounded border border-(--color-border) bg-(--color-background) p-1 shadow-lg">
+          <BaseSelect.Popup className={cn(SHELL_BASE, "min-w-(--anchor-width) p-1 shadow-lg")}>
             {options.map((opt) => (
               <BaseSelect.Item
                 key={opt.value}

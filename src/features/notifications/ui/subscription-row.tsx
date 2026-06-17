@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button, RouterLink, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 
 import { unsubscribeDocument } from "../actions";
 import type { DocumentSubscription } from "../types";
@@ -23,10 +24,7 @@ export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
     try {
       const result = await unsubscribeDocument(subscription.targetId);
       if (!result.success) {
-        toast.add({
-          title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
-          description: result.code === "forbidden" ? "У вас нет прав." : result.error,
-        });
+        toastActionError(toast, result, { action: "подписку" });
         return;
       }
       setRemoved(true);

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
 
 import { markAllRead, markAllSeen } from "../actions";
@@ -18,10 +19,7 @@ export function NotificationListActions() {
     try {
       const result = await action();
       if (!result.success) {
-        toast.add({
-          title: result.code === "forbidden" ? "Нет прав" : "Ошибка",
-          description: result.code === "forbidden" ? "У вас нет прав." : result.error,
-        });
+        toastActionError(toast, result, { action: "уведомления" });
         return;
       }
       toast.add({ title: okMsg });

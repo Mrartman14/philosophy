@@ -59,7 +59,7 @@ describe("RouteError (src/app/_components/route-error.tsx)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Root error.tsx — delegates visually identical UI to a native <button>.
+// Root error.tsx — delegates to the shared RouteError fallback.
 // ---------------------------------------------------------------------------
 describe("RootError (src/app/error.tsx)", () => {
   it("renders heading and retry button", () => {

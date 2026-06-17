@@ -2,7 +2,7 @@
 // src/components/ui/toaster.tsx
 import { Toast as BaseToast } from "@base-ui/react/toast";
 
-import { cn } from "./cn";
+import { cn, SHELL_BASE } from "./cn";
 
 /**
  * Самодостаточный toast-viewport. Подписывается на менеджер Base UI и
@@ -22,7 +22,8 @@ export function Toaster() {
             key={toast.id}
             toast={toast}
             className={cn(
-              "rounded border border-(--color-border) bg-(--color-background) p-3 shadow-lg",
+              SHELL_BASE,
+              "p-3 shadow-lg",
               "data-[type=error]:border-(--color-danger)",
             )}
           >

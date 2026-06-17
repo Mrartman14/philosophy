@@ -145,7 +145,7 @@ export function CommentReactions({
           );
         })}
       </div>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-(--color-danger)">{error}</p>}
     </div>
   );
 }

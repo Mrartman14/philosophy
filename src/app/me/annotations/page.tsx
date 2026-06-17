@@ -8,6 +8,7 @@ import {
   AnnotationDeleteButton,
 } from "@/features/annotations";
 import { requireUserOrRedirect } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Мои аннотации" };
 
@@ -21,7 +22,7 @@ export default async function MyAnnotationsPage({ searchParams }: Props) {
   await requireUserOrRedirect("/me/annotations");
 
   const sp = await searchParams;
-  const offset = Math.max(0, Number(sp.offset ?? 0) || 0);
+  const offset = parseNonNegativeInt(sp.offset, 0);
   const { items, total } = await getMyAnnotations(offset, LIMIT);
 
   return (

@@ -10,6 +10,7 @@ import {
   AnnotationAdminFilterForm,
 } from "@/features/annotations";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Аннотации — модерация" };
 
@@ -27,7 +28,7 @@ export default async function AdminAnnotationsPage({ searchParams }: Props) {
   if (!canModerateAnnotations(me)) forbidden();
 
   const sp = await searchParams;
-  const offset = Math.max(0, Number(sp.offset ?? 0) || 0);
+  const offset = parseNonNegativeInt(sp.offset, 0);
   const { items, total } = await getAdminAnnotations({
     offset,
     limit: LIMIT,

@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Button, Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { Button, Form, FormFeedback, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCommentBlocks } from "../actions";
@@ -54,12 +54,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Сохранено.</p>
       )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на изменение комментария.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="изменение комментария" />
       <div className="flex gap-2">
         <SubmitButton>Сохранить</SubmitButton>
         <Button type="button" variant="ghost" onClick={() => { setOpen(false); }}>

@@ -87,12 +87,12 @@ describe("outbox store", () => {
   it("updateOutboxCommand сохраняет немодифицированные поля при патче", async () => {
     const c = await enqueueOutbox({
       ...makeInput("annotation"),
-      clientId: "atomic-test-id",
+      clientId: "merge-test-id",
     });
     await updateOutboxCommand(c.clientId, { status: "done" });
     const updated = await getOutboxCommand(c.clientId);
     expect(updated).toMatchObject({
-      clientId: "atomic-test-id",
+      clientId: "merge-test-id",
       entity: "annotation",
       op: "create",
       status: "done",

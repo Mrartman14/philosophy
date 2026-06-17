@@ -6,6 +6,7 @@ import {
   AnnotationAnchorContext,
   AnnotationExportLinks,
 } from "@/features/annotations";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 export const metadata = { title: "Аннотации лекции" };
 
@@ -27,7 +28,7 @@ export default async function LectureAnnotationsPage({
 }: Props) {
   const { id } = await params;
   const sp = await searchParams;
-  const offset = Math.max(0, Number(sp.offset ?? 0) || 0);
+  const offset = parseNonNegativeInt(sp.offset, 0);
   const { items, total } = await getLectureAnnotations(id, offset, LIMIT);
 
   return (

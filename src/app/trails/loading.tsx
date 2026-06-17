@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui";
 
 export default function TrailsLoading() {
   return (
-    <div aria-busy="true" aria-label="Загрузка" className="flex flex-col gap-4">
+    <div aria-busy="true" aria-label="Загрузка троп…" className="flex flex-col gap-4">
       <Skeleton className="h-8 w-64" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-full" />

@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Form, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
@@ -50,12 +50,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
       {state.success && state.data && (
         <p className="text-sm text-(--color-description)">Комментарий добавлен.</p>
       )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на создание комментария.</p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+      <FormFeedback result={state} forbiddenAction="создание комментария" />
 
       <div>
         <SubmitButton>Отправить</SubmitButton>

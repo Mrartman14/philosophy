@@ -9,6 +9,7 @@ import {
   UsersTable,
 } from "@/features/users";
 import { getMe } from "@/utils/me";
+import { parseNonNegativeInt } from "@/utils/paging";
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;
@@ -23,9 +24,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
   const canModerate = canModerateUsers(me);
 
   const { offset } = await searchParams;
-  const offsetNum = Number(offset);
-  const safeOffset =
-    Number.isFinite(offsetNum) && offsetNum > 0 ? Math.floor(offsetNum) : 0;
+  const safeOffset = parseNonNegativeInt(offset, 0);
 
   const result = await getUsers({ offset: safeOffset, limit: PAGE_SIZE });
 
