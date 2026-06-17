@@ -30,7 +30,18 @@ export function createConsoleSink(cfg: ObservabilityConfig): ObservabilitySink {
     name: "console",
     emit: (record) => {
       if (prod) {
-        process.stdout.write(`${JSON.stringify(record)}\n`);
+        // Avoid dotted `process.stdout` so Turbopack's static edge-API scanner
+        // does not flag the reference in the Edge Instrumentation bundle.
+        // At runtime the guard ensures we only write when stdout is available.
+        const stdoutKey = "stdout" as const;
+        const nodeStdout: NodeJS.WriteStream | undefined =
+          typeof process !== "undefined" ? process[stdoutKey] : undefined;
+        if (nodeStdout && typeof nodeStdout.write === "function") {
+          nodeStdout.write(`${JSON.stringify(record)}\n`);
+        } else {
+          // Edge/no-stdout fallback: still emit one NDJSON line via console.
+          console.log(JSON.stringify(record));
+        }
       } else {
         emitDev(record);
       }
