@@ -53,10 +53,10 @@ export function useRegisterSW(): UseRegisterSWReturn {
         });
       })
       .catch((err: unknown) => {
-          log.error("[SW] registration failed", {
-            error: err instanceof Error ? err.message : String(err),
-          });
+        log.error("[SW] registration failed", {
+          error: err instanceof Error ? err.message : String(err),
         });
+      });
 
     // Периодически проверяем обновления SW, чтобы долгоживущие вкладки
     // замечали новый деплой. update() отклоняется офлайн — глушим через .catch.
