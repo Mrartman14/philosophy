@@ -34,11 +34,11 @@ beforeEach(() => {
 const flush = (): Promise<void> => new Promise((r) => setTimeout(r, 0));
 
 describe("startOfflineSync метрики", () => {
-  it("эмитит histogram offlineDrain с числом attempted за проход", async () => {
+  it("эмитит increment offlineDrainAttempted с числом attempted за проход", async () => {
     drainMock.mockResolvedValue({ skipped: false, attempted: 3, done: 2, failed: 0, deferred: 1 });
     const stop = startOfflineSync(vi.fn());
     await flush();
-    const drain = metricsOf(M.offlineDrain).find((m) => m.metricKind === "histogram");
+    const drain = metricsOf(M.offlineDrainAttempted).find((m) => m.metricKind === "counter");
     expect(drain?.value).toBe(3);
     stop();
   });
@@ -56,11 +56,11 @@ describe("startOfflineSync метрики", () => {
     stop();
   });
 
-  it("эмитит histogram offlineQueueDepth с числом pending после дренажа", async () => {
+  it("эмитит increment offlineQueueDepth с числом pending после дренажа", async () => {
     listMock.mockReturnValue(Promise.resolve([{ clientId: "a" }, { clientId: "b" }]));
     const stop = startOfflineSync(vi.fn());
     await flush();
-    const depth = metricsOf(M.offlineQueueDepth).find((m) => m.metricKind === "histogram");
+    const depth = metricsOf(M.offlineQueueDepth).find((m) => m.metricKind === "counter");
     expect(depth?.value).toBe(2);
     stop();
   });

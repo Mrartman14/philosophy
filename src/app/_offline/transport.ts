@@ -1,8 +1,7 @@
 // src/app/_offline/transport.ts
 // Concrete транспорт синка: POST /api/offline/{entity} (same-origin) +
 // маппинг HTTP → SyncSendResult. Инжектируется в drainOutbox (F3).
-import { metrics } from "@/services/observability/core/facade";
-import { M } from "@/services/observability/core/names";
+import { errors, metrics, M } from "@/services/observability/client";
 import type { OutboxCommand } from "@/services/offline/contract/storage";
 import type {
   SyncSendResult,
@@ -26,10 +25,12 @@ export const offlineTransport: SyncTransport = async (
       }),
     });
   } catch (e) {
-    metrics.increment(M.apiError, { surface: "offline.transport", class: "network" });
+    metrics.increment(M.apiRequestError, { transport: "fetch", surface: "offline.transport", errorClass: "network" });
+    errors.capture(e, { errorClass: "network", handled: false, attributes: { surface: "offline.transport" } });
     throw e;
   }
-  metrics.histogram(M.apiDuration, Date.now() - start, {
+  metrics.histogram(M.apiRequestDuration, Date.now() - start, {
+    transport: "fetch",
     surface: "offline.transport",
     status: res.status,
   });

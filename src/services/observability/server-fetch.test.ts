@@ -44,9 +44,9 @@ describe("instrumentedFetch", () => {
     const headers = new Headers(passedInit?.headers);
     expect(headers.get("X-Request-Id")).toBe("req-7");
     expect(histogram).toHaveBeenCalledWith(
-      M.apiDuration,
+      M.apiRequestDuration,
       expect.any(Number),
-      { surface: "media.upload", status: 204 },
+      { transport: "fetch", surface: "media.upload", status: 204 },
     );
     expect(capture).not.toHaveBeenCalled();
   });
@@ -60,8 +60,8 @@ describe("instrumentedFetch", () => {
     ).rejects.toBe(boom);
 
     expect(increment).toHaveBeenCalledWith(
-      M.apiError,
-      { surface: "media.upload", class: "network" },
+      M.apiRequestError,
+      { transport: "fetch", surface: "media.upload", errorClass: "network" },
     );
     expect(capture).toHaveBeenCalledWith(boom, { errorClass: "network", handled: false });
   });
@@ -70,9 +70,9 @@ describe("instrumentedFetch", () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(null, { status: 200 }))));
     await instrumentedFetch("http://x/y");
     expect(histogram).toHaveBeenCalledWith(
-      M.apiDuration,
+      M.apiRequestDuration,
       expect.any(Number),
-      { surface: "fetch", status: 200 },
+      { transport: "fetch", surface: "fetch", status: 200 },
     );
   });
 

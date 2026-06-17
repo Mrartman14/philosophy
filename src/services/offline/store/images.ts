@@ -1,8 +1,7 @@
 // src/services/offline/store/images.ts
 // Browser-only: кэш картинок офлайна в Cache Storage.
 // `<img src="/static/files/{key}">` отдаётся прозрачно из кэша через SW.
-import { metrics } from "@/services/observability/core/facade";
-import { M } from "@/services/observability/core/names";
+import { errors, metrics, M } from "@/services/observability/client";
 
 import {
   OFFLINE_IMAGE_CACHE,
@@ -16,10 +15,12 @@ export async function cacheImage(url: string): Promise<boolean> {
   try {
     res = await fetch(url, { credentials: "same-origin" });
   } catch (e) {
-    metrics.increment(M.apiError, { surface: "offline.image", class: "network" });
+    metrics.increment(M.apiRequestError, { transport: "fetch", surface: "offline.image", errorClass: "network" });
+    errors.capture(e, { errorClass: "network", handled: false, attributes: { surface: "offline.image" } });
     throw e;
   }
-  metrics.histogram(M.apiDuration, Date.now() - start, {
+  metrics.histogram(M.apiRequestDuration, Date.now() - start, {
+    transport: "fetch",
     surface: "offline.image",
     status: res.status,
   });

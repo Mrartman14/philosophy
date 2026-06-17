@@ -8,8 +8,9 @@ describe("observability names", () => {
     expect(M.actionDuration).toBe("action.duration");
     expect(M.actionCompleted).toBe("action.completed");
     expect(M.backendError).toBe("backend.error");
-    expect(M.apiDuration).toBe("api.request.duration");
-    expect(M.apiError).toBe("api.request.error");
+    expect(M.apiRequestDuration).toBe("api.request.duration");
+    expect(M.apiRequestError).toBe("api.request.error");
+    expect(M.offlineDrainAttempted).toBe("offline.drain.attempted");
     expect(M.authResolve).toBe("auth.resolve");
     expect(M.rbacDenied).toBe("rbac.denied");
     expect(M.mutationCommit).toBe("mutation.commit");

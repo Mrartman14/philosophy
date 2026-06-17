@@ -1,17 +1,25 @@
 // src/app/_offline/transport.test.ts
 import { describe, it, expect, afterEach, vi, beforeEach } from "vitest";
 
-const { histogram, increment } = vi.hoisted(() => ({
+const { histogram, increment, capture } = vi.hoisted(() => ({
   histogram: vi.fn(),
   increment: vi.fn(),
+  capture: vi.fn(),
 }));
 
-vi.mock("@/services/observability/core/facade", () => ({
-  metrics: {
-    histogram,
-    increment,
-  },
-}));
+vi.mock("@/services/observability/client", async () => {
+  const { M } = await import("@/services/observability/core/names");
+  return {
+    metrics: {
+      histogram,
+      increment,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      startTimer: () => () => {},
+    },
+    errors: { capture },
+    M,
+  };
+});
 
 import { M } from "@/services/observability/core/names";
 import type { OutboxCommand } from "@/services/offline/contract/storage";
@@ -149,9 +157,9 @@ describe("offlineTransport observability", () => {
     const res = await offlineTransport(obsCmd);
     expect(res).toEqual({ ok: true, serverId: "s1" });
     expect(histogram).toHaveBeenCalledWith(
-      M.apiDuration,
+      M.apiRequestDuration,
       expect.any(Number),
-      { surface: "offline.transport", status: 200 },
+      { transport: "fetch", surface: "offline.transport", status: 200 },
     );
   });
 
@@ -163,8 +171,9 @@ describe("offlineTransport observability", () => {
     );
     await expect(offlineTransport(obsCmd)).rejects.toBe(boom);
     expect(increment).toHaveBeenCalledWith(
-      M.apiError,
-      { surface: "offline.transport", class: "network" },
+      M.apiRequestError,
+      { transport: "fetch", surface: "offline.transport", errorClass: "network" },
     );
+    expect(capture).toHaveBeenCalledWith(boom, { errorClass: "network", handled: false, attributes: { surface: "offline.transport" } });
   });
 });

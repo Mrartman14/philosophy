@@ -1,7 +1,6 @@
 import createClient, { type Middleware } from "openapi-fetch";
 
-import { errors, metrics } from "@/services/observability/core/facade";
-import { M } from "@/services/observability/core/names";
+import { errors, log, metrics, M } from "@/services/observability";
 import { getContext } from "@/services/observability/core/registry";
 
 import type { paths } from "./schema";
@@ -23,7 +22,12 @@ const observability: Middleware = {
   onResponse({ request, response, schemaPath, id }) {
     const start = startedAt.get(id);
     startedAt.delete(id);
-    metrics.histogram(M.apiDuration, start === undefined ? 0 : Date.now() - start, {
+    if (start === undefined) {
+      log.warn("api.request.duration: missing start", { id });
+      return response;
+    }
+    metrics.histogram(M.apiRequestDuration, Date.now() - start, {
+      transport: "openapi",
       method: request.method,
       route: schemaPath,
       status: response.status,
@@ -32,10 +36,11 @@ const observability: Middleware = {
   },
   onError({ request, schemaPath, error, id }) {
     startedAt.delete(id);
-    metrics.increment(M.apiError, {
+    metrics.increment(M.apiRequestError, {
+      transport: "openapi",
       method: request.method,
       route: schemaPath,
-      class: "network",
+      errorClass: "network",
     });
     errors.capture(error, { errorClass: "network", handled: false });
   },

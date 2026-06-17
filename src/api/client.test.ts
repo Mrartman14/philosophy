@@ -29,15 +29,20 @@ const histogram = vi.fn();
 const increment = vi.fn();
 const capture = vi.fn();
 
-vi.mock("@/services/observability/core/facade", () => ({
-  metrics: {
-    histogram: (...a: unknown[]) => histogram(...a) as unknown,
-    increment: (...a: unknown[]) => increment(...a) as unknown,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    startTimer: () => () => {},
-  },
-  errors: { capture: (...a: unknown[]) => capture(...a) as unknown },
-}));
+vi.mock("@/services/observability", async () => {
+  const { M } = await import("@/services/observability/core/names");
+  return {
+    metrics: {
+      histogram: (...a: unknown[]) => histogram(...a) as unknown,
+      increment: (...a: unknown[]) => increment(...a) as unknown,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      startTimer: () => () => {},
+    },
+    errors: { capture: (...a: unknown[]) => capture(...a) as unknown },
+    log: { warn: vi.fn(), info: vi.fn(), debug: vi.fn(), error: vi.fn() },
+    M,
+  };
+});
 
 describe("api client observability middleware", () => {
   beforeEach(() => {
@@ -65,7 +70,8 @@ describe("api client observability middleware", () => {
     await api.GET("/api/annotations/{id}", { params: { path: { id: "a1" } } });
 
     expect(seenHeader).toBe("req-mw");
-    expect(histogram).toHaveBeenCalledWith(M.apiDuration, expect.any(Number), {
+    expect(histogram).toHaveBeenCalledWith(M.apiRequestDuration, expect.any(Number), {
+      transport: "openapi",
       method: "GET",
       route: "/api/annotations/{id}",
       status: 200,
@@ -84,10 +90,11 @@ describe("api client observability middleware", () => {
       .GET("/api/annotations/{id}", { params: { path: { id: "a1" } } })
       .catch(() => undefined);
 
-    expect(increment).toHaveBeenCalledWith(M.apiError, {
+    expect(increment).toHaveBeenCalledWith(M.apiRequestError, {
+      transport: "openapi",
       method: "GET",
       route: "/api/annotations/{id}",
-      class: "network",
+      errorClass: "network",
     });
     expect(capture).toHaveBeenCalledWith(boom, { errorClass: "network", handled: false });
   });

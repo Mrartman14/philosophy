@@ -1,17 +1,25 @@
 // src/services/offline/store/images.test.ts
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-const { obsHistogram, obsIncrement } = vi.hoisted(() => ({
-  obsHistogram: vi.fn(),
-  obsIncrement: vi.fn(),
+const { histogram, increment, capture } = vi.hoisted(() => ({
+  histogram: vi.fn(),
+  increment: vi.fn(),
+  capture: vi.fn(),
 }));
 
-vi.mock("@/services/observability/core/facade", () => ({
-  metrics: {
-    histogram: obsHistogram,
-    increment: obsIncrement,
-  },
-}));
+vi.mock("@/services/observability/client", async () => {
+  const { M } = await import("@/services/observability/core/names");
+  return {
+    metrics: {
+      histogram,
+      increment,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      startTimer: () => () => {},
+    },
+    errors: { capture },
+    M,
+  };
+});
 
 import { M } from "@/services/observability/core/names";
 
@@ -135,8 +143,9 @@ describe("images cache", () => {
 
 describe("cacheImage observability", () => {
   beforeEach(() => {
-    obsHistogram.mockClear();
-    obsIncrement.mockClear();
+    histogram.mockClear();
+    increment.mockClear();
+    capture.mockClear();
     vi.stubGlobal("caches", {
       open: vi.fn().mockResolvedValue({ put: vi.fn().mockResolvedValue(undefined) }),
     });
@@ -146,10 +155,10 @@ describe("cacheImage observability", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("img", { status: 200 })));
     const ok = await cacheImage("/static/files/a.png");
     expect(ok).toBe(true);
-    expect(obsHistogram).toHaveBeenCalledWith(
-      M.apiDuration,
+    expect(histogram).toHaveBeenCalledWith(
+      M.apiRequestDuration,
       expect.any(Number),
-      { surface: "offline.image", status: 200 },
+      { transport: "fetch", surface: "offline.image", status: 200 },
     );
   });
 
@@ -157,9 +166,10 @@ describe("cacheImage observability", () => {
     const boom = new TypeError("fetch failed");
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(boom));
     await expect(cacheImage("/static/files/a.png")).rejects.toBe(boom);
-    expect(obsIncrement).toHaveBeenCalledWith(
-      M.apiError,
-      { surface: "offline.image", class: "network" },
+    expect(increment).toHaveBeenCalledWith(
+      M.apiRequestError,
+      { transport: "fetch", surface: "offline.image", errorClass: "network" },
     );
+    expect(capture).toHaveBeenCalledWith(boom, { errorClass: "network", handled: false, attributes: { surface: "offline.image" } });
   });
 });

@@ -30,7 +30,7 @@ describe("client barrel exports", () => {
     expect(typeof barrel.log.info).toBe("function");
     expect(typeof barrel.errors.capture).toBe("function");
     expect(typeof barrel.metrics.increment).toBe("function");
-    expect(barrel.M.apiError).toBe("api.request.error");
+    expect(barrel.M.apiRequestError).toBe("api.request.error");
     expect(barrel.webVital("CLS")).toBe("web_vitals.CLS");
     expect(typeof barrel.setClientActor).toBe("function");
     expect(typeof barrel.setClientRoute).toBe("function");

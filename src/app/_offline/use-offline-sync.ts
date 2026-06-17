@@ -25,12 +25,12 @@ function onDrainOutcome(outcome: DrainOutcome): void {
 async function drainAndReport(send: SyncTransport): Promise<void> {
   const result = await drainOutbox({ send, onOutcome: onDrainOutcome });
   if (result.skipped) return; // дренаж уже шёл — чужой проход отметит метрики
-  metrics.histogram(M.offlineDrain, result.attempted);
+  metrics.increment(M.offlineDrainAttempted, undefined, result.attempted);
   metrics.increment(M.offlineDrain, { outcome: "done" }, result.done);
   metrics.increment(M.offlineDrain, { outcome: "failed" }, result.failed);
   metrics.increment(M.offlineDrain, { outcome: "deferred" }, result.deferred);
   const pending = await listOutboxByStatus("pending");
-  metrics.histogram(M.offlineQueueDepth, pending.length);
+  metrics.increment(M.offlineQueueDepth, undefined, pending.length);
 }
 
 /**

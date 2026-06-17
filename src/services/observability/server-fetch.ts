@@ -27,13 +27,14 @@ export async function instrumentedFetch(
   const start = Date.now();
   try {
     const res = await fetch(input, finalInit);
-    metrics.histogram(M.apiDuration, Date.now() - start, {
+    metrics.histogram(M.apiRequestDuration, Date.now() - start, {
+      transport: "fetch",
       surface,
       status: res.status,
     });
     return res;
   } catch (e) {
-    metrics.increment(M.apiError, { surface, class: "network" });
+    metrics.increment(M.apiRequestError, { transport: "fetch", surface, errorClass: "network" });
     errors.capture(e, { errorClass: "network", handled: false });
     throw e;
   }
