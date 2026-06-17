@@ -96,6 +96,49 @@ describe("getAuthState observability", () => {
     const { getMe } = await import("./me");
     await expect(getMe()).rejects.toThrow(/malformed/);
     const errs = mem.records.filter((r) => r.kind === "error");
-    expect(errs[0]).toMatchObject({ errorClass: "unexpected", handled: false });
+    expect(errs[0]).toMatchObject({ errorClass: "unexpected", handled: false, attributes: { reason: "malformed_me_payload" } });
+  });
+
+  it("suspended me → auth.resolve{result:suspended}", async () => {
+    cookieGet.mockReturnValue({ value: "tok" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              data: {
+                id: "u2",
+                username: "bob",
+                role: "user",
+                status: "suspended",
+                capabilities: [],
+              },
+            }),
+        }),
+      ),
+    );
+    const { getMe } = await import("./me");
+    await getMe();
+    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ result: "suspended" });
+  });
+
+  it("banned (403 + BANNED) → auth.resolve{result:banned}", async () => {
+    cookieGet.mockReturnValue({ value: "tok" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve({
+          status: 403,
+          ok: false,
+          json: () => Promise.resolve({ code: "BANNED" }),
+        }),
+      ),
+    );
+    const { getMe } = await import("./me");
+    expect(await getMe()).toBeNull();
+    expect(metric("auth.resolve")[0]?.attributes).toMatchObject({ result: "banned" });
   });
 });

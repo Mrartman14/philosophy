@@ -98,7 +98,7 @@ const getAuthState = cache(async (): Promise<AuthState> => {
     !("capabilities" in candidate)
   ) {
     const err = new Error("getMe(): backend returned malformed payload");
-    errors.capture(err, { errorClass: "unexpected", handled: false });
+    errors.capture(err, { errorClass: "unexpected", handled: false, attributes: { reason: "malformed_me_payload" } });
     throw err;
   }
 
