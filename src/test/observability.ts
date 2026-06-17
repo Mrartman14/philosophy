@@ -26,11 +26,11 @@ export interface MemorySinkHandle {
   /** Live reference to the records array (same ref across beforeEach clears). */
   readonly records: ObservabilityRecord[];
   /** Filter metric records by metric name. */
-  metricsOf(name: string): MetricRecord[];
+  readonly metricsOf: (name: string) => MetricRecord[];
   /** Filter error records (optionally by errorClass). */
-  errorsOf(errorClass?: string): ErrorRecord[];
+  readonly errorsOf: (errorClass?: string) => ErrorRecord[];
   /** Filter log records (optionally by level). */
-  logsOf(level?: string): LogRecord[];
+  readonly logsOf: (level?: string) => LogRecord[];
 }
 
 /**
@@ -53,23 +53,20 @@ export function withMemorySink(): MemorySinkHandle {
     get records() {
       return mem.records;
     },
-    metricsOf(name: string): MetricRecord[] {
-      return mem.records.filter(
+    metricsOf: (name: string): MetricRecord[] =>
+      mem.records.filter(
         (r): r is MetricRecord => r.kind === "metric" && r.metric === name,
-      );
-    },
-    errorsOf(errorClass?: string): ErrorRecord[] {
-      return mem.records.filter(
+      ),
+    errorsOf: (errorClass?: string): ErrorRecord[] =>
+      mem.records.filter(
         (r): r is ErrorRecord =>
           r.kind === "error" &&
           (errorClass === undefined || r.errorClass === errorClass),
-      );
-    },
-    logsOf(level?: string): LogRecord[] {
-      return mem.records.filter(
+      ),
+    logsOf: (level?: string): LogRecord[] =>
+      mem.records.filter(
         (r): r is LogRecord =>
           r.kind === "log" && (level === undefined || r.level === level),
-      );
-    },
+      ),
   };
 }

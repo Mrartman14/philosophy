@@ -4,8 +4,6 @@ import { baseContext } from "@/services/observability/core/registry";
 
 import { validateBatch, MAX_BATCH } from "./validate";
 
-const MAX_BYTES = 64 * 1024; // mirrors the private constant in validate.ts
-
 const ctx = { ...baseContext("test", "client"), sessionId: "s-1", route: "/x" };
 
 function logRec(attributes: Record<string, string | number | boolean | null>) {
