@@ -58,6 +58,26 @@ const eslintConfig = [
       ],
     },
   },
+  // no-console: единственный санкционированный канал логов — observability-фасад
+  // (@/services/observability). console.* в src запрещён, чтобы логи проходили
+  // через redaction + sink-роутинг, а не текли в stdout мимо наблюдаемости.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "no-console": "error",
+    },
+  },
+  // Исключения: console-adapter — ЕДИНСТВЕННАЯ санкционированная точка вывода
+  // (dev pretty-print / prod stdout JSON), и скрипты сборки/обслуживания.
+  {
+    files: [
+      "src/services/observability/adapters/console-adapter.ts",
+      "scripts/**/*.{ts,tsx,js,mjs,cjs}",
+    ],
+    rules: {
+      "no-console": "off",
+    },
+  },
   // Строгий React-стек. Плагины (react, react-hooks, jsx-a11y, import) уже
   // зарегистрированы eslint-config-next, поэтому подключаем ТОЛЬКО .rules выбранных
   // пресетов — спред целого пресет-объекта даёт "Cannot redefine plugin".
