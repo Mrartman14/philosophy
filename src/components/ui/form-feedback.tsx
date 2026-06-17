@@ -21,14 +21,14 @@ interface Props<T> {
 export function FormFeedback<T>({ result, forbiddenAction, successText }: Props<T>) {
   if (result.success) {
     if (successText) {
-      return <p role="status" className="text-sm text-(--color-description)">{successText}</p>;
+      return <p role="status" className="text-sm text-(--color-success)">{successText}</p>;
     }
     return null;
   }
 
   if (result.code === "forbidden") {
     return (
-      <p role="alert" className="text-sm text-red-600">
+      <p role="alert" className="text-sm text-(--color-danger)">
         {actionErrorMessage(result, forbiddenAction)}
       </p>
     );
@@ -38,7 +38,7 @@ export function FormFeedback<T>({ result, forbiddenAction, successText }: Props<
     const formError = result.fieldErrors._form;
     if (formError) {
       return (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-(--color-danger)">
           {formError}
         </p>
       );
@@ -47,7 +47,7 @@ export function FormFeedback<T>({ result, forbiddenAction, successText }: Props<
   }
 
   return (
-    <p role="alert" className="text-sm text-red-600">
+    <p role="alert" className="text-sm text-(--color-danger)">
       {result.error}
     </p>
   );
