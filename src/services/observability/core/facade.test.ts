@@ -123,4 +123,30 @@ describe("metrics", () => {
     expect(mem.records).toHaveLength(0);
     vi.unstubAllEnvs();
   });
+
+  it("client-runtime: NEXT_PUBLIC_OBSERVABILITY_SAMPLE_RATE=0 отбрасывает метрики", () => {
+    // Клиент должен читать NEXT_PUBLIC_* knob, а не серверный OBSERVABILITY_SAMPLE_RATE.
+    vi.stubEnv("NEXT_PUBLIC_OBSERVABILITY_SAMPLE_RATE", "0");
+    // Серверный knob не задан → по умолчанию 1 (метрики бы прошли, если читать его).
+    vi.stubEnv("OBSERVABILITY_SAMPLE_RATE", "1");
+    setContextProvider({
+      getContext: () => ({ ...baseContext("test", "client"), requestId: "req-client" }),
+    });
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    metrics.increment("action.completed");
+    expect(mem.records).toHaveLength(0);
+    vi.unstubAllEnvs();
+  });
+
+  it("server-runtime: OBSERVABILITY_SAMPLE_RATE=0 отбрасывает метрики (игнорирует NEXT_PUBLIC_*)", () => {
+    vi.stubEnv("OBSERVABILITY_SAMPLE_RATE", "0");
+    vi.stubEnv("NEXT_PUBLIC_OBSERVABILITY_SAMPLE_RATE", "1");
+    setContextProvider({
+      getContext: () => ({ ...baseContext("test", "server"), requestId: "req-server" }),
+    });
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    metrics.increment("action.completed");
+    expect(mem.records).toHaveLength(0);
+    vi.unstubAllEnvs();
+  });
 });

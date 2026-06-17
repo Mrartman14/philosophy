@@ -1,6 +1,6 @@
 // src/services/observability/core/facade.ts
 // Потребительский API наблюдаемости: log / errors / metrics. Изоморфен.
-import { readServerConfig } from "../config";
+import { readClientConfig, readServerConfig } from "../config";
 
 import type {
   CaptureOptions,
@@ -12,24 +12,26 @@ import type {
 import { redactAttributes } from "./redact";
 import { getContext, getSink } from "./registry";
 import { classifyError } from "./taxonomy";
-import type { Attributes, Level } from "./types";
+import type { Attributes, Level, ContextSnapshot } from "./types";
 
 // sampleRate читаем лениво на каждый emit — конфиг может меняться в тестах через env.
-function sampleRate(): number {
-  return readServerConfig().sampleRate;
+// Клиент читает NEXT_PUBLIC_* переменную; сервер/sw — серверный knob.
+function sampleRate(runtime: ContextSnapshot["runtime"]): number {
+  return (runtime === "client" ? readClientConfig() : readServerConfig()).sampleRate;
 }
 
-function sampled(): boolean {
-  return Math.random() < sampleRate();
+function sampled(ctx: ContextSnapshot): boolean {
+  return Math.random() < sampleRate(ctx.runtime);
 }
 
 function emitLog(level: Level, message: string, attributes?: Attributes): void {
+  const ctx = getContext();
   getSink().emit({
     kind: "log",
     level,
     message,
     attributes: redactAttributes(attributes ?? {}),
-    context: getContext(),
+    context: ctx,
     timestamp: Date.now(),
   });
 }
@@ -61,6 +63,9 @@ export const errors: ErrorReporter = {
     const backendCode = options?.backendCode ?? classified.backendCode;
     const cause = causeOf(error);
     // Ошибки эмитим ВСЕГДА — без сэмплирования.
+    // message, cause.message и cause.stack — свободный текст из Error-объекта;
+    // intentionally NOT passed through redactAttributes (только attributes редактируются).
+    // Известный residual по итогам final review — принятый trade-off.
     getSink().emit({
       kind: "error",
       errorClass,
@@ -83,7 +88,8 @@ function emitMetric(
   unit: "ms" | "count" | null,
   attributes?: Attributes,
 ): void {
-  if (!sampled()) return;
+  const ctx = getContext();
+  if (!sampled(ctx)) return;
   getSink().emit({
     kind: "metric",
     metric,
@@ -91,7 +97,7 @@ function emitMetric(
     value,
     unit,
     attributes: redactAttributes(attributes ?? {}),
-    context: getContext(),
+    context: ctx,
     timestamp: Date.now(),
   });
 }
