@@ -61,3 +61,14 @@ describe("initServerObservability", () => {
     expect(sink?.name).toBe("noop");
   });
 });
+
+describe("barrel parity", () => {
+  it("server и client барели делят один и тот же facade-инстанс", async () => {
+    const server = await import("./index");
+    const client = await import("./client");
+    expect(server.log).toBe(client.log);
+    expect(server.errors).toBe(client.errors);
+    expect(server.metrics).toBe(client.metrics);
+    expect(server.M).toBe(client.M);
+  });
+});
