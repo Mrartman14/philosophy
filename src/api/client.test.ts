@@ -8,18 +8,22 @@ vi.mock("next/headers", () => ({
   cookies: () => ({ get: () => undefined }),
 }));
 
-vi.mock("@/services/observability/context/server", () => ({
-  getServerContext: () => ({
-    env: "test",
-    runtime: "server",
-    release: null,
-    requestId: "req-mw",
-    sessionId: null,
-    route: null,
-    actorHash: null,
-    actorRole: null,
-  }),
-}));
+vi.mock("@/services/observability/core/registry", async (orig) => {
+  const actual = await orig<typeof import("@/services/observability/core/registry")>();
+  return {
+    ...actual,
+    getContext: () => ({
+      env: "test",
+      runtime: "server",
+      release: null,
+      requestId: "req-mw",
+      sessionId: null,
+      route: null,
+      actorHash: null,
+      actorRole: null,
+    }),
+  };
+});
 
 const histogram = vi.fn();
 const increment = vi.fn();

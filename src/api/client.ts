@@ -1,8 +1,8 @@
 import createClient, { type Middleware } from "openapi-fetch";
 
-import { getServerContext } from "@/services/observability/context/server";
 import { errors, metrics } from "@/services/observability/core/facade";
 import { M } from "@/services/observability/core/names";
+import { getContext } from "@/services/observability/core/registry";
 
 import type { paths } from "./schema";
 
@@ -15,7 +15,7 @@ const startedAt = new Map<string, number>();
 /** Наблюдаемость для обоих openapi-клиентов: X-Request-Id + api.duration / api.error. */
 const observability: Middleware = {
   onRequest({ request, id }) {
-    const requestId = getServerContext().requestId;
+    const requestId = getContext().requestId;
     if (requestId) request.headers.set("X-Request-Id", requestId);
     startedAt.set(id, Date.now());
     return request;

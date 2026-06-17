@@ -1,7 +1,7 @@
 // instrumentation.ts
 // Next 16 instrumentation hook: бутстрап серверной наблюдаемости при старте
 // процесса и единая точка перехвата необработанных ошибок рендера/роутинга.
-import { initServerObservability } from "@/services/observability";
+import { initServerObservability } from "@/services/observability/server";
 import { errors } from "@/services/observability/core/facade";
 
 /** Вызывается Next один раз при инициализации серверного рантайма. */

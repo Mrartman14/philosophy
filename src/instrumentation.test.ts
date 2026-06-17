@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const initServerObservability = vi.fn();
-vi.mock("@/services/observability", () => ({
+vi.mock("@/services/observability/server", () => ({
   initServerObservability: () => initServerObservability() as unknown,
 }));
 

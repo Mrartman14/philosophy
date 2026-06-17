@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 
 import type { components } from "@/api/schema";
-import { errors, metrics, M, setServerActor } from "@/services/observability";
+import { errors, metrics, M } from "@/services/observability";
+import { setServerActor } from "@/services/observability/server";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 
 /**

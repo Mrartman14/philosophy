@@ -4,10 +4,9 @@ import { createMemorySink } from "@/services/observability/adapters/memory-adapt
 import { setSink } from "@/services/observability/core/registry";
 
 const setServerActor = vi.fn();
-vi.mock("@/services/observability", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/services/observability")>();
-  return { ...actual, setServerActor };
-});
+vi.mock("@/services/observability/server", () => ({
+  setServerActor: (...a: unknown[]) => setServerActor(...a) as unknown,
+}));
 
 const cookieGet = vi.fn();
 vi.mock("next/headers", () => ({
