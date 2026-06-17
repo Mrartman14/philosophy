@@ -330,7 +330,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
           Текущая клавиатурная модель (tabIndex + onKeyDown):
             Delete/Backspace — удалить выбранный элемент;
             Escape          — снять выделение;
-            Ctrl+Z / Ctrl+Y — Undo/Redo истории холста.
+            Ctrl+Z / Ctrl+Shift+Z — Undo/Redo истории холста.
           Колесо мыши управляет зумом.
 
           KNOWN A11Y LIMITATION: навигация между узлами, перемещение узлов
