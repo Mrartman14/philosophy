@@ -15,5 +15,5 @@ export { setClientActor, setClientRoute } from "./context/client";
 export function initClientObservability(): void {
   const cfg = readClientConfig();
   setContextProvider(clientContextProvider);
-  setSink(cfg.clientEnabled && cfg.adapter === "console" ? createBeaconSink(cfg) : noopSink);
+  setSink(cfg.enabled ? createBeaconSink(cfg) : noopSink);
 }

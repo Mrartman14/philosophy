@@ -35,7 +35,7 @@ export async function instrumentedFetch(
     return res;
   } catch (e) {
     metrics.increment(M.apiRequestError, { transport: "fetch", surface, errorClass: "network" });
-    errors.capture(e, { errorClass: "network", handled: false });
+    errors.capture(e, { errorClass: "network", handled: false, attributes: { surface } });
     throw e;
   }
 }

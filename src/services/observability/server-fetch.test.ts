@@ -63,7 +63,7 @@ describe("instrumentedFetch", () => {
       M.apiRequestError,
       { transport: "fetch", surface: "media.upload", errorClass: "network" },
     );
-    expect(capture).toHaveBeenCalledWith(boom, { errorClass: "network", handled: false });
+    expect(capture).toHaveBeenCalledWith(boom, { errorClass: "network", handled: false, attributes: { surface: "media.upload" } });
   });
 
   it("defaults surface to 'fetch' when meta is absent", async () => {

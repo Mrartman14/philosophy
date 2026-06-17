@@ -38,7 +38,7 @@ describe("client barrel exports", () => {
 });
 
 describe("initClientObservability", () => {
-  it("clientEnabled + adapter=console → beacon-sink + clientContextProvider", () => {
+  it("enabled=true → beacon-sink + clientContextProvider", () => {
     vi.stubEnv("NEXT_PUBLIC_OBSERVABILITY_ENABLED", "1");
     vi.stubEnv("NEXT_PUBLIC_OBSERVABILITY_ADAPTER", "console");
     barrel.initClientObservability();

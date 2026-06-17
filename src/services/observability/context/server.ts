@@ -5,19 +5,13 @@ import "server-only";
 
 import { cache } from "react";
 
+import { readServerConfig } from "../config";
+import { resolveEnv } from "../core/env";
 import { baseContext, type ContextProvider } from "../core/registry";
 import type { ContextSnapshot } from "../core/types";
 
-function resolveEnv(): ContextSnapshot["env"] {
-  const raw = process.env.NODE_ENV;
-  if (raw === "production") return "production";
-  if (raw === "test") return "test";
-  return "development";
-}
-
 // HMAC-SHA256(id, salt) via Web Crypto (runtime-agnostic), усечённый. Без соли — «anon».
-export async function hashActor(id: string): Promise<string> {
-  const salt = process.env.OBSERVABILITY_ACTOR_SALT;
+export async function hashActor(id: string, salt: string | null): Promise<string> {
   if (!salt) return "anon";
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
@@ -41,11 +35,14 @@ export function getServerContext(): ContextSnapshot {
 }
 
 export async function setServerActor(id: string, role: string): Promise<void> {
+  const cfg = readServerConfig();
   const ctx = holder();
-  ctx.actorHash = await hashActor(id);
+  ctx.actorHash = await hashActor(id, cfg.actorSalt);
   ctx.actorRole = role;
 }
 
+// TODO(obs/routing): wire setServerRoute from middleware or root layout to propagate
+// the matched route into every server-side telemetry record. See SW-deferral pattern.
 export function setServerRoute(route: string): void {
   holder().route = route;
 }

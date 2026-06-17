@@ -13,9 +13,7 @@ function cfg(): ObservabilityConfig {
     adapter: "console",
     sampleRate: 1,
     actorSalt: null,
-    clientEnabled: true,
     ingestPath: "/api/telemetry",
-    release: null,
     env: "production",
   };
 }
