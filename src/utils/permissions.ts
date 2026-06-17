@@ -1,4 +1,5 @@
 import type { Capability } from "@/api/types";
+import { metrics, M } from "@/services/observability";
 
 import type { MaybeMe } from "./me";
 
@@ -116,9 +117,9 @@ export function requireCapability(
   check: (me: MaybeMe) => boolean
 ): asserts me is NonNullable<MaybeMe> {
   if (check(me)) return;
-  if (!me) throw new ForbiddenError("guest");
-  if (me.status !== "active") throw new ForbiddenError("status");
-  throw new ForbiddenError("role");
+  const reason = !me ? "guest" : me.status !== "active" ? "status" : "role";
+  metrics.increment(M.rbacDenied, { reason });
+  throw new ForbiddenError(reason);
 }
 
 /**
@@ -132,6 +133,8 @@ export function requireCapability(
 export function requireActive(
   me: MaybeMe
 ): asserts me is NonNullable<MaybeMe> {
-  if (!me) throw new ForbiddenError("guest");
-  if (me.status !== "active") throw new ForbiddenError("status");
+  if (me?.status === "active") return;
+  const reason = !me ? "guest" : "status";
+  metrics.increment(M.rbacDenied, { reason });
+  throw new ForbiddenError(reason);
 }
