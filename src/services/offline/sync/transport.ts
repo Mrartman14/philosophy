@@ -25,9 +25,21 @@ export type ReconcileHook = (
   serverId: string,
 ) => Promise<void>;
 
+/** Терминальный исход одной команды за проход (для per-command телеметрии). */
+export type DrainOutcome =
+  | { kind: "done"; command: OutboxCommand; serverId: string }
+  | { kind: "deferred"; command: OutboxCommand; attempts: number; error: string }
+  | { kind: "failed"; command: OutboxCommand; attempts: number; error: string };
+
 export interface DrainDeps {
   send: SyncTransport;
   onSynced?: ReconcileHook;
+  /**
+   * Per-command хук исхода (best-effort, синхронный). Зовётся ПОСЛЕ записи
+   * терминального статуса. Ядро не интерпретирует исход — точка съёма телеметрии
+   * на composition root (поэтому drain.ts не импортирует observability).
+   */
+  onOutcome?: (outcome: DrainOutcome) => void;
 }
 
 export interface DrainResult {

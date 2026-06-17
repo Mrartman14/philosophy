@@ -7,9 +7,24 @@ import type { OutboxCommand } from "../contract/storage";
 import { openOfflineDb } from "../store/db";
 import { listOutboxByStatus, updateOutboxCommand } from "../store/outbox";
 
-import type { DrainDeps, DrainResult, SyncSendResult } from "./transport";
+import type {
+  DrainDeps,
+  DrainOutcome,
+  DrainResult,
+  SyncSendResult,
+} from "./transport";
 
 let draining = false;
+
+// best-effort: исход-хук никогда не валит проход (телеметрия — не критичный путь).
+function emitOutcome(deps: DrainDeps, outcome: DrainOutcome): void {
+  if (!deps.onOutcome) return;
+  try {
+    deps.onOutcome(outcome);
+  } catch {
+    // swallow — onOutcome это съём метрик, не должен ломать дренаж
+  }
+}
 
 /**
  * Атомарно переводит команду pending→syncing за один readwrite-tx.
@@ -87,6 +102,7 @@ export async function drainOutbox(deps: DrainDeps): Promise<DrainResult> {
           }
         }
         done++;
+        emitOutcome(deps, { kind: "done", command: claimed, serverId: outcome.serverId });
       } else if (outcome.retriable) {
         await updateOutboxCommand(claimed.clientId, {
           status: "pending",
@@ -94,6 +110,12 @@ export async function drainOutbox(deps: DrainDeps): Promise<DrainResult> {
           lastError: outcome.error,
         });
         deferred++;
+        emitOutcome(deps, {
+          kind: "deferred",
+          command: claimed,
+          attempts: claimed.attempts + 1,
+          error: outcome.error,
+        });
         // backoff: стоп на первом transient-сбое (доминирующий кейс — офлайн,
         // где упадут и все следующие). Цена — head-of-line при «ядовитой»
         // retriable-команде; контракт транспорта (см. transport.ts) обязывает
@@ -106,6 +128,12 @@ export async function drainOutbox(deps: DrainDeps): Promise<DrainResult> {
           lastError: outcome.error,
         });
         failed++;
+        emitOutcome(deps, {
+          kind: "failed",
+          command: claimed,
+          attempts: claimed.attempts + 1,
+          error: outcome.error,
+        });
       }
     }
   } finally {

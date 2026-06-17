@@ -1,7 +1,7 @@
 // src/services/offline/sync/drain.test.ts
 import "fake-indexeddb/auto";
 import { IDBFactory } from "fake-indexeddb";
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import {
   enqueueOutbox,
@@ -206,6 +206,74 @@ describe("drainOutbox", () => {
 
     expect(reentrant?.skipped).toBe(true);
     expect(reentrant?.attempted).toBe(0);
+  });
+});
+
+describe("drainOutbox onOutcome callback", () => {
+  it("вызывает onOutcome kind:done с serverId при успехе", async () => {
+    const cmd = await enqueueOutbox({
+      entity: "annotations",
+      op: "create",
+      payload: { text: "x" },
+    });
+    const onOutcome = vi.fn();
+    const send = vi.fn(() => Promise.resolve({ ok: true, serverId: "srv-1" }) as const);
+    await drainOutbox({ send, onOutcome });
+    expect(onOutcome).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "done", serverId: "srv-1" }),
+    );
+    expect(onOutcome).toHaveBeenCalledWith(
+      expect.objectContaining({ command: expect.objectContaining({ clientId: cmd.clientId }) as object }),
+    );
+  });
+
+  it("вызывает onOutcome kind:deferred с attempts при retriable-сбое", async () => {
+    await enqueueOutbox({
+      entity: "annotations",
+      op: "create",
+      payload: {},
+      clientId: "c1-deferred",
+    });
+    // Simulate 2 prior attempts
+    await updateOutboxCommand("c1-deferred", { attempts: 2 });
+    const onOutcome = vi.fn();
+    const send = vi.fn(
+      () => Promise.resolve({ ok: false, retriable: true, error: "offline" }) as const,
+    );
+    await drainOutbox({ send, onOutcome });
+    expect(onOutcome).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "deferred", attempts: 3, error: "offline" }),
+    );
+  });
+
+  it("вызывает onOutcome kind:failed при non-retriable-сбое", async () => {
+    await enqueueOutbox({
+      entity: "annotations",
+      op: "create",
+      payload: {},
+    });
+    const onOutcome = vi.fn();
+    const send = vi.fn(
+      () => Promise.resolve({ ok: false, retriable: false, error: "422 invalid" }) as const,
+    );
+    await drainOutbox({ send, onOutcome });
+    expect(onOutcome).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "failed", attempts: 1, error: "422 invalid" }),
+    );
+  });
+
+  it("проглатывает исключение из onOutcome (best-effort, не рушит drain)", async () => {
+    await enqueueOutbox({
+      entity: "annotations",
+      op: "create",
+      payload: {},
+    });
+    const onOutcome = vi.fn(() => {
+      throw new Error("boom");
+    });
+    const send = vi.fn(() => Promise.resolve({ ok: true, serverId: "srv-1" }) as const);
+    const result = await drainOutbox({ send, onOutcome });
+    expect(result.done).toBe(1);
   });
 });
 
