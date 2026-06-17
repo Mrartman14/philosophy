@@ -1,6 +1,20 @@
 // src/services/offline/store/images.test.ts
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
+const { obsHistogram, obsIncrement } = vi.hoisted(() => ({
+  obsHistogram: vi.fn(),
+  obsIncrement: vi.fn(),
+}));
+
+vi.mock("@/services/observability/core/facade", () => ({
+  metrics: {
+    histogram: obsHistogram,
+    increment: obsIncrement,
+  },
+}));
+
+import { M } from "@/services/observability/core/names";
+
 import { OFFLINE_IMAGE_CACHE } from "../contract/storage";
 
 import {
@@ -116,5 +130,36 @@ describe("images cache", () => {
     expect(cachesDelete).not.toHaveBeenCalledWith("flbz-offline-images");
     expect(cachesDelete).not.toHaveBeenCalledWith("flbz-images-abc123");
     expect(cachesDelete).not.toHaveBeenCalledWith("flbz-shell");
+  });
+});
+
+describe("cacheImage observability", () => {
+  beforeEach(() => {
+    obsHistogram.mockClear();
+    obsIncrement.mockClear();
+    vi.stubGlobal("caches", {
+      open: vi.fn().mockResolvedValue({ put: vi.fn().mockResolvedValue(undefined) }),
+    });
+  });
+
+  it("records api.duration on cached fetch", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("img", { status: 200 })));
+    const ok = await cacheImage("/static/files/a.png");
+    expect(ok).toBe(true);
+    expect(obsHistogram).toHaveBeenCalledWith(
+      M.apiDuration,
+      expect.any(Number),
+      { surface: "offline.image", status: 200 },
+    );
+  });
+
+  it("records api.error and rethrows on network throw", async () => {
+    const boom = new TypeError("fetch failed");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(boom));
+    await expect(cacheImage("/static/files/a.png")).rejects.toBe(boom);
+    expect(obsIncrement).toHaveBeenCalledWith(
+      M.apiError,
+      { surface: "offline.image", class: "network" },
+    );
   });
 });
