@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { instrumentedFetch } from "@/services/observability/server-fetch";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import {
@@ -52,10 +53,10 @@ export const getAnnotationsFor = cache(
     );
     url.searchParams.set("offset", String(offset));
     url.searchParams.set("limit", String(limit));
-    const res = await fetch(url, {
+    const res = await instrumentedFetch(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       cache: "no-store",
-    });
+    }, { surface: "annotations.list" });
     // 404 (parent невидим) → пустой список, не валим страницу.
     if (res.status === 404) return toResult(null, offset, limit);
     if (!res.ok) {

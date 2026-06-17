@@ -3,6 +3,7 @@
 import "server-only";
 import { redirect } from "next/navigation";
 
+import { instrumentedFetch } from "@/services/observability/server-fetch";
 import { createFormAction, parseFormData } from "@/utils/create-action";
 
 import { setAuthCookie, clearAuthCookie, getAuthToken } from "./cookie";
@@ -33,12 +34,12 @@ export const loginAction = createFormAction<undefined>(async (formData) => {
 
   let res: Response;
   try {
-    res = await fetch(`${API_URL}/api/auth/login`, {
+    res = await instrumentedFetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
       cache: "no-store",
-    });
+    }, { surface: "auth.login" });
   } catch {
     throw new AuthError("service_unavailable");
   }
@@ -72,12 +73,12 @@ export const registerAction = createFormAction<undefined>(async (formData) => {
 
   let res: Response;
   try {
-    res = await fetch(`${API_URL}/api/auth/register`, {
+    res = await instrumentedFetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
       cache: "no-store",
-    });
+    }, { surface: "auth.register" });
   } catch {
     throw new AuthError("service_unavailable");
   }
@@ -120,12 +121,12 @@ export async function logoutAction(): Promise<void> {
       controller.abort();
     }, LOGOUT_TIMEOUT_MS);
     try {
-      await fetch(`${API_URL}/api/auth/logout`, {
+      await instrumentedFetch(`${API_URL}/api/auth/logout`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
         signal: controller.signal,
-      });
+      }, { surface: "auth.logout" });
     } catch {
       // best-effort: сеть / таймаут (AbortError) / любой статус — см. JSDoc выше
     } finally {

@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { instrumentedFetch } from "@/services/observability/server-fetch";
 import {
   rethrowApiError,
   type ApiError,
@@ -67,7 +68,7 @@ export const createAnnotation = createFormAction(async (formData, ctx) => {
   };
   if (input.anchor !== undefined) body.anchor = input.anchor;
 
-  const res = await fetch(
+  const res = await instrumentedFetch(
     `${API_URL}/api/${seg}/${encodeURIComponent(input.parent_entity_id)}/annotations`,
     {
       method: "POST",
@@ -79,6 +80,7 @@ export const createAnnotation = createFormAction(async (formData, ctx) => {
       body: JSON.stringify(body),
       cache: "no-store",
     },
+    { surface: "annotations.create" },
   );
   if (!res.ok) {
     const errBody = (await res.json().catch(() => ({}))) as ApiError;

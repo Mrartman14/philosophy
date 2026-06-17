@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { API_URL } from "@/api/client";
+import { instrumentedFetch } from "@/services/observability/server-fetch";
 
 interface ExportCtx { params: Promise<{ id: string }> }
 
@@ -28,10 +29,10 @@ export async function proxyExport(
     request.nextUrl.searchParams.get("format") === "txt" ? "txt" : "md";
   const token = (await cookies()).get("token")?.value;
 
-  const upstream = await fetch(`${API_URL}${upstreamPath(id, format)}`, {
+  const upstream = await instrumentedFetch(`${API_URL}${upstreamPath(id, format)}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     cache: "no-store",
-  });
+  }, { surface: "export.proxy" });
 
   const body = await upstream.text();
   return new NextResponse(body, {

@@ -73,8 +73,8 @@ describe("createAnnotation — Idempotency-Key wiring (raw fetch path)", () => {
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     const [_url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    const headers = init.headers as Record<string, string>;
-    expect(headers["Idempotency-Key"]).toBe("key-anno-001");
+    const headers = new Headers(init.headers);
+    expect(headers.get("Idempotency-Key")).toBe("key-anno-001");
   });
 
   it("sends no Idempotency-Key header when the hidden field is absent", async () => {
@@ -82,18 +82,17 @@ describe("createAnnotation — Idempotency-Key wiring (raw fetch path)", () => {
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     const [_url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    const headers = init.headers as Record<string, string>;
-    expect(headers["Idempotency-Key"]).toBeUndefined();
+    const headers = new Headers(init.headers);
+    expect(headers.get("Idempotency-Key")).toBeNull();
   });
 
   it("still includes Authorization and Content-Type regardless of idempotency key", async () => {
     await createAnnotation(initial, annotationForm({ __idempotency_key: "key-anno-002" }));
 
     const [_url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    const headers = init.headers as Record<string, string>;
-    expect(headers.Authorization).toBe("Bearer mock-token");
-    expect(headers["Content-Type"]).toBe("application/json");
-    // Note: "Content-Type" uses bracket notation because the hyphen makes dot notation invalid.
+    const headers = new Headers(init.headers);
+    expect(headers.get("Authorization")).toBe("Bearer mock-token");
+    expect(headers.get("Content-Type")).toBe("application/json");
   });
 
   it("uses POST method and encodes the correct URL segment for 'document' parent type", async () => {

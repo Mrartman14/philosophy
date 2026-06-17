@@ -6,6 +6,7 @@ import { cache } from "react";
 
 import type { components } from "@/api/schema";
 import { errors, metrics, M, setServerActor } from "@/services/observability";
+import { instrumentedFetch } from "@/services/observability/server-fetch";
 
 /**
  * Источник истины о текущем пользователе.
@@ -55,10 +56,14 @@ const getAuthState = cache(async (): Promise<AuthState> => {
     return NO_AUTH;
   }
 
-  const res = await fetch(`${API_URL}/api/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: "no-store",
-  });
+  const res = await instrumentedFetch(
+    `${API_URL}/api/me`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    },
+    { surface: "me.resolve" },
+  );
 
   if (res.status === 403) {
     let code: string | undefined;
