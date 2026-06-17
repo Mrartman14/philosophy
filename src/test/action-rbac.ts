@@ -1,24 +1,18 @@
 /**
- * Shared helpers for RBAC-denied path tests on server actions.
+ * Shared Me/resource builders for RBAC-denied path tests on server actions.
  *
  * USAGE PATTERN in each test file:
- *  1. vi.mock("@/utils/me", ...) — stub getMe to return guestMe() or suspendedMe()
+ *  1. vi.mock("@/utils/me", ...) — stub getMe to return null (guest),
+ *     suspendedMe(), activeUserNoCapsMe() or otherUserActiveMe()
  *  2. vi.mock("@/api/client", ...) — stub createApiClient with spy verbs
  *  3. Do NOT vi.mock("./permissions") — use REAL permission helpers (this is the gap we test)
- *  4. Use expectDenied() to verify the action returned {success:false,code:"forbidden"}
- *     AND no mutating API verb was called.
+ *  4. Each test asserts {success:false,code:"forbidden"} AND that no mutating
+ *     API verb spy was called.
  */
-
-import { expect } from "vitest";
 
 import type { Me } from "@/utils/me";
 
 // ── Me builders ──────────────────────────────────────────────────────────────
-
-/** Returns null — i.e. a guest (unauthenticated). requireCapability throws "guest". */
-export function guestMe(): null {
-  return null;
-}
 
 /**
  * Active user with NO capabilities ("user" role, no special caps).
@@ -83,27 +77,4 @@ export function lectureOwnedByOther(
     created_at: "2024-01-01T00:00:00Z",
     updated_at: "2024-01-01T00:00:00Z",
   };
-}
-
-// ── Assertion helper ──────────────────────────────────────────────────────────
-
-/**
- * Expects:
- *  1. The action result has {success: false, code: "forbidden"}.
- *  2. None of the provided mutating API verb spies were called.
- *
- * Named `expectDenied` (starts with "expect") so the vitest/expect-expect ESLint
- * rule recognises it as an assertion function.
- *
- * @param result  The ActionResult returned by the server action.
- * @param mutatingSpies  The vi.fn() spies for POST/PUT/PATCH/DELETE on the mock client.
- */
-export function expectDenied(
-  result: unknown,
-  mutatingSpies: { mock: { calls: unknown[] } }[],
-): void {
-  expect(result).toMatchObject({ success: false, code: "forbidden" });
-  for (const spy of mutatingSpies) {
-    expect(spy.mock.calls.length).toBe(0);
-  }
 }
