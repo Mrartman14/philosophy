@@ -11,7 +11,7 @@ export const MAX_BYTES = 64 * 1024;
 
 export type IngestResult =
   | { ok: true; records: ObservabilityRecord[] }
-  | { ok: false; reason: "too_large" | "too_many" | "invalid" };
+  | { ok: false; reason: "too_many" | "invalid" };
 
 const attrValue = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 const attributes = z.record(z.string(), attrValue);
@@ -86,8 +86,7 @@ const record = z.discriminatedUnion("kind", [
   metricRecord,
 ]);
 
-export function validateBatch(raw: unknown, byteLength: number): IngestResult {
-  if (byteLength > MAX_BYTES) return { ok: false, reason: "too_large" };
+export function validateBatch(raw: unknown): IngestResult {
   if (!Array.isArray(raw)) return { ok: false, reason: "invalid" };
   if (raw.length > MAX_BATCH) return { ok: false, reason: "too_many" };
 

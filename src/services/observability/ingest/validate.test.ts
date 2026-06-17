@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { validateBatch, MAX_BATCH, MAX_BYTES } from "./validate";
+import { validateBatch, MAX_BATCH } from "./validate";
 
 const ctx = {
   env: "test" as const,
@@ -26,7 +26,7 @@ function logRec(attributes: Record<string, string | number | boolean | null>) {
 
 describe("validateBatch", () => {
   it("accepts a well-formed batch and re-redacts attributes server-side", () => {
-    const res = validateBatch([logRec({ ok: 1, token: "leak" })], 100);
+    const res = validateBatch([logRec({ ok: 1, token: "leak" })]);
     expect(res.ok).toBe(true);
     if (!res.ok) throw new Error("unreachable");
     expect(res.records).toHaveLength(1);
@@ -36,24 +36,19 @@ describe("validateBatch", () => {
     expect("token" in rec.attributes).toBe(false);
   });
 
-  it("rejects an oversized payload by byte length", () => {
-    const res = validateBatch([logRec({})], MAX_BYTES + 1);
-    expect(res).toEqual({ ok: false, reason: "too_large" });
-  });
-
   it("rejects a batch with too many records", () => {
     const batch = Array.from({ length: MAX_BATCH + 1 }, () => logRec({}));
-    const res = validateBatch(batch, 200);
+    const res = validateBatch(batch);
     expect(res).toEqual({ ok: false, reason: "too_many" });
   });
 
   it("rejects a non-array payload", () => {
-    const res = validateBatch({ nope: true }, 50);
+    const res = validateBatch({ nope: true });
     expect(res).toEqual({ ok: false, reason: "invalid" });
   });
 
   it("rejects a record with an unknown kind", () => {
-    const res = validateBatch([{ ...logRec({}), kind: "bogus" }], 80);
+    const res = validateBatch([{ ...logRec({}), kind: "bogus" }]);
     expect(res).toEqual({ ok: false, reason: "invalid" });
   });
 
@@ -74,7 +69,7 @@ describe("validateBatch", () => {
       context: ctx,
       timestamp: 2,
     };
-    const res = validateBatch([errRec], 200);
+    const res = validateBatch([errRec]);
     expect(res.ok).toBe(true);
     if (!res.ok) throw new Error("unreachable");
     expect(res.records).toHaveLength(1);

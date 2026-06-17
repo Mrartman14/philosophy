@@ -41,7 +41,7 @@ export function createIngestHandler(deps?: {
       return { status: 400, emitted: 0 };
     }
 
-    const result = validateBatch(parsed, byteLength);
+    const result = validateBatch(parsed);
     if (!result.ok) {
       return { status: result.reason === "too_many" ? 413 : 400, emitted: 0 };
     }
