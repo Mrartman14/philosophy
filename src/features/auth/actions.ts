@@ -58,7 +58,7 @@ export const loginAction = createFormAction<undefined>(async (formData) => {
 
   await setAuthCookie(token);
   redirect(safeNextPath(next));
-});
+}, "loginAction");
 
 /**
  * Регистрация. Бек на 201 возвращает user.User БЕЗ токена
@@ -95,7 +95,7 @@ export const registerAction = createFormAction<undefined>(async (formData) => {
       ? "/login?registered=1"
       : `/login?registered=1&next=${encodeURIComponent(safeNext)}`;
   redirect(loginUrl);
-});
+}, "registerAction");
 
 /**
  * Выход. Дёргает `POST /api/auth/logout` (бэк отзывает ВСЕ токены пользователя,

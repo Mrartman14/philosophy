@@ -50,7 +50,7 @@ export const createCanvas = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES);
   return unwrap(data);
-});
+}, "createCanvas");
 
 /**
  * PUT /api/canvases/{id} (полная замена title+data). Owner-only enforce'ит бек.
@@ -83,7 +83,7 @@ export const updateCanvas = createFormAction(async (formData) => {
   revalidateEntity(Tags.CANVASES, input.id);
   revalidateEntity(Tags.CANVASES);
   return unwrap(data);
-});
+}, "updateCanvas");
 
 /** PATCH /api/canvases/{id}/visibility. UI шлёт только private→public. */
 export const setCanvasVisibility = createFormAction(async (formData) => {
@@ -99,7 +99,7 @@ export const setCanvasVisibility = createFormAction(async (formData) => {
   revalidateEntity(Tags.CANVASES, input.id);
   revalidateEntity(Tags.CANVASES);
   return unwrap(data);
-});
+}, "setCanvasVisibility");
 
 /** DELETE /api/canvases/{id}. Owner (любая) или admin delete_any (public) — enforce'ит бек. */
 export const deleteCanvas = createAction(async (rawId: string) => {
@@ -111,4 +111,4 @@ export const deleteCanvas = createAction(async (rawId: string) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.CANVASES);
   return undefined;
-});
+}, "deleteCanvas");

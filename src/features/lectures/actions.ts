@@ -76,7 +76,7 @@ export const createLecture = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES);
   return unwrap(data);
-});
+}, "createLecture");
 
 export const updateLecture = createFormAction(async (formData, ctx) => {
   const me = await getMe();
@@ -93,7 +93,7 @@ export const updateLecture = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
   return unwrap(data);
-});
+}, "updateLecture");
 
 export const setLectureVisibility = createFormAction(async (formData, ctx) => {
   const me = await getMe();
@@ -110,7 +110,7 @@ export const setLectureVisibility = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.LECTURES, input.id);
   revalidateEntity(Tags.LECTURES);
   return unwrap(data);
-});
+}, "setLectureVisibility");
 
 export const deleteLecture = createAction(async (rawId: string) => {
   const me = await getMe();
@@ -123,7 +123,7 @@ export const deleteLecture = createAction(async (rawId: string) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES);
   return undefined;
-});
+}, "deleteLecture");
 
 /**
  * PUT /api/lectures/{id}/cover — промоут ранее загруженного изображения
@@ -149,6 +149,7 @@ export const setLectureCover = createAction(
     revalidateEntity(Tags.LECTURES);
     return undefined;
   },
+  "setLectureCover",
 );
 
 /** DELETE /api/lectures/{id}/cover — снять обложку. Owner-only. 204. */
@@ -165,7 +166,7 @@ export const clearLectureCover = createAction(async (rawId: string) => {
   revalidateEntity(Tags.LECTURES, id);
   revalidateEntity(Tags.LECTURES);
   return undefined;
-});
+}, "clearLectureCover");
 
 /**
  * POST /api/lectures/{lectureID}/attachments — прикрепить document|media|canvas.
@@ -195,6 +196,7 @@ export const attachToLecture = createAction(
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
+  "attachToLecture",
 );
 
 /**
@@ -228,6 +230,7 @@ export const detachFromLecture = createAction(
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
+  "detachFromLecture",
 );
 
 /**
@@ -247,6 +250,7 @@ export const suggestGlossaryTerms = createAction(
     if (error) rethrowApiError(error, ERRORS);
     return data.data?.suggestions ?? [];
   },
+  "suggestGlossaryTerms",
 );
 
 /**
@@ -275,6 +279,7 @@ export const searchDocumentsForAttach = createAction(
       total: data.pagination?.total ?? null,
     };
   },
+  "searchDocumentsForAttach",
 );
 
 /** Поиск медиа для attach-пикера (GET /api/media — picker, requiredAuth). */
@@ -299,6 +304,7 @@ export const searchMediaForAttach = createAction(
       total: data.pagination?.total ?? null,
     };
   },
+  "searchMediaForAttach",
 );
 
 /**
@@ -334,4 +340,5 @@ export const reorderLectureAttachment = createAction(
     revalidateEntity(Tags.LECTURES, input.lecture_id);
     return undefined;
   },
+  "reorderLectureAttachment",
 );

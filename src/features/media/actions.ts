@@ -56,7 +56,7 @@ export const deleteMedia = createAction(async (rawId: string) => {
   revalidateEntity(Tags.MEDIA, id);
   revalidateEntity(Tags.MEDIA);
   return undefined;
-});
+}, "deleteMedia");
 
 /**
  * PATCH /api/media/{id}/visibility. Только владелец, только private→public.
@@ -78,4 +78,5 @@ export const setMediaVisibility = createAction(
     revalidateEntity(Tags.MEDIA);
     return undefined;
   },
+  "setMediaVisibility",
 );

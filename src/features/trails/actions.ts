@@ -66,7 +66,7 @@ export const createTrail = createFormAction(async (formData, ctx) => {
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS);
   return unwrap(data);
-});
+}, "createTrail");
 
 /** PUT /api/trails/{id} (метаданные: title + description). Owner-only enforce'ит бек. */
 export const updateTrailMeta = createFormAction(async (formData) => {
@@ -82,7 +82,7 @@ export const updateTrailMeta = createFormAction(async (formData) => {
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
   return unwrap(data);
-});
+}, "updateTrailMeta");
 
 /** PUT /api/trails/{id}/items (bulk-replace упорядоченного списка лекций). Owner-only. */
 export const setTrailItems = createFormAction(async (formData) => {
@@ -98,7 +98,7 @@ export const setTrailItems = createFormAction(async (formData) => {
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
   return unwrap(data);
-});
+}, "setTrailItems");
 
 /** PATCH /api/trails/{id}/visibility. UI шлёт только private→public. Owner-only. */
 export const setTrailVisibility = createFormAction(async (formData) => {
@@ -114,7 +114,7 @@ export const setTrailVisibility = createFormAction(async (formData) => {
   revalidateEntity(Tags.TRAILS, input.id);
   revalidateEntity(Tags.TRAILS);
   return unwrap(data);
-});
+}, "setTrailVisibility");
 
 /** DELETE /api/trails/{id}. Owner (любая видимость) или admin delete_any (public) — enforce'ит бек. */
 export const deleteTrail = createAction(async (rawId: string) => {
@@ -128,7 +128,7 @@ export const deleteTrail = createAction(async (rawId: string) => {
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS);
   return undefined;
-});
+}, "deleteTrail");
 
 /**
  * DELETE /api/trails/{id} от имени админа из admin-списка. На беке отдельного
@@ -146,4 +146,4 @@ export const adminDeleteTrail = createAction(async (rawId: string) => {
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS);
   return undefined;
-});
+}, "adminDeleteTrail");

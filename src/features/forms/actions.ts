@@ -92,7 +92,7 @@ export const createForm = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS);
   return unwrap(data);
-});
+}, "createForm");
 
 /** PATCH /api/forms/{id} — замена структуры. Owner-only + не опубликована (enforce бек). */
 export const updateForm = createFormAction(async (formData) => {
@@ -116,7 +116,7 @@ export const updateForm = createFormAction(async (formData) => {
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
   return unwrap(data);
-});
+}, "updateForm");
 
 /** PATCH /api/forms/{id} visibility-only → publish (private→public). */
 export const publishForm = createFormAction(async (formData) => {
@@ -132,7 +132,7 @@ export const publishForm = createFormAction(async (formData) => {
   revalidateEntity(Tags.FORMS, input.id);
   revalidateEntity(Tags.FORMS);
   return unwrap(data);
-});
+}, "publishForm");
 
 /** DELETE /api/forms/{id}. Owner или delete_any(public) — enforce бек. */
 export const deleteForm = createAction(async (rawId: string) => {
@@ -144,7 +144,7 @@ export const deleteForm = createAction(async (rawId: string) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.FORMS);
   return undefined;
-});
+}, "deleteForm");
 
 /** POST /api/forms/{id}/submissions. token — для приватной формы (share-link). */
 export const submitForm = createFormAction(async (formData, ctx) => {
@@ -163,7 +163,7 @@ export const submitForm = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.SUBMISSIONS);
   revalidateEntity(Tags.FORMS, input.formId);
   return unwrap(data);
-});
+}, "submitForm");
 
 /** PATCH /api/submissions/{id} (editable). Автор — enforce бек. */
 export const editSubmission = createFormAction(async (formData) => {
@@ -179,7 +179,7 @@ export const editSubmission = createFormAction(async (formData) => {
   revalidateEntity(Tags.SUBMISSIONS, input.id);
   revalidateEntity(Tags.SUBMISSIONS);
   return unwrap(data);
-});
+}, "editSubmission");
 
 /** DELETE /api/submissions/{id} (editable, освобождает слот). */
 export const deleteSubmission = createAction(async (rawId: string) => {
@@ -191,7 +191,7 @@ export const deleteSubmission = createAction(async (rawId: string) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SUBMISSIONS);
   return undefined;
-});
+}, "deleteSubmission");
 
 /** POST /api/submissions/{id}/retract (immutable, сжигает слот). */
 export const retractSubmission = createAction(async (rawId: string) => {
@@ -206,4 +206,4 @@ export const retractSubmission = createAction(async (rawId: string) => {
   revalidateEntity(Tags.SUBMISSIONS, id);
   revalidateEntity(Tags.SUBMISSIONS);
   return undefined;
-});
+}, "retractSubmission");

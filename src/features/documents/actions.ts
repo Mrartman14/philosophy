@@ -73,7 +73,7 @@ export const createDocument = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
   return unwrap(data);
-});
+}, "createDocument");
 
 /**
  * POST /api/documents/upload (multipart). FormData с File нельзя гнать через
@@ -123,7 +123,7 @@ export const uploadDocument = createFormAction(async (formData) => {
   const json = (await res.json()) as { data?: Document };
   revalidateEntity(Tags.DOCUMENTS);
   return json.data ?? null;
-});
+}, "uploadDocument");
 
 /** PATCH /api/documents/{id} (метаданные — title). Owner-only enforce'ит бек. */
 export const updateDocumentMeta = createFormAction(async (formData) => {
@@ -139,7 +139,7 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
   return unwrap(data);
-});
+}, "updateDocumentMeta");
 
 /**
  * PUT /api/documents/{id}/blocks. Owner-only enforce'ит бек. Content-edit PUT
@@ -164,7 +164,7 @@ export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
   return unwrap(data);
-});
+}, "updateDocumentBlocks");
 
 /** PATCH /api/documents/{id}/visibility. UI шлёт только private→public. */
 export const setDocumentVisibility = createFormAction(async (formData) => {
@@ -180,7 +180,7 @@ export const setDocumentVisibility = createFormAction(async (formData) => {
   revalidateEntity(Tags.DOCUMENTS, input.id);
   revalidateEntity(Tags.DOCUMENTS);
   return unwrap(data);
-});
+}, "setDocumentVisibility");
 
 /** DELETE /api/documents/{id}. Owner или admin (delete_any, не-private) — enforce'ит бек. */
 export const deleteDocument = createAction(async (rawId: string, ctx) => {
@@ -195,7 +195,7 @@ export const deleteDocument = createAction(async (rawId: string, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
   return undefined;
-});
+}, "deleteDocument");
 
 /** DELETE /api/admin/documents/{id}. Гейт — document.delete_any (только public). */
 export const adminDeleteDocument = createAction(async (rawId: string, ctx) => {
@@ -210,4 +210,4 @@ export const adminDeleteDocument = createAction(async (rawId: string, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.DOCUMENTS);
   return undefined;
-});
+}, "adminDeleteDocument");

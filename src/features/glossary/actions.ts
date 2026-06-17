@@ -55,7 +55,7 @@ export const createTerm = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY);
   return unwrap(data);
-});
+}, "createTerm");
 
 /**
  * PUT /api/admin/glossary/{id}/blocks. Content-edit PUT требует
@@ -80,7 +80,7 @@ export const updateTermBlocks = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.GLOSSARY, input.id);
   revalidateEntity(Tags.GLOSSARY);
   return unwrap(data);
-});
+}, "updateTermBlocks");
 
 export const deleteTerm = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
@@ -94,4 +94,4 @@ export const deleteTerm = createAction(async (rawId: string, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.GLOSSARY);
   return undefined;
-});
+}, "deleteTerm");

@@ -33,7 +33,7 @@ import "server-only";
 //   if (error) rethrowApiError(error);
 //   revalidateEntity("entities");
 //   return data;
-// });
+// }, "createEntity");
 
 // eslint-disable-next-line @typescript-eslint/require-await -- placeholder; will be replaced by a real async server action before use
 export const _placeholder = async () => null;

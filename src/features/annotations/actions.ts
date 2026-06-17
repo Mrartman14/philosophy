@@ -87,7 +87,7 @@ export const createAnnotation = createFormAction(async (formData, ctx) => {
   const json = (await res.json()) as { data?: Annotation };
   revalidateEntity(Tags.ANNOTATIONS);
   return (json.data ?? null);
-});
+}, "createAnnotation");
 
 /**
  * Редактирование. Только автор (бек owner-only). blocks обязательны, anchor
@@ -122,7 +122,7 @@ export const updateAnnotation = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.ANNOTATIONS, input.id);
   revalidateEntity(Tags.ANNOTATIONS);
   return unwrap(data);
-});
+}, "updateAnnotation");
 
 /** Удаление своей аннотации (DELETE /api/annotations/{id}). */
 export const deleteAnnotation = createAction(async (rawId: string, ctx) => {
@@ -141,7 +141,7 @@ export const deleteAnnotation = createAction(async (rawId: string, ctx) => {
   revalidateEntity(Tags.ANNOTATIONS, id);
   revalidateEntity(Tags.ANNOTATIONS);
   return undefined;
-});
+}, "deleteAnnotation");
 
 /**
  * Admin-удаление публичной аннотации (DELETE /api/admin/annotations/{id}).
@@ -163,4 +163,4 @@ export const adminDeleteAnnotation = createAction(async (rawId: string) => {
   revalidateEntity(Tags.ANNOTATIONS, id);
   revalidateEntity(Tags.ANNOTATIONS);
   return undefined;
-});
+}, "adminDeleteAnnotation");

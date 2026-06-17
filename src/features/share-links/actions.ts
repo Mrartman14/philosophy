@@ -57,7 +57,7 @@ export const createShareLink = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.SHARE_LINKS, input.resource_id);
   return unwrap(data);
-});
+}, "createShareLink");
 
 /**
  * Revoke собственной ссылки (создатель). Бек idempotent: повторный revoke —
@@ -78,6 +78,7 @@ export const revokeShareLink = createAction(
     revalidateEntity(Tags.SHARE_LINKS, input.resourceId);
     return true;
   },
+  "revokeShareLink",
 );
 
 /**
@@ -99,4 +100,5 @@ export const adminRevokeShareLink = createAction(
     revalidateEntity(Tags.SHARE_LINKS, input.resourceId);
     return true;
   },
+  "adminRevokeShareLink",
 );

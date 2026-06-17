@@ -27,4 +27,4 @@ export const setHistoryTracking = createAction(async (raw: unknown) => {
   });
   if (error) rethrowApiError(error);
   return unwrap(data);
-});
+}, "setHistoryTracking");

@@ -50,7 +50,7 @@ export const createEvent = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS);
   return unwrap(data);
-});
+}, "createEvent");
 
 /**
  * PUT /api/admin/events/{id}. Content-edit PUT требует `If-Match: "<version>"`
@@ -86,7 +86,7 @@ export const updateEvent = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.EVENTS, input.id);
   revalidateEntity(Tags.EVENTS);
   return unwrap(data);
-});
+}, "updateEvent");
 
 export const deleteEvent = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
@@ -100,4 +100,4 @@ export const deleteEvent = createAction(async (rawId: string, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.EVENTS);
   return undefined;
-});
+}, "deleteEvent");

@@ -32,6 +32,7 @@ export const setUserRole = createAction(
     revalidateEntity(Tags.USERS);
     return data.data ?? null;
   },
+  "setUserRole",
 );
 
 /**
@@ -51,4 +52,5 @@ export const setUserStatus = createAction(
     revalidateEntity(Tags.USERS);
     return data.data ?? null;
   },
+  "setUserStatus",
 );

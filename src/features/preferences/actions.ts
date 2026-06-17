@@ -54,7 +54,7 @@ export const updatePreferences = createFormAction(async (formData) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.PREFERENCES);
   return unwrap(data);
-});
+}, "updatePreferences");
 
 /**
  * Вызывается из push-subscription-toggle с результатом
@@ -68,7 +68,7 @@ export const subscribePush = createAction(async (rawSubscription: unknown) => {
   const { error } = await api.POST("/api/push/subscribe", { body: input });
   if (error) rethrowApiError(error, ERRORS);
   return undefined;
-});
+}, "subscribePush");
 
 export const unsubscribePush = createAction(async (rawEndpoint: string) => {
   const me = await getMe();
@@ -80,7 +80,7 @@ export const unsubscribePush = createAction(async (rawEndpoint: string) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   return undefined;
-});
+}, "unsubscribePush");
 
 export const sendPushBroadcast = createFormAction(async (formData, ctx) => {
   const me = await getMe();
@@ -98,4 +98,4 @@ export const sendPushBroadcast = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   // Бекенд отвечает 202 Accepted — рассылка асинхронная.
   return true;
-});
+}, "sendPushBroadcast");

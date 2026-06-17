@@ -26,7 +26,7 @@ export const markRead = createAction(async (id: string) => {
   });
   if (error) rethrowApiError(error);
   return undefined;
-});
+}, "markRead");
 
 // ВАЖНО: для action'ов БЕЗ входа указываем дженерики `<void, TOutput>` явно.
 // Без них `createAction(async () => …)` выводит `TInput = unknown`, и
@@ -42,7 +42,7 @@ export const markAllRead = createAction<void, void>(async () => {
   const { error } = await api.POST("/api/me/notifications/read-all", {});
   if (error) rethrowApiError(error);
   return undefined;
-});
+}, "markAllRead");
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- void-параметр нужен для zero-arg вызова (см. комментарий выше)
 export const markAllSeen = createAction<void, void>(async () => {
@@ -52,7 +52,7 @@ export const markAllSeen = createAction<void, void>(async () => {
   const { error } = await api.POST("/api/me/notifications/seen-all", {});
   if (error) rethrowApiError(error);
   return undefined;
-});
+}, "markAllSeen");
 
 export const subscribeDocument = createAction(async (documentId: string) => {
   const me = await getMe();
@@ -63,7 +63,7 @@ export const subscribeDocument = createAction(async (documentId: string) => {
   });
   if (error) rethrowApiError(error);
   return undefined;
-});
+}, "subscribeDocument");
 
 export const unsubscribeDocument = createAction(async (documentId: string) => {
   const me = await getMe();
@@ -74,7 +74,7 @@ export const unsubscribeDocument = createAction(async (documentId: string) => {
   });
   if (error) rethrowApiError(error);
   return undefined;
-});
+}, "unsubscribeDocument");
 
 // --- Read-actions для клиентских островков (нужен залогиненный) ---
 
@@ -83,7 +83,7 @@ export const fetchNotificationCounts = createAction<void, NotificationCounts>(as
   const me = await getMe();
   if (!canUseNotifications(me)) throw new ForbiddenError("guest");
   return getNotificationCounts();
-});
+}, "fetchNotificationCounts");
 
 export const fetchNotifications = createAction(
   async (input: { offset: number; limit: number }): Promise<NotificationListResult> => {
@@ -91,4 +91,5 @@ export const fetchNotifications = createAction(
     if (!canUseNotifications(me)) throw new ForbiddenError("guest");
     return getNotifications(input.offset, input.limit);
   },
+  "fetchNotifications",
 );

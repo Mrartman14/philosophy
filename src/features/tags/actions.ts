@@ -50,7 +50,7 @@ export const createTag = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.TAGS);
   return unwrap(data);
-});
+}, "createTag");
 
 export const updateTag = createFormAction(async (formData) => {
   const me = await getMe();
@@ -66,7 +66,7 @@ export const updateTag = createFormAction(async (formData) => {
   // Имя тега показывается на карточках/страницах лекций.
   revalidateEntity(Tags.LECTURES);
   return unwrap(data);
-});
+}, "updateTag");
 
 export const deleteTag = createAction(async (rawId: number) => {
   const me = await getMe();
@@ -81,7 +81,7 @@ export const deleteTag = createAction(async (rawId: number) => {
   // ON DELETE CASCADE снимает тег с лекций — их отображение тоже устарело.
   revalidateEntity(Tags.LECTURES);
   return undefined;
-});
+}, "deleteTag");
 
 export const setLectureTags = createFormAction(async (formData) => {
   const me = await getMe();
@@ -98,4 +98,4 @@ export const setLectureTags = createFormAction(async (formData) => {
   // Tag[] | null — чтобы initial state формы (data: null) совпал по типам
   // с useActionState (паттерн glossary: Term | null).
   return unwrap(data);
-});
+}, "setLectureTags");

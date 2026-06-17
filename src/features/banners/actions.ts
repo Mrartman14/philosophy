@@ -64,7 +64,7 @@ export const createBanner = createFormAction(async (formData, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS);
   return unwrap(data);
-});
+}, "createBanner");
 
 /**
  * PUT /api/admin/banners/{id}. Content-edit PUT требует `If-Match: "<version>"`
@@ -102,7 +102,7 @@ export const updateBanner = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.BANNERS, input.id);
   revalidateEntity(Tags.BANNERS);
   return unwrap(data);
-});
+}, "updateBanner");
 
 export const deleteBanner = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
@@ -116,7 +116,7 @@ export const deleteBanner = createAction(async (rawId: string, ctx) => {
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.BANNERS);
   return undefined;
-});
+}, "deleteBanner");
 
 export const dismissBanner = createAction(async (rawId: string) => {
   const me = await getMe();
@@ -136,4 +136,4 @@ export const dismissBanner = createAction(async (rawId: string) => {
   }
   revalidateEntity(Tags.BANNERS);
   return undefined;
-});
+}, "dismissBanner");

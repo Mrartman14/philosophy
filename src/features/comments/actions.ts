@@ -77,7 +77,7 @@ export const createComment = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.COMMENTS, lectureId);
   revalidateEntity(Tags.COMMENTS);
   return unwrap(data);
-});
+}, "createComment");
 
 /**
  * Редактировать blocks комментария (owner-only — бек проверит). FormData: id,
@@ -103,7 +103,7 @@ export const updateCommentBlocks = createFormAction(async (formData, ctx) => {
   revalidateEntity(Tags.COMMENTS, input.id);
   revalidateEntity(Tags.COMMENTS);
   return unwrap(data);
-});
+}, "updateCommentBlocks");
 
 /** Удалить свой комментарий (owner). Аргумент — id (uuid). */
 export const deleteComment = createAction(async (rawId: string, ctx) => {
@@ -119,7 +119,7 @@ export const deleteComment = createAction(async (rawId: string, ctx) => {
   revalidateEntity(Tags.COMMENTS, id);
   revalidateEntity(Tags.COMMENTS);
   return undefined;
-});
+}, "deleteComment");
 
 /** Admin-удаление (comment.delete_any, независимо от периметра). Аргумент — id. */
 export const adminDeleteComment = createAction(async (rawId: string) => {
@@ -134,7 +134,7 @@ export const adminDeleteComment = createAction(async (rawId: string) => {
   revalidateEntity(Tags.COMMENTS, id);
   revalidateEntity(Tags.COMMENTS);
   return undefined;
-});
+}, "adminDeleteComment");
 
 /** Поставить реакцию по оси (upsert). Аргумент: {id, axis, value}. */
 export const setReaction = createAction(
@@ -151,6 +151,7 @@ export const setReaction = createAction(
     revalidateEntity(Tags.COMMENTS, input.id);
     return undefined;
   },
+  "setReaction",
 );
 
 /** Снять реакцию с оси. Аргумент: {id, axis}. */
@@ -167,4 +168,5 @@ export const removeReaction = createAction(
     revalidateEntity(Tags.COMMENTS, input.id);
     return undefined;
   },
+  "removeReaction",
 );
