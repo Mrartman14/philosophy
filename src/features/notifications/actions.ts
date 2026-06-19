@@ -76,6 +76,28 @@ export const unsubscribeDocument = createAction(async (documentId: string) => {
   return undefined;
 }, "unsubscribeDocument");
 
+export const subscribeLecture = createAction(async (lectureId: string) => {
+  const me = await getMe();
+  requireActive(me);
+  const api = await createApiClient();
+  const { error } = await api.POST("/api/lectures/{id}/subscribe", {
+    params: { path: { id: lectureId } },
+  });
+  if (error) rethrowApiError(error);
+  return undefined;
+}, "subscribeLecture");
+
+export const unsubscribeLecture = createAction(async (lectureId: string) => {
+  const me = await getMe();
+  requireActive(me);
+  const api = await createApiClient();
+  const { error } = await api.DELETE("/api/lectures/{id}/subscribe", {
+    params: { path: { id: lectureId } },
+  });
+  if (error) rethrowApiError(error);
+  return undefined;
+}, "unsubscribeLecture");
+
 // --- Read-actions для клиентских островков (нужен залогиненный) ---
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- void-параметр нужен для zero-arg вызова (см. комментарий выше)

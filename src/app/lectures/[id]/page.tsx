@@ -13,6 +13,10 @@ import {
   LectureMediaSection,
 } from "@/features/lectures";
 import {
+  getLectureSubscription,
+  LectureSubscribeButton,
+} from "@/features/notifications";
+import {
   ShareButton,
   canCreateShareLink,
   getShareLinksFor,
@@ -35,6 +39,10 @@ export default async function LecturePage({ params, searchParams }: Props) {
   ]);
   if (!lecture) notFound();
 
+  const subscribed = me && lecture.id
+    ? await getLectureSubscription(lecture.id)
+    : false;
+
   const canShare = canCreateShareLink(me, lecture);
   const shareLinks = canShare
     ? await getShareLinksFor("lecture", lecture.id)
@@ -56,6 +64,12 @@ export default async function LecturePage({ params, searchParams }: Props) {
       <div className="flex justify-end">
         <SaveOfflineButton entity="lectures" id={id} />
       </div>
+      {/* === slot: подписка на лекцию (notifications) === */}
+      {me && lecture.id && (
+        <div className="flex justify-end">
+          <LectureSubscribeButton lectureId={lecture.id} initialSubscribed={subscribed} />
+        </div>
+      )}
       {/* === slot: share-кнопка (share-links, волна 3) === */}
       {canShare && (
         <div className="flex justify-end">

@@ -5,6 +5,7 @@ export {
   getNotificationCounts,
   getSubscriptions,
   getDocumentSubscription,
+  getLectureSubscription,
 } from "./api";
 export {
   markRead,
@@ -12,6 +13,8 @@ export {
   markAllSeen,
   subscribeDocument,
   unsubscribeDocument,
+  subscribeLecture,
+  unsubscribeLecture,
   fetchNotificationCounts,
   fetchNotifications,
 } from "./actions";
@@ -22,6 +25,7 @@ export { NotificationBell } from "./ui/notification-bell";
 export { NotificationItem } from "./ui/notification-item";
 export { NotificationListActions } from "./ui/notification-list-actions";
 export { DocumentSubscribeButton } from "./ui/document-subscribe-button";
+export { LectureSubscribeButton } from "./ui/lecture-subscribe-button";
 export { SubscriptionsSection } from "./ui/subscriptions-section";
 
 export type {

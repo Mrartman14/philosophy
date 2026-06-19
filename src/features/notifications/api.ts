@@ -101,3 +101,24 @@ export const getDocumentSubscription = cache(async (documentId: string): Promise
     return false;
   }
 });
+
+/**
+ * Подписан ли пользователь на лекцию. Interim: бэк не отдаёт `subscribed` в
+ * detail лекции — сканируем первую страницу подписок (limit 100). Аналогично
+ * getDocumentSubscription, мягкая деградация при ошибке.
+ */
+export const getLectureSubscription = cache(async (lectureId: string): Promise<boolean> => {
+  try {
+    const api = await createApiClient();
+    const { data, error } = await api.GET("/api/me/subscriptions", {
+      params: { query: { offset: 0, limit: 100 } },
+    });
+    if (error) return false;
+    return (data.data ?? []).some(
+      (s) => s.target_type === "lecture" && s.target_id === lectureId,
+    );
+  } catch {
+    // Сетевой сбой — мягкая деградация: показываем «Подписаться».
+    return false;
+  }
+});
