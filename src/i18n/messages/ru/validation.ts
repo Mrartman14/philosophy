@@ -182,6 +182,13 @@ const validation = {
     tagIdsBadJson: "Битый JSON в tag_ids",
   },
 
+  // --- audit: фильтры журнала (AuditActorSchema / AuditActionSchema / AuditDateSchema) ---
+  audit: {
+    invalidActorUuid: "Некорректный UUID актора",
+    invalidActionFormat: "Формат: domain.verb",
+    invalidDate: "Некорректная дата",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

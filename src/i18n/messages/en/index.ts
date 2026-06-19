@@ -4,6 +4,7 @@
 import type { Messages } from "../ru";
 
 import annotations from "./annotations";
+import audit from "./audit";
 import auth from "./auth";
 import banners from "./banners";
 import canvas from "./canvas";
@@ -27,6 +28,7 @@ import validation from "./validation";
 
 const en = {
   annotations,
+  audit,
   auth,
   banners,
   canvas,

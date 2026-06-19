@@ -5,16 +5,12 @@ import { type FormEvent, type ReactNode } from "react";
 
 import { Button, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
+import { useT } from "@/i18n/client";
 
 import { AUDIT_TARGET_TYPES } from "../target-types";
 
 /** Sentinel «все типы» для Select — в URL не сериализуется. */
 const ALL_TYPES = "all";
-
-const TARGET_TYPE_OPTIONS = [
-  { value: ALL_TYPES, label: "Все типы" },
-  ...AUDIT_TARGET_TYPES.map((t) => ({ value: t, label: t })),
-];
 
 const FILTER_FIELDS = [
   "actor",
@@ -35,8 +31,14 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 export function AuditFilterForm() {
+  const t = useT("audit");
   const searchParams = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
+
+  const TARGET_TYPE_OPTIONS = [
+    { value: ALL_TYPES, label: t("filterAllTypes") },
+    ...AUDIT_TARGET_TYPES.map((type) => ({ value: type, label: type })),
+  ];
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -58,43 +60,43 @@ export function AuditFilterForm() {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <Field label="ID актора (UUID)">
+      <Field label={t("filterActorLabel")}>
         <TextInput
           name="actor"
           defaultValue={searchParams.get("actor") ?? ""}
           placeholder="550e8400-e29b-…"
         />
       </Field>
-      <Field label="Тип цели">
+      <Field label={t("filterTargetTypeLabel")}>
         <Select
           name="target_type"
           defaultValue={searchParams.get("target_type") ?? ALL_TYPES}
           options={TARGET_TYPE_OPTIONS}
-          aria-label="Тип цели"
+          aria-label={t("filterTargetTypeLabel")}
         />
       </Field>
-      <Field label="ID цели">
+      <Field label={t("filterTargetIdLabel")}>
         <TextInput
           name="target_id"
           defaultValue={searchParams.get("target_id") ?? ""}
-          placeholder="ID сущности"
+          placeholder={t("filterTargetIdPlaceholder")}
         />
       </Field>
-      <Field label="Действие">
+      <Field label={t("filterActionLabel")}>
         <TextInput
           name="action"
           defaultValue={searchParams.get("action") ?? ""}
-          placeholder="Например, lecture.create"
+          placeholder={t("filterActionPlaceholder")}
         />
       </Field>
-      <Field label="С">
+      <Field label={t("filterFromLabel")}>
         <TextInput
           type="datetime-local"
           name="from"
           defaultValue={searchParams.get("from") ?? ""}
         />
       </Field>
-      <Field label="По">
+      <Field label={t("filterToLabel")}>
         <TextInput
           type="datetime-local"
           name="to"
@@ -103,10 +105,10 @@ export function AuditFilterForm() {
       </Field>
       <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
         <Button type="submit" disabled={pending}>
-          {pending ? "…" : "Фильтровать"}
+          {pending ? "…" : t("filterSubmit")}
         </Button>
         <Button type="button" variant="ghost" onClick={onReset} disabled={pending}>
-          Сбросить
+          {t("filterReset")}
         </Button>
       </div>
     </form>

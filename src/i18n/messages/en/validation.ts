@@ -179,6 +179,13 @@ const validation = {
     tagIdsBadJson: "Invalid JSON in tag_ids",
   },
 
+  // --- audit: log filters (AuditActorSchema / AuditActionSchema / AuditDateSchema) ---
+  audit: {
+    invalidActorUuid: "Invalid actor UUID",
+    invalidActionFormat: "Format: domain.verb",
+    invalidDate: "Invalid date",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",
