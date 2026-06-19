@@ -68,7 +68,7 @@
 
 - **Tier 1 — Primitive** (`primitives.ts`): сырые OKLCH-рампы (тёплый нейтральный «sand», акцент, link-blue, danger/success/warning/info) + не-цветовые шкалы (spacing 4px-база, type-scale, radius, shadow, z-index, duration, font-families). Рампы выкладываются на lightness'ах, вычисленных `apcach` под Lc-сетку против канонических фонов.
 - **Tier 2 — Semantic** (`semantic.ts`): переключаемый ярус.
-  - Цвет: `--color-bg / bg-subtle / bg-raised / bg-overlay`; `--color-fg / fg-muted / fg-subtle / fg-on-accent`; `--color-border / border-strong / ring`; `--color-accent / accent-hover / accent-fg`; `--color-link / link-hover`; статусы `danger/success/warning/info` (+ `-bg`, `-fg`).
+  - Цвет: поверхности `--color-surface / surface-subtle / surface-raised / surface-overlay`; текст `--color-fg / fg-muted / fg-subtle / fg-on-accent`; линии `--color-border / border-strong / ring`; бренд `--color-accent / accent-hover / accent-fg`; ссылки `--color-link / link-hover`; статусы `danger/success/warning/info` (+ `-bg` тинт-фон, `-fg` текст-на-тинте). NB: суффикс `-bg` у статусов — это тинт-подложка статуса, не семейство поверхностей (`surface`).
   - Не-цвет: `--space-*`, `--size-control-h-{sm,md,lg}`, `--space-control-pad-{x,y}`, `--space-stack`, `--text-*`, `--font-ui`, `--radius-*`, `--shadow-*`, `--z-*`, `--duration-*`.
 - **Tier 3 — Component** (тонкий, по необходимости): `--button-*`, `--input-*` и т.п. — только где компоненту нужна своя ручка. Минимизируем.
 
@@ -100,15 +100,15 @@
 ```css
 /* tokens.generated.css — генерируется */
 @theme inline {
-  --color-bg: var(--bg);
+  --color-surface: var(--surface);
   --color-fg: var(--fg);
   --font-ui:  var(--app-font);
   /* ...все semantic-токены... */
 }
-:root { --bg: oklch(...); --fg: oklch(...); }                       /* light-normal (default) */
-@media (prefers-color-scheme: dark) { :root { --bg:…; --fg:…; } }   /* system-dark */
-[data-theme="dark"]  { --bg:…; --fg:…; }                            /* explicit dark */
-[data-theme="light"] { --bg:…; --fg:…; }                            /* explicit light — бьёт media */
+:root { --surface: oklch(...); --fg: oklch(...); }                       /* light-normal (default) */
+@media (prefers-color-scheme: dark) { :root { --surface:…; --fg:…; } }   /* system-dark */
+[data-theme="dark"]  { --surface:…; --fg:…; }                            /* explicit dark */
+[data-theme="light"] { --surface:…; --fg:…; }                            /* explicit light — бьёт media */
 /* high-contrast: ДВА отдельных правила (нельзя смешивать селектор и @media в одном
    selector-list — это невалидный CSS, браузер дропнет весь блок). */
 [data-contrast="high"] { --fg:…; --border:…; /* high-Lc */ }

@@ -30,14 +30,13 @@
 | --- | --- | --- |
 | `--color-danger-fill-hover` | `--color-danger` | 3 |
 | `--color-danger-fill` | `--color-danger` | 3 |
-| `--color-background` | `--color-bg` | 25 |
+| `--color-background` | `--color-surface` | 25 |
 | `--color-foreground` | `--color-fg` | 11 |
-| `--color-text-pane` | `--color-bg-subtle` | 28 |
+| `--color-text-pane` | `--color-surface-subtle` | 28 |
 | `--color-description` | `--color-fg-muted` | 138 |
 | `--color-primary` | `--color-accent` | 16 |
-| `--color-surface` | `--color-bg-raised` | 1 |
 
-Имена, которые НЕ переименовываются (совпадают с новыми semantic): `--color-border`, `--color-link`, `--color-danger`, `--color-danger-bg`, `--color-success`. Всего ~158 distinct файлов; 23 — в запретных зонах (см. Global Constraints).
+Имена, которые НЕ переименовываются (совпадают с новыми semantic): `--color-border`, `--color-link`, `--color-danger`, `--color-danger-bg`, `--color-success`, **`--color-surface`** (в `lazy-ast-editor.tsx` он сейчас не определён — после ввода нового семейства поверхностей он становится реальным базовым токеном и резолвится сам, миграции/алиаса не требует). Семейство поверхностей: `surface / surface-subtle / surface-raised / surface-overlay`. NB: статусные суффиксы `-bg` (`danger-bg`/`success-bg`/…) — это тинт-подложки, НЕ семейство поверхностей; их codemod не трогает. Всего ~158 distinct файлов; 23 — в запретных зонах (см. Global Constraints).
 
 ## File Structure
 
@@ -283,7 +282,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 Create `src/styles/tokens/apca-targets.ts`:
 ```ts
 export type ColorTokenName =
-  | "bg" | "bg-subtle" | "bg-raised" | "bg-overlay"
+  | "surface" | "surface-subtle" | "surface-raised" | "surface-overlay"
   | "fg" | "fg-muted" | "fg-subtle" | "fg-on-accent"
   | "border" | "border-strong" | "ring"
   | "accent" | "accent-hover" | "accent-fg"
@@ -293,37 +292,39 @@ export type ColorTokenName =
   | "warning" | "warning-bg" | "warning-fg"
   | "info" | "info-bg" | "info-fg";
 
+// NB: ключи fg:/bg: ниже — это поля пары (foreground/background), а не имена токенов.
+// Значения — токены ColorTokenName. Статусные -bg/-fg — тинт-подложка/текст-на-тинте.
 export const CONTRAST_PAIRS: { fg: ColorTokenName; bg: ColorTokenName; minLc: number; note: string }[] = [
-  { fg: "fg", bg: "bg", minLc: 75, note: "body text on app bg (preferred 90)" },
-  { fg: "fg", bg: "bg-subtle", minLc: 75, note: "body on subtle pane" },
-  { fg: "fg", bg: "bg-raised", minLc: 75, note: "body on raised surface" },
-  { fg: "fg-muted", bg: "bg", minLc: 60, note: "secondary text" },
-  { fg: "fg-muted", bg: "bg-subtle", minLc: 60, note: "secondary on pane" },
-  { fg: "fg-subtle", bg: "bg", minLc: 30, note: "placeholder/disabled" },
-  { fg: "link", bg: "bg", minLc: 60, note: "link" },
-  { fg: "link-hover", bg: "bg", minLc: 60, note: "link hover" },
-  { fg: "accent", bg: "bg", minLc: 15, note: "accent fill discernible as object on bg" },
+  { fg: "fg", bg: "surface", minLc: 75, note: "body text on app surface (preferred 90)" },
+  { fg: "fg", bg: "surface-subtle", minLc: 75, note: "body on subtle surface" },
+  { fg: "fg", bg: "surface-raised", minLc: 75, note: "body on raised surface" },
+  { fg: "fg-muted", bg: "surface", minLc: 60, note: "secondary text" },
+  { fg: "fg-muted", bg: "surface-subtle", minLc: 60, note: "secondary on subtle surface" },
+  { fg: "fg-subtle", bg: "surface", minLc: 30, note: "placeholder/disabled" },
+  { fg: "link", bg: "surface", minLc: 60, note: "link" },
+  { fg: "link-hover", bg: "surface", minLc: 60, note: "link hover" },
+  { fg: "accent", bg: "surface", minLc: 15, note: "accent fill discernible as object on surface" },
   { fg: "accent-fg", bg: "accent", minLc: 60, note: "label on accent fill" },
   { fg: "fg-on-accent", bg: "accent", minLc: 60, note: "alt label on accent" },
   { fg: "accent-fg", bg: "accent-hover", minLc: 60, note: "label on accent hover state" },
   { fg: "fg-on-accent", bg: "accent-hover", minLc: 60, note: "alt label on accent hover" },
-  { fg: "border", bg: "bg", minLc: 15, note: "discernible border" },
-  { fg: "border-strong", bg: "bg", minLc: 30, note: "interactive border" },
-  { fg: "ring", bg: "bg", minLc: 45, note: "focus ring on bg" },
+  { fg: "border", bg: "surface", minLc: 15, note: "discernible border" },
+  { fg: "border-strong", bg: "surface", minLc: 30, note: "interactive border" },
+  { fg: "ring", bg: "surface", minLc: 45, note: "focus ring on surface" },
   { fg: "ring", bg: "accent", minLc: 45, note: "focus ring must stay visible over accent surface" },
-  { fg: "danger", bg: "bg", minLc: 60, note: "danger text/icon" },
+  { fg: "danger", bg: "surface", minLc: 60, note: "danger text/icon" },
   { fg: "fg-on-accent", bg: "danger", minLc: 60, note: "light label on solid danger fill (e.g. danger button)" },
   { fg: "danger-fg", bg: "danger-bg", minLc: 60, note: "danger text on tint" },
-  { fg: "danger-bg", bg: "bg", minLc: 8, note: "danger tint discernible from bg" },
-  { fg: "success", bg: "bg", minLc: 60, note: "success text/icon" },
+  { fg: "danger-bg", bg: "surface", minLc: 8, note: "danger tint discernible from surface" },
+  { fg: "success", bg: "surface", minLc: 60, note: "success text/icon" },
   { fg: "success-fg", bg: "success-bg", minLc: 60, note: "success text on tint" },
-  { fg: "warning", bg: "bg", minLc: 60, note: "warning text/icon" },
+  { fg: "warning", bg: "surface", minLc: 60, note: "warning text/icon" },
   { fg: "warning-fg", bg: "warning-bg", minLc: 60, note: "warning text on tint" },
-  { fg: "info", bg: "bg", minLc: 60, note: "info text/icon" },
+  { fg: "info", bg: "surface", minLc: 60, note: "info text/icon" },
   { fg: "info-fg", bg: "info-bg", minLc: 60, note: "info text on tint" },
 ];
-// NB: bg-overlay — полупрозрачный слой; APCAcontrast напрямую его не меряет.
-// Контент модалок рендерится на bg-raised поверх overlay → покрыто парой fg на bg-raised.
+// NB: surface-overlay — полупрозрачный слой; APCAcontrast напрямую его не меряет.
+// Контент модалок рендерится на surface-raised поверх overlay → покрыто парой fg на surface-raised.
 ```
 
 - [ ] **Step 2: typecheck → коммит**
@@ -437,7 +438,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: `BACKDROP`, `HUE`, `deriveOn`, `ThemeMode` (Task 4); `ColorTokenName` (Task 3); `Contrast` (enums).
 - Produces: `buildColorLayer(theme, contrast): Record<ColorTokenName, string>`; `COLOR_LAYERS` (4 комбинации).
-- **Политика fg:** fg-семейство деривируется против НАИХУДШЕГО (наименее контрастного) фона из {bg, bg-subtle, bg-raised}, т.к. гард ассертит fg на всех трёх. Для light худший — bg-raised (L0.985, ближе всех к тёмному тексту по контрасту? нет — светлее bg → дальше). Реально: для тёмного текста на светлом наименьший контраст даёт САМЫЙ СВЕТЛЫЙ фон → bg-raised. Деривируем fg против bg-raised, проверяем на всех. (Для dark — наоборот, самый тёмный фон.)
+- **Политика fg:** fg-семейство деривируется против НАИХУДШЕГО (наименее контрастного) фона из {surface, surface-subtle, surface-raised}, т.к. гард ассертит fg на всех трёх. Для light худший = самый светлый фон → surface-raised. Деривируем fg против него, проверяем на всех. (Для dark — наоборот, самый тёмный фон → surface-subtle.) Внутренние поля `BACKDROP` (`bg/bgSubtle/bgRaised`) — это значения этих поверхностей; имена полей внутренние, в токены не протекают.
 - accent усиливается в high; тинты статусов — с явным направлением по теме.
 
 - [ ] **Step 1: Тест полноты + high≠normal**
@@ -449,7 +450,7 @@ import { COLOR_LAYERS, buildColorLayer } from "./semantic";
 import { CONTRAST_PAIRS, type ColorTokenName } from "./apca-targets";
 
 const ALL: ColorTokenName[] = [
-  "bg","bg-subtle","bg-raised","bg-overlay","fg","fg-muted","fg-subtle","fg-on-accent",
+  "surface","surface-subtle","surface-raised","surface-overlay","fg","fg-muted","fg-subtle","fg-on-accent",
   "border","border-strong","ring","accent","accent-hover","accent-fg","link","link-hover",
   "danger","danger-bg","danger-fg","success","success-bg","success-fg",
   "warning","warning-bg","warning-fg","info","info-bg","info-fg",
@@ -511,8 +512,8 @@ export function buildColorLayer(theme: ThemeMode, contrast: Contrast): Record<Co
   const infoBg = deriveOn(bd.bg, t.tint, HUE.info.h, HUE.info.c * 0.3, dirTint);
 
   return {
-    bg: bd.bg, "bg-subtle": bd.bgSubtle, "bg-raised": bd.bgRaised,
-    "bg-overlay": theme === "light" ? "oklch(0.21 0.018 250 / 0.45)" : "oklch(0 0 0 / 0.6)",
+    surface: bd.bg, "surface-subtle": bd.bgSubtle, "surface-raised": bd.bgRaised,
+    "surface-overlay": theme === "light" ? "oklch(0.21 0.018 250 / 0.45)" : "oklch(0 0 0 / 0.6)",
 
     fg: deriveOn(worstFg, t.fg, HUE.neutral.h, HUE.neutral.c, dirFg),
     "fg-muted": deriveOn(worstFg, t.fgMuted, HUE.neutral.h, HUE.neutral.c, dirFg),
@@ -936,15 +937,16 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
    Удаляется в Task 18 после полной миграции. Имена, совпадающие с новыми
    (--color-border/-link/-danger/-danger-bg/-success), уже эмитит @theme inline. */
 :root {
-  --color-background: var(--color-bg);
+  --color-background: var(--color-surface);
   --color-foreground: var(--color-fg);
   --color-description: var(--color-fg-muted);
-  --color-text-pane: var(--color-bg-subtle);
+  --color-text-pane: var(--color-surface-subtle);
   --color-primary: var(--color-accent);
-  --color-surface: var(--color-bg-raised);
   --color-danger-fill: var(--color-danger);
   --color-danger-fill-hover: var(--color-danger);
 }
+/* NB: --color-surface НЕ алиасим — это реальный новый базовый токен (эмитит @theme inline);
+   существующий bg-(--color-surface) в lazy-ast-editor.tsx резолвится в него напрямую. */
 ```
 - [ ] **Step 2: Заглушка content.css** → `printf '/* .content — populated in Task 14 */\n' > src/styles/content.css`
 - [ ] **Step 3: Переписать globals.css** (сохранив существующие global-правила: scroll-margin, fancy-link, router-link-wave, sensitive-image, body:has dialog):
@@ -963,7 +965,7 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 
 @media (forced-colors: active) {
   :root {
-    --color-accent: AccentColor; --color-bg: Canvas; --color-fg: CanvasText;
+    --color-accent: AccentColor; --color-surface: Canvas; --color-fg: CanvasText;
     --color-border: ButtonBorder; --color-link: LinkText; --color-fg-muted: GrayText;
   }
   *::target-text { background-color: Highlight; color: HighlightText; }
@@ -1212,14 +1214,14 @@ pnpm lint && pnpm test && pnpm build
   .content :is(ul,ol) { padding-inline-start: 1.5em; } .content ul { list-style: disc; } .content ol { list-style: decimal; }
   .content > :is(ul,ol) > li + li { margin-block-start: calc(var(--space-stack) * 0.4); }
   .content blockquote { border-inline-start: 3px solid var(--color-border-strong); padding-inline-start: 1em; color: var(--color-fg-muted); }
-  .content code { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.9em; background: var(--color-bg-subtle); padding: 0.1em 0.3em; border-radius: var(--radius-sm); }
-  .content pre { font-family: var(--font-geist-mono), ui-monospace, monospace; background: var(--color-bg-subtle); padding: var(--space-control-pad-x); border-radius: var(--radius-md); overflow-x: auto; }
+  .content code { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.9em; background: var(--color-surface-subtle); padding: 0.1em 0.3em; border-radius: var(--radius-sm); }
+  .content pre { font-family: var(--font-geist-mono), ui-monospace, monospace; background: var(--color-surface-subtle); padding: var(--space-control-pad-x); border-radius: var(--radius-md); overflow-x: auto; }
   .content pre code { background: none; padding: 0; }
   .content hr { border: 0; border-block-start: 1px solid var(--color-border); }
   .content img { max-width: 100%; height: auto; border-radius: var(--radius-md); }
   .content table { width: 100%; border-collapse: collapse; }
   .content :is(th,td) { border: 1px solid var(--color-border); padding: var(--space-control-pad-y) var(--space-control-pad-x); text-align: start; }
-  .content th { font-weight: 600; background: var(--color-bg-subtle); }
+  .content th { font-weight: 600; background: var(--color-surface-subtle); }
 }
 ```
 - [ ] **Step 2: Убрать плагин** — в `globals.css` удалить `@plugin "@tailwindcss/typography";`; `pnpm remove @tailwindcss/typography`.
@@ -1256,9 +1258,9 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 **Interfaces:** Эта задача — НЕ переименование (его сделает общий кодмод Task 16), а смысловые правки ui-kit: focus-ring → `--color-ring`, density-токены вместо хардкода высот, highlight-фон Select на различимый токен.
 
-- [ ] **Step 1: `cn.ts`** — `FOCUS_RING_*`: `outline-(--color-foreground)` → `outline-(--color-ring)`; `SHELL_BASE`: `bg-(--color-background)` оставить (кодмод переименует) ИЛИ сразу `bg-(--color-bg)`. Чтобы не конфликтовать с кодмодом, в этой задаче меняем ТОЛЬКО ring и size-токены; переименование bg/fg/etc. оставляем кодмоду Task 16.
+- [ ] **Step 1: `cn.ts`** — `FOCUS_RING_*`: `outline-(--color-foreground)` → `outline-(--color-ring)`. `SHELL_BASE`: `bg-(--color-background)` оставить как есть — кодмод Task 16 переименует `--color-background` → `--color-surface`. В этой задаче меняем ТОЛЬКО ring и size-токены; переименование surface/fg/etc. — кодмоду Task 16.
 - [ ] **Step 2: Density-токены** — в `button.tsx`, `icon-button.tsx`, `text-input.tsx`, `textarea.tsx`, `select.tsx`, `checkbox.tsx`: `h-8/h-10/h-12` → `h-(--size-control-h-sm/-md/-lg)`; `px-3`→`px-(--space-control-pad-x)`; `py-2`→`py-(--space-control-pad-y)` (только для контролов).
-- [ ] **Step 3: Select highlight** — в `select.tsx` `data-[highlighted]:bg-(--color-text-pane)` → `data-[highlighted]:bg-(--color-bg-subtle)` (bg-subtle теперь заметно отличается от bg, см. Task 4) — различимость hover сохранена.
+- [ ] **Step 3: Select highlight** — в `select.tsx` `data-[highlighted]:bg-(--color-text-pane)` → `data-[highlighted]:bg-(--color-surface-subtle)` (surface-subtle заметно отличается от surface, см. Task 4) — различимость hover сохранена. (Кодмод Task 16 переименовал бы `--color-text-pane` → `--color-surface-subtle` сам, но здесь меняем явно вместе с семантикой highlight.)
 - [ ] **Step 4: Сборка/тесты ui** → `pnpm build && pnpm test src/components/ui`. `pnpm dev` + DevTools `<html data-density="compact">` — контролы плотнее.
 - [ ] **Step 5: Коммит (поимённо — только реально изменённые файлы)**
 ```bash
@@ -1282,15 +1284,16 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```js
 import { readFileSync, writeFileSync } from "node:fs";
 // Порядок важен: -fill-hover до -fill.
+// --color-surface НЕ в карте: это новое каноническое имя базовой поверхности
+// (эмитится @theme inline), а не legacy — существующие ссылки на него уже валидны.
 const MAP = [
   ["--color-danger-fill-hover", "--color-danger"],
   ["--color-danger-fill", "--color-danger"],
-  ["--color-background", "--color-bg"],
+  ["--color-background", "--color-surface"],
   ["--color-foreground", "--color-fg"],
-  ["--color-text-pane", "--color-bg-subtle"],
+  ["--color-text-pane", "--color-surface-subtle"],
   ["--color-description", "--color-fg-muted"],
   ["--color-primary", "--color-accent"],
-  ["--color-surface", "--color-bg-raised"],
 ];
 const files = process.argv.slice(2);
 let changed = 0;
@@ -1304,7 +1307,7 @@ console.log(`[migrate-legacy-tokens] changed ${changed}/${files.length} files`);
 ```
 - [ ] **Step 2: Собрать список NON-frozen файлов и прогнать**
 ```bash
-FILES=$(grep -rlE -- '--color-(background|foreground|text-pane|description|primary|danger-fill|surface)' src/ \
+FILES=$(grep -rlE -- '--color-(background|foreground|text-pane|description|primary|danger-fill)' src/ \
   --include='*.tsx' --include='*.ts' --include='*.css' \
   | grep -vE '^src/(app/admin|components/app|components/permission|components/shared|components/ui|styles/themes/compat\.css|app/layout\.tsx)' )
 echo "$FILES" | xargs node scripts/migrate-legacy-tokens.mjs
@@ -1331,7 +1334,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 - [ ] **Step 1: Прогнать codemod на frozen-зонах + layout**
 ```bash
-FROZEN=$(grep -rlE -- '--color-(background|foreground|text-pane|description|primary|danger-fill|surface)' \
+FROZEN=$(grep -rlE -- '--color-(background|foreground|text-pane|description|primary|danger-fill)' \
   src/app/admin src/components/app src/components/permission src/components/shared src/app/layout.tsx \
   --include='*.tsx' --include='*.ts' --include='*.css')
 echo "$FROZEN" | xargs node scripts/migrate-legacy-tokens.mjs
@@ -1354,7 +1357,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 - [ ] **Step 1: Проверить, что легаси-имён больше нет**
 ```bash
-grep -rnE -- '--color-(background|foreground|text-pane|description|primary|danger-fill|surface)' src/ \
+grep -rnE -- '--color-(background|foreground|text-pane|description|primary|danger-fill)' src/ \
   --include='*.tsx' --include='*.ts' --include='*.css' | grep -vE 'compat\.css|rebus\.css'
 ```
 Expected: ПУСТО. Если есть — домигрировать (прогнать codemod из git-истории или вручную) ПЕРЕД удалением shim.
