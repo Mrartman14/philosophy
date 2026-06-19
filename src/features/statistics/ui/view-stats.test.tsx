@@ -11,6 +11,34 @@ vi.mock("next/link", () => ({
   useLinkStatus: () => ({ pending: false }),
 }));
 
+// Мок @/i18n: getT("statistics") возвращает переводчик по реальному каталогу ru.
+vi.mock("@/i18n", async () => {
+  const { default: statistics } = await import(
+    "@/i18n/messages/ru/statistics"
+  );
+  return {
+    getT: (_ns: string) =>
+      Promise.resolve((key: string, params?: Record<string, unknown>) => {
+        const parts = key.split(".");
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = statistics;
+        for (const part of parts) {
+          val = val?.[part];
+        }
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        if (typeof val !== "string") return key;
+        if (params) {
+          return val.replace(/\{(\w+)\}/g, (_m: string, k: string) => {
+            const v = params[k];
+            if (typeof v === "string" || typeof v === "number") return String(v);
+            return `{${k}}`;
+          });
+        }
+        return val;
+      }),
+  };
+});
+
 import type { ViewStatsData } from "../types";
 
 import { ViewStats } from "./view-stats";
@@ -18,19 +46,19 @@ import { ViewStats } from "./view-stats";
 afterEach(cleanup);
 
 describe("ViewStats", () => {
-  it("трекинг выключен → подсказка со ссылкой в настройки", () => {
-    render(<ViewStats stats={{}} trackingEnabled={false} />);
+  it("трекинг выключен → подсказка со ссылкой в настройки", async () => {
+    render(await ViewStats({ stats: {}, trackingEnabled: false }));
     expect(screen.getByText("Трекинг просмотров выключен")).toBeTruthy();
     const link = screen.getByRole("link", { name: /настройк/i });
     expect(link.getAttribute("href")).toBe("/me/settings");
   });
 
-  it("трекинг включён, но пусто → соответствующий EmptyState", () => {
-    render(<ViewStats stats={{ total: 0, top: [] }} trackingEnabled />);
+  it("трекинг включён, но пусто → соответствующий EmptyState", async () => {
+    render(await ViewStats({ stats: { total: 0, top: [] }, trackingEnabled: true }));
     expect(screen.getByText("Вы пока ничего не просматривали")).toBeTruthy();
   });
 
-  it("рендерит total, разбивку и топ; доступные цели — ссылки, недоступные — текст", () => {
+  it("рендерит total, разбивку и топ; доступные цели — ссылки, недоступные — текст", async () => {
     const stats: ViewStatsData = {
       total: 5,
       count_by_type: { lecture: 3, document: 1 },
@@ -59,7 +87,7 @@ describe("ViewStats", () => {
         },
       ],
     };
-    render(<ViewStats stats={stats} trackingEnabled />);
+    render(await ViewStats({ stats, trackingEnabled: true }));
     // total и разбивка по типам
     expect(screen.getByText(/Всего просмотров/)).toBeTruthy();
     expect(screen.getByText("Лекции: 3")).toBeTruthy();

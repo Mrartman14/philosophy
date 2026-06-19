@@ -1,15 +1,8 @@
 // src/features/statistics/ui/view-stats.tsx
 import { EmptyState, RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { ViewStatItem, ViewStatsData } from "../types";
-
-const LABELS: Record<string, string> = {
-  lecture: "Лекции",
-  document: "Документы",
-  trail: "Маршруты",
-  canvas: "Канвасы",
-  form: "Формы",
-};
 
 const BASE_PATH: Record<string, string> = {
   lecture: "/lectures",
@@ -26,19 +19,32 @@ function targetHref(item: ViewStatItem): string | null {
   return `${base}/${item.target_id}`;
 }
 
-export function ViewStats({
+export async function ViewStats({
   stats,
   trackingEnabled,
 }: {
   stats: ViewStatsData;
   trackingEnabled: boolean;
 }) {
+  const t = await getT("statistics");
+
+  const entityLabels: Record<string, string> = {
+    lecture: t("entityType.lecture"),
+    document: t("entityType.document"),
+    trail: t("entityType.trail"),
+    canvas: t("entityType.canvas"),
+    form: t("entityType.form"),
+    media: t("entityType.media"),
+    annotation: t("entityType.annotation"),
+    comment: t("entityType.comment"),
+  };
+
   if (!trackingEnabled) {
     return (
       <EmptyState
-        title="Трекинг просмотров выключен"
-        description="Включите его в настройках, чтобы видеть статистику просмотров."
-        action={<RouterLink href="/me/settings">Перейти в настройки</RouterLink>}
+        title={t("trackingDisabledTitle")}
+        description={t("trackingDisabledDescription")}
+        action={<RouterLink href="/me/settings">{t("goToSettings")}</RouterLink>}
       />
     );
   }
@@ -46,8 +52,8 @@ export function ViewStats({
   if ((stats.total ?? 0) === 0) {
     return (
       <EmptyState
-        title="Вы пока ничего не просматривали"
-        description="Статистика появится после первых просмотров материалов."
+        title={t("noViewsTitle")}
+        description={t("noViewsDescription")}
       />
     );
   }
@@ -58,14 +64,14 @@ export function ViewStats({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm">
-        Всего просмотров: <strong>{stats.total}</strong>
+        {t("totalViews")} <strong>{stats.total}</strong>
       </p>
 
       {Object.keys(byType).length > 0 && (
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-(--color-fg-muted)">
           {Object.entries(byType).map(([type, count]) => (
             <li key={type}>
-              {LABELS[type] ?? type}: {count}
+              {entityLabels[type] ?? type}: {count}
             </li>
           ))}
         </ul>
@@ -81,13 +87,13 @@ export function ViewStats({
             >
               <span className="min-w-0 truncate">
                 {href ? (
-                  <RouterLink href={href}>{item.title ?? "Без названия"}</RouterLink>
+                  <RouterLink href={href}>{item.title ?? t("untitled")}</RouterLink>
                 ) : (
-                  <span className="text-(--color-fg-muted)">Недоступно</span>
+                  <span className="text-(--color-fg-muted)">{t("unavailable")}</span>
                 )}
               </span>
               <span className="shrink-0 text-(--color-fg-muted)">
-                {item.count} просм.
+                {t("viewCount", { count: item.count ?? 0 })}
               </span>
             </li>
           );

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { setHistoryTracking } from "../actions";
@@ -17,6 +18,8 @@ interface Props {
 export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("statistics");
+  const tErrors = useT("errors");
   const [enabled, setEnabled] = useState(initialEnabled);
   const [pending, setPending] = useState(false);
 
@@ -25,15 +28,15 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
     try {
       const result = await setHistoryTracking(next);
       if (!result.success) {
-        toastActionError(toast, result, { action: "изменение настроек" });
+        toastActionError(toast, result, { action: t("manageSettingsAction") });
         return;
       }
       setEnabled(next);
       toast.add({
-        title: "Сохранено",
+        title: t("savedTitle"),
         description: next
-          ? "Трекинг просмотров включён."
-          : "Трекинг выключен, история удалена.",
+          ? t("trackingEnabledDescription")
+          : t("trackingDisabledAfterPurge"),
       });
       router.refresh();
     } finally {
@@ -44,7 +47,7 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
   if (enabled) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="text-sm">Трекинг просмотров включён.</p>
+        <p className="text-sm">{t("trackingEnabledStatus")}</p>
         <ConfirmDialog
           trigger={
             <Button
@@ -52,13 +55,13 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
               className="self-start"
               disabled={pending || !canManage}
             >
-              Выключить
+              {t("disableButton")}
             </Button>
           }
-          title="Выключить трекинг?"
-          description="Вся история просмотров будет удалена безвозвратно."
+          title={t("disableDialogTitle")}
+          description={t("disableDialogDescription")}
           destructive
-          confirmLabel="Удалить историю"
+          confirmLabel={t("disableConfirmLabel")}
           onConfirm={() => apply(false)}
         />
       </div>
@@ -67,7 +70,7 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm">Трекинг просмотров выключен.</p>
+      <p className="text-sm">{t("trackingDisabledStatus")}</p>
       <Button
         className="self-start"
         disabled={pending || !canManage}
@@ -75,11 +78,11 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
           void apply(true);
         }}
       >
-        Включить
+        {t("enableButton")}
       </Button>
       {!canManage && (
         <p className="text-sm text-(--color-fg-muted)">
-          У вас нет прав на изменение настроек.
+          {tErrors("forbiddenAction", { action: t("manageSettingsAction") })}
         </p>
       )}
     </div>

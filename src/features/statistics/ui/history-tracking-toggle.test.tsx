@@ -18,6 +18,37 @@ vi.mock("../actions", () => ({
   setHistoryTracking: setTrackingMock,
 }));
 
+// Мок @/i18n/client: useT возвращает переводчик по реальным каталогам ru.
+vi.mock("@/i18n/client", async () => {
+  const { default: statistics } = await import(
+    "@/i18n/messages/ru/statistics"
+  );
+  const { default: errors } = await import("@/i18n/messages/ru/errors");
+  return {
+    useT: (ns: string) => {
+      const catalog = ns === "statistics" ? statistics : ns === "errors" ? errors : {};
+      return (key: string, params?: Record<string, unknown>) => {
+        const parts = key.split(".");
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = catalog;
+        for (const part of parts) {
+          val = val?.[part];
+        }
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        if (typeof val !== "string") return key;
+        if (params) {
+          return val.replace(/\{(\w+)\}/g, (_: string, k: string) => {
+            const v = params[k];
+            if (typeof v === "string" || typeof v === "number") return String(v);
+            return `{${k}}`;
+          });
+        }
+        return val;
+      };
+    },
+  };
+});
+
 function renderToggle(props: { initialEnabled: boolean; canManage: boolean }) {
   return render(
     <ToastProvider>

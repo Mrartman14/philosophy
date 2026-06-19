@@ -1,18 +1,8 @@
 // src/features/statistics/ui/production-stats-table.tsx
 import { EmptyState, Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Inventory } from "../types";
-
-const LABELS: Record<string, string> = {
-  lecture: "Лекции",
-  document: "Документы",
-  canvas: "Канвасы",
-  form: "Формы",
-  trail: "Маршруты",
-  media: "Медиа",
-  annotation: "Аннотации",
-  comment: "Комментарии",
-};
 
 /** number → строка; undefined (нет видимости, напр. comment) → «—».
  *  По schema.ts поля number|undefined (не null) — иначе no-unnecessary-condition. */
@@ -20,15 +10,27 @@ function fmt(n: number | undefined): string {
   return n === undefined ? "—" : String(n);
 }
 
-export function ProductionStatsTable({ inventory }: { inventory: Inventory }) {
+export async function ProductionStatsTable({ inventory }: { inventory: Inventory }) {
+  const t = await getT("statistics");
   const rows = inventory.by_type ?? [];
   const totals = inventory.totals;
+
+  const entityLabels: Record<string, string> = {
+    lecture: t("entityType.lecture"),
+    document: t("entityType.document"),
+    trail: t("entityType.trail"),
+    canvas: t("entityType.canvas"),
+    form: t("entityType.form"),
+    media: t("entityType.media"),
+    annotation: t("entityType.annotation"),
+    comment: t("entityType.comment"),
+  };
 
   if ((totals?.total ?? 0) === 0) {
     return (
       <EmptyState
-        title="Вы пока ничего не создали"
-        description="Здесь появится статистика по вашим лекциям, документам и другим материалам."
+        title={t("noProductionTitle")}
+        description={t("noProductionDescription")}
       />
     );
   }
@@ -37,23 +39,23 @@ export function ProductionStatsTable({ inventory }: { inventory: Inventory }) {
     <Table>
       <Thead>
         <Tr>
-          <Th>Тип</Th>
-          <Th className="text-right">Всего</Th>
-          <Th className="text-right">Публичных</Th>
-          <Th className="text-right">Приватных</Th>
+          <Th>{t("colType")}</Th>
+          <Th className="text-right">{t("colTotal")}</Th>
+          <Th className="text-right">{t("colPublic")}</Th>
+          <Th className="text-right">{t("colPrivate")}</Th>
         </Tr>
       </Thead>
       <Tbody>
         {rows.map((row, i) => (
           <Tr key={row.entity_type ?? `row-${i}`}>
-            <Td>{LABELS[row.entity_type ?? ""] ?? row.entity_type}</Td>
+            <Td>{entityLabels[row.entity_type ?? ""] ?? row.entity_type}</Td>
             <Td className="text-right">{fmt(row.total)}</Td>
             <Td className="text-right">{fmt(row.public)}</Td>
             <Td className="text-right">{fmt(row.private)}</Td>
           </Tr>
         ))}
         <Tr className="font-semibold">
-          <Td>Итого</Td>
+          <Td>{t("totalsRow")}</Td>
           <Td className="text-right">{fmt(totals?.total)}</Td>
           <Td className="text-right">{fmt(totals?.public)}</Td>
           <Td className="text-right">{fmt(totals?.private)}</Td>

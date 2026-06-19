@@ -21,6 +21,7 @@ import metadata from "./metadata";
 import notifications from "./notifications";
 import preferences from "./preferences";
 import shareLinks from "./shareLinks";
+import statistics from "./statistics";
 import trails from "./trails";
 import validation from "./validation";
 
@@ -40,6 +41,7 @@ const ru = {
   notifications,
   preferences,
   shareLinks,
+  statistics,
   trails,
   validation,
 };
