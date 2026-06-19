@@ -41,7 +41,17 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     pending = response;
 
     if (!refreshedAccess) {
-      // Токен протух или сбой — возвращаем ответ с удалёнными cookie без admin-гейта
+      // Токен протух или сбой — для /admin сразу редиректим на /login,
+      // иначе продолжаем как гость (pending содержит удалённые cookie)
+      if (request.nextUrl.pathname.startsWith("/admin")) {
+        const next = encodeURIComponent(
+          request.nextUrl.pathname + request.nextUrl.search,
+        );
+        const redir = NextResponse.redirect(new URL(`/login?next=${next}`, request.url));
+        redir.cookies.delete(ACCESS_COOKIE);
+        redir.cookies.delete(REFRESH_COOKIE);
+        return redir;
+      }
       return pending;
     }
     // refreshedAccess есть → request.cookies обновлён, pending содержит Set-Cookie
