@@ -21,6 +21,23 @@ const validation = {
     p256dh: "Пустой ключ p256dh",
     auth: "Пустой ключ auth",
   },
+
+  // --- auth: login (POST /api/auth/login) ---
+  login: {
+    usernameRequired: "Введите логин",
+    usernameMax: "Слишком длинный логин",
+    passwordRequired: "Введите пароль",
+    passwordMax: "Слишком длинный пароль",
+  },
+
+  // --- auth: register (POST /api/auth/register) ---
+  register: {
+    usernameMin: "Логин — минимум 3 символа",
+    usernameMax: "Логин — максимум 30 символов",
+    passwordMin: "Пароль — минимум 6 символов",
+    passwordMax: "Слишком длинный пароль",
+    passwordConfirmMismatch: "Пароли не совпадают",
+  },
 };
 
 export default validation;

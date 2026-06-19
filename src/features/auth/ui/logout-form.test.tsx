@@ -21,6 +21,26 @@ vi.mock("@/services/offline/store/saved-bundles", () => ({
   countSavedBundles: countMock,
 }));
 
+// Мок i18n/client: useT("auth") возвращает переводчик по реальному каталогу ru.
+vi.mock("@/i18n/client", async () => {
+  const { default: auth } = await import("@/i18n/messages/ru/auth");
+  return {
+    useT: (ns: string) => {
+      const catalog = ns === "auth" ? auth : {};
+      return (key: string) => {
+        const parts = key.split(".");
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = catalog;
+        for (const part of parts) {
+          val = val?.[part];
+        }
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        return typeof val === "string" ? val : key;
+      };
+    },
+  };
+});
+
 beforeEach(() => {
   logoutMock.mockReset().mockResolvedValue(undefined);
   wipeMock.mockReset().mockResolvedValue(undefined);

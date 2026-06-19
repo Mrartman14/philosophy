@@ -18,6 +18,16 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ вместо текста.
+// Это позволяет схемам-фабрикам работать без request-scope next-intl.
+vi.mock("@/i18n", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...original,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
+
 import { loginAction, registerAction, logoutAction, logoutAllAction } from "./actions";
 
 function fd(input: Record<string, string>): FormData {
@@ -263,7 +273,8 @@ describe("registerAction", () => {
     if (res.success || res.code !== "validation") {
       throw new Error("expected validation error");
     }
-    expect(res.fieldErrors.password_confirm).toBe("Пароли не совпадают");
+    // Заглушка getT возвращает ключ, а не текст — по аналогии с schemas.test.ts
+    expect(res.fieldErrors.password_confirm).toBe("register.passwordConfirmMismatch");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

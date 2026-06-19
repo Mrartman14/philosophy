@@ -1,11 +1,14 @@
 // src/features/auth/ui/logout-all-form.tsx
 "use client";
 import { Button, ConfirmDialog } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { wipeOfflineData } from "@/services/offline/wipe";
 
 import { logoutAllAction } from "../actions";
 
 export function LogoutAllForm() {
+  const t = useT("auth");
+
   // Текущее устройство тоже разлогинивается — logout-all отзывает все сессии,
   // включая текущую. Чистим офлайн-данные перед серверным вызовом, чтобы
   // приватные данные не оставались на устройстве. wipeOfflineData best-effort
@@ -19,13 +22,13 @@ export function LogoutAllForm() {
     <ConfirmDialog
       trigger={
         <Button variant="ghost" size="sm">
-          Выйти со всех устройств
+          {t("logoutAll.trigger")}
         </Button>
       }
-      title="Выйти со всех устройств?"
-      description="Все активные сессии будут завершены на всех устройствах. Сохранённые офлайн-материалы будут удалены с этого устройства."
+      title={t("logoutAll.dialogTitle")}
+      description={t("logoutAll.dialogDescription")}
       destructive
-      confirmLabel="Выйти везде"
+      confirmLabel={t("logoutAll.confirmLabel")}
       onConfirm={doLogoutAll}
     />
   );

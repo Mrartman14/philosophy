@@ -1,6 +1,14 @@
 import { describe, it, expect } from "vitest";
 
-import { LoginSchema, RegisterSchema } from "./schemas";
+import type { NamespaceT } from "@/i18n";
+
+import { makeLoginSchema, makeRegisterSchema } from "./schemas";
+
+// Заглушка переводчика: возвращает ключ, чтобы не зависеть от next-intl в тестах.
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const LoginSchema = makeLoginSchema(t);
+const RegisterSchema = makeRegisterSchema(t);
 
 describe("LoginSchema", () => {
   it("принимает валидные creds без next", () => {
@@ -98,7 +106,8 @@ describe("RegisterSchema", () => {
       const issue = r.error.issues.find(
         (i) => i.path.join(".") === "password_confirm"
       );
-      expect(issue?.message).toBe("Пароли не совпадают");
+      // Заглушка t возвращает ключ — проверяем, что сообщение присутствует
+      expect(issue?.message).toBe("register.passwordConfirmMismatch");
     }
   });
 });

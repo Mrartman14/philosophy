@@ -18,6 +18,23 @@ const validation = {
     p256dh: "Empty p256dh key",
     auth: "Empty auth key",
   },
+
+  // --- auth: login ---
+  login: {
+    usernameRequired: "Enter username",
+    usernameMax: "Username is too long",
+    passwordRequired: "Enter password",
+    passwordMax: "Password is too long",
+  },
+
+  // --- auth: register ---
+  register: {
+    usernameMin: "Username must be at least 3 characters",
+    usernameMax: "Username must be at most 30 characters",
+    passwordMin: "Password must be at least 6 characters",
+    passwordMax: "Password is too long",
+    passwordConfirmMismatch: "Passwords do not match",
+  },
 };
 
 export default validation;
