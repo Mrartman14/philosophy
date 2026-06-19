@@ -35,7 +35,6 @@ export type {
   TrailItem,
   TrailVisibility,
   TrailDocumentSummary,
-  TrailLectureSummary,
 } from "./types";
 
 export { TrailMyList } from "./ui/trail-my-list";

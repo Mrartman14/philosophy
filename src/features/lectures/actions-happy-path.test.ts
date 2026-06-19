@@ -197,6 +197,7 @@ describe("updateLecture — happy path", () => {
       title: "Updated",
       description: "",
       date: "2024-06-01",
+      version: "1",
       __idempotency_key: IK,
     });
     const result = await updateLecture(initial, fd);
@@ -213,7 +214,7 @@ describe("updateLecture — happy path", () => {
     put.mockResolvedValue(lectureSuccessEnvelope());
     await updateLecture(
       initial,
-      form({ id: LECTURE_ID, title: "T", description: "", date: "2024-06-01", __idempotency_key: IK }),
+      form({ id: LECTURE_ID, title: "T", description: "", date: "2024-06-01", version: "1", __idempotency_key: IK }),
     );
 
     expect(revalidateSpy()).toHaveBeenCalledTimes(2);

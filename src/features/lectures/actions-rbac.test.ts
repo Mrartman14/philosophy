@@ -277,6 +277,7 @@ describe("updateLecture — owner is ALLOWED (gate sanity)", () => {
       title: "Updated Title",
       description: "",
       date: "2024-01-01",
+      version: "1",
     });
     const result = await updateLecture(initial, fd);
     expect(result).not.toMatchObject({ code: "forbidden" });

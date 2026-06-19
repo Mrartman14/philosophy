@@ -22,8 +22,3 @@ export interface TrailDocumentSummary {
   filename: string;
 }
 
-/**
- * @deprecated Используйте TrailDocumentSummary.
- * Алиас для обратной совместимости с кодом, который ещё не обновлён.
- */
-export type TrailLectureSummary = TrailDocumentSummary;
