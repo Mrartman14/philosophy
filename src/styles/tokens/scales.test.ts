@@ -13,7 +13,7 @@ describe("scales", () => {
   it("type scale is monotonic in rem size", () => {
     const steps = ["2xs","xs","sm","base","lg","xl","2xl","3xl","4xl"] as const;
     const rems = steps.map((s) => parseFloat(TYPE_SCALE[s].size));
-    for (let i = 1; i < rems.length; i++) expect(rems[i]).toBeGreaterThan(rems[i - 1]);
+    for (let i = 1; i < rems.length; i++) expect(rems[i]!).toBeGreaterThan(rems[i - 1]!);
   });
   it("compact density tighter than comfortable", () => {
     expect(parseFloat(DENSITY.compact.controlH.md)).toBeLessThan(parseFloat(DENSITY.comfortable.controlH.md));
