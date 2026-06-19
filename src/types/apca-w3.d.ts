@@ -58,6 +58,7 @@ declare module "apca-w3" {
    * text on dark bg; negative = dark text on light bg).
    */
   export function APCAcontrast(textY: number, bgY: number): number;
+  export function APCAcontrast(textY: number, bgY: number, places: number): string;
 
   /**
    * Convert an sRGB triplet (values 0–255) to relative luminance Y (0–1).
@@ -73,6 +74,7 @@ declare module "apcach" {
   /** Opaque object returned by `apcach()` and consumed by `apcachToCss()`. */
   export interface ApcachColor {
     readonly alpha: number;
+    readonly chroma: number;
     readonly colorSpace: string;
     readonly hue: number;
     readonly lightness: number;
@@ -83,6 +85,8 @@ declare module "apcach" {
     readonly cr: number;
     readonly contrastModel: string;
     readonly searchDirection: string;
+    readonly bgColor?: string;
+    readonly fgColor?: string;
   }
 
   /**

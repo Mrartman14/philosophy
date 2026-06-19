@@ -22,6 +22,6 @@ export function deriveOn(
   bgOklch: string, targetLc: number, hue: number, chroma: number,
   dir: "lighter" | "darker" | "auto" = "auto",
 ): string {
-  const color = apcach(crToBg(bgOklch, targetLc, "apca", dir), maxChroma(chroma), hue);
+  const color = apcach(crToBg(bgOklch, targetLc, "apca", dir), maxChroma(chroma), hue, 100, "srgb");
   return apcachToCss(color, "oklch");
 }
