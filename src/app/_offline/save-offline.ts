@@ -10,6 +10,7 @@ import {
 } from "@/services/offline/store/saved-bundles";
 import { resolveStorageUrl } from "@/utils/storage-url";
 
+import { probeLectureManifest } from "./probe-lecture-manifest-action";
 import { assembleOfflineBundle } from "./save-offline-action";
 
 export interface SaveOfflineResult {
@@ -98,6 +99,23 @@ export async function saveOffline(
       };
     }
     await updateSavedBundle(entity, id, { status: "complete" });
+
+    // Best-effort захват freshnessToken: даёт ревалидации стартовый ETag для
+    // последующего If-None-Match (304-fast-path). Только для лекций.
+    // Бандл уже сохранён — ошибка/skip здесь НЕ ломают результат сохранения.
+    if (entity === "lectures") {
+      try {
+        const probe = await probeLectureManifest(id, undefined);
+        if (probe.status === "stale") {
+          await updateSavedBundle(entity, id, {
+            freshnessToken: probe.freshnessToken,
+          });
+        }
+      } catch {
+        // best-effort: сбой захвата токена не должен перекрывать успех сохранения.
+      }
+    }
+
     return persisted ? { ok: true } : { ok: true, warning: NOT_PERSISTED_WARNING };
   } catch (e) {
     // Квота/сбой записи: не роняем промис (кнопка иначе залипает без .catch) —
