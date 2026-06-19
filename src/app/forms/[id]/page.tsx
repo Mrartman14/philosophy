@@ -19,6 +19,7 @@ import {
   canCreateShareLink,
   getShareLinksFor,
 } from "@/features/share-links";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -41,6 +42,7 @@ export default async function FormPage({ params, searchParams }: Props) {
   const canShare = canCreateShareLink(me, form);
   const shareLinks =
     canShare && form.id ? await getShareLinksFor("form", form.id) : [];
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
@@ -62,7 +64,7 @@ export default async function FormPage({ params, searchParams }: Props) {
               href={`/forms/${form.id}/submissions`}
               className="text-sm text-(--color-link) hover:underline"
             >
-              Отклики
+              {t("formSubmissionsLink")}
             </RouterLink>
           )}
           {canPublish && form.id && <FormPublishButton formId={form.id} />}
@@ -73,15 +75,15 @@ export default async function FormPage({ params, searchParams }: Props) {
       {/* Заполнение: показываем всем, кому форму отдали (бек уже пустил через
           CanSeeForm — auth/public/?token). Владелец тоже может откликнуться. */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">Заполнить</h2>
+        <h2 className="text-lg font-semibold">{t("formFillSection")}</h2>
         <FormFill form={form} {...(token ? { token } : {})} />
       </section>
 
       {canEdit && (
         <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
-          <h2 className="text-lg font-semibold">Редактирование структуры</h2>
+          <h2 className="text-lg font-semibold">{t("formEditSection")}</h2>
           <p className="text-xs text-(--color-fg-muted)">
-            Доступно только до публикации. После публикации структура замораживается.
+            {t("formEditHint")}
           </p>
           <FormEditForm form={form} />
         </section>
@@ -89,7 +91,7 @@ export default async function FormPage({ params, searchParams }: Props) {
 
       {isOwner && form.published_at && (
         <p className="text-xs text-(--color-fg-muted)">
-          Форма опубликована — её структуру нельзя изменить.
+          {t("formPublishedNote")}
         </p>
       )}
     </div>
@@ -99,6 +101,6 @@ export default async function FormPage({ params, searchParams }: Props) {
 export async function generateMetadata({ params, searchParams }: Props) {
   const { id } = await params;
   const { token } = await searchParams;
-  const form = await getFormById(id, token);
-  return { title: form?.title ?? "Форма" };
+  const [form, t] = await Promise.all([getFormById(id, token), getT("pages")]);
+  return { title: form?.title ?? t("formDefaultTitle") };
 }

@@ -10,21 +10,26 @@ import {
   CommentRevisions,
   CommentExportLinks,
 } from "@/features/comments";
+import { getT } from "@/i18n";
 
 interface Props {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ revision?: string }>;
 }
 
-export const metadata = { title: "Комментарий" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("commentTitle") };
+}
 
 export default async function CommentSubtreePage({ params, searchParams }: Props) {
   const { id } = await params;
   const { revision } = await searchParams;
-  const [subtree, schema, astSchema] = await Promise.all([
+  const [subtree, schema, astSchema, t] = await Promise.all([
     getCommentSubtree(id),
     getCommentSchema(),
     getAstSchema(),
+    getT("pages"),
   ]);
   if (!subtree?.root || !schema) notFound();
 
@@ -33,7 +38,7 @@ export default async function CommentSubtreePage({ params, searchParams }: Props
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header className="flex items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold">Ветка обсуждения</h1>
+        <h1 className="text-2xl font-bold">{t("commentThreadHeading")}</h1>
         <CommentExportLinks kind="subtree" id={id} />
       </header>
 

@@ -24,6 +24,7 @@ import {
   canCreateShareLink,
   getShareLinksFor,
 } from "@/features/share-links";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -42,24 +43,25 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   const showRevisions = canSeeRevisions(document);
 
   const canShare = canCreateShareLink(me, document);
-  const [shareLinks, subscribed] = await Promise.all([
+  const [shareLinks, subscribed, t] = await Promise.all([
     canShare && document.id
       ? getShareLinksFor("document", document.id)
       : Promise.resolve([]),
     me && document.id ? getDocumentSubscription(document.id) : Promise.resolve(false),
+    getT("pages"),
   ]);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">{document.filename ?? "Документ"}</h1>
+        <h1 className="text-2xl font-bold">{document.filename ?? t("documentDefaultTitle")}</h1>
         <div className="flex items-center gap-2">
           {canEdit && (
             <RouterLink
               href={`/documents/${id}/edit`}
               className="text-sm text-(--color-link)"
             >
-              Редактировать
+              {t("documentEdit")}
             </RouterLink>
           )}
           {document.id && (
@@ -118,6 +120,6 @@ export default async function DocumentPage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const document = await getDocumentById(id);
-  return { title: document?.filename ?? "Документ" };
+  const [document, t] = await Promise.all([getDocumentById(id), getT("pages")]);
+  return { title: document?.filename ?? t("documentDefaultTitle") };
 }

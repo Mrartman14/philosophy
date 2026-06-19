@@ -7,10 +7,14 @@ import {
   AnnotationExportLinks,
   AnnotationDeleteButton,
 } from "@/features/annotations";
+import { getT } from "@/i18n";
 import { requireUserOrRedirect } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
-export const metadata = { title: "Мои аннотации" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("myAnnotationsTitle") };
+}
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;
@@ -24,13 +28,14 @@ export default async function MyAnnotationsPage({ searchParams }: Props) {
   const sp = await searchParams;
   const offset = parseNonNegativeInt(sp.offset, 0);
   const { items, total } = await getMyAnnotations(offset, LIMIT);
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
-      <h1 className="text-2xl font-bold">Мои аннотации</h1>
+      <h1 className="text-2xl font-bold">{t("myAnnotationsHeading")}</h1>
       {items.length === 0 ? (
         <p className="text-sm text-(--color-fg-muted)">
-          У вас пока нет аннотаций.
+          {t("myAnnotationsEmpty")}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">

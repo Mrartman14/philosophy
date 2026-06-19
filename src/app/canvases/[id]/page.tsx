@@ -15,6 +15,7 @@ import {
   CanvasDeleteButton,
 } from "@/features/canvas";
 import { ShareButton, canCreateShareLink, getShareLinksFor } from "@/features/share-links";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -36,11 +37,12 @@ export default async function CanvasPage({ params, searchParams }: Props) {
 
   const canShare = canCreateShareLink(me, canvas);
   const shareLinks = canShare && canvas.id ? await getShareLinksFor("canvas", canvas.id) : [];
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">{canvas.title ?? "Канвас"}</h1>
+        <h1 className="text-2xl font-bold">{canvas.title ?? t("canvasDefaultTitle")}</h1>
         {canvas.id && (
           <ShareButton
             resourceType="canvas"
@@ -57,12 +59,12 @@ export default async function CanvasPage({ params, searchParams }: Props) {
 
       {canEdit && (
         <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
-          <h2 className="text-lg font-semibold">Редактирование</h2>
+          <h2 className="text-lg font-semibold">{t("canvasEditSection")}</h2>
           <RouterLink
             href={`/canvases/${canvas.id}/edit`}
             className="inline-flex h-10 w-fit items-center rounded bg-(--color-accent) px-4 text-sm font-medium text-(--color-surface)"
           >
-            Открыть редактор
+            {t("canvasOpenEditor")}
           </RouterLink>
           {canPublish && canvas.id && <CanvasVisibilityButton id={canvas.id} />}
         </section>
@@ -83,6 +85,6 @@ export default async function CanvasPage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const result = await getCanvasById(id);
-  return { title: result?.canvas.title ?? "Канвас" };
+  const [result, t] = await Promise.all([getCanvasById(id), getT("pages")]);
+  return { title: result?.canvas.title ?? t("canvasDefaultTitle") };
 }

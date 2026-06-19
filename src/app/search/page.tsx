@@ -22,21 +22,25 @@ interface Props {
   }>;
 }
 
-export const metadata = { title: "Поиск" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("searchTitle") };
+}
 
 export default async function SearchPage({ searchParams }: Props) {
   const raw = await searchParams;
-  const t = await getT("validation");
+  const tValidation = await getT("validation");
+  const t = await getT("pages");
   // parse не бросает: каждое поле обёрнуто в .catch(undefined),
   // битые параметры молча отбрасываются.
-  const params = makeSearchParamsSchema(t).parse(raw);
+  const params = makeSearchParamsSchema(tValidation).parse(raw);
 
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header>
-        <h1 className="text-2xl font-bold">Поиск</h1>
+        <h1 className="text-2xl font-bold">{t("searchHeading")}</h1>
         <p className="text-sm text-(--color-fg-muted)">
-          Глобальный поиск по лекциям и терминам глоссария.
+          {t("searchSubtitle")}
         </p>
       </header>
 
@@ -56,7 +60,7 @@ export default async function SearchPage({ searchParams }: Props) {
         </Suspense>
       ) : (
         <p className="text-sm text-(--color-fg-muted)">
-          Введите запрос, чтобы начать поиск.
+          {t("searchPlaceholder")}
         </p>
       )}
     </section>
@@ -74,6 +78,7 @@ async function SearchBody({
   offset: number;
   searchParams: Record<string, string | string[] | undefined>;
 }) {
+  const t = await getT("pages");
   let result;
   try {
     result = await getSearchResults({
@@ -85,7 +90,7 @@ async function SearchBody({
   } catch {
     return (
       <p className="text-sm text-(--color-fg-muted)">
-        Поиск временно недоступен. Попробуйте позже.
+        {t("searchUnavailable")}
       </p>
     );
   }

@@ -11,13 +11,17 @@ import {
   SubmissionEditForm,
   SubmissionActions,
 } from "@/features/forms";
+import { getT } from "@/i18n";
 import { requireActiveUserOrRedirect } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export const metadata = { title: "Отклик" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("submissionTitle") };
+}
 
 /**
  * Просмотр отдельного отклика. Двусторонняя приватность бека
@@ -45,6 +49,7 @@ export default async function SubmissionPage({ params }: Props) {
   const canEdit = canEditSubmission(me, form, submission);
   const canDelete = canDeleteSubmission(me, form, submission);
   const canRetract = canRetractSubmission(me, form, submission);
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
@@ -52,20 +57,20 @@ export default async function SubmissionPage({ params }: Props) {
         <h1 className="text-2xl font-bold">{form.title}</h1>
         <p className="text-sm text-(--color-fg-muted)">
           {submission.retracted_at
-            ? "Отклик отозван"
-            : `Отправлен ${new Date(submission.submitted_at ?? "").toLocaleString("ru-RU")}`}
+            ? t("submissionRetracted")
+            : t("submissionSent", { date: new Date(submission.submitted_at ?? "").toLocaleString("ru-RU") })}
         </p>
       </header>
 
       {canEdit ? (
         // editable + автор + не отозван: правка ответов на месте.
         <section className="flex flex-col gap-4">
-          <h2 className="text-lg font-semibold">Ваш отклик</h2>
+          <h2 className="text-lg font-semibold">{t("submissionYourResponse")}</h2>
           <SubmissionEditForm form={form} submission={submission} />
         </section>
       ) : (
         <section className="flex flex-col gap-4">
-          <h2 className="text-lg font-semibold">Содержимое отклика</h2>
+          <h2 className="text-lg font-semibold">{t("submissionContents")}</h2>
           <SubmissionDetail form={form} submission={submission} />
         </section>
       )}

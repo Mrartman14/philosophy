@@ -4,6 +4,7 @@
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import { saveOffline } from "./save-offline";
 
@@ -18,10 +19,11 @@ export function SaveOfflineButton({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const toast = useToast();
+  const t = useT("pages");
 
   if (saved) {
     return (
-      <span className="text-sm text-(--color-fg-muted)">Сохранено офлайн ✓</span>
+      <span className="text-sm text-(--color-fg-muted)">{t("savedLectureSavedBadge")}</span>
     );
   }
 
@@ -32,12 +34,12 @@ export function SaveOfflineButton({
       if (result.ok) {
         setSaved(true);
         toast.add({
-          title: "Сохранено для офлайна",
+          title: t("saveOfflineSuccessTitle"),
           description: result.warning,
         });
       } else {
         toast.add({
-          title: "Не удалось сохранить офлайн",
+          title: t("saveOfflineFailTitle"),
           description: result.error,
         });
       }
@@ -46,7 +48,7 @@ export function SaveOfflineButton({
 
   return (
     <Button type="button" variant="secondary" disabled={saving} onClick={onClick}>
-      {saving ? "Сохранение…" : "Сохранить офлайн"}
+      {saving ? t("saveOfflineSaving") : t("saveOfflineButton")}
     </Button>
   );
 }

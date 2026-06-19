@@ -6,6 +6,7 @@ import {
   GlossaryDetail,
   GlossaryExportLinks,
 } from "@/features/glossary";
+import { getT } from "@/i18n";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -28,6 +29,6 @@ export default async function GlossaryTermPage({ params }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const term = await getTermById(id);
-  return { title: term?.title ?? "Термин" };
+  const [term, t] = await Promise.all([getTermById(id), getT("pages")]);
+  return { title: term?.title ?? t("termDefaultTitle") };
 }

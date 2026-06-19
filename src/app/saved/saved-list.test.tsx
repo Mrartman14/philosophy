@@ -2,7 +2,30 @@
 import "fake-indexeddb/auto";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { IDBFactory } from "fake-indexeddb";
-import { afterEach, beforeEach, describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+
+// Мок i18n/client: useT("pages") возвращает переводчик по реальному каталогу ru.
+vi.mock("@/i18n/client", async () => {
+  const { default: pages } = await import("@/i18n/messages/ru/pages");
+  return {
+    useT: (ns: string) => {
+      const catalog = ns === "pages" ? pages : {};
+      return (key: string, params?: Record<string, unknown>) => {
+        const parts = key.split(".");
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = catalog;
+        for (const part of parts) {
+          val = val?.[part];
+        }
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        if (typeof val !== "string") return key;
+        if (!params) return val;
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        return val.replace(/\{(\w+)\}/g, (_: string, k: string) => String(params[k] ?? k));
+      };
+    },
+  };
+});
 
 import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { putSavedBundle, getSavedBundle } from "@/services/offline/store/saved-bundles";

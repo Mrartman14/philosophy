@@ -7,6 +7,41 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 // Mock Next.js modules used by not-found.tsx (RouterLink → next/link, GoBack →
 // next/navigation) so jsdom can mount them without a Next runtime.
 // ---------------------------------------------------------------------------
+// Мок i18n/client: useT("pages") → переводчик по ru-каталогу.
+vi.mock("@/i18n/client", async () => {
+  const { default: pages } = await import("@/i18n/messages/ru/pages");
+  return {
+    useT: (ns: string) => {
+      const catalog = ns === "pages" ? pages : {};
+      return (key: string) => {
+        const parts = key.split(".");
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = catalog;
+        for (const part of parts) val = val?.[part];
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        return typeof val === "string" ? val : key;
+      };
+    },
+  };
+});
+
+// Мок i18n (сервер): getT("pages") → Promise<переводчик по ru-каталогу>.
+vi.mock("@/i18n", async () => {
+  const { default: pages } = await import("@/i18n/messages/ru/pages");
+  return {
+    getT: (ns: string) =>
+      Promise.resolve((key: string) => {
+        const catalog = ns === "pages" ? pages : {};
+        const parts = key.split(".");
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = catalog;
+        for (const part of parts) val = val?.[part];
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        return typeof val === "string" ? val : key;
+      }),
+  };
+});
+
 vi.mock("next/link", () => ({
   default: ({
     children,
@@ -128,15 +163,16 @@ describe("GlobalError (src/app/global-error.tsx)", () => {
 
 // ---------------------------------------------------------------------------
 // NotFound — no reset, just renders its message and a home link.
+// Component is async (uses getT) → resolve JSX before passing to render.
 // ---------------------------------------------------------------------------
 describe("NotFound (src/app/not-found.tsx)", () => {
-  it("renders 'Страница не найдена' heading", () => {
-    render(<NotFound />);
+  it("renders 'Страница не найдена' heading", async () => {
+    render(await NotFound());
     expect(screen.getByRole("heading", { name: "Страница не найдена" })).toBeTruthy();
   });
 
-  it("renders link back to home", () => {
-    render(<NotFound />);
+  it("renders link back to home", async () => {
+    render(await NotFound());
     expect(screen.getByRole("link", { name: "На главную" })).toBeTruthy();
   });
 });

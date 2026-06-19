@@ -2,9 +2,13 @@
 import { Pagination } from "@/components/ui";
 import { getLectures, LectureList, LectureSearchForm } from "@/features/lectures";
 import { getLectureTags, getTags } from "@/features/tags";
+import { getT } from "@/i18n";
 import { parsePaging } from "@/utils/paging";
 
-export const metadata = { title: "Лекции" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("lecturesTitle") };
+}
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -36,10 +40,11 @@ export default async function LecturesPage({ searchParams }: Props) {
     ),
   ]);
   const tagsByLectureId = Object.fromEntries(tagsEntries);
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
-      <h1 className="text-3xl font-bold">Лекции</h1>
+      <h1 className="text-3xl font-bold">{t("lecturesHeading")}</h1>
       <LectureSearchForm
         basePath="/lectures"
         tagOptions={allTags.items.map((t) => t.name)}

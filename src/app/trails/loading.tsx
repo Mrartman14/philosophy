@@ -1,9 +1,11 @@
 // src/app/trails/loading.tsx
 import { Skeleton } from "@/components/ui";
+import { getT } from "@/i18n";
 
-export default function TrailsLoading() {
+export default async function TrailsLoading() {
+  const t = await getT("pages");
   return (
-    <div aria-busy="true" aria-label="Загрузка троп…" className="flex flex-col gap-4">
+    <div aria-busy="true" aria-label={t("trailsLoadingLabel")} className="flex flex-col gap-4">
       <Skeleton className="h-8 w-64" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-full" />

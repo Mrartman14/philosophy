@@ -23,6 +23,7 @@ import lectures from "./lectures";
 import media from "./media";
 import metadata from "./metadata";
 import notifications from "./notifications";
+import pages from "./pages";
 import preferences from "./preferences";
 import search from "./search";
 import shareLinks from "./shareLinks";
@@ -50,6 +51,7 @@ const ru = {
   media,
   metadata,
   notifications,
+  pages,
   preferences,
   search,
   shareLinks,

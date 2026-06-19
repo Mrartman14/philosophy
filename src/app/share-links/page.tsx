@@ -5,10 +5,16 @@ import {
   getShareLinksFor,
   ShareLinkLookupSchema,
 } from "@/features/share-links";
+import { getT } from "@/i18n";
 import { requireActiveUserOrRedirect } from "@/utils/me";
 
 interface Props {
   searchParams: Promise<{ resource_type?: string; resource_id?: string }>;
+}
+
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("shareLinksTitle") };
 }
 
 export default async function MyShareLinksPage({ searchParams }: Props) {
@@ -16,14 +22,14 @@ export default async function MyShareLinksPage({ searchParams }: Props) {
 
   const raw = await searchParams;
   const parsed = ShareLinkLookupSchema.safeParse(raw);
+  const t = await getT("pages");
 
   return (
     <section className="flex flex-col gap-6 p-6">
       <header>
-        <h1 className="text-2xl font-bold">Мои ссылки</h1>
+        <h1 className="text-2xl font-bold">{t("shareLinksHeading")}</h1>
         <p className="text-sm text-(--color-fg-muted)">
-          Управление share-ссылками. Выберите тип ресурса и укажите его ID,
-          чтобы увидеть выпущенные ссылки.
+          {t("shareLinksSubtitle")}
         </p>
       </header>
 
@@ -40,11 +46,9 @@ export default async function MyShareLinksPage({ searchParams }: Props) {
         />
       ) : (
         <p className="text-sm text-(--color-fg-muted)">
-          Укажите тип и ID ресурса выше.
+          {t("shareLinksHint")}
         </p>
       )}
     </section>
   );
 }
-
-export const metadata = { title: "Мои ссылки" };

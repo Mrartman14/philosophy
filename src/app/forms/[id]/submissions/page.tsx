@@ -7,13 +7,17 @@ import {
   canListFormSubmissions,
   SubmissionList,
 } from "@/features/forms";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export const metadata = { title: "Отклики формы" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("formSubmissionsTitle") };
+}
 
 export default async function FormSubmissionsPage({ params }: Props) {
   const { id } = await params;
@@ -25,10 +29,12 @@ export default async function FormSubmissionsPage({ params }: Props) {
   const submissions = await getSubmissionsByForm(id);
   if (submissions === null) notFound();
 
+  const t = await getT("pages");
+
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
-      <h1 className="text-2xl font-bold">Отклики: {form.title}</h1>
-      <p className="text-sm text-(--color-fg-muted)">Всего: {submissions.length}</p>
+      <h1 className="text-2xl font-bold">{t("formSubmissionsHeading", { formTitle: form.title ?? "" })}</h1>
+      <p className="text-sm text-(--color-fg-muted)">{t("formSubmissionsTotal", { total: submissions.length })}</p>
       <SubmissionList submissions={submissions} />
     </div>
   );

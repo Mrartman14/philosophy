@@ -18,6 +18,7 @@ import {
   TrailDeleteButton,
 } from "@/features/trails";
 import type { TrailDocumentSummary } from "@/features/trails";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -53,11 +54,12 @@ export default async function TrailPage({ params, searchParams }: Props) {
   const canShare = canCreateShareLink(me, trail);
   const shareLinks =
     canShare && trail.id ? await getShareLinksFor("trail", trail.id) : [];
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">{trail.title || "Маршрут"}</h1>
+        <h1 className="text-2xl font-bold">{trail.title || t("trailDefaultTitle")}</h1>
         {trail.id && (
           <ShareButton
             resourceType="trail"
@@ -72,7 +74,7 @@ export default async function TrailPage({ params, searchParams }: Props) {
 
       {canEdit && (
         <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
-          <h2 className="text-lg font-semibold">Редактирование</h2>
+          <h2 className="text-lg font-semibold">{t("trailEditSection")}</h2>
           <TrailMetaForm trail={trail} />
           <TrailItemsEditor trailId={id} trailVersion={trail.version} initialItems={documents} />
           {isPrivateOwned && trail.id && <TrailVisibilityButton id={trail.id} />}
@@ -90,6 +92,6 @@ export default async function TrailPage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const trail = await getTrailById(id);
-  return { title: trail?.title ?? "Маршрут" };
+  const [trail, t] = await Promise.all([getTrailById(id), getT("pages")]);
+  return { title: trail?.title ?? t("trailDefaultTitle") };
 }

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descriptor";
 import { RouterLink, Skeleton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import {
   OFFLINE_SCHEMA_VERSION,
   type SavedBundleRecord,
@@ -31,6 +32,7 @@ function toItem(rec: SavedBundleRecord): SavedItem | null {
 
 export function SavedList() {
   const [items, setItems] = useState<SavedItem[] | null>(null);
+  const t = useT("pages");
 
   useEffect(() => {
     let cancelled = false;
@@ -45,7 +47,7 @@ export function SavedList() {
       for (const rec of stale) {
         await updateSavedBundle(rec.entity, rec.id, {
           status: "error",
-          error: "Сохранение прервано — откройте лекцию и сохраните заново.",
+          error: t("savedListStaleSaving"),
         });
       }
       const all = await listSavedBundles();
@@ -64,7 +66,7 @@ export function SavedList() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   if (items === null) {
     return (
@@ -78,10 +80,10 @@ export function SavedList() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
-      <h1 className="text-2xl font-bold">Сохранённое офлайн</h1>
+      <h1 className="text-2xl font-bold">{t("savedListHeading")}</h1>
       {items.length === 0 ? (
         <p className="text-sm text-(--color-fg-muted)">
-          Пока ничего не сохранено. Откройте лекцию и нажмите «Сохранить офлайн».
+          {t("savedListEmpty")}
         </p>
       ) : (
         <ul className="flex flex-col gap-2">

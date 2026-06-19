@@ -6,9 +6,13 @@ import {
   getProductionStats,
   getViewStats,
 } from "@/features/statistics";
+import { getT } from "@/i18n";
 import { requireUserOrRedirect } from "@/utils/me";
 
-export const metadata = { title: "Моя статистика" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("myStatsTitle") };
+}
 
 export default async function MyStatsPage() {
   await requireUserOrRedirect("/me/stats");
@@ -19,17 +23,19 @@ export default async function MyStatsPage() {
     getHistorySettings(),
   ]);
 
+  const t = await getT("pages");
+
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 p-4">
-      <h1 className="text-2xl font-bold">Моя статистика</h1>
+      <h1 className="text-2xl font-bold">{t("myStatsHeading")}</h1>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Что я создал</h2>
+        <h2 className="text-lg font-semibold">{t("myStatsCreated")}</h2>
         <ProductionStatsTable inventory={inventory} />
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Мои просмотры</h2>
+        <h2 className="text-lg font-semibold">{t("myStatsViews")}</h2>
         <ViewStats
           stats={viewStats}
           trackingEnabled={settings.tracking_enabled ?? false}

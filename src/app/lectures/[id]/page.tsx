@@ -22,6 +22,7 @@ import {
   getShareLinksFor,
 } from "@/features/share-links";
 import { getLectureTags } from "@/features/tags";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -89,6 +90,6 @@ export default async function LecturePage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const lecture = await getLectureById(id);
-  return { title: lecture?.title ?? "Лекция" };
+  const [lecture, t] = await Promise.all([getLectureById(id), getT("pages")]);
+  return { title: lecture?.title ?? t("lectureDefaultTitle") };
 }

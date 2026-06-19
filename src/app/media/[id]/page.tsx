@@ -14,6 +14,7 @@ import {
   canCreateShareLink,
   getShareLinksFor,
 } from "@/features/share-links";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -23,8 +24,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const media = await getMediaById(id);
-  return { title: media ? media.filename : "Медиа" };
+  const [media, t] = await Promise.all([getMediaById(id), getT("pages")]);
+  return { title: media ? media.filename : t("mediaDefaultTitle") };
 }
 
 export default async function MediaPage({ params, searchParams }: Props) {

@@ -6,9 +6,13 @@ import {
   AnnotationAnchorContext,
   AnnotationExportLinks,
 } from "@/features/annotations";
+import { getT } from "@/i18n";
 import { parseNonNegativeInt } from "@/utils/paging";
 
-export const metadata = { title: "Аннотации лекции" };
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("lectureAnnotationsTitle") };
+}
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -30,13 +34,14 @@ export default async function LectureAnnotationsPage({
   const sp = await searchParams;
   const offset = parseNonNegativeInt(sp.offset, 0);
   const { items, total } = await getLectureAnnotations(id, offset, LIMIT);
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
-      <h1 className="text-2xl font-bold">Аннотации лекции</h1>
+      <h1 className="text-2xl font-bold">{t("lectureAnnotationsHeading")}</h1>
       {items.length === 0 ? (
         <p className="text-sm text-(--color-fg-muted)">
-          К материалам этой лекции пока нет аннотаций.
+          {t("lectureAnnotationsEmpty")}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">

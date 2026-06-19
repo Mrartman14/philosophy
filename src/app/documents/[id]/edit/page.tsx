@@ -11,6 +11,7 @@ import {
   DocumentEditForm,
   DocumentVisibilityButton,
 } from "@/features/documents";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -25,13 +26,14 @@ export default async function DocumentEditPage({ params }: Props) {
 
   const isPrivateOwned = document.visibility === "private";
   const astSchema = await getAstSchema();
+  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Редактирование</h1>
+        <h1 className="text-2xl font-bold">{t("documentEditHeading")}</h1>
         <RouterLink href={`/documents/${id}`} className="text-sm text-(--color-link)">
-          ← К документу
+          {t("documentEditBack")}
         </RouterLink>
       </header>
 
@@ -48,10 +50,10 @@ export default async function DocumentEditPage({ params }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const document = await getDocumentById(id);
+  const [document, t] = await Promise.all([getDocumentById(id), getT("pages")]);
   return {
     title: document?.filename
-      ? `Редактирование: ${document.filename}`
-      : "Редактирование документа",
+      ? t("documentEditMetaTitleFull", { filename: document.filename })
+      : t("documentEditMetaTitleFallback"),
   };
 }
