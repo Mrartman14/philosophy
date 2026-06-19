@@ -2476,6 +2476,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -4158,7 +4160,9 @@ export interface paths {
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: {
-                                token?: string;
+                                access_token?: string;
+                                expires_in?: number;
+                                refresh_token?: string;
                             };
                         };
                     };
@@ -4226,10 +4230,65 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Выход — отзыв всех текущих токенов
-         * @description Инвалидирует все JWT, выданные пользователю до этого момента
-         *     (logout со всех устройств): прежние токены начинают возвращать
-         *     401, новый логин выдаёт рабочий токен. Идемпотентно.
+         * Выход с текущего устройства
+         * @description Отзывает текущую сессию по refresh-токену из тела (вызов от BFF).
+         *     Для выхода со всех устройств — POST /api/auth/logout-all. Идемпотентно.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["user.RefreshRequest"];
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Выход со всех устройств
+         * @description Инвалидирует все access-токены (tokens_valid_after) и все
+         *     refresh-сессии пользователя. Требует валидный access-токен.
          */
         post: {
             parameters: {
@@ -4258,6 +4317,80 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Обновление сессии (ротация refresh-токена)
+         * @description Принимает refresh-токен в теле (вызов от BFF/Next), ротирует и
+         *     выдаёт новый access_token + refresh_token.
+         *     Неверный JSON → 400; невалидный / истёкший / отозванный / reuse токен → 401.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["user.RefreshRequest"];
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: {
+                                access_token?: string;
+                                expires_in?: number;
+                                refresh_token?: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -6982,13 +7115,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description PUBLIC_IMMUTABLE */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -7832,13 +7965,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description PUBLIC_IMMUTABLE */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -8721,6 +8854,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -8762,7 +8897,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description Version ETag from previous GET/POST */
+                    "If-Match": string;
+                };
                 path: {
                     /** @description ID лекции */
                     id: string;
@@ -8779,6 +8917,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -8823,6 +8963,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -8839,6 +8988,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -9654,6 +9812,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/lectures/{id}/manifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Манифест свежести лекции (для офлайн-SWR)
+         * @description Возвращает корневой токен (ETag) и версии по классам состава (metadata/content/comments/annotations/tags). Поддерживает If-None-Match → 304.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
+                header?: {
+                    /** @description Предыдущий корневой токен; совпал → 304 */
+                    "If-None-Match"?: string;
+                };
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Корневой токен свежести бандла */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["freshness.Manifest"];
+                        };
+                    };
+                };
+                /** @description Not Modified — бандл не менялся */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": string;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/lectures/{id}/media": {
         parameters: {
             query?: never;
@@ -9720,6 +9966,131 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/lectures/{id}/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Подписаться на изменения лекции (метаданные + дети) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Lecture ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["notification.Subscription"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /** Отписаться от изменений лекции */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Lecture ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -9817,6 +10188,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (bumps on visibility change too) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -9870,13 +10243,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description PUBLIC_IMMUTABLE */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -12091,13 +12464,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description PUBLIC_IMMUTABLE */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -13073,6 +13446,8 @@ export interface paths {
                 /** @description Created */
                 201: {
                     headers: {
+                        /** @description Optimistic-locking version token (strong ETag) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13230,6 +13605,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Optimistic-locking version token (strong ETag) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13271,7 +13648,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description Version ETag from previous GET/POST (optimistic lock) */
+                    "If-Match": string;
+                };
                 path: {
                     /** @description ID маршрута */
                     id: string;
@@ -13288,6 +13668,8 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -13332,6 +13714,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description REQUEST_BODY_TOO_LARGE */
                 413: {
                     headers: {
@@ -13348,6 +13739,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -13428,14 +13828,17 @@ export interface paths {
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    /** @description Version ETag from previous GET/POST */
+                    "If-Match": string;
+                };
                 path: {
                     /** @description ID маршрута */
                     id: string;
                 };
                 cookie?: never;
             };
-            /** @description Список ID лекций в порядке */
+            /** @description Список ID документов в порядке */
             requestBody: {
                 content: {
                     "application/json": components["schemas"]["trail.SetItemsRequest"];
@@ -13445,11 +13848,229 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.Response"] & {
                             data?: components["schemas"]["trail.TrailWithItems"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description VERSION_MISMATCH */
+                412: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description IF_MATCH_REQUIRED */
+                428: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trails/{id}/manifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Манифест свежести трейла (для офлайн-SWR)
+         * @description Возвращает корневой токен (ETag) + own_version трейла + карту версий членов (per-member локализация). Поддерживает If-None-Match → 304.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
+                header?: {
+                    /** @description Предыдущий корневой токен; совпал → 304 */
+                    "If-None-Match"?: string;
+                };
+                path: {
+                    /** @description ID трейла */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Корневой токен свежести трейл-бандла */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["freshness.TrailManifest"];
+                        };
+                    };
+                };
+                /** @description Not Modified — бандл не менялся */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": string;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trails/{id}/visibility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Изменить видимость маршрута
+         * @description Меняет visibility маршрута (private/public). Только владелец маршрута.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID маршрута */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Новое значение visibility */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["trail.SetVisibilityRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Version as strong ETag (bumps on visibility change too) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["trail.Trail"];
                         };
                     };
                 };
@@ -13505,114 +14126,6 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/trails/{id}/visibility": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Изменить видимость маршрута
-         * @description Меняет visibility маршрута (private/public). Только владелец маршрута.
-         */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID маршрута */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Новое значение visibility */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["trail.SetVisibilityRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.Response"] & {
-                            data?: components["schemas"]["trail.Trail"];
-                        };
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description REQUEST_BODY_TOO_LARGE */
-                413: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description PUBLIC_IMMUTABLE */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -13875,7 +14388,7 @@ export interface components {
              *     docs/conventions/optimistic-locking.md.
              */
             version?: number;
-            visibility?: components["schemas"]["annotation.Visibility"];
+            visibility?: components["schemas"]["access.Visibility"];
         };
         "annotation.CreateRequest": {
             anchor?: components["schemas"]["annotation.Anchor"];
@@ -13889,8 +14402,6 @@ export interface components {
             anchor?: components["schemas"]["annotation.Anchor"];
             blocks: components["schemas"]["ast.Block"][];
         };
-        /** @enum {string} */
-        "annotation.Visibility": "private" | "public";
         /** @enum {string} */
         "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE";
         "ast.Block": {
@@ -14258,6 +14769,10 @@ export interface components {
         "comment.UpdateRequest": {
             blocks: components["schemas"]["ast.Block"][];
         };
+        "composition.NodeRef": {
+            id?: string;
+            kind?: string;
+        };
         "document.CreateDocumentRequest": {
             blocks: components["schemas"]["ast.Block"][];
             title: string;
@@ -14457,6 +14972,31 @@ export interface components {
             /** @description "private" | "public" */
             visibility?: components["schemas"]["access.Visibility"];
         };
+        "freshness.Manifest": {
+            own_version?: number;
+            ref?: components["schemas"]["composition.NodeRef"];
+            sections?: {
+                [key: string]: components["schemas"]["freshness.SectionVersion"];
+            };
+            version?: string;
+        };
+        "freshness.SectionVersion": {
+            version?: string;
+        };
+        "freshness.TrailManifest": {
+            members?: components["schemas"]["freshness.TrailManifestMember"][];
+            own_version?: number;
+            ref?: components["schemas"]["composition.NodeRef"];
+            sections?: {
+                [key: string]: components["schemas"]["freshness.SectionVersion"];
+            };
+            version?: string;
+        };
+        "freshness.TrailManifestMember": {
+            position?: number;
+            ref?: components["schemas"]["composition.NodeRef"];
+            version?: string;
+        };
         "glossary.CreateRequest": {
             blocks: components["schemas"]["ast.Block"][];
             title: string;
@@ -14564,7 +15104,8 @@ export interface components {
             owner_id: string;
             title: string;
             updated_at: string;
-            visibility: components["schemas"]["lecture.Visibility"];
+            version?: number;
+            visibility: components["schemas"]["access.Visibility"];
         };
         "lecture.SetCoverRequest": {
             alt_text?: string;
@@ -14579,8 +15120,6 @@ export interface components {
             description?: string;
             title?: string;
         };
-        /** @enum {string} */
-        "lecture.Visibility": "private" | "public";
         /** @enum {string} */
         "media.FileType": "video" | "audio";
         "media.Media": {
@@ -14766,7 +15305,7 @@ export interface components {
             visibility?: "private" | "public";
         };
         "trail.SetItemsRequest": {
-            lecture_ids: string[];
+            document_ids: string[];
         };
         "trail.SetVisibilityRequest": {
             /** @enum {unknown} */
@@ -14779,10 +15318,11 @@ export interface components {
             owner_id?: string;
             title: string;
             updated_at?: string;
-            visibility?: components["schemas"]["trail.Visibility"];
+            version?: number;
+            visibility?: components["schemas"]["access.Visibility"];
         };
         "trail.TrailItem": {
-            lecture_id?: string;
+            document_id?: string;
             position?: number;
         };
         "trail.TrailWithItems": {
@@ -14793,20 +15333,22 @@ export interface components {
             owner_id?: string;
             title: string;
             updated_at?: string;
-            visibility?: components["schemas"]["trail.Visibility"];
+            version?: number;
+            visibility?: components["schemas"]["access.Visibility"];
         };
         "trail.UpdateRequest": {
             description?: string;
             title?: string;
         };
-        /** @enum {string} */
-        "trail.Visibility": "private" | "public";
         "user.MeResponse": {
             capabilities?: components["schemas"]["rbac.Capability"][];
             id?: string;
             role?: components["schemas"]["rbac.Role"];
             status?: components["schemas"]["rbac.Status"];
             username?: string;
+        };
+        "user.RefreshRequest": {
+            refresh_token?: string;
         };
         "user.RegisterRequest": {
             /**
@@ -14836,6 +15378,12 @@ export interface components {
     responses: never;
     parameters: never;
     requestBodies: {
+        /** @description refresh token */
+        "user.RefreshRequest": {
+            content: {
+                "application/json": components["schemas"]["user.RefreshRequest"];
+            };
+        };
         /** @description Username и пароль */
         "user.RegisterRequest": {
             content: {
