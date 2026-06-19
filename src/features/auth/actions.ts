@@ -48,23 +48,23 @@ export const loginAction = createFormAction<undefined>(async (formData) => {
   if (res.status === 403) throw new AuthError("account_blocked");
   if (!res.ok) throw new AuthError("service_unavailable");
 
-  let tokens: { access?: string; refresh?: string; expiresIn?: number } = {};
+  let access: string | undefined;
+  let refresh: string | undefined;
+  let expiresIn: number | undefined;
   try {
     const json = (await res.json()) as {
       data?: { access_token?: unknown; refresh_token?: unknown; expires_in?: unknown };
     };
     const d = json.data ?? {};
-    tokens = {
-      access: typeof d.access_token === "string" ? d.access_token : undefined,
-      refresh: typeof d.refresh_token === "string" ? d.refresh_token : undefined,
-      expiresIn: typeof d.expires_in === "number" ? d.expires_in : undefined,
-    };
+    if (typeof d.access_token === "string") access = d.access_token;
+    if (typeof d.refresh_token === "string") refresh = d.refresh_token;
+    if (typeof d.expires_in === "number") expiresIn = d.expires_in;
   } catch {
     throw new AuthError("service_unavailable");
   }
-  if (!tokens.access || !tokens.refresh) throw new AuthError("service_unavailable");
+  if (!access || !refresh) throw new AuthError("service_unavailable");
 
-  await setAuthCookies({ access: tokens.access, refresh: tokens.refresh, expiresIn: tokens.expiresIn });
+  await setAuthCookies({ access, refresh, ...(expiresIn !== undefined && { expiresIn }) });
   redirect(safeNextPath(next));
 }, "loginAction");
 

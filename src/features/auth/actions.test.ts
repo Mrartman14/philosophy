@@ -274,7 +274,9 @@ describe("logoutAction (per-device)", () => {
     const fetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 204 })));
     vi.stubGlobal("fetch", fetchMock);
     await expect(logoutAction()).rejects.toThrow("NEXT_REDIRECT");
-    const [, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const call = fetchMock.mock.calls[0];
+    if (call === undefined) throw new Error("fetch не был вызван");
+    const [, opts] = call as unknown as [string, RequestInit];
     expect(JSON.parse(String(opts.body))).toEqual({ refresh_token: "ref" });
     expect(cookieDelete).toHaveBeenCalledWith("token");
     expect(cookieDelete).toHaveBeenCalledWith("refresh_token");
@@ -326,7 +328,9 @@ describe("logoutAllAction", () => {
     const fetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 204 })));
     vi.stubGlobal("fetch", fetchMock);
     await expect(logoutAllAction()).rejects.toThrow("NEXT_REDIRECT");
-    const [url, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const call = fetchMock.mock.calls[0];
+    if (call === undefined) throw new Error("fetch не был вызван");
+    const [url, opts] = call as unknown as [string, RequestInit];
     expect(url).toContain("/api/auth/logout-all");
     // headers приходят как объект Headers (инструментованный fetch оборачивает через new Headers())
     const headers = new Headers(opts.headers as HeadersInit);
