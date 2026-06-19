@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import { type Appearance, APPEARANCE_COOKIE, htmlAttrs, serializeAppearance } from "./appearance-cookie";
 import { persistAppearance } from "./persist-appearance";
@@ -20,14 +20,15 @@ function applyToHtml(a: Appearance) {
 
 export function AppearanceProvider({ initial, children }: { initial: Appearance; children: React.ReactNode }) {
   const [appearance, setAppearance] = useState(initial);
+  const appearanceRef = useRef(appearance);
+  useEffect(() => { appearanceRef.current = appearance; }, [appearance]);
   const setAxis = useCallback<Ctx["setAxis"]>((k, v) => {
-    setAppearance((prev) => {
-      const next = { ...prev, [k]: v };
-      applyToHtml(next);
-      document.cookie = `${APPEARANCE_COOKIE}=${encodeURIComponent(serializeAppearance(next))}; path=/; max-age=31536000; samesite=lax`;
-      void persistAppearance(next);
-      return next;
-    });
+    const next = { ...appearanceRef.current, [k]: v };
+    appearanceRef.current = next;
+    applyToHtml(next);
+    document.cookie = `${APPEARANCE_COOKIE}=${encodeURIComponent(serializeAppearance(next))}; path=/; max-age=31536000; samesite=lax`;
+    void persistAppearance(next);
+    setAppearance(next);
   }, []);
   return <AppearanceContext.Provider value={{ appearance, setAxis }}>{children}</AppearanceContext.Provider>;
 }
