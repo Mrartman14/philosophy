@@ -37,6 +37,12 @@ export function buildColorLayer(theme: ThemeMode, contrast: Contrast): Record<Co
     ? deriveOn(bd.bg, accentFill + 10, HUE.accent.h, HUE.accent.c, dirFg)
     : deriveOn(accent, 15, HUE.accent.h, HUE.accent.c, "darker");
 
+  // danger-solid: a fixed-lightness saturated red for solid danger buttons.
+  // L=0.42 gives a dark-enough fill so a near-white label reaches Lc≥60 in both themes.
+  // boost nudges it slightly darker in high-contrast mode (lower L = more contrast for the label).
+  const dangerSolidL = contrast === "high" ? 0.39 : 0.42;
+  const dangerSolid = `oklch(${dangerSolidL} ${HUE.danger.c} ${HUE.danger.h})`;
+  const dangerOnSolid = deriveOn(dangerSolid, 65, HUE.neutral.h, 0.0, "lighter");
   const dangerBg = deriveOn(bd.bg, t.tint, HUE.danger.h, HUE.danger.c * 0.3, dirTint);
   const successBg = deriveOn(bd.bg, t.tint, HUE.success.h, HUE.success.c * 0.3, dirTint);
   const warningBg = deriveOn(bd.bg, t.tint, HUE.warning.h, HUE.warning.c * 0.3, dirTint);
@@ -69,6 +75,8 @@ export function buildColorLayer(theme: ThemeMode, contrast: Contrast): Record<Co
     danger: deriveOn(bd.bg, statusTarget, HUE.danger.h, HUE.danger.c, dirFg),
     "danger-bg": dangerBg,
     "danger-fg": deriveOn(dangerBg, t.statusOnTint, HUE.danger.h, HUE.danger.c, dirFg),
+    "danger-solid": dangerSolid,
+    "danger-on-solid": dangerOnSolid,
     success: deriveOn(bd.bg, statusTarget, HUE.success.h, HUE.success.c, dirFg),
     "success-bg": successBg,
     "success-fg": deriveOn(successBg, t.statusOnTint, HUE.success.h, HUE.success.c, dirFg),

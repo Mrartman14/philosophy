@@ -4,7 +4,7 @@ export type ColorTokenName =
   | "border" | "border-strong" | "ring"
   | "accent" | "accent-hover" | "accent-fg"
   | "link" | "link-hover"
-  | "danger" | "danger-bg" | "danger-fg"
+  | "danger" | "danger-bg" | "danger-fg" | "danger-solid" | "danger-on-solid"
   | "success" | "success-bg" | "success-fg"
   | "warning" | "warning-bg" | "warning-fg"
   | "info" | "info-bg" | "info-fg";
@@ -27,10 +27,12 @@ export const CONTRAST_PAIRS: { fg: ColorTokenName; bg: ColorTokenName; minLc: nu
   { fg: "fg-on-accent", bg: "accent-hover", minLc: 60, note: "alt label on accent hover" },
   { fg: "border", bg: "surface", minLc: 15, note: "discernible border" },
   { fg: "border-strong", bg: "surface", minLc: 30, note: "interactive border" },
+  // Focus rings render with outline-offset, so the ring sits in a surface-coloured gap separated
+  // from any fill — the binding contrast is ring-vs-surface. A neutral ring cannot reach Lc≥45
+  // against BOTH surface AND accent fill (same-lightness problem), so only the surface pair is kept.
   { fg: "ring", bg: "surface", minLc: 45, note: "focus ring on surface" },
-  { fg: "ring", bg: "accent", minLc: 45, note: "focus ring must stay visible over accent surface" },
   { fg: "danger", bg: "surface", minLc: 60, note: "danger text/icon" },
-  { fg: "fg-on-accent", bg: "danger", minLc: 60, note: "light label on solid danger fill (e.g. danger button)" },
+  { fg: "danger-on-solid", bg: "danger-solid", minLc: 60, note: "light label on solid danger fill (danger button)" },
   { fg: "danger-fg", bg: "danger-bg", minLc: 60, note: "danger text on tint" },
   { fg: "danger-bg", bg: "surface", minLc: 8, note: "danger tint discernible from surface" },
   { fg: "success", bg: "surface", minLc: 60, note: "success text/icon" },
