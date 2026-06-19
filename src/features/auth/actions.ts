@@ -119,7 +119,7 @@ export async function logoutAction(): Promise<void> {
   const refresh = await getRefreshToken();
   if (refresh) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), LOGOUT_TIMEOUT_MS);
+    const timer = setTimeout(() => { controller.abort(); }, LOGOUT_TIMEOUT_MS);
     try {
       await instrumentedFetch(`${API_URL}/api/auth/logout`, {
         method: "POST",
@@ -145,7 +145,7 @@ export async function logoutAllAction(): Promise<void> {
   const access = await getAuthToken();
   if (access) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), LOGOUT_TIMEOUT_MS);
+    const timer = setTimeout(() => { controller.abort(); }, LOGOUT_TIMEOUT_MS);
     try {
       await instrumentedFetch(`${API_URL}/api/auth/logout-all`, {
         method: "POST",

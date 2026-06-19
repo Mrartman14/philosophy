@@ -21,9 +21,7 @@ describe("GET /auth/forced-logout", () => {
     expect(res.headers.get("clear-site-data")).toBe('"cookies", "storage"');
 
     // Next.js сериализует несколько Set-Cookie через getSetCookie()
-    const setCookies = res.headers.getSetCookie
-      ? res.headers.getSetCookie()
-      : [res.headers.get("set-cookie") ?? ""];
+    const setCookies = res.headers.getSetCookie();
 
     const tokenCookie = setCookies.find((c) => c.startsWith("token="));
     expect(tokenCookie).toBeDefined();

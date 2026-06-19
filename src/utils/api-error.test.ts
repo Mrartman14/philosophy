@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 
 import { rethrowApiError } from "./api-error";
-import { BannedError, ForbiddenError } from "./permissions";
 import { ZodValidationError } from "./create-action";
+import { BannedError, ForbiddenError } from "./permissions";
 
 /** Ловит брошенную ошибку для проверки её класса/полей. */
 function caught(fn: () => never): unknown {

@@ -277,7 +277,7 @@ describe("logoutAction (per-device)", () => {
     const call = fetchMock.mock.calls[0];
     if (call === undefined) throw new Error("fetch не был вызван");
     const [, opts] = call as unknown as [string, RequestInit];
-    expect(JSON.parse(String(opts.body))).toEqual({ refresh_token: "ref" });
+    expect(JSON.parse(opts.body as string)).toEqual({ refresh_token: "ref" });
     expect(cookieDelete).toHaveBeenCalledWith("token");
     expect(cookieDelete).toHaveBeenCalledWith("refresh_token");
   });
@@ -330,10 +330,10 @@ describe("logoutAllAction", () => {
     await expect(logoutAllAction()).rejects.toThrow("NEXT_REDIRECT");
     const call = fetchMock.mock.calls[0];
     if (call === undefined) throw new Error("fetch не был вызван");
-    const [url, opts] = call as unknown as [string, RequestInit];
+    const [url, opts] = call as unknown as [string, { headers: HeadersInit }];
     expect(url).toContain("/api/auth/logout-all");
     // headers приходят как объект Headers (инструментованный fetch оборачивает через new Headers())
-    const headers = new Headers(opts.headers as HeadersInit);
+    const headers = new Headers(opts.headers);
     expect(headers.get("Authorization")).toBe("Bearer acc");
     expect(cookieDelete).toHaveBeenCalledWith("token");
     expect(cookieDelete).toHaveBeenCalledWith("refresh_token");
