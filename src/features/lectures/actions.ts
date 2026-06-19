@@ -14,6 +14,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
+import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { ForbiddenError, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
@@ -85,7 +86,10 @@ export const updateLecture = createFormAction(async (formData, ctx) => {
   requireCapability(me, (m) => canUpdateLecture(m, lecture));
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/lectures/{id}", {
-    params: { path: { id: input.id } },
+    params: {
+      path: { id: input.id },
+      header: ifMatchHeader(formData, "лекции"),
+    },
     body: { title: input.title, description: input.description, date: input.date },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });

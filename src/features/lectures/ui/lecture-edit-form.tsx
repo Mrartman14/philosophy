@@ -33,6 +33,7 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
     <div className="flex flex-col gap-6">
       <Form action={action} errors={fieldErrors} className="max-w-xl">
         <input type="hidden" name="id" value={lecture.id} />
+        <input type="hidden" name="version" value={String(lecture.version ?? "")} />
 
         <FormField name="title" label="Название" required>
           <TextInput name="title" required maxLength={200} defaultValue={lecture.title} />
