@@ -12,9 +12,9 @@ function toPayload(a: Appearance) {
 }
 
 export async function persistAppearance(appearance: Appearance): Promise<void> {
-  const me = await getMe();
-  if (!me) return; // аноним — только cookie
   try {
+    const me = await getMe();
+    if (!me) return; // аноним — только cookie
     const api = await createApiClient();
     // Бэк-поля appearance ещё не в контракте → as never; снять в Task 21 после регена schema.ts.
     await api.PATCH("/api/me/preferences", { body: toPayload(appearance) as never });

@@ -54,7 +54,7 @@ ${densityVars("comfortable")}
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
 ${colorVars(colorLayers["dark-normal"]).replace(/^/gm, "  ")}
   }
 }
@@ -67,20 +67,32 @@ ${colorVars(colorLayers["dark-normal"])}
 ${colorVars(colorLayers["light-normal"])}
 }
 
-/* high-contrast: ДВА независимых правила (нельзя смешивать селектор и @media). */
-[data-contrast="high"] {
+/* high contrast (explicit data-contrast="high"), resolved per theme */
+[data-theme="light"][data-contrast="high"] {
 ${colorVars(colorLayers["light-high"])}
 }
 [data-theme="dark"][data-contrast="high"] {
 ${colorVars(colorLayers["dark-high"])}
 }
-@media (prefers-contrast: more) {
-  :root:not([data-contrast="normal"]) {
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme])[data-contrast="high"] {
 ${colorVars(colorLayers["light-high"]).replace(/^/gm, "  ")}
   }
 }
-@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
-  :root:not([data-contrast="normal"]):not([data-theme="light"]) {
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme])[data-contrast="high"] {
+${colorVars(colorLayers["dark-high"]).replace(/^/gm, "  ")}
+  }
+}
+
+/* OS prefers-contrast: more — auto-boost for users with NO explicit data-contrast, per resolved theme */
+@media (prefers-contrast: more) {
+  :root:not([data-contrast]):not([data-theme="dark"]) {
+${colorVars(colorLayers["light-high"]).replace(/^/gm, "  ")}
+  }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root:not([data-contrast]):not([data-theme="light"]) {
 ${colorVars(colorLayers["dark-high"]).replace(/^/gm, "  ")}
   }
 }

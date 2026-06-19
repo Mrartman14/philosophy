@@ -43,4 +43,10 @@ describe("persistAppearance", () => {
     await persistAppearance(DEFAULT_APPEARANCE);
     expect(patch).not.toHaveBeenCalled();
   });
+
+  it("swallows getMe() rejection (5xx)", async () => {
+    getMe.mockRejectedValue(new Error("503 Service Unavailable"));
+    await expect(persistAppearance(DEFAULT_APPEARANCE)).resolves.toBeUndefined();
+    expect(patch).not.toHaveBeenCalled();
+  });
 });

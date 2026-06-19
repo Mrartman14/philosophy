@@ -14,10 +14,18 @@ describe("tokens.generated.css", () => {
     expect(css).toContain('[data-density="compact"]');
     expect(css).toContain('[data-font="serif"]');
   });
-  it("high-contrast is a standalone rule, NOT a selector+@media list (valid CSS)", () => {
-    expect(css).toContain('[data-contrast="high"] {');
-    expect(css).not.toMatch(/,\s*\n\s*@media/); // запятая перед @media = невалидно
-    expect(css).toContain(':root:not([data-contrast="normal"])');
-    expect(css).toContain('(prefers-color-scheme: dark) and (prefers-contrast: more)');
+  it("high-contrast cascade is correct: no bare unqualified rule, correct media selectors", () => {
+    // no bare [data-contrast="high"] without theme qualifier
+    expect(css).not.toMatch(/^\[data-contrast="high"\]\s*\{/m);
+    // prefers-contrast: more light rule uses :not([data-theme="dark"])
+    expect(css).toContain(':not([data-contrast]):not([data-theme="dark"])');
+    // combined dark prefers-contrast rule
+    expect(css).toContain('(prefers-contrast: more) and (prefers-color-scheme: dark)');
+    expect(css).toContain(':not([data-contrast]):not([data-theme="light"])');
+    // light prefers-color-scheme block with :not([data-theme])[data-contrast="high"]
+    expect(css).toContain('(prefers-color-scheme: light)');
+    expect(css).toContain(':not([data-theme])[data-contrast="high"]');
+    // no comma before @media (invalid CSS)
+    expect(css).not.toMatch(/,\s*\n\s*@media/);
   });
 });
