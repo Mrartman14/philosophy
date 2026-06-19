@@ -13,6 +13,7 @@ import {
   SubmitButton,
   TextInput,
 } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createBanner } from "../actions";
@@ -25,6 +26,7 @@ const initial: ActionResult<Banner | null> = {
 };
 
 export function BannerCreateForm() {
+  const t = useT("banners");
   const router = useRouter();
   const [dismissible, setDismissible] = useState(true);
   const [state, action] = useActionState(createBanner, initial);
@@ -50,7 +52,7 @@ export function BannerCreateForm() {
       />
       <IdempotencyField result={state} />
 
-      <FormField name="background_color" label="Цвет фона" required>
+      <FormField name="background_color" label={t("fieldColor")} required>
         <TextInput
           name="background_color"
           type="color"
@@ -60,36 +62,36 @@ export function BannerCreateForm() {
         />
       </FormField>
 
-      <FormField name="target_audience" label="Аудитория" required>
+      <FormField name="target_audience" label={t("fieldAudience")} required>
         <Select
           name="target_audience"
           defaultValue="all"
           options={AUDIENCE_OPTIONS}
-          aria-label="Аудитория"
+          aria-label={t("fieldAudienceAriaLabel")}
         />
       </FormField>
 
       <label htmlFor="dismissible" className="flex items-center gap-2 text-sm">
         <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
-        Пользователь может скрыть баннер
+        {t("fieldDismissible")}
       </label>
 
-      <FormField name="start_at" label="Начало показа (UTC)" required>
+      <FormField name="start_at" label={t("fieldStartAt")} required>
         <TextInput name="start_at" type="datetime-local" required />
       </FormField>
 
-      <FormField name="end_at" label="Окончание показа (UTC, необязательно)">
+      <FormField name="end_at" label={t("fieldEndAt")}>
         <TextInput name="end_at" type="datetime-local" />
       </FormField>
 
-      <FormField name="event_id" label="id события (необязательно)">
-        <TextInput name="event_id" placeholder="UUID события из /admin/events" />
+      <FormField name="event_id" label={t("fieldEventId")}>
+        <TextInput name="event_id" placeholder={t("eventIdPlaceholder")} />
       </FormField>
 
-      <FormFeedback result={state} forbiddenAction="создание баннера" />
+      <FormFeedback result={state} forbiddenAction={t("createAction")} />
 
       <div>
-        <SubmitButton>Создать</SubmitButton>
+        <SubmitButton>{t("btnCreate")}</SubmitButton>
       </div>
     </Form>
   );

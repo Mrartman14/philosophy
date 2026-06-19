@@ -7,6 +7,7 @@
 // Литералы не нужно помечать `as const`: значения-свойства расширяются до string,
 // поэтому `typeof ru` даёт string-листья, а en satisfies Messages проходит.
 import auth from "./auth";
+import banners from "./banners";
 import canvas from "./canvas";
 import comments from "./comments";
 import documents from "./documents";
@@ -20,6 +21,7 @@ import validation from "./validation";
 
 const ru = {
   auth,
+  banners,
   canvas,
   comments,
   documents,

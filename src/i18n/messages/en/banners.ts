@@ -1,0 +1,65 @@
+// src/i18n/messages/en/banners.ts
+// Mirror of ru/banners.ts. Key parity enforced by satisfies Messages.
+const banners = {
+  // --- Form field labels (create + edit) ---
+  fieldColor: "Background color",
+  fieldAudience: "Audience",
+  fieldAudienceAriaLabel: "Audience",
+  fieldDismissible: "User can dismiss the banner",
+  fieldStartAt: "Show start (UTC)",
+  fieldEndAt: "Show end (UTC, optional)",
+  fieldEventId: "Event ID (optional)",
+  fieldBlocks: "Banner text",
+  eventIdPlaceholder: "Event UUID from /admin/events",
+
+  // --- Hints ---
+  hintEndAt:
+    "A saved show end time cannot be cleared — the backend ignores an empty value for this field.",
+  hintEventId: "To unlink the event — clear the field and save.",
+
+  // --- Buttons / submit ---
+  btnCreate: "Create",
+  btnSave: "Save",
+  btnDelete: "Delete",
+  btnEdit: "Edit",
+
+  // --- Status ---
+  saved: "Saved.",
+
+  // --- Forbidden inline (Case 3: banner-edit-form only) ---
+  editAction: "editing the banner",
+
+  // --- Delete confirmation ---
+  deleteTitle: "Delete banner?",
+  deleteDescription: "This action is irreversible. The banner will disappear from all pages.",
+
+  // --- Toast actions (for toastActionError) ---
+  deleteAction: "deleting the banner",
+  dismissAction: "dismissing the banner",
+  dismissFailTitle: "Failed to dismiss the banner",
+
+  // --- Dismiss button ---
+  dismissAriaLabel: "Dismiss banner",
+
+  // --- admin-row ---
+  noText: "Banner without text",
+  notDismissible: " · not dismissible",
+  hasEvent: " · linked to event",
+
+  // --- active-banners aria ---
+  sectionLabel: "Announcements",
+
+  // --- Audience labels ---
+  audienceAll: "Everyone",
+  audienceAuthenticated: "Authenticated users",
+  audienceAdmin: "Administrators",
+
+  // --- Display period (formatBannerPeriod) ---
+  periodFrom: "from {start}",
+  periodFromTo: "from {start} to {end}",
+
+  // --- create-form: forbiddenAction (Case 3) ---
+  createAction: "creating the banner",
+};
+
+export default banners;

@@ -4,6 +4,7 @@
 import type { Messages } from "../ru";
 
 import auth from "./auth";
+import banners from "./banners";
 import canvas from "./canvas";
 import comments from "./comments";
 import documents from "./documents";
@@ -17,6 +18,7 @@ import validation from "./validation";
 
 const en = {
   auth,
+  banners,
   canvas,
   comments,
   documents,

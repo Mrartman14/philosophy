@@ -19,6 +19,10 @@ vi.mock("./permissions", () => ({
   canDismissBanner: () => true,
 }));
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
+vi.mock("@/i18n", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/i18n")>();
+  return { ...actual, getT: () => Promise.resolve((key: string) => key) };
+});
 
 // импорт ПОСЛЕ vi.mock (hoisted)
 import { updateBanner } from "./actions";

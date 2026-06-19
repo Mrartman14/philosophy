@@ -13,6 +13,7 @@ import {
   SubmitButton,
   TextInput,
 } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateBanner } from "../actions";
@@ -35,6 +36,8 @@ interface Props {
 }
 
 export function BannerEditForm({ banner }: Props) {
+  const t = useT("banners");
+  const tErrors = useT("errors");
   const [dismissible, setDismissible] = useState(banner.dismissible !== false);
   const [blocks, setBlocks] = useState<AstBlock[]>(banner.blocks ?? []);
   const [state, action] = useActionState(updateBanner, initial);
@@ -56,7 +59,7 @@ export function BannerEditForm({ banner }: Props) {
       />
       <IdempotencyField result={state} />
 
-      <FormField name="background_color" label="Цвет фона" required>
+      <FormField name="background_color" label={t("fieldColor")} required>
         <TextInput
           name="background_color"
           type="color"
@@ -66,21 +69,21 @@ export function BannerEditForm({ banner }: Props) {
         />
       </FormField>
 
-      <FormField name="target_audience" label="Аудитория" required>
+      <FormField name="target_audience" label={t("fieldAudience")} required>
         <Select
           name="target_audience"
           defaultValue={banner.target_audience ?? "all"}
           options={AUDIENCE_OPTIONS}
-          aria-label="Аудитория"
+          aria-label={t("fieldAudienceAriaLabel")}
         />
       </FormField>
 
       <label htmlFor="dismissible" className="flex items-center gap-2 text-sm">
         <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
-        Пользователь может скрыть баннер
+        {t("fieldDismissible")}
       </label>
 
-      <FormField name="start_at" label="Начало показа (UTC)" required>
+      <FormField name="start_at" label={t("fieldStartAt")} required>
         <TextInput
           name="start_at"
           type="datetime-local"
@@ -89,7 +92,7 @@ export function BannerEditForm({ banner }: Props) {
         />
       </FormField>
 
-      <FormField name="end_at" label="Окончание показа (UTC, необязательно)">
+      <FormField name="end_at" label={t("fieldEndAt")}>
         <TextInput
           name="end_at"
           type="datetime-local"
@@ -97,22 +100,21 @@ export function BannerEditForm({ banner }: Props) {
         />
       </FormField>
       <p className="text-xs text-(--color-fg-muted)">
-        Уже сохранённое «Окончание показа» очистить нельзя — бекенд игнорирует
-        пустое значение этого поля.
+        {t("hintEndAt")}
       </p>
 
-      <FormField name="event_id" label="id события (необязательно)">
+      <FormField name="event_id" label={t("fieldEventId")}>
         <TextInput
           name="event_id"
           defaultValue={banner.event_id ?? ""}
-          placeholder="UUID события из /admin/events"
+          placeholder={t("eventIdPlaceholder")}
         />
       </FormField>
       <p className="text-xs text-(--color-fg-muted)">
-        Чтобы отвязать событие — очистите поле и сохраните.
+        {t("hintEventId")}
       </p>
 
-      <FormField name="blocks" label="Текст баннера">
+      <FormField name="blocks" label={t("fieldBlocks")}>
         <AstEditor
           defaultValue={banner.blocks ?? []}
           entityContext="banner"
@@ -121,11 +123,11 @@ export function BannerEditForm({ banner }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("saved")}</p>
       )}
       {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
-          У вас нет прав на изменение баннера.
+          {tErrors("forbiddenAction", { action: t("editAction") })}
         </p>
       )}
       {!state.success &&
@@ -140,7 +142,7 @@ export function BannerEditForm({ banner }: Props) {
       )}
 
       <div>
-        <SubmitButton>Сохранить</SubmitButton>
+        <SubmitButton>{t("btnSave")}</SubmitButton>
       </div>
     </Form>
   );

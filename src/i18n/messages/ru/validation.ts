@@ -87,6 +87,21 @@ const validation = {
     blocksEmpty: "Добавьте хотя бы один блок",
   },
 
+  // --- banners: BannerFieldsSchema / BannerUpdateSchema / BannerIdSchema ---
+  banners: {
+    colorFormat: "Цвет — hex вида #RGB или #RRGGBB",
+    audienceRequired: "Выберите аудиторию",
+    dismissibleInvalid: "Некорректное значение «можно скрыть»",
+    startAtRequired: "Укажите начало показа",
+    startAtInvalid: "Укажите дату и время начала показа",
+    endAtInvalid: "Укажите дату и время окончания показа",
+    endAtBeforeStart: "Окончание показа должно быть позже начала",
+    eventIdUuid: "id события — UUID",
+    blocksInvalidJson: "Битый JSON в теле формы",
+    blocksNotArray: "Тело должно быть массивом блоков",
+    invalidId: "Некорректный id баннера",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

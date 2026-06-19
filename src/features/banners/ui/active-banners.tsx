@@ -1,5 +1,6 @@
 // src/features/banners/ui/active-banners.tsx
 import { AstRender } from "@/components/ast-render";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { getActiveBanners } from "../api";
@@ -22,7 +23,10 @@ import { BannerDismissButton } from "./banner-dismiss-button";
 export async function ActiveBanners() {
   let banners: Banner[];
   let authenticated = false;
+  let sectionLabel = "Объявления";
   try {
+    const t = await getT("banners");
+    sectionLabel = t("sectionLabel");
     const me = await getMe();
     authenticated = me !== null;
     banners = await getActiveBanners();
@@ -32,7 +36,7 @@ export async function ActiveBanners() {
   if (banners.length === 0) return null;
 
   return (
-    <aside aria-label="Объявления" className="w-full">
+    <aside aria-label={sectionLabel} className="w-full">
       {banners.map((banner) =>
         banner.id ? (
           <div

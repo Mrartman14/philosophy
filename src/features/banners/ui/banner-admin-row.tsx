@@ -1,10 +1,11 @@
 // src/features/banners/ui/banner-admin-row.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import {
-  audienceLabel,
   bannerPreviewText,
   formatBannerPeriod,
+  audienceLabel,
 } from "../display";
 import type { Banner } from "../types";
 
@@ -17,7 +18,8 @@ interface Props {
   canDelete: boolean;
 }
 
-export function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
+export async function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
+  const t = await getT("banners");
   const preview = bannerPreviewText(banner.blocks);
   return (
     <li className="flex items-center justify-between gap-4 py-2">
@@ -29,13 +31,13 @@ export function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
         />
         <div className="flex min-w-0 flex-col">
           <span className="truncate font-medium">
-            {preview || "Баннер без текста"}
+            {preview || t("noText")}
           </span>
           <span className="text-xs text-(--color-fg-muted)">
             {formatBannerPeriod(banner.start_at, banner.end_at)}
             {` · ${audienceLabel(banner.target_audience)}`}
-            {banner.dismissible === false ? " · нельзя скрыть" : ""}
-            {banner.event_id ? " · привязан к событию" : ""}
+            {banner.dismissible === false ? t("notDismissible") : ""}
+            {banner.event_id ? t("hasEvent") : ""}
           </span>
         </div>
       </div>
@@ -46,7 +48,7 @@ export function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
             href={`/admin/banners/${banner.id}/edit`}
             className="text-sm hover:underline"
           >
-            Редактировать
+            {t("btnEdit")}
           </RouterLink>
         )}
         {canDelete && banner.id && <BannerDeleteButton id={banner.id} />}

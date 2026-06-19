@@ -76,6 +76,17 @@ const errors = {
   CANVAS_VALIDATION_ERROR:
     "Graph failed validation (nodes/edges/entity references).",
 
+  // --- banners slice: domain codes ---
+  BANNER_INVALID_COLOR:
+    "The backend rejected the background color: must be a hex value like #RGB or #RRGGBB.",
+  BANNER_INVALID_DATE:
+    "The backend rejected the show dates: check the format and the start/end order.",
+  BANNER_INVALID_EVENT: "No event found with this ID.",
+  BANNER_BLOCKS_INVALID: "The banner text failed AST validation.",
+  BANNER_BLOCK_REFERENCED:
+    "Other content references a block in this banner. Remove the references or keep the block.",
+  BANNER_NOT_DISMISSIBLE: "This banner cannot be dismissed.",
+
   // --- lectures slice: domain codes ---
   UPLOAD_NOT_FOUND: "Uploaded image not found. Please try again.",
   ALREADY_ATTACHED: "This entity is already attached to the lecture.",

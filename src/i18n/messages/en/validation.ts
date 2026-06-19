@@ -84,6 +84,21 @@ const validation = {
     blocksEmpty: "Add at least one block",
   },
 
+  // --- banners: BannerFieldsSchema / BannerUpdateSchema / BannerIdSchema ---
+  banners: {
+    colorFormat: "Color must be a hex value like #RGB or #RRGGBB",
+    audienceRequired: "Select an audience",
+    dismissibleInvalid: 'Invalid value for "can be dismissed"',
+    startAtRequired: "Specify the show start time",
+    startAtInvalid: "Specify a valid date and time for show start",
+    endAtInvalid: "Specify a valid date and time for show end",
+    endAtBeforeStart: "Show end must be after show start",
+    eventIdUuid: "Event ID must be a UUID",
+    blocksInvalidJson: "Invalid JSON in the form body",
+    blocksNotArray: "Body must be an array of blocks",
+    invalidId: "Invalid banner ID",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

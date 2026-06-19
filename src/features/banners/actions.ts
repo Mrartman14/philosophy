@@ -3,10 +3,11 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import {
   rethrowApiError,
   type ApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
@@ -27,28 +28,29 @@ import {
   canDismissBanner,
 } from "./permissions";
 import {
-  BannerCreateSchema,
-  BannerUpdateSchema,
+  makeBannerCreateSchema,
+  makeBannerUpdateSchema,
   BannerIdSchema,
 } from "./schemas";
 
-/** Доменные коды баннеров → русский текст. Бек пишет code в UPPER_SNAKE_CASE
+/** Доменные коды баннеров → ключ каталога errors. Бек пишет code в UPPER_SNAKE_CASE
  * (internal/apperror, middleware/auth.go). REF_NOT_FOUND и BLOCKS_HAVE_ANCHORS —
- * из DEFAULT_MESSAGES api-error.ts (текст совпадал). */
-const ERRORS: ApiErrorMessages = {
-  INVALID_COLOR: "Бекенд отклонил цвет фона: нужен hex вида #RGB или #RRGGBB.",
-  INVALID_DATE:
-    "Бекенд отклонил даты показа: проверьте формат и порядок начала/окончания.",
-  INVALID_EVENT: "Событие с таким id не найдено.",
-  BLOCKS_INVALID: "Текст баннера не прошёл валидацию AST.",
-  BLOCK_REFERENCED:
-    "На блок баннера ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+ * из DEFAULT_MESSAGES api-error.ts.
+ * CONFLICT (409) — используется только в dismissBanner (dismissible=false). */
+const ERRORS: ApiErrorMessageKeys = {
+  INVALID_COLOR: "BANNER_INVALID_COLOR",
+  INVALID_DATE: "BANNER_INVALID_DATE",
+  INVALID_EVENT: "BANNER_INVALID_EVENT",
+  BLOCKS_INVALID: "BANNER_BLOCKS_INVALID",
+  BLOCK_REFERENCED: "BANNER_BLOCK_REFERENCED",
+  CONFLICT: "BANNER_NOT_DISMISSIBLE",
 };
 
 export const createBanner = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateBanner);
-  const input = parseFormData(BannerCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeBannerCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/banners", {
     body: {
@@ -75,7 +77,8 @@ export const createBanner = createFormAction(async (formData, ctx) => {
 export const updateBanner = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateBanner);
-  const input = parseFormData(BannerUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeBannerUpdateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/banners/{id}", {
     params: {
@@ -126,14 +129,8 @@ export const dismissBanner = createAction(async (rawId: string) => {
   const { error } = await api.POST("/api/banners/{id}/dismiss", {
     params: { path: { id } },
   });
-  if (error) {
-    const err = error as ApiError;
-    // dismissible=false → 409 CONFLICT («banner is not dismissible»).
-    if (err.code === "CONFLICT") {
-      throw new Error("Этот баннер нельзя скрыть.");
-    }
-    rethrowApiError(err, ERRORS);
-  }
+  // dismissible=false → 409 CONFLICT → BANNER_NOT_DISMISSIBLE в ERRORS-карте.
+  if (error) rethrowApiError(error as ApiError, ERRORS);
   revalidateEntity(Tags.BANNERS);
   return undefined;
 }, "dismissBanner");

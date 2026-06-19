@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { IconButton, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { dismissBanner } from "../actions";
@@ -20,22 +21,23 @@ interface Props {
  * список, dismissed-баннер исчезает.
  */
 export function BannerDismissButton({ id }: Props) {
+  const t = useT("banners");
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
 
   return (
     <IconButton
-      aria-label="Скрыть баннер"
+      aria-label={t("dismissAriaLabel")}
       disabled={pending}
       onClick={() => {
         startTransition(async () => {
           const result = await dismissBanner(id);
           if (!result.success) {
             toastActionError(toast, result, {
-              action: "скрытие баннера",
-              forbiddenTitle: "Не удалось скрыть баннер",
-              failureTitle: "Не удалось скрыть баннер",
+              action: t("dismissAction"),
+              forbiddenTitle: t("dismissFailTitle"),
+              failureTitle: t("dismissFailTitle"),
             });
             return;
           }

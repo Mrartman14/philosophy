@@ -80,6 +80,17 @@ const errors = {
   CANVAS_VALIDATION_ERROR:
     "Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).",
 
+  // --- banners slice: доменные коды ---
+  BANNER_INVALID_COLOR:
+    "Бекенд отклонил цвет фона: нужен hex вида #RGB или #RRGGBB.",
+  BANNER_INVALID_DATE:
+    "Бекенд отклонил даты показа: проверьте формат и порядок начала/окончания.",
+  BANNER_INVALID_EVENT: "Событие с таким id не найдено.",
+  BANNER_BLOCKS_INVALID: "Текст баннера не прошёл валидацию AST.",
+  BANNER_BLOCK_REFERENCED:
+    "На блок баннера ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+  BANNER_NOT_DISMISSIBLE: "Этот баннер нельзя скрыть.",
+
   // --- lectures slice: доменные коды ---
   UPLOAD_NOT_FOUND: "Загруженное изображение не найдено. Попробуйте ещё раз.",
   ALREADY_ATTACHED: "Эта сущность уже прикреплена к лекции.",
