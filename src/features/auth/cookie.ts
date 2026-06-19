@@ -1,26 +1,39 @@
 import "server-only";
 import { cookies } from "next/headers";
 
-const COOKIE_NAME = "token";
-const MAX_AGE_SECONDS = 60 * 60 * 24; // 24ч = TTL access-JWT на бэке
+import {
+  ACCESS_COOKIE,
+  REFRESH_COOKIE,
+  ACCESS_FALLBACK_MAX_AGE,
+  REFRESH_MAX_AGE,
+  authCookieOptions,
+} from "./cookie-config";
 
-export async function setAuthCookie(token: string): Promise<void> {
+/** Кладёт пару токенов в httpOnly-cookie. Access живёт ≈ expires_in (15 мин),
+ * refresh — 30 дней. Обе ротируются на каждом refresh (см. middleware). */
+export async function setAuthCookies(t: {
+  access: string;
+  refresh: string;
+  expiresIn?: number;
+}): Promise<void> {
   const store = await cookies();
-  store.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: MAX_AGE_SECONDS,
-  });
+  const accessMaxAge = t.expiresIn && t.expiresIn > 0 ? t.expiresIn : ACCESS_FALLBACK_MAX_AGE;
+  store.set(ACCESS_COOKIE, t.access, authCookieOptions(accessMaxAge));
+  store.set(REFRESH_COOKIE, t.refresh, authCookieOptions(REFRESH_MAX_AGE));
 }
 
-export async function clearAuthCookie(): Promise<void> {
+export async function clearAuthCookies(): Promise<void> {
   const store = await cookies();
-  store.delete(COOKIE_NAME);
+  store.delete(ACCESS_COOKIE);
+  store.delete(REFRESH_COOKIE);
 }
 
 export async function getAuthToken(): Promise<string | undefined> {
   const store = await cookies();
-  return store.get(COOKIE_NAME)?.value;
+  return store.get(ACCESS_COOKIE)?.value;
+}
+
+export async function getRefreshToken(): Promise<string | undefined> {
+  const store = await cookies();
+  return store.get(REFRESH_COOKIE)?.value;
 }
