@@ -13,14 +13,14 @@ export function cn(...inputs: ClassValue[]): string {
  * Используется в: TextInput, Textarea, Select trigger.
  */
 export const FOCUS_RING_INPUT =
-  "focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-(--color-foreground)";
+  "focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-(--color-ring)";
 
 /**
  * Focus-ring для контролов (кнопки, чекбоксы), offset-2.
  * Используется в: Button, IconButton, Checkbox.
  */
 export const FOCUS_RING_CONTROL =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-foreground)";
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
 /**
  * Базовый shell поверхности: скругление + бордер + фон.

@@ -51,7 +51,7 @@ export function Select({
         aria-label={ariaLabel}
         className={cn(
           SHELL_BASE,
-          "inline-flex h-10 w-full items-center justify-between gap-2 px-3 text-sm",
+          "inline-flex h-(--size-control-h-md) w-full items-center justify-between gap-2 px-(--space-control-pad-x) text-sm",
           FOCUS_RING_INPUT,
           "data-[disabled]:opacity-50",
           className,
@@ -71,7 +71,7 @@ export function Select({
                 value={opt.value}
                 className={cn(
                   "flex cursor-pointer items-center rounded px-2 py-1.5 text-sm outline-none",
-                  "data-[highlighted]:bg-(--color-text-pane)",
+                  "data-[highlighted]:bg-(--color-surface-subtle)",
                   "data-[selected]:font-semibold",
                 )}
               >

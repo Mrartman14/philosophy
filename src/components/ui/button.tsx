@@ -12,13 +12,13 @@ const variantClasses: Record<ButtonVariant, string> = {
   secondary:
     "border border-(--color-border) bg-(--color-text-pane) hover:bg-(--color-background) disabled:opacity-50",
   ghost: "hover:bg-(--color-text-pane) disabled:opacity-50",
-  danger: "bg-(--color-danger-fill) text-white hover:bg-(--color-danger-fill-hover) disabled:opacity-50",
+  danger: "bg-(--color-danger-solid) text-(--color-danger-on-solid) hover:opacity-90 disabled:opacity-50",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-sm",
-  md: "h-10 px-4 text-sm",
-  lg: "h-12 px-6 text-base",
+  sm: "h-(--size-control-h-sm) px-3 text-sm",
+  md: "h-(--size-control-h-md) px-4 text-sm",
+  lg: "h-(--size-control-h-lg) px-6 text-base",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

@@ -13,7 +13,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         rows={rows}
         className={cn(
           SHELL_BASE,
-          "block w-full px-3 py-2 text-sm",
+          "block w-full px-(--space-control-pad-x) py-(--space-control-pad-y) text-sm",
           "placeholder:text-(--color-description)",
           FOCUS_RING_INPUT,
           "disabled:opacity-50 data-[invalid]:border-(--color-danger)",
