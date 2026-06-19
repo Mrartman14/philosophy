@@ -8,11 +8,15 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getBanSignal } from "@/utils/me";
 
-// Источник истины имени cookie — features/auth/cookie.ts (COOKIE_NAME="token").
-// Литерал продублирован намеренно: route handler в app/ не может делать
+// Источник истины имён cookie — features/auth/cookie-config.ts.
+// Литералы продублированы намеренно: route handler в app/ не может делать
 // deep-import во внутренности фичи (ESLint-гард), а barrel @/features/auth
 // тянет server-only-модуль.
 const TOKEN_COOKIE = "token";
+// Дублирует REFRESH_COOKIE из cookie-config.ts: форс-логаут ОБЯЗАН чистить
+// refresh-токен — иначе забаненный клиент сможет переполучить access через
+// живой refresh (security hole).
+const REFRESH_COOKIE = "refresh_token";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   // CSRF-защита: деструктив (чистка cookie + Clear-Site-Data + последующий
@@ -27,6 +31,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     { status: 303 },
   );
   response.cookies.set(TOKEN_COOKIE, "", { path: "/", maxAge: 0 });
+  response.cookies.set(REFRESH_COOKIE, "", { path: "/", maxAge: 0 });
   response.headers.set("Clear-Site-Data", '"cookies", "storage"');
   return response;
 }

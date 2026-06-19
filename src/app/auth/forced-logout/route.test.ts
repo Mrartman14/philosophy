@@ -10,7 +10,7 @@ beforeEach(() => banSignalMock.mockReset());
 afterEach(() => vi.clearAllMocks());
 
 describe("GET /auth/forced-logout", () => {
-  it("забанен → 303 /login?blocked=1, чистит token-cookie, ставит Clear-Site-Data", async () => {
+  it("забанен → 303 /login?blocked=1, чистит token-cookie и refresh-cookie, ставит Clear-Site-Data", async () => {
     banSignalMock.mockResolvedValue(true);
     const res = await GET(new NextRequest("https://app.test/some/page"));
 
@@ -20,10 +20,21 @@ describe("GET /auth/forced-logout", () => {
     );
     expect(res.headers.get("clear-site-data")).toBe('"cookies", "storage"');
 
-    const setCookie = res.headers.get("set-cookie") ?? "";
-    expect(setCookie).toMatch(/token=/);
-    expect(setCookie).toMatch(/Max-Age=0/i);
-    expect(setCookie).toMatch(/Path=\//);
+    // Next.js сериализует несколько Set-Cookie через getSetCookie()
+    const setCookies = res.headers.getSetCookie
+      ? res.headers.getSetCookie()
+      : [res.headers.get("set-cookie") ?? ""];
+
+    const tokenCookie = setCookies.find((c) => c.startsWith("token="));
+    expect(tokenCookie).toBeDefined();
+    expect(tokenCookie).toMatch(/Max-Age=0/i);
+    expect(tokenCookie).toMatch(/Path=\//);
+
+    // Безопасность: форс-логаут обязан чистить и refresh_token
+    const refreshCookie = setCookies.find((c) => c.startsWith("refresh_token="));
+    expect(refreshCookie).toBeDefined();
+    expect(refreshCookie).toMatch(/Max-Age=0/i);
+    expect(refreshCookie).toMatch(/Path=\//);
   });
 
   it("НЕ забанен (CSRF/случайный заход) → 303 на /, ничего не трогает", async () => {
