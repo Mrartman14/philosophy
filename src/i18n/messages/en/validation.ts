@@ -35,6 +35,16 @@ const validation = {
     passwordMax: "Password is too long",
     passwordConfirmMismatch: "Passwords do not match",
   },
+
+  // --- comments: createComment / updateCommentBlocks form schemas ---
+  comments: {
+    invalidType: "Unknown comment type",
+    invalidParentId: "Invalid parent_id",
+    invalidCommentId: "Invalid comment id",
+    blocksInvalidJson: "Invalid JSON in body",
+    blocksNotArray: "Comment cannot be empty",
+    blocksEmpty: "Comment cannot be empty",
+  },
 };
 
 export default validation;

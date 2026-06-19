@@ -2,6 +2,8 @@
 // src/features/comments/ui/comment-reactions.tsx
 import { useState, useOptimistic, startTransition } from "react";
 
+import { useT } from "@/i18n/client";
+
 import { setReaction, removeReaction } from "../actions";
 import { axisLabel, axisValueAriaLabel } from "../reactions";
 import type { CommentType, MyReactions, ReactionAxis, ReactionSummary } from "../types";
@@ -79,6 +81,7 @@ export function CommentReactions({
   allowedAxes,
   canReact,
 }: Props) {
+  const t = useT("comments");
   const [error, setError] = useState<string | null>(null);
   const [optimisticReactions, applyOptimistic] = useOptimistic(
     myReactions,
@@ -104,7 +107,7 @@ export function CommentReactions({
         // useOptimistic reverts automatically when the transition settles — no manual rollback needed.
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на реакцию."
+            ? t("reactionForbidden")
             : result.error,
         );
       }

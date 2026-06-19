@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { Button, Form, FormFeedback, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCommentBlocks } from "../actions";
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function CommentEditForm({ commentId, lectureId, initialBlocks, version }: Props) {
+  const t = useT("comments");
   const [open, setOpen] = useState(false);
   const [blocks, setBlocks] = useState<AstBlock[]>(initialBlocks);
   const [state, action] = useActionState(updateCommentBlocks, initial);
@@ -31,7 +33,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
   if (!open) {
     return (
       <Button type="button" variant="ghost" onClick={() => { setOpen(true); }}>
-        Редактировать
+        {t("editButton")}
       </Button>
     );
   }
@@ -42,23 +44,23 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
       <input type="hidden" name="version" value={version ?? ""} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
-      <FormField name="blocks" label="Текст">
+      <FormField name="blocks" label={t("editBodyLabel")}>
         <LazyAstEditor
           defaultValue={initialBlocks}
           entityContext="comment"
           defaultLectureId={lectureId}
           onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel="Редактирование комментария"
+          ariaLabel={t("editBodyAriaLabel")}
         />
       </FormField>
       {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
       )}
-      <FormFeedback result={state} forbiddenAction="изменение комментария" />
+      <FormFeedback result={state} forbiddenAction={t("editForbiddenAction")} />
       <div className="flex gap-2">
-        <SubmitButton>Сохранить</SubmitButton>
+        <SubmitButton>{t("editSubmit")}</SubmitButton>
         <Button type="button" variant="ghost" onClick={() => { setOpen(false); }}>
-          Отмена
+          {t("editCancel")}
         </Button>
       </div>
     </Form>

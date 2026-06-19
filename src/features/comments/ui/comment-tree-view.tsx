@@ -1,6 +1,9 @@
 // src/features/comments/ui/comment-tree-view.tsx
 // Чистое изоморфное read-only дерево комментов: рекурсивно рендерит CommentNodeView
 // через groupByParent. Для офлайн-рендера снимка (slice L). Без серверных зависимостей.
+//
+// ИЗОМОРФНЫЙ КОНТРАКТ: нет React-хуков, нет getT/useT.
+// emptyLabel — опциональный проп; дефолт — русский литерал (offline-fallback).
 import { groupByParent } from "../comment-tree-utils";
 import type { Comment, RootSubtree } from "../types";
 
@@ -28,10 +31,19 @@ function BranchView({
   );
 }
 
-export function CommentTreeView({ subtrees }: { subtrees: RootSubtree[] }) {
+interface Props {
+  subtrees: RootSubtree[];
+  /**
+   * Текст плашки при пустом дереве. Дефолт: "Комментариев пока нет."
+   * Онлайн-контейнеры (CommentTree — server) передают t("empty") из каталога.
+   */
+  emptyLabel?: string;
+}
+
+export function CommentTreeView({ subtrees, emptyLabel = "Комментариев пока нет." }: Props) {
   if (subtrees.length === 0) {
     return (
-      <p className="text-sm text-(--color-fg-muted)">Комментариев пока нет.</p>
+      <p className="text-sm text-(--color-fg-muted)">{emptyLabel}</p>
     );
   }
   return (

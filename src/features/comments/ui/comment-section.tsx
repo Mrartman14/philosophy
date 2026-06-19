@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import {
@@ -40,11 +41,13 @@ function renderContent(
   list: CommentListResult | null,
   lectureId: string,
   schema: CommentSchema,
+  noSnippet: string,
+  searchFoundCount: (count: number) => string,
 ): ReactNode {
   if (searching && search) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="text-xs text-(--color-fg-muted)">Найдено: {search.total}</p>
+        <p className="text-xs text-(--color-fg-muted)">{searchFoundCount(search.total)}</p>
         <ul className="flex flex-col gap-2">
           {search.items.map((item) => (
             <li key={item.id} className="rounded border border-(--color-border) p-2 text-sm">
@@ -55,8 +58,8 @@ function renderContent(
               <p>
                 {item.id ? (
                   <a href={`/comments/${item.id}`} className="hover:underline">
-                    {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- snippet может быть "" (пустой комментарий), "" → "(без текста)" намеренно */}
-                    {item.snippet || "(без текста)"}
+                    {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- snippet может быть "" (пустой комментарий), "" → noSnippet намеренно */}
+                    {item.snippet || noSnippet}
                   </a>
                 ) : (
                   item.snippet
@@ -74,10 +77,14 @@ function renderContent(
 }
 
 export async function CommentSection({ lectureId, query }: Props) {
-  const me = await getMe();
-  const schema = await getCommentSchema();
+  const [me, schema, t] = await Promise.all([
+    getMe(),
+    getCommentSchema(),
+    getT("comments"),
+  ]);
+
   if (!schema) {
-    return <p className="text-sm text-(--color-fg-muted)">Комментарии временно недоступны.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{t("unavailable")}</p>;
   }
 
   const rootTypes = (schema.allowed_roots ?? []);
@@ -90,13 +97,21 @@ export async function CommentSection({ lectureId, query }: Props) {
     getAstSchema(),
   ]);
 
-  const content = renderContent(searching, search, list, lectureId, schema);
+  const content = renderContent(
+    searching,
+    search,
+    list,
+    lectureId,
+    schema,
+    t("noSnippet"),
+    (count) => t("searchFoundCount", { count }),
+  );
   const canCreate = canCreateComment(me);
 
   return (
-    <section className="flex flex-col gap-5" aria-label="Комментарии">
+    <section className="flex flex-col gap-5" aria-label={t("sectionLabel")}>
       <header className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-semibold">Обсуждение</h2>
+        <h2 className="text-xl font-semibold">{t("sectionHeading")}</h2>
         <CommentExportLinks kind="lecture" id={lectureId} />
       </header>
 
@@ -116,7 +131,7 @@ export async function CommentSection({ lectureId, query }: Props) {
           <CommentCreateForm lectureId={lectureId} rootTypes={rootTypes} />
         ) : (
           <p className="text-sm text-(--color-fg-muted)">
-            Войдите, чтобы оставить комментарий.
+            {t("loginPrompt")}
           </p>
         )}
       </SchemaContextProvider>

@@ -3,7 +3,8 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { getT } from "@/i18n";
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
@@ -21,38 +22,35 @@ import {
   canModerateComments,
 } from "./permissions";
 import {
-  CommentBlocksUpdateSchema,
-  CommentCreateSchema,
   CommentIdSchema,
   ReactionSchema,
   RemoveReactionSchema,
+  makeCommentBlocksUpdateSchema,
+  makeCommentCreateSchema,
 } from "./schemas";
 import type { ReactionAxis } from "./types";
 
-/** Доменные коды бека → русский текст. role-403/SUSPENDED/BANNED и дефолтный
- * REF_NOT_FOUND обрабатывает централизованный rethrowApiError. BLOCKS_HAVE_ANCHORS
- * у комментариев отличается от дефолта, поэтому переопределён локально. */
-const ERRORS: ApiErrorMessages = {
-  SELF_REACTION: "Нельзя реагировать на собственный комментарий.",
-  AXIS_NOT_ALLOWED: "Эта реакция недоступна для данного типа комментария.",
-  INVALID_INSIGHT_VALUE: "Реакция «Инсайт» возможна только со знаком плюс.",
-  COMMENT_DELETED: "Комментарий удалён.",
-  PARENT_NOT_AVAILABLE: "Родительский комментарий недоступен.",
-  PARENT_WRONG_LECTURE: "Родительский комментарий недоступен.",
-  INVALID_ROOT_TYPE: "Этот тип комментария нельзя использовать как корневой.",
-  INVALID_TYPE_FOR_PARENT:
-    "Этот тип комментария недопустим как ответ на выбранный узел.",
-  MAX_DEPTH_EXCEEDED: "Превышена максимальная глубина ветки.",
-  BLOCKS_EMPTY: "Комментарий не может быть пустым.",
-  BLOCKS_INVALID: "Тело комментария не прошло проверку AST.",
-  BLOCK_ID_UNKNOWN: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
-  DUPLICATE_BLOCK_ID: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
-  COMMENT_REFERENCED:
-    "На этот комментарий ссылаются другие материалы. Сначала удалите ссылки.",
-  BLOCK_REFERENCED:
-    "На блок этого комментария ссылаются извне. Сначала удалите ссылки.",
-  BLOCKS_HAVE_ANCHORS:
-    "К блокам этого комментария привязаны другие комментарии. Сначала открепите их.",
+/** Доменные коды бека → ключи каталога errors (i18n-канал). role-403/SUSPENDED/BANNED
+ * и дефолтный REF_NOT_FOUND обрабатывает централизованный rethrowApiError.
+ * BLOCKS_HAVE_ANCHORS у комментариев отличается от дефолта (document/glossary-контекст),
+ * поэтому переопределён entity-ключом BLOCKS_HAVE_ANCHORS_COMMENT. */
+const ERRORS: ApiErrorMessageKeys = {
+  SELF_REACTION: "SELF_REACTION",
+  AXIS_NOT_ALLOWED: "AXIS_NOT_ALLOWED",
+  INVALID_INSIGHT_VALUE: "INVALID_INSIGHT_VALUE",
+  COMMENT_DELETED: "COMMENT_DELETED",
+  PARENT_NOT_AVAILABLE: "PARENT_NOT_AVAILABLE",
+  PARENT_WRONG_LECTURE: "PARENT_WRONG_LECTURE",
+  INVALID_ROOT_TYPE: "INVALID_ROOT_TYPE",
+  INVALID_TYPE_FOR_PARENT: "INVALID_TYPE_FOR_PARENT",
+  MAX_DEPTH_EXCEEDED: "MAX_DEPTH_EXCEEDED",
+  BLOCKS_EMPTY: "BLOCKS_EMPTY",
+  BLOCKS_INVALID: "BLOCKS_INVALID",
+  BLOCK_ID_UNKNOWN: "BLOCK_ID_UNKNOWN",
+  DUPLICATE_BLOCK_ID: "DUPLICATE_BLOCK_ID",
+  COMMENT_REFERENCED: "COMMENT_REFERENCED",
+  BLOCK_REFERENCED: "BLOCK_REFERENCED",
+  BLOCKS_HAVE_ANCHORS: "BLOCKS_HAVE_ANCHORS_COMMENT",
 };
 
 /** Создать комментарий (корень или ответ). FormData: type, blocks(JSON), parent_id?. */
@@ -62,7 +60,8 @@ export const createComment = createFormAction(async (formData, ctx) => {
   const rawLectureId = formData.get("lecture_id");
   const lectureId = typeof rawLectureId === "string" ? rawLectureId : "";
   if (!lectureId) throw new Error("Не указана лекция.");
-  const input = parseFormData(CommentCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeCommentCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/lectures/{id}/comments", {
     params: { path: { id: lectureId } },
@@ -89,7 +88,8 @@ export const createComment = createFormAction(async (formData, ctx) => {
 export const updateCommentBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateComment); // active+create — точную owner-проверку делает бек
-  const input = parseFormData(CommentBlocksUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeCommentBlocksUpdateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/comments/{id}/blocks", {
     params: {

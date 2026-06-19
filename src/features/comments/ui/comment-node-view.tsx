@@ -3,6 +3,11 @@
 // тело(AstRender)/сводка реакций. БЕЗ getMe/canX/actions/getBlock — рендерится и на
 // сервере, и на клиенте (офлайн SavedLectureView из снимка). Интерактив и резолв якоря
 // онлайн-контейнер (CommentNode) инжектит через слоты.
+//
+// ИЗОМОРФНЫЙ КОНТРАКТ: нет React-хуков, нет getT/useT.
+// Переводимые строки передаются через опциональные пропы; дефолт — русский
+// литерал (совпадает с каталогом comments.deleted / comments.edited).
+// Онлайн-контейнер (CommentNode) передаёт значения из getT("comments").
 import type { ReactNode } from "react";
 
 import { AstRender } from "@/components/ast-render";
@@ -21,6 +26,16 @@ interface Props {
   reactionsSlot?: ReactNode;
   /** Онлайн: кнопки edit/delete/reply. Офлайн: отсутствует. */
   actionsSlot?: ReactNode;
+  /**
+   * Текст плашки удалённого комментария. Дефолт: "Комментарий удалён".
+   * Онлайн-контейнер передаёт t("deleted") из каталога comments.
+   */
+  deletedLabel?: string;
+  /**
+   * Суффикс «(изменён)» у отредактированного комментария. Дефолт: "(изменён)".
+   * Онлайн-контейнер передаёт t("edited") из каталога comments.
+   */
+  editedLabel?: string;
 }
 
 export function CommentNodeView({
@@ -28,11 +43,13 @@ export function CommentNodeView({
   anchorSlot,
   reactionsSlot,
   actionsSlot,
+  deletedLabel = "Комментарий удалён",
+  editedLabel = "(изменён)",
 }: Props): ReactNode {
   if (comment.is_deleted) {
     return (
       <div className="rounded border border-dashed border-(--color-border) p-3 text-sm text-(--color-fg-muted)">
-        Комментарий удалён
+        {deletedLabel}
       </div>
     );
   }
@@ -43,7 +60,7 @@ export function CommentNodeView({
         <CommentTypeBadge type={comment.type} />
         <span>{comment.author?.username ?? "—"}</span>
         <span>{formatCommentDate(comment.created_at)}</span>
-        {comment.is_edited && <span>(изменён)</span>}
+        {comment.is_edited && <span>{editedLabel}</span>}
       </div>
 
       {anchorSlot ??

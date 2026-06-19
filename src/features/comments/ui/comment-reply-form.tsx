@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { Button, Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
+  const t = useT("comments");
   const [open, setOpen] = useState(false);
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
@@ -32,12 +34,12 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
   if (!open) {
     return (
       <Button type="button" variant="ghost" onClick={() => { setOpen(true); }}>
-        Ответить
+        {t("replyButton")}
       </Button>
     );
   }
 
-  const options = childTypes.map((t) => ({ value: t, label: commentTypeLabel(t) }));
+  const options = childTypes.map((type) => ({ value: type, label: commentTypeLabel(type) }));
 
   return (
     <Form action={action} errors={fieldErrors} className="mt-2 flex flex-col gap-2 border-l border-(--color-border) pl-3">
@@ -46,25 +48,25 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
-      <FormField name="type" label="Тип ответа" required>
-        <Select name="type" options={options} defaultValue={childTypes[0] ?? ""} aria-label="Тип ответа" />
+      <FormField name="type" label={t("replyTypeLabel")} required>
+        <Select name="type" options={options} defaultValue={childTypes[0] ?? ""} aria-label={t("replyTypeAriaLabel")} />
       </FormField>
 
-      <FormField name="blocks" label="Текст ответа">
+      <FormField name="blocks" label={t("replyBodyLabel")}>
         <LazyAstEditor
           entityContext="comment"
           defaultLectureId={lectureId}
           onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel="Текст ответа"
+          ariaLabel={t("replyBodyAriaLabel")}
         />
       </FormField>
 
-      <FormFeedback result={state} forbiddenAction="ответ" />
+      <FormFeedback result={state} forbiddenAction={t("replyForbiddenAction")} />
 
       <div className="flex gap-2">
-        <SubmitButton>Ответить</SubmitButton>
+        <SubmitButton>{t("replySubmit")}</SubmitButton>
         <Button type="button" variant="ghost" onClick={() => { setOpen(false); }}>
-          Отмена
+          {t("replyCancel")}
         </Button>
       </div>
     </Form>

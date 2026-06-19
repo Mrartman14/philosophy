@@ -19,6 +19,16 @@ vi.mock("./permissions", () => ({
 }));
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
 
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ вместо текста.
+// Позволяет схемам-фабрикам работать без request-scope next-intl.
+vi.mock("@/i18n", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...original,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
+
 // импорт ПОСЛЕ vi.mock (hoisted)
 import { updateCommentBlocks } from "./actions";
 

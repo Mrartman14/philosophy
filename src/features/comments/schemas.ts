@@ -3,41 +3,57 @@ import "server-only";
 import { z } from "zod";
 
 import { COMMENT_TYPES, REACTION_AXES as AXES } from "@/api/enums";
+import type { NamespaceT } from "@/i18n";
 import { blocksJsonField } from "@/utils/blocks-json";
 
 /**
- * blocks приходит из скрытого input формы как JSON-строка (AstEditor
- * сериализует blocks в hidden input). Парсим в непустой массив.
- * Пустой массив → 422 BLOCKS_EMPTY на беке; ловим раньше.
+ * Фабрика blocksJsonField с переведёнными сообщениями.
+ * Вызывается внутри makeCommentCreateSchema / makeCommentBlocksUpdateSchema.
  */
-const BlocksJsonSchema = blocksJsonField({
-  allowEmpty: false,
-  messages: {
-    invalidJson: "Битый JSON в теле",
-    // Оригинал объединял !Array.isArray и length===0 в одно условие с одним
-    // сообщением. Передаём то же сообщение в оба поля — поведение идентично.
-    notArray: "Комментарий не может быть пустым",
-    empty: "Комментарий не может быть пустым",
-  },
-});
+function makeBlocksJsonSchema(t: NamespaceT<"validation">) {
+  return blocksJsonField({
+    allowEmpty: false,
+    messages: {
+      invalidJson: t("comments.blocksInvalidJson"),
+      // Оригинал объединял !Array.isArray и length===0 в одно условие — сохраняем то же.
+      notArray: t("comments.blocksNotArray"),
+      empty: t("comments.blocksEmpty"),
+    },
+  });
+}
 
-export const CommentCreateSchema = z
-  .object({
-    type: z.enum(COMMENT_TYPES, { message: "Неизвестный тип комментария" }),
-    blocks: BlocksJsonSchema,
-    // parent_id есть только в форме ответа; в корневой форме отсутствует.
-    parent_id: z.uuid("Некорректный parent_id").optional(),
-  })
-  .transform((raw) => ({
-    type: raw.type,
-    blocks: raw.blocks,
-    ...(raw.parent_id ? { parent_id: raw.parent_id } : {}),
-  }));
+/**
+ * Фабрика схемы создания комментария. t = await getT("validation") в action.
+ * blocks приходит из скрытого input формы как JSON-строка.
+ */
+export function makeCommentCreateSchema(t: NamespaceT<"validation">) {
+  return z
+    .object({
+      type: z.enum(COMMENT_TYPES, { message: t("comments.invalidType") }),
+      blocks: makeBlocksJsonSchema(t),
+      // parent_id есть только в форме ответа; в корневой форме отсутствует.
+      parent_id: z.uuid(t("comments.invalidParentId")).optional(),
+    })
+    .transform((raw) => ({
+      type: raw.type,
+      blocks: raw.blocks,
+      ...(raw.parent_id ? { parent_id: raw.parent_id } : {}),
+    }));
+}
 
-export const CommentBlocksUpdateSchema = z.object({
-  id: z.uuid("Некорректный id комментария"),
-  blocks: BlocksJsonSchema,
-});
+/**
+ * Фабрика схемы обновления blocks комментария. t = await getT("validation") в action.
+ */
+export function makeCommentBlocksUpdateSchema(t: NamespaceT<"validation">) {
+  return z.object({
+    id: z.uuid(t("comments.invalidCommentId")),
+    blocks: makeBlocksJsonSchema(t),
+  });
+}
+
+// Внутренние схемы (не показываются в UI как field-ошибки):
+// ReactionSchema, RemoveReactionSchema, CommentIdSchema — аргументы action,
+// не parseFormData. Русские литералы в сообщениях — internal/dev-only.
 
 export const ReactionSchema = z
   .object({
@@ -64,8 +80,8 @@ export const CommentIdSchema = z.object({
   id: z.uuid("Некорректный id комментария"),
 });
 
-export type CommentCreateInput = z.infer<typeof CommentCreateSchema>;
-export type CommentBlocksUpdateInput = z.infer<typeof CommentBlocksUpdateSchema>;
+export type CommentCreateInput = z.infer<ReturnType<typeof makeCommentCreateSchema>>;
+export type CommentBlocksUpdateInput = z.infer<ReturnType<typeof makeCommentBlocksUpdateSchema>>;
 export type ReactionInput = z.infer<typeof ReactionSchema>;
 export type RemoveReactionInput = z.infer<typeof RemoveReactionSchema>;
 export type CommentIdInput = z.infer<typeof CommentIdSchema>;

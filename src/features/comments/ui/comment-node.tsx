@@ -1,4 +1,5 @@
 // src/features/comments/ui/comment-node.tsx
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import {
@@ -23,10 +24,10 @@ interface Props {
 }
 
 export async function CommentNode({ comment, lectureId, schema }: Props) {
-  const me = await getMe();
+  const [me, t] = await Promise.all([getMe(), getT("comments")]);
 
   if (comment.is_deleted) {
-    return <CommentNodeView comment={comment} />;
+    return <CommentNodeView comment={comment} deletedLabel={t("deleted")} />;
   }
 
   const type = comment.type;
@@ -38,6 +39,8 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
   return (
     <CommentNodeView
       comment={comment}
+      deletedLabel={t("deleted")}
+      editedLabel={t("edited")}
       anchorSlot={
         comment.anchor ? <CommentAnchorContext anchor={comment.anchor} /> : undefined
       }

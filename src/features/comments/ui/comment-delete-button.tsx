@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteComment, adminDeleteComment } from "../actions";
@@ -15,21 +16,22 @@ interface Props {
 }
 
 export function CommentDeleteButton({ commentId, admin = false }: Props) {
+  const t = useT("comments");
   const [done, setDone] = useState(false);
   const toast = useToast();
   const { key } = useIdempotencyKey();
-  if (done) return <span className="text-xs text-(--color-fg-muted)">Удалено</span>;
+  if (done) return <span className="text-xs text-(--color-fg-muted)">{t("deleteDone")}</span>;
   return (
     <ConfirmDialog
       trigger={
         <Button type="button" variant="danger" className="text-xs">
-          Удалить
+          {t("deleteButton")}
         </Button>
       }
-      title="Удалить комментарий?"
-      description="Действие необратимо. Если у комментария есть ответы, он станет «удалён», но ветка сохранится."
+      title={t("deleteDialogTitle")}
+      description={t("deleteDialogDescription")}
       destructive
-      confirmLabel="Удалить"
+      confirmLabel={t("deleteDialogConfirm")}
       onConfirm={async () => {
         const result = admin
           ? await adminDeleteComment(commentId)
@@ -38,9 +40,9 @@ export function CommentDeleteButton({ commentId, admin = false }: Props) {
           setDone(true);
         } else {
           toastActionError(toast, result, {
-            action: "удаление комментария",
-            forbiddenTitle: "Не удалось удалить",
-            failureTitle: "Не удалось удалить",
+            action: t("deleteAction"),
+            forbiddenTitle: t("deleteForbiddenTitle"),
+            failureTitle: t("deleteFailureTitle"),
           });
         }
       }}

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function CommentCreateForm({ lectureId, rootTypes }: Props) {
+  const t = useT("comments");
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
   const fieldErrors: Record<string, string> =
@@ -34,26 +36,26 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
-      <FormField name="type" label="Тип комментария" required>
-        <Select name="type" options={options} defaultValue={rootTypes[0] ?? ""} aria-label="Тип комментария" />
+      <FormField name="type" label={t("createTypeLabel")} required>
+        <Select name="type" options={options} defaultValue={rootTypes[0] ?? ""} aria-label={t("createTypeAriaLabel")} />
       </FormField>
 
-      <FormField name="blocks" label="Текст">
+      <FormField name="blocks" label={t("createBodyLabel")}>
         <LazyAstEditor
           entityContext="comment"
           defaultLectureId={lectureId}
           onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel="Текст комментария"
+          ariaLabel={t("createBodyAriaLabel")}
         />
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">Комментарий добавлен.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("createSuccess")}</p>
       )}
-      <FormFeedback result={state} forbiddenAction="создание комментария" />
+      <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
 
       <div>
-        <SubmitButton>Отправить</SubmitButton>
+        <SubmitButton>{t("createSubmit")}</SubmitButton>
       </div>
     </Form>
   );

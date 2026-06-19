@@ -1,13 +1,23 @@
 // src/features/comments/schemas.test.ts
 import { describe, it, expect } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  CommentCreateSchema,
-  CommentBlocksUpdateSchema,
+  makeCommentCreateSchema,
+  makeCommentBlocksUpdateSchema,
   ReactionSchema,
   RemoveReactionSchema,
   CommentIdSchema,
 } from "./schemas";
+
+// Образец mock-t для тестов схем-фабрик: возвращает ключ как строку.
+// Сообщения об ошибках при этом равны ключу (не русскому тексту) — success/fail
+// тесты проверяют только r.success, а не конкретный текст.
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const CommentCreateSchema = makeCommentCreateSchema(t);
+const CommentBlocksUpdateSchema = makeCommentBlocksUpdateSchema(t);
 
 const UUID = "550e8400-e29b-41d4-a716-446655440000";
 const blocksJson = JSON.stringify([

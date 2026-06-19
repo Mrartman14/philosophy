@@ -5,6 +5,7 @@ import { type FormEvent } from "react";
 
 import { Button, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
+import { useT } from "@/i18n/client";
 
 interface Props {
   /** Текущее значение из searchParams (?cq=). */
@@ -17,6 +18,7 @@ interface Props {
  * Показывается только залогиненным (бек: requiredAuth) — гейт на странице.
  */
 export function CommentSearch({ defaultQuery = "" }: Props) {
+  const t = useT("comments");
   const searchParams = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
 
@@ -37,12 +39,12 @@ export function CommentSearch({ defaultQuery = "" }: Props) {
       <TextInput
         name="cq"
         defaultValue={defaultQuery}
-        placeholder="Поиск по комментариям…"
+        placeholder={t("searchPlaceholder")}
         maxLength={200}
-        aria-label="Поиск по комментариям лекции"
+        aria-label={t("searchAriaLabel")}
       />
       <Button type="submit" disabled={pending}>
-        {pending ? "…" : "Найти"}
+        {pending ? t("searchPending") : t("searchButton")}
       </Button>
     </form>
   );

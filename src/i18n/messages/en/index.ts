@@ -4,6 +4,7 @@
 import type { Messages } from "../ru";
 
 import auth from "./auth";
+import comments from "./comments";
 import errors from "./errors";
 import metadata from "./metadata";
 import notifications from "./notifications";
@@ -12,6 +13,7 @@ import validation from "./validation";
 
 const en = {
   auth,
+  comments,
   errors,
   metadata,
   notifications,

@@ -38,6 +38,16 @@ const validation = {
     passwordMax: "Слишком длинный пароль",
     passwordConfirmMismatch: "Пароли не совпадают",
   },
+
+  // --- comments: createComment / updateCommentBlocks form schemas ---
+  comments: {
+    invalidType: "Неизвестный тип комментария",
+    invalidParentId: "Некорректный parent_id",
+    invalidCommentId: "Некорректный id комментария",
+    blocksInvalidJson: "Битый JSON в теле",
+    blocksNotArray: "Комментарий не может быть пустым",
+    blocksEmpty: "Комментарий не может быть пустым",
+  },
 };
 
 export default validation;

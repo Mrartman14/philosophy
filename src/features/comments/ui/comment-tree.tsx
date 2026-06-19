@@ -1,4 +1,6 @@
 // src/features/comments/ui/comment-tree.tsx
+import { getT } from "@/i18n";
+
 import { groupByParent } from "../comment-tree-utils";
 import type { Comment, CommentSchema, RootSubtree } from "../types";
 
@@ -39,9 +41,11 @@ interface Props {
   schema: CommentSchema;
 }
 
-export function CommentTree({ subtrees, lectureId, schema }: Props) {
+export async function CommentTree({ subtrees, lectureId, schema }: Props) {
+  const t = await getT("comments");
+
   if (subtrees.length === 0) {
-    return <p className="text-sm text-(--color-fg-muted)">Комментариев пока нет.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{t("empty")}</p>;
   }
   return (
     <ul className="flex flex-col gap-3">

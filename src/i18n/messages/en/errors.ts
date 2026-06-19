@@ -16,6 +16,29 @@ const errors = {
   IDEMPOTENCY_KEY_INVALID:
     "Invalid idempotency key. Refresh the page and try again.",
 
+  // --- comments slice: domain codes ---
+  SELF_REACTION: "You can't react to your own comment.",
+  AXIS_NOT_ALLOWED: "This reaction is not available for this comment type.",
+  INVALID_INSIGHT_VALUE: "The Insight reaction is only available with a positive value.",
+  COMMENT_DELETED: "Comment has been deleted.",
+  PARENT_NOT_AVAILABLE: "The parent comment is not available.",
+  PARENT_WRONG_LECTURE: "The parent comment is not available.",
+  INVALID_ROOT_TYPE: "This comment type cannot be used as a root.",
+  INVALID_TYPE_FOR_PARENT:
+    "This comment type is not allowed as a reply to the selected node.",
+  MAX_DEPTH_EXCEEDED: "Maximum thread depth exceeded.",
+  BLOCKS_EMPTY: "Comment cannot be empty.",
+  BLOCKS_INVALID: "Comment body failed AST validation.",
+  BLOCK_ID_UNKNOWN: "Block ID error. Please reload the editor.",
+  DUPLICATE_BLOCK_ID: "Block ID error. Please reload the editor.",
+  COMMENT_REFERENCED:
+    "Other content references this comment. Remove the references first.",
+  BLOCK_REFERENCED:
+    "An external reference points to a block in this comment. Remove it first.",
+  // BLOCKS_HAVE_ANCHORS for comments differs from the default (document/glossary context):
+  BLOCKS_HAVE_ANCHORS_COMMENT:
+    "Other comments are anchored to this comment's blocks. Detach them first.",
+
   // --- api-error: rethrowApiError fallbacks ---
   serverError: "Server error",
   accountRestricted: "Account restricted.",
