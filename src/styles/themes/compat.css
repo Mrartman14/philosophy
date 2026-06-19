@@ -1,0 +1,14 @@
+/* ВРЕМЕННЫЙ shim миграции. Старые имена = алиасы новых semantic.
+   Удаляется в Task 18 после полной миграции. Имена, совпадающие с новыми
+   (--color-border/-link/-danger/-danger-bg/-success), уже эмитит @theme inline. */
+:root {
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-fg);
+  --color-description: var(--color-fg-muted);
+  --color-text-pane: var(--color-surface-subtle);
+  --color-primary: var(--color-accent);
+  --color-danger-fill: var(--color-danger);
+  --color-danger-fill-hover: var(--color-danger);
+}
+/* NB: --color-surface НЕ алиасим — это реальный новый базовый токен (эмитит @theme inline);
+   существующий bg-(--color-surface) в lazy-ast-editor.tsx резолвится в него напрямую. */

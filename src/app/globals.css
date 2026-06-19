@@ -1,46 +1,22 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@import "../styles/themes/rebus.css";
+@import "../styles/tokens.generated.css";
+@import "../styles/themes/compat.css";
+@import "../styles/content.css";
 
-@theme {
-  --color-primary: var(--color-primary);
-  --color-background: var(--color-background);
-  --color-border: var(--color-border);
-  --color-link: var(--color-link);
-  --color-description: var(--color-description);
-  --color-text-pane: var(--color-text-pane);
-  --color-foreground: var(--color-foreground);
+/* Глобальная ось размера текста: масштабирует все rem (вкл. type-утилиты). */
+html { font-size: calc(100% * var(--text-scale, 1)); }
 
-  /* Semantic feedback tokens */
-  --color-danger: var(--color-danger);
-  --color-danger-bg: var(--color-danger-bg);
-  --color-danger-fill: var(--color-danger-fill);
-  --color-danger-fill-hover: var(--color-danger-fill-hover);
-  --color-success: var(--color-success);
-
-  --spacing-header: 50px;
-}
-
-:root {
-  color-scheme: light dark;
-  --header-height: var(--spacing-header);
-}
+:root { --header-height: var(--spacing-header); }
+/* NB: color-scheme НЕ задаём в :root — единственный источник = inline-style на <html> из htmlAttrs (Task 11). */
 
 @media (forced-colors: active) {
   :root {
-    --color-primary: AccentColor;
-    --color-background: Canvas;
-    --color-foreground: CanvasText;
-    --color-border: ButtonBorder;
-    --color-link: LinkText;
-    --color-description: GrayText;
+    --color-accent: AccentColor; --color-surface: Canvas; --color-fg: CanvasText;
+    --color-border: ButtonBorder; --color-link: LinkText; --color-fg-muted: GrayText;
   }
-
-  *::target-text {
-    background-color: Highlight;
-    color: HighlightText;
-  }
+  *::target-text { background-color: Highlight; color: HighlightText; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -52,7 +28,7 @@
   scrollbar-color: var(--color-border) transparent;
 
   &::target-text {
-    background-color: var(--color-primary);
+    background-color: var(--color-accent);
     color: #fff;
   }
 }
