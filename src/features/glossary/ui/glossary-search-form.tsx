@@ -5,6 +5,7 @@ import { type FormEvent } from "react";
 
 import { Button, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
+import { useT } from "@/i18n/client";
 
 interface Props {
   defaultQ: string;
@@ -13,6 +14,7 @@ interface Props {
 export function GlossarySearchForm({ defaultQ }: Props) {
   const searchParams = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
+  const t = useT("glossary");
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,11 +34,11 @@ export function GlossarySearchForm({ defaultQ }: Props) {
         type="search"
         name="q"
         defaultValue={defaultQ}
-        placeholder="Поиск по названию"
+        placeholder={t("searchPlaceholder")}
         className="flex-1"
       />
       <Button type="submit" disabled={pending}>
-        {pending ? "…" : "Найти"}
+        {pending ? t("searchPending") : t("searchButton")}
       </Button>
     </form>
   );

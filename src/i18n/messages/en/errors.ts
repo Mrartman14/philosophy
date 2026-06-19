@@ -124,6 +124,11 @@ const errors = {
   // --- preferences slice: domain codes ---
   NOT_CONFIGURED: "Push notifications are not configured on the server.",
 
+  // --- glossary slice: domain codes ---
+  GLOSSARY_BLOCKS_EMPTY: "The term body cannot be empty.",
+  GLOSSARY_BLOCK_REFERENCED:
+    "Other content references a block in this term. Remove the references or keep the block.",
+
   // --- annotations slice: domain codes ---
   ANNOTATION_BLOCKS_EMPTY: "The annotation body cannot be empty.",
   ANNOTATION_BLOCKS_INVALID: "The annotation body failed AST validation.",

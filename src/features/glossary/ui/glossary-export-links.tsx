@@ -1,5 +1,6 @@
 // src/features/glossary/ui/glossary-export-links.tsx
 import { API_URL } from "@/api/client";
+import { getT } from "@/i18n";
 
 import { glossaryExportUrls } from "../export-urls";
 
@@ -17,7 +18,8 @@ interface Props {
  * Ссылки на публичные .md/.txt-выгрузки глоссария. Контент рендерит бек;
  * эндпоинты публичные (только rate-limit) — прокси не нужен, прямые ссылки.
  */
-export function GlossaryExportLinks({ termId, className }: Props) {
+export async function GlossaryExportLinks({ termId, className }: Props) {
+  const t = await getT("glossary");
   const urls = glossaryExportUrls(API_URL, termId);
   return (
     <p
@@ -25,7 +27,7 @@ export function GlossaryExportLinks({ termId, className }: Props) {
         className ?? "flex items-center gap-2 text-xs text-(--color-fg-muted)"
       }
     >
-      Экспорт:
+      {t("exportLabel")}
       <a href={urls.md} className="hover:underline" target="_blank" rel="noopener noreferrer">
         .md
       </a>

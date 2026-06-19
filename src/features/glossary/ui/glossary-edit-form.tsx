@@ -9,6 +9,7 @@ import {
   IdempotencyField,
   SubmitButton,
 } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateTermBlocks } from "../actions";
@@ -23,6 +24,8 @@ interface Props {
 export function GlossaryEditForm({ term }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>(term.blocks ?? []);
   const [state, action] = useActionState(updateTermBlocks, initial);
+  const t = useT("glossary");
+  const tErrors = useT("errors");
 
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation"
@@ -36,7 +39,7 @@ export function GlossaryEditForm({ term }: Props) {
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
-      <FormField name="blocks" label="Тело термина">
+      <FormField name="blocks" label={t("blocksLabel")}>
         <AstEditor
           defaultValue={term.blocks ?? []}
           entityContext="glossary"
@@ -45,17 +48,19 @@ export function GlossaryEditForm({ term }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
       )}
       {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на изменение термина.</p>
+        <p className="text-sm text-red-600">
+          {tErrors("forbiddenAction", { action: t("updateTermAction") })}
+        </p>
       )}
       {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 
       <div>
-        <SubmitButton>Сохранить</SubmitButton>
+        <SubmitButton>{t("saveButton")}</SubmitButton>
       </div>
     </Form>
   );

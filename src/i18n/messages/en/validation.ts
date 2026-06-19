@@ -159,6 +159,15 @@ const validation = {
     invalidId: "Invalid media ID",
   },
 
+  // --- glossary: TermCreateSchema / TermBlocksUpdateSchema / TermIdSchema ---
+  glossary: {
+    titleRequired: "Enter a name",
+    titleMax: "Up to 300 characters",
+    invalidTermId: "Invalid term ID",
+    blocksInvalidJson: "Invalid JSON in the form body",
+    blocksNotArray: "Body must be an array of blocks",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

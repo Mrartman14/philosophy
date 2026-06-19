@@ -2,27 +2,40 @@
 import "server-only";
 import { z } from "zod";
 
+import type { NamespaceT } from "@/i18n";
 import { blocksJsonField } from "@/utils/blocks-json";
 
-export const TermCreateSchema = z.object({
-  title: z.string().trim().min(1, "Введите название").max(300, "До 300 символов"),
-});
+type ValidationT = NamespaceT<"validation">;
 
-export const TermBlocksUpdateSchema = z.object({
-  id: z.uuid("Некорректный id термина"),
-  blocks: blocksJsonField({
-    allowEmpty: true,
-    messages: {
-      invalidJson: "Битый JSON в теле формы",
-      notArray: "Тело должно быть массивом блоков",
-    },
-  }),
-});
+export function makeTermCreateSchema(t: ValidationT) {
+  return z.object({
+    title: z
+      .string()
+      .trim()
+      .min(1, t("glossary.titleRequired"))
+      .max(300, t("glossary.titleMax")),
+  });
+}
 
-export const TermIdSchema = z.object({
-  id: z.uuid("Некорректный id термина"),
-});
+export function makeTermBlocksUpdateSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("glossary.invalidTermId")),
+    blocks: blocksJsonField({
+      allowEmpty: true,
+      messages: {
+        invalidJson: t("glossary.blocksInvalidJson"),
+        notArray: t("glossary.blocksNotArray"),
+      },
+    }),
+  });
+}
 
-export type TermCreateInput = z.infer<typeof TermCreateSchema>;
-export type TermBlocksUpdateInput = z.infer<typeof TermBlocksUpdateSchema>;
-export type TermIdInput = z.infer<typeof TermIdSchema>;
+export function makeTermIdSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("glossary.invalidTermId")),
+  });
+}
+
+export type TermCreateInput = z.infer<ReturnType<typeof makeTermCreateSchema>>;
+export type TermBlocksUpdateInput = z.infer<ReturnType<typeof makeTermBlocksUpdateSchema>>;
+export type TermIdInput = z.infer<ReturnType<typeof makeTermIdSchema>>;

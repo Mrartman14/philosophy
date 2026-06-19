@@ -15,6 +15,7 @@ import documents from "./documents";
 import errors from "./errors";
 import events from "./events";
 import forms from "./forms";
+import glossary from "./glossary";
 import lectures from "./lectures";
 import media from "./media";
 import metadata from "./metadata";
@@ -36,6 +37,7 @@ const ru = {
   errors,
   events,
   forms,
+  glossary,
   lectures,
   media,
   metadata,

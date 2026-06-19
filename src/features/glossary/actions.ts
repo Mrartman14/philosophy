@@ -3,7 +3,8 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { getT } from "@/i18n";
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
@@ -22,22 +23,22 @@ import {
   canDeleteTerm,
 } from "./permissions";
 import {
-  TermCreateSchema,
-  TermBlocksUpdateSchema,
-  TermIdSchema,
+  makeTermCreateSchema,
+  makeTermBlocksUpdateSchema,
+  makeTermIdSchema,
 } from "./schemas";
 
 
-const ERRORS: ApiErrorMessages = {
-  BLOCKS_EMPTY: "Тело термина не может быть пустым.",
-  BLOCK_REFERENCED:
-    "На блок ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+const ERRORS: ApiErrorMessageKeys = {
+  BLOCKS_EMPTY: "GLOSSARY_BLOCKS_EMPTY",
+  BLOCK_REFERENCED: "GLOSSARY_BLOCK_REFERENCED",
 };
 
 export const createTerm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateTerm);
-  const input = parseFormData(TermCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeTermCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/glossary", {
     body: {
@@ -66,7 +67,8 @@ export const createTerm = createFormAction(async (formData, ctx) => {
 export const updateTermBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateTerm);
-  const input = parseFormData(TermBlocksUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeTermBlocksUpdateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/glossary/{id}/blocks", {
     params: {
@@ -85,7 +87,8 @@ export const updateTermBlocks = createFormAction(async (formData, ctx) => {
 export const deleteTerm = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canDeleteTerm);
-  const { id } = TermIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeTermIdSchema(t).parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/glossary/{id}", {
     params: { path: { id } },

@@ -1,5 +1,6 @@
 // src/features/glossary/ui/glossary-admin-row.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Term } from "../types";
 
@@ -11,7 +12,8 @@ interface Props {
   canDelete: boolean;
 }
 
-export function GlossaryAdminRow({ term, canEdit, canDelete }: Props) {
+export async function GlossaryAdminRow({ term, canEdit, canDelete }: Props) {
+  const t = await getT("glossary");
   return (
     <li className="flex items-center justify-between gap-4 py-2">
       <span className="flex-1 truncate">{term.title}</span>
@@ -21,7 +23,7 @@ export function GlossaryAdminRow({ term, canEdit, canDelete }: Props) {
             href={`/admin/glossary/${term.id}/edit`}
             className="text-sm hover:underline"
           >
-            Редактировать
+            {t("editButton")}
           </RouterLink>
         )}
         {canDelete && term.id && (

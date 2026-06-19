@@ -4,6 +4,7 @@ import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteTerm } from "../actions";
@@ -16,19 +17,22 @@ export function GlossaryDeleteButton({ id }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const toast = useToast();
+  const t = useT("glossary");
   const [, startTransition] = useTransition();
   const { key } = useIdempotencyKey();
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">Удалить</Button>}
-      title="Удалить термин?"
-      description="Действие необратимо. Если на блоки термина ссылаются другие материалы — удаление будет отклонено."
+      trigger={<Button variant="danger">{t("deleteButton")}</Button>}
+      title={t("deleteConfirmTitle")}
+      description={t("deleteConfirmDescription")}
       destructive
-      confirmLabel="Удалить"
+      confirmLabel={t("deleteConfirmLabel")}
       onConfirm={async () => {
         const result = await deleteTerm(id, key);
         if (!result.success) {
+          // toastActionError — frozen seam (src/utils/action-toast.ts); action-литерал
+          // оставлен до foundation-PR локализации этого seam.
           toastActionError(toast, result, { action: "удаление термина" });
           return;
         }

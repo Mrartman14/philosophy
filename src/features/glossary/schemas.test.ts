@@ -1,12 +1,20 @@
 import { describe, it, expect } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  TermCreateSchema,
-  TermBlocksUpdateSchema,
-  TermIdSchema,
+  makeTermCreateSchema,
+  makeTermBlocksUpdateSchema,
+  makeTermIdSchema,
 } from "./schemas";
 
+// Заглушка переводчика: возвращает ключ как есть (поведение совпадает с
+// resolveErrorMessage вне request-scope: см. playbook Case 1).
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
 describe("TermCreateSchema", () => {
+  const TermCreateSchema = makeTermCreateSchema(t);
+
   it("принимает валидный title", () => {
     const r = TermCreateSchema.safeParse({ title: "Эпистемология" });
     expect(r.success).toBe(true);
@@ -22,6 +30,8 @@ describe("TermCreateSchema", () => {
 });
 
 describe("TermBlocksUpdateSchema", () => {
+  const TermBlocksUpdateSchema = makeTermBlocksUpdateSchema(t);
+
   it("принимает валидный uuid и JSON-массив", () => {
     const r = TermBlocksUpdateSchema.safeParse({
       id: "550e8400-e29b-41d4-a716-446655440000",
@@ -58,6 +68,8 @@ describe("TermBlocksUpdateSchema", () => {
 });
 
 describe("TermIdSchema", () => {
+  const TermIdSchema = makeTermIdSchema(t);
+
   it("принимает валидный uuid", () => {
     const r = TermIdSchema.safeParse({ id: "550e8400-e29b-41d4-a716-446655440000" });
     expect(r.success).toBe(true);

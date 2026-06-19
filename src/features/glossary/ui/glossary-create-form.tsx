@@ -10,6 +10,7 @@ import {
   SubmitButton,
   TextInput,
 } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTerm } from "../actions";
@@ -19,6 +20,7 @@ const initial: ActionResult<Term | null> = { success: true, data: null };
 
 export function GlossaryCreateForm() {
   const router = useRouter();
+  const t = useT("glossary");
   const [state, action] = useActionState(createTerm, initial);
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation"
@@ -34,14 +36,16 @@ export function GlossaryCreateForm() {
   return (
     <Form action={action} errors={fieldErrors} className="max-w-xl">
       <IdempotencyField result={state} />
-      <FormField name="title" label="Название" required>
-        <TextInput name="title" required maxLength={300} placeholder="Например: «Эпистемология»" />
+      <FormField name="title" label={t("titleLabel")} required>
+        <TextInput name="title" required maxLength={300} placeholder={t("titlePlaceholder")} />
       </FormField>
 
+      {/* FormFeedback.forbiddenAction — frozen seam (src/components/ui); литерал оставлен
+          намеренно до foundation-PR локализации FormFeedback. */}
       <FormFeedback result={state} forbiddenAction="создание термина" />
 
       <div>
-        <SubmitButton>Создать</SubmitButton>
+        <SubmitButton>{t("createButton")}</SubmitButton>
       </div>
     </Form>
   );

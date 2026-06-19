@@ -162,6 +162,15 @@ const validation = {
     invalidId: "Некорректный id медиа",
   },
 
+  // --- glossary: TermCreateSchema / TermBlocksUpdateSchema / TermIdSchema ---
+  glossary: {
+    titleRequired: "Введите название",
+    titleMax: "До 300 символов",
+    invalidTermId: "Некорректный id термина",
+    blocksInvalidJson: "Битый JSON в теле формы",
+    blocksNotArray: "Тело должно быть массивом блоков",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

@@ -128,6 +128,11 @@ const errors = {
   // --- preferences slice: доменные коды ---
   NOT_CONFIGURED: "Push-уведомления не настроены на сервере.",
 
+  // --- glossary slice: доменные коды ---
+  GLOSSARY_BLOCKS_EMPTY: "Тело термина не может быть пустым.",
+  GLOSSARY_BLOCK_REFERENCED:
+    "На блок ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+
   // --- annotations slice: доменные коды ---
   ANNOTATION_BLOCKS_EMPTY: "Тело аннотации не может быть пустым.",
   ANNOTATION_BLOCKS_INVALID: "Тело аннотации не прошло валидацию AST.",

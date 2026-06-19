@@ -1,6 +1,7 @@
 // src/features/glossary/ui/glossary-revisions.tsx
 import { AstRender } from "@/components/ast-render";
 import { RevisionHistory } from "@/components/revision-history";
+import { getT } from "@/i18n";
 
 import { getTermRevision, getTermRevisions } from "../api";
 
@@ -21,10 +22,11 @@ interface Props {
  * показываем (решение как в слайсе events).
  */
 export async function GlossaryRevisions({ termId, selectedRevisionId }: Props) {
-  const metas = await getTermRevisions(termId);
-  const selected = selectedRevisionId
-    ? await getTermRevision(termId, selectedRevisionId)
-    : null;
+  const [t, metas, selected] = await Promise.all([
+    getT("glossary"),
+    getTermRevisions(termId),
+    selectedRevisionId ? getTermRevision(termId, selectedRevisionId) : Promise.resolve(null),
+  ]);
 
   // Бек отдаёт ревизии по created_at ASC (старые первыми) — показываем
   // новые первыми, как принято в RevisionHistory-потребителях.
@@ -37,7 +39,7 @@ export async function GlossaryRevisions({ termId, selectedRevisionId }: Props) {
       )}
       selectedId={selected?.id}
       buildHref={(rid) => `/admin/glossary/${termId}/edit?revision=${rid}`}
-      title="История ревизий термина"
+      title={t("revisionsTitle")}
     >
       {selected && (
         <div className="content">
