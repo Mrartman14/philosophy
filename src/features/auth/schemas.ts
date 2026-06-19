@@ -1,43 +1,59 @@
 import "server-only";
 import { z } from "zod";
 
-export const LoginSchema = z.object({
-  username: z
-    .string()
-    .trim()
-    .min(1, "Введите логин")
-    .max(200, "Слишком длинный логин"),
-  password: z
-    .string()
-    .min(1, "Введите пароль")
-    .max(200, "Слишком длинный пароль"),
-  next: z.string().optional(),
-});
+import type { NamespaceT } from "@/i18n";
 
-export type LoginInput = z.infer<typeof LoginSchema>;
+type ValidationT = NamespaceT<"validation">;
 
-export const RegisterSchema = z
-  .object({
+/**
+ * POST /api/auth/login — форма входа.
+ * Фабрика: принимает t = await getT("validation") для локализации сообщений.
+ */
+export function makeLoginSchema(t: ValidationT) {
+  return z.object({
     username: z
       .string()
       .trim()
-      .min(3, "Логин — минимум 3 символа")
-      .max(30, "Логин — максимум 30 символов"),
+      .min(1, t("login.usernameRequired"))
+      .max(200, t("login.usernameMax")),
     password: z
       .string()
-      .min(6, "Пароль — минимум 6 символов")
-      .max(72, "Слишком длинный пароль"),
-    password_confirm: z.string(),
+      .min(1, t("login.passwordRequired"))
+      .max(200, t("login.passwordMax")),
     next: z.string().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.password !== data.password_confirm) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["password_confirm"],
-        message: "Пароли не совпадают",
-      });
-    }
   });
+}
 
-export type RegisterInput = z.infer<typeof RegisterSchema>;
+export type LoginInput = z.infer<ReturnType<typeof makeLoginSchema>>;
+
+/**
+ * POST /api/auth/register — форма регистрации.
+ * Фабрика: принимает t = await getT("validation") для локализации сообщений.
+ */
+export function makeRegisterSchema(t: ValidationT) {
+  return z
+    .object({
+      username: z
+        .string()
+        .trim()
+        .min(3, t("register.usernameMin"))
+        .max(30, t("register.usernameMax")),
+      password: z
+        .string()
+        .min(6, t("register.passwordMin"))
+        .max(72, t("register.passwordMax")),
+      password_confirm: z.string(),
+      next: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (data.password !== data.password_confirm) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["password_confirm"],
+          message: t("register.passwordConfirmMismatch"),
+        });
+      }
+    });
+}
+
+export type RegisterInput = z.infer<ReturnType<typeof makeRegisterSchema>>;

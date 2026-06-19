@@ -3,6 +3,15 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const cookieStore = { get: vi.fn(() => undefined) };
 vi.mock("next/headers", () => ({ cookies: () => Promise.resolve(cookieStore) }));
 
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ вместо текста.
+vi.mock("@/i18n", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...original,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
+
 const redirect = vi.fn((url: string) => { throw new Error(`REDIRECT:${url}`); });
 vi.mock("next/navigation", () => ({ redirect: (u: string) => redirect(u) }));
 

@@ -3,6 +3,7 @@
 // гарантирует паритет ключей с ru на этапе tsc.
 import type { Messages } from "../ru";
 
+import auth from "./auth";
 import errors from "./errors";
 import metadata from "./metadata";
 import notifications from "./notifications";
@@ -10,6 +11,7 @@ import preferences from "./preferences";
 import validation from "./validation";
 
 const en = {
+  auth,
   errors,
   metadata,
   notifications,

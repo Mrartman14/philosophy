@@ -3,12 +3,13 @@
 import "server-only";
 import { redirect } from "next/navigation";
 
+import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import { createFormAction, parseFormData } from "@/utils/create-action";
 
 import { setAuthCookies, clearAuthCookies, getAuthToken, getRefreshToken } from "./cookie";
 import { safeNextPath } from "./safe-next";
-import { LoginSchema, RegisterSchema } from "./schemas";
+import { makeLoginSchema, makeRegisterSchema } from "./schemas";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
@@ -30,7 +31,7 @@ class AuthError extends Error {
 }
 
 export const loginAction = createFormAction<undefined>(async (formData) => {
-  const { username, password, next } = parseFormData(LoginSchema, formData);
+  const { username, password, next } = parseFormData(makeLoginSchema(await getT("validation")), formData);
 
   let res: Response;
   try {
@@ -76,7 +77,7 @@ export const loginAction = createFormAction<undefined>(async (formData) => {
  * (RegisterSchema зеркалит правила бека); 429 = login-rate-limiter.
  */
 export const registerAction = createFormAction<undefined>(async (formData) => {
-  const { username, password, next } = parseFormData(RegisterSchema, formData);
+  const { username, password, next } = parseFormData(makeRegisterSchema(await getT("validation")), formData);
 
   let res: Response;
   try {

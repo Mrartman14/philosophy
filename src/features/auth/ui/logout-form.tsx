@@ -1,12 +1,15 @@
 // src/features/auth/ui/logout-form.tsx
 "use client";
 import { Button, ConfirmDialog } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { countSavedBundles } from "@/services/offline/store/saved-bundles";
 import { wipeOfflineData } from "@/services/offline/wipe";
 
 import { logoutAction } from "../actions";
 
 export function LogoutForm() {
+  const t = useT("auth");
+
   // Сначала чистим офлайн-кеш (IndexedDB-снимки лекций + Cache Storage
   // картинок), затем серверный логаут (отзыв токенов + redirect). Чистка ДО
   // логаута — чтобы приватные офлайн-данные не пережили смену пользователя на
@@ -24,13 +27,13 @@ export function LogoutForm() {
     <ConfirmDialog
       trigger={
         <Button variant="ghost" size="sm">
-          Выйти
+          {t("logout.trigger")}
         </Button>
       }
-      title="Выйти из аккаунта?"
-      description="Сохранённые офлайн-материалы будут удалены с этого устройства. После входа их можно скачать заново."
+      title={t("logout.dialogTitle")}
+      description={t("logout.dialogDescription")}
       destructive
-      confirmLabel="Выйти и удалить"
+      confirmLabel={t("logout.confirmLabel")}
       onConfirm={doLogout}
       shouldConfirm={async () => (await countSavedBundles().catch(() => 0)) > 0}
     />
