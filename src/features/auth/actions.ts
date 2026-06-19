@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import { createFormAction, parseFormData } from "@/utils/create-action";
 
-import { setAuthCookie, clearAuthCookie, getAuthToken } from "./cookie";
+import { setAuthCookies, clearAuthCookies, getAuthToken, getRefreshToken } from "./cookie";
 import { safeNextPath } from "./safe-next";
 import { LoginSchema, RegisterSchema } from "./schemas";
 
@@ -48,16 +48,23 @@ export const loginAction = createFormAction<undefined>(async (formData) => {
   if (res.status === 403) throw new AuthError("account_blocked");
   if (!res.ok) throw new AuthError("service_unavailable");
 
-  let token: string | undefined;
+  let tokens: { access?: string; refresh?: string; expiresIn?: number } = {};
   try {
-    const json = (await res.json()) as { data?: { access_token?: unknown } };
-    if (typeof json.data?.access_token === "string") token = json.data.access_token;
+    const json = (await res.json()) as {
+      data?: { access_token?: unknown; refresh_token?: unknown; expires_in?: unknown };
+    };
+    const d = json.data ?? {};
+    tokens = {
+      access: typeof d.access_token === "string" ? d.access_token : undefined,
+      refresh: typeof d.refresh_token === "string" ? d.refresh_token : undefined,
+      expiresIn: typeof d.expires_in === "number" ? d.expires_in : undefined,
+    };
   } catch {
     throw new AuthError("service_unavailable");
   }
-  if (!token) throw new AuthError("service_unavailable");
+  if (!tokens.access || !tokens.refresh) throw new AuthError("service_unavailable");
 
-  await setAuthCookie(token);
+  await setAuthCookies({ access: tokens.access, refresh: tokens.refresh, expiresIn: tokens.expiresIn });
   redirect(safeNextPath(next));
 }, "loginAction");
 
@@ -99,31 +106,25 @@ export const registerAction = createFormAction<undefined>(async (formData) => {
 }, "registerAction");
 
 /**
- * Выход. Дёргает `POST /api/auth/logout` (бэк отзывает ВСЕ токены пользователя,
- * logout-everywhere; идемпотентно), затем чистит локальную cookie и редиректит.
+ * Выход с текущего устройства: отзыв ТЕКУЩЕЙ refresh-сессии по токену из cookie.
+ * Бэк принимает тело `{ refresh_token }` и инвалидирует только эту сессию.
  *
- * Вызов бэка — best-effort: логаут ОБЯЗАН разлогинить локально даже если бэк
- * недоступен или ответил ошибкой, иначе сетевой сбой запер бы пользователя в
- * сессии. 401/403 для логаута неактуальны (токен и так невалиден), показывать
- * нечего — поэтому ошибки/таймаут глотаем. Худший случай при сбое: токен живёт
- * до своего expiry на сервере — не хуже прежнего поведения (бэк не звался вовсе).
- *
- * Запрос ограничен таймаутом: зависший бэк не должен держать логаут открытым —
- * по абортy мы всё равно чистим cookie и редиректим.
+ * Best-effort: локально разлогиниваем (чистим обе cookie) даже при сбое бэка.
+ * Худший случай при сбое: refresh и access живут до своего expiry на сервере.
+ * Запрос ограничен таймаутом: зависший бэк не должен держать логаут открытым.
  */
 const LOGOUT_TIMEOUT_MS = 3000;
 
 export async function logoutAction(): Promise<void> {
-  const token = await getAuthToken();
-  if (token) {
+  const refresh = await getRefreshToken();
+  if (refresh) {
     const controller = new AbortController();
-    const timer = setTimeout(() => {
-      controller.abort();
-    }, LOGOUT_TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), LOGOUT_TIMEOUT_MS);
     try {
       await instrumentedFetch(`${API_URL}/api/auth/logout`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: refresh }),
         cache: "no-store",
         signal: controller.signal,
       }, { surface: "auth.logout" });
@@ -134,6 +135,30 @@ export async function logoutAction(): Promise<void> {
     }
   }
 
-  await clearAuthCookie();
+  await clearAuthCookies();
+  redirect("/");
+}
+
+/** Выход со всех устройств: бэк отзывает все сессии + бампит tokens_valid_after
+ * (мгновенный kill всего access). Требует валидный access-токен. Best-effort. */
+export async function logoutAllAction(): Promise<void> {
+  const access = await getAuthToken();
+  if (access) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), LOGOUT_TIMEOUT_MS);
+    try {
+      await instrumentedFetch(`${API_URL}/api/auth/logout-all`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${access}` },
+        cache: "no-store",
+        signal: controller.signal,
+      }, { surface: "auth.logout_all" });
+    } catch {
+      // best-effort
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  await clearAuthCookies();
   redirect("/");
 }
