@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { Form, FormField, Select, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updatePreferences } from "../actions";
@@ -10,21 +11,23 @@ import type { Preferences, ReadingMode } from "../types";
 
 const initial: ActionResult<Preferences | null> = { success: true, data: null };
 
-const READING_MODE_OPTIONS: { value: ReadingMode; label: string }[] = [
-  { value: "full", label: "Полный" },
-  { value: "focused", label: "Фокусированный" },
-];
-
 export function PreferencesForm({
   initialReadingMode,
 }: {
   initialReadingMode: ReadingMode;
 }) {
+  const t = useT("preferences");
+  const tErrors = useT("errors");
   const [state, action] = useActionState(updatePreferences, initial);
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
+
+  const READING_MODE_OPTIONS: { value: ReadingMode; label: string }[] = [
+    { value: "full", label: t("readingModeFull") },
+    { value: "focused", label: t("readingModeFocused") },
+  ];
 
   return (
     <Form
@@ -34,31 +37,31 @@ export function PreferencesForm({
     >
       <FormField
         name="reading_mode"
-        label="Режим чтения"
-        description="«Фокусированный» скрывает второстепенные элементы на странице лекции."
+        label={t("readingModeLabel")}
+        description={t("readingModeDescription")}
       >
         <Select
           name="reading_mode"
           defaultValue={initialReadingMode}
           options={READING_MODE_OPTIONS}
-          aria-label="Режим чтения"
+          aria-label={t("readingModeAriaLabel")}
         />
       </FormField>
 
       {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
-          У вас нет прав на изменение настроек.
+          {tErrors("forbiddenAction", { action: t("updateSettingsAction") })}
         </p>
       )}
       {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
       {state.success && state.data !== null && (
-        <p className="text-sm text-(--color-fg-muted)">Настройки сохранены.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("settingsSaved")}</p>
       )}
 
       <div>
-        <SubmitButton>Сохранить</SubmitButton>
+        <SubmitButton>{t("saveButton")}</SubmitButton>
       </div>
     </Form>
   );

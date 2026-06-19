@@ -125,6 +125,9 @@ const errors = {
   NOT_FOUND: "Ресурс не найден или вы не его владелец.",
   RESOURCE_NOT_PRIVATE: "Ссылку можно создать только для приватного ресурса.",
 
+  // --- preferences slice: доменные коды ---
+  NOT_CONFIGURED: "Push-уведомления не настроены на сервере.",
+
   // --- annotations slice: доменные коды ---
   ANNOTATION_BLOCKS_EMPTY: "Тело аннотации не может быть пустым.",
   ANNOTATION_BLOCKS_INVALID: "Тело аннотации не прошло валидацию AST.",

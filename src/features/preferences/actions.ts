@@ -6,7 +6,7 @@ import { Tags } from "@/api/tags";
 import { getT } from "@/i18n";
 import {
   rethrowApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
@@ -35,8 +35,8 @@ import {
 /** Доменные коды apperror этого слайса. SUSPENDED/FORBIDDEN и фоллбек
  * "err.error ?? Ошибка сервера" (бывшие BAD_REQUEST/VALIDATION_ERROR, которые
  * предпочитали сообщение бека) — в централизованном rethrowApiError. */
-const ERRORS: ApiErrorMessages = {
-  NOT_CONFIGURED: "Push-уведомления не настроены на сервере.",
+const ERRORS: ApiErrorMessageKeys = {
+  NOT_CONFIGURED: "NOT_CONFIGURED",
 };
 
 export const updatePreferences = createFormAction(async (formData) => {

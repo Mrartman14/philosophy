@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { log } from "@/services/observability/client";
 
 import { subscribePush, unsubscribePush } from "../actions";
@@ -25,6 +26,8 @@ export function PushSubscriptionToggle({
   vapidPublicKey,
   canSubscribe,
 }: PushSubscriptionToggleProps) {
+  const t = useT("preferences");
+  const tErrors = useT("errors");
   const [state, setState] = useState<ToggleState>({ phase: "loading" });
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +82,7 @@ export function PushSubscriptionToggle({
         await subscription.unsubscribe();
         setError(
           result.code === "forbidden"
-            ? "У вас нет прав на подписку на уведомления."
+            ? tErrors("forbiddenAction", { action: t("pushSubscribeAction") })
             : result.error,
         );
         return;
@@ -89,7 +92,7 @@ export function PushSubscriptionToggle({
       if (Notification.permission === "denied") {
         setState({ phase: "denied" });
       } else {
-        setError("Не удалось оформить подписку. Попробуйте ещё раз.");
+        setError(t("pushSubscribeError"));
       }
     } finally {
       setPending(false);
@@ -115,7 +118,7 @@ export function PushSubscriptionToggle({
       }
       setState({ phase: "ready", subscribed: false });
     } catch {
-      setError("Не удалось отписаться. Попробуйте ещё раз.");
+      setError(t("pushUnsubscribeError"));
     } finally {
       setPending(false);
     }
@@ -123,27 +126,27 @@ export function PushSubscriptionToggle({
 
   if (state.phase === "loading") {
     return (
-      <p className="text-sm text-(--color-fg-muted)">Проверяем подписку…</p>
+      <p className="text-sm text-(--color-fg-muted)">{t("pushCheckingSubscription")}</p>
     );
   }
   if (state.phase === "unsupported") {
     return (
       <p className="text-sm text-(--color-fg-muted)">
-        Push-уведомления не поддерживаются в этом браузере.
+        {t("pushUnsupported")}
       </p>
     );
   }
   if (state.phase === "denied") {
     return (
       <p className="text-sm text-(--color-fg-muted)">
-        Уведомления заблокированы. Разрешите их в настройках браузера.
+        {t("pushDenied")}
       </p>
     );
   }
   if (vapidPublicKey === null) {
     return (
       <p className="text-sm text-(--color-fg-muted)">
-        Push-уведомления временно недоступны.
+        {t("pushUnavailable")}
       </p>
     );
   }
@@ -152,8 +155,8 @@ export function PushSubscriptionToggle({
     <div className="flex flex-col gap-2">
       <p className="text-sm">
         {state.subscribed
-          ? "Вы подписаны на уведомления."
-          : "Вы не подписаны на уведомления."}
+          ? t("pushSubscribed")
+          : t("pushNotSubscribed")}
       </p>
       {state.subscribed ? (
         <Button
@@ -162,7 +165,7 @@ export function PushSubscriptionToggle({
           disabled={pending}
           onClick={() => { void handleUnsubscribe(); }}
         >
-          Отписаться
+          {t("pushUnsubscribeButton")}
         </Button>
       ) : (
         <Button
@@ -170,12 +173,12 @@ export function PushSubscriptionToggle({
           disabled={pending || !canSubscribe}
           onClick={() => { void handleSubscribe(); }}
         >
-          Подписаться
+          {t("pushSubscribeButton")}
         </Button>
       )}
       {!canSubscribe && !state.subscribed && (
         <p className="text-sm text-(--color-fg-muted)">
-          У вас нет прав на подписку на уведомления.
+          {tErrors("forbiddenAction", { action: t("pushSubscribeAction") })}
         </p>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}

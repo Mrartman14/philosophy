@@ -36,23 +36,23 @@ export function PushSendForm() {
       className="flex max-w-xl flex-col gap-4"
     >
       <IdempotencyField result={state} />
-      <FormField name="title" label="Заголовок" required>
+      <FormField name="title" label={tPrefs("pushTitleLabel")} required>
         <TextInput
           name="title"
           required
           maxLength={200}
-          placeholder="Например: «Новая лекция»"
+          placeholder={tPrefs("pushTitlePlaceholder")}
         />
       </FormField>
 
-      <FormField name="body" label="Текст">
+      <FormField name="body" label={tPrefs("pushBodyLabel")}>
         <Textarea name="body" maxLength={1000} rows={4} />
       </FormField>
 
       <FormField
         name="url"
-        label="Ссылка"
-        description="Откроется по клику на уведомление. Путь («/lectures/…») или полный http(s)-URL."
+        label={tPrefs("pushUrlLabel")}
+        description={tPrefs("pushUrlDescription")}
       >
         <TextInput name="url" placeholder="/lectures/…" />
       </FormField>
@@ -67,12 +67,12 @@ export function PushSendForm() {
       )}
       {state.success && state.data && (
         <p className="text-sm text-(--color-fg-muted)">
-          Рассылка принята и будет доставлена подписчикам в фоне.
+          {tPrefs("pushSendAccepted")}
         </p>
       )}
 
       <div>
-        <SubmitButton>Отправить</SubmitButton>
+        <SubmitButton>{tPrefs("pushSendButton")}</SubmitButton>
       </div>
     </Form>
   );
