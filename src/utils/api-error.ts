@@ -90,26 +90,40 @@ export function rethrowApiError(
   err: ApiError | undefined,
   overrides?: ApiErrorMessages,
 ): never {
-  // Серверная валидация (422): раскладка по полям имеет приоритет над общим
-  // текстом, чтобы попасть в существующий канал {code:"validation", fieldErrors}.
-  if (err?.fields && Object.keys(err.fields).length > 0) {
-    throw new ZodValidationError(err.fields);
-  }
   const code = err?.code;
   if (code) {
     // Метрика по доменному коду — до любого throw, чтобы попадали все ветки.
     metrics.increment(M.backendError, { code });
+
+    // 1. Форс-логаут: BANNED имеет наивысший приоритет — даже при наличии fields
+    //    (дрейф контракта) забаненный должен быть разлогинен, а не получить
+    //    field-ошибку.
     if (code === "BANNED") {
       throw new BannedError(err.error ?? "Account banned");
     }
+
+    // 2. Role-403: нет прав на операцию.
     if (ROLE_FORBIDDEN_CODES.has(code)) {
       throw new ForbiddenError("role", err.error);
     }
+
+    // 3. Status-403: аккаунт ограничен (SUSPENDED).
     if (STATUS_FORBIDDEN_CODES.has(code)) {
       throw new ForbiddenError("status", err.error ?? "Аккаунт ограничен.");
     }
+
+    // 4. Серверная валидация (422): раскладка по полям имеет приоритет над общим
+    //    текстом, чтобы попасть в канал {code:"validation", fieldErrors}.
+    //    Стоит ПОСЛЕ auth/forbidden-веток: если бек вдруг пришлёт fields+BANNED,
+    //    форс-логаут (п.1) сработает раньше.
+    if (err.fields && Object.keys(err.fields).length > 0) {
+      throw new ZodValidationError(err.fields);
+    }
+
+    // 5. Маппинг кода на текст: слайс-override → дефолт → фоллбек.
     const text = overrides?.[code] ?? DEFAULT_MESSAGES[code];
     if (text) throw new Error(text);
+
     // Код есть, но нигде не сопоставлен — это дрифт контракта, не юзер-ошибка.
     errors.capture(new Error(err.error ?? `Unmapped backend code: ${code}`), {
       errorClass: "unexpected",

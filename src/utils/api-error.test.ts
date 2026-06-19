@@ -124,6 +124,15 @@ describe("rethrowApiError — серверный 422 fields", () => {
     expect(() => rethrowApiError({ code: "VERSION_MISMATCH", error: "x" }))
       .toThrow("Объект изменён в другом месте. Обновите страницу и повторите.");
   });
+
+  // Защитный кейс от дрейфа контракта: если бек пришлёт fields вместе с BANNED,
+  // форс-логаут должен сработать, а не проглотиться ZodValidationError.
+  it("BANNED + fields → BannedError (fields НЕ проглатывают форс-логаут)", () => {
+    const err = caught(() =>
+      rethrowApiError({ code: "BANNED", error: "x", fields: { a: "b" } }),
+    );
+    expect(err).toBeInstanceOf(BannedError);
+  });
 });
 
 describe("rethrowApiError idempotency codes", () => {
