@@ -6,7 +6,7 @@ export type Annotation = components["schemas"]["annotation.Annotation"];
 
 /** Видимость аннотации. Фиксируется при создании (спека §6.8). */
 export type AnnotationVisibility =
-  components["schemas"]["annotation.Visibility"];
+  components["schemas"]["access.Visibility"];
 
 /** Якорь — text-range или media-interval (взаимоисключающие). */
 export type Anchor = components["schemas"]["annotation.Anchor"];

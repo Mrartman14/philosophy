@@ -11,7 +11,7 @@ export type TrailWithItems = components["schemas"]["trail.TrailWithItems"];
 export type TrailItem = components["schemas"]["trail.TrailItem"];
 
 /** Видимость: "private" | "public". */
-export type TrailVisibility = components["schemas"]["trail.Visibility"];
+export type TrailVisibility = components["schemas"]["access.Visibility"];
 
 /**
  * Лёгкая сводка лекции для отображения items и пикера. Локальный тип, потому

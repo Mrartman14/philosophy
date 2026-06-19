@@ -3,7 +3,7 @@ import type { components } from "@/api/schema";
 import type { Lecture as LectureSchema } from "@/api/types";
 
 export type Lecture = LectureSchema;
-export type LectureVisibility = components["schemas"]["lecture.Visibility"];
+export type LectureVisibility = components["schemas"]["access.Visibility"];
 export type LectureListItem = Pick<
   Lecture,
   "id" | "owner_id" | "visibility" | "title" | "description" | "date" | "created_at" | "updated_at"
