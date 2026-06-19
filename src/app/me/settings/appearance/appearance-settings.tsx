@@ -3,7 +3,7 @@ import { useAppearance } from "@/components/appearance";
 import { Select } from "@/components/ui";
 
 const THEME = [{ value: "system", label: "Как в системе" }, { value: "light", label: "Светлая" }, { value: "dark", label: "Тёмная" }];
-const CONTRAST = [{ value: "normal", label: "Обычный" }, { value: "high", label: "Высокий" }];
+const CONTRAST = [{ value: "auto", label: "Как в системе" }, { value: "normal", label: "Обычный" }, { value: "high", label: "Высокий" }];
 const DENSITY = [{ value: "comfortable", label: "Просторно" }, { value: "compact", label: "Компактно" }];
 const FONT = [{ value: "sans", label: "Стандартный" }, { value: "legible", label: "Высоко-разборчивый" }, { value: "serif", label: "С засечками (для чтения)" }];
 const TEXT_SIZE = [{ value: "sm", label: "Меньше" }, { value: "md", label: "Обычный" }, { value: "lg", label: "Крупнее" }, { value: "xl", label: "Максимальный" }];

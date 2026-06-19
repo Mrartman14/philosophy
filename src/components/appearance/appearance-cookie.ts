@@ -4,7 +4,7 @@ import { TEXT_SCALE } from "@/styles/tokens/scales";
 
 export interface Appearance { theme: Theme; contrast: Contrast; density: Density; font: FontChoice; textSize: TextSize }
 export const APPEARANCE_COOKIE = "appearance";
-export const DEFAULT_APPEARANCE: Appearance = { theme: "system", contrast: "normal", density: "comfortable", font: "sans", textSize: "md" };
+export const DEFAULT_APPEARANCE: Appearance = { theme: "system", contrast: "auto", density: "comfortable", font: "sans", textSize: "md" };
 
 const ENUMS = { theme: THEMES, contrast: CONTRASTS, density: DENSITIES, font: FONTS, textSize: TEXT_SIZES } as const;
 function pick<K extends keyof Appearance>(key: K, value: unknown): Appearance[K] {
@@ -20,7 +20,9 @@ export function serializeAppearance(a: Appearance): string { return JSON.stringi
 export function htmlAttrs(a: Appearance) {
   return {
     ...(a.theme !== "system" ? { "data-theme": a.theme } : {}),
-    ...(a.contrast !== "normal" ? { "data-contrast": a.contrast } : {}),
+    // "auto" → no attribute (OS prefers-contrast applies via :not([data-contrast]));
+    // explicit "normal"/"high" → emit the attribute (normal opts out of the OS boost).
+    ...(a.contrast !== "auto" ? { "data-contrast": a.contrast } : {}),
     ...(a.density !== "comfortable" ? { "data-density": a.density } : {}),
     ...(a.font !== "sans" ? { "data-font": a.font } : {}),
     style: { "--text-scale": String(TEXT_SCALE[a.textSize]) } as Record<string, string>,

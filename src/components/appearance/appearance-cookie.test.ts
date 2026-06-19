@@ -23,4 +23,9 @@ describe("appearance-cookie", () => {
   it("htmlAttrs maps textSize → --text-scale", () => {
     expect(htmlAttrs({ ...DEFAULT_APPEARANCE, textSize: "xl" }).style["--text-scale"]).toBe("1.25");
   });
+  it("htmlAttrs: auto contrast omits data-contrast (OS boost applies); explicit normal/high emit it (opt-out/force)", () => {
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, contrast: "auto" })["data-contrast"]).toBeUndefined();
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, contrast: "normal" })["data-contrast"]).toBe("normal");
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, contrast: "high" })["data-contrast"]).toBe("high");
+  });
 });

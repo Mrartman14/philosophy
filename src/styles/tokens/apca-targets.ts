@@ -17,6 +17,7 @@ export const CONTRAST_PAIRS: { fg: ColorTokenName; bg: ColorTokenName; minLc: nu
   { fg: "fg", bg: "surface-raised", minLc: 75, note: "body on raised surface" },
   { fg: "fg-muted", bg: "surface", minLc: 60, note: "secondary text" },
   { fg: "fg-muted", bg: "surface-subtle", minLc: 60, note: "secondary on subtle surface" },
+  { fg: "fg-muted", bg: "surface-raised", minLc: 60, note: "secondary on raised surface" },
   { fg: "fg-subtle", bg: "surface", minLc: 30, note: "placeholder/disabled" },
   { fg: "link", bg: "surface", minLc: 60, note: "link" },
   { fg: "link-hover", bg: "surface", minLc: 60, note: "link hover" },
