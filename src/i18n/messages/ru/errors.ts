@@ -69,7 +69,9 @@ const errors = {
   UPLOAD_NOT_FOUND: "Загруженное изображение не найдено. Попробуйте ещё раз.",
   ALREADY_ATTACHED: "Эта сущность уже прикреплена к лекции.",
   INVALID_ENTITY_TYPE: "Недопустимый тип сущности.",
-  NOT_FOUND: "Лекция не найдена.",
+  // NOT_FOUND — generic backend-код; не добавляется в глобальный каталог, чтобы
+  // isErrorKey не распознавал его как каталожный ключ для всех слайсов.
+  // Слайс lectures маппит NOT_FOUND → LECTURE_NOT_FOUND в своей ERRORS-карте.
   LECTURE_NOT_FOUND: "Лекция не найдена.",
 
   // --- api-error: фоллбеки rethrowApiError (когда у бека нет своего текста) ---

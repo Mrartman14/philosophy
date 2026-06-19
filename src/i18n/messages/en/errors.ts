@@ -66,7 +66,9 @@ const errors = {
   UPLOAD_NOT_FOUND: "Uploaded image not found. Please try again.",
   ALREADY_ATTACHED: "This entity is already attached to the lecture.",
   INVALID_ENTITY_TYPE: "Invalid entity type.",
-  NOT_FOUND: "Lecture not found.",
+  // NOT_FOUND — generic backend code; not added to the global catalog to prevent
+  // isErrorKey from treating it as a catalog key for all slices.
+  // The lectures slice maps NOT_FOUND → LECTURE_NOT_FOUND in its ERRORS map.
   LECTURE_NOT_FOUND: "Lecture not found.",
 
   // --- api-error: rethrowApiError fallbacks ---

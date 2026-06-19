@@ -50,7 +50,10 @@ const ERRORS: ApiErrorMessageKeys = {
   UPLOAD_NOT_FOUND: "UPLOAD_NOT_FOUND",
   ALREADY_ATTACHED: "ALREADY_ATTACHED",
   INVALID_ENTITY_TYPE: "INVALID_ENTITY_TYPE",
-  NOT_FOUND: "NOT_FOUND",
+  // NOT_FOUND — generic backend code; mapped to entity-specific key so the global
+  // catalog stays free of this generic code (otherwise isErrorKey would treat it
+  // as a catalog key for every future slice that receives NOT_FOUND).
+  NOT_FOUND: "LECTURE_NOT_FOUND",
   LECTURE_NOT_FOUND: "LECTURE_NOT_FOUND",
 };
 
