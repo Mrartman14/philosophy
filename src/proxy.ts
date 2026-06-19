@@ -13,6 +13,10 @@ const API_URL = process.env.API_URL ?? "http://localhost:8080";
 /**
  * Прозрачный refresh-on-demand + admin-гейт.
  *
+ * Полная история «почему так» — в дизайн-доке rbac-unification.
+ * Файл совмещает admin-гейт и прозрачный refresh в одном именованном экспорте
+ * `proxy` — Next 16 распознаёт middleware в proxy.ts по этому имени.
+ *
  * Порядок обработки:
  *  1. Если access-cookie есть — пропускаем без обращения к бэку.
  *  2. Если refresh-cookie есть — пробуем обменять на свежую пару.
@@ -24,7 +28,7 @@ const API_URL = process.env.API_URL ?? "http://localhost:8080";
  * Безопасность держит data-layer (getMe()→бэк на каждый запрос):
  * обход middleware = «refresh не случился» → гость, не дыра.
  */
-export default async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const hasAccess = Boolean(request.cookies.get(ACCESS_COOKIE)?.value);
   const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
 
