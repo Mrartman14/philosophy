@@ -109,15 +109,19 @@
 @media (prefers-color-scheme: dark) { :root { --bg:…; --fg:…; } }   /* system-dark */
 [data-theme="dark"]  { --bg:…; --fg:…; }                            /* explicit dark */
 [data-theme="light"] { --bg:…; --fg:…; }                            /* explicit light — бьёт media */
-[data-contrast="high"],
-@media (prefers-contrast: more) { :root { /* high-Lc цвета */ } }
+/* high-contrast: ДВА отдельных правила (нельзя смешивать селектор и @media в одном
+   selector-list — это невалидный CSS, браузер дропнет весь блок). */
+[data-contrast="high"] { --fg:…; --border:…; /* high-Lc */ }
+@media (prefers-contrast: more) {
+  :root:not([data-contrast="normal"]) { --fg:…; /* те же high-Lc; уважает явный normal */ }
+}
 [data-density="compact"] { --size-control-h-md:…; --space-control-pad-y:…; }
 :root { --app-font: var(--font-geist-sans); }
 [data-font="legible"] { --app-font: var(--font-atkinson); }
 [data-font="serif"]   { --app-font: var(--font-serif); }
 ```
 
-Переключаемые переменные, не попадающие ни в один utility-класс, объявляем `@theme static`, иначе tree-shake (v4.0.5+) их выкинет.
+**Про `@theme`:** переключаемые *значения* живут как plain-CSS custom properties в `:root`/`[data-*]` (вне `@theme`), а `@theme inline` лишь маппит Tailwind-токены цвета/шрифта на них — поэтому `[data-*]`-оверрайды работают, и tree-shake (v4.0.5+) эти значения НЕ трогает (это авторский CSS, не `@theme`-токены; эмпирически подтверждено компиляцией через `@tailwindcss/postcss` 4.1.x). `@theme static` здесь не нужен. **Не-цветовые шкалы** (`--text-*`, `--radius-*`, `--shadow-*`, `--z-*`, `--duration-*`) объявляем в обычном `@theme` (не inline), чтобы Tailwind строил из них утилиты (`text-lg`, `rounded-md` …) с нашими значениями, а не дефолтными.
 
 ## 7. No-FOUC применение и гибридная персистентность (Next 16 + RSC)
 
@@ -132,6 +136,7 @@
 - **Размер текста:** `html { font-size: calc(100% * var(--text-scale, 1)); }` (100% уважает системный размер браузера). Опции `0.9 / 1 / 1.125 / 1.25`.
 - **Брейкпоинты — px** (Tailwind `--breakpoint-*`), чтобы лейаут не «прыгал» при масштабе; текст растёт внутри стабильной сетки. Трейд-офф: отказ от rem-брейкпоинтов (обратимо).
 - **Шрифты:** 3 семейства через `next/font` — Geist (sans, есть), **Atkinson Hyperlegible** (доступный), serif для чтения (кандидат — **Source Serif 4**; альтернативы Newsreader/Lora, финально при реализации). Все var-классы на `<html>`; активный — `[data-font]` → `--app-font` → `--font-ui`. Своп без ре-загрузки.
+- **Кириллица (важно — UI на `ru`):** у Atkinson Hyperlegible на Google Fonts НЕТ cyrillic-subset (только `latin`/`latin-ext`), и `next/font` падает на сборке при запросе несуществующего subset. Поэтому: Atkinson — `subsets:["latin","latin-ext"]`; в `FONT_STACKS.legible` кириллицу закрывает следующий в стеке Geist, у которого надо добавить `cyrillic` в subsets (сейчас только `latin`). То есть в legible-режиме латиница рендерится Atkinson, кириллица — Geist-фоллбеком (известное ограничение оси). Source Serif 4 cyrillic — подтвердить при реализации.
 - CLS: `adjustFontFallback` + preload; меряем эмпирически, при необходимости — ручные `size-adjust`/override-метрики.
 
 ## 9. Плотность и spacing
@@ -162,7 +167,7 @@
 
 ## 13. Настройки в аккаунте + интеграция
 
-- Расширяем слайс `preferences`: схема (`PreferencesUpdateSchema`) получает `appearance` (theme/contrast/density/font/text_size). Бэк-персист — координированно (есть открытые бэк-аски); до готовности бэка работает cookie-путь.
+- Расширяем слайс `preferences`: **отдельная `AppearancePrefsSchema`** (theme/contrast/density/font/text_size) — НЕ вливаем в `PreferencesUpdateSchema`, чтобы не сломать существующий `updatePreferences` (он шлёт `reading_mode`). Схема реально используется: ею валидируется body в `persistAppearance` с явным маппингом camelCase→snake_case (`text_size: a.textSize`). Единый источник enum-значений (массивы `THEMES/CONTRASTS/...`) переиспользуется и клиентским `parseAppearance`, и `z.enum`. Бэк-персист — координированно (открытые бэк-аски); до готовности бэка работает cookie-путь.
 - Страница `/me/settings` → секция «Внешний вид» с контролами (Base UI Select/RadioGroup) на каждую ось. Server component читает текущий appearance; client-контролы вызывают сеттеры.
 - **RBAC:** настройки self-scoped — любой авторизованный меняет своё (`can`/`requireCapability` не требуется для собственных preferences сверх существующего паттерна слайса). Аноним — cookie-only.
 - Хедер-переключатель темы для анонимов — опционально, отдельной задачей (вне scope этого PR).
@@ -223,6 +228,9 @@ src/features/preferences/          # расширенная схема + UI на
 - **px-брейкпоинты** — отступление от дефолта Tailwind v4; обратимо.
 - **serif-шрифт** — финальный выбор семейства при реализации (кандидат Source Serif 4).
 - **CI-гард** — паттерн «синтезирован», валидируем собственными тестами.
+- **legible-шрифт на кириллице** — Atkinson не покрывает кириллицу → русский текст в legible-режиме рендерится Geist-фоллбеком (см. §8). Принято как ограничение.
+- **Полная миграция legacy-токенов (~158 файлов, вкл. запретные зоны)** — решение пользователя: мигрируем всё в этом координированном foundation-PR (а не оставляем постоянный shim). Затрагивает admin-shell, `components/app|permission` — санкционировано как единый foundation-PR (CLAUDE.md). Compat-shim — временный мост, удаляется в конце фазы наложения.
+- **Дрейф `tokens.generated.css`** — pnpm@8 НЕ запускает `prebuild` → генерация встроена прямо в `build` через `&&` (как у sw-assets) + CI-шаг `generate:tokens && git diff --exit-code`; snapshot-тест живёт в `src/` (vitest `include` = `src/**`).
 
 ## 19. Вне scope (YAGNI сейчас)
 
