@@ -114,6 +114,10 @@ const errors = {
     "Public media cannot be made private. Delete it and upload again.",
   MEDIA_NOT_FOUND: "Media not found.",
 
+  // --- share-links slice: domain codes ---
+  NOT_FOUND: "Resource not found or you are not its owner.",
+  RESOURCE_NOT_PRIVATE: "A share link can only be created for a private resource.",
+
   // --- annotations slice: domain codes ---
   ANNOTATION_BLOCKS_EMPTY: "The annotation body cannot be empty.",
   ANNOTATION_BLOCKS_INVALID: "The annotation body failed AST validation.",

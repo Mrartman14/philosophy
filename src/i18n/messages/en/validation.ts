@@ -142,6 +142,13 @@ const validation = {
     offsetMin: "offset >= 0",
   },
 
+  // --- share-links: ExpiresAtSchema / ShareLinkCreateSchema / RevokeTokenSchema ---
+  shareLinks: {
+    invalidDate: "Invalid date",
+    resourceIdRequired: "Enter resource ID",
+    tokenRequired: "Token is required",
+  },
+
   // --- media: MediaIdSchema / MediaVisibilitySchema ---
   media: {
     invalidId: "Invalid media ID",

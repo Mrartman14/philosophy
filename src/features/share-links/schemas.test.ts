@@ -1,11 +1,18 @@
 // src/features/share-links/schemas.test.ts
 import { describe, expect, it } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  ShareLinkCreateSchema,
+  makeShareLinkCreateSchema,
   ShareLinkLookupSchema,
-  RevokeTokenSchema,
+  makeRevokeTokenSchema,
 } from "./schemas";
+
+// Stub translator: returns key as-is (паттерн из playbook Case 1).
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+const ShareLinkCreateSchema = makeShareLinkCreateSchema(t);
+const RevokeTokenSchema = makeRevokeTokenSchema(t);
 
 describe("ShareLinkCreateSchema", () => {
   it("принимает валидный create без expires_at", () => {

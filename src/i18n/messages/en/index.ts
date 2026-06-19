@@ -17,6 +17,7 @@ import media from "./media";
 import metadata from "./metadata";
 import notifications from "./notifications";
 import preferences from "./preferences";
+import shareLinks from "./shareLinks";
 import trails from "./trails";
 import validation from "./validation";
 
@@ -35,6 +36,7 @@ const en = {
   metadata,
   notifications,
   preferences,
+  shareLinks,
   trails,
   validation,
 } satisfies Messages;

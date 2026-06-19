@@ -145,6 +145,13 @@ const validation = {
     offsetMin: "offset >= 0",
   },
 
+  // --- share-links: ExpiresAtSchema / ShareLinkCreateSchema / RevokeTokenSchema ---
+  shareLinks: {
+    invalidDate: "Некорректная дата",
+    resourceIdRequired: "Укажите ID ресурса",
+    tokenRequired: "Токен обязателен",
+  },
+
   // --- media: MediaIdSchema / MediaVisibilitySchema ---
   media: {
     invalidId: "Некорректный id медиа",

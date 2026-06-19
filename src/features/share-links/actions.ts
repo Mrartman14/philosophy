@@ -3,9 +3,10 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import {
   rethrowApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
@@ -19,15 +20,15 @@ import { ForbiddenError } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import { canManageOwnLinks, canModerateShareLinks } from "./permissions";
-import { ShareLinkCreateSchema, RevokeTokenSchema } from "./schemas";
+import { makeShareLinkCreateSchema, makeRevokeTokenSchema } from "./schemas";
 
 
 /** Доменные коды apperror этого слайса. SUSPENDED/FORBIDDEN/REF_NOT_FOUND и
  * фоллбек "err.error ?? Ошибка сервера" (бывший BAD_REQUEST) — в rethrowApiError. */
-const ERRORS: ApiErrorMessages = {
+const ERRORS: ApiErrorMessageKeys = {
   // Создать ссылку может только владелец; бек маскирует отказ под 404.
-  NOT_FOUND: "Ресурс не найден или вы не его владелец.",
-  RESOURCE_NOT_PRIVATE: "Ссылку можно создать только для приватного ресурса.",
+  NOT_FOUND: "NOT_FOUND",
+  RESOURCE_NOT_PRIVATE: "RESOURCE_NOT_PRIVATE",
 };
 
 /**
@@ -42,7 +43,8 @@ export const createShareLink = createFormAction(async (formData, ctx) => {
   if (!canManageOwnLinks(me)) {
     throw new ForbiddenError(me ? "status" : "guest");
   }
-  const input = parseFormData(ShareLinkCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeShareLinkCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/share-links", {
     body: {
@@ -69,7 +71,8 @@ export const revokeShareLink = createAction(
     if (!canManageOwnLinks(me)) {
       throw new ForbiddenError(me ? "status" : "guest");
     }
-    const { token } = RevokeTokenSchema.parse({ token: input.token });
+    const t = await getT("validation");
+    const { token } = makeRevokeTokenSchema(t).parse({ token: input.token });
     const api = await createApiClient();
     const { error } = await api.DELETE("/api/share-links/{token}", {
       params: { path: { token } },
@@ -91,7 +94,8 @@ export const adminRevokeShareLink = createAction(
     if (!canModerateShareLinks(me)) {
       throw new ForbiddenError(me ? "role" : "guest");
     }
-    const { token } = RevokeTokenSchema.parse({ token: input.token });
+    const t = await getT("validation");
+    const { token } = makeRevokeTokenSchema(t).parse({ token: input.token });
     const api = await createApiClient();
     const { error } = await api.DELETE("/api/admin/share-links/{token}", {
       params: { path: { token } },

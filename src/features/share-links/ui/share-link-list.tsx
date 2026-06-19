@@ -14,6 +14,7 @@ import {
   Tr,
   useToast,
 } from "@/components/ui";
+import { useT, useFmt } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { revokeShareLink, adminRevokeShareLink } from "../actions";
@@ -22,23 +23,13 @@ import type { ShareLink, ResourceType } from "../types";
 
 import { CopyButton } from "./copy-button";
 
-const dateFormat = new Intl.DateTimeFormat("ru-RU", {
+const DATE_FMT_OPTS: Intl.DateTimeFormatOptions = {
   dateStyle: "short",
   timeStyle: "short",
-});
+};
 
-function fmt(iso?: string): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : dateFormat.format(d);
-}
-
-function statusLabel(link: ShareLink): string {
-  if (link.revoked_at) return "Отозвана";
-  if (link.expires_at && new Date(link.expires_at).getTime() < Date.now()) {
-    return "Истекла";
-  }
-  return "Активна";
+function isExpired(isoDate: string): boolean {
+  return new Date(isoDate).getTime() < Date.now();
 }
 
 interface Props {
@@ -60,14 +51,30 @@ export function ShareLinkList({
 }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("shareLinks");
+  const fmt = useFmt();
   const [pending, startTransition] = useTransition();
+
+  function fmtDate(iso?: string): string {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? iso : fmt.dateTime(d, DATE_FMT_OPTS);
+  }
+
+  function statusLabel(link: ShareLink): string {
+    if (link.revoked_at) return t("statusRevoked");
+    if (link.expires_at && isExpired(link.expires_at)) {
+      return t("statusExpired");
+    }
+    return t("statusActive");
+  }
 
   function onRevoke(token: string) {
     startTransition(async () => {
       const action = admin ? adminRevokeShareLink : revokeShareLink;
       const result = await action({ token, resourceId });
       if (result.success) {
-        toast.add({ title: "Ссылка отозвана" });
+        toast.add({ title: t("revokedToast") });
         router.refresh();
       } else {
         toastActionError(toast, result, { action: "отзыв ссылки", forbiddenTitle: "Ошибка" });
@@ -78,8 +85,8 @@ export function ShareLinkList({
   if (links.length === 0) {
     return (
       <EmptyState
-        title="Ссылок нет"
-        description="Для этого ресурса ещё не выпущено ни одной ссылки."
+        title={t("emptyTitle")}
+        description={t("emptyDesc")}
       />
     );
   }
@@ -92,12 +99,12 @@ export function ShareLinkList({
     <Table>
       <Thead>
         <Tr>
-          <Th>Статус</Th>
-          {canBuildUrl && <Th>Ссылка</Th>}
-          <Th>Токен</Th>
-          <Th>Создана</Th>
-          <Th>Истекает</Th>
-          <Th>Действие</Th>
+          <Th>{t("colStatus")}</Th>
+          {canBuildUrl && <Th>{t("colLink")}</Th>}
+          <Th>{t("colToken")}</Th>
+          <Th>{t("colCreated")}</Th>
+          <Th>{t("colExpires")}</Th>
+          <Th>{t("colAction")}</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -119,7 +126,7 @@ export function ShareLinkList({
                         readOnly
                         value={url}
                         className="w-64 rounded border border-(--color-border) bg-(--color-surface-subtle) px-2 py-1 text-xs"
-                        aria-label="URL ссылки"
+                        aria-label={t("urlAriaLabel")}
                       />
                       <CopyButton value={url} />
                     </div>
@@ -133,8 +140,8 @@ export function ShareLinkList({
                   {token ? `${token.slice(0, 12)}…` : "—"}
                 </code>
               </Td>
-              <Td className="whitespace-nowrap">{fmt(link.created_at)}</Td>
-              <Td className="whitespace-nowrap">{fmt(link.expires_at)}</Td>
+              <Td className="whitespace-nowrap">{fmtDate(link.created_at)}</Td>
+              <Td className="whitespace-nowrap">{fmtDate(link.expires_at)}</Td>
               <Td>
                 {revoked ? (
                   <span className="text-xs text-(--color-fg-muted)">—</span>
@@ -145,7 +152,7 @@ export function ShareLinkList({
                     disabled={pending || !token}
                     onClick={() => { onRevoke(token); }}
                   >
-                    Отозвать
+                    {t("revokeButton")}
                   </Button>
                 )}
               </Td>

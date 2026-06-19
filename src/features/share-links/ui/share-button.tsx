@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { Button, Dialog, IdempotencyField, TextInput, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createShareLink } from "../actions";
-import { RESOURCE_TYPE_LABELS } from "../types";
 import type { ShareLink, ResourceType } from "../types";
 
 import { ShareLinkList } from "./share-link-list";
@@ -41,6 +41,7 @@ export function ShareButton({
 }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("shareLinks");
   const [open, setOpen] = useState(false);
   const [state, formAction, pending] = useActionState(
     createShareLink,
@@ -49,7 +50,7 @@ export function ShareButton({
 
   useEffect(() => {
     if (state.success && state.data) {
-      toast.add({ title: "Ссылка создана" });
+      toast.add({ title: t("linkCreatedToast") });
       router.refresh();
     } else if (!state.success) {
       toastActionError(toast, state, { action: "создание ссылки", forbiddenTitle: "Ошибка" });
@@ -66,11 +67,11 @@ export function ShareButton({
       onOpenChange={setOpen}
       trigger={
         <Button type="button" variant="ghost">
-          Поделиться
+          {t("shareButtonLabel")}
         </Button>
       }
-      title={`Поделиться: ${RESOURCE_TYPE_LABELS[resourceType]}`}
-      description="Ссылка открывает приватный ресурс держателю без входа."
+      title={t("shareDialogTitle", { type: t(`resourceTypes.${resourceType}`) })}
+      description={t("shareDialogDesc")}
     >
       <div className="flex flex-col gap-4">
         <form action={formAction} className="flex items-end gap-2">
@@ -79,12 +80,12 @@ export function ShareButton({
           <IdempotencyField result={state} />
           <label htmlFor="expires_at" className="flex flex-1 flex-col gap-1">
             <span className="text-xs text-(--color-fg-muted)">
-              Срок действия (необязательно)
+              {t("expiresAtLabel")}
             </span>
             <TextInput id="expires_at" type="datetime-local" name="expires_at" />
           </label>
           <Button type="submit" disabled={pending}>
-            {pending ? "…" : "Создать ссылку"}
+            {pending ? "…" : t("createLinkButton")}
           </Button>
         </form>
 

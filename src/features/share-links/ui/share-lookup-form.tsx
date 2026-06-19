@@ -5,11 +5,11 @@ import { type FormEvent } from "react";
 
 import { Button, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
+import { useT } from "@/i18n/client";
 
 import {
   SHARE_RESOURCE_TYPES,
   ALL_RESOURCE_TYPES,
-  RESOURCE_TYPE_LABELS,
 } from "../types";
 
 interface Props {
@@ -25,11 +25,12 @@ interface Props {
 export function ShareLookupForm({ admin = false }: Props) {
   const searchParams = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
+  const t = useT("shareLinks");
 
   const types = admin ? ALL_RESOURCE_TYPES : SHARE_RESOURCE_TYPES;
-  const options = types.map((t) => ({
-    value: t,
-    label: RESOURCE_TYPE_LABELS[t],
+  const options = types.map((type) => ({
+    value: type,
+    label: t(`resourceTypes.${type}`),
   }));
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -49,25 +50,25 @@ export function ShareLookupForm({ admin = false }: Props) {
   return (
     <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-(--color-fg-muted)">Тип ресурса</span>
+        <span className="text-xs text-(--color-fg-muted)">{t("resourceTypeLabel")}</span>
         <Select
           name="resource_type"
           defaultValue={searchParams.get("resource_type") ?? types[0]}
           options={options}
-          aria-label="Тип ресурса"
+          aria-label={t("resourceTypeLabel")}
         />
       </div>
       <label htmlFor="resource_id" className="flex flex-1 flex-col gap-1">
-        <span className="text-xs text-(--color-fg-muted)">ID ресурса</span>
+        <span className="text-xs text-(--color-fg-muted)">{t("resourceIdLabel")}</span>
         <TextInput
           id="resource_id"
           name="resource_id"
           defaultValue={searchParams.get("resource_id") ?? ""}
-          placeholder="UUID ресурса"
+          placeholder={t("resourceIdPlaceholder")}
         />
       </label>
       <Button type="submit" disabled={pending}>
-        {pending ? "…" : "Показать ссылки"}
+        {pending ? "…" : t("showLinksButton")}
       </Button>
     </form>
   );
