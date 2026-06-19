@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @import "../styles/tokens.generated.css";
-@import "../styles/themes/compat.css";
 @import "../styles/content.css";
 
 /* Глобальная ось размера текста: масштабирует все rem (вкл. type-утилиты). */
