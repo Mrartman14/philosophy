@@ -49,7 +49,7 @@ export function AttachmentsPanel({
         {showAttach && (
           <button
             type="button"
-            className="rounded border border-(--color-border) px-2 py-1 text-sm hover:bg-(--color-text-pane)"
+            className="rounded border border-(--color-border) px-2 py-1 text-sm hover:bg-(--color-surface-subtle)"
             onClick={() => { setPickerOpen((v) => !v); }}
             disabled={pending}
           >
@@ -71,7 +71,7 @@ export function AttachmentsPanel({
       )}
 
       {sorted.length === 0 ? (
-        <p className="mt-2 text-sm text-(--color-description)">{emptyText}</p>
+        <p className="mt-2 text-sm text-(--color-fg-muted)">{emptyText}</p>
       ) : (
         <ol className="mt-2 flex flex-col divide-y divide-(--color-border)">
           {sorted.map((item, i) => (
@@ -85,7 +85,7 @@ export function AttachmentsPanel({
                   item.label
                 )}
                 {item.entityType === "canvas" && (
-                  <span className="ml-2 text-xs text-(--color-description)">
+                  <span className="ml-2 text-xs text-(--color-fg-muted)">
                     (canvas — просмотр недоступен)
                   </span>
                 )}
@@ -96,7 +96,7 @@ export function AttachmentsPanel({
                     <button
                       type="button"
                       aria-label="Выше"
-                      className="rounded px-1 text-sm hover:bg-(--color-text-pane)"
+                      className="rounded px-1 text-sm hover:bg-(--color-surface-subtle)"
                       disabled={pending}
                       onClick={() => {
                         const prev = sorted[i - 1];
@@ -111,7 +111,7 @@ export function AttachmentsPanel({
                     <button
                       type="button"
                       aria-label="Ниже"
-                      className="rounded px-1 text-sm hover:bg-(--color-text-pane)"
+                      className="rounded px-1 text-sm hover:bg-(--color-surface-subtle)"
                       disabled={pending}
                       onClick={() => {
                         const next = sorted[i + 1];
@@ -125,7 +125,7 @@ export function AttachmentsPanel({
                   {onDetach && (
                     <button
                       type="button"
-                      className="rounded border border-(--color-border) px-2 py-0.5 text-sm hover:bg-(--color-text-pane)"
+                      className="rounded border border-(--color-border) px-2 py-0.5 text-sm hover:bg-(--color-surface-subtle)"
                       disabled={pending}
                       onClick={() => { run(() => onDetach(item)); }}
                     >

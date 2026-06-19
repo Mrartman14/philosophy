@@ -74,7 +74,7 @@ export function Pagination({
   const prev = Math.max(0, offset - limit);
   const next = offset + limit;
 
-  const linkCls = "rounded border border-(--color-border) px-3 py-1 hover:bg-(--color-text-pane)";
+  const linkCls = "rounded border border-(--color-border) px-3 py-1 hover:bg-(--color-surface-subtle)";
   const disabledCls = "rounded border border-(--color-border) px-3 py-1 opacity-40";
 
   return (
@@ -94,7 +94,7 @@ export function Pagination({
           ← Назад
         </span>
       )}
-      <span className="text-(--color-description)">
+      <span className="text-(--color-fg-muted)">
         {total === 0
           ? "0 из 0"
           : `${offset + 1}–${Math.min(offset + limit, total)} из ${total}`}

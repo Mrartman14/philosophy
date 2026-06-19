@@ -41,7 +41,7 @@ interface Props {
 
 export function CommentTree({ subtrees, lectureId, schema }: Props) {
   if (subtrees.length === 0) {
-    return <p className="text-sm text-(--color-description)">Комментариев пока нет.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Комментариев пока нет.</p>;
   }
   return (
     <ul className="flex flex-col gap-3">

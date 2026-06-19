@@ -26,7 +26,7 @@ export default async function MyTrailsPage({ searchParams }: Props) {
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header>
         <h1 className="text-2xl font-bold">Мои маршруты</h1>
-        <p className="text-sm text-(--color-description)">Всего: {result.total}</p>
+        <p className="text-sm text-(--color-fg-muted)">Всего: {result.total}</p>
       </header>
 
       {canCreate && (

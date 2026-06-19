@@ -61,7 +61,7 @@ export function PushSendForm() {
         <p className="text-sm text-red-600">{state.error}</p>
       )}
       {state.success && state.data && (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Рассылка принята и будет доставлена подписчикам в фоне.
         </p>
       )}

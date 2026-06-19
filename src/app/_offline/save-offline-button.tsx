@@ -21,7 +21,7 @@ export function SaveOfflineButton({
 
   if (saved) {
     return (
-      <span className="text-sm text-(--color-description)">Сохранено офлайн ✓</span>
+      <span className="text-sm text-(--color-fg-muted)">Сохранено офлайн ✓</span>
     );
   }
 

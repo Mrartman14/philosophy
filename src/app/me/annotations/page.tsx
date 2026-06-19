@@ -29,7 +29,7 @@ export default async function MyAnnotationsPage({ searchParams }: Props) {
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-bold">Мои аннотации</h1>
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           У вас пока нет аннотаций.
         </p>
       ) : (

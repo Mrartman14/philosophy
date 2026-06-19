@@ -59,16 +59,16 @@ function HitCard({ hit }: { hit: SearchHit }) {
   const snippets = topSnippets(hit.matches);
 
   return (
-    <article className="rounded-lg border border-(--color-border) bg-(--color-background) p-4">
+    <article className="rounded-lg border border-(--color-border) bg-(--color-surface) p-4">
       <header className="flex flex-wrap items-baseline gap-2">
-        <span className="rounded bg-(--color-text-pane) px-2 py-0.5 text-xs text-(--color-description)">
+        <span className="rounded bg-(--color-surface-subtle) px-2 py-0.5 text-xs text-(--color-fg-muted)">
           {label}
         </span>
         <RouterLink href={href} className="text-lg font-semibold hover:underline">
           {title}
         </RouterLink>
         {date && (
-          <time className="text-xs text-(--color-description)">{date}</time>
+          <time className="text-xs text-(--color-fg-muted)">{date}</time>
         )}
       </header>
       {snippets.length > 0 && (
@@ -76,7 +76,7 @@ function HitCard({ hit }: { hit: SearchHit }) {
           {snippets.map((s, i) => (
             <li
               key={i}
-              className="rounded px-2 py-1 text-sm hover:bg-(--color-text-pane)"
+              className="rounded px-2 py-1 text-sm hover:bg-(--color-surface-subtle)"
             >
               {s}
             </li>
@@ -103,7 +103,7 @@ export function SearchResults({ hits, total }: Props) {
   }
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-(--color-description)">Найдено: {total}</p>
+      <p className="text-xs text-(--color-fg-muted)">Найдено: {total}</p>
       <ul className="flex flex-col gap-3">
         {hits.map((hit, i) => (
           <li key={hitHref(hit) ?? i}>

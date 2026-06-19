@@ -15,7 +15,7 @@ export function LectureAdminRow({ lecture, canEdit, canDelete }: Props) {
   return (
     <Tr>
       <Td className="font-medium">{lecture.title}</Td>
-      <Td className="text-(--color-description)">{lecture.date}</Td>
+      <Td className="text-(--color-fg-muted)">{lecture.date}</Td>
       <Td>{lecture.visibility === "public" ? "Публичная" : "Приватная"}</Td>
       <Td>
         <div className="flex gap-2">

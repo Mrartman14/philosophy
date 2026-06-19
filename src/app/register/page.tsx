@@ -26,7 +26,7 @@ export default async function RegisterPage({ searchParams }: PageProps) {
     <div className="flex flex-col items-center gap-6 py-12">
       <h1 className="text-2xl font-semibold">Регистрация</h1>
       <RegisterForm next={next} />
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Уже есть аккаунт?{" "}
         <RouterLink href={loginHref} className="underline">
           Войдите

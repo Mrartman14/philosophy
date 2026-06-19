@@ -95,9 +95,9 @@ export function LinkPopover({ editor, schema }: Props) {
         <Popover.Positioner sideOffset={8}>
           <Popover.Popup
             initialFocus={inputRef}
-            className="bg-(--color-background) border border-(--color-border) rounded p-3 shadow-lg"
+            className="bg-(--color-surface) border border-(--color-border) rounded p-3 shadow-lg"
           >
-            <Popover.Arrow className="fill-(--color-background) stroke-(--color-border)" />
+            <Popover.Arrow className="fill-(--color-surface) stroke-(--color-border)" />
             <div className="flex flex-col gap-2 min-w-[260px]">
               <input
                 ref={inputRef}
@@ -119,7 +119,7 @@ export function LinkPopover({ editor, schema }: Props) {
                   <button
                     type="button"
                     onClick={handleRemove}
-                    className="text-(--color-description) rounded px-3 py-1 text-sm hover:bg-(--color-text-pane)"
+                    className="text-(--color-fg-muted) rounded px-3 py-1 text-sm hover:bg-(--color-surface-subtle)"
                   >
                     Удалить ссылку
                   </button>
@@ -128,7 +128,7 @@ export function LinkPopover({ editor, schema }: Props) {
                   type="button"
                   onClick={onApply}
                   disabled={!href.trim()}
-                  className="bg-(--color-primary) text-white rounded px-3 py-1 text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-(--color-accent) text-white rounded px-3 py-1 text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Применить
                 </button>

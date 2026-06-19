@@ -78,7 +78,7 @@ export function ShareButton({
           <input type="hidden" name="resource_id" value={resourceId} />
           <IdempotencyField result={state} />
           <label htmlFor="expires_at" className="flex flex-1 flex-col gap-1">
-            <span className="text-xs text-(--color-description)">
+            <span className="text-xs text-(--color-fg-muted)">
               Срок действия (необязательно)
             </span>
             <TextInput id="expires_at" type="datetime-local" name="expires_at" />

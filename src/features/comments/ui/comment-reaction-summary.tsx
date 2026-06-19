@@ -27,7 +27,7 @@ export function CommentReactionSummary({
   const axes = REACTION_AXES.filter((a) => hasData(reactions, a));
   if (axes.length === 0) return null;
   return (
-    <div className="flex flex-wrap items-center gap-3 text-xs text-(--color-description)">
+    <div className="flex flex-wrap items-center gap-3 text-xs text-(--color-fg-muted)">
       {axes.map((axis) => (
         <span key={axis} className="flex items-center gap-1">
           <span>{axisLabel(axis)}:</span>

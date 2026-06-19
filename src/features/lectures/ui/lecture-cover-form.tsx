@@ -82,7 +82,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
           className="max-h-48 w-auto rounded border border-(--color-border) object-cover"
         />
       ) : (
-        <p className="text-sm text-(--color-description)">Обложка не задана.</p>
+        <p className="text-sm text-(--color-fg-muted)">Обложка не задана.</p>
       )}
 
       <label className="flex flex-col gap-1 text-sm">
@@ -97,7 +97,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
       </label>
 
       <div className="flex items-center gap-2">
-        <label className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 text-sm hover:bg-(--color-text-pane)">
+        <label className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 text-sm hover:bg-(--color-surface-subtle)">
           {currentKey ? "Заменить обложку" : "Загрузить обложку"}
           <input
             type="file"

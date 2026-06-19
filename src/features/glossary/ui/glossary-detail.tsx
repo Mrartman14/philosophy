@@ -14,7 +14,7 @@ export function GlossaryDetail({ term }: Props) {
       <header className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold">{term.title}</h1>
         {updated && (
-          <p className="text-xs text-(--color-description)">
+          <p className="text-xs text-(--color-fg-muted)">
             Обновлено: {updated.toLocaleDateString("ru-RU")}
           </p>
         )}

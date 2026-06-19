@@ -135,7 +135,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
               <option value="immutable">Без изменений (только отозвать)</option>
             </select>
           </label>
-          <p className="text-xs text-(--color-description)">
+          <p className="text-xs text-(--color-fg-muted)">
             Режим «без изменений» нельзя будет смягчить позже. Публичную форму нельзя вернуть в приватную, а её структуру — менять.
           </p>
         </div>

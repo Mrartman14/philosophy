@@ -86,7 +86,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
       <Button type="submit" className="self-start" disabled={busy || pending}>
         {busy ? "Загрузка…" : "Загрузить"}
       </Button>
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         Новое медиа создаётся приватным. Опубликовать можно на его странице.
       </p>
     </form>

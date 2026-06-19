@@ -43,7 +43,7 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
 
   if (options.length === 0) {
     return (
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Тегов пока нет. Создайте их на странице «Теги» в админке.
       </p>
     );

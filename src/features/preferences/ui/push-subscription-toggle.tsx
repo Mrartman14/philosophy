@@ -123,26 +123,26 @@ export function PushSubscriptionToggle({
 
   if (state.phase === "loading") {
     return (
-      <p className="text-sm text-(--color-description)">Проверяем подписку…</p>
+      <p className="text-sm text-(--color-fg-muted)">Проверяем подписку…</p>
     );
   }
   if (state.phase === "unsupported") {
     return (
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Push-уведомления не поддерживаются в этом браузере.
       </p>
     );
   }
   if (state.phase === "denied") {
     return (
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Уведомления заблокированы. Разрешите их в настройках браузера.
       </p>
     );
   }
   if (vapidPublicKey === null) {
     return (
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Push-уведомления временно недоступны.
       </p>
     );
@@ -174,7 +174,7 @@ export function PushSubscriptionToggle({
         </Button>
       )}
       {!canSubscribe && !state.subscribed && (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           У вас нет прав на подписку на уведомления.
         </p>
       )}

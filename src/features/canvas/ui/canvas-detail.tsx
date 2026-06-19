@@ -54,7 +54,7 @@ export function CanvasDetail({ data }: Props) {
     <CanvasRender
       data={toRenderData(data)}
       resolveEntityRef={resolveEntityRefView}
-      className="rounded border border-(--color-border) bg-(--color-background) p-2"
+      className="rounded border border-(--color-border) bg-(--color-surface) p-2"
     />
   );
 }

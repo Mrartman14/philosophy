@@ -80,7 +80,7 @@ export default async function FormPage({ params, searchParams }: Props) {
       {canEdit && (
         <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
           <h2 className="text-lg font-semibold">Редактирование структуры</h2>
-          <p className="text-xs text-(--color-description)">
+          <p className="text-xs text-(--color-fg-muted)">
             Доступно только до публикации. После публикации структура замораживается.
           </p>
           <FormEditForm form={form} />
@@ -88,7 +88,7 @@ export default async function FormPage({ params, searchParams }: Props) {
       )}
 
       {isOwner && form.published_at && (
-        <p className="text-xs text-(--color-description)">
+        <p className="text-xs text-(--color-fg-muted)">
           Форма опубликована — её структуру нельзя изменить.
         </p>
       )}

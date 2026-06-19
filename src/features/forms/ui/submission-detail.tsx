@@ -14,7 +14,7 @@ export function SubmissionDetail({ form, submission }: Props) {
   const answerByField = new Map((submission.answers ?? []).map((a) => [a.field_id, a.value]));
 
   if (submission.retracted_at) {
-    return <p className="text-sm text-(--color-description)">Отклик отозван — ответы удалены.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Отклик отозван — ответы удалены.</p>;
   }
 
   return (
@@ -27,7 +27,7 @@ export function SubmissionDetail({ form, submission }: Props) {
             <dt className="content font-medium" data-size="sm">
               <AstRender blocks={f.prompt ?? []} />
             </dt>
-            <dd className="text-sm">{text || <span className="text-(--color-description)">—</span>}</dd>
+            <dd className="text-sm">{text || <span className="text-(--color-fg-muted)">—</span>}</dd>
           </div>
         );
       })}

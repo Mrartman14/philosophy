@@ -50,7 +50,7 @@ export default async function SubmissionPage({ params }: Props) {
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold">{form.title}</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           {submission.retracted_at
             ? "Отклик отозван"
             : `Отправлен ${new Date(submission.submitted_at ?? "").toLocaleString("ru-RU")}`}

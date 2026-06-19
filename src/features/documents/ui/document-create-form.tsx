@@ -46,7 +46,7 @@ export function DocumentCreateForm() {
           <option value="public">Публичный</option>
         </select>
       </FormField>
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         Публичный документ нельзя будет вернуть в приватный — только удалить.
       </p>
 

@@ -48,7 +48,7 @@ export function EditorNodeLayer({
               <rect
                 x={n.x - 2} y={n.y - 2} width={n.width + 4} height={n.height + 4}
                 fill="none"
-                stroke={invalid ? "var(--color-danger)" : "var(--color-primary)"}
+                stroke={invalid ? "var(--color-danger)" : "var(--color-accent)"}
                 strokeWidth={1.5}
                 strokeDasharray={invalid ? "4 2" : undefined}
                 pointerEvents="none"
@@ -65,7 +65,7 @@ export function EditorNodeLayer({
           <circle
             key={`side-${side}`}
             cx={p.x} cy={p.y} r={5}
-            fill="var(--color-background)" stroke="var(--color-primary)" strokeWidth={1.5}
+            fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth={1.5}
             style={{ cursor: "crosshair" }}
             onPointerDown={(e) => { onSideHandleDown(singleSelected.id, side, e); }}
           />
@@ -77,7 +77,7 @@ export function EditorNodeLayer({
         <rect
           key={`rh-${handle}`}
           x={p.x - 4} y={p.y - 4} width={8} height={8}
-          fill="var(--color-primary)"
+          fill="var(--color-accent)"
           style={{ cursor: `${handle}-resize` }}
           onPointerDown={(e) => { onResizeHandleDown(singleSelected.id, handle, e); }}
         />

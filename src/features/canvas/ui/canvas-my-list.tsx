@@ -10,7 +10,7 @@ interface Props {
 /** Read-only список карточек канвасов. */
 export function CanvasMyList({ canvases }: Props) {
   if (canvases.length === 0) {
-    return <p className="text-sm text-(--color-description)">Канвасов пока нет.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Канвасов пока нет.</p>;
   }
   return (
     <ul className="flex flex-col gap-2">
@@ -18,10 +18,10 @@ export function CanvasMyList({ canvases }: Props) {
         c.id
           ? [
               <li key={c.id} className="rounded border border-(--color-border) p-3">
-                <RouterLink href={`/canvases/${c.id}`} className="font-medium hover:text-(--color-primary)">
+                <RouterLink href={`/canvases/${c.id}`} className="font-medium hover:text-(--color-accent)">
                   {c.title ?? "Без названия"}
                 </RouterLink>
-                <span className="ml-2 text-xs text-(--color-description)">
+                <span className="ml-2 text-xs text-(--color-fg-muted)">
                   {c.visibility === "public" ? "публичный" : "приватный"}
                 </span>
               </li>,

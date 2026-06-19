@@ -14,7 +14,7 @@ export function LectureExportLinks({ id, className }: Props) {
   return (
     <span
       className={
-        className ?? "flex items-center gap-2 text-xs text-(--color-description)"
+        className ?? "flex items-center gap-2 text-xs text-(--color-fg-muted)"
       }
     >
       <a href={urls.md} className="hover:underline" target="_blank" rel="noopener noreferrer">

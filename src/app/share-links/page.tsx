@@ -21,7 +21,7 @@ export default async function MyShareLinksPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6 p-6">
       <header>
         <h1 className="text-2xl font-bold">Мои ссылки</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Управление share-ссылками. Выберите тип ресурса и укажите его ID,
           чтобы увидеть выпущенные ссылки.
         </p>
@@ -39,7 +39,7 @@ export default async function MyShareLinksPage({ searchParams }: Props) {
           resourceId={parsed.data.resource_id}
         />
       ) : (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Укажите тип и ID ресурса выше.
         </p>
       )}

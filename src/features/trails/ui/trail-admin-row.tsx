@@ -18,7 +18,7 @@ export function TrailAdminRow({ trail, canDelete }: Props) {
         <RouterLink href={`/trails/${trail.id}`} className="text-sm hover:underline">
           {trail.title || "Без названия"}
         </RouterLink>
-        <span className="text-xs text-(--color-description)">
+        <span className="text-xs text-(--color-fg-muted)">
           {trail.visibility} · автор {trail.owner_id}
         </span>
       </div>

@@ -80,7 +80,7 @@ export function LectureDescription({
             key={i}
             title={seg.highlight.title}
             data-term-id={seg.highlight.termId}
-            className="rounded bg-(--color-text-pane) px-0.5"
+            className="rounded bg-(--color-surface-subtle) px-0.5"
           >
             {seg.text}
           </mark>

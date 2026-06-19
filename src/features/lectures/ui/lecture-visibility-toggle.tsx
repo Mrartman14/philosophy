@@ -33,7 +33,7 @@ export function LectureVisibilityToggle({
         name="visibility"
         defaultValue={lecture.visibility}
         onChange={autoSubmit}
-        className="h-10 rounded border border-(--color-border) bg-(--color-background) px-3 text-sm"
+        className="h-10 rounded border border-(--color-border) bg-(--color-surface) px-3 text-sm"
       >
         <option value="private">Приватная</option>
         <option value="public">Публичная</option>

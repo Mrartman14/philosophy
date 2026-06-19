@@ -24,7 +24,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
         {field.required && <span className="text-red-600"> *</span>}
       </div>
       {(field.help_text?.length ?? 0) > 0 && (
-        <div className="content text-(--color-description)" data-size="sm">
+        <div className="content text-(--color-fg-muted)" data-size="sm">
           <AstRender blocks={field.help_text ?? []} />
         </div>
       )}

@@ -13,7 +13,7 @@ const MARGIN = 24;
  */
 export function CanvasRender({ data, resolveEntityRef, emptyText = "Граф пуст.", className, children }: CanvasRenderProps) {
   if (data.nodes.length === 0) {
-    return <p className="text-sm text-(--color-description)">{emptyText}</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{emptyText}</p>;
   }
 
   const bbox = boundingBox(data.nodes);
@@ -36,7 +36,7 @@ export function CanvasRender({ data, resolveEntityRef, emptyText = "Граф п�
       >
         <defs>
           <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-description)" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-fg-muted)" />
           </marker>
         </defs>
 
@@ -51,13 +51,13 @@ export function CanvasRender({ data, resolveEntityRef, emptyText = "Граф п�
               <path
                 d={geo.d}
                 fill="none"
-                stroke="var(--color-description)"
+                stroke="var(--color-fg-muted)"
                 strokeWidth={1.5}
                 strokeDasharray={e.style === "dashed" ? "6 4" : undefined}
                 markerEnd={arrow ? "url(#cv-arrow)" : undefined}
               />
               {e.label && (
-                <text x={geo.mid.x} y={geo.mid.y - 4} fontSize={11} textAnchor="middle" fill="var(--color-description)">
+                <text x={geo.mid.x} y={geo.mid.y - 4} fontSize={11} textAnchor="middle" fill="var(--color-fg-muted)">
                   {e.label.length > 40 ? e.label.slice(0, 39) + "…" : e.label}
                 </text>
               )}

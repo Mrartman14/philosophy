@@ -353,14 +353,14 @@ export function CanvasEditor({ canvas, etag }: Props) {
             ref={svgRef}
             width="100%" height="100%"
             viewBox={viewBox}
-            style={{ touchAction: "none", background: "var(--color-background)", display: "block" }}
+            style={{ touchAction: "none", background: "var(--color-surface)", display: "block" }}
             onPointerDown={onBackgroundPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
           >
             <defs>
               <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-description)" />
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-fg-muted)" />
               </marker>
             </defs>
 
@@ -385,8 +385,8 @@ export function CanvasEditor({ canvas, etag }: Props) {
             {marquee && (
               <rect
                 x={marquee.x} y={marquee.y} width={marquee.width} height={marquee.height}
-                fill="var(--color-primary)" fillOpacity={0.1}
-                stroke="var(--color-primary)" strokeDasharray="4 2" pointerEvents="none"
+                fill="var(--color-accent)" fillOpacity={0.1}
+                stroke="var(--color-accent)" strokeDasharray="4 2" pointerEvents="none"
               />
             )}
           </svg>

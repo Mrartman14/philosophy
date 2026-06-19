@@ -11,7 +11,7 @@ export function AnnotationVisibilityField() {
   const [visibility, setVisibility] = useState<"private" | "public">("private");
   return (
     <fieldset className="flex flex-col gap-1 text-sm">
-      <legend className="text-(--color-description)">Видимость</legend>
+      <legend className="text-(--color-fg-muted)">Видимость</legend>
       <input type="hidden" name="visibility" value={visibility} />
       <label className="flex items-center gap-2">
         <input
@@ -31,7 +31,7 @@ export function AnnotationVisibilityField() {
         />
         Публичная (видна всем, кто видит сущность)
       </label>
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         Видимость нельзя изменить после создания.
       </p>
     </fieldset>

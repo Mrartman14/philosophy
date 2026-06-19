@@ -22,7 +22,7 @@ export function GlossaryExportLinks({ termId, className }: Props) {
   return (
     <p
       className={
-        className ?? "flex items-center gap-2 text-xs text-(--color-description)"
+        className ?? "flex items-center gap-2 text-xs text-(--color-fg-muted)"
       }
     >
       Экспорт:

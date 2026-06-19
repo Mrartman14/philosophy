@@ -18,20 +18,20 @@ export function MediaCard({ media }: MediaCardProps) {
   return (
     <RouterLink
       href={`/media/${media.id}`}
-      className="flex flex-col gap-2 rounded border border-(--color-border) p-4 hover:bg-(--color-text-pane) focus:outline-0"
+      className="flex flex-col gap-2 rounded border border-(--color-border) p-4 hover:bg-(--color-surface-subtle) focus:outline-0"
     >
       <span className="truncate font-semibold" title={media.filename}>
         {media.filename}
       </span>
-      <span className="flex items-center gap-2 text-xs text-(--color-description)">
-        <span className="rounded bg-(--color-text-pane) px-2 py-0.5">
+      <span className="flex items-center gap-2 text-xs text-(--color-fg-muted)">
+        <span className="rounded bg-(--color-surface-subtle) px-2 py-0.5">
           {typeLabel[media.type] ?? media.type}
         </span>
         <span
           className={
             isPublic
               ? "rounded px-2 py-0.5 text-(--color-success)"
-              : "rounded px-2 py-0.5 text-(--color-description)"
+              : "rounded px-2 py-0.5 text-(--color-fg-muted)"
           }
         >
           {isPublic ? "Опубликовано" : "Приватно"}

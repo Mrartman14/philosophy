@@ -15,7 +15,7 @@ const visibilityLabel: Record<string, string> = {
 export function DocumentMyList({ documents }: Props) {
   if (documents.length === 0) {
     return (
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         У вас пока нет документов.
       </p>
     );
@@ -27,7 +27,7 @@ export function DocumentMyList({ documents }: Props) {
           <RouterLink href={`/documents/${doc.id}`} className="text-sm hover:underline">
             {doc.filename ?? "Без названия"}
           </RouterLink>
-          <span className="text-xs text-(--color-description)">
+          <span className="text-xs text-(--color-fg-muted)">
             {visibilityLabel[doc.visibility ?? "private"] ?? doc.visibility}
           </span>
         </li>

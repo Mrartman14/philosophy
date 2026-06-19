@@ -59,9 +59,9 @@ export function EditorTextOverlay({ node, viewport, onCommit, onCancel }: Props)
         padding: 4,
         boxSizing: "border-box",
         resize: "none",
-        border: "1px solid var(--color-primary)",
-        background: "var(--color-background)",
-        color: "var(--color-foreground)",
+        border: "1px solid var(--color-accent)",
+        background: "var(--color-surface)",
+        color: "var(--color-fg)",
         zIndex: 10,
       }}
     />

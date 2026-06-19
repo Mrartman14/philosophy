@@ -31,7 +31,7 @@ export function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
           <span className="truncate font-medium">
             {preview || "Баннер без текста"}
           </span>
-          <span className="text-xs text-(--color-description)">
+          <span className="text-xs text-(--color-fg-muted)">
             {formatBannerPeriod(banner.start_at, banner.end_at)}
             {` · ${audienceLabel(banner.target_audience)}`}
             {banner.dismissible === false ? " · нельзя скрыть" : ""}

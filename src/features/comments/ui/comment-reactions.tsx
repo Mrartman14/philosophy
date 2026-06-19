@@ -119,7 +119,7 @@ export function CommentReactions({
           const values = axis === "insight" ? [1] : [1, -1];
           return (
             <span key={axis} className="flex items-center gap-1">
-              <span className="text-(--color-description)">{axisLabel(axis)}:</span>
+              <span className="text-(--color-fg-muted)">{axisLabel(axis)}:</span>
               {values.map((v) => {
                 const active = current === v;
                 return (
@@ -132,15 +132,15 @@ export function CommentReactions({
                     aria-label={`${axisLabel(axis)}: ${axisValueAriaLabel(axis, v)}`}
                     className={
                       active
-                        ? "rounded border border-(--color-border) bg-(--color-text-pane) px-1.5"
-                        : "rounded border border-(--color-border) px-1.5 hover:bg-(--color-text-pane) disabled:opacity-40"
+                        ? "rounded border border-(--color-border) bg-(--color-surface-subtle) px-1.5"
+                        : "rounded border border-(--color-border) px-1.5 hover:bg-(--color-surface-subtle) disabled:opacity-40"
                     }
                   >
                     <span aria-hidden="true">{axis === "insight" ? "★" : v === 1 ? "+" : "−"}</span>
                   </button>
                 );
               })}
-              <span className="text-(--color-description)">{axisCount(reactions, axis)}</span>
+              <span className="text-(--color-fg-muted)">{axisCount(reactions, axis)}</span>
             </span>
           );
         })}

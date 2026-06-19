@@ -96,7 +96,7 @@ export function BannerEditForm({ banner }: Props) {
           defaultValue={toDatetimeLocal(banner.end_at)}
         />
       </FormField>
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         Уже сохранённое «Окончание показа» очистить нельзя — бекенд игнорирует
         пустое значение этого поля.
       </p>
@@ -108,7 +108,7 @@ export function BannerEditForm({ banner }: Props) {
           placeholder="UUID события из /admin/events"
         />
       </FormField>
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         Чтобы отвязать событие — очистите поле и сохраните.
       </p>
 
@@ -121,7 +121,7 @@ export function BannerEditForm({ banner }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-description)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
       )}
       {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">

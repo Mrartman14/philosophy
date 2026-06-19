@@ -37,7 +37,7 @@ export function FormField({
       </Field.Label>
       {children}
       {description && (
-        <Field.Description className="text-xs text-(--color-description)">
+        <Field.Description className="text-xs text-(--color-fg-muted)">
           {description}
         </Field.Description>
       )}

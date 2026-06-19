@@ -26,16 +26,16 @@ function AuditDetails({ record }: { record: AuditRecord }) {
   if (fieldCount === 0 && !record.request_id) return <>—</>;
   return (
     <details>
-      <summary className="cursor-pointer text-xs text-(--color-description)">
+      <summary className="cursor-pointer text-xs text-(--color-fg-muted)">
         Показать{fieldCount > 0 ? ` (${fieldCount})` : ""}
       </summary>
       {fieldCount > 0 && (
-        <pre className="mt-1 max-w-xs overflow-x-auto rounded bg-(--color-text-pane) p-2 text-xs">
+        <pre className="mt-1 max-w-xs overflow-x-auto rounded bg-(--color-surface-subtle) p-2 text-xs">
           {JSON.stringify(details, null, 2)}
         </pre>
       )}
       {record.request_id && (
-        <p className="mt-1 text-xs text-(--color-description)">
+        <p className="mt-1 text-xs text-(--color-fg-muted)">
           request_id: <code>{record.request_id}</code>
         </p>
       )}
@@ -79,7 +79,7 @@ export function AuditTable({ records }: Props) {
                 {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- бек возвращает "" для удалённого актора (LEFT JOIN), "" → "—" намеренно */}
                 <span>{rec.actor_username || "—"}</span>
                 <code
-                  className="text-xs text-(--color-description)"
+                  className="text-xs text-(--color-fg-muted)"
                   title={rec.actor_user_id}
                 >
                   {shortId(rec.actor_user_id)}
@@ -94,7 +94,7 @@ export function AuditTable({ records }: Props) {
                 <div className="flex flex-col">
                   <span>{rec.target_type}</span>
                   <code
-                    className="text-xs text-(--color-description)"
+                    className="text-xs text-(--color-fg-muted)"
                     title={rec.target_id}
                   >
                     {shortId(rec.target_id)}

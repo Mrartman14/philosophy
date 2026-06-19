@@ -62,7 +62,7 @@ export function ViewStats({
       </p>
 
       {Object.keys(byType).length > 0 && (
-        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-(--color-description)">
+        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-(--color-fg-muted)">
           {Object.entries(byType).map(([type, count]) => (
             <li key={type}>
               {LABELS[type] ?? type}: {count}
@@ -83,10 +83,10 @@ export function ViewStats({
                 {href ? (
                   <RouterLink href={href}>{item.title ?? "Без названия"}</RouterLink>
                 ) : (
-                  <span className="text-(--color-description)">Недоступно</span>
+                  <span className="text-(--color-fg-muted)">Недоступно</span>
                 )}
               </span>
-              <span className="shrink-0 text-(--color-description)">
+              <span className="shrink-0 text-(--color-fg-muted)">
                 {item.count} просм.
               </span>
             </li>

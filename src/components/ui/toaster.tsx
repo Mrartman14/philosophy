@@ -33,7 +33,7 @@ export function Toaster() {
               </BaseToast.Title>
             )}
             {toast.description !== undefined && (
-              <BaseToast.Description className="mt-1 text-xs text-(--color-description)">
+              <BaseToast.Description className="mt-1 text-xs text-(--color-fg-muted)">
                 {toast.description}
               </BaseToast.Description>
             )}

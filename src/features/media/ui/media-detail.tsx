@@ -35,8 +35,8 @@ export function MediaDetail({
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold break-words">{media.filename}</h1>
-        <div className="flex items-center gap-2 text-xs text-(--color-description)">
-          <span className="rounded bg-(--color-text-pane) px-2 py-0.5">
+        <div className="flex items-center gap-2 text-xs text-(--color-fg-muted)">
+          <span className="rounded bg-(--color-surface-subtle) px-2 py-0.5">
             {typeLabel[media.type] ?? media.type}
           </span>
           <span>{isPublic ? "Опубликовано" : "Приватно"}</span>
@@ -46,7 +46,7 @@ export function MediaDetail({
       {media.url ? (
         <MediaPlayer url={media.url} type={media.type} filename={media.filename} />
       ) : (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Файл недоступен для воспроизведения.
         </p>
       )}

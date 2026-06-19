@@ -28,7 +28,7 @@ const FILTER_FIELDS = [
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-xs text-(--color-description)">{label}</span>
+      <span className="text-xs text-(--color-fg-muted)">{label}</span>
       {children}
     </label>
   );

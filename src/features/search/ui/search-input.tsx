@@ -143,12 +143,12 @@ function HeaderInput() {
           maxLength={200}
           placeholder="Поиск…"
           aria-label="Поисковый запрос"
-          className="h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm outline-0 focus:border-(--color-primary) sm:w-[200px]"
+          className="h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm outline-0 focus:border-(--color-accent) sm:w-[200px]"
         />
         <button
           type="submit"
           aria-label="Искать"
-          className="text-xl text-(--color-description) hover:text-(--color-primary)"
+          className="text-xl text-(--color-fg-muted) hover:text-(--color-accent)"
         >
           <SearchIcon />
         </button>
@@ -161,7 +161,7 @@ function HeaderInput() {
       type="button"
       onClick={() => { setOpen(true); }}
       aria-label="Открыть поиск"
-      className="text-xl text-(--color-description) hover:text-(--color-primary)"
+      className="text-xl text-(--color-fg-muted) hover:text-(--color-accent)"
     >
       <SearchIcon />
     </button>
@@ -191,7 +191,7 @@ function HeaderFallback() {
       type="button"
       aria-label="Открыть поиск"
       disabled
-      className="text-xl text-(--color-description)"
+      className="text-xl text-(--color-fg-muted)"
     >
       <SearchIcon />
     </button>

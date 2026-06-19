@@ -9,21 +9,21 @@ interface Props {
 
 export function TrailPublicList({ trails }: Props) {
   if (trails.length === 0) {
-    return <p className="text-sm text-(--color-description)">Маршрутов пока нет.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Маршрутов пока нет.</p>;
   }
   return (
     <ul className="flex flex-col gap-3">
       {trails.map((trail) => (
         <li
           key={trail.id}
-          className="rounded border border-(--color-border) p-4 hover:bg-(--color-text-pane)"
+          className="rounded border border-(--color-border) p-4 hover:bg-(--color-surface-subtle)"
         >
           <RouterLink href={`/trails/${trail.id}`} className="block">
             <span className="text-base font-semibold hover:underline">
               {trail.title || "Без названия"}
             </span>
             {trail.description && (
-              <span className="mt-1 block text-sm text-(--color-description) line-clamp-2 whitespace-pre-line">
+              <span className="mt-1 block text-sm text-(--color-fg-muted) line-clamp-2 whitespace-pre-line">
                 {trail.description}
               </span>
             )}

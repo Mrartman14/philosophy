@@ -34,7 +34,7 @@ export default async function CanvasesPage({ searchParams }: Props) {
       <header className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Канвасы</h1>
-          <p className="text-sm text-(--color-description)">Всего: {result.total}</p>
+          <p className="text-sm text-(--color-fg-muted)">Всего: {result.total}</p>
         </div>
         {canCreate && (
           <RouterLink href="/canvases/new">

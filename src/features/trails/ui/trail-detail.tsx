@@ -13,7 +13,7 @@ export function TrailDetail({ trail, documents }: Props) {
   return (
     <div className="flex flex-col gap-6">
       {trail.description && (
-        <p className="whitespace-pre-line text-sm text-(--color-description)">
+        <p className="whitespace-pre-line text-sm text-(--color-fg-muted)">
           {trail.description}
         </p>
       )}
@@ -21,7 +21,7 @@ export function TrailDetail({ trail, documents }: Props) {
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Документы маршрута</h2>
         {documents.length === 0 ? (
-          <p className="text-sm text-(--color-description)">В маршруте пока нет документов.</p>
+          <p className="text-sm text-(--color-fg-muted)">В маршруте пока нет документов.</p>
         ) : (
           <ol className="flex flex-col gap-1">
             {documents.map((doc, index) => (

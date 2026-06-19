@@ -18,7 +18,7 @@ export function DocumentAdminRow({ document, canDelete }: Props) {
         <RouterLink href={`/documents/${document.id}`} className="text-sm hover:underline">
           {document.filename ?? "Без названия"}
         </RouterLink>
-        <span className="text-xs text-(--color-description)">
+        <span className="text-xs text-(--color-fg-muted)">
           {document.visibility} · автор {document.owner_id}
         </span>
       </div>

@@ -30,8 +30,8 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
-          <Popover.Popup className="bg-(--color-background) border border-(--color-border) rounded p-3 shadow-lg min-w-[320px] max-w-[480px]">
-            <Popover.Arrow className="fill-(--color-background) stroke-(--color-border)" />
+          <Popover.Popup className="bg-(--color-surface) border border-(--color-border) rounded p-3 shadow-lg min-w-[320px] max-w-[480px]">
+            <Popover.Arrow className="fill-(--color-surface) stroke-(--color-border)" />
             <RefMenu
               editor={editor}
               defaultLectureId={defaultLectureId}

@@ -26,7 +26,7 @@ export default function MeLayout({ children }: { children: ReactNode }) {
             <RouterLink
               key={section.href}
               href={section.href}
-              className="rounded border border-(--color-border) px-3 py-1.5 text-sm hover:border-(--color-primary) hover:text-(--color-primary)"
+              className="rounded border border-(--color-border) px-3 py-1.5 text-sm hover:border-(--color-accent) hover:text-(--color-accent)"
             >
               {section.title}
             </RouterLink>

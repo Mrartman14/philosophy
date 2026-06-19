@@ -26,7 +26,7 @@ export function LectureDetail({
       )}
       <header className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold">{lecture.title}</h1>
-        <p className="text-sm text-(--color-description)">{lecture.date}</p>
+        <p className="text-sm text-(--color-fg-muted)">{lecture.date}</p>
         {tags && tags.length > 0 && (
           <ul className="mt-1 flex flex-wrap gap-1">
             {tags.map((tag) => (

@@ -31,7 +31,7 @@ export function CommentNodeView({
 }: Props): ReactNode {
   if (comment.is_deleted) {
     return (
-      <div className="rounded border border-dashed border-(--color-border) p-3 text-sm text-(--color-description)">
+      <div className="rounded border border-dashed border-(--color-border) p-3 text-sm text-(--color-fg-muted)">
         Комментарий удалён
       </div>
     );
@@ -39,7 +39,7 @@ export function CommentNodeView({
 
   return (
     <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
-      <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-description)">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <CommentTypeBadge type={comment.type} />
         <span>{comment.author?.username ?? "—"}</span>
         <span>{formatCommentDate(comment.created_at)}</span>
@@ -48,7 +48,7 @@ export function CommentNodeView({
 
       {anchorSlot ??
         (comment.anchor?.exact ? (
-          <p className="border-l-2 border-(--color-border) pl-2 text-xs italic text-(--color-description)">
+          <p className="border-l-2 border-(--color-border) pl-2 text-xs italic text-(--color-fg-muted)">
             {comment.anchor.exact}
           </p>
         ) : null)}

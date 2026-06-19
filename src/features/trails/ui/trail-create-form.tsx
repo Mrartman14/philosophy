@@ -45,7 +45,7 @@ export function TrailCreateForm() {
           <option value="public">Публичный</option>
         </select>
       </FormField>
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         Публичный маршрут нельзя будет вернуть в приватный — только удалить.
       </p>
 

@@ -41,14 +41,14 @@ export function EditorEdgeLayer({ edges, nodesById, selectedEdgeIds, preview, on
             <path
               d={geo.d}
               fill="none"
-              stroke={selected ? "var(--color-primary)" : "var(--color-description)"}
+              stroke={selected ? "var(--color-accent)" : "var(--color-fg-muted)"}
               strokeWidth={selected ? 2.5 : 1.5}
               strokeDasharray={e.style === "dashed" ? "6 4" : undefined}
               markerEnd={arrow ? "url(#cv-arrow)" : undefined}
               pointerEvents="none"
             />
             {e.label && (
-              <text x={geo.mid.x} y={geo.mid.y - 4} fontSize={11} textAnchor="middle" fill="var(--color-description)" pointerEvents="none">
+              <text x={geo.mid.x} y={geo.mid.y - 4} fontSize={11} textAnchor="middle" fill="var(--color-fg-muted)" pointerEvents="none">
                 {e.label.length > 40 ? e.label.slice(0, 39) + "…" : e.label}
               </text>
             )}
@@ -59,7 +59,7 @@ export function EditorEdgeLayer({ edges, nodesById, selectedEdgeIds, preview, on
         <path
           d={`M ${preview.from.x} ${preview.from.y} L ${preview.to.x} ${preview.to.y}`}
           fill="none"
-          stroke="var(--color-primary)"
+          stroke="var(--color-accent)"
           strokeWidth={2}
           strokeDasharray="4 4"
           pointerEvents="none"

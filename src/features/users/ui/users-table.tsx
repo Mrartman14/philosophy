@@ -59,7 +59,7 @@ export function UsersTable({ users, canModerate, meId }: Props) {
               <Td>
                 {u.username}
                 {isSelf && (
-                  <span className="ml-1 text-xs text-(--color-description)">
+                  <span className="ml-1 text-xs text-(--color-fg-muted)">
                     (вы)
                   </span>
                 )}
@@ -87,7 +87,7 @@ export function UsersTable({ users, canModerate, meId }: Props) {
                 )}
               </Td>
               <Td>{formatDate(u.created_at)}</Td>
-              <Td className="font-mono text-xs text-(--color-description)">
+              <Td className="font-mono text-xs text-(--color-fg-muted)">
                 {u.id}
               </Td>
             </Tr>

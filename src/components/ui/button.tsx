@@ -8,10 +8,10 @@ export type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-(--color-foreground) text-(--color-background) hover:opacity-90 disabled:opacity-50",
+    "bg-(--color-fg) text-(--color-surface) hover:opacity-90 disabled:opacity-50",
   secondary:
-    "border border-(--color-border) bg-(--color-text-pane) hover:bg-(--color-background) disabled:opacity-50",
-  ghost: "hover:bg-(--color-text-pane) disabled:opacity-50",
+    "border border-(--color-border) bg-(--color-surface-subtle) hover:bg-(--color-surface) disabled:opacity-50",
+  ghost: "hover:bg-(--color-surface-subtle) disabled:opacity-50",
   danger: "bg-(--color-danger-solid) text-(--color-danger-on-solid) hover:opacity-90 disabled:opacity-50",
 };
 

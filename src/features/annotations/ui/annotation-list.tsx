@@ -17,7 +17,7 @@ export function AnnotationList({
   emptyText = "Аннотаций пока нет.",
 }: Props) {
   if (annotations.length === 0) {
-    return <p className="text-sm text-(--color-description)">{emptyText}</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{emptyText}</p>;
   }
   return (
     <ul className="flex flex-col gap-3">

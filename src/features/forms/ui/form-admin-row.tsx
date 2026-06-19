@@ -25,7 +25,7 @@ export function FormAdminRow({ form, canDelete }: Props) {
         {form.title ?? "Без названия"}
       </RouterLink>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-(--color-description)">{form.visibility}</span>
+        <span className="text-xs text-(--color-fg-muted)">{form.visibility}</span>
         {canDelete && form.id && (
           <ConfirmDialog
             trigger={<Button variant="danger" size="sm">Удалить</Button>}

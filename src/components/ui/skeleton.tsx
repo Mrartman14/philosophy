@@ -12,7 +12,7 @@ export function Skeleton({ className, ...rest }: SkeletonProps) {
   return (
     <div
       aria-hidden="true"
-      className={cn("animate-pulse rounded bg-(--color-text-pane)", className)}
+      className={cn("animate-pulse rounded bg-(--color-surface-subtle)", className)}
       {...rest}
     />
   );

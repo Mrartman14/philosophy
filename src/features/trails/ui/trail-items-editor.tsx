@@ -75,7 +75,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
       <h2 className="text-lg font-semibold">Содержимое маршрута</h2>
 
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">Маршрут пуст. Добавьте документы.</p>
+        <p className="text-sm text-(--color-fg-muted)">Маршрут пуст. Добавьте документы.</p>
       ) : (
         <ol className="flex flex-col gap-1">
           {items.map((item, index) => (

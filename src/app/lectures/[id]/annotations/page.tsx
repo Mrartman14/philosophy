@@ -35,7 +35,7 @@ export default async function LectureAnnotationsPage({
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-bold">Аннотации лекции</h1>
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           К материалам этой лекции пока нет аннотаций.
         </p>
       ) : (

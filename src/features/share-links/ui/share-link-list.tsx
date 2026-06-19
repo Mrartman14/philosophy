@@ -118,7 +118,7 @@ export function ShareLinkList({
                       <input
                         readOnly
                         value={url}
-                        className="w-64 rounded border border-(--color-border) bg-(--color-text-pane) px-2 py-1 text-xs"
+                        className="w-64 rounded border border-(--color-border) bg-(--color-surface-subtle) px-2 py-1 text-xs"
                         aria-label="URL ссылки"
                       />
                       <CopyButton value={url} />
@@ -137,7 +137,7 @@ export function ShareLinkList({
               <Td className="whitespace-nowrap">{fmt(link.expires_at)}</Td>
               <Td>
                 {revoked ? (
-                  <span className="text-xs text-(--color-description)">—</span>
+                  <span className="text-xs text-(--color-fg-muted)">—</span>
                 ) : (
                   <Button
                     type="button"

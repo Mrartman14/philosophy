@@ -49,14 +49,14 @@ export function CalendarView({ range, occurrences }: Props) {
       </nav>
 
       {groups.length === 0 ? (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           В этом месяце событий нет.
         </p>
       ) : (
         <ol className="flex flex-col gap-6">
           {groups.map((group) => (
             <li key={group.date} className="flex flex-col gap-2">
-              <h3 className="text-sm font-semibold capitalize text-(--color-description)">
+              <h3 className="text-sm font-semibold capitalize text-(--color-fg-muted)">
                 {formatDay(group.date)}
               </h3>
               <ul className="flex flex-col gap-3">
@@ -67,7 +67,7 @@ export function CalendarView({ range, occurrences }: Props) {
                   >
                     <p className="font-medium">{occ.title}</p>
                     {occ.is_recurring && (
-                      <p className="text-xs text-(--color-description)">
+                      <p className="text-xs text-(--color-fg-muted)">
                         Повторяющееся событие
                       </p>
                     )}

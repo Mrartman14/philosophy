@@ -18,7 +18,7 @@ export function EventAdminRow({ event, canEdit, canDelete }: Props) {
     <li className="flex items-center justify-between gap-4 py-2">
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="truncate font-medium">{event.title}</span>
-        <span className="text-xs text-(--color-description)">
+        <span className="text-xs text-(--color-fg-muted)">
           {formatEventDate(event.start_date, event.all_day)}
           {event.end_date
             ? ` — ${formatEventDate(event.end_date, event.all_day)}`

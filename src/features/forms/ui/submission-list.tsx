@@ -9,7 +9,7 @@ interface Props {
 
 export function SubmissionList({ submissions }: Props) {
   if (submissions.length === 0) {
-    return <p className="text-sm text-(--color-description)">Откликов пока нет.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Откликов пока нет.</p>;
   }
   return (
     <ul className="flex flex-col divide-y divide-(--color-border)">
@@ -18,7 +18,7 @@ export function SubmissionList({ submissions }: Props) {
           <RouterLink href={`/submissions/${s.id}`} className="text-sm hover:underline">
             Отклик {s.id?.slice(0, 8)}
           </RouterLink>
-          <span className="text-xs text-(--color-description)">
+          <span className="text-xs text-(--color-fg-muted)">
             {s.retracted_at ? "отозван" : new Date(s.submitted_at ?? "").toLocaleString("ru-RU")}
           </span>
         </li>

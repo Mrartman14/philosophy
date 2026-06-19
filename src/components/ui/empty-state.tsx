@@ -24,7 +24,7 @@ export function EmptyState({ title, description, action, className }: EmptyState
     >
       <h3 className="text-sm font-semibold">{title}</h3>
       {description !== undefined && (
-        <p className="max-w-sm text-xs text-(--color-description)">{description}</p>
+        <p className="max-w-sm text-xs text-(--color-fg-muted)">{description}</p>
       )}
       {action !== undefined && <div className="mt-2">{action}</div>}
     </div>

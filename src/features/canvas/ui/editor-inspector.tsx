@@ -40,7 +40,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
   const edge = selectedEdgeIds.length === 1 ? (data.edges ?? []).find((e) => e.id === selectedEdgeIds[0]) : undefined;
 
   if (!node && !edge) {
-    return <p className="text-sm text-(--color-description)">Выберите узел или ребро.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Выберите узел или ребро.</p>;
   }
 
   if (node) {
@@ -86,7 +86,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           </label>
         </div>
         {node.type === "entity_ref" && (
-          <p className="text-xs text-(--color-description)">
+          <p className="text-xs text-(--color-fg-muted)">
             {node.entity_type}: {node.entity_id}
           </p>
         )}
@@ -96,7 +96,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
 
   // We know edge is defined here: the !node && !edge guard above returned early.
   if (!edge) {
-    return <p className="text-sm text-(--color-description)">Выберите узел или ребро.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Выберите узел или ребро.</p>;
   }
 
   const edgeId = edge.id;

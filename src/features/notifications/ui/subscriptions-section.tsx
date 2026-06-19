@@ -9,14 +9,14 @@ export async function SubscriptionsSection() {
     result = await getSubscriptions();
   } catch {
     return (
-      <p className="text-sm text-(--color-description)">Не удалось загрузить подписки.</p>
+      <p className="text-sm text-(--color-fg-muted)">Не удалось загрузить подписки.</p>
     );
   }
   const { items } = result;
 
   if (items.length === 0) {
     return (
-      <p className="text-sm text-(--color-description)">У вас нет активных подписок.</p>
+      <p className="text-sm text-(--color-fg-muted)">У вас нет активных подписок.</p>
     );
   }
 

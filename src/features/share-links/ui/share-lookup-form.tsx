@@ -49,7 +49,7 @@ export function ShareLookupForm({ admin = false }: Props) {
   return (
     <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-(--color-description)">Тип ресурса</span>
+        <span className="text-xs text-(--color-fg-muted)">Тип ресурса</span>
         <Select
           name="resource_type"
           defaultValue={searchParams.get("resource_type") ?? types[0]}
@@ -58,7 +58,7 @@ export function ShareLookupForm({ admin = false }: Props) {
         />
       </div>
       <label htmlFor="resource_id" className="flex flex-1 flex-col gap-1">
-        <span className="text-xs text-(--color-description)">ID ресурса</span>
+        <span className="text-xs text-(--color-fg-muted)">ID ресурса</span>
         <TextInput
           id="resource_id"
           name="resource_id"

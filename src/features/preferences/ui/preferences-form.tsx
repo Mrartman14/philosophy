@@ -54,7 +54,7 @@ export function PreferencesForm({
         <p className="text-sm text-red-600">{state.error}</p>
       )}
       {state.success && state.data !== null && (
-        <p className="text-sm text-(--color-description)">Настройки сохранены.</p>
+        <p className="text-sm text-(--color-fg-muted)">Настройки сохранены.</p>
       )}
 
       <div>

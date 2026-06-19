@@ -57,7 +57,7 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-description)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
       )}
       {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">

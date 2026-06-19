@@ -55,7 +55,7 @@ export function EditorToolbar({
       </Button>
 
       <span className="ml-auto flex items-center gap-2">
-        {dirty && <span className="text-xs text-(--color-description)">Есть несохранённые изменения</span>}
+        {dirty && <span className="text-xs text-(--color-fg-muted)">Есть несохранённые изменения</span>}
         <Button type="button" size="sm" variant="primary" disabled={saving || !dirty} onClick={onSave}>
           {saving ? "Сохранение…" : "Сохранить"}
         </Button>

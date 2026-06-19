@@ -12,7 +12,7 @@ const modeLabel: Record<string, string> = { editable: "редактируемы�
 
 export function MyFormsList({ forms }: Props) {
   if (forms.length === 0) {
-    return <p className="text-sm text-(--color-description)">У вас пока нет форм.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">У вас пока нет форм.</p>;
   }
   return (
     <ul className="flex flex-col divide-y divide-(--color-border)">
@@ -21,7 +21,7 @@ export function MyFormsList({ forms }: Props) {
           <RouterLink href={`/forms/${f.id}`} className="text-sm hover:underline">
             {f.title ?? "Без названия"}
           </RouterLink>
-          <span className="text-xs text-(--color-description)">
+          <span className="text-xs text-(--color-fg-muted)">
             {visLabel[f.visibility ?? "private"] ?? f.visibility}
             {" · "}
             {modeLabel[f.submission_mode ?? "editable"] ?? f.submission_mode}

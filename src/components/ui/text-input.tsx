@@ -14,7 +14,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         className={cn(
           SHELL_BASE,
           "h-(--size-control-h-md) w-full px-(--space-control-pad-x) text-sm",
-          "placeholder:text-(--color-description)",
+          "placeholder:text-(--color-fg-muted)",
           FOCUS_RING_INPUT,
           "disabled:opacity-50 data-[invalid]:border-(--color-danger)",
           className,

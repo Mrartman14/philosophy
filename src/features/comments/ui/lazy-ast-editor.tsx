@@ -8,7 +8,7 @@ import type { AstEditor as AstEditorType } from "@/components/ast-editor";
 function EditorLoadingFallback() {
   return (
     <div className="min-h-[8rem] rounded border border-(--color-border) bg-(--color-surface) flex items-start p-3">
-      <span className="text-sm text-(--color-description)">Загрузка редактора…</span>
+      <span className="text-sm text-(--color-fg-muted)">Загрузка редактора…</span>
     </div>
   );
 }

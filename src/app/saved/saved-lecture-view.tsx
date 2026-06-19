@@ -126,14 +126,14 @@ export function SavedLectureView({ id }: { id: string }) {
   }
   if (state.kind === "missing") {
     return (
-      <p className="mx-auto max-w-3xl p-6 text-sm text-(--color-description)">
+      <p className="mx-auto max-w-3xl p-6 text-sm text-(--color-fg-muted)">
         Эта лекция не сохранена офлайн.
       </p>
     );
   }
   if (state.kind === "incomplete") {
     return (
-      <p className="mx-auto max-w-3xl p-6 text-sm text-(--color-description)">
+      <p className="mx-auto max-w-3xl p-6 text-sm text-(--color-fg-muted)">
         {state.status === "saving"
           ? "Лекция ещё сохраняется…"
           : `Сохранение не завершено: ${state.error ?? "ошибка"}.`}
@@ -142,7 +142,7 @@ export function SavedLectureView({ id }: { id: string }) {
   }
   if (state.kind === "corrupt") {
     return (
-      <p className="mx-auto max-w-3xl p-6 text-sm text-(--color-description)">
+      <p className="mx-auto max-w-3xl p-6 text-sm text-(--color-fg-muted)">
         Сохранённый снимок повреждён или устарел — откройте лекцию онлайн и сохраните заново.
       </p>
     );
@@ -158,7 +158,7 @@ export function SavedLectureView({ id }: { id: string }) {
     <article className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       {remoteStatus === "gone" && (
         <p
-          className="rounded-md border border-(--color-border) p-3 text-sm text-(--color-description)"
+          className="rounded-md border border-(--color-border) p-3 text-sm text-(--color-fg-muted)"
           role="status"
         >
           Эта лекция удалена с платформы. У вас осталась сохранённая копия.
@@ -166,14 +166,14 @@ export function SavedLectureView({ id }: { id: string }) {
       )}
       {remoteStatus === "stale" && (
         <p
-          className="rounded-md border border-(--color-border) p-3 text-sm text-(--color-description)"
+          className="rounded-md border border-(--color-border) p-3 text-sm text-(--color-fg-muted)"
           role="status"
         >
           Доступна обновлённая версия — нажмите «Обновить».
         </p>
       )}
       <div className="flex items-center justify-between gap-3">
-        <span className="text-sm text-(--color-description)">
+        <span className="text-sm text-(--color-fg-muted)">
           Сохранено офлайн:{" "}
           {new Date(state.savedAt).toLocaleDateString("ru-RU", {
             timeZone: "UTC",
@@ -191,7 +191,7 @@ export function SavedLectureView({ id }: { id: string }) {
         )}
       </div>
       {refreshError && (
-        <p className="text-sm text-(--color-description)" role="alert">
+        <p className="text-sm text-(--color-fg-muted)" role="alert">
           {refreshError}
         </p>
       )}
@@ -206,7 +206,7 @@ export function SavedLectureView({ id }: { id: string }) {
           />
         )}
         <h1 className="text-3xl font-bold">{lecture.title}</h1>
-        <p className="text-sm text-(--color-description)">{lecture.date}</p>
+        <p className="text-sm text-(--color-fg-muted)">{lecture.date}</p>
         {tags.length > 0 && (
           <ul className="flex flex-wrap gap-1">
             {tags.map((t) => (

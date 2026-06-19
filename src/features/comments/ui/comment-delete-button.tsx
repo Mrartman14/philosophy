@@ -18,7 +18,7 @@ export function CommentDeleteButton({ commentId, admin = false }: Props) {
   const [done, setDone] = useState(false);
   const toast = useToast();
   const { key } = useIdempotencyKey();
-  if (done) return <span className="text-xs text-(--color-description)">Удалено</span>;
+  if (done) return <span className="text-xs text-(--color-fg-muted)">Удалено</span>;
   return (
     <ConfirmDialog
       trigger={

@@ -125,7 +125,7 @@ export function EventEditForm({ event }: Props) {
           placeholder="FREQ=WEEKLY;BYDAY=MO"
         />
       </FormField>
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         Уже сохранённые «Дату окончания» и «Повторение» очистить нельзя —
         бекенд игнорирует пустые значения этих полей.
       </p>
@@ -139,7 +139,7 @@ export function EventEditForm({ event }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-description)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
       )}
       {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">

@@ -44,11 +44,11 @@ function renderContent(
   if (searching && search) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="text-xs text-(--color-description)">Найдено: {search.total}</p>
+        <p className="text-xs text-(--color-fg-muted)">Найдено: {search.total}</p>
         <ul className="flex flex-col gap-2">
           {search.items.map((item) => (
             <li key={item.id} className="rounded border border-(--color-border) p-2 text-sm">
-              <span className="text-xs text-(--color-description)">
+              <span className="text-xs text-(--color-fg-muted)">
                 {commentTypeLabel((item.type ?? "claim"))} ·{" "}
                 {item.author?.username ?? "—"}
               </span>
@@ -77,7 +77,7 @@ export async function CommentSection({ lectureId, query }: Props) {
   const me = await getMe();
   const schema = await getCommentSchema();
   if (!schema) {
-    return <p className="text-sm text-(--color-description)">Комментарии временно недоступны.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">Комментарии временно недоступны.</p>;
   }
 
   const rootTypes = (schema.allowed_roots ?? []);
@@ -115,7 +115,7 @@ export async function CommentSection({ lectureId, query }: Props) {
         {canCreate ? (
           <CommentCreateForm lectureId={lectureId} rootTypes={rootTypes} />
         ) : (
-          <p className="text-sm text-(--color-description)">
+          <p className="text-sm text-(--color-fg-muted)">
             Войдите, чтобы оставить комментарий.
           </p>
         )}

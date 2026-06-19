@@ -31,13 +31,13 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
     <button
       type="button"
       onClick={handleClick}
-      className={`flex w-full items-start gap-2 rounded px-3 py-2 text-left text-sm hover:bg-(--color-text-pane) ${
-        read ? "text-(--color-description)" : "font-medium"
+      className={`flex w-full items-start gap-2 rounded px-3 py-2 text-left text-sm hover:bg-(--color-surface-subtle) ${
+        read ? "text-(--color-fg-muted)" : "font-medium"
       }`}
     >
       {!read && (
         <span
-          className="mt-1.5 size-2 shrink-0 rounded-full bg-(--color-primary)"
+          className="mt-1.5 size-2 shrink-0 rounded-full bg-(--color-accent)"
           aria-hidden="true"
         />
       )}

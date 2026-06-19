@@ -25,8 +25,8 @@ export async function CommentAnchorContext({ anchor }: { anchor: Anchor }) {
   const block = isText && anchor.start_block_id ? await getBlock(anchor.start_block_id) : null;
 
   return (
-    <div className="rounded bg-(--color-text-pane) p-2 text-xs">
-      <p className="text-(--color-description)">Привязка к {entityLabel}</p>
+    <div className="rounded bg-(--color-surface-subtle) p-2 text-xs">
+      <p className="text-(--color-fg-muted)">Привязка к {entityLabel}</p>
       {anchor.exact && (
         <blockquote className="mt-1 border-l-2 border-(--color-border) pl-2 italic">
           {anchor.exact}

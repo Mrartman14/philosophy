@@ -22,7 +22,7 @@ export function AnnotationAnchorContext({ anchor }: Props) {
       return `${m}:${String(sec).padStart(2, "0")}`;
     };
     return (
-      <p className="text-xs text-(--color-description)">
+      <p className="text-xs text-(--color-fg-muted)">
         ⏱ {fmt(anchor.start_sec)}
         {anchor.end_sec !== undefined ? `–${fmt(anchor.end_sec)}` : ""}
       </p>
@@ -32,7 +32,7 @@ export function AnnotationAnchorContext({ anchor }: Props) {
   // Text-якорь — цитата.
   if (anchor.exact) {
     return (
-      <blockquote className="border-l-2 border-(--color-border) pl-2 text-xs text-(--color-description)">
+      <blockquote className="border-l-2 border-(--color-border) pl-2 text-xs text-(--color-fg-muted)">
         «{anchor.prefix ?? ""}
         <mark>{anchor.exact}</mark>
         {anchor.suffix ?? ""}»

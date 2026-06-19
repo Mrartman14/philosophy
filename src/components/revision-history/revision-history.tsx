@@ -40,7 +40,7 @@ export function RevisionHistory({
     <section className={className} aria-label={title}>
       <h2 className="text-lg font-semibold">{title}</h2>
       {revisions.length === 0 ? (
-        <p className="mt-2 text-sm text-(--color-description)">{emptyText}</p>
+        <p className="mt-2 text-sm text-(--color-fg-muted)">{emptyText}</p>
       ) : (
         <ol className="mt-2 flex flex-col divide-y divide-(--color-border)">
           {revisions.map((rev) => {

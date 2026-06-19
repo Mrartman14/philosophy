@@ -14,7 +14,7 @@ export function SearchResultsSkeleton() {
       <ul className="flex flex-col gap-3">
         {Array.from({ length: 5 }).map((_, i) => (
           <li key={i}>
-            <article className="rounded-lg border border-(--color-border) bg-(--color-background) p-4">
+            <article className="rounded-lg border border-(--color-border) bg-(--color-surface) p-4">
               {/* Badge + title row */}
               <div className="flex flex-wrap items-baseline gap-2">
                 <Skeleton className="h-5 w-14 rounded" />

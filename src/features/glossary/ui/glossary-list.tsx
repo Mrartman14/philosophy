@@ -11,7 +11,7 @@ interface Props {
 export function GlossaryList({ items, total }: Props) {
   if (items.length === 0) {
     return (
-      <div className="rounded border border-dashed border-(--color-border) p-6 text-center text-sm text-(--color-description)">
+      <div className="rounded border border-dashed border-(--color-border) p-6 text-center text-sm text-(--color-fg-muted)">
         Термины не найдены.
       </div>
     );
@@ -21,7 +21,7 @@ export function GlossaryList({ items, total }: Props) {
   );
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm text-(--color-description)">Всего: {total}</p>
+      <p className="text-sm text-(--color-fg-muted)">Всего: {total}</p>
       <ul className="flex flex-col divide-y divide-(--color-border)">
         {sorted.map((term, i) => (
           <li key={term.id ?? `idx-${i}`} className="py-2">

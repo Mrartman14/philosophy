@@ -9,7 +9,7 @@ const modeLabel: Record<string, string> = {
 
 export function FormMeta({ form }: { form: Form }) {
   return (
-    <div className="flex flex-wrap gap-2 text-xs text-(--color-description)">
+    <div className="flex flex-wrap gap-2 text-xs text-(--color-fg-muted)">
       <span className="rounded border border-(--color-border) px-2 py-0.5">
         {visLabel[form.visibility ?? "private"] ?? form.visibility}
       </span>

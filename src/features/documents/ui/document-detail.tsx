@@ -12,7 +12,7 @@ export function DocumentDetail({ document }: Props) {
   return (
     <article className="content">
       {blocks.length === 0 ? (
-        <p className="text-sm text-(--color-description)">Документ пуст.</p>
+        <p className="text-sm text-(--color-fg-muted)">Документ пуст.</p>
       ) : (
         <AstRender blocks={blocks} />
       )}

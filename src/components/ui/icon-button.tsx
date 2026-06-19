@@ -17,10 +17,10 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
  */
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-(--color-foreground) text-(--color-background) hover:opacity-90 disabled:opacity-50",
+    "bg-(--color-fg) text-(--color-surface) hover:opacity-90 disabled:opacity-50",
   secondary:
-    "border border-(--color-border) hover:bg-(--color-text-pane) disabled:opacity-50",
-  ghost: "hover:bg-(--color-text-pane) disabled:opacity-50",
+    "border border-(--color-border) hover:bg-(--color-surface-subtle) disabled:opacity-50",
+  ghost: "hover:bg-(--color-surface-subtle) disabled:opacity-50",
   danger: "text-(--color-danger) hover:bg-(--color-danger-bg) disabled:opacity-50",
 };
 

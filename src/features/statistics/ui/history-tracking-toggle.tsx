@@ -78,7 +78,7 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
         Включить
       </Button>
       {!canManage && (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           У вас нет прав на изменение настроек.
         </p>
       )}

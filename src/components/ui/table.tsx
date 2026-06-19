@@ -59,7 +59,7 @@ export const Th = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLTableCel
     return (
       <th
         ref={ref}
-        className={cn("px-3 py-2 font-semibold text-(--color-description)", className)}
+        className={cn("px-3 py-2 font-semibold text-(--color-fg-muted)", className)}
         {...rest}
       />
     );

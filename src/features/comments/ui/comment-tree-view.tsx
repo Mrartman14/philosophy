@@ -31,7 +31,7 @@ function BranchView({
 export function CommentTreeView({ subtrees }: { subtrees: RootSubtree[] }) {
   if (subtrees.length === 0) {
     return (
-      <p className="text-sm text-(--color-description)">Комментариев пока нет.</p>
+      <p className="text-sm text-(--color-fg-muted)">Комментариев пока нет.</p>
     );
   }
   return (

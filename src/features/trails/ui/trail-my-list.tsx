@@ -15,7 +15,7 @@ const visibilityLabel: Record<string, string> = {
 export function TrailMyList({ trails }: Props) {
   if (trails.length === 0) {
     return (
-      <p className="text-sm text-(--color-description)">У вас пока нет маршрутов.</p>
+      <p className="text-sm text-(--color-fg-muted)">У вас пока нет маршрутов.</p>
     );
   }
   return (
@@ -25,7 +25,7 @@ export function TrailMyList({ trails }: Props) {
           <RouterLink href={`/trails/${trail.id}`} className="text-sm hover:underline">
             {trail.title || "Без названия"}
           </RouterLink>
-          <span className="text-xs text-(--color-description)">
+          <span className="text-xs text-(--color-fg-muted)">
             {visibilityLabel[trail.visibility ?? "private"] ?? trail.visibility}
           </span>
         </li>

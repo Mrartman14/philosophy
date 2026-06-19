@@ -30,7 +30,7 @@ export default async function NotificationsPage({ searchParams }: Props) {
       </div>
 
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">Пока нет уведомлений.</p>
+        <p className="text-sm text-(--color-fg-muted)">Пока нет уведомлений.</p>
       ) : (
         <div className="flex flex-col divide-y divide-(--color-border)">
           {items.map((n) => (

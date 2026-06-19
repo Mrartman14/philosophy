@@ -39,7 +39,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
         </p>
       )}
       <LoginForm next={next} />
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Нет аккаунта?{" "}
         <RouterLink href={registerHref} className="underline">
           Зарегистрируйтесь

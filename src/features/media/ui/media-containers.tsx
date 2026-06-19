@@ -19,7 +19,7 @@ export function MediaContainers({ containers }: Props) {
   const lectures = containers.filter((c) => c.container_type === "lecture");
   if (lectures.length === 0) {
     return (
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Медиа не прикреплено ни к одной лекции.
       </p>
     );

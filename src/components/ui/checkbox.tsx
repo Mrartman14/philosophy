@@ -28,7 +28,7 @@ export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox
         SHELL_BASE,
         "inline-flex h-5 w-5 items-center justify-center",
         FOCUS_RING_CONTROL,
-        "data-[checked]:bg-(--color-foreground) data-[checked]:text-(--color-background)",
+        "data-[checked]:bg-(--color-fg) data-[checked]:text-(--color-surface)",
         "data-[disabled]:opacity-50",
         className,
       )}

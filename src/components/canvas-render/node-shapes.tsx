@@ -35,9 +35,9 @@ function NodeText({ node }: { node: RenderNode }) {
     <g>
       <rect
         x={node.x} y={node.y} width={node.width} height={node.height}
-        rx={4} fill="var(--color-text-pane)" stroke="var(--color-border)"
+        rx={4} fill="var(--color-surface-subtle)" stroke="var(--color-border)"
       />
-      <text x={node.x + PADDING} y={node.y + 18} fontSize={12} fill="var(--color-foreground)">
+      <text x={node.x + PADDING} y={node.y + 18} fontSize={12} fill="var(--color-fg)">
         {lines.map((ln, i) => (
           <tspan key={i} x={node.x + PADDING} dy={i === 0 ? 0 : 14}>{ln}</tspan>
         ))}
@@ -48,7 +48,7 @@ function NodeText({ node }: { node: RenderNode }) {
 
 function NodeShape({ node }: { node: RenderNode }) {
   const { x, y, width, height } = node;
-  const fill = "var(--color-text-pane)";
+  const fill = "var(--color-surface-subtle)";
   const stroke = "var(--color-border)";
   let shape;
   if (node.shapeKind === "ellipse") {
@@ -63,7 +63,7 @@ function NodeShape({ node }: { node: RenderNode }) {
     <g>
       {shape}
       {node.text && (
-        <text x={x + width / 2} y={y + height / 2} fontSize={12} textAnchor="middle" dominantBaseline="middle" fill="var(--color-foreground)">
+        <text x={x + width / 2} y={y + height / 2} fontSize={12} textAnchor="middle" dominantBaseline="middle" fill="var(--color-fg)">
           {clamp(node.text, 40)}
         </text>
       )}
@@ -78,9 +78,9 @@ function NodeEntityRef({ node, resolve }: { node: RenderNode; resolve: EntityRef
     <g>
       <rect
         x={node.x} y={node.y} width={node.width} height={node.height}
-        rx={6} fill="var(--color-text-pane)" stroke="var(--color-primary)"
+        rx={6} fill="var(--color-surface-subtle)" stroke="var(--color-accent)"
       />
-      <text x={node.x + PADDING} y={node.y + 20} fontSize={12} fill="var(--color-foreground)">{label}</text>
+      <text x={node.x + PADDING} y={node.y + 20} fontSize={12} fill="var(--color-fg)">{label}</text>
     </g>
   );
   if (view.href) {

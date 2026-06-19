@@ -52,7 +52,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
         />
       </FormField>
       {state.success && state.data && (
-        <p className="text-sm text-(--color-description)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
       )}
       <FormFeedback result={state} forbiddenAction="изменение комментария" />
       <div className="flex gap-2">

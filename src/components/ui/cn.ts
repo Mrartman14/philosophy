@@ -27,4 +27,4 @@ export const FOCUS_RING_CONTROL =
  * Используется текстовыми инпутами, select (trigger + popup), checkbox и
  * toast-карточкой; каждый потребитель дописывает собственные токены размера/состояния.
  */
-export const SHELL_BASE = "rounded border border-(--color-border) bg-(--color-background)";
+export const SHELL_BASE = "rounded border border-(--color-border) bg-(--color-surface)";

@@ -6,8 +6,8 @@
  */
 export function chipClass(opts?: { interactive?: boolean }): string {
   const base =
-    "rounded-full border border-(--color-border) px-2 py-0.5 text-xs text-(--color-description)";
+    "rounded-full border border-(--color-border) px-2 py-0.5 text-xs text-(--color-fg-muted)";
   return opts?.interactive
-    ? `${base} hover:bg-(--color-text-pane)`
+    ? `${base} hover:bg-(--color-surface-subtle)`
     : base;
 }

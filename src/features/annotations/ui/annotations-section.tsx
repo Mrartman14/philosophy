@@ -45,7 +45,7 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
       <h2 className="text-lg font-semibold">Аннотации</h2>
 
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">Аннотаций пока нет.</p>
+        <p className="text-sm text-(--color-fg-muted)">Аннотаций пока нет.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((a) => {

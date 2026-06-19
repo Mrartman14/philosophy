@@ -55,14 +55,14 @@ export function Dialog({
         <BaseDialog.Popup
           className={cn(
             "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-            "w-full max-w-lg rounded-lg border border-(--color-border) bg-(--color-background) p-6 shadow-xl",
+            "w-full max-w-lg rounded-lg border border-(--color-border) bg-(--color-surface) p-6 shadow-xl",
             "transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
             className,
           )}
         >
           <BaseDialog.Title className="text-lg font-semibold">{title}</BaseDialog.Title>
           {description !== undefined && (
-            <BaseDialog.Description className="mt-1 text-sm text-(--color-description)">
+            <BaseDialog.Description className="mt-1 text-sm text-(--color-fg-muted)">
               {description}
             </BaseDialog.Description>
           )}

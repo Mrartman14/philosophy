@@ -94,11 +94,11 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => { setOpen((v) => !v); }}
-        className="relative flex size-8 items-center justify-center text-(--color-description) hover:text-(--color-primary)"
+        className="relative flex size-8 items-center justify-center text-(--color-fg-muted) hover:text-(--color-accent)"
       >
         <BellIcon className="size-5" />
         {badge && (
-          <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-(--color-primary) px-1 text-[10px] leading-4 text-(--color-background)">
+          <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-(--color-accent) px-1 text-[10px] leading-4 text-(--color-surface)">
             {badge}
           </span>
         )}

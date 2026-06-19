@@ -48,7 +48,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-description)">Комментарий добавлен.</p>
+        <p className="text-sm text-(--color-fg-muted)">Комментарий добавлен.</p>
       )}
       <FormFeedback result={state} forbiddenAction="создание комментария" />
 

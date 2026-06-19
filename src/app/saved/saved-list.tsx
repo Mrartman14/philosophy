@@ -80,7 +80,7 @@ export function SavedList() {
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-bold">Сохранённое офлайн</h1>
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Пока ничего не сохранено. Откройте лекцию и нажмите «Сохранить офлайн».
         </p>
       ) : (
@@ -89,7 +89,7 @@ export function SavedList() {
             <li key={it.id}>
               <RouterLink
                 href={`/saved/${it.id}`}
-                className="block rounded border border-(--color-border) p-3 hover:bg-(--color-text-pane)"
+                className="block rounded border border-(--color-border) p-3 hover:bg-(--color-surface-subtle)"
               >
                 <span className="font-medium">{it.title}</span>
               </RouterLink>

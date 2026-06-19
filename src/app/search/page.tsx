@@ -33,7 +33,7 @@ export default async function SearchPage({ searchParams }: Props) {
     <section className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header>
         <h1 className="text-2xl font-bold">Поиск</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Глобальный поиск по лекциям и терминам глоссария.
         </p>
       </header>
@@ -53,7 +53,7 @@ export default async function SearchPage({ searchParams }: Props) {
           />
         </Suspense>
       ) : (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Введите запрос, чтобы начать поиск.
         </p>
       )}
@@ -82,7 +82,7 @@ async function SearchBody({
     });
   } catch {
     return (
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Поиск временно недоступен. Попробуйте позже.
       </p>
     );
