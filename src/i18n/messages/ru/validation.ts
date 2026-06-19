@@ -189,6 +189,12 @@ const validation = {
     invalidDate: "Некорректная дата",
   },
 
+  // --- search: SearchQuerySchema ---
+  search: {
+    queryRequired: "Введите запрос",
+    queryMax: "Не более 200 символов",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import type { NamespaceT } from "@/i18n";
+
 import { SEARCH_TYPES } from "./types";
 
 /**
@@ -18,20 +20,29 @@ import { SEARCH_TYPES } from "./types";
  *  - offset: >= 0. (limit фиксируем на фронте, в URL не выносим.)
  */
 
-export const SearchQuerySchema = z
-  .string()
-  .trim()
-  .min(1, "Введите запрос")
-  .max(200, "Не более 200 символов");
+type ValidationT = NamespaceT<"validation">;
+
+export function makeSearchQuerySchema(t: ValidationT) {
+  return z
+    .string()
+    .trim()
+    .min(1, t("search.queryRequired"))
+    .max(200, t("search.queryMax"));
+}
+
+export type SearchQueryInput = z.infer<ReturnType<typeof makeSearchQuerySchema>>;
 
 export const SearchTypeSchema = z.enum(SEARCH_TYPES);
 
 export const SearchOffsetSchema = z.coerce.number().int().min(0);
 
-export const SearchParamsSchema = z.object({
-  q: SearchQuerySchema.optional().catch(undefined),
-  type: SearchTypeSchema.optional().catch(undefined),
-  offset: SearchOffsetSchema.optional().catch(undefined),
-});
+export function makeSearchParamsSchema(t: ValidationT) {
+  const q = makeSearchQuerySchema(t);
+  return z.object({
+    q: q.optional().catch(undefined),
+    type: SearchTypeSchema.optional().catch(undefined),
+    offset: SearchOffsetSchema.optional().catch(undefined),
+  });
+}
 
-export type SearchParamsInput = z.infer<typeof SearchParamsSchema>;
+export type SearchParamsInput = z.infer<ReturnType<typeof makeSearchParamsSchema>>;

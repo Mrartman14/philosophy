@@ -8,8 +8,10 @@ export {
   type SearchResult,
 } from "./api";
 export {
-  SearchParamsSchema,
+  makeSearchQuerySchema,
+  makeSearchParamsSchema,
   type SearchParamsInput,
+  type SearchQueryInput,
 } from "./schemas";
 export { SEARCH_TYPES, type SearchType, type SearchHit } from "./types";
 export { SearchInput } from "./ui/search-input";

@@ -1,13 +1,15 @@
 // src/features/search/ui/search-results-skeleton.tsx
 import { Skeleton } from "@/components/ui";
+import { getT } from "@/i18n";
 
 /**
  * Placeholder shown inside the Suspense boundary while search results load.
  * Mimics the visual structure of SearchResults: a count line + a few HitCards.
  */
-export function SearchResultsSkeleton() {
+export async function SearchResultsSkeleton() {
+  const t = await getT("search");
   return (
-    <div className="flex flex-col gap-4" aria-busy="true" aria-label="Загрузка результатов…">
+    <div className="flex flex-col gap-4" aria-busy="true" aria-label={t("loadingAriaLabel")}>
       {/* Mimics "Найдено: N" label */}
       <Skeleton className="h-4 w-24" />
 

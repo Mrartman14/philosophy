@@ -1,21 +1,8 @@
 // src/features/search/ui/search-results.tsx
 import { EmptyState, RouterLink } from "@/components/ui";
+import { getT, getServerFmt } from "@/i18n";
 
 import type { SearchHit, SearchMatch } from "../types";
-
-const TYPE_LABEL: Record<string, string> = {
-  lecture: "Лекция",
-  glossary: "Термин",
-};
-
-const dateFormat = new Intl.DateTimeFormat("ru-RU", { dateStyle: "long" });
-
-function formatDate(iso?: string): string | null {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  return dateFormat.format(d);
-}
 
 /** Первые до 3 непустых сниппетов хита (бек уже усекает текст). */
 function topSnippets(matches: SearchMatch[] | undefined): string[] {
@@ -39,22 +26,32 @@ function hitHref(hit: SearchHit): string | null {
   return null;
 }
 
-function hitTitle(hit: SearchHit): string {
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- .trim() может дать "", "" → "Без названия" намеренно
-  if (hit.type === "lecture") return hit.lecture?.title?.trim() || "Без названия";
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- аналогично: trim → ""
-  if (hit.type === "glossary") return hit.glossary_term?.title?.trim() || "Без названия";
-  return "Результат";
+interface HitCardProps {
+  hit: SearchHit;
+  typeLabel: Record<string, string>;
+  untitled: string;
+  hitFallbackTitle: string;
+  formatDate: (iso?: string) => string | null;
 }
 
-function HitCard({ hit }: { hit: SearchHit }) {
+function HitCard({ hit, typeLabel, untitled, hitFallbackTitle, formatDate }: HitCardProps) {
   const href = hitHref(hit);
   // Неизвестный тип или хит без id — нечего открыть, пропускаем (defensive,
   // как .md-handler бека: unknown hit types skipped).
   if (!href) return null;
 
-  const title = hitTitle(hit);
-  const label = hit.type ? (TYPE_LABEL[hit.type] ?? hit.type) : "—";
+  const rawTitle =
+    hit.type === "lecture"
+      ? hit.lecture?.title?.trim()
+      : hit.type === "glossary"
+        ? hit.glossary_term?.title?.trim()
+        : undefined;
+  // trim() может дать "" — намеренно падаем на untitled, а не на nullish
+  const title = rawTitle !== undefined && rawTitle !== "" ? rawTitle
+    : hit.type === "lecture" || hit.type === "glossary" ? untitled
+    : hitFallbackTitle;
+
+  const label = hit.type ? (typeLabel[hit.type] ?? hit.type) : "—";
   const date = hit.type === "lecture" ? formatDate(hit.lecture?.date) : null;
   const snippets = topSnippets(hit.matches);
 
@@ -92,22 +89,43 @@ interface Props {
   total: number;
 }
 
-export function SearchResults({ hits, total }: Props) {
+export async function SearchResults({ hits, total }: Props) {
+  const t = await getT("search");
+  const fmt = await getServerFmt();
+
+  const typeLabel: Record<string, string> = {
+    lecture: t("typeLecture"),
+    glossary: t("typeGlossary"),
+  };
+
+  function formatDate(iso?: string): string | null {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    return fmt.dateTime(d, { dateStyle: "long" });
+  }
+
   if (hits.length === 0) {
     return (
       <EmptyState
-        title="Ничего не найдено"
-        description="Попробуйте изменить запрос или снять фильтр по типу."
+        title={t("emptyTitle")}
+        description={t("emptyDescription")}
       />
     );
   }
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-(--color-fg-muted)">Найдено: {total}</p>
+      <p className="text-xs text-(--color-fg-muted)">{t("foundCount", { total })}</p>
       <ul className="flex flex-col gap-3">
         {hits.map((hit, i) => (
           <li key={hitHref(hit) ?? i}>
-            <HitCard hit={hit} />
+            <HitCard
+              hit={hit}
+              typeLabel={typeLabel}
+              untitled={t("untitled")}
+              hitFallbackTitle={t("hitFallbackTitle")}
+              formatDate={formatDate}
+            />
           </li>
         ))}
       </ul>

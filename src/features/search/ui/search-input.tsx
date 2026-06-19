@@ -13,6 +13,7 @@ import {
 
 import { Button, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
+import { useT } from "@/i18n/client";
 
 import { SEARCH_TYPES } from "../types";
 
@@ -39,20 +40,21 @@ function SearchIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-const TYPE_OPTIONS = [
-  { value: "", label: "Везде" },
-  ...SEARCH_TYPES.map((t) => ({
-    value: t,
-    label: t === "lecture" ? "Лекции" : "Термины",
-  })),
-];
-
 /** Полная форма для страницы /search: строка + фильтр типа + кнопка. */
 function PageForm() {
+  const t = useT("search");
   const params = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
   const initialQ = params.get("q") ?? "";
   const initialType = params.get("type") ?? "";
+
+  const typeOptions = [
+    { value: "", label: t("filterAll") },
+    ...SEARCH_TYPES.map((type) => ({
+      value: type,
+      label: type === "lecture" ? t("filterLectures") : t("filterTerms"),
+    })),
+  ];
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,20 +75,20 @@ function PageForm() {
       <TextInput
         name="q"
         defaultValue={initialQ}
-        placeholder="Поиск по лекциям и терминам"
-        aria-label="Поисковый запрос"
+        placeholder={t("inputPlaceholder")}
+        aria-label={t("inputAriaLabel")}
         maxLength={200}
         className="min-w-60 flex-1"
       />
       <Select
         name="type"
         defaultValue={initialType}
-        options={TYPE_OPTIONS}
-        aria-label="Тип результата"
+        options={typeOptions}
+        aria-label={t("filterAriaLabel")}
         className="w-40"
       />
       <Button type="submit" disabled={pending}>
-        {pending ? "…" : "Найти"}
+        {pending ? "…" : t("submitButton")}
       </Button>
     </form>
   );
@@ -94,6 +96,7 @@ function PageForm() {
 
 /** Компактная сворачиваемая иконка для шапки. */
 function HeaderInput() {
+  const t = useT("search");
   const router = useRouter();
   const params = useSearchParams();
   const initialQ = params.get("q") ?? "";
@@ -141,13 +144,13 @@ function HeaderInput() {
             if (!value.trim()) setOpen(false);
           }}
           maxLength={200}
-          placeholder="Поиск…"
-          aria-label="Поисковый запрос"
+          placeholder={t("headerInputPlaceholder")}
+          aria-label={t("inputAriaLabel")}
           className="h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm outline-0 focus:border-(--color-accent) sm:w-[200px]"
         />
         <button
           type="submit"
-          aria-label="Искать"
+          aria-label={t("headerSubmitAriaLabel")}
           className="text-xl text-(--color-fg-muted) hover:text-(--color-accent)"
         >
           <SearchIcon />
@@ -160,7 +163,7 @@ function HeaderInput() {
     <button
       type="button"
       onClick={() => { setOpen(true); }}
-      aria-label="Открыть поиск"
+      aria-label={t("headerOpenAriaLabel")}
       className="text-xl text-(--color-fg-muted) hover:text-(--color-accent)"
     >
       <SearchIcon />
@@ -186,10 +189,11 @@ export function SearchInput({ variant = "page" }: Props) {
 }
 
 function HeaderFallback() {
+  const t = useT("search");
   return (
     <button
       type="button"
-      aria-label="Открыть поиск"
+      aria-label={t("headerOpenAriaLabel")}
       disabled
       className="text-xl text-(--color-fg-muted)"
     >

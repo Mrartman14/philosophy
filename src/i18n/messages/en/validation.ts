@@ -187,6 +187,12 @@ const validation = {
   },
 
   // --- forms: form builder + response submission ---
+  // --- search: SearchQuerySchema ---
+  search: {
+    queryRequired: "Enter a search query",
+    queryMax: "Up to 200 characters",
+  },
+
   forms: {
     invalidId: "Invalid identifier",
     titleRequired: "Enter a title",

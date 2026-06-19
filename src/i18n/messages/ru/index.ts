@@ -22,6 +22,7 @@ import media from "./media";
 import metadata from "./metadata";
 import notifications from "./notifications";
 import preferences from "./preferences";
+import search from "./search";
 import shareLinks from "./shareLinks";
 import statistics from "./statistics";
 import tags from "./tags";
@@ -46,6 +47,7 @@ const ru = {
   metadata,
   notifications,
   preferences,
+  search,
   shareLinks,
   statistics,
   tags,

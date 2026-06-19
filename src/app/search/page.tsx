@@ -4,12 +4,13 @@ import { Suspense } from "react";
 import { Pagination } from "@/components/ui";
 import {
   getSearchResults,
+  makeSearchParamsSchema,
   SearchExportLinks,
   SearchInput,
-  SearchParamsSchema,
   SearchResults,
   SearchResultsSkeleton,
 } from "@/features/search";
+import { getT } from "@/i18n";
 
 const PAGE_LIMIT = 20;
 
@@ -25,9 +26,10 @@ export const metadata = { title: "Поиск" };
 
 export default async function SearchPage({ searchParams }: Props) {
   const raw = await searchParams;
+  const t = await getT("validation");
   // parse не бросает: каждое поле обёрнуто в .catch(undefined),
   // битые параметры молча отбрасываются.
-  const params = SearchParamsSchema.parse(raw);
+  const params = makeSearchParamsSchema(t).parse(raw);
 
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-6 p-6">

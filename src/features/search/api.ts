@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrapList } from "@/utils/api-unwrap";
 
 import type { SearchHit, SearchType } from "./types";
@@ -50,7 +51,8 @@ export const getSearchResults = cache(
       params: { query },
     });
     if (error) {
-      throw new Error(error.error ?? "Не удалось выполнить поиск");
+      const t = await getT("search");
+      throw new Error(error.error ?? t("fetchFailed"));
     }
     return unwrapList(data, { offset, limit });
   },

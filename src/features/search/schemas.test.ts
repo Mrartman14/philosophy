@@ -1,12 +1,19 @@
-// src/features/search/schemas.test.ts
 import { describe, it, expect } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  SearchQuerySchema,
+  makeSearchQuerySchema,
+  makeSearchParamsSchema,
   SearchTypeSchema,
   SearchOffsetSchema,
-  SearchParamsSchema,
 } from "./schemas";
+
+// Заглушка переводчика: возвращает ключ как текст (достаточно для тестов схемы).
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const SearchQuerySchema = makeSearchQuerySchema(t);
+const SearchParamsSchema = makeSearchParamsSchema(t);
 
 describe("SearchQuerySchema", () => {
   it("принимает непустую строку", () => {
