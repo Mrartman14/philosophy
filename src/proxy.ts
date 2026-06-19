@@ -89,11 +89,24 @@ async function performRefresh(
   let rotated: { access: string; refresh: string; expiresIn?: number } | null = null;
 
   try {
+    // Таймаут ~3 с: зависший бэк не должен блокировать middleware на каждом запросе
+    const signal =
+      typeof AbortSignal.timeout === "function"
+        ? AbortSignal.timeout(3000)
+        : (() => {
+            const ctrl = new AbortController();
+            setTimeout(() => {
+              ctrl.abort();
+            }, 3000);
+            return ctrl.signal;
+          })();
+
     const res = await fetch(`${API_URL}/api/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh_token: refresh }),
       cache: "no-store",
+      signal,
     });
 
     if (res.ok) {
@@ -115,7 +128,8 @@ async function performRefresh(
 
   if (!rotated) {
     // refresh невалиден/протух/сбой → чистим обе cookie
-    const errRes = NextResponse.next();
+    // { request } для симметрии с успешной веткой и защиты от будущих правок
+    const errRes = NextResponse.next({ request });
     errRes.cookies.delete(ACCESS_COOKIE);
     errRes.cookies.delete(REFRESH_COOKIE);
     return { response: errRes, refreshedAccess: null };
@@ -137,8 +151,9 @@ async function performRefresh(
 }
 
 export const config = {
-  // Исключаем статику/ассеты/изображения и Next-внутренний трафик.
+  // Исключаем API-роуты, статику/ассеты/изображения и Next-внутренний трафик.
+  // api/ — Route Handlers не должны получать refresh-попытку через middleware.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|webp|ico|gif|css|js|woff2?)$).*)",
+    "/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|webp|ico|gif|css|js|woff2?)$).*)",
   ],
 };

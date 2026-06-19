@@ -48,6 +48,18 @@ describe("middleware — прозрачный refresh", () => {
     await proxy(req({}));
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("refresh-fetch отклонён (network error / таймаут) → обе cookie очищены, не падает", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.reject(new Error("network error"))),
+    );
+    const res = await proxy(req({ [REFRESH_COOKIE]: "ref" }));
+    // middleware должен вернуть ответ, не бросить
+    expect(res).toBeDefined();
+    expect(res.cookies.get(ACCESS_COOKIE)?.value).toBe("");
+    expect(res.cookies.get(REFRESH_COOKIE)?.value).toBe("");
+  });
 });
 
 describe("middleware — admin-гейт", () => {
