@@ -115,26 +115,35 @@ export const registerAction = createFormAction<undefined>(async (formData) => {
  */
 const LOGOUT_TIMEOUT_MS = 3000;
 
+/**
+ * Вызывает бэк с таймаутом best-effort: сетевые сбои и AbortError
+ * молча проглатываются — локальный разлогин должен произойти в любом случае.
+ */
+async function bestEffortTimedFetch(
+  url: string,
+  init: Omit<RequestInit, "signal">,
+  surface: string,
+): Promise<void> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => { controller.abort(); }, LOGOUT_TIMEOUT_MS);
+  try {
+    await instrumentedFetch(url, { ...init, signal: controller.signal }, { surface });
+  } catch {
+    // best-effort: сеть / таймаут (AbortError) / любой статус — разлогин происходит всегда
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function logoutAction(): Promise<void> {
   const refresh = await getRefreshToken();
   if (refresh) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => { controller.abort(); }, LOGOUT_TIMEOUT_MS);
-    try {
-      await instrumentedFetch(`${API_URL}/api/auth/logout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: refresh }),
-        cache: "no-store",
-        signal: controller.signal,
-      }, { surface: "auth.logout" });
-    } catch {
-      // best-effort: сеть / таймаут (AbortError) / любой статус — см. JSDoc выше
-    } finally {
-      clearTimeout(timer);
-    }
+    await bestEffortTimedFetch(
+      `${API_URL}/api/auth/logout`,
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refresh_token: refresh }), cache: "no-store" },
+      "auth.logout",
+    );
   }
-
   await clearAuthCookies();
   redirect("/");
 }
@@ -144,20 +153,11 @@ export async function logoutAction(): Promise<void> {
 export async function logoutAllAction(): Promise<void> {
   const access = await getAuthToken();
   if (access) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => { controller.abort(); }, LOGOUT_TIMEOUT_MS);
-    try {
-      await instrumentedFetch(`${API_URL}/api/auth/logout-all`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${access}` },
-        cache: "no-store",
-        signal: controller.signal,
-      }, { surface: "auth.logout_all" });
-    } catch {
-      // best-effort
-    } finally {
-      clearTimeout(timer);
-    }
+    await bestEffortTimedFetch(
+      `${API_URL}/api/auth/logout-all`,
+      { method: "POST", headers: { Authorization: `Bearer ${access}` }, cache: "no-store" },
+      "auth.logout_all",
+    );
   }
   await clearAuthCookies();
   redirect("/");
