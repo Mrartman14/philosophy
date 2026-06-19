@@ -4,15 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button, Select, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { setUserRole } from "../actions";
 import type { UserRole } from "../types";
-
-const ROLE_OPTIONS = [
-  { value: "user", label: "Пользователь" },
-  { value: "admin", label: "Администратор" },
-];
 
 interface Props {
   userId: string;
@@ -21,30 +17,36 @@ interface Props {
 }
 
 export function UserRoleControl({ userId, username, current }: Props) {
+  const t = useT("users");
   const [value, setValue] = useState<string>(current);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const toast = useToast();
   const dirty = value !== current;
 
+  const ROLE_OPTIONS = [
+    { value: "user", label: t("roleUser") },
+    { value: "admin", label: t("roleAdmin") },
+  ];
+
   async function apply() {
     const result = await setUserRole({ id: userId, role: value });
     if (!result.success) {
       toastActionError(toast, result, {
-        action: "изменение роли пользователя",
-        forbiddenTitle: "Не удалось изменить роль",
-        failureTitle: "Не удалось изменить роль",
+        action: t("changeRoleAction"),
+        forbiddenTitle: t("changeRoleFailed"),
+        failureTitle: t("changeRoleFailed"),
       });
       return;
     }
-    toast.add({ title: "Роль обновлена", description: username });
+    toast.add({ title: t("roleUpdated"), description: username });
     startTransition(() => { router.refresh(); });
   }
 
   return (
     <div className="flex items-center gap-2">
       <Select
-        aria-label={`Роль пользователя ${username}`}
+        aria-label={t("roleAriaLabel", { username })}
         options={ROLE_OPTIONS}
         value={value}
         onValueChange={setValue}
@@ -53,7 +55,7 @@ export function UserRoleControl({ userId, username, current }: Props) {
       />
       {dirty && (
         <Button size="sm" disabled={isPending} onClick={() => void apply()}>
-          Применить
+          {t("applyButton")}
         </Button>
       )}
     </div>

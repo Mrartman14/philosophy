@@ -152,6 +152,11 @@ const validation = {
     tokenRequired: "Токен обязателен",
   },
 
+  // --- users: UserRoleUpdateSchema / UserStatusUpdateSchema ---
+  users: {
+    invalidId: "Некорректный id пользователя",
+  },
+
   // --- media: MediaIdSchema / MediaVisibilitySchema ---
   media: {
     invalidId: "Некорректный id медиа",

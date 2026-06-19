@@ -149,6 +149,11 @@ const validation = {
     tokenRequired: "Token is required",
   },
 
+  // --- users: UserRoleUpdateSchema / UserStatusUpdateSchema ---
+  users: {
+    invalidId: "Invalid user ID",
+  },
+
   // --- media: MediaIdSchema / MediaVisibilitySchema ---
   media: {
     invalidId: "Invalid media ID",

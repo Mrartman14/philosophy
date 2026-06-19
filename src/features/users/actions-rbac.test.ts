@@ -32,6 +32,14 @@ vi.mock("@/utils/me", () => ({ getMe: () => getMeImpl() as unknown }));
 
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
 
+vi.mock("@/i18n", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...actual,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
+
 // next/navigation — createAction may use redirect
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {

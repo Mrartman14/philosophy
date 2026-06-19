@@ -4,16 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button, ConfirmDialog, Select, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { setUserStatus } from "../actions";
 import type { UserStatus } from "../types";
-
-const STATUS_OPTIONS = [
-  { value: "active", label: "Активен" },
-  { value: "suspended", label: "Приостановлен" },
-  { value: "banned", label: "Заблокирован" },
-];
 
 interface Props {
   userId: string;
@@ -22,30 +17,37 @@ interface Props {
 }
 
 export function UserStatusControl({ userId, username, current }: Props) {
+  const t = useT("users");
   const [value, setValue] = useState<string>(current);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const toast = useToast();
   const dirty = value !== current;
 
+  const STATUS_OPTIONS = [
+    { value: "active", label: t("statusActive") },
+    { value: "suspended", label: t("statusSuspended") },
+    { value: "banned", label: t("statusBanned") },
+  ];
+
   async function apply() {
     const result = await setUserStatus({ id: userId, status: value });
     if (!result.success) {
       toastActionError(toast, result, {
-        action: "изменение статуса пользователя",
-        forbiddenTitle: "Не удалось изменить статус",
-        failureTitle: "Не удалось изменить статус",
+        action: t("changeStatusAction"),
+        forbiddenTitle: t("changeStatusFailed"),
+        failureTitle: t("changeStatusFailed"),
       });
       return;
     }
-    toast.add({ title: "Статус обновлён", description: username });
+    toast.add({ title: t("statusUpdated"), description: username });
     startTransition(() => { router.refresh(); });
   }
 
   return (
     <div className="flex items-center gap-2">
       <Select
-        aria-label={`Статус пользователя ${username}`}
+        aria-label={t("statusAriaLabel", { username })}
         options={STATUS_OPTIONS}
         value={value}
         onValueChange={setValue}
@@ -56,18 +58,18 @@ export function UserStatusControl({ userId, username, current }: Props) {
         <ConfirmDialog
           trigger={
             <Button size="sm" variant="danger" disabled={isPending}>
-              Применить
+              {t("applyButton")}
             </Button>
           }
-          title={`Заблокировать ${username}?`}
-          description="Заблокированный пользователь не сможет войти в систему. Статус можно будет вернуть позже."
+          title={t("confirmBanTitle", { username })}
+          description={t("confirmBanDescription")}
           destructive
-          confirmLabel="Заблокировать"
+          confirmLabel={t("confirmBanLabel")}
           onConfirm={apply}
         />
       ) : dirty ? (
         <Button size="sm" disabled={isPending} onClick={() => void apply()}>
-          Применить
+          {t("applyButton")}
         </Button>
       ) : null}
     </div>

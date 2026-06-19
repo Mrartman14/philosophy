@@ -87,6 +87,9 @@ const errors = {
     "Other content references a block in this banner. Remove the references or keep the block.",
   BANNER_NOT_DISMISSIBLE: "This banner cannot be dismissed.",
 
+  // --- users slice: domain codes ---
+  USER_NOT_FOUND: "User not found.",
+
   // --- lectures slice: domain codes ---
   UPLOAD_NOT_FOUND: "Uploaded image not found. Please try again.",
   ALREADY_ATTACHED: "This entity is already attached to the lecture.",

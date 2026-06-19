@@ -59,10 +59,15 @@ describe("rethrowUserApiError", () => {
     ).toThrow("Операция отклонена сервером (конфликт).");
   });
 
-  it("NOT_FOUND → «Пользователь не найден.»", () => {
-    expect(() =>
-      rethrowUserApiError({ code: "NOT_FOUND", error: "user not found" }),
-    ).toThrow("Пользователь не найден.");
+  it("NOT_FOUND → ApiMessageError('USER_NOT_FOUND') (локализуется на границе action)", () => {
+    let thrown: unknown;
+    try {
+      rethrowUserApiError({ code: "NOT_FOUND", error: "user not found" });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).toBeInstanceOf(ApiMessageError);
+    expect((thrown as ApiMessageError).messageKey).toBe("USER_NOT_FOUND");
   });
 
   it("SUSPENDED → ForbiddenError('status') (createAction даст code=forbidden)", () => {

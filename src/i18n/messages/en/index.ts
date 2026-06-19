@@ -20,6 +20,7 @@ import preferences from "./preferences";
 import shareLinks from "./shareLinks";
 import statistics from "./statistics";
 import trails from "./trails";
+import users from "./users";
 import validation from "./validation";
 
 const en = {
@@ -40,6 +41,7 @@ const en = {
   shareLinks,
   statistics,
   trails,
+  users,
   validation,
 } satisfies Messages;
 

@@ -3,6 +3,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { requireCapability } from "@/utils/permissions";
@@ -10,7 +11,7 @@ import { revalidateEntity } from "@/utils/revalidate";
 
 import { rethrowUserApiError } from "./errors";
 import { canModerateUsers } from "./permissions";
-import { UserRoleUpdateSchema, UserStatusUpdateSchema } from "./schemas";
+import { makeUserRoleUpdateSchema, makeUserStatusUpdateSchema } from "./schemas";
 import type { AdminUser } from "./types";
 
 /**
@@ -22,7 +23,7 @@ export const setUserRole = createAction(
   async (input: { id: string; role: string }): Promise<AdminUser | null> => {
     const me = await getMe();
     requireCapability(me, canModerateUsers);
-    const parsed = UserRoleUpdateSchema.parse(input);
+    const parsed = makeUserRoleUpdateSchema(await getT("validation")).parse(input);
     const api = await createApiClient();
     const { data, error } = await api.PUT("/api/admin/users/{id}/role", {
       params: { path: { id: parsed.id } },
@@ -42,7 +43,7 @@ export const setUserStatus = createAction(
   async (input: { id: string; status: string }): Promise<AdminUser | null> => {
     const me = await getMe();
     requireCapability(me, canModerateUsers);
-    const parsed = UserStatusUpdateSchema.parse(input);
+    const parsed = makeUserStatusUpdateSchema(await getT("validation")).parse(input);
     const api = await createApiClient();
     const { data, error } = await api.PUT("/api/admin/users/{id}/status", {
       params: { path: { id: parsed.id } },
