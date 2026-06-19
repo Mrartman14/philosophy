@@ -57,6 +57,21 @@ const errors = {
   SUBMISSION_NOT_FOUND: "Отклик не найден.",
   FORM_BLOCKS_INVALID: "Описание формы не прошло валидацию.",
 
+  // --- documents slice: доменные коды ---
+  // PUBLIC_IMMUTABLE у документов — отдельный ключ, чтобы не перезатирать canvas PUBLIC_IMMUTABLE
+  DOCUMENT_PUBLIC_IMMUTABLE: "Публичный документ нельзя сделать приватным.",
+  DOCUMENT_REFERENCED:
+    "На документ ссылаются другие материалы. Удалите ссылки, затем повторите.",
+  DOCUMENT_BLOCK_REFERENCED:
+    "На блок документа ссылаются извне. Удалите ссылки или оставьте блок.",
+  DOCUMENT_BLOCKS_HAVE_ANCHORS:
+    "Нельзя удалить блок с привязанными комментариями. Сначала удалите комментарии.",
+  DOCUMENT_BLOCKS_EMPTY: "Документ должен содержать хотя бы один блок.",
+  DOCUMENT_BLOCKS_INVALID: "Тело документа не прошло валидацию AST.",
+  DOCUMENT_BLOCK_ID_UNKNOWN: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
+  DOCUMENT_DUPLICATE_BLOCK_ID: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
+  DOCUMENT_IMAGE_UNKNOWN_KEY: "В документе есть изображение с неизвестным ключом.",
+
   // --- canvas slice: доменные коды ---
   PUBLIC_IMMUTABLE: "Публичный канвас нельзя сделать приватным.",
   CANVAS_VERSION_MISMATCH:

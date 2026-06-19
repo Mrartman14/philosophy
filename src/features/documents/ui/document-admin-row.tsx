@@ -1,5 +1,6 @@
 // src/features/documents/ui/document-admin-row.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Document } from "../types";
 
@@ -11,15 +12,18 @@ interface Props {
   canDelete: boolean;
 }
 
-export function DocumentAdminRow({ document, canDelete }: Props) {
+export async function DocumentAdminRow({ document, canDelete }: Props) {
+  const t = await getT("documents");
   return (
     <li className="flex items-center justify-between gap-3 py-2">
       <div className="flex flex-col">
         <RouterLink href={`/documents/${document.id}`} className="text-sm hover:underline">
-          {document.filename ?? "Без названия"}
+          {document.filename ?? t("noTitle")}
         </RouterLink>
         <span className="text-xs text-(--color-fg-muted)">
-          {document.visibility} · автор {document.owner_id}
+          {document.visibility === "public" ? t("visibilityPublic") : t("visibilityPrivate")}
+          {" · "}
+          {t("authorLabel")} {document.owner_id}
         </span>
       </div>
       {canDelete && document.id && (

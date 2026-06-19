@@ -73,6 +73,17 @@ const validation = {
     blocksMin: "At least one block is required",
   },
 
+  // --- documents: DocumentCreateSchema / DocumentBlocksSchema / DocumentMetaSchema / etc. ---
+  documents: {
+    titleRequired: "Enter a title",
+    titleMax: "Up to 500 characters",
+    invalidId: "Invalid document ID",
+    blocksMinLength: "Document body cannot be empty",
+    blocksInvalidJson: "Invalid JSON in document body",
+    blocksNotArray: "Body must be an array of blocks",
+    blocksEmpty: "Add at least one block",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

@@ -5,11 +5,12 @@ import { cookies } from "next/headers";
 
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import {
   rethrowApiError,
   type ApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
@@ -29,39 +30,39 @@ import { revalidateEntity } from "@/utils/revalidate";
 
 import { canCreateDocument, canListAdminDocuments } from "./permissions";
 import {
-  DocumentCreateSchema,
-  DocumentBlocksSchema,
-  DocumentMetaSchema,
-  DocumentVisibilitySchema,
-  DocumentIdSchema,
+  makeDocumentCreateSchema,
+  makeDocumentBlocksSchema,
+  makeDocumentMetaSchema,
+  makeDocumentVisibilitySchema,
+  makeDocumentIdSchema,
 } from "./schemas";
 import type { Document } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
-/** Доменные коды бека → русский текст. role-403/SUSPENDED/BANNED и дефолтный
- * REF_NOT_FOUND обрабатывает централизованный rethrowApiError. BLOCKS_HAVE_ANCHORS
- * у документов отличается от дефолта, поэтому переопределён локально. */
-const ERRORS: ApiErrorMessages = {
-  PUBLIC_IMMUTABLE: "Публичный документ нельзя сделать приватным.",
-  DOCUMENT_REFERENCED:
-    "На документ ссылаются другие материалы. Удалите ссылки, затем повторите.",
-  BLOCK_REFERENCED:
-    "На блок документа ссылаются извне. Удалите ссылки или оставьте блок.",
-  BLOCKS_HAVE_ANCHORS:
-    "Нельзя удалить блок с привязанными комментариями. Сначала удалите комментарии.",
-  BLOCKS_EMPTY: "Документ должен содержать хотя бы один блок.",
-  BLOCKS_INVALID: "Тело документа не прошло валидацию AST.",
-  BLOCK_ID_UNKNOWN: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
-  DUPLICATE_BLOCK_ID: "Ошибка идентификаторов блоков. Перезагрузите редактор.",
-  IMAGE_UNKNOWN_KEY: "В документе есть изображение с неизвестным ключом.",
+/** Доменные коды бека → ключи каталога errors (Case 2 i18n).
+ * role-403/SUSPENDED/BANNED и дефолтный REF_NOT_FOUND обрабатывает
+ * централизованный rethrowApiError. BLOCKS_HAVE_ANCHORS / BLOCK_REFERENCED /
+ * BLOCKS_EMPTY и прочие получают document-специфичные ключи (отличаются от
+ * дефолтного comments-текста). */
+const ERRORS: ApiErrorMessageKeys = {
+  PUBLIC_IMMUTABLE: "DOCUMENT_PUBLIC_IMMUTABLE",
+  DOCUMENT_REFERENCED: "DOCUMENT_REFERENCED",
+  BLOCK_REFERENCED: "DOCUMENT_BLOCK_REFERENCED",
+  BLOCKS_HAVE_ANCHORS: "DOCUMENT_BLOCKS_HAVE_ANCHORS",
+  BLOCKS_EMPTY: "DOCUMENT_BLOCKS_EMPTY",
+  BLOCKS_INVALID: "DOCUMENT_BLOCKS_INVALID",
+  BLOCK_ID_UNKNOWN: "DOCUMENT_BLOCK_ID_UNKNOWN",
+  DUPLICATE_BLOCK_ID: "DOCUMENT_DUPLICATE_BLOCK_ID",
+  IMAGE_UNKNOWN_KEY: "DOCUMENT_IMAGE_UNKNOWN_KEY",
 };
 
 /** POST /api/documents (JSON). Гейт — document.create. */
 export const createDocument = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateDocument);
-  const input = parseFormData(DocumentCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeDocumentCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/documents", {
     body: {
@@ -130,7 +131,8 @@ export const uploadDocument = createFormAction(async (formData) => {
 export const updateDocumentMeta = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(DocumentMetaSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeDocumentMetaSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/documents/{document_id}", {
     params: { path: { document_id: input.id } },
@@ -151,7 +153,8 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
 export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(DocumentBlocksSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeDocumentBlocksSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/documents/{document_id}/blocks", {
     params: {
@@ -171,7 +174,8 @@ export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
 export const setDocumentVisibility = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(DocumentVisibilitySchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeDocumentVisibilitySchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/documents/{document_id}/visibility", {
     params: { path: { document_id: input.id } },
@@ -187,7 +191,8 @@ export const setDocumentVisibility = createFormAction(async (formData) => {
 export const deleteDocument = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireActive(me);
-  const { id } = DocumentIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeDocumentIdSchema(t).parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/documents/{document_id}", {
     params: { path: { document_id: id } },
@@ -202,7 +207,8 @@ export const deleteDocument = createAction(async (rawId: string, ctx) => {
 export const adminDeleteDocument = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canListAdminDocuments);
-  const { id } = DocumentIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeDocumentIdSchema(t).parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/documents/{document_id}", {
     params: { path: { document_id: id } },

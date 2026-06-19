@@ -53,6 +53,14 @@ vi.mock("next/headers", () => ({
   cookies: () => Promise.resolve({ get: vi.fn(() => ({ value: "mock-token" })) }),
 }));
 
+vi.mock("@/i18n", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...actual,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
+
 // next/navigation — createAction/createFormAction may use redirect
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {

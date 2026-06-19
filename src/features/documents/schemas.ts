@@ -3,60 +3,78 @@ import "server-only";
 import { z } from "zod";
 
 import { VISIBILITY } from "@/api/enums";
+import type { NamespaceT } from "@/i18n";
 import { blocksJsonField } from "@/utils/blocks-json";
 
-/** Парсит JSON-строку blocks из скрытого поля формы в непустой массив. */
-const BlocksJsonSchema = blocksJsonField({
-  allowEmpty: false,
-  messages: {
-    minLength: "Тело документа не может быть пустым",
-    invalidJson: "Битый JSON в теле документа",
-    notArray: "Тело должно быть массивом блоков",
-    empty: "Добавьте хотя бы один блок",
-  },
-});
+type ValidationT = NamespaceT<"validation">;
 
-const TitleSchema = z
-  .string()
-  .trim()
-  .min(1, "Введите название")
-  .max(500, "До 500 символов");
+/** Парсит JSON-строку blocks из скрытого поля формы в непустой массив. */
+function makeBlocksJsonSchema(t: ValidationT) {
+  return blocksJsonField({
+    allowEmpty: false,
+    messages: {
+      minLength: t("documents.blocksMinLength"),
+      invalidJson: t("documents.blocksInvalidJson"),
+      notArray: t("documents.blocksNotArray"),
+      empty: t("documents.blocksEmpty"),
+    },
+  });
+}
+
+function makeTitleSchema(t: ValidationT) {
+  return z
+    .string()
+    .trim()
+    .min(1, t("documents.titleRequired"))
+    .max(500, t("documents.titleMax"));
+}
 
 const VisibilityEnum = z.enum(VISIBILITY);
 
 /** POST /api/documents (JSON create). visibility опционально. */
-export const DocumentCreateSchema = z.object({
-  title: TitleSchema,
-  blocks: BlocksJsonSchema,
-  // Радио/select: ключ отсутствует, если не выбрано → бек дефолтит private.
-  visibility: VisibilityEnum.optional(),
-});
+export function makeDocumentCreateSchema(t: ValidationT) {
+  return z.object({
+    title: makeTitleSchema(t),
+    blocks: makeBlocksJsonSchema(t),
+    // Радио/select: ключ отсутствует, если не выбрано → бек дефолтит private.
+    visibility: VisibilityEnum.optional(),
+  });
+}
 
 /** PUT /api/documents/{id}/blocks. */
-export const DocumentBlocksSchema = z.object({
-  id: z.uuid("Некорректный id документа"),
-  blocks: BlocksJsonSchema,
-});
+export function makeDocumentBlocksSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("documents.invalidId")),
+    blocks: makeBlocksJsonSchema(t),
+  });
+}
 
 /** PATCH /api/documents/{id} (метаданные — только title). */
-export const DocumentMetaSchema = z.object({
-  id: z.uuid("Некорректный id документа"),
-  title: TitleSchema,
-});
+export function makeDocumentMetaSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("documents.invalidId")),
+    title: makeTitleSchema(t),
+  });
+}
 
 /** PATCH /api/documents/{id}/visibility. UI предлагает только private→public. */
-export const DocumentVisibilitySchema = z.object({
-  id: z.uuid("Некорректный id документа"),
-  visibility: VisibilityEnum,
-});
+export function makeDocumentVisibilitySchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("documents.invalidId")),
+    visibility: VisibilityEnum,
+  });
+}
 
 /** Для delete: только id. */
-export const DocumentIdSchema = z.object({
-  id: z.uuid("Некорректный id документа"),
-});
+export function makeDocumentIdSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("documents.invalidId")),
+  });
+}
 
-export type DocumentCreateInput = z.infer<typeof DocumentCreateSchema>;
-export type DocumentBlocksInput = z.infer<typeof DocumentBlocksSchema>;
-export type DocumentMetaInput = z.infer<typeof DocumentMetaSchema>;
-export type DocumentVisibilityInput = z.infer<typeof DocumentVisibilitySchema>;
-export type DocumentIdInput = z.infer<typeof DocumentIdSchema>;
+// Типы инферируются из фабрик через ReturnType (паттерн playbook Case 1).
+export type DocumentCreateInput = z.infer<ReturnType<typeof makeDocumentCreateSchema>>;
+export type DocumentBlocksInput = z.infer<ReturnType<typeof makeDocumentBlocksSchema>>;
+export type DocumentMetaInput = z.infer<ReturnType<typeof makeDocumentMetaSchema>>;
+export type DocumentVisibilityInput = z.infer<ReturnType<typeof makeDocumentVisibilitySchema>>;
+export type DocumentIdInput = z.infer<ReturnType<typeof makeDocumentIdSchema>>;

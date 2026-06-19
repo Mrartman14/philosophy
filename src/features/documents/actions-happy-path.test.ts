@@ -47,6 +47,14 @@ vi.mock("next/headers", () => ({
   cookies: () => Promise.resolve({ get: vi.fn(() => ({ value: "mock-token" })) }),
 }));
 
+vi.mock("@/i18n", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...actual,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
+
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {
     const err = new Error("NEXT_REDIRECT") as Error & { digest: string };

@@ -1,13 +1,24 @@
 // src/features/documents/schemas.test.ts
 import { describe, expect, it } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
+// Стаб переводчика — возвращает ключ вместо текста (паттерн playbook Case 1).
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
 import {
-  DocumentCreateSchema,
-  DocumentBlocksSchema,
-  DocumentMetaSchema,
-  DocumentVisibilitySchema,
-  DocumentIdSchema,
+  makeDocumentCreateSchema,
+  makeDocumentBlocksSchema,
+  makeDocumentMetaSchema,
+  makeDocumentVisibilitySchema,
+  makeDocumentIdSchema,
 } from "./schemas";
+
+const DocumentCreateSchema = makeDocumentCreateSchema(t);
+const DocumentBlocksSchema = makeDocumentBlocksSchema(t);
+const DocumentMetaSchema = makeDocumentMetaSchema(t);
+const DocumentVisibilitySchema = makeDocumentVisibilitySchema(t);
+const DocumentIdSchema = makeDocumentIdSchema(t);
 
 describe("DocumentCreateSchema", () => {
   it("success: title + валидный blocks JSON + visibility", () => {

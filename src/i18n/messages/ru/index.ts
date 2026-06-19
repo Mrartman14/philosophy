@@ -9,6 +9,7 @@
 import auth from "./auth";
 import canvas from "./canvas";
 import comments from "./comments";
+import documents from "./documents";
 import errors from "./errors";
 import forms from "./forms";
 import lectures from "./lectures";
@@ -21,6 +22,7 @@ const ru = {
   auth,
   canvas,
   comments,
+  documents,
   errors,
   forms,
   lectures,

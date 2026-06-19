@@ -54,6 +54,20 @@ const errors = {
   SUBMISSION_NOT_FOUND: "Response not found.",
   FORM_BLOCKS_INVALID: "The form description failed validation.",
 
+  // --- documents slice: domain codes ---
+  DOCUMENT_PUBLIC_IMMUTABLE: "A public document cannot be made private.",
+  DOCUMENT_REFERENCED:
+    "Other content references this document. Remove the references and try again.",
+  DOCUMENT_BLOCK_REFERENCED:
+    "An external reference points to a block in this document. Remove it or keep the block.",
+  DOCUMENT_BLOCKS_HAVE_ANCHORS:
+    "Can't delete a block that has anchored comments. Remove the comments first.",
+  DOCUMENT_BLOCKS_EMPTY: "The document must contain at least one block.",
+  DOCUMENT_BLOCKS_INVALID: "The document body failed AST validation.",
+  DOCUMENT_BLOCK_ID_UNKNOWN: "Block ID error. Please reload the editor.",
+  DOCUMENT_DUPLICATE_BLOCK_ID: "Block ID error. Please reload the editor.",
+  DOCUMENT_IMAGE_UNKNOWN_KEY: "The document contains an image with an unknown key.",
+
   // --- canvas slice: domain codes ---
   PUBLIC_IMMUTABLE: "A public canvas cannot be made private.",
   CANVAS_VERSION_MISMATCH:

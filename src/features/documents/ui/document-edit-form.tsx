@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
 import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateDocumentBlocks } from "../actions";
@@ -17,6 +18,8 @@ interface Props {
 }
 
 export function DocumentEditForm({ document }: Props) {
+  const t = useT("documents");
+  const tErrors = useT("errors");
   const [blocks, setBlocks] = useState<AstBlock[]>(document.blocks ?? []);
   const [state, action] = useActionState(updateDocumentBlocks, initial);
 
@@ -27,7 +30,7 @@ export function DocumentEditForm({ document }: Props) {
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
-      <FormField name="blocks" label="Содержимое">
+      <FormField name="blocks" label={t("contentLabel")}>
         <AstEditor
           defaultValue={document.blocks ?? []}
           entityContext="document"
@@ -36,17 +39,19 @@ export function DocumentEditForm({ document }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
       )}
       {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на изменение документа.</p>
+        <p className="text-sm text-red-600">
+          {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
+        </p>
       )}
       {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 
       <div>
-        <SubmitButton>Сохранить содержимое</SubmitButton>
+        <SubmitButton>{t("saveContentButton")}</SubmitButton>
       </div>
     </Form>
   );

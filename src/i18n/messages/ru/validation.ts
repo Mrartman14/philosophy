@@ -76,6 +76,17 @@ const validation = {
     blocksMin: "Нужен хотя бы один блок",
   },
 
+  // --- documents: DocumentCreateSchema / DocumentBlocksSchema / DocumentMetaSchema / etc. ---
+  documents: {
+    titleRequired: "Введите название",
+    titleMax: "До 500 символов",
+    invalidId: "Некорректный id документа",
+    blocksMinLength: "Тело документа не может быть пустым",
+    blocksInvalidJson: "Битый JSON в теле документа",
+    blocksNotArray: "Тело должно быть массивом блоков",
+    blocksEmpty: "Добавьте хотя бы один блок",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",
