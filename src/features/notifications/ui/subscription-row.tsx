@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button, RouterLink, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { unsubscribeDocument } from "../actions";
@@ -14,6 +15,7 @@ interface SubscriptionRowProps {
 
 export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
   const toast = useToast();
+  const t = useT("notifications");
   const [removed, setRemoved] = useState(false);
   const [pending, setPending] = useState(false);
 
@@ -24,7 +26,7 @@ export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
     try {
       const result = await unsubscribeDocument(subscription.targetId);
       if (!result.success) {
-        toastActionError(toast, result, { action: "подписку" });
+        toastActionError(toast, result, { action: t("subscribeAction") });
         return;
       }
       setRemoved(true);
@@ -35,7 +37,7 @@ export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
 
   // Бэк отдаёт только target_id (без названия) — показываем ссылку с префиксом id.
   // TODO(backend-ask): добавить название цели в подписку (Task 16).
-  const label = `Документ ${subscription.targetId.slice(0, 8)}`;
+  const label = `${t("documentPrefix")} ${subscription.targetId.slice(0, 8)}`;
 
   return (
     <li className="flex items-center justify-between gap-3 py-2">
@@ -58,7 +60,7 @@ export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
           void unsubscribe();
         }}
       >
-        Отписаться
+        {t("unsubscribeButton")}
       </Button>
     </li>
   );

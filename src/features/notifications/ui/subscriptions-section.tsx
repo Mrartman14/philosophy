@@ -1,22 +1,25 @@
 // src/features/notifications/ui/subscriptions-section.tsx
+import { getT } from "@/i18n";
+
 import { getSubscriptions } from "../api";
 
 import { SubscriptionRow } from "./subscription-row";
 
 export async function SubscriptionsSection() {
+  const t = await getT("notifications");
   let result;
   try {
     result = await getSubscriptions();
   } catch {
     return (
-      <p className="text-sm text-(--color-fg-muted)">Не удалось загрузить подписки.</p>
+      <p className="text-sm text-(--color-fg-muted)">{t("subscriptionsError")}</p>
     );
   }
   const { items } = result;
 
   if (items.length === 0) {
     return (
-      <p className="text-sm text-(--color-fg-muted)">У вас нет активных подписок.</p>
+      <p className="text-sm text-(--color-fg-muted)">{t("subscriptionsEmpty")}</p>
     );
   }
 

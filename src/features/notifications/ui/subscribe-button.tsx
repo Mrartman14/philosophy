@@ -5,6 +5,7 @@
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -22,6 +23,7 @@ export function SubscribeButton({
   unsubscribeAction,
 }: SubscribeButtonProps) {
   const toast = useToast();
+  const t = useT("notifications");
   const [subscribed, setSubscribed] = useState(initialSubscribed);
   const [pending, setPending] = useState(false);
 
@@ -35,7 +37,7 @@ export function SubscribeButton({
         : await unsubscribeAction(entityId);
       if (!result.success) {
         setSubscribed(!next); // откат
-        toastActionError(toast, result, { action: "подписку" });
+        toastActionError(toast, result, { action: t("subscribeAction") });
       }
     } finally {
       setPending(false);
@@ -50,7 +52,7 @@ export function SubscribeButton({
         void toggle();
       }}
     >
-      {subscribed ? "Отписаться" : "Подписаться"}
+      {subscribed ? t("unsubscribeButton") : t("subscribeButton")}
     </Button>
   );
 }

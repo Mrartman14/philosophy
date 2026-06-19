@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -12,6 +13,7 @@ import { markAllRead, markAllSeen } from "../actions";
 export function NotificationListActions() {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("notifications");
   const [pending, setPending] = useState(false);
 
   async function run(action: () => Promise<ActionResult>, okMsg: string) {
@@ -19,7 +21,7 @@ export function NotificationListActions() {
     try {
       const result = await action();
       if (!result.success) {
-        toastActionError(toast, result, { action: "уведомления" });
+        toastActionError(toast, result, { action: t("notificationsAction") });
         return;
       }
       toast.add({ title: okMsg });
@@ -35,19 +37,19 @@ export function NotificationListActions() {
         variant="secondary"
         disabled={pending}
         onClick={() => {
-          void run(markAllRead, "Все отмечены прочитанными");
+          void run(markAllRead, t("markAllReadSuccess"));
         }}
       >
-        Прочитать все
+        {t("markAllReadButton")}
       </Button>
       <Button
         variant="ghost"
         disabled={pending}
         onClick={() => {
-          void run(markAllSeen, "Отмечены просмотренными");
+          void run(markAllSeen, t("markAllSeenSuccess"));
         }}
       >
-        Просмотреть все
+        {t("markAllSeenButton")}
       </Button>
     </div>
   );

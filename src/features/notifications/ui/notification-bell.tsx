@@ -2,6 +2,8 @@
 // src/features/notifications/ui/notification-bell.tsx
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useT } from "@/i18n/client";
+
 import { fetchNotificationCounts } from "../actions";
 import type { NotificationCounts } from "../types";
 
@@ -16,6 +18,7 @@ interface NotificationBellProps {
 }
 
 export function NotificationBell({ initialCounts }: NotificationBellProps) {
+  const t = useT("notifications");
   const [counts, setCounts] = useState(initialCounts);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -90,7 +93,7 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
     <div ref={rootRef} className="relative flex items-center">
       <button
         type="button"
-        aria-label="Уведомления"
+        aria-label={t("bellAriaLabel")}
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => { setOpen((v) => !v); }}

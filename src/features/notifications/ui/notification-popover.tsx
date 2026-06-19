@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { RouterLink } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import { fetchNotifications, markAllSeen } from "../actions";
 import type { AppNotification } from "../types";
@@ -16,6 +17,7 @@ interface NotificationPopoverProps {
 }
 
 export function NotificationPopover({ onClose, onSeen }: NotificationPopoverProps) {
+  const t = useT("notifications");
   const [items, setItems] = useState<AppNotification[] | null>(null);
   const [error, setError] = useState(false);
 
@@ -41,29 +43,29 @@ export function NotificationPopover({ onClose, onSeen }: NotificationPopoverProp
   }, [onSeen]);
 
   return (
-    <div role="dialog" aria-label="Уведомления" className="absolute right-0 top-full z-50 mt-2 flex w-80 max-w-[90vw] flex-col rounded border border-(--color-border) bg-(--color-surface) shadow-lg">
+    <div role="dialog" aria-label={t("popoverAriaLabel")} className="absolute right-0 top-full z-50 mt-2 flex w-80 max-w-[90vw] flex-col rounded border border-(--color-border) bg-(--color-surface) shadow-lg">
       <div className="flex items-center justify-between border-b border-(--color-border) px-3 py-2">
-        <span className="text-sm font-semibold">Уведомления</span>
+        <span className="text-sm font-semibold">{t("popoverHeading")}</span>
         <RouterLink
           href="/me/notifications"
           className="text-xs text-(--color-link)"
           onClick={onClose}
         >
-          Все
+          {t("popoverViewAll")}
         </RouterLink>
       </div>
       <div className="flex max-h-96 flex-col overflow-y-auto p-1">
         {items === null && !error && (
-          <p className="px-3 py-4 text-sm text-(--color-fg-muted)">Загрузка…</p>
+          <p className="px-3 py-4 text-sm text-(--color-fg-muted)">{t("popoverLoading")}</p>
         )}
         {error && (
           <p className="px-3 py-4 text-sm text-(--color-fg-muted)">
-            Не удалось загрузить уведомления.
+            {t("popoverError")}
           </p>
         )}
         {items !== null && items.length === 0 && (
           <p className="px-3 py-4 text-sm text-(--color-fg-muted)">
-            Пока нет уведомлений.
+            {t("popoverEmpty")}
           </p>
         )}
         {items?.map((n) => (
