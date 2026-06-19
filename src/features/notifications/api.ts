@@ -82,43 +82,33 @@ export const getSubscriptions = cache(
 );
 
 /**
- * Подписан ли пользователь на документ. Interim: бэк не отдаёт `subscribed` в
- * detail документа — сканируем первую страницу подписок (limit 100). См.
- * backend-ask (Task 16): N+1 при большом числе подписок, деградирует мягко.
+ * Приватный хелпер: подписан ли пользователь на сущность данного типа.
+ * Interim: бэк не отдаёт `subscribed` в detail-ответах — сканируем первую
+ * страницу подписок (limit 100). Backend-ask (Task 16): N+1 при большом числе
+ * подписок, деградирует мягко → false.
  */
-export const getDocumentSubscription = cache(async (documentId: string): Promise<boolean> => {
-  try {
-    const api = await createApiClient();
-    const { data, error } = await api.GET("/api/me/subscriptions", {
-      params: { query: { offset: 0, limit: 100 } },
-    });
-    if (error) return false;
-    return (data.data ?? []).some(
-      (s) => s.target_type === "document" && s.target_id === documentId,
-    );
-  } catch {
-    // Сетевой сбой (fetch reject) — тоже мягкая деградация: показываем «Подписаться».
-    return false;
-  }
-});
+const getEntitySubscription = cache(
+  async (targetType: string, targetId: string): Promise<boolean> => {
+    try {
+      const api = await createApiClient();
+      const { data, error } = await api.GET("/api/me/subscriptions", {
+        params: { query: { offset: 0, limit: 100 } },
+      });
+      if (error) return false;
+      return (data.data ?? []).some(
+        (s) => s.target_type === targetType && s.target_id === targetId,
+      );
+    } catch {
+      // Сетевой сбой (fetch reject) — тоже мягкая деградация: показываем «Подписаться».
+      return false;
+    }
+  },
+);
 
-/**
- * Подписан ли пользователь на лекцию. Interim: бэк не отдаёт `subscribed` в
- * detail лекции — сканируем первую страницу подписок (limit 100). Аналогично
- * getDocumentSubscription, мягкая деградация при ошибке.
- */
-export const getLectureSubscription = cache(async (lectureId: string): Promise<boolean> => {
-  try {
-    const api = await createApiClient();
-    const { data, error } = await api.GET("/api/me/subscriptions", {
-      params: { query: { offset: 0, limit: 100 } },
-    });
-    if (error) return false;
-    return (data.data ?? []).some(
-      (s) => s.target_type === "lecture" && s.target_id === lectureId,
-    );
-  } catch {
-    // Сетевой сбой — мягкая деградация: показываем «Подписаться».
-    return false;
-  }
-});
+/** Подписан ли пользователь на документ. */
+export const getDocumentSubscription = (documentId: string): Promise<boolean> =>
+  getEntitySubscription("document", documentId);
+
+/** Подписан ли пользователь на лекцию. */
+export const getLectureSubscription = (lectureId: string): Promise<boolean> =>
+  getEntitySubscription("lecture", lectureId);

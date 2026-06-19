@@ -39,14 +39,11 @@ export default async function LecturePage({ params, searchParams }: Props) {
   ]);
   if (!lecture) notFound();
 
-  const subscribed = me && lecture.id
-    ? await getLectureSubscription(lecture.id)
-    : false;
-
   const canShare = canCreateShareLink(me, lecture);
-  const shareLinks = canShare
-    ? await getShareLinksFor("lecture", lecture.id)
-    : [];
+  const [subscribed, shareLinks] = await Promise.all([
+    me && lecture.id ? getLectureSubscription(lecture.id) : Promise.resolve(false),
+    canShare ? getShareLinksFor("lecture", lecture.id) : Promise.resolve([]),
+  ]);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
