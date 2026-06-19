@@ -15,20 +15,24 @@ import {
   canManageOwnHistory,
   getHistorySettings,
 } from "@/features/statistics";
+import { getStoredLocale } from "@/i18n";
 import { requireUserOrRedirect } from "@/utils/me";
 
 import { AppearanceSettings } from "./appearance/appearance-settings";
+import { LocaleSettings } from "./locale-settings";
 
 export const metadata = { title: "Настройки" };
 
 export default async function SettingsPage() {
   const me = await requireUserOrRedirect("/me/settings");
 
-  const [prefs, vapidPublicKey, historySettings] = await Promise.all([
-    getPreferences(),
-    getVapidKey(),
-    getHistorySettings(),
-  ]);
+  const [prefs, vapidPublicKey, historySettings, storedLocale] =
+    await Promise.all([
+      getPreferences(),
+      getVapidKey(),
+      getHistorySettings(),
+      getStoredLocale(),
+    ]);
   // reading_mode в schema.ts — string|undefined; сужаем с фоллбеком на
   // дефолт бекенда (internal/preference/model.go: DefaultPreferences).
   const readingMode: ReadingMode =
@@ -39,6 +43,11 @@ export default async function SettingsPage() {
       <h1 className="text-2xl font-bold">Настройки</h1>
 
       <AppearanceSettings />
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Язык интерфейса</h2>
+        <LocaleSettings initial={storedLocale} />
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Чтение</h2>
