@@ -39,6 +39,20 @@ const validation = {
     passwordConfirmMismatch: "Пароли не совпадают",
   },
 
+  // --- canvas: CanvasCreateSchema / CanvasUpdateSchema / CanvasIdSchema ---
+  canvas: {
+    titleRequired: "Введите название",
+    titleMax: "До 200 символов",
+    invalidId: "Некорректный id канваса",
+    badJson: "Битый JSON в данных графа",
+    graphInvalid: "Граф не прошёл валидацию",
+    etagMissing: "Отсутствует версия канваса (ETag) — обновите страницу.",
+    // CanvasDataSchema superRefine (node/edge structural errors)
+    duplicateNodeId: "Дубликат node.id \"{id}\"",
+    edgeFromNotFound: "Ребро \"{edgeId}\": from_node \"{nodeId}\" не найден",
+    edgeToNotFound: "Ребро \"{edgeId}\": to_node \"{nodeId}\" не найден",
+  },
+
   // --- comments: createComment / updateCommentBlocks form schemas ---
   comments: {
     invalidType: "Неизвестный тип комментария",

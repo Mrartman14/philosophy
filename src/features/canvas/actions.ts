@@ -3,7 +3,8 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { getT } from "@/i18n";
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import { createAction, createFormAction, parseFormData } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
@@ -12,33 +13,34 @@ import { revalidateEntity } from "@/utils/revalidate";
 
 import { canCreateCanvas } from "./permissions";
 import {
-  CanvasCreateSchema,
-  CanvasUpdateSchema,
-  CanvasVisibilitySchema,
-  CanvasIdSchema,
+  makeCanvasCreateSchema,
+  makeCanvasUpdateSchema,
+  makeCanvasVisibilitySchema,
+  makeCanvasIdSchema,
 } from "./schemas";
 import type { CanvasData } from "./types";
 
-/** Доменные коды canvas → русский текст. role-403/SUSPENDED/BANNED и REF_NOT_FOUND
- * обрабатывает централизованный `rethrowApiError`. VALIDATION_ERROR/BAD_REQUEST —
- * фиксированный текст (не `err.error ??`). */
-const ERRORS: ApiErrorMessages = {
-  PUBLIC_IMMUTABLE: "Публичный канвас нельзя сделать приватным.",
+/** Доменные коды canvas → ключ каталога `errors` (Case 2 i18n-миграции).
+ * role-403/SUSPENDED/BANNED и REF_NOT_FOUND обрабатывает централизованный
+ * `rethrowApiError`. VERSION_MISMATCH переопределяет generic DEFAULT_MESSAGES
+ * canvas-специфичным ключом. */
+const ERRORS: ApiErrorMessageKeys = {
+  PUBLIC_IMMUTABLE: "PUBLIC_IMMUTABLE",
   // optimistic lock: бек шлёт VERSION_MISMATCH (412) на устаревший If-Match.
   // Прежний generic PRECONDITION_FAILED для этого потока больше не эмитится.
-  VERSION_MISMATCH:
-    "Канвас изменён в другом месте — обновите страницу и повторите.",
-  PAYLOAD_TOO_LARGE: "Данные графа слишком большие (лимит 1 МиБ).",
-  REQUEST_BODY_TOO_LARGE: "Данные графа слишком большие (лимит 1 МиБ).",
-  VALIDATION_ERROR: "Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).",
-  BAD_REQUEST: "Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).",
+  VERSION_MISMATCH: "CANVAS_VERSION_MISMATCH",
+  PAYLOAD_TOO_LARGE: "CANVAS_PAYLOAD_TOO_LARGE",
+  REQUEST_BODY_TOO_LARGE: "CANVAS_PAYLOAD_TOO_LARGE",
+  VALIDATION_ERROR: "CANVAS_VALIDATION_ERROR",
+  BAD_REQUEST: "CANVAS_VALIDATION_ERROR",
 };
 
 /** POST /api/canvases (JSON). Гейт — canvas.create. */
 export const createCanvas = createFormAction(async (formData) => {
   const me = await getMe();
   requireCapability(me, canCreateCanvas);
-  const input = parseFormData(CanvasCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeCanvasCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/canvases", {
     body: {
@@ -66,10 +68,11 @@ export const createCanvas = createFormAction(async (formData) => {
 export const updateCanvas = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(CanvasUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeCanvasUpdateSchema(t), formData);
   const etag = formData.get("etag");
   if (typeof etag !== "string" || etag === "") {
-    throw new Error("Отсутствует версия канваса (ETag) — обновите страницу.");
+    throw new Error(t("canvas.etagMissing"));
   }
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/canvases/{id}", {
@@ -89,7 +92,8 @@ export const updateCanvas = createFormAction(async (formData) => {
 export const setCanvasVisibility = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(CanvasVisibilitySchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeCanvasVisibilitySchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/canvases/{id}/visibility", {
     params: { path: { id: input.id } },
@@ -105,7 +109,8 @@ export const setCanvasVisibility = createFormAction(async (formData) => {
 export const deleteCanvas = createAction(async (rawId: string) => {
   const me = await getMe();
   requireActive(me);
-  const { id } = CanvasIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeCanvasIdSchema(t).parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/canvases/{id}", { params: { path: { id } } });
   if (error) rethrowApiError(error, ERRORS);

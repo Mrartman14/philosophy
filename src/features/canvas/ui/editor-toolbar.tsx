@@ -1,6 +1,7 @@
 "use client";
 // src/features/canvas/ui/editor-toolbar.tsx
 import { Button } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import type { EditorCommand } from "../editor";
 
@@ -26,38 +27,40 @@ export function EditorToolbar({
   dispatch, canUndo, canRedo, dirty, gridEnabled, saving, showJson, hasSelection,
   onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson, onBack,
 }: Props) {
+  const t = useT("canvas");
+
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-(--color-border) p-2">
-      <Button type="button" size="sm" variant="ghost" onClick={onBack}>← Назад</Button>
+      <Button type="button" size="sm" variant="ghost" onClick={onBack}>{t("toolbar.back")}</Button>
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
 
-      <Button type="button" size="sm" onClick={onAddText}>Текст</Button>
-      <Button type="button" size="sm" onClick={() => { onAddShape("rect"); }}>Прямоуг.</Button>
-      <Button type="button" size="sm" onClick={() => { onAddShape("ellipse"); }}>Эллипс</Button>
-      <Button type="button" size="sm" onClick={() => { onAddShape("diamond"); }}>Ромб</Button>
-      <Button type="button" size="sm" onClick={onAddEntityRef}>Ссылка</Button>
+      <Button type="button" size="sm" onClick={onAddText}>{t("toolbar.addText")}</Button>
+      <Button type="button" size="sm" onClick={() => { onAddShape("rect"); }}>{t("toolbar.addRect")}</Button>
+      <Button type="button" size="sm" onClick={() => { onAddShape("ellipse"); }}>{t("toolbar.addEllipse")}</Button>
+      <Button type="button" size="sm" onClick={() => { onAddShape("diamond"); }}>{t("toolbar.addDiamond")}</Button>
+      <Button type="button" size="sm" onClick={onAddEntityRef}>{t("toolbar.addLink")}</Button>
 
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
       <Button type="button" size="sm" variant="danger" disabled={!hasSelection} onClick={() => { dispatch({ type: "deleteSelection" }); }}>
-        Удалить
+        {t("toolbar.deleteSelected")}
       </Button>
 
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
-      <Button type="button" size="sm" variant="ghost" disabled={!canUndo} onClick={() => { dispatch({ type: "undo" }); }} aria-label="Отменить">↶</Button>
-      <Button type="button" size="sm" variant="ghost" disabled={!canRedo} onClick={() => { dispatch({ type: "redo" }); }} aria-label="Повторить">↷</Button>
+      <Button type="button" size="sm" variant="ghost" disabled={!canUndo} onClick={() => { dispatch({ type: "undo" }); }} aria-label={t("toolbar.undoAriaLabel")}>↶</Button>
+      <Button type="button" size="sm" variant="ghost" disabled={!canRedo} onClick={() => { dispatch({ type: "redo" }); }} aria-label={t("toolbar.redoAriaLabel")}>↷</Button>
 
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
       <Button type="button" size="sm" variant={gridEnabled ? "primary" : "ghost"} onClick={() => { dispatch({ type: "toggleGrid" }); }}>
-        Сетка
+        {t("toolbar.grid")}
       </Button>
       <Button type="button" size="sm" variant="ghost" onClick={onToggleJson}>
-        {showJson ? "Холст" : "JSON"}
+        {showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")}
       </Button>
 
       <span className="ml-auto flex items-center gap-2">
-        {dirty && <span className="text-xs text-(--color-fg-muted)">Есть несохранённые изменения</span>}
+        {dirty && <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>}
         <Button type="button" size="sm" variant="primary" disabled={saving || !dirty} onClick={onSave}>
-          {saving ? "Сохранение…" : "Сохранить"}
+          {saving ? t("toolbar.saving") : t("toolbar.save")}
         </Button>
       </span>
     </div>

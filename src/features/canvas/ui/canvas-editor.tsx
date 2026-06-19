@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "r
 
 import type { Point, RenderNode, Side } from "@/components/canvas-render";
 import { useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCanvas } from "../actions";
@@ -49,6 +50,8 @@ const INITIAL_SAVE_STATE: ActionResult<Canvas | null> = { success: true, data: n
 export function CanvasEditor({ canvas, etag }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("canvas");
+  const tErrors = useT("errors");
   const [state, rawDispatch] = useReducer(canvasReducer, canvas.data ?? { nodes: [], edges: [] }, initEditorState);
   const dispatch = useCallback((c: EditorCommand) => { rawDispatch(c); }, []);
 
@@ -262,7 +265,10 @@ export function CanvasEditor({ canvas, etag }: Props) {
     if (!validation.ok) {
       const first = validation.errors[0];
       if (first?.nodeId) setInvalidNodeId(first.nodeId);
-      toast.add({ title: "Граф не прошёл проверку", description: first?.message ?? "Исправьте ошибки." });
+      toast.add({
+        title: t("editor.toastValidationTitle"),
+        description: first?.message ?? t("editor.toastValidationFallback"),
+      });
       return;
     }
     setSaving(true);
@@ -274,20 +280,23 @@ export function CanvasEditor({ canvas, etag }: Props) {
     const result = await updateCanvas(INITIAL_SAVE_STATE, fd);
     setSaving(false);
     if (result.success) {
-      toast.add({ title: "Сохранено" });
+      toast.add({ title: t("editor.toastSavedTitle") });
       dispatch({ type: "markSaved", data: state.data });
       router.refresh();
     } else {
       // серверная 400 по entity_ref-видимости: пытаемся вытащить node id из текста
       const m = /node(?:\sid)?\s+"([^"]+)"/.exec(result.error);
       if (m?.[1]) setInvalidNodeId(m[1]);
-      const msg = result.code === "forbidden" ? "У вас нет прав на изменение канваса." : result.error;
-      toast.add({ title: "Ошибка сохранения", description: msg });
+      const msg =
+        result.code === "forbidden"
+          ? tErrors("forbiddenAction", { action: t("editor.forbiddenUpdate") })
+          : result.error;
+      toast.add({ title: t("editor.toastSaveErrorTitle"), description: msg });
     }
   };
 
   const onBack = () => {
-    if (state.dirty && !window.confirm("Есть несохранённые изменения. Уйти без сохранения?")) return;
+    if (state.dirty && !window.confirm(t("editor.confirmLeave"))) return;
     router.push(`/canvases/${canvas.id}`);
   };
 
@@ -341,7 +350,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
         {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
         <div
           role="application"
-          aria-label="Редактор холста"
+          aria-label={t("editor.ariaLabel")}
           className="relative flex-1"
           style={{ height: "70vh" }}
           // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex

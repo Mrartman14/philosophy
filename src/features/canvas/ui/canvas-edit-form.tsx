@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import { Form, FormField, TextInput, Textarea, SubmitButton, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCanvas } from "../actions";
@@ -31,15 +32,20 @@ interface Props {
 export function CanvasEditForm({ canvas, etag }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("canvas");
+  const tErrors = useT("errors");
   const [state, action] = useActionState(updateCanvas, initial);
 
   useEffect(() => {
     if (state.success && state.data) {
-      toast.add({ title: "Сохранено" });
+      toast.add({ title: t("editForm.toastSavedTitle") });
       router.refresh();
     } else if (!state.success && state.code !== "validation") {
-      const msg = state.code === "forbidden" ? "У вас нет прав на изменение канваса." : state.error;
-      toast.add({ title: "Ошибка", description: msg });
+      const msg =
+        state.code === "forbidden"
+          ? tErrors("forbiddenAction", { action: t("editForm.forbiddenUpdate") })
+          : state.error;
+      toast.add({ title: t("editForm.toastErrorTitle"), description: msg });
     }
     // state — единственный триггер; toast/router стабильны
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,13 +58,13 @@ export function CanvasEditForm({ canvas, etag }: Props) {
     <Form action={action} errors={fieldErrors}>
       <input type="hidden" name="id" value={canvas.id ?? ""} />
       <input type="hidden" name="etag" value={etag ?? ""} />
-      <FormField name="title" label="Название" required>
+      <FormField name="title" label={t("editForm.titleLabel")} required>
         <TextInput name="title" defaultValue={canvas.title ?? ""} required />
       </FormField>
-      <FormField name="data" label="Данные графа (JSON)">
+      <FormField name="data" label={t("editForm.dataLabel")}>
         <Textarea name="data" rows={14} defaultValue={dataJson} className="font-mono text-xs" />
       </FormField>
-      <SubmitButton>Сохранить</SubmitButton>
+      <SubmitButton>{t("editForm.submitSave")}</SubmitButton>
     </Form>
   );
 }

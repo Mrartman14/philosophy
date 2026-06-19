@@ -1,0 +1,167 @@
+// src/i18n/messages/ru/canvas.ts
+// UI-строки фичи canvas. Клиентские компоненты используют useT("canvas"),
+// серверные — await getT("canvas").
+const canvas = {
+  // --- canvas-create-form ---
+  createForm: {
+    titleLabel: "Название",
+    visibilityLabel: "Видимость",
+    dataLabel: "Данные графа (JSON, необязательно)",
+    dataDescription: 'Например: {"nodes":[],"edges":[]}',
+    visibilityPrivate: "Приватный",
+    visibilityPublic: "Публичный",
+    submitCreate: "Создать",
+    toastCreatedTitle: "Канвас создан",
+    toastErrorTitle: "Ошибка",
+  },
+
+  // --- canvas-edit-form ---
+  editForm: {
+    titleLabel: "Название",
+    dataLabel: "Данные графа (JSON)",
+    submitSave: "Сохранить",
+    toastSavedTitle: "Сохранено",
+    toastErrorTitle: "Ошибка",
+    forbiddenUpdate: "изменение канваса",
+  },
+
+  // --- canvas-delete-button ---
+  deleteButton: {
+    trigger: "Удалить",
+    title: "Удалить канвас?",
+    description: "Действие необратимо.",
+    confirmLabel: "Удалить",
+    toastDeletedTitle: "Канвас удалён",
+    forbiddenDelete: "удаление канваса",
+  },
+
+  // --- canvas-visibility-button ---
+  visibilityButton: {
+    makePublic: "Сделать публичным",
+    toastPublishedTitle: "Канвас опубликован",
+    toastErrorTitle: "Ошибка",
+    forbiddenVisibility: "изменение видимости канваса",
+  },
+
+  // --- canvas-editor ---
+  editor: {
+    ariaLabel: "Редактор холста",
+    toastValidationTitle: "Граф не прошёл проверку",
+    toastValidationFallback: "Исправьте ошибки.",
+    toastSavedTitle: "Сохранено",
+    toastSaveErrorTitle: "Ошибка сохранения",
+    forbiddenUpdate: "изменение канваса",
+    confirmLeave: "Есть несохранённые изменения. Уйти без сохранения?",
+  },
+
+  // --- editor-toolbar ---
+  toolbar: {
+    back: "← Назад",
+    addText: "Текст",
+    addRect: "Прямоуг.",
+    addEllipse: "Эллипс",
+    addDiamond: "Ромб",
+    addLink: "Ссылка",
+    deleteSelected: "Удалить",
+    undoAriaLabel: "Отменить",
+    redoAriaLabel: "Повторить",
+    grid: "Сетка",
+    showCanvas: "Холст",
+    showJson: "JSON",
+    unsavedChanges: "Есть несохранённые изменения",
+    saving: "Сохранение…",
+    save: "Сохранить",
+  },
+
+  // --- editor-inspector ---
+  inspector: {
+    emptyHint: "Выберите узел или ребро.",
+    nodeHeading: "Узел: {type}",
+    shapeLabel: "Фигура",
+    shapeAriaLabel: "Фигура",
+    shapeRect: "Прямоугольник",
+    shapeEllipse: "Эллипс",
+    shapeDiamond: "Ромб",
+    widthLabel: "Ширина",
+    heightLabel: "Высота",
+    edgeHeading: "Ребро",
+    edgeCaptionLabel: "Подпись",
+    edgeStyleLabel: "Стиль",
+    edgeStyleAriaLabel: "Стиль",
+    edgeStyleSolid: "Сплошная",
+    edgeStyleDashed: "Пунктир",
+    edgeEndLabel: "Конец",
+    edgeEndAriaLabel: "Конец",
+    edgeEndArrow: "Стрелка",
+    edgeEndNone: "Без стрелки",
+    edgeFromSideLabel: "От стороны",
+    edgeFromSideAriaLabel: "От стороны",
+    edgeToSideLabel: "К стороне",
+    edgeToSideAriaLabel: "К стороне",
+    sideAuto: "авто",
+    sideTop: "сверху",
+    sideRight: "справа",
+    sideBottom: "снизу",
+    sideLeft: "слева",
+  },
+
+  // --- entity-ref-dialog ---
+  entityRefDialog: {
+    title: "Добавить ссылку на сущность",
+    typeLabel: "Тип сущности",
+    typeAriaLabel: "Тип сущности",
+    idLabel: "ID сущности (UUID)",
+    addButton: "Добавить",
+    typeDocument: "Документ",
+    typeLecture: "Лекция",
+    typeGlossary: "Глоссарий",
+    typeMedia: "Медиа",
+    typeCanvas: "Канвас",
+    typeComment: "Комментарий",
+    typeAnnotation: "Аннотация",
+    typeForm: "Форма",
+    typeBanner: "Баннер",
+    typeEvent: "Событие",
+  },
+
+  // --- canvas-my-list ---
+  myList: {
+    empty: "Канвасов пока нет.",
+    untitled: "Без названия",
+    visibilityPublic: "публичный",
+    visibilityPrivate: "приватный",
+  },
+
+  // --- canvas-containers ---
+  containers: {
+    title: "Включён в лекции",
+    emptyText: "Канвас не включён ни в одну лекцию.",
+    lectureLabel: "Лекция {id}",
+  },
+
+  // --- canvas-revisions ---
+  revisions: {
+    versionLabel: "Версия {num}",
+  },
+
+  // --- canvas-search ---
+  search: {
+    placeholder: "Поиск по названию",
+    submit: "Найти",
+  },
+
+  // --- forbidden actions (for Case 3 per-feature action strings) ---
+  // These are passed as {action} in errors.forbiddenAction
+  forbiddenCreateAction: "создание канваса",
+
+  // --- api.ts: fetch error messages (thrown to React error boundary) ---
+  api: {
+    loadCanvasesFailed: "Не удалось загрузить канвасы",
+    loadCanvasFailed: "Не удалось загрузить канвас",
+    loadRevisionsFailed: "Не удалось загрузить ревизии",
+    loadRevisionFailed: "Не удалось загрузить ревизию",
+    loadContainersFailed: "Не удалось загрузить привязки",
+  },
+};
+
+export default canvas;

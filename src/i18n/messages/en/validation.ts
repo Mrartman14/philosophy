@@ -36,6 +36,20 @@ const validation = {
     passwordConfirmMismatch: "Passwords do not match",
   },
 
+  // --- canvas: CanvasCreateSchema / CanvasUpdateSchema / CanvasIdSchema ---
+  canvas: {
+    titleRequired: "Enter a title",
+    titleMax: "Up to 200 characters",
+    invalidId: "Invalid canvas ID",
+    badJson: "Invalid JSON in graph data",
+    graphInvalid: "Graph failed validation",
+    etagMissing: "Canvas version (ETag) is missing — refresh the page.",
+    // CanvasDataSchema superRefine (node/edge structural errors)
+    duplicateNodeId: "Duplicate node.id \"{id}\"",
+    edgeFromNotFound: "Edge \"{edgeId}\": from_node \"{nodeId}\" not found",
+    edgeToNotFound: "Edge \"{edgeId}\": to_node \"{nodeId}\" not found",
+  },
+
   // --- comments: createComment / updateCommentBlocks form schemas ---
   comments: {
     invalidType: "Unknown comment type",

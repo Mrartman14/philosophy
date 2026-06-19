@@ -39,6 +39,14 @@ const errors = {
   BLOCKS_HAVE_ANCHORS_COMMENT:
     "Other comments are anchored to this comment's blocks. Detach them first.",
 
+  // --- canvas slice: domain codes ---
+  PUBLIC_IMMUTABLE: "A public canvas cannot be made private.",
+  CANVAS_VERSION_MISMATCH:
+    "The canvas was changed elsewhere — refresh the page and try again.",
+  CANVAS_PAYLOAD_TOO_LARGE: "Graph data is too large (limit 1 MiB).",
+  CANVAS_VALIDATION_ERROR:
+    "Graph failed validation (nodes/edges/entity references).",
+
   // --- api-error: rethrowApiError fallbacks ---
   serverError: "Server error",
   accountRestricted: "Account restricted.",

@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
@@ -49,7 +50,11 @@ export const getCanvases = cache(
     const query: { offset: number; limit: number; q?: string } = { offset, limit };
     if (filter.q) query.q = filter.q;
     const { data, error } = await api.GET("/api/canvases", { params: { query } });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить канвасы");
+    if (error) {
+      if (error.error) throw new Error(error.error);
+      const t = await getT("canvas");
+      throw new Error(t("api.loadCanvasesFailed"));
+    }
     return unwrapList(data, { offset, limit });
   },
 );
@@ -72,7 +77,11 @@ export const getCanvasById = cache(
       params: { path: { id }, query },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить канвас");
+    if (error) {
+      if (error.error) throw new Error(error.error);
+      const t = await getT("canvas");
+      throw new Error(t("api.loadCanvasFailed"));
+    }
     const canvas = unwrap(data);
     if (!canvas) return null;
     return { canvas, etag: response.headers.get("ETag") };
@@ -91,7 +100,11 @@ export const getCanvasRevisions = cache(
     const { data, error } = await api.GET("/api/canvases/{id}/revisions", {
       params: { path: { id }, query },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
+    if (error) {
+      if (error.error) throw new Error(error.error);
+      const t = await getT("canvas");
+      throw new Error(t("api.loadRevisionsFailed"));
+    }
     return unwrap(data) ?? [];
   },
 );
@@ -106,7 +119,11 @@ export const getCanvasRevision = cache(
       params: { path: { id, rev }, query },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
+    if (error) {
+      if (error.error) throw new Error(error.error);
+      const t = await getT("canvas");
+      throw new Error(t("api.loadRevisionFailed"));
+    }
     return unwrap(data);
   },
 );
@@ -120,7 +137,11 @@ export const getCanvasContainers = cache(
     const { data, error } = await api.GET("/api/canvases/{id}/attachments", {
       params: { path: { id }, query },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить привязки");
+    if (error) {
+      if (error.error) throw new Error(error.error);
+      const t = await getT("canvas");
+      throw new Error(t("api.loadContainersFailed"));
+    }
     return unwrap(data) ?? [];
   },
 );

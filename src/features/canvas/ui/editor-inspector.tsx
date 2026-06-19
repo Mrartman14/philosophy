@@ -1,17 +1,10 @@
 "use client";
 // src/features/canvas/ui/editor-inspector.tsx
 import { Select, TextInput } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import type { EditorCommand, Side } from "../editor";
 import type { CanvasData } from "../types";
-
-const SIDE_OPTIONS: { value: string; label: string }[] = [
-  { value: "", label: "авто" },
-  { value: "top", label: "сверху" },
-  { value: "right", label: "справа" },
-  { value: "bottom", label: "снизу" },
-  { value: "left", label: "слева" },
-];
 
 interface Props {
   data: CanvasData;
@@ -36,11 +29,21 @@ function sidesCommand(edgeId: string, fromSide: Side | undefined, toSide: Side |
  * стороны. При множественном/пустом выделении показывает подсказку.
  */
 export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispatch }: Props) {
+  const t = useT("canvas");
+
+  const sideOptions = [
+    { value: "", label: t("inspector.sideAuto") },
+    { value: "top", label: t("inspector.sideTop") },
+    { value: "right", label: t("inspector.sideRight") },
+    { value: "bottom", label: t("inspector.sideBottom") },
+    { value: "left", label: t("inspector.sideLeft") },
+  ];
+
   const node = selectedNodeIds.length === 1 ? (data.nodes ?? []).find((n) => n.id === selectedNodeIds[0]) : undefined;
   const edge = selectedEdgeIds.length === 1 ? (data.edges ?? []).find((e) => e.id === selectedEdgeIds[0]) : undefined;
 
   if (!node && !edge) {
-    return <p className="text-sm text-(--color-fg-muted)">Выберите узел или ребро.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{t("inspector.emptyHint")}</p>;
   }
 
   if (node) {
@@ -48,26 +51,26 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
     if (!nodeId) return null;
     return (
       <div className="flex flex-col gap-3">
-        <h3 className="text-sm font-semibold">Узел: {node.type}</h3>
+        <h3 className="text-sm font-semibold">{t("inspector.nodeHeading", { type: node.type ?? "" })}</h3>
         {node.type === "shape" && (
           <div className="flex flex-col gap-1 text-sm">
-            Фигура
+            {t("inspector.shapeLabel")}
             <Select
               name="shape_kind"
-              aria-label="Фигура"
+              aria-label={t("inspector.shapeAriaLabel")}
               value={node.shape_kind ?? "rect"}
               onValueChange={(v) => { dispatch({ type: "setShapeKind", nodeId, shapeKind: v as "rect" | "ellipse" | "diamond" }); }}
               options={[
-                { value: "rect", label: "Прямоугольник" },
-                { value: "ellipse", label: "Эллипс" },
-                { value: "diamond", label: "Ромб" },
+                { value: "rect", label: t("inspector.shapeRect") },
+                { value: "ellipse", label: t("inspector.shapeEllipse") },
+                { value: "diamond", label: t("inspector.shapeDiamond") },
               ]}
             />
           </div>
         )}
         <div className="flex gap-2">
           <label htmlFor="inspector-node-width" className="flex flex-1 flex-col gap-1 text-sm">
-            Ширина
+            {t("inspector.widthLabel")}
             <TextInput
               id="inspector-node-width"
               type="number"
@@ -76,7 +79,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
             />
           </label>
           <label htmlFor="inspector-node-height" className="flex flex-1 flex-col gap-1 text-sm">
-            Высота
+            {t("inspector.heightLabel")}
             <TextInput
               id="inspector-node-height"
               type="number"
@@ -96,7 +99,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
 
   // We know edge is defined here: the !node && !edge guard above returned early.
   if (!edge) {
-    return <p className="text-sm text-(--color-fg-muted)">Выберите узел или ребро.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{t("inspector.emptyHint")}</p>;
   }
 
   const edgeId = edge.id;
@@ -105,9 +108,9 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
   const sideValue = (s: Side | undefined) => s ?? "";
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold">Ребро</h3>
+      <h3 className="text-sm font-semibold">{t("inspector.edgeHeading")}</h3>
       <label htmlFor="inspector-edge-label" className="flex flex-col gap-1 text-sm">
-        Подпись
+        {t("inspector.edgeCaptionLabel")}
         <TextInput
           id="inspector-edge-label"
           value={edge.label ?? ""}
@@ -116,44 +119,44 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
         />
       </label>
       <div className="flex flex-col gap-1 text-sm">
-        Стиль
+        {t("inspector.edgeStyleLabel")}
         <Select
           name="style"
-          aria-label="Стиль"
+          aria-label={t("inspector.edgeStyleAriaLabel")}
           value={edge.style ?? "solid"}
           onValueChange={(v) => { dispatch({ type: "setEdgeStyle", edgeId, style: v as "solid" | "dashed" }); }}
-          options={[{ value: "solid", label: "Сплошная" }, { value: "dashed", label: "Пунктир" }]}
+          options={[{ value: "solid", label: t("inspector.edgeStyleSolid") }, { value: "dashed", label: t("inspector.edgeStyleDashed") }]}
         />
       </div>
       <div className="flex flex-col gap-1 text-sm">
-        Конец
+        {t("inspector.edgeEndLabel")}
         <Select
           name="end"
-          aria-label="Конец"
+          aria-label={t("inspector.edgeEndAriaLabel")}
           value={edge.end ?? "arrow"}
           onValueChange={(v) => { dispatch({ type: "setEdgeEnd", edgeId, end: v as "none" | "arrow" }); }}
-          options={[{ value: "arrow", label: "Стрелка" }, { value: "none", label: "Без стрелки" }]}
+          options={[{ value: "arrow", label: t("inspector.edgeEndArrow") }, { value: "none", label: t("inspector.edgeEndNone") }]}
         />
       </div>
       <div className="flex gap-2">
         <div className="flex flex-1 flex-col gap-1 text-sm">
-          От стороны
+          {t("inspector.edgeFromSideLabel")}
           <Select
             name="from_side"
-            aria-label="От стороны"
+            aria-label={t("inspector.edgeFromSideAriaLabel")}
             value={sideValue(edge.from_side)}
             onValueChange={(v) => { dispatch(sidesCommand(edgeId, (v || undefined) as Side | undefined, edge.to_side)); }}
-            options={SIDE_OPTIONS}
+            options={sideOptions}
           />
         </div>
         <div className="flex flex-1 flex-col gap-1 text-sm">
-          К стороне
+          {t("inspector.edgeToSideLabel")}
           <Select
             name="to_side"
-            aria-label="К стороне"
+            aria-label={t("inspector.edgeToSideAriaLabel")}
             value={sideValue(edge.to_side)}
             onValueChange={(v) => { dispatch(sidesCommand(edgeId, edge.from_side, (v || undefined) as Side | undefined)); }}
-            options={SIDE_OPTIONS}
+            options={sideOptions}
           />
         </div>
       </div>

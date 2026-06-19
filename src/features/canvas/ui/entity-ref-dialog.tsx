@@ -8,22 +8,9 @@ import { GlossaryPicker } from "@/components/ast-editor/pickers/glossary-picker"
 import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
 import { MediaPicker } from "@/components/ast-editor/pickers/media-picker";
 import { Dialog, Select, TextInput, Button } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import type { CanvasRefEntityType } from "../types";
-
-/** Все 10 типов entity_ref (порядок UI). */
-const ENTITY_TYPES: { value: CanvasRefEntityType; label: string }[] = [
-  { value: "document", label: "Документ" },
-  { value: "lecture", label: "Лекция" },
-  { value: "glossary", label: "Глоссарий" },
-  { value: "media", label: "Медиа" },
-  { value: "canvas", label: "Канвас" },
-  { value: "comment", label: "Комментарий" },
-  { value: "annotation", label: "Аннотация" },
-  { value: "form", label: "Форма" },
-  { value: "banner", label: "Баннер" },
-  { value: "event", label: "Событие" },
-];
 
 /** Типы с готовым AsyncCombobox-пикером. Остальные — ручной ввод id. */
 const PICKER_TYPES = new Set(["document", "lecture", "glossary", "media", "canvas"]);
@@ -45,10 +32,25 @@ interface Props {
  * Колбэк onOpenChange(false) ⇒ закрытие.
  */
 export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
+  const t = useT("canvas");
   const [entityType, setEntityType] = useState<CanvasRefEntityType>("document");
   const [manualId, setManualId] = useState("");
 
   const usePicker = PICKER_TYPES.has(entityType);
+
+  /** Все 10 типов entity_ref (порядок UI). */
+  const entityTypes: { value: CanvasRefEntityType; label: string }[] = [
+    { value: "document", label: t("entityRefDialog.typeDocument") },
+    { value: "lecture", label: t("entityRefDialog.typeLecture") },
+    { value: "glossary", label: t("entityRefDialog.typeGlossary") },
+    { value: "media", label: t("entityRefDialog.typeMedia") },
+    { value: "canvas", label: t("entityRefDialog.typeCanvas") },
+    { value: "comment", label: t("entityRefDialog.typeComment") },
+    { value: "annotation", label: t("entityRefDialog.typeAnnotation") },
+    { value: "form", label: t("entityRefDialog.typeForm") },
+    { value: "banner", label: t("entityRefDialog.typeBanner") },
+    { value: "event", label: t("entityRefDialog.typeEvent") },
+  ];
 
   const reset = () => {
     setManualId("");
@@ -63,17 +65,17 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
     <Dialog
       open={open}
       onOpenChange={(next) => { if (!next) reset(); }}
-      title="Добавить ссылку на сущность"
+      title={t("entityRefDialog.title")}
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1 text-sm">
-          Тип сущности
+          {t("entityRefDialog.typeLabel")}
           <Select
             name="entity_type"
-            aria-label="Тип сущности"
+            aria-label={t("entityRefDialog.typeAriaLabel")}
             value={entityType}
             onValueChange={(v) => { setEntityType(v as CanvasRefEntityType); }}
-            options={ENTITY_TYPES}
+            options={entityTypes}
           />
         </div>
 
@@ -88,7 +90,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
         ) : (
           <div className="flex flex-col gap-2">
             <label htmlFor="entity_id" className="flex flex-col gap-1 text-sm">
-              ID сущности (UUID)
+              {t("entityRefDialog.idLabel")}
               <TextInput
                 id="entity_id"
                 name="entity_id"
@@ -102,7 +104,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
               disabled={manualId.trim() === ""}
               onClick={() => { if (manualId.trim()) pick(manualId.trim()); }}
             >
-              Добавить
+              {t("entityRefDialog.addButton")}
             </Button>
           </div>
         )}

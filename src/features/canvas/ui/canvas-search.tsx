@@ -5,11 +5,13 @@ import { type FormEvent } from "react";
 
 import { Button, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
+import { useT } from "@/i18n/client";
 
 /** Поиск по title через ?q=. Сбрасывает offset при изменении запроса. */
 export function CanvasSearch() {
   const searchParams = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
+  const t = useT("canvas");
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,9 +27,9 @@ export function CanvasSearch() {
 
   return (
     <form onSubmit={onSubmit} className="flex items-center gap-2">
-      <TextInput name="q" defaultValue={searchParams.get("q") ?? ""} placeholder="Поиск по названию" />
+      <TextInput name="q" defaultValue={searchParams.get("q") ?? ""} placeholder={t("search.placeholder")} />
       <Button type="submit" disabled={pending}>
-        {pending ? "…" : "Найти"}
+        {pending ? "…" : t("search.submit")}
       </Button>
     </form>
   );

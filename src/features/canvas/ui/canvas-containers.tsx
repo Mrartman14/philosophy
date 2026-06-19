@@ -1,6 +1,7 @@
 // src/features/canvas/ui/canvas-containers.tsx
 import { AttachmentsPanel } from "@/components/attachments";
 import type { AttachmentItem } from "@/components/attachments";
+import { getT } from "@/i18n";
 
 import { getCanvasContainers } from "../api";
 
@@ -15,13 +16,14 @@ interface Props {
  * со ссылкой на лекцию.
  */
 export async function CanvasContainers({ canvasId, token }: Props) {
+  const t = await getT("canvas");
   const dtos = await getCanvasContainers(canvasId, token);
   const items: AttachmentItem[] = dtos.flatMap((d) =>
     d.container_id
       ? [
           {
             id: d.container_id,
-            label: `Лекция ${d.container_id}`,
+            label: t("containers.lectureLabel", { id: d.container_id }),
             sortOrder: d.sort_order ?? 0,
             href: `/lectures/${d.container_id}`,
             ...(d.entity_type ? { entityType: d.entity_type } : {}),
@@ -31,9 +33,9 @@ export async function CanvasContainers({ canvasId, token }: Props) {
   );
   return (
     <AttachmentsPanel
-      title="Включён в лекции"
+      title={t("containers.title")}
       items={items}
-      emptyText="Канвас не включён ни в одну лекцию."
+      emptyText={t("containers.emptyText")}
     />
   );
 }

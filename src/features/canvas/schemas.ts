@@ -10,6 +10,7 @@ import {
   CANVAS_EDGE_ENDS,
   CANVAS_REF_ENTITY_TYPES,
 } from "@/api/enums";
+import type { NamespaceT } from "@/i18n";
 
 /**
  * Zod-зеркало canvas-графа. Источник истины — philosophy-api
@@ -66,29 +67,48 @@ const EdgeSchema = z.object({
   end: z.enum(CANVAS_EDGE_ENDS).optional(),
 });
 
+type ValidationT = NamespaceT<"validation">;
+
 /** Полная структурная валидация графа (зеркало ValidateData). */
-export const CanvasDataSchema = z
-  .object({
-    nodes: z.array(NodeSchema).max(MAX_NODES),
-    edges: z.array(EdgeSchema).max(MAX_EDGES),
-  })
-  .superRefine((d, ctx) => {
-    const ids = new Set<string>();
-    for (const n of d.nodes) {
-      if (ids.has(n.id)) {
-        ctx.addIssue({ code: "custom", message: `Дубликат node.id "${n.id}"` });
+export function makeCanvasDataSchema(t: ValidationT) {
+  return z
+    .object({
+      nodes: z.array(NodeSchema).max(MAX_NODES),
+      edges: z.array(EdgeSchema).max(MAX_EDGES),
+    })
+    .superRefine((d, ctx) => {
+      const ids = new Set<string>();
+      for (const n of d.nodes) {
+        if (ids.has(n.id)) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("canvas.duplicateNodeId", { id: n.id }),
+          });
+        }
+        ids.add(n.id);
       }
-      ids.add(n.id);
-    }
-    for (const e of d.edges) {
-      if (!ids.has(e.from_node)) {
-        ctx.addIssue({ code: "custom", message: `Ребро "${e.id}": from_node "${e.from_node}" не найден` });
+      for (const e of d.edges) {
+        if (!ids.has(e.from_node)) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("canvas.edgeFromNotFound", { edgeId: e.id, nodeId: e.from_node }),
+          });
+        }
+        if (!ids.has(e.to_node)) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("canvas.edgeToNotFound", { edgeId: e.id, nodeId: e.to_node }),
+          });
+        }
       }
-      if (!ids.has(e.to_node)) {
-        ctx.addIssue({ code: "custom", message: `Ребро "${e.id}": to_node "${e.to_node}" не найден` });
-      }
-    }
-  });
+    });
+}
+
+/** Вариант без переводчика для тестов и server-only контекстов без request-scope.
+ * Используй `makeCanvasDataSchema(t)` в production-коде (actions). */
+export const CanvasDataSchema = makeCanvasDataSchema(
+  ((key: string) => key) as unknown as ValidationT,
+);
 
 export type CanvasDataInput = z.infer<typeof CanvasDataSchema>;
 
@@ -101,61 +121,83 @@ export type ParseDataResult =
  * Возвращает discriminated result (не бросает) — удобно для preview-валидации
  * в client-форме и для schemas в actions.
  */
-export function parseCanvasDataJson(raw: string): ParseDataResult {
+export function parseCanvasDataJson(raw: string, t?: ValidationT): ParseDataResult {
   const trimmed = raw.trim();
   if (trimmed === "") return { ok: true, data: { nodes: [], edges: [] } };
   let parsed: unknown;
   try {
     parsed = JSON.parse(trimmed);
   } catch {
-    return { ok: false, error: "Битый JSON в данных графа" };
+    return {
+      ok: false,
+      error: t ? t("canvas.badJson") : "canvas.badJson",
+    };
   }
-  const result = CanvasDataSchema.safeParse(parsed);
+  const schema = t ? makeCanvasDataSchema(t) : CanvasDataSchema;
+  const result = schema.safeParse(parsed);
   if (!result.success) {
     const first = result.error.issues[0];
-    return { ok: false, error: first?.message ?? "Граф не прошёл валидацию" };
+    return {
+      ok: false,
+      error: first?.message ?? (t ? t("canvas.graphInvalid") : "canvas.graphInvalid"),
+    };
   }
   return { ok: true, data: result.data };
 }
 
-/** Transform-обёртка: JSON-строка data → CanvasData (для FormData-схем). */
-const DataJsonField = z.string().optional().transform((s, ctx) => {
-  const result = parseCanvasDataJson(s ?? "");
-  if (!result.ok) {
-    ctx.addIssue({ code: "custom", message: result.error });
-    return z.NEVER;
-  }
-  return result.data;
-});
-
-const TitleSchema = z.string().trim().min(1, "Введите название").max(200, "До 200 символов");
-const VisibilityEnum = z.enum(VISIBILITY);
-const UuidSchema = z.uuid("Некорректный id канваса");
+/** Transform-обёртка: JSON-строка data → CanvasData (для FormData-схем).
+ * Принимает переводчик для локализованных ошибок валидации. */
+function makeDataJsonField(t: ValidationT) {
+  return z.string().optional().transform((s, ctx) => {
+    const result = parseCanvasDataJson(s ?? "", t);
+    if (!result.ok) {
+      ctx.addIssue({ code: "custom", message: result.error });
+      return z.NEVER;
+    }
+    return result.data;
+  });
+}
 
 /** POST /api/canvases. visibility/data опциональны. */
-export const CanvasCreateSchema = z.object({
-  title: TitleSchema,
-  visibility: VisibilityEnum.optional(),
-  data: DataJsonField,
-});
+export function makeCanvasCreateSchema(t: ValidationT) {
+  return z.object({
+    title: z.string().trim().min(1, t("canvas.titleRequired")).max(200, t("canvas.titleMax")),
+    visibility: z.enum(VISIBILITY).optional(),
+    data: makeDataJsonField(t),
+  });
+}
 
 /** PUT /api/canvases/{id}. id + title + data (заменяет целиком). */
-export const CanvasUpdateSchema = z.object({
-  id: UuidSchema,
-  title: TitleSchema,
-  data: DataJsonField,
-});
+export function makeCanvasUpdateSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("canvas.invalidId")),
+    title: z.string().trim().min(1, t("canvas.titleRequired")).max(200, t("canvas.titleMax")),
+    data: makeDataJsonField(t),
+  });
+}
 
 /** PATCH /api/canvases/{id}/visibility. UI шлёт только private→public. */
-export const CanvasVisibilitySchema = z.object({
-  id: UuidSchema,
-  visibility: VisibilityEnum,
-});
+export function makeCanvasVisibilitySchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("canvas.invalidId")),
+    visibility: z.enum(VISIBILITY),
+  });
+}
 
 /** Для delete. */
-export const CanvasIdSchema = z.object({ id: UuidSchema });
+export function makeCanvasIdSchema(t: ValidationT) {
+  return z.object({ id: z.uuid(t("canvas.invalidId")) });
+}
 
-export type CanvasCreateInput = z.infer<typeof CanvasCreateSchema>;
-export type CanvasUpdateInput = z.infer<typeof CanvasUpdateSchema>;
-export type CanvasVisibilityInput = z.infer<typeof CanvasVisibilitySchema>;
-export type CanvasIdInput = z.infer<typeof CanvasIdSchema>;
+// --- Совместимые const-алиасы (для тестов и мест, не имеющих request-scope t). ---
+// В production-коде (actions) использовать фабрики с getT("validation").
+const _tPassthrough = ((key: string) => key) as unknown as ValidationT;
+export const CanvasCreateSchema = makeCanvasCreateSchema(_tPassthrough);
+export const CanvasUpdateSchema = makeCanvasUpdateSchema(_tPassthrough);
+export const CanvasVisibilitySchema = makeCanvasVisibilitySchema(_tPassthrough);
+export const CanvasIdSchema = makeCanvasIdSchema(_tPassthrough);
+
+export type CanvasCreateInput = z.infer<ReturnType<typeof makeCanvasCreateSchema>>;
+export type CanvasUpdateInput = z.infer<ReturnType<typeof makeCanvasUpdateSchema>>;
+export type CanvasVisibilityInput = z.infer<ReturnType<typeof makeCanvasVisibilitySchema>>;
+export type CanvasIdInput = z.infer<ReturnType<typeof makeCanvasIdSchema>>;

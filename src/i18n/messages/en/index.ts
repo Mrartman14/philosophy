@@ -4,6 +4,7 @@
 import type { Messages } from "../ru";
 
 import auth from "./auth";
+import canvas from "./canvas";
 import comments from "./comments";
 import errors from "./errors";
 import metadata from "./metadata";
@@ -13,6 +14,7 @@ import validation from "./validation";
 
 const en = {
   auth,
+  canvas,
   comments,
   errors,
   metadata,

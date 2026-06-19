@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { setCanvasVisibility } from "../actions";
@@ -19,15 +20,20 @@ interface Props {
 export function CanvasVisibilityButton({ id }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("canvas");
+  const tErrors = useT("errors");
   const [state, action] = useActionState(setCanvasVisibility, initial);
 
   useEffect(() => {
     if (state.success && state.data) {
-      toast.add({ title: "Канвас опубликован" });
+      toast.add({ title: t("visibilityButton.toastPublishedTitle") });
       router.refresh();
     } else if (!state.success) {
-      const msg = state.code === "forbidden" ? "У вас нет прав на это действие." : state.error;
-      toast.add({ title: "Ошибка", description: msg });
+      const msg =
+        state.code === "forbidden"
+          ? tErrors("forbiddenAction", { action: t("visibilityButton.forbiddenVisibility") })
+          : state.error;
+      toast.add({ title: t("visibilityButton.toastErrorTitle"), description: msg });
     }
     // state — единственный триггер; toast/router стабильны
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,7 +43,7 @@ export function CanvasVisibilityButton({ id }: Props) {
     <form action={action}>
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="visibility" value="public" />
-      <Button type="submit" variant="secondary">Сделать публичным</Button>
+      <Button type="submit" variant="secondary">{t("visibilityButton.makePublic")}</Button>
     </form>
   );
 }
