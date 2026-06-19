@@ -6,12 +6,18 @@
 // по одной строке импорта и одному ключу в каждый index (этот и ../en).
 // Литералы не нужно помечать `as const`: значения-свойства расширяются до string,
 // поэтому `typeof ru` даёт string-листья, а en satisfies Messages проходит.
+import errors from "./errors";
 import metadata from "./metadata";
 import notifications from "./notifications";
+import preferences from "./preferences";
+import validation from "./validation";
 
 const ru = {
+  errors,
   metadata,
   notifications,
+  preferences,
+  validation,
 };
 
 export default ru;

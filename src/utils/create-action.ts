@@ -10,6 +10,7 @@
 import { redirect } from "next/navigation";
 import { z, type ZodType } from "zod";
 
+import { type ErrorKey, resolveErrorMessage } from "@/i18n";
 import { errors, metrics, M, classifyError } from "@/services/observability";
 
 import { readIdempotencyKey } from "./idempotency";
@@ -43,7 +44,7 @@ function isNextInternalError(error: unknown): boolean {
   );
 }
 
-function toResult<T>(error: unknown): ActionResult<T> {
+async function toResult<T>(error: unknown): Promise<ActionResult<T>> {
   if (error instanceof ForbiddenError) {
     return { success: false, error: error.message, code: "forbidden" };
   }
@@ -53,6 +54,15 @@ function toResult<T>(error: unknown): ActionResult<T> {
       error: error.message,
       code: "validation",
       fieldErrors: error.fieldErrors,
+    };
+  }
+  // Локализуемая ошибка бека: несёт ключ namespace «errors», а не готовый текст.
+  // Единственная точка перевода api-error/доменных кодов (Guardrail 5: getT
+  // живёт в фасаде @/i18n, не в server-only api-error). Локаль — из request-scope.
+  if (error instanceof ApiMessageError) {
+    return {
+      success: false,
+      error: await resolveErrorMessage(error.messageKey, error.params),
     };
   }
   const message =
@@ -100,7 +110,7 @@ export function createAction<TInput, TOutput>(
     } catch (error) {
       const outcome = captureActionError(error, name);
       metrics.increment(M.actionCompleted, { action: name, outcome });
-      return toResult<TOutput>(error);
+      return await toResult<TOutput>(error);
     } finally {
       end();
     }
@@ -126,11 +136,29 @@ export function createFormAction<TOutput>(
     } catch (error) {
       const outcome = captureActionError(error, name);
       metrics.increment(M.actionCompleted, { action: name, outcome });
-      return toResult<TOutput>(error);
+      return await toResult<TOutput>(error);
     } finally {
       end();
     }
   };
+}
+
+/**
+ * Локализуемая ошибка бека: несёт КЛЮЧ namespace «errors» (+ ICU-параметры),
+ * а не готовый русский текст. Бросается из `rethrowApiError` для маппленных
+ * доменных кодов; `createAction`/`createFormAction` резолвят ключ в текст ОДИН
+ * раз на границе (`toResult` → `resolveErrorMessage`). Это держит server-only
+ * `api-error.ts` синхронным и свободным от прямого импорта next-intl
+ * (Guardrail 5): перевод инкапсулирован в фасаде `@/i18n`.
+ */
+export class ApiMessageError extends Error {
+  constructor(
+    public readonly messageKey: ErrorKey,
+    public readonly params?: Record<string, string | number>,
+  ) {
+    super(messageKey);
+    this.name = "ApiMessageError";
+  }
 }
 
 /**

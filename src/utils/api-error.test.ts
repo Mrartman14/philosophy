@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { rethrowApiError } from "./api-error";
-import { ZodValidationError } from "./create-action";
+import { ApiMessageError, ZodValidationError } from "./create-action";
 import { BannedError, ForbiddenError } from "./permissions";
 
 /** Ловит брошенную ошибку для проверки её класса/полей. */
@@ -47,41 +47,40 @@ describe("rethrowApiError — ограничение аккаунта", () => {
   });
 
   it("SUSPENDED с error → пробрасывает текст бека", () => {
-    expect(() =>
+    const err = caught(() =>
       rethrowApiError({ code: "SUSPENDED", error: "вы ограничены" }),
-    ).toThrow("вы ограничены");
+    );
+    expect(err).toBeInstanceOf(ForbiddenError);
+    expect((err as ForbiddenError).message).toBe("вы ограничены");
   });
 
-  it("SUSPENDED без error → дефолтный текст", () => {
-    expect(() => rethrowApiError({ code: "SUSPENDED" })).toThrow(
-      "Аккаунт ограничен.",
-    );
+  it("SUSPENDED без error → Forbidden('status') без бакнутого текста (клиент рисует branded errors.accountRestricted)", () => {
+    const err = caught(() => rethrowApiError({ code: "SUSPENDED" }));
+    expect(err).toBeInstanceOf(ForbiddenError);
+    expect((err as ForbiddenError).reason).toBe("status");
+    // message — дефолтный «Forbidden: status», НЕ бакнутый русский текст.
+    expect((err as ForbiddenError).message).toBe("Forbidden: status");
   });
 });
 
-describe("rethrowApiError — доменные коды и overrides", () => {
-  it("override переопределяет дефолт для одного кода", () => {
-    expect(() =>
+describe("rethrowApiError — доменные коды и overrides (несут ключ каталога)", () => {
+  it("override переопределяет дефолтный ключ для одного кода", () => {
+    const err = caught(() =>
       rethrowApiError(
         { code: "REF_NOT_FOUND" },
-        { REF_NOT_FOUND: "Локальный текст про ссылку." },
+        // override указывает на другой ключ каталога (здесь — переиспользуем
+        // accountRestricted чисто как валидный ErrorKey для проверки приоритета).
+        { REF_NOT_FOUND: "accountRestricted" },
       ),
-    ).toThrow("Локальный текст про ссылку.");
-  });
-
-  it("без override берётся дефолт (REF_NOT_FOUND)", () => {
-    expect(() => rethrowApiError({ code: "REF_NOT_FOUND" })).toThrow(
-      "Одна из ссылок указывает на несуществующий объект.",
     );
+    expect(err).toBeInstanceOf(ApiMessageError);
+    expect((err as ApiMessageError).messageKey).toBe("accountRestricted");
   });
 
-  it("код только в override-карте слайса (INVALID_DATE)", () => {
-    expect(() =>
-      rethrowApiError(
-        { code: "INVALID_DATE" },
-        { INVALID_DATE: "Дата отклонена." },
-      ),
-    ).toThrow("Дата отклонена.");
+  it("без override берётся дефолтный ключ (REF_NOT_FOUND)", () => {
+    const err = caught(() => rethrowApiError({ code: "REF_NOT_FOUND" }));
+    expect(err).toBeInstanceOf(ApiMessageError);
+    expect((err as ApiMessageError).messageKey).toBe("REF_NOT_FOUND");
   });
 });
 
@@ -98,14 +97,16 @@ describe("rethrowApiError — фоллбек", () => {
     ).toThrow("конфликт ресурса");
   });
 
-  it("undefined → «Ошибка сервера»", () => {
-    expect(() => rethrowApiError(undefined)).toThrow("Ошибка сервера");
+  it("undefined → ApiMessageError('serverError')", () => {
+    const err = caught(() => rethrowApiError(undefined));
+    expect(err).toBeInstanceOf(ApiMessageError);
+    expect((err as ApiMessageError).messageKey).toBe("serverError");
   });
 
-  it("код без текста и без error → «Ошибка сервера»", () => {
-    expect(() => rethrowApiError({ code: "INTERNAL" })).toThrow(
-      "Ошибка сервера",
-    );
+  it("код без текста и без error → ApiMessageError('serverError')", () => {
+    const err = caught(() => rethrowApiError({ code: "INTERNAL" }));
+    expect(err).toBeInstanceOf(ApiMessageError);
+    expect((err as ApiMessageError).messageKey).toBe("serverError");
   });
 });
 
@@ -120,9 +121,10 @@ describe("rethrowApiError — серверный 422 fields", () => {
     }
   });
 
-  it("без fields ведёт себя как раньше (общий Error)", () => {
-    expect(() => rethrowApiError({ code: "VERSION_MISMATCH", error: "x" }))
-      .toThrow("Объект изменён в другом месте. Обновите страницу и повторите.");
+  it("без fields ведёт себя как раньше (ApiMessageError с ключом кода)", () => {
+    const err = caught(() => rethrowApiError({ code: "VERSION_MISMATCH", error: "x" }));
+    expect(err).toBeInstanceOf(ApiMessageError);
+    expect((err as ApiMessageError).messageKey).toBe("VERSION_MISMATCH");
   });
 
   // Защитный кейс от дрейфа контракта: если бек пришлёт fields вместе с BANNED,
@@ -135,22 +137,19 @@ describe("rethrowApiError — серверный 422 fields", () => {
   });
 });
 
-describe("rethrowApiError idempotency codes", () => {
-  it("maps IDEMPOTENCY_KEY_IN_USE to a wait message", () => {
-    expect(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_IN_USE" })).toThrow(
-      /уже обрабатывается/i,
-    );
+describe("rethrowApiError idempotency codes (несут ключ каталога)", () => {
+  it("maps IDEMPOTENCY_KEY_IN_USE to its catalog key", () => {
+    const err = caught(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_IN_USE" }));
+    expect((err as ApiMessageError).messageKey).toBe("IDEMPOTENCY_KEY_IN_USE");
   });
 
-  it("maps IDEMPOTENCY_KEY_REUSED to a conflict message", () => {
-    expect(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_REUSED" })).toThrow(
-      /конфликтует/i,
-    );
+  it("maps IDEMPOTENCY_KEY_REUSED to its catalog key", () => {
+    const err = caught(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_REUSED" }));
+    expect((err as ApiMessageError).messageKey).toBe("IDEMPOTENCY_KEY_REUSED");
   });
 
-  it("maps IDEMPOTENCY_KEY_INVALID to a refresh message", () => {
-    expect(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_INVALID" })).toThrow(
-      /ключ идемпотентности/i,
-    );
+  it("maps IDEMPOTENCY_KEY_INVALID to its catalog key", () => {
+    const err = caught(() => rethrowApiError({ code: "IDEMPOTENCY_KEY_INVALID" }));
+    expect((err as ApiMessageError).messageKey).toBe("IDEMPOTENCY_KEY_INVALID");
   });
 });
