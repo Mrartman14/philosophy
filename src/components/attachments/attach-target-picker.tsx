@@ -1,6 +1,7 @@
 // src/components/attachments/attach-target-picker.tsx
 "use client";
 import { AsyncCombobox } from "@/components/ast-editor/pickers/async-combobox";
+import { useT } from "@/i18n/client";
 
 import type { AttachTargetPickerProps } from "./types";
 
@@ -20,14 +21,15 @@ export function AttachTargetPicker({
   onClose,
   placeholder,
 }: AttachTargetPickerProps) {
+  const t = useT("common");
   return (
     <AsyncCombobox<Target>
       fetcher={fetcher}
-      renderItem={(t) => <span>{t.label}</span>}
-      getKey={(t) => t.id}
-      onSelect={(t) => { onSelect(t.id, t.label); }}
+      renderItem={(item) => <span>{item.label}</span>}
+      getKey={(item) => item.id}
+      onSelect={(item) => { onSelect(item.id, item.label); }}
       {...(onClose ? { onClose } : {})}
-      placeholder={placeholder ?? "Поиск…"}
+      placeholder={placeholder ?? t("attachments.search")}
     />
   );
 }

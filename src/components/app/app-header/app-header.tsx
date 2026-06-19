@@ -6,6 +6,7 @@ import { LogoIcon } from "@/assets/icons/logo-icon";
 import { RouterLink } from "@/components/ui";
 import { NotificationBell, getNotificationCounts } from "@/features/notifications";
 import { SearchInput } from "@/features/search";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { NetworkIndicator } from "../network-indicator";
@@ -15,6 +16,7 @@ export const AppHeader = async () => {
   const counts = me
     ? await getNotificationCounts().catch(() => ({ unread: 0, unseen: 0 }))
     : null;
+  const t = await getT("common");
   return (
     <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--color-surface) border-t-0 border-b md:border-t border-(--color-border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:left-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
       <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-l md:border-r border-(--color-border) bg-(--color-surface) pl-4 pr-4">
@@ -29,13 +31,13 @@ export const AppHeader = async () => {
               href="/calendar"
               className="text-sm text-(--color-fg-muted) hover:text-(--color-accent)"
             >
-              Календарь
+              {t("nav.calendar")}
             </RouterLink>
             <RouterLink
               href="/trails"
               className="text-sm text-(--color-fg-muted) hover:text-(--color-accent)"
             >
-              Маршруты
+              {t("nav.trails")}
             </RouterLink>
           </NavigationMenu.Item>
           <div className="flex gap-2 items-center">
@@ -48,7 +50,7 @@ export const AppHeader = async () => {
                   href="/canvases"
                   className="text-sm text-(--color-fg-muted) hover:text-(--color-accent)"
                 >
-                  Канвасы
+                  {t("nav.canvases")}
                 </RouterLink>
                 <RouterLink
                   href="/me"
@@ -62,7 +64,7 @@ export const AppHeader = async () => {
                 href="/login"
                 className="text-sm text-(--color-fg-muted) hover:text-(--color-accent)"
               >
-                Войти
+                {t("nav.login")}
               </RouterLink>
             )}
           </div>

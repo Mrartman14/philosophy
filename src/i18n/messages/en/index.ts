@@ -9,6 +9,7 @@ import auth from "./auth";
 import banners from "./banners";
 import canvas from "./canvas";
 import comments from "./comments";
+import common from "./common";
 import documents from "./documents";
 import editor from "./editor";
 import errors from "./errors";
@@ -34,6 +35,7 @@ const en = {
   auth,
   banners,
   canvas,
+  common,
   comments,
   documents,
   editor,

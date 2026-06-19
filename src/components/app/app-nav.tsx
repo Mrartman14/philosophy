@@ -9,13 +9,15 @@ import { NavigationMenu } from "@base-ui/react/navigation-menu";
 import type { Lecture } from "@/api/types";
 import { ChevronDownIcon } from "@/assets/icons/chevron-down-icon";
 import { RouterLink } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
+  const t = useT("common");
 
   return (
     <NavigationMenu.Item className="flex items-stretch justify-center">
       <NavigationMenu.Trigger className={triggerClassName}>
-        <span className="tracking-wide">Лекции</span>
+        <span className="tracking-wide">{t("nav.lectures")}</span>
         <NavigationMenu.Icon className={chevronClassName}>
           <ChevronDownIcon />
         </NavigationMenu.Icon>

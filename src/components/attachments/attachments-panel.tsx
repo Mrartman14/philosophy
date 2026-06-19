@@ -2,6 +2,8 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 
+import { useT } from "@/i18n/client";
+
 import type { AttachmentsPanelProps } from "./types";
 
 /**
@@ -12,9 +14,9 @@ import type { AttachmentsPanelProps } from "./types";
  * и media (волна 3).
  */
 export function AttachmentsPanel({
-  title = "Прикрепления",
+  title,
   items,
-  emptyText = "Пока ничего не прикреплено.",
+  emptyText,
   className,
   canManage = false,
   canAttach = false,
@@ -23,6 +25,10 @@ export function AttachmentsPanel({
   onAttach,
   renderTargetPicker,
 }: AttachmentsPanelProps) {
+  const t = useT("common");
+  const resolvedTitle = title ?? t("attachments.title");
+  const resolvedEmptyText = emptyText ?? t("attachments.empty");
+
   const [pickerOpen, setPickerOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -36,16 +42,16 @@ export function AttachmentsPanel({
     setError(null);
     startTransition(async () => {
       const r = await fn();
-      if (!r.ok) setError(r.error ?? "Ошибка операции");
+      if (!r.ok) setError(r.error ?? t("attachments.operationError"));
     });
   }
 
   const showAttach = canManage && canAttach && Boolean(onAttach) && Boolean(renderTargetPicker);
 
   return (
-    <section className={className} aria-label={title}>
+    <section className={className} aria-label={resolvedTitle}>
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">{title}</h2>
+        <h2 className="text-lg font-semibold">{resolvedTitle}</h2>
         {showAttach && (
           <button
             type="button"
@@ -53,7 +59,7 @@ export function AttachmentsPanel({
             onClick={() => { setPickerOpen((v) => !v); }}
             disabled={pending}
           >
-            Прикрепить
+            {t("attachments.attach")}
           </button>
         )}
       </div>
@@ -71,7 +77,7 @@ export function AttachmentsPanel({
       )}
 
       {sorted.length === 0 ? (
-        <p className="mt-2 text-sm text-(--color-fg-muted)">{emptyText}</p>
+        <p className="mt-2 text-sm text-(--color-fg-muted)">{resolvedEmptyText}</p>
       ) : (
         <ol className="mt-2 flex flex-col divide-y divide-(--color-border)">
           {sorted.map((item, i) => (
@@ -86,7 +92,7 @@ export function AttachmentsPanel({
                 )}
                 {item.entityType === "canvas" && (
                   <span className="ml-2 text-xs text-(--color-fg-muted)">
-                    (canvas — просмотр недоступен)
+                    {t("attachments.canvasNoPreview")}
                   </span>
                 )}
               </span>
@@ -95,7 +101,7 @@ export function AttachmentsPanel({
                   {onReorder && i > 0 && (
                     <button
                       type="button"
-                      aria-label="Выше"
+                      aria-label={t("attachments.moveUp")}
                       className="rounded px-1 text-sm hover:bg-(--color-surface-subtle)"
                       disabled={pending}
                       onClick={() => {
@@ -110,7 +116,7 @@ export function AttachmentsPanel({
                   {onReorder && i < sorted.length - 1 && (
                     <button
                       type="button"
-                      aria-label="Ниже"
+                      aria-label={t("attachments.moveDown")}
                       className="rounded px-1 text-sm hover:bg-(--color-surface-subtle)"
                       disabled={pending}
                       onClick={() => {
@@ -129,7 +135,7 @@ export function AttachmentsPanel({
                       disabled={pending}
                       onClick={() => { run(() => onDetach(item)); }}
                     >
-                      Открепить
+                      {t("attachments.detach")}
                     </button>
                   )}
                 </span>

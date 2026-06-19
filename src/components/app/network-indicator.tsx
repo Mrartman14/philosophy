@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 import { OfflineIcon } from "@/assets/icons/offline-icon";
+import { useT } from "@/i18n/client";
 
 function subscribeToOnlineStatus(callback: () => void) {
   window.addEventListener("online", callback);
@@ -24,6 +25,7 @@ function getServerSnapshot() {
 export const NetworkIndicator: React.FC<{ className?: string }> = ({
   className,
 }) => {
+  const t = useT("common");
   const isOnline = useSyncExternalStore(
     subscribeToOnlineStatus,
     getSnapshot,
@@ -34,7 +36,7 @@ export const NetworkIndicator: React.FC<{ className?: string }> = ({
     <>
       {/* Always-mounted live region: announces offline transition to screen readers */}
       <span role="status" aria-live="polite" aria-atomic="true">
-        {!isOnline && <span className="sr-only">Нет сети</span>}
+        {!isOnline && <span className="sr-only">{t("networkIndicator.offline")}</span>}
       </span>
 
       {/* Visual indicator for sighted users; aria-hidden because sr-only text carries the name */}

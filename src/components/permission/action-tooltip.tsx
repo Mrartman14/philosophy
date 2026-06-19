@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { useT } from "@/i18n/client";
 import type { DenyReason } from "@/utils/permissions";
 
 interface ActionTooltipProps {
@@ -18,19 +19,6 @@ interface ActionTooltipProps {
   children: ReactNode;
 }
 
-function tooltipText(reason: DenyReason, action: string): string {
-  switch (reason) {
-    case "guest":
-      return `Войдите, чтобы ${action}`;
-    case "status":
-      return `Аккаунт ограничен — нельзя ${action}`;
-    case "role":
-    case "owner":
-      // Не должно случаться: эти reason'ы рендерятся как «полностью скрыто».
-      return `Действие недоступно`;
-  }
-}
-
 /**
  * Универсальная обёртка для disabled-кнопок с пояснением.
  *
@@ -45,8 +33,25 @@ export const ActionTooltip: React.FC<ActionTooltipProps> = ({
   action,
   children,
 }) => {
+  const t = useT("common");
+
   if (reason === null) return children;
-  const text = tooltipText(reason, action);
+
+  let text: string;
+  switch (reason) {
+    case "guest":
+      text = t("actionTooltip.loginToAction", { action });
+      break;
+    case "status":
+      text = t("actionTooltip.accountRestrictedAction", { action });
+      break;
+    case "role":
+    case "owner":
+      // Не должно случаться: эти reason'ы рендерятся как «полностью скрыто».
+      text = t("actionTooltip.actionUnavailable");
+      break;
+  }
+
   return (
     <span
       title={text}

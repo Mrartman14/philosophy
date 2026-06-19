@@ -1,4 +1,6 @@
 // src/components/canvas-render/canvas-render.tsx
+import { getT } from "@/i18n";
+
 import { boundingBox, edgePath } from "./geometry";
 import { NodeShapeRender } from "./node-shapes";
 import type { CanvasRenderProps, RenderNode } from "./types";
@@ -11,9 +13,12 @@ const MARGIN = 24;
  * прямые рёбра с привязкой к стороне. Без интерактива (pan/zoom) — внешняя
  * обёртка скроллит при необходимости (overflow:auto).
  */
-export function CanvasRender({ data, resolveEntityRef, emptyText = "Граф пуст.", className, children }: CanvasRenderProps) {
+export async function CanvasRender({ data, resolveEntityRef, emptyText, className, children }: CanvasRenderProps) {
+  const t = await getT("common");
+  const resolvedEmptyText = emptyText ?? t("canvasRender.emptyGraph");
+
   if (data.nodes.length === 0) {
-    return <p className="text-sm text-(--color-fg-muted)">{emptyText}</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{resolvedEmptyText}</p>;
   }
 
   const bbox = boundingBox(data.nodes);
@@ -31,7 +36,7 @@ export function CanvasRender({ data, resolveEntityRef, emptyText = "Граф п�
         width={vbW}
         height={vbH}
         role="img"
-        aria-label="Граф канваса"
+        aria-label={t("canvasRender.graphAriaLabel")}
         style={{ maxWidth: "100%", height: "auto" }}
       >
         <defs>

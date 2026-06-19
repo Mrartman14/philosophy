@@ -1,5 +1,6 @@
 // src/components/revision-history/revision-history.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { RevisionHistoryProps } from "./types";
 
@@ -27,20 +28,24 @@ function formatCreatedAt(iso: string): string {
  * Переиспользуется слайсами events / banners / glossary / documents /
  * comments / annotations — доменную специфику сюда не добавлять.
  */
-export function RevisionHistory({
+export async function RevisionHistory({
   revisions,
   selectedId,
   buildHref,
   children,
-  title = "История ревизий",
-  emptyText = "Ревизий пока нет.",
+  title,
+  emptyText,
   className,
 }: RevisionHistoryProps) {
+  const t = await getT("common");
+  const resolvedTitle = title ?? t("revisionHistory.title");
+  const resolvedEmptyText = emptyText ?? t("revisionHistory.empty");
+
   return (
-    <section className={className} aria-label={title}>
-      <h2 className="text-lg font-semibold">{title}</h2>
+    <section className={className} aria-label={resolvedTitle}>
+      <h2 className="text-lg font-semibold">{resolvedTitle}</h2>
       {revisions.length === 0 ? (
-        <p className="mt-2 text-sm text-(--color-fg-muted)">{emptyText}</p>
+        <p className="mt-2 text-sm text-(--color-fg-muted)">{resolvedEmptyText}</p>
       ) : (
         <ol className="mt-2 flex flex-col divide-y divide-(--color-border)">
           {revisions.map((rev) => {
