@@ -2,7 +2,7 @@
 // src/features/trails/ui/trail-meta-form.tsx
 import { useActionState } from "react";
 
-import { Form, FormField, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { Form, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateTrailMeta } from "../actions";
@@ -23,6 +23,7 @@ export function TrailMetaForm({ trail }: Props) {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={trail.id} />
       <input type="hidden" name="version" value={String(trail.version ?? "")} />
+      <IdempotencyField result={state} />
 
       <FormField name="title" label="Название" required>
         <TextInput name="title" required maxLength={200} defaultValue={trail.title} />

@@ -105,7 +105,7 @@ export const getDocumentSummary = cache(
     if (error) {
       return { id, filename: "Документ недоступен" };
     }
-    const doc = data.data as { id?: string; filename?: string } | undefined;
+    const doc = unwrap(data);
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- API может вернуть "", "" трактуется как «нет имени»
     return { id, filename: doc?.filename || "Без названия" };
   },

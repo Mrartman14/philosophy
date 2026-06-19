@@ -70,7 +70,7 @@ export const createTrail = createFormAction(async (formData, ctx) => {
 }, "createTrail");
 
 /** PUT /api/trails/{id} (метаданные: title + description). Owner-only enforce'ит бек. */
-export const updateTrailMeta = createFormAction(async (formData) => {
+export const updateTrailMeta = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
   const input = parseFormData(TrailMetaSchema, formData);
@@ -78,6 +78,7 @@ export const updateTrailMeta = createFormAction(async (formData) => {
   const { data, error } = await api.PUT("/api/trails/{id}", {
     params: { path: { id: input.id }, header: ifMatchHeader(formData, "маршрута") },
     body: { title: input.title, description: input.description },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);
@@ -86,7 +87,7 @@ export const updateTrailMeta = createFormAction(async (formData) => {
 }, "updateTrailMeta");
 
 /** PUT /api/trails/{id}/items (bulk-replace упорядоченного списка документов). Owner-only. */
-export const setTrailItems = createFormAction(async (formData) => {
+export const setTrailItems = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
   const input = parseFormData(TrailItemsSchema, formData);
@@ -94,6 +95,7 @@ export const setTrailItems = createFormAction(async (formData) => {
   const { data, error } = await api.PUT("/api/trails/{id}/items", {
     params: { path: { id: input.id }, header: ifMatchHeader(formData, "маршрута") },
     body: { document_ids: input.document_ids },
+    headers: idempotencyHeaders(ctx.idempotencyKey),
   });
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);

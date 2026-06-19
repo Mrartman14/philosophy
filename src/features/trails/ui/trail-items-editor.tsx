@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker";
-import { Button, SubmitButton, Form, useToast } from "@/components/ui";
+import { Button, IdempotencyField, SubmitButton, Form, useToast } from "@/components/ui";
 // DocumentPicker — client-компонент из @/components (НЕ cross-feature). В index.ts
 // ast-editor он не реэкспортнут, поэтому импортируем напрямую.
 import type { ActionResult } from "@/utils/create-action";
@@ -139,6 +139,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
         <input type="hidden" name="id" value={trailId} />
         <input type="hidden" name="version" value={String(trailVersion ?? "")} />
         <input type="hidden" name="document_ids" value={JSON.stringify(orderedIds)} />
+        <IdempotencyField result={state} />
         <SubmitButton>Сохранить содержимое</SubmitButton>
         {!state.success && state.code === "forbidden" && (
           <span className="text-sm text-red-600">У вас нет прав на изменение маршрута.</span>

@@ -33,9 +33,12 @@ export default async function TrailPage({ params, searchParams }: Props) {
 
   // Резолвим метаданные документов items в порядке position (items приходят
   // отсортированными по position с бека). React.cache дедуплицирует.
-  const items = trail.items ?? [];
+  // Элементы без document_id отбрасываем до резолва — пустая строка даёт
+  // битую ссылку /documents/, а getDocumentSummary вернёт заглушку для 404.
   const documents: TrailDocumentSummary[] = await Promise.all(
-    items.map((item) => getDocumentSummary(item.document_id ?? "")),
+    (trail.items ?? [])
+      .flatMap((item) => (item.document_id ? [item.document_id] : []))
+      .map((docId) => getDocumentSummary(docId)),
   );
 
   const canEdit = canEditTrail(me, trail);
