@@ -1,5 +1,6 @@
 // src/features/auth/index.ts
 export { LoginForm } from "./ui/login-form";
+export { LogoutAllForm } from "./ui/logout-all-form";
 export { LogoutForm } from "./ui/logout-form";
 export { RegisterForm } from "./ui/register-form";
 export { logoutAction, logoutAllAction } from "./actions";

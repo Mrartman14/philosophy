@@ -1,6 +1,6 @@
 // src/app/me/settings/page.tsx
 import { RouterLink } from "@/components/ui";
-import { LogoutForm } from "@/features/auth";
+import { LogoutAllForm, LogoutForm } from "@/features/auth";
 import { SubscriptionsSection } from "@/features/notifications";
 import {
   PreferencesForm,
@@ -68,6 +68,7 @@ export default async function SettingsPage() {
       <section className="flex flex-col items-start gap-3 border-t border-(--color-border) pt-8">
         <h2 className="text-lg font-semibold">Аккаунт</h2>
         <LogoutForm />
+        <LogoutAllForm />
       </section>
     </div>
   );
