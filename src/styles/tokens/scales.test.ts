@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { TYPE_SCALE, DENSITY, TEXT_SCALE, FONT_STACKS, Z } from "./scales";
+
 import { THEMES, FONTS } from "./enums";
+import { TYPE_SCALE, DENSITY, TEXT_SCALE, FONT_STACKS, Z } from "./scales";
 
 describe("enums", () => {
   it("expose axis value arrays", () => {
@@ -12,8 +13,9 @@ describe("enums", () => {
 describe("scales", () => {
   it("type scale is monotonic in rem size", () => {
     const steps = ["2xs","xs","sm","base","lg","xl","2xl","3xl","4xl"] as const;
-    const rems = steps.map((s) => parseFloat(TYPE_SCALE[s].size));
-    for (let i = 1; i < rems.length; i++) expect(rems[i]!).toBeGreaterThan(rems[i - 1]!);
+    steps
+      .map((s) => parseFloat(TYPE_SCALE[s].size))
+      .reduce((prev, cur) => { expect(cur).toBeGreaterThan(prev); return cur; });
   });
   it("compact density tighter than comfortable", () => {
     expect(parseFloat(DENSITY.compact.controlH.md)).toBeLessThan(parseFloat(DENSITY.comfortable.controlH.md));

@@ -1,12 +1,15 @@
-import { describe, it, expect } from "vitest";
 import { APCAcontrast, sRGBtoY } from "apca-w3";
 import { parse, converter } from "culori";
+import { describe, it, expect } from "vitest";
+
 import { TOKENS, CONTRAST_PAIRS } from "./index";
 
 const toRgb = converter("rgb");
 function lc(fg: string, bg: string): number {
-  const f = toRgb(parse(fg))!, b = toRgb(parse(bg))!;
-  const k = (x: number) => Math.max(0, Math.min(255, Math.round(x * 255)));
+  const f = toRgb(parse(fg));
+  const b = toRgb(parse(bg));
+  if (!f || !b) throw new Error(`lc: unparseable colour (fg=${fg}, bg=${bg})`);
+  const k = (x: number | undefined) => Math.max(0, Math.min(255, Math.round((x ?? 0) * 255)));
   return APCAcontrast(sRGBtoY([k(f.r), k(f.g), k(f.b)]), sRGBtoY([k(b.r), k(b.g), k(b.b)]));
 }
 const COMBOS = ["light-normal","light-high","dark-normal","dark-high"] as const;

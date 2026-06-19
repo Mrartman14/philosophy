@@ -1,6 +1,6 @@
-import { BACKDROP, HUE, deriveOn, type ThemeMode } from "./primitives";
 import type { ColorTokenName } from "./apca-targets";
 import type { Contrast } from "./enums";
+import { BACKDROP, HUE, deriveOn, type ThemeMode } from "./primitives";
 
 function targets(contrast: Contrast) {
   const boost = contrast === "high" ? 15 : 0;

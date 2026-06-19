@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { COLOR_LAYERS, buildColorLayer } from "./semantic";
+
 import { CONTRAST_PAIRS, type ColorTokenName } from "./apca-targets";
+import { COLOR_LAYERS, buildColorLayer } from "./semantic";
 
 const ALL: ColorTokenName[] = [
   "surface","surface-subtle","surface-raised","surface-overlay","fg","fg-muted","fg-subtle","fg-on-accent",
