@@ -58,6 +58,9 @@ export interface SavedBundleRecord<TSnapshot = unknown> {
    * сверяли. Снимок при этом НЕ стирается — пометка чисто информационная.
    */
   remoteStatus?: "stale" | "gone";
+  /** Корневой токен свежести (ETag манифеста) на момент сохранения/последней
+   * ревалидации. Используется как If-None-Match для дешёвой проверки. */
+  freshnessToken?: string;
   snapshot: TSnapshot;
   imageKeys: string[]; // sha256-ключи картинок для Cache Storage
 }
