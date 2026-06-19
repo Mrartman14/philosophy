@@ -33,7 +33,7 @@ describe("loginAction transport", () => {
 
   it("calls instrumentedFetch with surface auth.login and succeeds", async () => {
     instrumentedFetch.mockResolvedValue(
-      new Response(JSON.stringify({ data: { token: "t" } }), { status: 200 }),
+      new Response(JSON.stringify({ data: { access_token: "t" } }), { status: 200 }),
     );
     await expect(
       loginAction({ success: true, data: undefined }, form({ username: "neo", password: "trinity99", next: "/" })),

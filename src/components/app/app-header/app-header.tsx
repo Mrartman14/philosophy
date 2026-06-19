@@ -4,7 +4,6 @@ import { NavigationMenu } from "@base-ui/react/navigation-menu";
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { LogoIcon } from "@/assets/icons/logo-icon";
 import { RouterLink } from "@/components/ui";
-import { LogoutForm } from "@/features/auth";
 import { NotificationBell, getNotificationCounts } from "@/features/notifications";
 import { SearchInput } from "@/features/search";
 import { getMe } from "@/utils/me";
@@ -46,42 +45,17 @@ export const AppHeader = async () => {
               <>
                 <NotificationBell initialCounts={counts ?? { unread: 0, unseen: 0 }} />
                 <RouterLink
-                  href="/documents/my"
-                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
-                >
-                  Мои документы
-                </RouterLink>
-                <RouterLink
-                  href="/media/my"
-                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
-                >
-                  Мои медиа
-                </RouterLink>
-                <RouterLink
                   href="/canvases"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
                   Канвасы
                 </RouterLink>
                 <RouterLink
-                  href="/me/annotations"
+                  href="/me"
                   className="text-sm text-(--color-description) hover:text-(--color-primary)"
                 >
-                  Мои аннотации
+                  {me.username}
                 </RouterLink>
-                <RouterLink
-                  href="/me/forms"
-                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
-                >
-                  Мои формы
-                </RouterLink>
-                <RouterLink
-                  href="/settings"
-                  className="text-sm text-(--color-description) hover:text-(--color-primary)"
-                >
-                  Настройки
-                </RouterLink>
-                <LogoutForm username={me.username} />
               </>
             ) : (
               <RouterLink

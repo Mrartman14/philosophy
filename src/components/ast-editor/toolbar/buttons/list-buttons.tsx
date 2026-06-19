@@ -36,7 +36,7 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
   const isTaskActive = editor.isActive("list_item") && itemChecked != null;
 
   return (
-    <Toolbar.Group>
+    <Toolbar.Group className={`flex items-center gap-1`}>
       <Toolbar.Button
         aria-label="Маркированный список"
         aria-pressed={editor.isActive("list", { ordered: false })}

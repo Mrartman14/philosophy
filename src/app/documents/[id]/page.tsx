@@ -2,9 +2,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { SchemaContextProvider } from "@/components/ast-editor";
-import { getAstSchema } from "@/components/ast-editor/schema-server";
-import { Skeleton } from "@/components/ui";
+import { RouterLink, Skeleton } from "@/components/ui";
 import { AnnotationsSection } from "@/features/annotations";
 import {
   canEditDocument,
@@ -12,9 +10,6 @@ import {
   canSeeRevisions,
   getDocumentById,
   DocumentDetail,
-  DocumentMetaForm,
-  DocumentEditForm,
-  DocumentVisibilityButton,
   DocumentDeleteButton,
   DocumentExportLinks,
   DocumentRevisions,
@@ -45,9 +40,6 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   const canEdit = canEditDocument(me, document);
   const canDelete = canDeleteDocument(me, document);
   const showRevisions = canSeeRevisions(document);
-  const isPrivateOwned = canEdit && document.visibility === "private";
-
-  const astSchema = canEdit ? await getAstSchema() : null;
 
   const canShare = canCreateShareLink(me, document);
   const [shareLinks, subscribed] = await Promise.all([
@@ -62,6 +54,14 @@ export default async function DocumentPage({ params, searchParams }: Props) {
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{document.filename ?? "Документ"}</h1>
         <div className="flex items-center gap-2">
+          {canEdit && (
+            <RouterLink
+              href={`/documents/${id}/edit`}
+              className="text-sm text-(--color-link)"
+            >
+              Редактировать
+            </RouterLink>
+          )}
           {document.id && (
             <ShareButton
               resourceType="document"
@@ -98,19 +98,6 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         <Suspense fallback={<Skeleton className="h-32 w-full" />}>
           <AnnotationsSection parentEntityType="document" parentId={document.id} />
         </Suspense>
-      )}
-
-      {canEdit && (
-        <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
-          <h2 className="text-lg font-semibold">Редактирование</h2>
-          <DocumentMetaForm document={document} />
-          <SchemaContextProvider initial={astSchema ?? undefined}>
-            <DocumentEditForm document={document} />
-          </SchemaContextProvider>
-          {isPrivateOwned && document.id && (
-            <DocumentVisibilityButton id={document.id} />
-          )}
-        </section>
       )}
 
       {/* DocumentRevisions всегда рендерит контент (история ревизий) — Skeleton. */}

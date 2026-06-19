@@ -45,7 +45,7 @@ export function NotificationPopover({ onClose, onSeen }: NotificationPopoverProp
       <div className="flex items-center justify-between border-b border-(--color-border) px-3 py-2">
         <span className="text-sm font-semibold">Уведомления</span>
         <RouterLink
-          href="/notifications"
+          href="/me/notifications"
           className="text-xs text-(--color-link)"
           onClick={onClose}
         >

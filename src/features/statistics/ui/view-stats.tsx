@@ -38,7 +38,7 @@ export function ViewStats({
       <EmptyState
         title="Трекинг просмотров выключен"
         description="Включите его в настройках, чтобы видеть статистику просмотров."
-        action={<RouterLink href="/settings">Перейти в настройки</RouterLink>}
+        action={<RouterLink href="/me/settings">Перейти в настройки</RouterLink>}
       />
     );
   }

@@ -33,7 +33,7 @@ const DIALOG_TITLE = "Выйти из аккаунта?";
 describe("LogoutForm", () => {
   it("пустая офлайн-библиотека → «Выйти» сразу чистит кеш и логаутит, без диалога", async () => {
     countMock.mockResolvedValue(0);
-    render(<LogoutForm username="alice" />);
+    render(<LogoutForm />);
 
     fireEvent.click(screen.getByRole("button", { name: "Выйти" }));
 
@@ -46,7 +46,7 @@ describe("LogoutForm", () => {
 
   it("непустая библиотека → «Выйти» показывает предупреждение, логаут НЕ идёт до подтверждения", async () => {
     countMock.mockResolvedValue(3);
-    render(<LogoutForm username="alice" />);
+    render(<LogoutForm />);
 
     fireEvent.click(screen.getByRole("button", { name: "Выйти" }));
 
@@ -57,7 +57,7 @@ describe("LogoutForm", () => {
 
   it("непустая библиотека → подтверждение «Выйти и удалить» → чистит кеш и логаутит", async () => {
     countMock.mockResolvedValue(3);
-    render(<LogoutForm username="alice" />);
+    render(<LogoutForm />);
 
     fireEvent.click(screen.getByRole("button", { name: "Выйти" }));
     const confirm = await screen.findByRole("button", {
@@ -73,7 +73,7 @@ describe("LogoutForm", () => {
 
   it("непустая библиотека → «Отмена» → логаут не вызывается", async () => {
     countMock.mockResolvedValue(3);
-    render(<LogoutForm username="alice" />);
+    render(<LogoutForm />);
 
     fireEvent.click(screen.getByRole("button", { name: "Выйти" }));
     const cancel = await screen.findByRole("button", { name: "Отмена" });

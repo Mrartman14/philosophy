@@ -22,7 +22,7 @@ describe("ViewStats", () => {
     render(<ViewStats stats={{}} trackingEnabled={false} />);
     expect(screen.getByText("Трекинг просмотров выключен")).toBeTruthy();
     const link = screen.getByRole("link", { name: /настройк/i });
-    expect(link.getAttribute("href")).toBe("/settings");
+    expect(link.getAttribute("href")).toBe("/me/settings");
   });
 
   it("трекинг включён, но пусто → соответствующий EmptyState", () => {

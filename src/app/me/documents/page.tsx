@@ -1,4 +1,4 @@
-// src/app/documents/my/page.tsx
+// src/app/me/documents/page.tsx
 import { SchemaContextProvider } from "@/components/ast-editor";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
@@ -19,7 +19,7 @@ interface Props {
 
 export default async function MyDocumentsPage({ searchParams }: Props) {
   // Документы — приватная зона: гостя отправляем на логин.
-  const me = await requireActiveUserOrRedirect("/documents/my");
+  const me = await requireActiveUserOrRedirect("/me/documents");
 
   const { offset } = await searchParams;
   const result = await getMyDocuments({ offset: parseNonNegativeInt(offset, 0), limit: 20 });

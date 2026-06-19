@@ -54,7 +54,7 @@ export function DocumentCreateForm() {
         <AstEditor
           defaultValue={[]}
           entityContext="document"
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
+          onChange={setBlocks}
         />
       </FormField>
 

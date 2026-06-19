@@ -65,7 +65,7 @@ export function EditorToolbar({ editor, schema, context, defaultLectureId }: Edi
   ].filter((g) => g.visible);
 
   return (
-    <Toolbar.Root>
+    <Toolbar.Root className={`flex items-center gap-1 p-1`}>
       {groups.map((g, i) => (
         <Fragment key={i}>
           {i > 0 && <Toolbar.Separator />}

@@ -41,7 +41,7 @@ describe("loginAction", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(() =>
-        Promise.resolve(new Response(JSON.stringify({ data: { token: "jwt-abc" } }), {
+        Promise.resolve(new Response(JSON.stringify({ data: { access_token: "jwt-abc" } }), {
           status: 200,
         }))
       )
@@ -63,7 +63,7 @@ describe("loginAction", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(() =>
-        Promise.resolve(new Response(JSON.stringify({ data: { token: "jwt" } }), { status: 200 }))
+        Promise.resolve(new Response(JSON.stringify({ data: { access_token: "jwt" } }), { status: 200 }))
       )
     );
     let thrown: Error & { digest?: string } = new Error("not thrown");

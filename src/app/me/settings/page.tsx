@@ -1,5 +1,6 @@
-// src/app/settings/page.tsx
+// src/app/me/settings/page.tsx
 import { RouterLink } from "@/components/ui";
+import { LogoutForm } from "@/features/auth";
 import { SubscriptionsSection } from "@/features/notifications";
 import {
   PreferencesForm,
@@ -19,7 +20,7 @@ import { requireUserOrRedirect } from "@/utils/me";
 export const metadata = { title: "Настройки" };
 
 export default async function SettingsPage() {
-  const me = await requireUserOrRedirect("/settings");
+  const me = await requireUserOrRedirect("/me/settings");
 
   const [prefs, vapidPublicKey, historySettings] = await Promise.all([
     getPreferences(),
@@ -62,6 +63,11 @@ export default async function SettingsPage() {
         <RouterLink href="/me/stats" className="text-sm">
           Посмотреть мою статистику →
         </RouterLink>
+      </section>
+
+      <section className="flex flex-col items-start gap-3 border-t border-(--color-border) pt-8">
+        <h2 className="text-lg font-semibold">Аккаунт</h2>
+        <LogoutForm />
       </section>
     </div>
   );

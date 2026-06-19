@@ -1,4 +1,4 @@
-// src/app/media/my/page.tsx
+// src/app/me/media/page.tsx
 import { Pagination } from "@/components/ui";
 import {
   MediaGrid,
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default async function MyMediaPage({ searchParams }: Props) {
-  const me = await requireActiveUserOrRedirect("/media/my");
+  const me = await requireActiveUserOrRedirect("/me/media");
 
   const sp = await searchParams;
   const offset = parseNonNegativeInt(sp.offset, 0);
@@ -36,7 +36,7 @@ export default async function MyMediaPage({ searchParams }: Props) {
 
       <section className="flex flex-col gap-4">
         <MediaGrid items={items} />
-        <Pagination basePath="/media/my" offset={offset} limit={limit} total={total} searchParams={sp} />
+        <Pagination basePath="/me/media" offset={offset} limit={limit} total={total} searchParams={sp} />
       </section>
     </div>
   );

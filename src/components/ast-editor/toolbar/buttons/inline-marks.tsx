@@ -22,7 +22,7 @@ export function InlineMarksGroup({ editor, schema }: Props) {
     return null;
   }
   return (
-    <Toolbar.Group>
+    <Toolbar.Group className={`flex items-center gap-1`}>
       {schema.marks.has("bold") && (
         <Toolbar.Button
           aria-label="Жирный"

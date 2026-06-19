@@ -28,7 +28,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
   }
 
   return (
-    <Toolbar.Group>
+    <Toolbar.Group className={`flex items-center gap-1`}>
       {allowed.has("blockquote") && (
         <Toolbar.Button
           aria-label="Цитата"

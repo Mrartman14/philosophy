@@ -22,7 +22,7 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
   /** Момент последнего локального «всё просмотрено» — против гонки с poll'ом. */
   const lastSeenRef = useRef(0);
 
-  // router.refresh() (напр. "Просмотреть все" на /notifications) перерисовывает
+  // router.refresh() (напр. "Просмотреть все" на /me/notifications) перерисовывает
   // хедер с новыми initialCounts — пересеваем, иначе бейдж висит устаревшим до
   // следующего poll'а. Гонку с poll'ом по-прежнему закрывает lastSeenRef.
   useEffect(() => {

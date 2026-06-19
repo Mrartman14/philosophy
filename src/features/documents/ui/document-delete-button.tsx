@@ -21,7 +21,7 @@ interface Props {
 
 export function DocumentDeleteButton({
   id,
-  redirectTo = "/documents/my",
+  redirectTo = "/me/documents",
   admin = false,
   label = "Удалить",
 }: Props) {

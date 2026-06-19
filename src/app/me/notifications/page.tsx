@@ -1,4 +1,4 @@
-// src/app/notifications/page.tsx
+// src/app/me/notifications/page.tsx
 import { Pagination } from "@/components/ui";
 import {
   getNotifications,
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default async function NotificationsPage({ searchParams }: Props) {
-  await requireUserOrRedirect("/notifications");
+  await requireUserOrRedirect("/me/notifications");
 
   const { offset: offsetParam } = await searchParams;
   const limit = 20;
@@ -40,7 +40,7 @@ export default async function NotificationsPage({ searchParams }: Props) {
       )}
 
       {total > 0 && (
-        <Pagination basePath="/notifications" offset={offset} limit={limit} total={total} />
+        <Pagination basePath="/me/notifications" offset={offset} limit={limit} total={total} />
       )}
     </div>
   );

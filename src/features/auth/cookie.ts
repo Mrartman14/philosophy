@@ -2,7 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 
 const COOKIE_NAME = "token";
-const MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 дней
+const MAX_AGE_SECONDS = 60 * 60 * 24; // 24ч = TTL access-JWT на бэке
 
 export async function setAuthCookie(token: string): Promise<void> {
   const store = await cookies();

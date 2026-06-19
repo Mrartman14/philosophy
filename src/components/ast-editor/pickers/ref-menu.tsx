@@ -2,6 +2,8 @@
 import type { Editor } from "@tiptap/core";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
+
 import { Comment2StagePicker } from "./comment-2stage-picker";
 import { DocumentPicker } from "./document-picker";
 import { GlossaryPicker } from "./glossary-picker";
@@ -72,19 +74,20 @@ export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: Ref
 
   return (
     <div className="ref-menu" role="dialog" aria-label="Вставить ссылку">
-      <div className="ref-menu__cats">
+      <div className="flex gap-1 p-1 gap-1">
         {(Object.keys(MARK_FOR) as Category[]).map((c) => (
-          <button
+          <Button
             key={c}
             type="button"
             aria-pressed={cat === c}
             onClick={() => { setCat(c); }}
+            variant={cat === c ? "primary" : "secondary"}
           >
             {labels[c]}
-          </button>
+          </Button>
         ))}
       </div>
-      <div className="ref-menu__picker">
+      <div>
         {cat === "lecture" && <LecturePicker onSelect={onSelect} />}
         {cat === "glossary" && <GlossaryPicker onSelect={onSelect} />}
         {cat === "document" && <DocumentPicker onSelect={onSelect} />}

@@ -50,8 +50,8 @@ export const loginAction = createFormAction<undefined>(async (formData) => {
 
   let token: string | undefined;
   try {
-    const json = (await res.json()) as { data?: { token?: unknown } };
-    if (typeof json.data?.token === "string") token = json.data.token;
+    const json = (await res.json()) as { data?: { access_token?: unknown } };
+    if (typeof json.data?.access_token === "string") token = json.data.access_token;
   } catch {
     throw new AuthError("service_unavailable");
   }
