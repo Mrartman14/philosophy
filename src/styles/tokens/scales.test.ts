@@ -24,6 +24,7 @@ describe("scales", () => {
   it("font stacks reference next/font vars", () => {
     expect(FONT_STACKS.sans).toContain("--font-geist-sans");
     expect(FONT_STACKS.legible).toContain("--font-atkinson");
+    expect(FONT_STACKS.legible).toContain("--font-geist-sans");
     expect(FONT_STACKS.serif).toContain("--font-serif");
   });
   it("z toast above modal", () => { expect(Z.toast).toBeGreaterThan(Z.modal); });

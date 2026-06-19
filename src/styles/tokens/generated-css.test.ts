@@ -18,5 +18,6 @@ describe("tokens.generated.css", () => {
     expect(css).toContain('[data-contrast="high"] {');
     expect(css).not.toMatch(/,\s*\n\s*@media/); // запятая перед @media = невалидно
     expect(css).toContain(':root:not([data-contrast="normal"])');
+    expect(css).toContain('(prefers-color-scheme: dark) and (prefers-contrast: more)');
   });
 });

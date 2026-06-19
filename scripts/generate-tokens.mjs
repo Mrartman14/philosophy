@@ -79,6 +79,11 @@ ${colorVars(colorLayers["dark-high"])}
 ${colorVars(colorLayers["light-high"]).replace(/^/gm, "  ")}
   }
 }
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
+  :root:not([data-contrast="normal"]):not([data-theme="light"]) {
+${colorVars(colorLayers["dark-high"]).replace(/^/gm, "  ")}
+  }
+}
 
 [data-density="compact"] {
 ${densityVars("compact")}

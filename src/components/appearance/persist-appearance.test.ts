@@ -34,7 +34,7 @@ describe("persistAppearance", () => {
 
   it("swallows backend errors (fields not yet in contract)", async () => {
     getMe.mockResolvedValue({ id: "u1", status: "active", capabilities: [] });
-    patch.mockResolvedValue({ data: null, error: { code: "BAD_REQUEST" } });
+    patch.mockRejectedValue(new Error("backend 500"));
     await expect(persistAppearance(DEFAULT_APPEARANCE)).resolves.toBeUndefined();
   });
 
