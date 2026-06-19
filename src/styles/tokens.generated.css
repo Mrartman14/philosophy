@@ -98,7 +98,7 @@
   --danger: oklch(58.96874999999999% 0.2 27);
   --danger-bg: oklch(90.93749999999997% 0.045312500000000006 27);
   --danger-fg: oklch(46.80084228515623% 0.1890625 27);
-  --danger-solid: oklch(0.42 0.2 27);
+  --danger-solid: oklch(0.42 0.171 27);
   --danger-on-solid: oklch(86.63281249999999% 0 80);
   --success: oklch(55.45312500000003% 0.1553125 149);
   --success-bg: oklch(89.99999999999999% 0.048 149);
@@ -139,7 +139,7 @@
     --danger: oklch(80.55859374999999% 0.10937500000000004 27);
     --danger-bg: oklch(38.58984375% 0.06 27);
     --danger-fg: oklch(85.24716949462892% 0.07812500000000001 27);
-    --danger-solid: oklch(0.42 0.2 27);
+    --danger-solid: oklch(0.42 0.171 27);
     --danger-on-solid: oklch(86.63281249999999% 0 80);
     --success: oklch(77.62695312500001% 0.16 149);
     --success-bg: oklch(37.27832031249999% 0.048 149);
@@ -173,7 +173,7 @@
   --danger: oklch(80.55859374999999% 0.10937500000000004 27);
   --danger-bg: oklch(38.58984375% 0.06 27);
   --danger-fg: oklch(85.24716949462892% 0.07812500000000001 27);
-  --danger-solid: oklch(0.42 0.2 27);
+  --danger-solid: oklch(0.42 0.171 27);
   --danger-on-solid: oklch(86.63281249999999% 0 80);
   --success: oklch(77.62695312500001% 0.16 149);
   --success-bg: oklch(37.27832031249999% 0.048 149);
@@ -206,7 +206,7 @@
   --danger: oklch(58.96874999999999% 0.2 27);
   --danger-bg: oklch(90.93749999999997% 0.045312500000000006 27);
   --danger-fg: oklch(46.80084228515623% 0.1890625 27);
-  --danger-solid: oklch(0.42 0.2 27);
+  --danger-solid: oklch(0.42 0.171 27);
   --danger-on-solid: oklch(86.63281249999999% 0 80);
   --success: oklch(55.45312500000003% 0.1553125 149);
   --success-bg: oklch(89.99999999999999% 0.048 149);
@@ -240,8 +240,8 @@
   --danger: oklch(45.703124999999986% 0.1859375 27);
   --danger-bg: oklch(90.93749999999997% 0.045312500000000006 27);
   --danger-fg: oklch(30.94894409179686% 0.12500000000000003 27);
-  --danger-solid: oklch(0.39 0.2 27);
-  --danger-on-solid: oklch(85.22656250000001% 0 80);
+  --danger-solid: oklch(0.39 0.158 27);
+  --danger-on-solid: oklch(85.2265625% 0 80);
   --success: oklch(43.6875% 0.1225 149);
   --success-bg: oklch(89.99999999999999% 0.048 149);
   --success-fg: oklch(30.585937500000004% 0.08499999999999999 149);
@@ -272,8 +272,8 @@
   --danger: oklch(86.57617187500001% 0.07031250000000001 27);
   --danger-bg: oklch(38.58984375% 0.06 27);
   --danger-fg: oklch(92.50364303588866% 0.037500000000000006 27);
-  --danger-solid: oklch(0.39 0.2 27);
-  --danger-on-solid: oklch(85.22656250000001% 0 80);
+  --danger-solid: oklch(0.39 0.158 27);
+  --danger-on-solid: oklch(85.2265625% 0 80);
   --success: oklch(83.953125% 0.16 149);
   --success-bg: oklch(37.27832031249999% 0.048 149);
   --success-fg: oklch(90.19973754882812% 0.16 149);
@@ -305,8 +305,8 @@
     --danger: oklch(45.703124999999986% 0.1859375 27);
     --danger-bg: oklch(90.93749999999997% 0.045312500000000006 27);
     --danger-fg: oklch(30.94894409179686% 0.12500000000000003 27);
-    --danger-solid: oklch(0.39 0.2 27);
-    --danger-on-solid: oklch(85.22656250000001% 0 80);
+    --danger-solid: oklch(0.39 0.158 27);
+    --danger-on-solid: oklch(85.2265625% 0 80);
     --success: oklch(43.6875% 0.1225 149);
     --success-bg: oklch(89.99999999999999% 0.048 149);
     --success-fg: oklch(30.585937500000004% 0.08499999999999999 149);
@@ -339,8 +339,8 @@
     --danger: oklch(86.57617187500001% 0.07031250000000001 27);
     --danger-bg: oklch(38.58984375% 0.06 27);
     --danger-fg: oklch(92.50364303588866% 0.037500000000000006 27);
-    --danger-solid: oklch(0.39 0.2 27);
-    --danger-on-solid: oklch(85.22656250000001% 0 80);
+    --danger-solid: oklch(0.39 0.158 27);
+    --danger-on-solid: oklch(85.2265625% 0 80);
     --success: oklch(83.953125% 0.16 149);
     --success-bg: oklch(37.27832031249999% 0.048 149);
     --success-fg: oklch(90.19973754882812% 0.16 149);
@@ -375,8 +375,8 @@
     --danger: oklch(45.703124999999986% 0.1859375 27);
     --danger-bg: oklch(90.93749999999997% 0.045312500000000006 27);
     --danger-fg: oklch(30.94894409179686% 0.12500000000000003 27);
-    --danger-solid: oklch(0.39 0.2 27);
-    --danger-on-solid: oklch(85.22656250000001% 0 80);
+    --danger-solid: oklch(0.39 0.158 27);
+    --danger-on-solid: oklch(85.2265625% 0 80);
     --success: oklch(43.6875% 0.1225 149);
     --success-bg: oklch(89.99999999999999% 0.048 149);
     --success-fg: oklch(30.585937500000004% 0.08499999999999999 149);
@@ -409,8 +409,8 @@
     --danger: oklch(86.57617187500001% 0.07031250000000001 27);
     --danger-bg: oklch(38.58984375% 0.06 27);
     --danger-fg: oklch(92.50364303588866% 0.037500000000000006 27);
-    --danger-solid: oklch(0.39 0.2 27);
-    --danger-on-solid: oklch(85.22656250000001% 0 80);
+    --danger-solid: oklch(0.39 0.158 27);
+    --danger-on-solid: oklch(85.2265625% 0 80);
     --success: oklch(83.953125% 0.16 149);
     --success-bg: oklch(37.27832031249999% 0.048 149);
     --success-fg: oklch(90.19973754882812% 0.16 149);

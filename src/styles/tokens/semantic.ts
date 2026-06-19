@@ -41,7 +41,11 @@ export function buildColorLayer(theme: ThemeMode, contrast: Contrast): Record<Co
   // L=0.42 gives a dark-enough fill so a near-white label reaches Lc≥60 in both themes.
   // boost nudges it slightly darker in high-contrast mode (lower L = more contrast for the label).
   const dangerSolidL = contrast === "high" ? 0.39 : 0.42;
-  const dangerSolid = `oklch(${dangerSolidL} ${HUE.danger.c} ${HUE.danger.h})`;
+  // Chroma clamped to the sRGB gamut at this lightness/hue (HUE.danger.c=0.2 is
+  // out of sRGB here → would be clipped on sRGB displays, drifting the verified
+  // danger-on-solid contrast). These values stay in-gamut; label keeps Lc≥60.
+  const dangerSolidC = contrast === "high" ? 0.158 : 0.171;
+  const dangerSolid = `oklch(${dangerSolidL} ${dangerSolidC} ${HUE.danger.h})`;
   const dangerOnSolid = deriveOn(dangerSolid, 65, HUE.neutral.h, 0.0, "lighter");
   const dangerBg = deriveOn(bd.bg, t.tint, HUE.danger.h, HUE.danger.c * 0.3, dirTint);
   const successBg = deriveOn(bd.bg, t.tint, HUE.success.h, HUE.success.c * 0.3, dirTint);
