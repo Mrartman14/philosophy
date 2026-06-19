@@ -39,7 +39,7 @@ export default async function AdminTagsPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Теги</h1>
-        <p className="text-sm text-(--color-description)">Всего: {result.total}</p>
+        <p className="text-sm text-(--color-fg-muted)">Всего: {result.total}</p>
       </header>
 
       {canCreate && <TagCreateForm />}

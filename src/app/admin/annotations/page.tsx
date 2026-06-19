@@ -40,13 +40,13 @@ export default async function AdminAnnotationsPage({ searchParams }: Props) {
   return (
     <section className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Аннотации (публичные)</h1>
-      <p className="text-sm text-(--color-description)">
+      <p className="text-sm text-(--color-fg-muted)">
         Видны только публичные аннотации. Удаление доступно для публичных
         (приватные модерации недоступны).
       </p>
       <AnnotationAdminFilterForm />
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">Ничего не найдено.</p>
+        <p className="text-sm text-(--color-fg-muted)">Ничего не найдено.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((a) => (

@@ -37,7 +37,7 @@ export default async function AdminGlossaryPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Глоссарий</h1>
-        <p className="text-sm text-(--color-description)">Всего: {result.total}</p>
+        <p className="text-sm text-(--color-fg-muted)">Всего: {result.total}</p>
       </header>
 
       {canCreate && <GlossaryCreateForm />}

@@ -21,11 +21,11 @@ export const LoginCta: React.FC<LoginCtaProps> = ({
     : "/login";
 
   return (
-    <p className="text-sm text-(--color-description)">
+    <p className="text-sm text-(--color-fg-muted)">
       {message}.{" "}
       <RouterLink
         href={href}
-        className="text-(--color-primary) hover:underline"
+        className="text-(--color-accent) hover:underline"
       >
         Войти
       </RouterLink>

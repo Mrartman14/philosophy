@@ -23,8 +23,8 @@ export function AdminSidebar({ items }: { items: NavItem[] }) {
             className={cn(
               "rounded px-2 py-1.5 text-sm transition",
               active
-                ? "bg-(--color-foreground) text-(--color-background)"
-                : "hover:bg-(--color-background)",
+                ? "bg-(--color-fg) text-(--color-surface)"
+                : "hover:bg-(--color-surface)",
             )}
           >
             {item.label}

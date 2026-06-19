@@ -10,11 +10,11 @@ export const InstallBanner: React.FC = () => {
 
   if (canInstall) {
     return (
-      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-(--color-border) bg-(--color-text-pane)">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-(--color-border) bg-(--color-surface-subtle)">
         <span className="text-sm">Установить приложение на устройство</span>
         <button
           onClick={() => { void promptInstall(); }}
-          className="text-sm font-medium px-3 py-1 rounded bg-(--color-foreground) text-(--color-background) hover:opacity-80 shrink-0"
+          className="text-sm font-medium px-3 py-1 rounded bg-(--color-fg) text-(--color-surface) hover:opacity-80 shrink-0"
         >
           Установить
         </button>
@@ -24,7 +24,7 @@ export const InstallBanner: React.FC = () => {
 
   if (isIOS) {
     return (
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-(--color-border) bg-(--color-text-pane) text-sm text-(--color-description)">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-(--color-border) bg-(--color-surface-subtle) text-sm text-(--color-fg-muted)">
         Нажмите «Поделиться» ⎋ → «На экран Домой» + чтобы установить
       </div>
     );

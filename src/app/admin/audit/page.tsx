@@ -49,7 +49,7 @@ export default async function AdminAuditPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Аудит</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Журнал админ-действий. Всего записей: {result.total}
         </p>
       </header>

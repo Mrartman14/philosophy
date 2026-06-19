@@ -28,13 +28,13 @@ export const AppNav: React.FC<{ lectures: Lecture[] }> = ({ lectures }) => {
               <li key={item.id}>
                 <RouterLink
                   href={href}
-                  className="group block p-2 hover:bg-(--color-text-pane) font-semibold focus:outline-0"
+                  className="group block p-2 hover:bg-(--color-surface-subtle) font-semibold focus:outline-0"
                 >
                   <span className="group-hover:underline group-focus:underline">
                     {item.title}
                   </span>
                   {item.description && (
-                    <span className="block text-xs text-(--color-description)">
+                    <span className="block text-xs text-(--color-fg-muted)">
                       {item.description}
                     </span>
                   )}
@@ -56,7 +56,7 @@ const contentListClassName =
 
 const triggerClassName =
   "md:text-base flex items-center justify-center gap-1 md:gap-1 " +
-  "data-[popup-open]:text-inherit text-(--color-description) font-semibold select-none";
+  "data-[popup-open]:text-inherit text-(--color-fg-muted) font-semibold select-none";
 
 const contentAnimationClassName =
   "transition-[opacity,transform,translate] duration-[var(--duration)] ease-[var(--easing)] " +

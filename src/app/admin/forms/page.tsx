@@ -29,7 +29,7 @@ export default async function AdminFormsPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Формы</h1>
-        <p className="text-sm text-(--color-description)">Публичные формы. Всего: {result.total}</p>
+        <p className="text-sm text-(--color-fg-muted)">Публичные формы. Всего: {result.total}</p>
       </header>
 
       <ul className="flex flex-col divide-y divide-(--color-border)">

@@ -21,17 +21,17 @@ export default async function AdminLayout({
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] w-full">
-      <aside className="w-56 shrink-0 border-r border-(--color-border) bg-(--color-text-pane) p-4 flex flex-col gap-4">
+      <aside className="w-56 shrink-0 border-r border-(--color-border) bg-(--color-surface-subtle) p-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <RouterLink
             href="/"
-            className="text-xs text-(--color-description) hover:underline"
+            className="text-xs text-(--color-fg-muted) hover:underline"
           >
             ← На сайт
           </RouterLink>
           <h2 className="text-lg font-bold">Админ-панель</h2>
           {me && (
-            <span className="text-xs text-(--color-description) break-all">
+            <span className="text-xs text-(--color-fg-muted) break-all">
               {me.username}
             </span>
           )}

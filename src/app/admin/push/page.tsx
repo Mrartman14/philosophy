@@ -14,7 +14,7 @@ export default async function AdminPushPage() {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Push-уведомления</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Рассылка уходит всем подписанным пользователям. Отправка асинхронная —
           доставка занимает время.
         </p>

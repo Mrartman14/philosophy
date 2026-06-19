@@ -35,7 +35,7 @@ export default async function AdminBannersPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Баннеры</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Всего: {result.total}
         </p>
       </header>

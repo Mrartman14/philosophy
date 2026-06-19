@@ -28,7 +28,7 @@ export default async function AdminTrailsPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Маршруты</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Публичные маршруты. Всего: {result.total}
         </p>
       </header>

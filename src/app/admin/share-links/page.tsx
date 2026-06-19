@@ -25,7 +25,7 @@ export default async function AdminShareLinksPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Модерация ссылок</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Просмотр и отзыв любых share-ссылок. Укажите тип ресурса и его ID.
         </p>
       </header>
@@ -44,7 +44,7 @@ export default async function AdminShareLinksPage({ searchParams }: Props) {
           showUrl={false}
         />
       ) : (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Укажите тип и ID ресурса выше.
         </p>
       )}

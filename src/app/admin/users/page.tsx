@@ -32,7 +32,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Пользователи</h1>
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Всего: {result.total}
         </p>
       </header>

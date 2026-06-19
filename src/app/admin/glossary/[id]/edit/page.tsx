@@ -39,7 +39,7 @@ export default async function AdminGlossaryEditPage({
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">{term.title}</h1>
-        <p className="text-xs text-(--color-description)">
+        <p className="text-xs text-(--color-fg-muted)">
           Название термина нельзя изменить. Можно редактировать только тело.
         </p>
       </header>

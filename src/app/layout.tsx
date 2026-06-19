@@ -82,7 +82,7 @@ export default async function RootLayout({
       </head>
       <body
         className={`
-          root bg-(--color-background)
+          root bg-(--color-surface)
           ${geistSans.variable} ${geistMono.variable} ${atkinson.variable} ${sourceSerif.variable} antialiased
           grid grid-rows-[var(--header-height)_1fr] items-stretch justify-items-center min-h-screen
           `}

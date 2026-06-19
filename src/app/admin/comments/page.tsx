@@ -36,7 +36,7 @@ export default async function AdminCommentsPage({ searchParams }: Props) {
 
       <form method="get" className="flex items-end gap-2">
         <label htmlFor="lecture_id" className="flex flex-col gap-1 text-sm">
-          <span className="text-xs text-(--color-description)">ID лекции</span>
+          <span className="text-xs text-(--color-fg-muted)">ID лекции</span>
           <TextInput
             id="lecture_id"
             name="lecture_id"
@@ -48,16 +48,16 @@ export default async function AdminCommentsPage({ searchParams }: Props) {
       </form>
 
       {!lecture_id && (
-        <p className="text-sm text-(--color-description)">
+        <p className="text-sm text-(--color-fg-muted)">
           Укажите ID лекции — глобального списка комментариев на бекенде нет.
         </p>
       )}
 
       {list && (
         <div className="flex flex-col gap-3">
-          <p className="text-xs text-(--color-description)">Всего: {list.total}</p>
+          <p className="text-xs text-(--color-fg-muted)">Всего: {list.total}</p>
           {list.items.length === 0 ? (
-            <p className="text-sm text-(--color-description)">Комментариев нет.</p>
+            <p className="text-sm text-(--color-fg-muted)">Комментариев нет.</p>
           ) : (
             list.items.map((c) => <AdminCommentRow key={c.id} comment={c} />)
           )}
