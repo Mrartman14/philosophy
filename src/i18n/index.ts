@@ -10,9 +10,7 @@ import { getLocale, getStoredLocale } from "./locale.server";
 export { getLocale, getStoredLocale };
 
 /** Серверный переводчик (RSC / server actions). Ключи типизированы через AppConfig. */
-export function getT(namespace?: Parameters<typeof getTranslations>[0]) {
-  return getTranslations(namespace);
-}
+export const getT = getTranslations;
 
 /** Сообщения текущего запроса (для передачи в I18nProvider из layout). */
 export function getMessages() {
