@@ -1,1 +1,27 @@
-/* .content — populated in Task 14 */
+@layer components {
+  .content { color: var(--color-fg); font-family: var(--font-ui); font-size: var(--text-base); line-height: var(--text-base--line-height); --flow: var(--space-stack); }
+  .content[data-size="sm"] { font-size: var(--text-sm); line-height: var(--text-sm--line-height); }
+  .content--measure { max-inline-size: 65ch; }
+  /* FLOW: односторонний логический margin — единственный механизм ритма. */
+  .content > * + * { margin-block-start: var(--flow); }
+  .content > :is(h1,h2,h3) { --flow: calc(var(--space-stack) * 1.75); }
+  .content > :is(h4,h5,h6) { --flow: calc(var(--space-stack) * 1.25); }
+  .content :is(h1,h2,h3,h4,h5,h6) { font-weight: 600; line-height: 1.2; }
+  .content h1 { font-size: var(--text-3xl); } .content h2 { font-size: var(--text-2xl); }
+  .content h3 { font-size: var(--text-xl); } .content h4 { font-size: var(--text-lg); }
+  .content h5 { font-size: var(--text-base); } .content h6 { font-size: var(--text-sm); }
+  .content a { color: var(--color-link); text-decoration: underline; }
+  .content a:hover { color: var(--color-link-hover); }
+  .content strong { font-weight: 600; }
+  .content :is(ul,ol) { padding-inline-start: 1.5em; } .content ul { list-style: disc; } .content ol { list-style: decimal; }
+  .content > :is(ul,ol) > li + li { margin-block-start: calc(var(--space-stack) * 0.4); }
+  .content blockquote { border-inline-start: 3px solid var(--color-border-strong); padding-inline-start: 1em; color: var(--color-fg-muted); }
+  .content code { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.9em; background: var(--color-surface-subtle); padding: 0.1em 0.3em; border-radius: var(--radius-sm); }
+  .content pre { font-family: var(--font-geist-mono), ui-monospace, monospace; background: var(--color-surface-subtle); padding: var(--space-control-pad-x); border-radius: var(--radius-md); overflow-x: auto; }
+  .content pre code { background: none; padding: 0; }
+  .content hr { border: 0; border-block-start: 1px solid var(--color-border); }
+  .content img { max-width: 100%; height: auto; border-radius: var(--radius-md); }
+  .content table { width: 100%; border-collapse: collapse; }
+  .content :is(th,td) { border: 1px solid var(--color-border); padding: var(--space-control-pad-y) var(--space-control-pad-x); text-align: start; }
+  .content th { font-weight: 600; background: var(--color-surface-subtle); }
+}

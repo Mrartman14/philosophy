@@ -34,7 +34,7 @@ export async function EventRevisions({ eventId, selectedRevisionId }: Props) {
       buildHref={(rid) => `/admin/events/${eventId}/edit?revision=${rid}`}
     >
       {selected && (
-        <div className="prose">
+        <div className="content">
           <AstRender blocks={selected.blocks ?? []} />
         </div>
       )}

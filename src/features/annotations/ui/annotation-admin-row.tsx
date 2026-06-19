@@ -21,7 +21,7 @@ export function AnnotationAdminRow({ annotation, canAdminDelete }: Props) {
         </span>
         <span>автор: {annotation.owner_id}</span>
       </header>
-      <div className="prose prose-sm">
+      <div className="content" data-size="sm">
         <AstRender blocks={annotation.blocks ?? []} />
       </div>
       {canAdminDelete && annotation.id && (

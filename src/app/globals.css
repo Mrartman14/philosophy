@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 
 @import "../styles/tokens.generated.css";
 @import "../styles/themes/compat.css";

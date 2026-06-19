@@ -40,7 +40,7 @@ export async function ActiveBanners() {
             style={{ backgroundColor: banner.background_color }}
             className="flex w-full items-start justify-between gap-3 border-b border-(--color-border) px-4 py-2"
           >
-            <div className="prose min-w-0 flex-1 text-sm">
+            <div className="content min-w-0 flex-1 text-sm">
               <AstRender blocks={banner.blocks ?? []} />
             </div>
             {authenticated && banner.dismissible !== false && (

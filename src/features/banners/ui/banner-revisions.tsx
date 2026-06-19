@@ -37,7 +37,7 @@ export async function BannerRevisions({ bannerId, selectedRevisionId }: Props) {
       buildHref={(rid) => `/admin/banners/${bannerId}/edit?revision=${rid}`}
     >
       {selected && (
-        <div className="prose">
+        <div className="content">
           <AstRender blocks={selected.blocks ?? []} />
         </div>
       )}

@@ -72,7 +72,7 @@ export function CalendarView({ range, occurrences }: Props) {
                       </p>
                     )}
                     {(occ.blocks?.length ?? 0) > 0 && (
-                      <div className="prose mt-2">
+                      <div className="content mt-2">
                         <AstRender blocks={occ.blocks ?? []} />
                       </div>
                     )}

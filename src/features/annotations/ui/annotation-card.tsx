@@ -34,7 +34,7 @@ export function AnnotationCard({ annotation, actions, anchorContext }: Props) {
         {updated && <time>{updated.toLocaleDateString("ru-RU")}</time>}
       </header>
       {anchorContext}
-      <div className="prose prose-sm">
+      <div className="content" data-size="sm">
         <AstRender blocks={annotation.blocks ?? []} />
       </div>
       {actions && <div className="flex gap-2">{actions}</div>}

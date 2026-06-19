@@ -27,7 +27,7 @@ export async function CommentRevisions({ commentId, selectedRevisionId, basePath
       buildHref={(rid) => `${basePath}?revision=${rid}`}
     >
       {selected && (
-        <div className="prose prose-sm max-w-none">
+        <div className="content" data-size="sm">
           <AstRender blocks={(selected.blocks ?? [])} />
         </div>
       )}

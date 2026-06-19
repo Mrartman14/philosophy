@@ -33,7 +33,7 @@ export async function CommentAnchorContext({ anchor }: { anchor: Anchor }) {
         </blockquote>
       )}
       {block && (
-        <div className="prose prose-sm mt-1 max-w-none opacity-80">
+        <div className="content mt-1 opacity-80" data-size="sm">
           <AstRender blocks={[block]} />
         </div>
       )}

@@ -231,7 +231,7 @@ export function SavedLectureView({ id }: { id: string }) {
               {doc.filename && (
                 <h2 className="text-xl font-semibold">{doc.filename}</h2>
               )}
-              <div className="prose prose-sm max-w-none">
+              <div className="content" data-size="sm">
                 <AstRender blocks={doc.blocks ?? []} />
               </div>
             </div>

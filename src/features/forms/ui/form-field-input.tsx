@@ -19,12 +19,12 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
 
   return (
     <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
-      <div className="prose prose-sm max-w-none">
+      <div className="content" data-size="sm">
         <AstRender blocks={field.prompt ?? []} />
         {field.required && <span className="text-red-600"> *</span>}
       </div>
       {(field.help_text?.length ?? 0) > 0 && (
-        <div className="prose prose-sm max-w-none text-(--color-description)">
+        <div className="content text-(--color-description)" data-size="sm">
           <AstRender blocks={field.help_text ?? []} />
         </div>
       )}

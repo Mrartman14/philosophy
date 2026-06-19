@@ -40,7 +40,7 @@ export async function GlossaryRevisions({ termId, selectedRevisionId }: Props) {
       title="История ревизий термина"
     >
       {selected && (
-        <div className="prose">
+        <div className="content">
           <AstRender blocks={selected.blocks ?? []} />
         </div>
       )}

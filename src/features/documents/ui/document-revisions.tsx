@@ -30,7 +30,7 @@ export async function DocumentRevisions({ documentId, selectedRevisionId }: Prop
       buildHref={(rid) => `/documents/${documentId}?revision=${rid}`}
     >
       {selected && (
-        <div className="prose max-w-none">
+        <div className="content">
           <AstRender blocks={selected.blocks ?? []} />
         </div>
       )}

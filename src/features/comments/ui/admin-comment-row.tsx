@@ -19,7 +19,7 @@ export function AdminCommentRow({ comment }: { comment: Comment }) {
           {deleted && <span className="text-red-600">удалён</span>}
         </div>
         {!deleted && (
-          <div className="prose prose-sm max-w-none">
+          <div className="content" data-size="sm">
             <AstRender blocks={(comment.blocks ?? [])} />
           </div>
         )}

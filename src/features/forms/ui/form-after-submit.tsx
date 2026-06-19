@@ -8,7 +8,7 @@ export function FormAfterSubmit({ blocks }: { blocks: AstBlock[] }) {
   return (
     <section className="rounded border border-(--color-border) p-4">
       <h2 className="mb-2 text-sm font-semibold">После отправки</h2>
-      <article className="prose max-w-none">
+      <article className="content">
         <AstRender blocks={blocks} />
       </article>
     </section>

@@ -38,7 +38,7 @@ export async function AnnotationRevisions({
       buildHref={(rid) => `${basePath}?revision=${rid}`}
     >
       {selected && (
-        <div className="prose prose-sm">
+        <div className="content" data-size="sm">
           <AstRender blocks={selected.blocks ?? []} />
         </div>
       )}

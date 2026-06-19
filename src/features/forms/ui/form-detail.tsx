@@ -12,7 +12,7 @@ export function FormDetail({ form }: { form: Form }) {
       <h1 className="text-2xl font-bold">{form.title ?? "Форма"}</h1>
       <FormMeta form={form} />
       {description.length > 0 && (
-        <article className="prose max-w-none">
+        <article className="content">
           <AstRender blocks={description} />
         </article>
       )}

@@ -10,7 +10,7 @@ interface Props {
 export function DocumentDetail({ document }: Props) {
   const blocks = document.blocks ?? [];
   return (
-    <article className="prose max-w-none">
+    <article className="content">
       {blocks.length === 0 ? (
         <p className="text-sm text-(--color-description)">Документ пуст.</p>
       ) : (

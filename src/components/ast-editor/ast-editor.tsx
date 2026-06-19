@@ -107,7 +107,7 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
           defaultLectureId={props.defaultLectureId}
         />
       )}
-      <EditorContent editor={editor} className="prose prose-sm max-w-none" />
+      <EditorContent editor={editor} className="content" data-size="sm" />
       {props.editable !== false && (
         <SlashMenu editor={editor} schema={schema} context={props.entityContext} />
       )}

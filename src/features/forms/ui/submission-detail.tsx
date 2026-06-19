@@ -24,7 +24,7 @@ export function SubmissionDetail({ form, submission }: Props) {
         const text = decodeAnswerText(f.type ?? "text", value ?? null, f.options ?? []);
         return (
           <div key={f.id} className="flex flex-col gap-1">
-            <dt className="prose prose-sm max-w-none font-medium">
+            <dt className="content font-medium" data-size="sm">
               <AstRender blocks={f.prompt ?? []} />
             </dt>
             <dd className="text-sm">{text || <span className="text-(--color-description)">—</span>}</dd>

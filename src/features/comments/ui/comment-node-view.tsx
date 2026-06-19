@@ -53,7 +53,7 @@ export function CommentNodeView({
           </p>
         ) : null)}
 
-      <div className="prose prose-sm max-w-none">
+      <div className="content" data-size="sm">
         <AstRender blocks={comment.blocks ?? []} />
       </div>
 

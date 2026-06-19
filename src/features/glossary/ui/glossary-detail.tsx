@@ -19,7 +19,7 @@ export function GlossaryDetail({ term }: Props) {
           </p>
         )}
       </header>
-      <div className="prose">
+      <div className="content">
         <AstRender blocks={term.blocks ?? []} />
       </div>
     </article>
