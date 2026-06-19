@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_APPEARANCE } from "./appearance-cookie";
 import { AppearanceProvider, useAppearance } from "./appearance-provider";
+import { persistAppearance } from "./persist-appearance";
 
 vi.mock("./persist-appearance", () => ({ persistAppearance: vi.fn() }));
 
@@ -19,7 +20,7 @@ function Probe() {
 afterEach(cleanup);
 
 describe("AppearanceProvider", () => {
-  beforeEach(() => { document.documentElement.removeAttribute("data-theme"); document.documentElement.removeAttribute("data-density"); document.documentElement.removeAttribute("data-contrast"); document.documentElement.removeAttribute("data-font"); document.documentElement.style.colorScheme = ""; document.documentElement.style.removeProperty("--text-scale"); document.cookie = "appearance=; path=/; max-age=0"; });
+  beforeEach(() => { vi.mocked(persistAppearance).mockClear(); document.documentElement.removeAttribute("data-theme"); document.documentElement.removeAttribute("data-density"); document.documentElement.removeAttribute("data-contrast"); document.documentElement.removeAttribute("data-font"); document.documentElement.style.colorScheme = ""; document.documentElement.style.removeProperty("--text-scale"); document.cookie = "appearance=; path=/; max-age=0"; });
   it("exposes initial", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); expect(screen.getByTestId("theme").textContent).toBe("system"); });
   it("setAxis mutates <html> + state", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("dark")); expect(document.documentElement.getAttribute("data-theme")).toBe("dark"); expect(screen.getByTestId("theme").textContent).toBe("dark"); });
   it("explicit→system removes data-theme + sets color-scheme", () => { render(<AppearanceProvider initial={{ ...DEFAULT_APPEARANCE, theme: "dark" }}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("system")); expect(document.documentElement.hasAttribute("data-theme")).toBe(false); expect(document.documentElement.style.colorScheme).toBe("light dark"); });
@@ -32,5 +33,21 @@ describe("AppearanceProvider", () => {
     document.cookie = `appearance=${encodeURIComponent(JSON.stringify({ ...DEFAULT_APPEARANCE, theme: "light" }))}; path=/`;
     render(<AppearanceProvider initial={{ ...DEFAULT_APPEARANCE, theme: "dark" }}><Probe/></AppearanceProvider>);
     expect(decodeURIComponent(document.cookie)).toContain('"theme":"light"');
+  });
+  it("debounces backend persist: a burst of changes → one PATCH with the latest snapshot", () => {
+    vi.useFakeTimers();
+    try {
+      render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>);
+      fireEvent.click(screen.getByText("dark"));
+      fireEvent.click(screen.getByText("compact"));
+      expect(persistAppearance).not.toHaveBeenCalled(); // still inside the debounce window
+      vi.advanceTimersByTime(500);
+      expect(persistAppearance).toHaveBeenCalledTimes(1);
+      expect(persistAppearance).toHaveBeenLastCalledWith(
+        expect.objectContaining({ theme: "dark", density: "compact" }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
