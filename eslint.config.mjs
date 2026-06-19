@@ -6,6 +6,18 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import testingLibrary from "eslint-plugin-testing-library";
 import vitest from "eslint-plugin-vitest";
 
+// Общие паттерны no-restricted-imports (flat-config перезаписывает, не мержит опции
+// правила → каждый матчнувший блок должен нести нужные паттерны целиком).
+const DEEP_IMPORT_PATTERN = {
+  group: ["@/features/*/!(index)", "@/features/*/*/**"],
+  message: "Импортируй фичу через её index.ts (@/features/<entity>).",
+};
+const NO_NEXT_INTL_PATTERN = {
+  group: ["next-intl", "next-intl/*"],
+  message:
+    "next-intl — только через фасад @/i18n (server) / @/i18n/client (Guardrail 5). Прямой импорт запрещён.",
+};
+
 const eslintConfig = [
   // Сгенерированные файлы не линтим: `pnpm generate:api` (openapi-typescript)
   // перезатрёт любые авто-фиксы, поэтому strict-правила тут только создают шум при регене.
@@ -154,21 +166,24 @@ const eslintConfig = [
     rules: { "testing-library/render-result-naming-convention": "off" },
   },
   // Guardrail 1: deep-imports into other features must go through their index.ts
+  // + Guardrail 5: прямой импорт next-intl запрещён (кроме src/i18n/** — см. ниже)
   {
     files: ["src/**/*.{ts,tsx}"],
     ignores: ["src/features/*/**"],
     rules: {
       "no-restricted-imports": [
         "error",
-        {
-          patterns: [
-            {
-              group: ["@/features/*/!(index)", "@/features/*/*/**"],
-              message: "Импортируй фичу через её index.ts (@/features/<entity>).",
-            },
-          ],
-        },
+        { patterns: [DEEP_IMPORT_PATTERN, NO_NEXT_INTL_PATTERN] },
       ],
+    },
+  },
+  // Guardrail 5 exemption: src/i18n — ЕДИНСТВЕННАЯ точка прямого импорта next-intl.
+  // Должен идти ПОСЛЕ Guardrail 1 (перезаписывает его no-restricted-imports для src/i18n),
+  // сохраняя при этом запрет deep-import.
+  {
+    files: ["src/i18n/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [DEEP_IMPORT_PATTERN] }],
     },
   },
   // Guardrail 2: cross-feature imports forbidden
@@ -184,6 +199,7 @@ const eslintConfig = [
               message:
                 "Cross-feature импорты запрещены. Данные ходят через бекенд, общий код — через @/components, @/utils, @/hooks.",
             },
+            NO_NEXT_INTL_PATTERN,
           ],
         },
       ],
@@ -207,6 +223,7 @@ const eslintConfig = [
               message: "Этот файл server-only. Используй import \"server-only\" в начале файла.",
             },
           ],
+          patterns: [NO_NEXT_INTL_PATTERN],
         },
       ],
     },
@@ -234,6 +251,7 @@ const eslintConfig = [
               message:
                 "client.ts — публичный client-safe entry: НЕ реэкспортируй api/actions/permissions/schemas (server-only). Только изоморфные view, чистые утилиты, типы; server-данные — пропами/слотами.",
             },
+            NO_NEXT_INTL_PATTERN,
           ],
         },
       ],
