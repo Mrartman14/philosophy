@@ -1,16 +1,18 @@
 // src/features/comments/comment-format.ts
-// Чистое форматирование даты комментария (изоморфно, без серверных зависимостей).
-// Единый источник — дублировалось в comment-node.tsx и admin-comment-row.tsx.
+// Локале-параметризуемое форматирование даты комментария через единый seam @/i18n.
+// Изоморфно (без хуков) → пригодно для офлайн SavedLectureView из снимка.
+import { getFmt } from "@/i18n/format";
+import { DEFAULT_LOCALE, type ResolvedLocale } from "@/i18n/locales";
 
-const dateFmt = new Intl.DateTimeFormat("ru-RU", {
-  dateStyle: "short",
-  timeStyle: "short",
-  timeZone: "UTC",
-});
-
-/** ISO → "дд.мм.гггг, чч:мм" (UTC). Пустая → ""; неразбираемая → возвращается как есть. */
-export function formatCommentDate(iso?: string): string {
+/** ISO → "дд.мм.гггг, чч:мм" (UTC). Пустая → ""; неразбираемая → как есть. */
+export function formatCommentDate(
+  iso?: string,
+  locale: ResolvedLocale = DEFAULT_LOCALE,
+): string {
   if (!iso) return "";
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : dateFmt.format(d);
+  return getFmt(locale).dateTime(iso, {
+    dateStyle: "short",
+    timeStyle: "short",
+    timeZone: "UTC",
+  });
 }
