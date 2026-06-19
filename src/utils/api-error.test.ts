@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import { rethrowApiError } from "./api-error";
 import { BannedError, ForbiddenError } from "./permissions";
+import { ZodValidationError } from "./create-action";
 
 /** Ловит брошенную ошибку для проверки её класса/полей. */
 function caught(fn: () => never): unknown {
@@ -105,6 +106,23 @@ describe("rethrowApiError — фоллбек", () => {
     expect(() => rethrowApiError({ code: "INTERNAL" })).toThrow(
       "Ошибка сервера",
     );
+  });
+});
+
+describe("rethrowApiError — серверный 422 fields", () => {
+  it("бросает ZodValidationError с раскладкой по полям", () => {
+    try {
+      rethrowApiError({ code: "VALIDATION_ERROR", error: "Проверьте поля", fields: { title: "Обязательно" } });
+      throw new Error("должно было бросить");
+    } catch (e) {
+      expect(e).toBeInstanceOf(ZodValidationError);
+      expect((e as ZodValidationError).fieldErrors).toEqual({ title: "Обязательно" });
+    }
+  });
+
+  it("без fields ведёт себя как раньше (общий Error)", () => {
+    expect(() => rethrowApiError({ code: "VERSION_MISMATCH", error: "x" }))
+      .toThrow("Объект изменён в другом месте. Обновите страницу и повторите.");
   });
 });
 

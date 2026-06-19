@@ -3,6 +3,7 @@ import type { ApiErrorCode } from "@/api/types";
 import { errors, metrics, M } from "@/services/observability";
 
 import { BannedError, ForbiddenError } from "./permissions";
+import { ZodValidationError } from "./create-action";
 
 /** Форма ошибки бека (openapi-fetch error body / ручной JSON). `code`
  * типизирован сгенерированным union `apperror.Code` — опечатка в ключе
@@ -11,6 +12,8 @@ import { BannedError, ForbiddenError } from "./permissions";
 export interface ApiError {
   code?: ApiErrorCode;
   error?: string;
+  /** Карта «поле → текст» из httputil.ValidationErrorResponse (422). */
+  fields?: Record<string, string>;
 }
 
 /** Карта «доменный код → русский текст». Используется и для дефолтов, и для
@@ -87,6 +90,11 @@ export function rethrowApiError(
   err: ApiError | undefined,
   overrides?: ApiErrorMessages,
 ): never {
+  // Серверная валидация (422): раскладка по полям имеет приоритет над общим
+  // текстом, чтобы попасть в существующий канал {code:"validation", fieldErrors}.
+  if (err?.fields && Object.keys(err.fields).length > 0) {
+    throw new ZodValidationError(err.fields);
+  }
   const code = err?.code;
   if (code) {
     // Метрика по доменному коду — до любого throw, чтобы попадали все ветки.
