@@ -22,6 +22,8 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Token CSS is fresh
+        run: pnpm generate:tokens && git diff --exit-code src/styles/tokens.generated.css
       # Fail-fast: дешёвые проверки раньше дорогой сборки.
       - run: pnpm typecheck
       - run: pnpm lint
