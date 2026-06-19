@@ -15,6 +15,26 @@ import { EditorToolbar } from "./toolbar";
 vi.mock("@/components/ui", () => ({
   useToast: () => ({ add: vi.fn() }),
 }));
+// Мок i18n/client: useT возвращает переводчик по реальному каталогу ru.
+vi.mock("@/i18n/client", async () => {
+  const { default: editor } = await import("@/i18n/messages/ru/editor");
+  return {
+    useT: (ns: string) => {
+      const catalog = ns === "editor" ? editor : {};
+      return (key: string, params?: Record<string, string | number>) => {
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = catalog;
+        for (const part of key.split(".")) { val = val?.[part]; }
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        if (typeof val !== "string") return key;
+        if (params) {
+          return val.replace(/\{(\w+)\}/g, (_: string, k: string) => String(params[k] ?? k));
+        }
+        return val;
+      };
+    },
+  };
+});
 vi.mock("../pickers/actions", () => ({
   searchLectures: vi.fn(),
   searchGlossary: vi.fn(),

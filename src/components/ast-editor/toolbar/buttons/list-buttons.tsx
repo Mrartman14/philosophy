@@ -4,6 +4,7 @@ import type { Editor } from "@tiptap/core";
 
 import { ListBulletIcon } from "@/assets/icons/list-bullet-icon";
 import { ListOrderedIcon } from "@/assets/icons/list-ordered-icon";
+import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function ListButtonsGroup({ editor, schema, context }: Props) {
+  const t = useT("editor");
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
   if (!allowed.has("list")) return null;
@@ -38,21 +40,21 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
   return (
     <Toolbar.Group className={`flex items-center gap-1`}>
       <Toolbar.Button
-        aria-label="Маркированный список"
+        aria-label={t("bulletList")}
         aria-pressed={editor.isActive("list", { ordered: false })}
         onClick={() => { toggle(false); }}
       >
         <ListBulletIcon />
       </Toolbar.Button>
       <Toolbar.Button
-        aria-label="Нумерованный список"
+        aria-label={t("orderedList")}
         aria-pressed={editor.isActive("list", { ordered: true })}
         onClick={() => { toggle(true); }}
       >
         <ListOrderedIcon />
       </Toolbar.Button>
       <Toolbar.Button
-        aria-label="Чек-лист"
+        aria-label={t("checkList")}
         aria-pressed={isTaskActive}
         onClick={() => { toggle(false, true); }}
       >

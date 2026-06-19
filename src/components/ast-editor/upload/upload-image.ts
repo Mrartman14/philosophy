@@ -2,6 +2,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 
+import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
@@ -26,7 +27,7 @@ export async function uploadImage(formData: FormData): Promise<UploadImageResult
     return { success: false, error: "file is required" };
   }
 
-  const cookieStore = await cookies();
+  const [cookieStore, t] = await Promise.all([cookies(), getT("editor")]);
   const token = cookieStore.get("token")?.value;
 
   let res: Response;
@@ -39,7 +40,7 @@ export async function uploadImage(formData: FormData): Promise<UploadImageResult
   } catch (e) {
     return {
       success: false,
-      error: e instanceof Error ? e.message : "Сетевая ошибка",
+      error: e instanceof Error ? e.message : t("imageUploadNetworkError"),
     };
   }
 
@@ -56,21 +57,21 @@ export async function uploadImage(formData: FormData): Promise<UploadImageResult
   }
 
   if (res.status === 401 || res.status === 403) {
-    return { success: false, error: body.error ?? "Нет доступа", code: "forbidden" };
+    return { success: false, error: body.error ?? t("imageUploadNoAccess"), code: "forbidden" };
   }
   if (res.status === 413 || body.code === "IMAGE_TOO_LARGE") {
     return {
       success: false,
-      error: body.error ?? "Изображение слишком большое (макс 10 MiB)",
+      error: body.error ?? t("imageUploadTooLarge"),
       code: "image_too_large",
     };
   }
   if (res.status === 422 || body.code === "IMAGE_INVALID_MIME") {
     return {
       success: false,
-      error: body.error ?? "Неподдерживаемый формат файла",
+      error: body.error ?? t("imageUploadInvalidMime"),
       code: "image_invalid_mime",
     };
   }
-  return { success: false, error: body.error ?? `Ошибка загрузки: ${res.status}` };
+  return { success: false, error: body.error ?? t("imageUploadFailed", { status: res.status }) };
 }

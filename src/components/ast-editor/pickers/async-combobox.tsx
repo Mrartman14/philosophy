@@ -1,6 +1,8 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
+import { useT } from "@/i18n/client";
+
 export interface AsyncComboboxProps<T> {
   /**
    * Stable reference recommended (`useCallback`). Component refetches when
@@ -26,10 +28,11 @@ interface State<T> {
 }
 
 export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
+  const t = useT("editor");
   const pageSize = props.pageSize ?? 20;
-  const empty = props.copy?.empty ?? "Ничего не найдено";
-  const errorCopy = props.copy?.error ?? "Ошибка загрузки";
-  const loadingCopy = props.copy?.loading ?? "Загрузка…";
+  const empty = props.copy?.empty ?? t("comboboxEmpty");
+  const errorCopy = props.copy?.error ?? t("comboboxError");
+  const loadingCopy = props.copy?.loading ?? t("comboboxLoading");
 
   const listboxId = useId();
   const [q, setQ] = useState("");
@@ -121,13 +124,13 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
         {s.error && (
           <div role="presentation">
             {errorCopy}
-            <button type="button" onClick={() => void load(debouncedQ, 0)}>Повторить</button>
+            <button type="button" onClick={() => void load(debouncedQ, 0)}>{t("comboboxRetry")}</button>
           </div>
         )}
         {canLoadMore && (
           <div role="presentation">
             <button type="button" onClick={() => void load(debouncedQ, s.items.length)}>
-              Загрузить ещё
+              {t("comboboxLoadMore")}
             </button>
           </div>
         )}

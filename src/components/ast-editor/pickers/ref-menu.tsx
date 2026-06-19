@@ -3,6 +3,7 @@ import type { Editor } from "@tiptap/core";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useT } from "@/i18n/client";
 
 import { Comment2StagePicker } from "./comment-2stage-picker";
 import { DocumentPicker } from "./document-picker";
@@ -23,13 +24,6 @@ const MARK_FOR: Record<Category, string> = {
   comment: "comment_ref",
 };
 
-const labels: Record<Category, string> = {
-  lecture: "Лекция",
-  glossary: "Термин",
-  document: "Документ",
-  media: "Медиа",
-  comment: "Комментарий",
-};
 
 export interface RefMenuProps {
   editor: Editor;
@@ -44,7 +38,16 @@ export interface RefMenuProps {
 }
 
 export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: RefMenuProps) {
+  const t = useT("editor");
   const [cat, setCat] = useState<Category | null>(null);
+
+  const labels: Record<Category, string> = {
+    lecture: t("refCategoryLecture"),
+    glossary: t("refCategoryGlossary"),
+    document: t("refCategoryDocument"),
+    media: t("refCategoryMedia"),
+    comment: t("refCategoryComment"),
+  };
 
   const apply = (markName: string, id: string, label: string) => {
     onWillInsert?.();
@@ -73,7 +76,7 @@ export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: Ref
   };
 
   return (
-    <div className="ref-menu" role="dialog" aria-label="Вставить ссылку">
+    <div className="ref-menu" role="dialog" aria-label={t("insertRefDialogAriaLabel")}>
       <div className="flex gap-1 p-1 gap-1">
         {(Object.keys(MARK_FOR) as Category[]).map((c) => (
           <Button

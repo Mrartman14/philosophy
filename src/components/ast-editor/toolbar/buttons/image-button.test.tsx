@@ -21,6 +21,22 @@ vi.mock("@/components/ui", () => ({
 vi.mock("../../upload/upload-image", () => ({
   uploadImage: vi.fn(),
 }));
+// Мок i18n/client: useT возвращает переводчик по реальному каталогу ru.
+vi.mock("@/i18n/client", async () => {
+  const { default: editor } = await import("@/i18n/messages/ru/editor");
+  return {
+    useT: (ns: string) => {
+      const catalog = ns === "editor" ? editor : {};
+      return (key: string) => {
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        let val: any = catalog;
+        for (const part of key.split(".")) { val = val?.[part]; }
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+        return typeof val === "string" ? val : key;
+      };
+    },
+  };
+});
 
 const mockedUpload = uploadImage as unknown as ReturnType<typeof vi.fn>;
 

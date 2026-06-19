@@ -4,6 +4,8 @@ import type { Extensions } from "@tiptap/core";
 import type { Editor } from "@tiptap/react";
 import { useEditor } from "@tiptap/react";
 
+import { useT } from "@/i18n/client";
+
 import { deserialize } from "./deserializer";
 import { buildExtensions } from "./extensions";
 import { serialize } from "./serializer";
@@ -23,6 +25,7 @@ export interface UseAstEditorOptions {
 
 export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
   const { defaultValue, entityContext, editable = true, placeholder, ariaLabel, schema, onChange, extraExtensions } = opts;
+  const t = useT("editor");
   return useEditor(
     {
       immediatelyRender: false,
@@ -30,7 +33,7 @@ export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
       editable,
       editorProps: {
         attributes: {
-          "aria-label": ariaLabel ?? "Редактор AST",
+          "aria-label": ariaLabel ?? t("editorAriaLabel"),
           role: "textbox",
           "aria-multiline": "true",
         },

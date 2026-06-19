@@ -3,6 +3,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { makePngFile } from "./__fixtures__/png-1x1";
 import { uploadImage } from "./upload-image";
 
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ.
+vi.mock("@/i18n", () => ({
+  getT: () => Promise.resolve((key: string) => key),
+}));
+
 vi.mock("next/headers", () => ({
   cookies: () => Promise.resolve({
     get: (name: string) => (name === "token" ? { value: "fake-jwt" } : undefined),

@@ -5,6 +5,7 @@ import type { Editor } from "@tiptap/core";
 import { useRef, useState } from "react";
 
 import { LinkIcon } from "@/assets/icons/link-icon";
+import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot } from "../../types";
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function LinkPopover({ editor, schema }: Props) {
+  const t = useT("editor");
   const [open, setOpen] = useState(false);
   const [href, setHref] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -57,7 +59,7 @@ export function LinkPopover({ editor, schema }: Props) {
     }
     // attr-plugin (Phase 1) rejects the mark when the URL scheme is not allowed.
     if (!editor.isActive("link", { href: v })) {
-      setErr("Недопустимая схема ссылки (разрешены http, https, mailto)");
+      setErr(t("linkInvalidScheme"));
       return;
     }
     setOpen(false);
@@ -84,7 +86,7 @@ export function LinkPopover({ editor, schema }: Props) {
       <Popover.Trigger
         render={
           <Toolbar.Button
-            aria-label="Ссылка"
+            aria-label={t("linkAriaLabel")}
             aria-pressed={isActive}
           />
         }
@@ -106,7 +108,7 @@ export function LinkPopover({ editor, schema }: Props) {
                 onChange={(e) => { setHref(e.target.value); }}
                 onKeyDown={handleKeyDown}
                 placeholder="https://…"
-                aria-label="URL ссылки"
+                aria-label={t("linkUrlAriaLabel")}
                 className="border border-(--color-border) rounded px-2 py-1 text-sm w-full"
               />
               {err ? (
@@ -121,7 +123,7 @@ export function LinkPopover({ editor, schema }: Props) {
                     onClick={handleRemove}
                     className="text-(--color-fg-muted) rounded px-3 py-1 text-sm hover:bg-(--color-surface-subtle)"
                   >
-                    Удалить ссылку
+                    {t("linkRemove")}
                   </button>
                 )}
                 <button
@@ -130,7 +132,7 @@ export function LinkPopover({ editor, schema }: Props) {
                   disabled={!href.trim()}
                   className="bg-(--color-accent) text-white rounded px-3 py-1 text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Применить
+                  {t("linkApply")}
                 </button>
               </div>
             </div>

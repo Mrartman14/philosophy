@@ -6,6 +6,7 @@ import { useRef, useState, type ChangeEvent } from "react";
 
 import { ImageIcon } from "@/assets/icons/image-icon";
 import { useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
 import { uploadImage } from "../../upload/upload-image";
@@ -23,6 +24,7 @@ interface Props {
  * block-кнопки (самогейт + дублирующий гейт в toolbar.tsx для сепараторов).
  */
 export function ImageButton({ editor, schema, context }: Props) {
+  const t = useT("editor");
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const toast = useToast();
@@ -47,18 +49,23 @@ export function ImageButton({ editor, schema, context }: Props) {
         // Reject транспорта (сеть, прерванный server action) — generic-toast,
         // иначе unhandled rejection.
         toast.add({
-          title: "Не удалось загрузить изображение",
-          description: "Произошла ошибка. Попробуйте ещё раз.",
+          title: t("imageUploadFailTitle"),
+          description: t("imageUploadFailGeneric"),
         });
         return;
       }
       if (!res.success) {
+        const description =
+          res.code === "forbidden"
+            ? t("imageUploadForbidden")
+            : res.code === "image_too_large"
+              ? t("imageUploadTooLarge")
+              : res.code === "image_invalid_mime"
+                ? t("imageUploadInvalidMime")
+                : res.error;
         toast.add({
-          title: "Не удалось загрузить изображение",
-          description:
-            res.code === "forbidden"
-              ? "У вас нет прав на загрузку изображений."
-              : res.error,
+          title: t("imageUploadFailTitle"),
+          description,
         });
         return;
       }
@@ -83,7 +90,7 @@ export function ImageButton({ editor, schema, context }: Props) {
   return (
     <>
       <Toolbar.Button
-        aria-label="Изображение"
+        aria-label={t("imageAriaLabel")}
         disabled={busy}
         onClick={() => inputRef.current?.click()}
       >

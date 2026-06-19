@@ -5,6 +5,7 @@ import type { Editor } from "@tiptap/core";
 import { BoldIcon } from "@/assets/icons/bold-icon";
 import { CodeIcon } from "@/assets/icons/code-icon";
 import { ItalicIcon } from "@/assets/icons/italic-icon";
+import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot } from "../../types";
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function InlineMarksGroup({ editor, schema }: Props) {
+  const t = useT("editor");
   if (
     !schema.marks.has("bold") &&
     !schema.marks.has("italic") &&
@@ -25,7 +27,7 @@ export function InlineMarksGroup({ editor, schema }: Props) {
     <Toolbar.Group className={`flex items-center gap-1`}>
       {schema.marks.has("bold") && (
         <Toolbar.Button
-          aria-label="Жирный"
+          aria-label={t("bold")}
           aria-pressed={editor.isActive("bold")}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
@@ -34,7 +36,7 @@ export function InlineMarksGroup({ editor, schema }: Props) {
       )}
       {schema.marks.has("italic") && (
         <Toolbar.Button
-          aria-label="Курсив"
+          aria-label={t("italic")}
           aria-pressed={editor.isActive("italic")}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
@@ -43,7 +45,7 @@ export function InlineMarksGroup({ editor, schema }: Props) {
       )}
       {schema.marks.has("code") && (
         <Toolbar.Button
-          aria-label="Код"
+          aria-label={t("code")}
           aria-pressed={editor.isActive("code")}
           onClick={() => editor.chain().focus().toggleCode().run()}
         >

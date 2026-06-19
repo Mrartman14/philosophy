@@ -5,6 +5,7 @@ import type { Editor } from "@tiptap/core";
 import { useState } from "react";
 
 import { BookmarkIcon } from "@/assets/icons/bookmark-icon";
+import { useT } from "@/i18n/client";
 
 import { RefMenu } from "../../pickers/ref-menu";
 import type { SchemaSnapshot } from "../../types";
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function RefPopover({ editor, schema, defaultLectureId }: Props) {
+  const t = useT("editor");
   const [open, setOpen] = useState(false);
 
   // Show only if at least one nav-ref mark is registered.
@@ -24,7 +26,7 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger
-        render={<Toolbar.Button aria-label="Вставить ссылку на сущность" />}
+        render={<Toolbar.Button aria-label={t("insertRefAriaLabel")} />}
       >
         <BookmarkIcon />
       </Popover.Trigger>

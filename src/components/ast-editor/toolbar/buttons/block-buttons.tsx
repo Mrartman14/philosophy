@@ -6,6 +6,7 @@ import { CodeBlockIcon } from "@/assets/icons/code-block-icon";
 import { HorizontalRuleIcon } from "@/assets/icons/horizontal-rule-icon";
 import { QuoteIcon } from "@/assets/icons/quote-icon";
 import { TableIcon } from "@/assets/icons/table-icon";
+import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
 
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function BlockButtonsGroup({ editor, schema, context }: Props) {
+  const t = useT("editor");
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
   if (
@@ -31,7 +33,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
     <Toolbar.Group className={`flex items-center gap-1`}>
       {allowed.has("blockquote") && (
         <Toolbar.Button
-          aria-label="Цитата"
+          aria-label={t("blockquote")}
           aria-pressed={editor.isActive("blockquote")}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
         >
@@ -40,7 +42,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
       )}
       {allowed.has("code_block") && (
         <Toolbar.Button
-          aria-label="Блок кода"
+          aria-label={t("codeBlock")}
           aria-pressed={editor.isActive("code_block")}
           onClick={() =>
             editor.chain().focus().toggleNode("code_block", "paragraph").run()
@@ -51,7 +53,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
       )}
       {allowed.has("thematic_break") && (
         <Toolbar.Button
-          aria-label="Горизонтальная линия"
+          aria-label={t("thematicBreak")}
           onClick={() =>
             editor
               .chain()
@@ -65,7 +67,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
       )}
       {allowed.has("table") && (
         <Toolbar.Button
-          aria-label="Таблица"
+          aria-label={t("table")}
           onClick={() =>
             editor
               .chain()

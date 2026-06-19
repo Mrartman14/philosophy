@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
+import { useT } from "@/i18n/client";
+
 import { getAstSchemaAction } from "./schema-action";
 import { loadSchema, normalizeSchema } from "./schema-cache";
 import type { SchemaSnapshot, SchemaResponse } from "./types";
@@ -30,6 +32,7 @@ export function SchemaContextProvider({
   initial,
   fetcher = getAstSchemaAction,
 }: ProviderProps) {
+  const t = useT("editor");
   const [snapshot, setSnapshot] = useState<SchemaSnapshot | null>(() =>
     initial ? normalizeSchema(initial) : null,
   );
@@ -51,7 +54,7 @@ export function SchemaContextProvider({
   }, [initial, fetcher]);
 
   if (error) {
-    return <div role="alert">AST schema недоступна: {error.message}</div>;
+    return <div role="alert">{t("schemaUnavailable", { message: error.message })}</div>;
   }
   if (!snapshot) return <>{fallback}</>;
   return <SchemaContext.Provider value={snapshot}>{children}</SchemaContext.Provider>;

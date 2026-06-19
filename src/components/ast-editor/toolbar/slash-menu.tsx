@@ -2,6 +2,8 @@
 import type { Editor } from "@tiptap/core";
 import { useEffect, useId, useState } from "react";
 
+import { useT } from "@/i18n/client";
+
 import type { SchemaSnapshot, EntityContext } from "../types";
 
 import { slashMenuKey, consumeSlashMarker, closeSlashMenu } from "./slash-menu-plugin";
@@ -13,7 +15,9 @@ interface Cmd {
   run: (editor: Editor) => void;
 }
 
-function buildCommands(schema: SchemaSnapshot, context: EntityContext): Cmd[] {
+type EditorT = ReturnType<typeof useT<"editor">>;
+
+function buildCommands(schema: SchemaSnapshot, context: EntityContext, t: EditorT): Cmd[] {
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
   const cmds: Cmd[] = [];
@@ -22,7 +26,7 @@ function buildCommands(schema: SchemaSnapshot, context: EntityContext): Cmd[] {
     for (const l of [1, 2, 3] as const) {
       cmds.push({
         id: `h${l}`,
-        label: `Заголовок ${l}`,
+        label: t("slashMenuHeading", { level: l }),
         run: (e) => e.chain().focus().setHeading({ level: l }).run(),
       });
     }
@@ -30,40 +34,40 @@ function buildCommands(schema: SchemaSnapshot, context: EntityContext): Cmd[] {
   if (allowed.has("blockquote")) {
     cmds.push({
       id: "bq",
-      label: "Цитата",
+      label: t("slashMenuBlockquote"),
       run: (e) => e.chain().focus().wrapIn("blockquote").run(),
     });
   }
   if (allowed.has("code_block")) {
     cmds.push({
       id: "cb",
-      label: "Блок кода",
+      label: t("slashMenuCodeBlock"),
       run: (e) => e.chain().focus().toggleNode("code_block", "paragraph").run(),
     });
   }
   if (allowed.has("list")) {
     cmds.push({
       id: "ul",
-      label: "Маркированный список",
+      label: t("slashMenuBulletList"),
       run: (e) => e.chain().focus().wrapIn("list", { ordered: false }).run(),
     });
     cmds.push({
       id: "ol",
-      label: "Нумерованный список",
+      label: t("slashMenuOrderedList"),
       run: (e) => e.chain().focus().wrapIn("list", { ordered: true }).run(),
     });
   }
   if (allowed.has("thematic_break")) {
     cmds.push({
       id: "hr",
-      label: "Линия",
+      label: t("slashMenuThematicBreak"),
       run: (e) => e.chain().focus().insertContent({ type: "thematic_break" }).run(),
     });
   }
   if (allowed.has("table")) {
     cmds.push({
       id: "table",
-      label: "Таблица 3×3",
+      label: t("slashMenuTable"),
       run: (e) =>
         e
           .chain()
@@ -110,6 +114,7 @@ interface Props {
 }
 
 export function SlashMenu({ editor, schema, context }: Props) {
+  const t = useT("editor");
   const listboxId = useId();
   const [state, setState] = useState({ open: false, from: -1, query: "" });
   const [active, setActive] = useState(0);
@@ -125,7 +130,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
     };
   }, [editor]);
 
-  const allCmds = buildCommands(schema, context);
+  const allCmds = buildCommands(schema, context, t);
   const cmds = state.query
     ? allCmds.filter((c) => c.label.toLowerCase().includes(state.query.toLowerCase()))
     : allCmds;
@@ -195,13 +200,13 @@ export function SlashMenu({ editor, schema, context }: Props) {
   if (cmds.length === 0) {
     return (
       <div role="status" className="ast-slash-menu ast-slash-menu--empty">
-        Нет совпадений
+        {t("slashMenuNoMatches")}
       </div>
     );
   }
 
   return (
-    <div id={listboxId} role="listbox" aria-label="Команды блока" className="ast-slash-menu">
+    <div id={listboxId} role="listbox" aria-label={t("slashMenuAriaLabel")} className="ast-slash-menu">
       {cmds.map((c, i) => (
         <button
           key={c.id}
@@ -219,7 +224,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
         </button>
       ))}
       <button type="button" onClick={() => { closeSlashMenu(editor.view); }}>
-        Esc — закрыть
+        {t("slashMenuClose")}
       </button>
     </div>
   );

@@ -2,6 +2,7 @@
 import type { Editor } from "@tiptap/core";
 
 import { Select } from "@/components/ui/select";
+import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
 
@@ -12,16 +13,6 @@ interface Props {
 }
 
 type Value = "paragraph" | `h${1 | 2 | 3 | 4 | 5 | 6}`;
-
-const items: { label: string; value: Value }[] = [
-  { label: "Параграф", value: "paragraph" },
-  { label: "Заголовок 1", value: "h1" },
-  { label: "Заголовок 2", value: "h2" },
-  { label: "Заголовок 3", value: "h3" },
-  { label: "Заголовок 4", value: "h4" },
-  { label: "Заголовок 5", value: "h5" },
-  { label: "Заголовок 6", value: "h6" },
-];
 
 function getActive(editor: Editor): Value {
   for (
@@ -35,9 +26,20 @@ function getActive(editor: Editor): Value {
 }
 
 export function HeadingSelect({ editor, schema, context }: Props) {
+  const t = useT("editor");
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
   if (!allowed.has("heading")) return null;
+
+  const items: { label: string; value: Value }[] = [
+    { label: t("paragraph"), value: "paragraph" },
+    { label: t("heading1"), value: "h1" },
+    { label: t("heading2"), value: "h2" },
+    { label: t("heading3"), value: "h3" },
+    { label: t("heading4"), value: "h4" },
+    { label: t("heading5"), value: "h5" },
+    { label: t("heading6"), value: "h6" },
+  ];
 
   const active = getActive(editor);
   const onChange = (v: string) => {
@@ -55,7 +57,7 @@ export function HeadingSelect({ editor, schema, context }: Props) {
 
   return (
     <Select
-      aria-label="Тип блока"
+      aria-label={t("blockTypeAriaLabel")}
       value={active}
       onValueChange={onChange}
       options={items}

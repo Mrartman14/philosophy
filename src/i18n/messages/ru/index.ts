@@ -13,6 +13,7 @@ import banners from "./banners";
 import canvas from "./canvas";
 import comments from "./comments";
 import documents from "./documents";
+import editor from "./editor";
 import errors from "./errors";
 import events from "./events";
 import forms from "./forms";
@@ -38,6 +39,7 @@ const ru = {
   canvas,
   comments,
   documents,
+  editor,
   errors,
   events,
   forms,

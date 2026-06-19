@@ -1,4 +1,7 @@
+"use client";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
+
+import { useT } from "@/i18n/client";
 
 import { resolveStorageUrl } from "../../upload/storage-url";
 
@@ -8,6 +11,7 @@ export function ImageNodeView({
   editor,
   selected,
 }: NodeViewProps) {
+  const t = useT("editor");
   const editable = editor.isEditable;
   const storageKey = (node.attrs.storage_key as string | undefined) ?? "";
   const alt = (node.attrs.alt as string | undefined) ?? "";
@@ -26,7 +30,7 @@ export function ImageNodeView({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={resolveStorageUrl(storageKey)} alt={alt} />
       ) : (
-        <div role="img" aria-label="Изображение загружается" />
+        <div role="img" aria-label={t("imageLoading")} />
       )}
 
       {editable && selected && (
