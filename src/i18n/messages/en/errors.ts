@@ -39,6 +39,21 @@ const errors = {
   BLOCKS_HAVE_ANCHORS_COMMENT:
     "Other comments are anchored to this comment's blocks. Detach them first.",
 
+  // --- forms slice: domain codes ---
+  FORM_PUBLISHED: "The form is published — its structure cannot be changed.",
+  FORM_PUBLIC_IMMUTABLE: "A public form cannot be made private again.",
+  MODE_CHANGE_FORBIDDEN: "The immutable mode cannot be switched to editable.",
+  FORM_IMMUTABLE_MODE:
+    "This form does not allow editing or deleting a response — only retracting.",
+  RETRACT_NOT_APPLICABLE: "Retraction is only available for forms without response editing.",
+  ALREADY_SUBMITTED: "You have already submitted a response to this form.",
+  ALREADY_RETRACTED: "The response has already been retracted.",
+  INVALID_FORM_SCHEMA: "The form structure failed server-side validation.",
+  INVALID_SUBMISSION: "The answers failed validation. Please fill in all required fields correctly.",
+  FORM_NOT_FOUND: "Form not found.",
+  SUBMISSION_NOT_FOUND: "Response not found.",
+  FORM_BLOCKS_INVALID: "The form description failed validation.",
+
   // --- canvas slice: domain codes ---
   PUBLIC_IMMUTABLE: "A public canvas cannot be made private.",
   CANVAS_VERSION_MISMATCH:

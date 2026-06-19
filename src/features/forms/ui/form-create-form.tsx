@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import { Form, FormFeedback, IdempotencyField, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createForm } from "../actions";
@@ -15,6 +16,7 @@ const initial: ActionResult<FormEntity | null> = { success: true, data: null };
 
 export function FormCreateForm() {
   const router = useRouter();
+  const t = useT("forms");
   const [state, action] = useActionState(createForm, initial);
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation" ? state.fieldErrors : {};
@@ -28,7 +30,7 @@ export function FormCreateForm() {
       <IdempotencyField result={state} />
       <FormBuilder mode="create" />
       <FormFeedback result={state} forbiddenAction="создание формы" />
-      <div><SubmitButton>Создать форму</SubmitButton></div>
+      <div><SubmitButton>{t("createSubmit")}</SubmitButton></div>
     </Form>
   );
 }

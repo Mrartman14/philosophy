@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { publishForm } from "../actions";
@@ -15,14 +16,15 @@ interface Props {
 export function FormPublishButton({ formId }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("forms");
   const [, startTransition] = useTransition();
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="primary">Опубликовать</Button>}
-      title="Опубликовать форму?"
-      description="После публикации форму нельзя вернуть в приватную, а её структуру — изменить. Действующие share-ссылки перестанут работать."
-      confirmLabel="Опубликовать"
+      trigger={<Button variant="primary">{t("publishButton")}</Button>}
+      title={t("publishTitle")}
+      description={t("publishDescription")}
+      confirmLabel={t("publishConfirm")}
       onConfirm={async () => {
         const fd = new FormData();
         fd.set("id", formId);

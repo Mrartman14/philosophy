@@ -59,6 +59,29 @@ const validation = {
     blocksNotArray: "Comment cannot be empty",
     blocksEmpty: "Comment cannot be empty",
   },
+
+  // --- forms: form builder + response submission ---
+  forms: {
+    invalidId: "Invalid identifier",
+    titleRequired: "Enter a title",
+    titleMax: "Up to 500 characters",
+    promptRequired: "Question text is required",
+    emptyOption: "Empty option",
+    choiceRequiresOptions: "Add at least one option",
+    optionsOnlyForChoice: "Options are only for choice fields",
+    duplicateOptions: "Options must be unique",
+    fieldsRequired: "Add at least one field",
+    duplicateSortOrder: "Duplicate sort order for field #{n}",
+    emptyPayload: "Empty form",
+    badJsonPayload: "Invalid JSON in form",
+    payloadStructureError: "Form structure error",
+    visibilityRequired: "Visibility is required",
+    modeRequired: "Mode is required",
+    emptyAnswers: "No answers",
+    badJsonAnswers: "Invalid JSON in answers",
+    answersNotArray: "Answers must be an array",
+    invalidAnswer: "Invalid answer",
+  },
 };
 
 export default validation;

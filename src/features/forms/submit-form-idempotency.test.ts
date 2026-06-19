@@ -30,6 +30,11 @@ vi.mock("./permissions", () => ({
 
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
 
+// Mock i18n facade: getT возвращает стаб-переводчик (ключ → ключ).
+vi.mock("@/i18n", () => ({
+  getT: () => Promise.resolve((key: string) => key),
+}));
+
 // Imports AFTER vi.mock (hoisted).
 import { createForm, submitForm } from "./actions";
 

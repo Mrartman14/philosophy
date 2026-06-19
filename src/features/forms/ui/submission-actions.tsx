@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteSubmission, retractSubmission } from "../actions";
@@ -18,21 +19,22 @@ interface Props {
 export function SubmissionActions({ submissionId, kind, redirectTo = "/me/submissions" }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("forms");
   const [, startTransition] = useTransition();
 
   const isDelete = kind === "delete";
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{isDelete ? "Удалить отклик" : "Отозвать отклик"}</Button>}
-      title={isDelete ? "Удалить отклик?" : "Отозвать отклик?"}
+      trigger={<Button variant="danger">{isDelete ? t("deleteSubmissionButton") : t("retractSubmissionButton")}</Button>}
+      title={isDelete ? t("deleteSubmissionTitle") : t("retractSubmissionTitle")}
       description={
         isDelete
-          ? "Отклик будет удалён. Вы сможете заполнить форму заново."
-          : "Отзыв необратим: повторно отправить отклик на эту форму будет нельзя."
+          ? t("deleteSubmissionDescription")
+          : t("retractSubmissionDescription")
       }
       destructive
-      confirmLabel={isDelete ? "Удалить" : "Отозвать"}
+      confirmLabel={isDelete ? t("deleteSubmissionConfirm") : t("retractSubmissionConfirm")}
       onConfirm={async () => {
         const result = isDelete
           ? await deleteSubmission(submissionId)

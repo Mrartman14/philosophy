@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import { IDEMPOTENCY_FIELD } from "@/utils/idempotency";
 
@@ -22,6 +23,7 @@ interface Props {
 
 export function FormFill({ form, token }: Props) {
   const toast = useToast();
+  const t = useT("forms");
   const { key: idempotencyKey, rotate } = useIdempotencyKey();
   const fields: FormField[] = (form.fields ?? [])
     .slice()
@@ -39,7 +41,7 @@ export function FormFill({ form, token }: Props) {
   if (done) {
     return (
       <div className="flex flex-col gap-4">
-        <p className="text-sm font-medium">Ответ отправлен. Спасибо!</p>
+        <p className="text-sm font-medium">{t("submitSuccessMessage")}</p>
         {afterBlocks && afterBlocks.length > 0 && <FormAfterSubmit blocks={afterBlocks} />}
       </div>
     );
@@ -53,7 +55,7 @@ export function FormFill({ form, token }: Props) {
       const enc = encodeAnswerValue(f.type ?? "text", values[fid] ?? emptyAnswerValue(f.type ?? "text"));
       if (enc === null) {
         if (f.required) {
-          toast.add({ title: "Заполните обязательные поля", description: "Не все обязательные поля заполнены." });
+          toast.add({ title: t("requiredFieldsTitle"), description: t("requiredFieldsDescription") });
           return;
         }
         continue;
@@ -93,7 +95,7 @@ export function FormFill({ form, token }: Props) {
       ))}
       <div>
         <Button type="button" disabled={pending} onClick={() => { void onSubmit(); }}>
-          {pending ? "Отправка…" : "Отправить отклик"}
+          {pending ? t("submittingButton") : t("submitButton")}
         </Button>
       </div>
     </div>

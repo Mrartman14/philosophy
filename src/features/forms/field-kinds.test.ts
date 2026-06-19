@@ -3,11 +3,13 @@ import { describe, expect, it } from "vitest";
 
 import {
   FIELD_TYPES,
-  FIELD_TYPE_LABELS,
-  FIELD_TYPE_OPTIONS,
+  makeFieldTypeOptions,
   fieldTypeHasOptions,
   isFieldType,
 } from "./field-kinds";
+
+// Stub переводчика: возвращает ключ как-есть (достаточно для структурных проверок).
+const stubT = (key: string) => key;
 
 describe("field-kinds", () => {
   it("FIELD_TYPES содержит ровно 6 типов бека", () => {
@@ -21,15 +23,15 @@ describe("field-kinds", () => {
     ]);
   });
 
-  it("каждый тип имеет русскую метку", () => {
-    for (const t of FIELD_TYPES) {
-      expect(FIELD_TYPE_LABELS[t]).toBeTruthy();
+  it("makeFieldTypeOptions — массив {value,label} для Select", () => {
+    const options = makeFieldTypeOptions(stubT);
+    expect(options).toHaveLength(6);
+    // Каждый тип присутствует и получает метку из переводчика
+    for (const type of FIELD_TYPES) {
+      const opt = options.find((o) => o.value === type);
+      expect(opt).toBeTruthy();
+      expect(typeof opt?.label).toBe("string");
     }
-  });
-
-  it("FIELD_TYPE_OPTIONS — массив {value,label} для Select", () => {
-    expect(FIELD_TYPE_OPTIONS).toHaveLength(6);
-    expect(FIELD_TYPE_OPTIONS[0]).toEqual({ value: "text", label: FIELD_TYPE_LABELS.text });
   });
 
   it("fieldTypeHasOptions: только choice-типы", () => {

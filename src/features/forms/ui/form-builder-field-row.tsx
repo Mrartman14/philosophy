@@ -1,8 +1,9 @@
 "use client";
 // src/features/forms/ui/form-builder-field-row.tsx
 import { Button, TextInput, Textarea, Checkbox } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
-import { FIELD_TYPE_OPTIONS, fieldTypeHasOptions } from "../field-kinds";
+import { FIELD_TYPES, fieldTypeHasOptions } from "../field-kinds";
 import type { FieldType } from "../types";
 
 export interface BuilderField {
@@ -36,21 +37,22 @@ export function FormBuilderFieldRow({
   canMoveUp,
   canMoveDown,
 }: Props) {
+  const t = useT("forms");
   const hasOptions = fieldTypeHasOptions(field.type);
 
   return (
     <fieldset className="flex flex-col gap-3 rounded border border-(--color-border) p-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium">Поле #{index + 1}</span>
+        <span className="text-sm font-medium">{t("fieldRow.heading", { index: index + 1 })}</span>
         <div className="flex gap-1">
-          <Button type="button" variant="ghost" size="sm" disabled={disabled || !canMoveUp} onClick={onMoveUp} aria-label="Вверх">↑</Button>
-          <Button type="button" variant="ghost" size="sm" disabled={disabled || !canMoveDown} onClick={onMoveDown} aria-label="Вниз">↓</Button>
-          <Button type="button" variant="danger" size="sm" disabled={disabled} onClick={onRemove} aria-label="Удалить">✕</Button>
+          <Button type="button" variant="ghost" size="sm" disabled={disabled || !canMoveUp} onClick={onMoveUp} aria-label={t("fieldRow.ariaUp")}>↑</Button>
+          <Button type="button" variant="ghost" size="sm" disabled={disabled || !canMoveDown} onClick={onMoveDown} aria-label={t("fieldRow.ariaDown")}>↓</Button>
+          <Button type="button" variant="danger" size="sm" disabled={disabled} onClick={onRemove} aria-label={t("fieldRow.ariaRemove")}>✕</Button>
         </div>
       </div>
 
       <label className="flex flex-col gap-1 text-sm">
-        Тип поля
+        {t("fieldRow.typeLabel")}
         <select
           className="rounded border border-(--color-border) px-2 py-1 text-sm"
           value={field.type}
@@ -63,14 +65,14 @@ export function FormBuilderFieldRow({
             onChange(next);
           }}
         >
-          {FIELD_TYPE_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
+          {FIELD_TYPES.map((type) => (
+            <option key={type} value={type}>{t(`fieldType.${type}`)}</option>
           ))}
         </select>
       </label>
 
       <label htmlFor={`field-${String(index)}-prompt`} className="flex flex-col gap-1 text-sm">
-        Текст вопроса (markdown)
+        {t("fieldRow.promptLabel")}
         <TextInput
           id={`field-${String(index)}-prompt`}
           value={field.prompt}
@@ -81,7 +83,7 @@ export function FormBuilderFieldRow({
       </label>
 
       <label htmlFor={`field-${String(index)}-help`} className="flex flex-col gap-1 text-sm">
-        Подсказка (необязательно, markdown)
+        {t("fieldRow.helpLabel")}
         <Textarea
           id={`field-${String(index)}-help`}
           value={field.help_text}
@@ -98,18 +100,18 @@ export function FormBuilderFieldRow({
           disabled={disabled}
           onCheckedChange={(v) => { onChange({ ...field, required: v }); }}
         />
-        Обязательное поле
+        {t("fieldRow.requiredLabel")}
       </label>
 
       {hasOptions && (
         <div className="flex flex-col gap-2">
-          <span className="text-sm">Варианты</span>
+          <span className="text-sm">{t("fieldRow.optionsLabel")}</span>
           {field.options.map((opt, oi) => (
             <div key={oi} className="flex gap-2">
               <TextInput
                 value={opt}
                 disabled={disabled}
-                placeholder={`Вариант ${oi + 1}`}
+                placeholder={t("fieldRow.optionPlaceholder", { index: oi + 1 })}
                 onChange={(e) => {
                   const options = field.options.slice();
                   options[oi] = e.target.value;
@@ -122,7 +124,7 @@ export function FormBuilderFieldRow({
                 size="sm"
                 disabled={disabled || field.options.length <= 1}
                 onClick={() => { onChange({ ...field, options: field.options.filter((_, i) => i !== oi) }); }}
-                aria-label="Удалить вариант"
+                aria-label={t("fieldRow.ariaRemoveOption")}
               >✕</Button>
             </div>
           ))}
@@ -133,7 +135,7 @@ export function FormBuilderFieldRow({
             disabled={disabled}
             onClick={() => { onChange({ ...field, options: [...field.options, ""] }); }}
           >
-            + Вариант
+            {t("fieldRow.addOption")}
           </Button>
         </div>
       )}

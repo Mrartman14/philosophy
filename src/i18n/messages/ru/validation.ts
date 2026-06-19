@@ -62,6 +62,29 @@ const validation = {
     blocksNotArray: "Комментарий не может быть пустым",
     blocksEmpty: "Комментарий не может быть пустым",
   },
+
+  // --- forms: конструктор формы + отправка отклика ---
+  forms: {
+    invalidId: "Некорректный идентификатор",
+    titleRequired: "Введите название",
+    titleMax: "До 500 символов",
+    promptRequired: "Текст вопроса обязателен",
+    emptyOption: "Пустой вариант",
+    choiceRequiresOptions: "Добавьте хотя бы один вариант",
+    optionsOnlyForChoice: "Варианты только у полей выбора",
+    duplicateOptions: "Варианты не должны повторяться",
+    fieldsRequired: "Добавьте хотя бы одно поле",
+    duplicateSortOrder: "Дублируется порядок поля #{n}",
+    emptyPayload: "Пустая форма",
+    badJsonPayload: "Битый JSON формы",
+    payloadStructureError: "Ошибка структуры формы",
+    visibilityRequired: "Не указана видимость",
+    modeRequired: "Не указан режим",
+    emptyAnswers: "Нет ответов",
+    badJsonAnswers: "Битый JSON ответов",
+    answersNotArray: "Ответы должны быть массивом",
+    invalidAnswer: "Некорректный ответ",
+  },
 };
 
 export default validation;

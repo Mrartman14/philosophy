@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { editSubmission } from "../actions";
@@ -41,6 +42,7 @@ function wireToInput(type: FormField["type"], value: unknown): AnswerInput {
 export function SubmissionEditForm({ form, submission }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("forms");
   const fields: FormField[] = (form.fields ?? [])
     .slice()
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
@@ -60,7 +62,7 @@ export function SubmissionEditForm({ form, submission }: Props) {
       const enc = encodeAnswerValue(f.type ?? "text", values[fid] ?? emptyAnswerValue(f.type ?? "text"));
       if (enc === null) {
         if (f.required) {
-          toast.add({ title: "Заполните обязательные поля", description: "Не все обязательные поля заполнены." });
+          toast.add({ title: t("requiredFieldsTitle"), description: t("requiredFieldsDescription") });
           return;
         }
         continue;
@@ -93,7 +95,7 @@ export function SubmissionEditForm({ form, submission }: Props) {
       ))}
       <div>
         <Button type="button" disabled={pending} onClick={() => { void onSave(); }}>
-          {pending ? "Сохранение…" : "Сохранить изменения"}
+          {pending ? t("savingButton") : t("saveButton")}
         </Button>
       </div>
     </div>

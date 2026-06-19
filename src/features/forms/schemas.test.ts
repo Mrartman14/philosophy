@@ -1,15 +1,26 @@
 // src/features/forms/schemas.test.ts
 import { describe, expect, it } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  FormCreateSchema,
-  FormUpdateSchema,
-  FormVisibilitySchema,
-  SubmitSchema,
-  SubmissionEditSchema,
+  makeFormCreateSchema,
+  makeFormUpdateSchema,
+  makeFormVisibilitySchema,
+  makeSubmitSchema,
+  makeSubmissionEditSchema,
   FormIdSchema,
   SubmissionIdSchema,
 } from "./schemas";
+
+// Stub переводчика: возвращает ключ как-есть (достаточно для проверки success/failure).
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const FormCreateSchema = makeFormCreateSchema(t);
+const FormUpdateSchema = makeFormUpdateSchema(t);
+const FormVisibilitySchema = makeFormVisibilitySchema(t);
+const SubmitSchema = makeSubmitSchema(t);
+const SubmissionEditSchema = makeSubmissionEditSchema(t);
 
 const UUID = "550e8400-e29b-41d4-a716-446655440000";
 

@@ -3,7 +3,8 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { getT } from "@/i18n";
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
@@ -17,36 +18,32 @@ import { revalidateEntity } from "@/utils/revalidate";
 
 import { canCreateForm } from "./permissions";
 import {
-  FormCreateSchema,
-  FormUpdateSchema,
-  FormVisibilitySchema,
+  makeFormCreateSchema,
+  makeFormUpdateSchema,
+  makeFormVisibilitySchema,
+  makeSubmitSchema,
+  makeSubmissionEditSchema,
   FormIdSchema,
-  SubmitSchema,
-  SubmissionEditSchema,
   SubmissionIdSchema,
 } from "./schemas";
 
 
-/** Доменные коды бека → понятный русский (internal/apperror, form/service.go).
+/** Доменные коды бека → ключ каталога errors (src/i18n/messages/{ru,en}/errors.ts).
  * role-403/SUSPENDED/BANNED и дефолтный REF_NOT_FOUND обрабатывает
  * централизованный rethrowApiError. */
-const ERRORS: ApiErrorMessages = {
-  FORM_PUBLISHED: "Форма опубликована — её структуру нельзя менять.",
-  PUBLIC_IMMUTABLE: "Публичную форму нельзя вернуть в приватную.",
-  MODE_CHANGE_FORBIDDEN:
-    "Режим «без изменений» нельзя сменить на «редактируемый».",
-  FORM_IMMUTABLE_MODE:
-    "Эта форма не разрешает редактировать или удалять отклик — только отозвать.",
-  RETRACT_NOT_APPLICABLE:
-    "Отзыв доступен только в формах без редактирования отклика.",
-  ALREADY_SUBMITTED: "Вы уже отправляли отклик на эту форму.",
-  ALREADY_RETRACTED: "Отклик уже отозван.",
-  INVALID_FORM_SCHEMA: "Структура формы не прошла проверку на сервере.",
-  INVALID_SUBMISSION:
-    "Ответы не прошли проверку. Заполните обязательные поля корректно.",
-  BLOCKS_INVALID: "Описание формы не прошло валидацию.",
-  FORM_NOT_FOUND: "Форма не найдена.",
-  SUBMISSION_NOT_FOUND: "Отклик не найден.",
+const ERRORS: ApiErrorMessageKeys = {
+  FORM_PUBLISHED: "FORM_PUBLISHED",
+  PUBLIC_IMMUTABLE: "FORM_PUBLIC_IMMUTABLE",
+  MODE_CHANGE_FORBIDDEN: "MODE_CHANGE_FORBIDDEN",
+  FORM_IMMUTABLE_MODE: "FORM_IMMUTABLE_MODE",
+  RETRACT_NOT_APPLICABLE: "RETRACT_NOT_APPLICABLE",
+  ALREADY_SUBMITTED: "ALREADY_SUBMITTED",
+  ALREADY_RETRACTED: "ALREADY_RETRACTED",
+  INVALID_FORM_SCHEMA: "INVALID_FORM_SCHEMA",
+  INVALID_SUBMISSION: "INVALID_SUBMISSION",
+  BLOCKS_INVALID: "FORM_BLOCKS_INVALID",
+  FORM_NOT_FOUND: "FORM_NOT_FOUND",
+  SUBMISSION_NOT_FOUND: "SUBMISSION_NOT_FOUND",
 };
 
 /** Собирает тело CreateFormRequest из payload (опускает undefined-ключи: exactOptionalPropertyTypes). */
@@ -74,7 +71,7 @@ function buildFieldsBody(
 export const createForm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   if (!canCreateForm(me)) throw new ForbiddenError(me ? (me.status !== "active" ? "status" : "role") : "guest");
-  const input = parseFormData(FormCreateSchema, formData);
+  const input = parseFormData(makeFormCreateSchema(await getT("validation")), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/forms", {
     body: {
@@ -98,7 +95,7 @@ export const createForm = createFormAction(async (formData, ctx) => {
 export const updateForm = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(FormUpdateSchema, formData);
+  const input = parseFormData(makeFormUpdateSchema(await getT("validation")), formData);
   const { payload } = input;
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/forms/{id}", {
@@ -122,7 +119,7 @@ export const updateForm = createFormAction(async (formData) => {
 export const publishForm = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(FormVisibilitySchema, formData);
+  const input = parseFormData(makeFormVisibilitySchema(await getT("validation")), formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/forms/{id}", {
     params: { path: { id: input.id } },
@@ -150,7 +147,7 @@ export const deleteForm = createAction(async (rawId: string) => {
 export const submitForm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(SubmitSchema, formData);
+  const input = parseFormData(makeSubmitSchema(await getT("validation")), formData);
   const api = await createApiClient();
   const query: { token?: string } = {};
   if (input.token) query.token = input.token;
@@ -169,7 +166,7 @@ export const submitForm = createFormAction(async (formData, ctx) => {
 export const editSubmission = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(SubmissionEditSchema, formData);
+  const input = parseFormData(makeSubmissionEditSchema(await getT("validation")), formData);
   const api = await createApiClient();
   const { data, error } = await api.PATCH("/api/submissions/{id}", {
     params: { path: { id: input.id } },

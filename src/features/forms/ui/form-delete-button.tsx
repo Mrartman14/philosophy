@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteForm } from "../actions";
@@ -14,18 +15,19 @@ interface Props {
   label?: string;
 }
 
-export function FormDeleteButton({ id, redirectTo = "/me/forms", label = "Удалить форму" }: Props) {
+export function FormDeleteButton({ id, redirectTo = "/me/forms", label }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("forms");
   const [, startTransition] = useTransition();
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{label}</Button>}
-      title="Удалить форму?"
-      description="Действие необратимо. Будут удалены все отклики на форму."
+      trigger={<Button variant="danger">{label ?? t("deleteFormLabel")}</Button>}
+      title={t("deleteFormTitle")}
+      description={t("deleteFormDescription")}
       destructive
-      confirmLabel="Удалить"
+      confirmLabel={t("deleteConfirm")}
       onConfirm={async () => {
         const result = await deleteForm(id);
         if (!result.success) {

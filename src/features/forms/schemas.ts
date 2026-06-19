@@ -3,79 +3,91 @@ import "server-only";
 import { z } from "zod";
 
 import { VISIBILITY, FORM_SUBMISSION_MODES, FORM_FIELD_TYPES } from "@/api/enums";
+import type { NamespaceT } from "@/i18n";
 
-const UUID = z.uuid("Некорректный идентификатор");
+type ValidationT = NamespaceT<"validation">;
 
-const TitleSchema = z.string().trim().min(1, "Введите название").max(500, "До 500 символов");
+function makeUUID(t: ValidationT) {
+  return z.uuid(t("forms.invalidId"));
+}
+
+function makeTitleSchema(t: ValidationT) {
+  return z.string().trim().min(1, t("forms.titleRequired")).max(500, t("forms.titleMax"));
+}
+
 const VisibilityEnum = z.enum(VISIBILITY);
 const ModeEnum = z.enum(FORM_SUBMISSION_MODES);
 const FieldTypeEnum = z.enum(FORM_FIELD_TYPES);
 
 /** Описание одного поля в payload конструктора. */
-const FieldSchema = z
-  .object({
-    type: FieldTypeEnum,
-    prompt: z.string().trim().min(1, "Текст вопроса обязателен"),
-    help_text: z.string().optional(),
-    required: z.boolean(),
-    sort_order: z.number().int(),
-    // Опции — массив plain-строк (label); id генерит бек.
-    options: z.array(z.string().trim().min(1, "Пустой вариант")).optional(),
-  })
-  .superRefine((f, ctx) => {
-    const isChoice = f.type === "single_choice" || f.type === "multi_choice";
-    const opts = f.options ?? [];
-    if (isChoice && opts.length === 0) {
-      ctx.addIssue({ code: "custom", message: "Добавьте хотя бы один вариант" });
-    }
-    if (!isChoice && opts.length > 0) {
-      ctx.addIssue({ code: "custom", message: "Варианты только у полей выбора" });
-    }
-    if (isChoice && new Set(opts).size !== opts.length) {
-      ctx.addIssue({ code: "custom", message: "Варианты не должны повторяться" });
-    }
-  });
+function makeFieldSchema(t: ValidationT) {
+  return z
+    .object({
+      type: FieldTypeEnum,
+      prompt: z.string().trim().min(1, t("forms.promptRequired")),
+      help_text: z.string().optional(),
+      required: z.boolean(),
+      sort_order: z.number().int(),
+      // Опции — массив plain-строк (label); id генерит бек.
+      options: z.array(z.string().trim().min(1, t("forms.emptyOption"))).optional(),
+    })
+    .superRefine((f, ctx) => {
+      const isChoice = f.type === "single_choice" || f.type === "multi_choice";
+      const opts = f.options ?? [];
+      if (isChoice && opts.length === 0) {
+        ctx.addIssue({ code: "custom", message: t("forms.choiceRequiresOptions") });
+      }
+      if (!isChoice && opts.length > 0) {
+        ctx.addIssue({ code: "custom", message: t("forms.optionsOnlyForChoice") });
+      }
+      if (isChoice && new Set(opts).size !== opts.length) {
+        ctx.addIssue({ code: "custom", message: t("forms.duplicateOptions") });
+      }
+    });
+}
 
 /** Полный payload формы (общий для create/update); fields revalidate-уникальность sort_order. */
-const FormPayloadShape = z
-  .object({
-    title: TitleSchema,
-    description: z.string().optional(),
-    after_submit: z.string().optional(),
-    visibility: VisibilityEnum.optional(),
-    submission_mode: ModeEnum.optional(),
-    fields: z.array(FieldSchema).min(1, "Добавьте хотя бы одно поле"),
-  })
-  .superRefine((p, ctx) => {
-    const seen = new Set<number>();
-    p.fields.forEach((f, i) => {
-      if (seen.has(f.sort_order)) {
-        ctx.addIssue({
-          code: "custom",
-          message: `Дублируется порядок поля #${i + 1}`,
-        });
-      }
-      seen.add(f.sort_order);
+function makeFormPayloadShape(t: ValidationT) {
+  return z
+    .object({
+      title: makeTitleSchema(t),
+      description: z.string().optional(),
+      after_submit: z.string().optional(),
+      visibility: VisibilityEnum.optional(),
+      submission_mode: ModeEnum.optional(),
+      fields: z.array(makeFieldSchema(t)).min(1, t("forms.fieldsRequired")),
+    })
+    .superRefine((p, ctx) => {
+      const seen = new Set<number>();
+      p.fields.forEach((f, i) => {
+        if (seen.has(f.sort_order)) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("forms.duplicateSortOrder", { n: i + 1 }),
+          });
+        }
+        seen.add(f.sort_order);
+      });
     });
-  });
+}
 
-type FormPayload = z.infer<typeof FormPayloadShape>;
+type FormPayload = z.infer<ReturnType<typeof makeFormPayloadShape>>;
 
 /** Парсит JSON-строку payload в объект и прогоняет через FormPayloadShape. */
-function payloadField() {
-  return z.string().min(1, "Пустая форма").transform((s, ctx): FormPayload => {
+function makePayloadField(t: ValidationT) {
+  return z.string().min(1, t("forms.emptyPayload")).transform((s, ctx): FormPayload => {
     let parsed: unknown;
     try {
       parsed = JSON.parse(s);
     } catch {
-      ctx.addIssue({ code: "custom", message: "Битый JSON формы" });
+      ctx.addIssue({ code: "custom", message: t("forms.badJsonPayload") });
       return z.NEVER;
     }
-    const r = FormPayloadShape.safeParse(parsed);
+    const r = makeFormPayloadShape(t).safeParse(parsed);
     if (!r.success) {
       ctx.addIssue({
         code: "custom",
-        message: r.error.issues[0]?.message ?? "Ошибка структуры формы",
+        message: r.error.issues[0]?.message ?? t("forms.payloadStructureError"),
       });
       return z.NEVER;
     }
@@ -84,29 +96,60 @@ function payloadField() {
 }
 
 /** POST /api/forms. visibility/submission_mode обязательны для create. */
-export const FormCreateSchema = z
-  .object({ payload: payloadField() })
-  .transform(({ payload }) => payload)
-  .superRefine((p, ctx) => {
-    if (!p.visibility) {
-      ctx.addIssue({ code: "custom", message: "Не указана видимость", path: ["visibility"] });
-    }
-    if (!p.submission_mode) {
-      ctx.addIssue({ code: "custom", message: "Не указан режим", path: ["submission_mode"] });
-    }
-  });
+export function makeFormCreateSchema(t: ValidationT) {
+  return z
+    .object({ payload: makePayloadField(t) })
+    .transform(({ payload }) => payload)
+    .superRefine((p, ctx) => {
+      if (!p.visibility) {
+        ctx.addIssue({ code: "custom", message: t("forms.visibilityRequired"), path: ["visibility"] });
+      }
+      if (!p.submission_mode) {
+        ctx.addIssue({ code: "custom", message: t("forms.modeRequired"), path: ["submission_mode"] });
+      }
+    });
+}
 
 /** PATCH /api/forms/{id}. Полная замена структуры (бек: fields = replace-all). */
-export const FormUpdateSchema = z.object({
-  id: UUID,
-  payload: payloadField(),
-});
+export function makeFormUpdateSchema(t: ValidationT) {
+  return z.object({
+    id: makeUUID(t),
+    payload: makePayloadField(t),
+  });
+}
 
 /** PATCH /api/forms/{id} visibility-only (UI предлагает только private→public). */
-export const FormVisibilitySchema = z.object({
-  id: UUID,
-  visibility: z.literal("public"),
-});
+export function makeFormVisibilitySchema(t: ValidationT) {
+  return z.object({
+    id: makeUUID(t),
+    visibility: z.literal("public"),
+  });
+}
+
+function makeAnswersJsonSchema(t: ValidationT) {
+  return z
+    .string()
+    .min(1, t("forms.emptyAnswers"))
+    .transform((s, ctx): z.infer<typeof AnswerWireSchema>[] => {
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(s);
+      } catch {
+        ctx.addIssue({ code: "custom", message: t("forms.badJsonAnswers") });
+        return z.NEVER;
+      }
+      if (!Array.isArray(parsed)) {
+        ctx.addIssue({ code: "custom", message: t("forms.answersNotArray") });
+        return z.NEVER;
+      }
+      const r = z.array(AnswerWireSchema).safeParse(parsed);
+      if (!r.success) {
+        ctx.addIssue({ code: "custom", message: t("forms.invalidAnswer") });
+        return z.NEVER;
+      }
+      return r.data;
+    });
+}
 
 /** Один ответ в submit (value — произвольный JSON по типу поля). */
 const AnswerWireSchema = z.object({
@@ -114,47 +157,31 @@ const AnswerWireSchema = z.object({
   value: z.record(z.string(), z.unknown()),
 });
 
-const AnswersJsonSchema = z
-  .string()
-  .min(1, "Нет ответов")
-  .transform((s, ctx): z.infer<typeof AnswerWireSchema>[] => {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(s);
-    } catch {
-      ctx.addIssue({ code: "custom", message: "Битый JSON ответов" });
-      return z.NEVER;
-    }
-    if (!Array.isArray(parsed)) {
-      ctx.addIssue({ code: "custom", message: "Ответы должны быть массивом" });
-      return z.NEVER;
-    }
-    const r = z.array(AnswerWireSchema).safeParse(parsed);
-    if (!r.success) {
-      ctx.addIssue({ code: "custom", message: "Некорректный ответ" });
-      return z.NEVER;
-    }
-    return r.data;
-  });
-
 /** POST /api/forms/{id}/submissions. token — для приватной формы через share-link. */
-export const SubmitSchema = z.object({
-  formId: UUID,
-  answers: AnswersJsonSchema,
-  token: z.string().min(1).optional(),
-});
+export function makeSubmitSchema(t: ValidationT) {
+  return z.object({
+    formId: makeUUID(t),
+    answers: makeAnswersJsonSchema(t),
+    token: z.string().min(1).optional(),
+  });
+}
 
 /** PATCH /api/submissions/{id} (editable-формы). */
-export const SubmissionEditSchema = z.object({
-  id: UUID,
-  answers: AnswersJsonSchema,
-});
+export function makeSubmissionEditSchema(t: ValidationT) {
+  return z.object({
+    id: makeUUID(t),
+    answers: makeAnswersJsonSchema(t),
+  });
+}
 
-export const FormIdSchema = z.object({ id: UUID });
-export const SubmissionIdSchema = z.object({ id: UUID });
+export const FormIdSchema = z.object({ id: z.uuid() });
+export const SubmissionIdSchema = z.object({ id: z.uuid() });
 
-export type FormCreateInput = z.infer<typeof FormCreateSchema>;
-export type FormUpdateInput = z.infer<typeof FormUpdateSchema>;
-export type FormVisibilityInput = z.infer<typeof FormVisibilitySchema>;
-export type SubmitInput = z.infer<typeof SubmitSchema>;
-export type SubmissionEditInput = z.infer<typeof SubmissionEditSchema>;
+// Convenience legacy exports for schemas used without localised messages
+// (e.g. FormVisibilitySchema used in publishForm only needs UUID validation, no user messages).
+// The action callers pass getT("validation") explicitly.
+export type FormCreateInput = z.infer<ReturnType<typeof makeFormCreateSchema>>;
+export type FormUpdateInput = z.infer<ReturnType<typeof makeFormUpdateSchema>>;
+export type FormVisibilityInput = z.infer<ReturnType<typeof makeFormVisibilitySchema>>;
+export type SubmitInput = z.infer<ReturnType<typeof makeSubmitSchema>>;
+export type SubmissionEditInput = z.infer<ReturnType<typeof makeSubmissionEditSchema>>;

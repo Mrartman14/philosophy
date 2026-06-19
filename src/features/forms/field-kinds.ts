@@ -11,18 +11,16 @@ export const FIELD_TYPES = [
   "date",
 ] as const satisfies readonly FieldType[];
 
-export const FIELD_TYPE_LABELS: Record<FieldType, string> = {
-  text: "Короткий текст",
-  long_text: "Длинный текст",
-  single_choice: "Один из вариантов",
-  multi_choice: "Несколько вариантов",
-  number: "Число",
-  date: "Дата",
-};
-
-/** Готовые опции для <Select> / <select> конструктора. */
-export const FIELD_TYPE_OPTIONS: { value: FieldType; label: string }[] =
-  FIELD_TYPES.map((t) => ({ value: t, label: FIELD_TYPE_LABELS[t] }));
+/** Возвращает опции для <select> конструктора с локализованными метками.
+ * Передай t = useT("forms") из клиентского компонента. */
+export function makeFieldTypeOptions(
+  t: (key: string) => string,
+): { value: FieldType; label: string }[] {
+  return FIELD_TYPES.map((type) => ({
+    value: type,
+    label: t(`fieldType.${type}`),
+  }));
+}
 
 /** Choice-типы требуют непустой options (бек: FieldType.HasOptions). */
 export function fieldTypeHasOptions(t: FieldType): boolean {

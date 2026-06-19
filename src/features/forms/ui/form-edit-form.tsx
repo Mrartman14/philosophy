@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import { Form, FormFeedback, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateForm } from "../actions";
@@ -42,6 +43,7 @@ const initial: ActionResult<FormEntity | null> = { success: true, data: null };
 
 export function FormEditForm({ form }: Props) {
   const router = useRouter();
+  const t = useT("forms");
   const [state, action] = useActionState(updateForm, initial);
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation" ? state.fieldErrors : {};
@@ -55,7 +57,7 @@ export function FormEditForm({ form }: Props) {
       <input type="hidden" name="id" value={form.id ?? ""} />
       <FormBuilder mode="edit" initial={toBuilderInitial(form)} />
       <FormFeedback result={state} forbiddenAction="изменение формы" />
-      <div><SubmitButton>Сохранить структуру</SubmitButton></div>
+      <div><SubmitButton>{t("editSubmit")}</SubmitButton></div>
     </Form>
   );
 }

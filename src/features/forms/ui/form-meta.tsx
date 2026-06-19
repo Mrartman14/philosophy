@@ -1,13 +1,19 @@
 // src/features/forms/ui/form-meta.tsx
+import { getT } from "@/i18n";
+
 import type { Form } from "../types";
 
-const visLabel: Record<string, string> = { private: "Приватная", public: "Публичная" };
-const modeLabel: Record<string, string> = {
-  editable: "Отклик можно менять и удалять",
-  immutable: "Отклик можно только отозвать",
-};
+export async function FormMeta({ form }: { form: Form }) {
+  const t = await getT("forms");
+  const visLabel: Record<string, string> = {
+    private: t("visibility.private"),
+    public: t("visibility.public"),
+  };
+  const modeLabel: Record<string, string> = {
+    editable: t("submissionMode.editable"),
+    immutable: t("submissionMode.immutable"),
+  };
 
-export function FormMeta({ form }: { form: Form }) {
   return (
     <div className="flex flex-wrap gap-2 text-xs text-(--color-fg-muted)">
       <span className="rounded border border-(--color-border) px-2 py-0.5">
@@ -17,7 +23,7 @@ export function FormMeta({ form }: { form: Form }) {
         {modeLabel[form.submission_mode ?? "editable"] ?? form.submission_mode}
       </span>
       {form.published_at && (
-        <span className="rounded border border-(--color-border) px-2 py-0.5">Опубликована</span>
+        <span className="rounded border border-(--color-border) px-2 py-0.5">{t("publishedBadge")}</span>
       )}
     </div>
   );

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button, TextInput, Textarea } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import type { FieldType, SubmissionMode, Visibility } from "../types";
 
@@ -45,6 +46,7 @@ const DEFAULT_INITIAL: BuilderInitial = {
  * sort_order назначается по позиции при сериализации.
  */
 export function FormBuilder({ initial, mode, disabled = false }: Props) {
+  const t = useT("forms");
   const init = initial ?? DEFAULT_INITIAL;
   const [title, setTitle] = useState(init.title);
   const [description, setDescription] = useState(init.description);
@@ -95,48 +97,48 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
       <input type="hidden" name="payload" value={payload} />
 
       <label htmlFor="form-builder-title" className="flex flex-col gap-1 text-sm">
-        Название формы
+        {t("builder.titleLabel")}
         <TextInput id="form-builder-title" value={title} disabled={disabled} maxLength={500} onChange={(e) => { setTitle(e.target.value); }} required />
       </label>
 
       <label htmlFor="form-builder-description" className="flex flex-col gap-1 text-sm">
-        Описание (markdown, необязательно)
+        {t("builder.descriptionLabel")}
         <Textarea id="form-builder-description" value={description} disabled={disabled} rows={3} onChange={(e) => { setDescription(e.target.value); }} />
       </label>
 
       <label htmlFor="form-builder-after-submit" className="flex flex-col gap-1 text-sm">
-        Текст после отправки (markdown, необязательно)
+        {t("builder.afterSubmitLabel")}
         <Textarea id="form-builder-after-submit" value={afterSubmit} disabled={disabled} rows={2} onChange={(e) => { setAfterSubmit(e.target.value); }} />
       </label>
 
       {mode === "create" && (
         <div className="flex flex-col gap-2">
           <label className="flex flex-col gap-1 text-sm">
-            Видимость
+            {t("builder.visibilityLabel")}
             <select
               className="rounded border border-(--color-border) px-2 py-1 text-sm"
               value={visibility}
               disabled={disabled}
               onChange={(e) => { setVisibility(e.target.value as Visibility); }}
             >
-              <option value="private">Приватная</option>
-              <option value="public">Публичная (опубликовать сразу)</option>
+              <option value="private">{t("builder.visibilityPrivate")}</option>
+              <option value="public">{t("builder.visibilityPublic")}</option>
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            Режим откликов
+            {t("builder.submissionModeLabel")}
             <select
               className="rounded border border-(--color-border) px-2 py-1 text-sm"
               value={submissionMode}
               disabled={disabled}
               onChange={(e) => { setSubmissionMode(e.target.value as SubmissionMode); }}
             >
-              <option value="editable">Редактируемый (можно менять/удалять отклик)</option>
-              <option value="immutable">Без изменений (только отозвать)</option>
+              <option value="editable">{t("builder.submissionModeEditable")}</option>
+              <option value="immutable">{t("builder.submissionModeImmutable")}</option>
             </select>
           </label>
           <p className="text-xs text-(--color-fg-muted)">
-            Режим «без изменений» нельзя будет смягчить позже. Публичную форму нельзя вернуть в приватную, а её структуру — менять.
+            {t("builder.submissionModeHint")}
           </p>
         </div>
       )}
@@ -159,7 +161,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
       </div>
 
       <Button type="button" variant="secondary" disabled={disabled} onClick={() => { setFields((p) => [...p, emptyField()]); }}>
-        + Добавить поле
+        {t("builder.addField")}
       </Button>
     </div>
   );
