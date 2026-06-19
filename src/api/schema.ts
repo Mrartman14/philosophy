@@ -4092,6 +4092,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ask/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Контекст для ответа LLM по вопросу
+         * @description Возвращает релевантные документы и термины глоссария (с полным Markdown и ссылками-источниками), отфильтрованные по видимости актора. LLM пользователя синтезирует ответ только по этим данным. Сервис сам LLM не вызывает.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Поисковый запрос */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["llmretrieval.contextRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["llmretrieval.ContextItem"][];
+                        };
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ast/schema": {
         parameters: {
             query?: never;
@@ -11820,13 +11884,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description VALIDATION_ERROR */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -12009,6 +12073,163 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список персональных токенов (метаданные) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["pat.Token"][];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Создать персональный токен
+         * @description Возвращает СЫРОЙ токен один раз. Используется для подключения личного MCP (Phase 2b).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Метка и опциональный срок */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["pat.createTokenRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/tokens/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Отозвать персональный токен */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID токена */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -14403,7 +14624,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -15120,6 +15341,20 @@ export interface components {
             description?: string;
             title?: string;
         };
+        "llmretrieval.ContextItem": {
+            content_markdown?: string;
+            entity_id?: string;
+            snippet?: string;
+            source_url?: string;
+            title?: string;
+            type?: components["schemas"]["llmretrieval.HitType"];
+        };
+        /** @enum {string} */
+        "llmretrieval.HitType": "document" | "glossary";
+        "llmretrieval.contextRequest": {
+            limit?: number;
+            query?: string;
+        };
         /** @enum {string} */
         "media.FileType": "video" | "audio";
         "media.Media": {
@@ -15168,11 +15403,45 @@ export interface components {
             target_type?: string;
             user_id?: string;
         };
+        "pat.Token": {
+            created_at?: number;
+            /** @description Unix sec, nil = no expiry */
+            expires_at?: number;
+            id?: string;
+            label?: string;
+            revoked_at?: number;
+            token_hint?: string;
+        };
+        "pat.createTokenRequest": {
+            expires_in_days?: number;
+            label?: string;
+        };
+        "preference.Appearance": {
+            contrast?: components["schemas"]["preference.Contrast"];
+            density?: components["schemas"]["preference.Density"];
+            font?: components["schemas"]["preference.Font"];
+            text_size?: components["schemas"]["preference.TextSize"];
+            theme?: components["schemas"]["preference.Theme"];
+        };
+        /** @enum {string} */
+        "preference.Contrast": "normal" | "high";
+        /** @enum {string} */
+        "preference.Density": "comfortable" | "compact";
+        /** @enum {string} */
+        "preference.Font": "sans" | "legible" | "serif";
+        /** @enum {string} */
+        "preference.Locale": "system" | "ru" | "en";
         "preference.Preferences": {
+            appearance?: components["schemas"]["preference.Appearance"];
+            locale?: components["schemas"]["preference.Locale"];
             reading_mode?: components["schemas"]["preference.ReadingMode"];
         };
         /** @enum {string} */
         "preference.ReadingMode": "full" | "focused";
+        /** @enum {string} */
+        "preference.TextSize": "sm" | "md" | "lg" | "xl";
+        /** @enum {string} */
+        "preference.Theme": "system" | "light" | "dark";
         "productionstats.EntityInventory": {
             entity_type?: components["schemas"]["productionstats.EntityType"];
             private?: number;
