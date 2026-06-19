@@ -1,0 +1,29 @@
+import { THEMES, CONTRASTS, DENSITIES, FONTS, TEXT_SIZES,
+  type Theme, type Contrast, type Density, type FontChoice, type TextSize } from "@/styles/tokens/enums";
+import { TEXT_SCALE } from "@/styles/tokens/scales";
+
+export interface Appearance { theme: Theme; contrast: Contrast; density: Density; font: FontChoice; textSize: TextSize }
+export const APPEARANCE_COOKIE = "appearance";
+export const DEFAULT_APPEARANCE: Appearance = { theme: "system", contrast: "normal", density: "comfortable", font: "sans", textSize: "md" };
+
+const ENUMS = { theme: THEMES, contrast: CONTRASTS, density: DENSITIES, font: FONTS, textSize: TEXT_SIZES } as const;
+function pick<K extends keyof Appearance>(key: K, value: unknown): Appearance[K] {
+  return (ENUMS[key] as readonly string[]).includes(value as string) ? (value as Appearance[K]) : DEFAULT_APPEARANCE[key];
+}
+export function parseAppearance(raw: string | undefined): Appearance {
+  if (!raw) return DEFAULT_APPEARANCE;
+  let o: Record<string, unknown>;
+  try { o = JSON.parse(raw) as Record<string, unknown>; } catch { return DEFAULT_APPEARANCE; }
+  return { theme: pick("theme", o.theme), contrast: pick("contrast", o.contrast), density: pick("density", o.density), font: pick("font", o.font), textSize: pick("textSize", o.textSize) };
+}
+export function serializeAppearance(a: Appearance): string { return JSON.stringify(a); }
+export function htmlAttrs(a: Appearance) {
+  return {
+    ...(a.theme !== "system" ? { "data-theme": a.theme } : {}),
+    ...(a.contrast !== "normal" ? { "data-contrast": a.contrast } : {}),
+    ...(a.density !== "comfortable" ? { "data-density": a.density } : {}),
+    ...(a.font !== "sans" ? { "data-font": a.font } : {}),
+    style: { "--text-scale": String(TEXT_SCALE[a.textSize]) } as Record<string, string>,
+    colorScheme: a.theme === "system" ? "light dark" : a.theme,
+  };
+}
