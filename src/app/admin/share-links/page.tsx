@@ -8,6 +8,7 @@ import {
   canModerateShareLinks,
   ShareLinkLookupSchema,
 } from "@/features/share-links";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -21,12 +22,14 @@ export default async function AdminShareLinksPage({ searchParams }: Props) {
   const raw = await searchParams;
   const parsed = ShareLinkLookupSchema.safeParse(raw);
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold">Модерация ссылок</h1>
+        <h1 className="text-2xl font-bold">{t("shareLinksTitle")}</h1>
         <p className="text-sm text-(--color-fg-muted)">
-          Просмотр и отзыв любых share-ссылок. Укажите тип ресурса и его ID.
+          {t("shareLinksDescription")}
         </p>
       </header>
 
@@ -45,7 +48,7 @@ export default async function AdminShareLinksPage({ searchParams }: Props) {
         />
       ) : (
         <p className="text-sm text-(--color-fg-muted)">
-          Укажите тип и ID ресурса выше.
+          {t("shareLinksHint")}
         </p>
       )}
     </section>

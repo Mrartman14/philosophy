@@ -16,6 +16,7 @@ import {
   getTags,
   LectureTagsForm,
 } from "@/features/tags";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Редактирование лекции" };
@@ -40,6 +41,8 @@ export default async function EditLecturePage({ params }: Props) {
     ? await Promise.all([getTags(), getLectureTags(lecture.id)])
     : [null, null];
 
+  const t = await getT("admin");
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">{lecture.title}</h1>
@@ -52,7 +55,7 @@ export default async function EditLecturePage({ params }: Props) {
       )}
       {canAssign && allTags && (
         <section className="max-w-xl border-t border-(--color-border) pt-4">
-          <h2 className="mb-3 text-lg font-semibold">Теги</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t("editLectureTagsHeading")}</h2>
           <LectureTagsForm
             lectureId={lecture.id}
             allTags={allTags.items}
@@ -75,12 +78,12 @@ export default async function EditLecturePage({ params }: Props) {
 
       {canManageCover(me, lecture) && (
         <section className="max-w-xl border-t border-(--color-border) pt-4">
-          <h2 className="mb-2 text-lg font-semibold">Прикрепления</h2>
+          <h2 className="mb-2 text-lg font-semibold">{t("editLectureAttachmentsHeading")}</h2>
           <a
             href={`/admin/lectures/${lecture.id}/attachments`}
             className="text-sm underline hover:no-underline"
           >
-            Управление документами и медиа лекции →
+            {t("editLectureAttachmentsLink")}
           </a>
         </section>
       )}

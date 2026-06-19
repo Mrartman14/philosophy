@@ -9,6 +9,7 @@ import {
   GlossaryCreateForm,
   GlossarySearchForm,
 } from "@/features/glossary";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
@@ -33,11 +34,13 @@ export default async function AdminGlossaryPage({ searchParams }: Props) {
     (a.title ?? "").localeCompare(b.title ?? "", "ru")
   );
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold">Глоссарий</h1>
-        <p className="text-sm text-(--color-fg-muted)">Всего: {result.total}</p>
+        <h1 className="text-2xl font-bold">{t("glossaryTitle")}</h1>
+        <p className="text-sm text-(--color-fg-muted)">{t("glossaryTotal", { total: result.total })}</p>
       </header>
 
       {canCreate && <GlossaryCreateForm />}

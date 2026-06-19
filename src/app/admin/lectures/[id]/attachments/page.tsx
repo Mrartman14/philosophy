@@ -11,6 +11,7 @@ import {
   searchMediaForAttach,
 } from "@/features/lectures";
 import type { ManagedAttachment } from "@/features/lectures";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Прикрепления лекции" };
@@ -32,10 +33,12 @@ export default async function LectureAttachmentsPage({ params }: Props) {
 
   const canAttach = canAttachToLecture(me, lecture);
 
+  const t = await getT("admin");
+
   const docItems: ManagedAttachment[] = docs.map((d, i) => ({
     entityId: d.id ?? "",
     entityType: "document",
-    label: d.filename ?? d.id ?? "Документ",
+    label: d.filename ?? d.id ?? t("attachmentsDocumentFallback"),
     sortOrder: i,
   }));
   const mediaItems: ManagedAttachment[] = media.map((m, i) => ({
@@ -58,14 +61,14 @@ export default async function LectureAttachmentsPage({ params }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">{lecture.title}: прикрепления</h1>
+      <h1 className="text-2xl font-bold">{t("attachmentsPageTitle", { lectureTitle: lecture.title })}</h1>
       <LectureAttachmentsManager
         lectureId={id}
         attachments={docItems}
         canAttach={canAttach}
         pickerEntityType="document"
         targetFetcher={docFetcher}
-        title="Документы лекции"
+        title={t("attachmentsDocsSectionTitle")}
       />
       <LectureAttachmentsManager
         lectureId={id}
@@ -73,7 +76,7 @@ export default async function LectureAttachmentsPage({ params }: Props) {
         canAttach={canAttach}
         pickerEntityType="media"
         targetFetcher={mediaFetcher}
-        title="Медиа лекции"
+        title={t("attachmentsMediaSectionTitle")}
       />
     </div>
   );

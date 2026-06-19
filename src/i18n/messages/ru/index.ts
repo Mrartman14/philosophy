@@ -6,6 +6,7 @@
 // по одной строке импорта и одному ключу в каждый index (этот и ../en).
 // Литералы не нужно помечать `as const`: значения-свойства расширяются до string,
 // поэтому `typeof ru` даёт string-листья, а en satisfies Messages проходит.
+import admin from "./admin";
 import annotations from "./annotations";
 import audit from "./audit";
 import auth from "./auth";
@@ -34,6 +35,7 @@ import users from "./users";
 import validation from "./validation";
 
 const ru = {
+  admin,
   annotations,
   audit,
   auth,

@@ -11,6 +11,7 @@ import {
   BannerAdminRow,
   BannerCreateForm,
 } from "@/features/banners";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
@@ -31,12 +32,14 @@ export default async function AdminBannersPage({ searchParams }: Props) {
     limit: 20,
   });
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold">Баннеры</h1>
+        <h1 className="text-2xl font-bold">{t("bannersTitle")}</h1>
         <p className="text-sm text-(--color-fg-muted)">
-          Всего: {result.total}
+          {t("bannersTotal", { total: result.total })}
         </p>
       </header>
 

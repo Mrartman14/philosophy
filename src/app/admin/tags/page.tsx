@@ -10,6 +10,7 @@ import {
   TagAdminRow,
   TagCreateForm,
 } from "@/features/tags";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
@@ -35,19 +36,21 @@ export default async function AdminTagsPage({ searchParams }: Props) {
     a.name.localeCompare(b.name, "ru"),
   );
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold">Теги</h1>
-        <p className="text-sm text-(--color-fg-muted)">Всего: {result.total}</p>
+        <h1 className="text-2xl font-bold">{t("tagsTitle")}</h1>
+        <p className="text-sm text-(--color-fg-muted)">{t("tagsTotal", { total: result.total })}</p>
       </header>
 
       {canCreate && <TagCreateForm />}
 
       {sorted.length === 0 ? (
         <EmptyState
-          title="Тегов пока нет"
-          description={canCreate ? "Создайте первый тег формой выше." : undefined}
+          title={t("tagsEmptyTitle")}
+          description={canCreate ? t("tagsEmptyDescription") : undefined}
         />
       ) : (
         <ul className="flex max-w-xl flex-col divide-y divide-(--color-border)">

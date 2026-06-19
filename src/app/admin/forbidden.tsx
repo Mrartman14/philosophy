@@ -1,10 +1,13 @@
 // src/app/admin/forbidden.tsx
-export default function AdminForbidden() {
+import { getT } from "@/i18n";
+
+export default async function AdminForbidden() {
+  const t = await getT("admin");
   return (
     <div className="flex min-h-[40vh] flex-col items-center justify-center gap-2 text-center">
-      <h1 className="text-2xl font-bold">403</h1>
+      <h1 className="text-2xl font-bold">{t("forbiddenTitle")}</h1>
       <p className="text-(--color-fg-muted)">
-        Доступ к админ-панели запрещён.
+        {t("forbiddenDescription")}
       </p>
     </div>
   );

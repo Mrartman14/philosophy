@@ -14,6 +14,7 @@ import {
   BannerExportLinks,
   BannerRevisions,
 } from "@/features/banners";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Баннеры — редактирование" };
@@ -39,11 +40,13 @@ export default async function AdminBannerEditPage({
 
   const astSchema = canUpdate ? await getAstSchema() : null;
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-8">
       <header className="flex items-center justify-between gap-4">
         <h1 className="truncate text-2xl font-bold">
-          {bannerPreviewText(banner.blocks, 60) || "Баннер"}
+          {bannerPreviewText(banner.blocks, 60) || t("bannerFallbackTitle")}
         </h1>
         {banner.id && <BannerExportLinks id={banner.id} />}
       </header>

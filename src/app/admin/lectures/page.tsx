@@ -19,6 +19,7 @@ import {
   getLectures,
   LectureAdminRow,
 } from "@/features/lectures";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parsePaging } from "@/utils/paging";
 
@@ -37,25 +38,27 @@ export default async function AdminLecturesPage({ searchParams }: Props) {
 
   const { items, total } = await getLectures({ offset, limit });
 
+  const t = await getT("admin");
+
   return (
     <div className="flex flex-col gap-4">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Лекции</h1>
+        <h1 className="text-2xl font-bold">{t("lecturesTitle")}</h1>
         {canCreateLecture(me) && (
           <RouterLink href="/admin/lectures/new">
-            <Button>Создать</Button>
+            <Button>{t("lecturesCreate")}</Button>
           </RouterLink>
         )}
       </header>
 
       {items.length === 0 ? (
         <EmptyState
-          title="Лекций пока нет"
-          description="Создайте первую."
+          title={t("lecturesEmptyTitle")}
+          description={t("lecturesEmptyDescription")}
           action={
             canCreateLecture(me) ? (
               <RouterLink href="/admin/lectures/new">
-                <Button>Создать</Button>
+                <Button>{t("lecturesCreate")}</Button>
               </RouterLink>
             ) : undefined
           }
@@ -65,10 +68,10 @@ export default async function AdminLecturesPage({ searchParams }: Props) {
           <Table>
             <Thead>
               <Tr>
-                <Th>Название</Th>
-                <Th>Дата</Th>
-                <Th>Видимость</Th>
-                <Th>Действия</Th>
+                <Th>{t("lecturesColTitle")}</Th>
+                <Th>{t("lecturesColDate")}</Th>
+                <Th>{t("lecturesColVisibility")}</Th>
+                <Th>{t("lecturesColActions")}</Th>
               </Tr>
             </Thead>
             <Tbody>

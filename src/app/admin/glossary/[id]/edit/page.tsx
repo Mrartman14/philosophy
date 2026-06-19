@@ -10,6 +10,7 @@ import {
   GlossaryDeleteButton,
   GlossaryRevisions,
 } from "@/features/glossary";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 export const metadata = { title: "Глоссарий — редактирование термина" };
@@ -35,12 +36,14 @@ export default async function AdminGlossaryEditPage({
 
   const astSchema = canUpdate ? await getAstSchema() : null;
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">{term.title}</h1>
         <p className="text-xs text-(--color-fg-muted)">
-          Название термина нельзя изменить. Можно редактировать только тело.
+          {t("glossaryEditHint")}
         </p>
       </header>
 

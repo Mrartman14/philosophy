@@ -8,6 +8,7 @@ import {
   getUsers,
   UsersTable,
 } from "@/features/users";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
@@ -28,12 +29,14 @@ export default async function AdminUsersPage({ searchParams }: Props) {
 
   const result = await getUsers({ offset: safeOffset, limit: PAGE_SIZE });
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold">Пользователи</h1>
+        <h1 className="text-2xl font-bold">{t("usersTitle")}</h1>
         <p className="text-sm text-(--color-fg-muted)">
-          Всего: {result.total}
+          {t("usersTotal", { total: result.total })}
         </p>
       </header>
 

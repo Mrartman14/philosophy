@@ -9,6 +9,7 @@ import {
   AnnotationAdminRow,
   AnnotationAdminFilterForm,
 } from "@/features/annotations";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
@@ -37,16 +38,17 @@ export default async function AdminAnnotationsPage({ searchParams }: Props) {
       : {}),
   });
 
+  const t = await getT("admin");
+
   return (
     <section className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Аннотации (публичные)</h1>
+      <h1 className="text-2xl font-bold">{t("annotationsTitle")}</h1>
       <p className="text-sm text-(--color-fg-muted)">
-        Видны только публичные аннотации. Удаление доступно для публичных
-        (приватные модерации недоступны).
+        {t("annotationsDescription")}
       </p>
       <AnnotationAdminFilterForm />
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-fg-muted)">Ничего не найдено.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("annotationsEmpty")}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((a) => (
