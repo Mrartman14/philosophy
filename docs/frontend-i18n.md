@@ -5,7 +5,7 @@
 ## Что уже есть
 
 - Фасад `@/i18n` (server) / `@/i18n/client` (client)
-- Каталоги `src/i18n/messages/{ru,ts}.ts`
+- Каталоги `src/i18n/messages/{ru,en}.ts`
 - ESLint Guardrail 5 (запрет на direct `next-intl` импорты)
 - Seam форматирования `getFmt`
 - Пилоты: notifications (ICU-плюрал), comments (даты)
