@@ -116,6 +116,22 @@ const validation = {
     documentItemDuplicate: "Документ добавлен дважды",
   },
 
+  // --- events: EventFieldsSchema / EventCreateSchema / EventUpdateSchema / EventIdSchema ---
+  events: {
+    titleRequired: "Введите название",
+    titleMax: "До 500 символов",
+    startDateRequired: "Укажите дату начала",
+    rruleMax: "До 500 символов",
+    dateFormat: "Формат даты — ГГГГ-ММ-ДД",
+    startDateTimeRequired: "Укажите дату и время начала",
+    endDateTimeRequired: "Укажите дату и время окончания",
+    endBeforeStart: "Дата окончания раньше даты начала",
+    rrulePrefix: "RRULE должен начинаться с FREQ=",
+    blocksInvalidJson: "Битый JSON в теле формы",
+    blocksNotArray: "Тело должно быть массивом блоков",
+    invalidId: "Некорректный id события",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

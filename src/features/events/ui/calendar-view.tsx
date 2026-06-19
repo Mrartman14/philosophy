@@ -1,7 +1,7 @@
 // src/features/events/ui/calendar-view.tsx
 import { AstRender } from "@/components/ast-render";
 import { RouterLink } from "@/components/ui";
-
+import { getT, getServerFmt } from "@/i18n";
 
 import { groupOccurrencesByDate, type MonthRange } from "../calendar";
 import type { EventOccurrence } from "../types";
@@ -11,46 +11,46 @@ interface Props {
   occurrences: EventOccurrence[];
 }
 
-const dayFormat = new Intl.DateTimeFormat("ru-RU", {
-  weekday: "long",
-  day: "numeric",
-  month: "long",
-  timeZone: "UTC",
-});
-
-function formatDay(date: string): string {
-  const d = new Date(`${date}T00:00:00Z`);
-  if (Number.isNaN(d.getTime())) return date;
-  return dayFormat.format(d);
-}
-
-export function CalendarView({ range, occurrences }: Props) {
+export async function CalendarView({ range, occurrences }: Props) {
+  const t = await getT("events");
+  const fmt = await getServerFmt();
   const groups = groupOccurrencesByDate(occurrences);
+
+  const formatDay = (date: string): string => {
+    const d = new Date(`${date}T00:00:00Z`);
+    if (Number.isNaN(d.getTime())) return date;
+    return fmt.dateTime(d, {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      timeZone: "UTC",
+    });
+  };
 
   return (
     <section className="flex flex-col gap-6">
       <nav
-        aria-label="Навигация по месяцам"
+        aria-label={t("monthNavLabel")}
         className="flex items-center justify-between"
       >
         <RouterLink
           href={`/calendar?month=${range.prevMonth}`}
           className="text-sm hover:underline"
         >
-          ← Предыдущий
+          {t("prevMonth")}
         </RouterLink>
         <h2 className="text-xl font-semibold capitalize">{range.label}</h2>
         <RouterLink
           href={`/calendar?month=${range.nextMonth}`}
           className="text-sm hover:underline"
         >
-          Следующий →
+          {t("nextMonth")}
         </RouterLink>
       </nav>
 
       {groups.length === 0 ? (
         <p className="text-sm text-(--color-fg-muted)">
-          В этом месяце событий нет.
+          {t("noEvents")}
         </p>
       ) : (
         <ol className="flex flex-col gap-6">
@@ -68,7 +68,7 @@ export function CalendarView({ range, occurrences }: Props) {
                     <p className="font-medium">{occ.title}</p>
                     {occ.is_recurring && (
                       <p className="text-xs text-(--color-fg-muted)">
-                        Повторяющееся событие
+                        {t("recurringEvent")}
                       </p>
                     )}
                     {(occ.blocks?.length ?? 0) > 0 && (

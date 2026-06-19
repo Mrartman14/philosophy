@@ -113,6 +113,22 @@ const validation = {
     documentItemDuplicate: "Document added twice",
   },
 
+  // --- events: EventFieldsSchema / EventCreateSchema / EventUpdateSchema / EventIdSchema ---
+  events: {
+    titleRequired: "Enter a title",
+    titleMax: "Up to 500 characters",
+    startDateRequired: "Enter a start date",
+    rruleMax: "Up to 500 characters",
+    dateFormat: "Date format must be YYYY-MM-DD",
+    startDateTimeRequired: "Enter a start date and time",
+    endDateTimeRequired: "Enter an end date and time",
+    endBeforeStart: "End date is before start date",
+    rrulePrefix: "RRULE must start with FREQ=",
+    blocksInvalidJson: "Invalid JSON in form body",
+    blocksNotArray: "Body must be an array of blocks",
+    invalidId: "Invalid event ID",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

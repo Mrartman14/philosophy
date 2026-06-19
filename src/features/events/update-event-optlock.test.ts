@@ -18,6 +18,16 @@ vi.mock("./permissions", () => ({
   canDeleteEvent: () => true,
 }));
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
+// getT("validation") используется в action для сборки схемы; в тестах возвращаем
+// identity-stub (ключ → ключ), что достаточно для проверки поведения.
+// resolveErrorMessage подхватывает реальную реализацию (деградирует к DEFAULT_LOCALE).
+vi.mock("@/i18n", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...actual,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
 
 // импорт ПОСЛЕ vi.mock (hoisted)
 import { updateEvent } from "./actions";

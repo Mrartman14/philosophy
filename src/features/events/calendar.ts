@@ -1,6 +1,9 @@
 // src/features/events/calendar.ts
 // Чистые date-хелперы домена events. Без "server-only": нужны тестам и
 // server-safe UI-компонентам; никаких side effects и зависимостей.
+import { getFmt } from "@/i18n/format";
+import type { ResolvedLocale } from "@/i18n/locales";
+
 import type { EventOccurrence } from "./types";
 
 export interface MonthRange {
@@ -32,6 +35,7 @@ function pad2(n: number): string {
 export function resolveMonthRange(
   monthParam?: string,
   now: Date = new Date(),
+  locale: ResolvedLocale = "ru",
 ): MonthRange {
   let year: number;
   let month: number; // 1–12
@@ -46,11 +50,12 @@ export function resolveMonthRange(
   const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const prev = month === 1 ? { y: year - 1, m: 12 } : { y: year, m: month - 1 };
   const next = month === 12 ? { y: year + 1, m: 1 } : { y: year, m: month + 1 };
-  const label = new Intl.DateTimeFormat("ru-RU", {
+  const fmt = getFmt(locale);
+  const label = fmt.dateTime(new Date(Date.UTC(year, month - 1, 1)), {
     month: "long",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date(Date.UTC(year, month - 1, 1)));
+  });
 
   return {
     month: `${year}-${pad2(month)}`,
@@ -96,10 +101,15 @@ export function groupOccurrencesByDate(
  * Форматирует дату события для списков. all_day (YYYY-MM-DD) → «1 июля
  * 2026 г.»; timed (RFC3339) → плюс время в UTC (формы тоже подписаны UTC).
  */
-export function formatEventDate(value?: string, allDay?: boolean): string {
+export function formatEventDate(
+  value?: string,
+  allDay?: boolean,
+  locale: ResolvedLocale = "ru",
+): string {
   if (!value) return "";
   const date = new Date(allDay ? `${value}T00:00:00Z` : value);
   if (Number.isNaN(date.getTime())) return value;
+  const fmt = getFmt(locale);
   const opts: Intl.DateTimeFormatOptions = allDay
     ? { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }
     : {
@@ -110,5 +120,5 @@ export function formatEventDate(value?: string, allDay?: boolean): string {
         minute: "2-digit",
         timeZone: "UTC",
       };
-  return new Intl.DateTimeFormat("ru-RU", opts).format(date);
+  return fmt.dateTime(date, opts);
 }

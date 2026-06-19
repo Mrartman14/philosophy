@@ -100,6 +100,14 @@ const errors = {
   // Слайс lectures маппит NOT_FOUND → LECTURE_NOT_FOUND в своей ERRORS-карте.
   LECTURE_NOT_FOUND: "Лекция не найдена.",
 
+  // --- events slice: доменные коды ---
+  INVALID_DATE:
+    "Бекенд отклонил дату: проверьте формат и порядок дат начала/окончания.",
+  INVALID_RRULE: "Бекенд отклонил правило повторения (RRULE).",
+  EVENT_BLOCKS_INVALID: "Описание события не прошло валидацию AST.",
+  EVENT_BLOCK_REFERENCED:
+    "На блок события ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+
   // --- trails slice: доменные коды ---
   TRAIL_PUBLIC_IMMUTABLE: "Публичный маршрут нельзя сделать приватным — только удалить.",
   TRAIL_DUPLICATE_DOCUMENT: "Документ добавлен в маршрут дважды. Уберите дубликат.",

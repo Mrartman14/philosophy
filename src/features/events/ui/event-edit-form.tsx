@@ -12,6 +12,7 @@ import {
   SubmitButton,
   TextInput,
 } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateEvent } from "../actions";
@@ -33,6 +34,8 @@ interface Props {
 }
 
 export function EventEditForm({ event }: Props) {
+  const t = useT("events");
+  const tErrors = useT("errors");
   const initialAllDay = event.all_day ?? true;
   const [allDay, setAllDay] = useState(initialAllDay);
   const [startDate, setStartDate] = useState(
@@ -69,7 +72,7 @@ export function EventEditForm({ event }: Props) {
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
-      <FormField name="title" label="Название" required>
+      <FormField name="title" label={t("fieldTitle")} required>
         <TextInput
           name="title"
           defaultValue={event.title ?? ""}
@@ -85,12 +88,12 @@ export function EventEditForm({ event }: Props) {
           checked={allDay}
           onCheckedChange={handleAllDayChange}
         />
-        Весь день
+        {t("fieldAllDay")}
       </label>
 
       <FormField
         name="start_date"
-        label={allDay ? "Дата начала" : "Дата и время начала (UTC)"}
+        label={allDay ? t("fieldStartDate") : t("fieldStartDateTime")}
         required
       >
         <TextInput
@@ -106,8 +109,8 @@ export function EventEditForm({ event }: Props) {
         name="end_date"
         label={
           allDay
-            ? "Дата окончания (необязательно)"
-            : "Дата и время окончания (UTC, необязательно)"
+            ? t("fieldEndDate")
+            : t("fieldEndDateTime")
         }
       >
         <TextInput
@@ -118,7 +121,7 @@ export function EventEditForm({ event }: Props) {
         />
       </FormField>
 
-      <FormField name="rrule" label="Повторение (RRULE, необязательно)">
+      <FormField name="rrule" label={t("fieldRrule")}>
         <TextInput
           name="rrule"
           defaultValue={event.rrule ?? ""}
@@ -126,11 +129,10 @@ export function EventEditForm({ event }: Props) {
         />
       </FormField>
       <p className="text-xs text-(--color-fg-muted)">
-        Уже сохранённые «Дату окончания» и «Повторение» очистить нельзя —
-        бекенд игнорирует пустые значения этих полей.
+        {t("clearLimitation")}
       </p>
 
-      <FormField name="blocks" label="Описание события">
+      <FormField name="blocks" label={t("fieldBlocks")}>
         <AstEditor
           defaultValue={event.blocks ?? []}
           entityContext="event"
@@ -139,11 +141,11 @@ export function EventEditForm({ event }: Props) {
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("savedSuccess")}</p>
       )}
       {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
-          У вас нет прав на изменение события.
+          {tErrors("forbiddenAction", { action: t("editAction") })}
         </p>
       )}
       {!state.success && !state.code && (
@@ -151,7 +153,7 @@ export function EventEditForm({ event }: Props) {
       )}
 
       <div>
-        <SubmitButton>Сохранить</SubmitButton>
+        <SubmitButton>{t("btnSave")}</SubmitButton>
       </div>
     </Form>
   );

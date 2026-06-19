@@ -2,23 +2,28 @@
 import "server-only";
 import { z } from "zod";
 
+import type { NamespaceT } from "@/i18n";
 import { blocksJsonField } from "@/utils/blocks-json";
 import { toRfc3339, DATE_ONLY as DATE_ONLY_RE } from "@/utils/datetime-form";
 
-const EventFieldsSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, "Введите название")
-    .max(500, "До 500 символов"),
-  // Чекбокс: ключ есть в FormData только если включён (значение "on").
-  all_day: z.string().optional(),
-  start_date: z.string().trim().min(1, "Укажите дату начала"),
-  end_date: z.string().trim().optional(),
-  rrule: z.string().trim().max(500, "До 500 символов").optional(),
-});
+type ValidationT = NamespaceT<"validation">;
 
-type EventFieldsRaw = z.infer<typeof EventFieldsSchema>;
+function makeEventFieldsSchema(t: ValidationT) {
+  return z.object({
+    title: z
+      .string()
+      .trim()
+      .min(1, t("events.titleRequired"))
+      .max(500, t("events.titleMax")),
+    // Чекбокс: ключ есть в FormData только если включён (значение "on").
+    all_day: z.string().optional(),
+    start_date: z.string().trim().min(1, t("events.startDateRequired")),
+    end_date: z.string().trim().optional(),
+    rrule: z.string().trim().max(500, t("events.rruleMax")).optional(),
+  });
+}
+
+type EventFieldsRaw = z.infer<ReturnType<typeof makeEventFieldsSchema>>;
 
 function normalizeFields(raw: EventFieldsRaw) {
   const allDay = raw.all_day !== undefined;
@@ -38,83 +43,92 @@ function normalizeFields(raw: EventFieldsRaw) {
 
 type NormalizedFields = ReturnType<typeof normalizeFields>;
 
-function validateFields(v: NormalizedFields, ctx: z.RefinementCtx): void {
-  if (v.all_day) {
-    if (!DATE_ONLY_RE.test(v.start_date)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["start_date"],
-        message: "Формат даты — ГГГГ-ММ-ДД",
-      });
+function makeValidateFields(t: ValidationT) {
+  return function validateFields(v: NormalizedFields, ctx: z.RefinementCtx): void {
+    if (v.all_day) {
+      if (!DATE_ONLY_RE.test(v.start_date)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["start_date"],
+          message: t("events.dateFormat"),
+        });
+      }
+      if (v.end_date && !DATE_ONLY_RE.test(v.end_date)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["end_date"],
+          message: t("events.dateFormat"),
+        });
+      }
+    } else {
+      if (Number.isNaN(Date.parse(v.start_date))) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["start_date"],
+          message: t("events.startDateTimeRequired"),
+        });
+      }
+      if (v.end_date && Number.isNaN(Date.parse(v.end_date))) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["end_date"],
+          message: t("events.endDateTimeRequired"),
+        });
+      }
     }
-    if (v.end_date && !DATE_ONLY_RE.test(v.end_date)) {
+    // Оба значения нормализованы к одному формату — лексикографическое
+    // сравнение корректно и для YYYY-MM-DD, и для RFC3339.
+    if (v.end_date && v.end_date < v.start_date) {
       ctx.addIssue({
         code: "custom",
         path: ["end_date"],
-        message: "Формат даты — ГГГГ-ММ-ДД",
+        message: t("events.endBeforeStart"),
       });
     }
-  } else {
-    if (Number.isNaN(Date.parse(v.start_date))) {
+    if (v.rrule && !v.rrule.startsWith("FREQ=")) {
       ctx.addIssue({
         code: "custom",
-        path: ["start_date"],
-        message: "Укажите дату и время начала",
+        path: ["rrule"],
+        message: t("events.rrulePrefix"),
       });
     }
-    if (v.end_date && Number.isNaN(Date.parse(v.end_date))) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["end_date"],
-        message: "Укажите дату и время окончания",
-      });
-    }
-  }
-  // Оба значения нормализованы к одному формату — лексикографическое
-  // сравнение корректно и для YYYY-MM-DD, и для RFC3339.
-  if (v.end_date && v.end_date < v.start_date) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["end_date"],
-      message: "Дата окончания раньше даты начала",
-    });
-  }
-  if (v.rrule && !v.rrule.startsWith("FREQ=")) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["rrule"],
-      message: "RRULE должен начинаться с FREQ=",
-    });
-  }
+  };
 }
 
-export const EventCreateSchema = EventFieldsSchema.transform(
-  normalizeFields,
-).superRefine(validateFields);
+export function makeEventCreateSchema(t: ValidationT) {
+  return makeEventFieldsSchema(t)
+    .transform(normalizeFields)
+    .superRefine(makeValidateFields(t));
+}
 
-const BlocksJsonSchema = blocksJsonField({
-  allowEmpty: true,
-  messages: {
-    invalidJson: "Битый JSON в теле формы",
-    notArray: "Тело должно быть массивом блоков",
-  },
-});
+export function makeEventUpdateSchema(t: ValidationT) {
+  const BlocksJsonSchema = blocksJsonField({
+    allowEmpty: true,
+    messages: {
+      invalidJson: t("events.blocksInvalidJson"),
+      notArray: t("events.blocksNotArray"),
+    },
+  });
 
-export const EventUpdateSchema = EventFieldsSchema.extend({
-  id: z.uuid("Некорректный id события"),
-  blocks: BlocksJsonSchema,
-})
-  .transform((raw) => ({
-    ...normalizeFields(raw),
-    id: raw.id,
-    blocks: raw.blocks,
-  }))
-  .superRefine(validateFields);
+  return makeEventFieldsSchema(t)
+    .extend({
+      id: z.uuid(t("events.invalidId")),
+      blocks: BlocksJsonSchema,
+    })
+    .transform((raw) => ({
+      ...normalizeFields(raw),
+      id: raw.id,
+      blocks: raw.blocks,
+    }))
+    .superRefine(makeValidateFields(t));
+}
 
-export const EventIdSchema = z.object({
-  id: z.uuid("Некорректный id события"),
-});
+export function makeEventIdSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("events.invalidId")),
+  });
+}
 
-export type EventCreateInput = z.infer<typeof EventCreateSchema>;
-export type EventUpdateInput = z.infer<typeof EventUpdateSchema>;
-export type EventIdInput = z.infer<typeof EventIdSchema>;
+export type EventCreateInput = z.infer<ReturnType<typeof makeEventCreateSchema>>;
+export type EventUpdateInput = z.infer<ReturnType<typeof makeEventUpdateSchema>>;
+export type EventIdInput = z.infer<ReturnType<typeof makeEventIdSchema>>;

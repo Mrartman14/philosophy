@@ -3,7 +3,8 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { getT } from "@/i18n";
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
@@ -17,25 +18,28 @@ import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import { canCreateEvent, canUpdateEvent, canDeleteEvent } from "./permissions";
-import { EventCreateSchema, EventUpdateSchema, EventIdSchema } from "./schemas";
+import {
+  makeEventCreateSchema,
+  makeEventUpdateSchema,
+  makeEventIdSchema,
+} from "./schemas";
 
 
-/** Доменные коды событий → русский текст. Бек пишет code в UPPER_SNAKE_CASE
+/** Доменные коды событий → ключи каталога errors. Бек пишет code в UPPER_SNAKE_CASE
  * (internal/apperror, middleware/auth.go). REF_NOT_FOUND и BLOCKS_HAVE_ANCHORS —
- * из DEFAULT_MESSAGES api-error.ts (текст совпадал). */
-const ERRORS: ApiErrorMessages = {
-  INVALID_DATE:
-    "Бекенд отклонил дату: проверьте формат и порядок дат начала/окончания.",
-  INVALID_RRULE: "Бекенд отклонил правило повторения (RRULE).",
-  BLOCKS_INVALID: "Описание события не прошло валидацию AST.",
-  BLOCK_REFERENCED:
-    "На блок события ссылаются другие материалы. Удалите ссылки или оставьте блок.",
+ * из DEFAULT_MESSAGES api-error.ts. */
+const ERRORS: ApiErrorMessageKeys = {
+  INVALID_DATE: "INVALID_DATE",
+  INVALID_RRULE: "INVALID_RRULE",
+  BLOCKS_INVALID: "EVENT_BLOCKS_INVALID",
+  BLOCK_REFERENCED: "EVENT_BLOCK_REFERENCED",
 };
 
 export const createEvent = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateEvent);
-  const input = parseFormData(EventCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeEventCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/events", {
     body: {
@@ -61,7 +65,8 @@ export const createEvent = createFormAction(async (formData, ctx) => {
 export const updateEvent = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateEvent);
-  const input = parseFormData(EventUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeEventUpdateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/events/{id}", {
     params: {
@@ -91,7 +96,8 @@ export const updateEvent = createFormAction(async (formData, ctx) => {
 export const deleteEvent = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
   requireCapability(me, canDeleteEvent);
-  const { id } = EventIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeEventIdSchema(t).parse({ id: rawId });
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/events/{id}", {
     params: { path: { id } },

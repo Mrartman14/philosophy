@@ -96,6 +96,14 @@ const errors = {
   // The lectures slice maps NOT_FOUND → LECTURE_NOT_FOUND in its ERRORS map.
   LECTURE_NOT_FOUND: "Lecture not found.",
 
+  // --- events slice: domain codes ---
+  INVALID_DATE:
+    "The backend rejected the date: check the format and the start/end date order.",
+  INVALID_RRULE: "The backend rejected the recurrence rule (RRULE).",
+  EVENT_BLOCKS_INVALID: "The event description failed AST validation.",
+  EVENT_BLOCK_REFERENCED:
+    "Other content references a block in this event. Remove the references or keep the block.",
+
   // --- trails slice: domain codes ---
   TRAIL_PUBLIC_IMMUTABLE: "A public trail cannot be made private — you can only delete it.",
   TRAIL_DUPLICATE_DOCUMENT: "A document was added to the trail twice. Remove the duplicate.",
