@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { Form, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTag } from "../actions";
@@ -12,6 +13,8 @@ const initial: ActionResult<Tag | null> = { success: true, data: null };
 
 export function TagCreateForm() {
   const [state, action] = useActionState(createTag, initial);
+  const tTags = useT("tags");
+  const tErrors = useT("errors");
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation"
       ? state.fieldErrors
@@ -20,22 +23,24 @@ export function TagCreateForm() {
   return (
     <Form action={action} errors={fieldErrors} className="flex max-w-xl flex-col gap-3">
       <IdempotencyField result={state} />
-      <FormField name="name" label="Новый тег" required>
-        <TextInput name="name" required maxLength={100} placeholder="Например: «этика»" />
+      <FormField name="name" label={tTags("newTagLabel")} required>
+        <TextInput name="name" required maxLength={100} placeholder={tTags("namePlaceholder")} />
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-green-600">Тег «{state.data.name}» создан.</p>
+        <p className="text-sm text-green-600">{tTags("tagCreated", { name: state.data.name })}</p>
       )}
       {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на создание тега.</p>
+        <p className="text-sm text-red-600">
+          {tErrors("forbiddenAction", { action: tTags("createTagAction") })}
+        </p>
       )}
       {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
 
       <div>
-        <SubmitButton>Создать</SubmitButton>
+        <SubmitButton>{tTags("create")}</SubmitButton>
       </div>
     </Form>
   );

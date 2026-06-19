@@ -23,6 +23,7 @@ import notifications from "./notifications";
 import preferences from "./preferences";
 import shareLinks from "./shareLinks";
 import statistics from "./statistics";
+import tags from "./tags";
 import trails from "./trails";
 import users from "./users";
 import validation from "./validation";
@@ -45,6 +46,7 @@ const ru = {
   preferences,
   shareLinks,
   statistics,
+  tags,
   trails,
   users,
   validation,

@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { Checkbox, Form, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { setLectureTags } from "../actions";
@@ -26,6 +27,8 @@ interface Props {
 export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
   const [selected, setSelected] = useState<number[]>(assignedTagIds);
   const [state, action] = useActionState(setLectureTags, initial);
+  const tTags = useT("tags");
+  const tErrors = useT("errors");
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation"
       ? state.fieldErrors
@@ -44,7 +47,7 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
   if (options.length === 0) {
     return (
       <p className="text-sm text-(--color-fg-muted)">
-        Тегов пока нет. Создайте их на странице «Теги» в админке.
+        {tTags("noTagsHint")}
       </p>
     );
   }
@@ -71,10 +74,12 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
       </ul>
 
       {state.success && state.data && (
-        <p className="text-sm text-green-600">Теги сохранены.</p>
+        <p className="text-sm text-green-600">{tTags("tagsSaved")}</p>
       )}
       {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на назначение тегов.</p>
+        <p className="text-sm text-red-600">
+          {tErrors("forbiddenAction", { action: tTags("assignTagsAction") })}
+        </p>
       )}
       {!state.success && state.code === "validation" &&
         (fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form) && (
@@ -87,7 +92,7 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
       )}
 
       <div>
-        <SubmitButton>Сохранить теги</SubmitButton>
+        <SubmitButton>{tTags("saveTags")}</SubmitButton>
       </div>
     </Form>
   );

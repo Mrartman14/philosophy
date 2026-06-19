@@ -168,6 +168,17 @@ const validation = {
     blocksNotArray: "Body must be an array of blocks",
   },
 
+  // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---
+  tags: {
+    nameRequired: "Enter a tag name",
+    nameMax: "Up to 100 characters",
+    invalidId: "Invalid tag ID",
+    invalidLectureId: "Invalid lecture ID",
+    tagIdsEmpty: "Empty tag_ids field",
+    tagIdsInvalid: "tag_ids must be an array of positive integer IDs",
+    tagIdsBadJson: "Invalid JSON in tag_ids",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

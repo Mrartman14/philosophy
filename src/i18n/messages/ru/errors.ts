@@ -128,6 +128,10 @@ const errors = {
   // --- preferences slice: доменные коды ---
   NOT_CONFIGURED: "Push-уведомления не настроены на сервере.",
 
+  // --- tags slice: доменные коды ---
+  TAG_CONFLICT: "Тег с таким именем уже существует.",
+  TAG_NOT_FOUND: "Объект не найден — возможно, уже удалён. Обновите страницу.",
+
   // --- glossary slice: доменные коды ---
   GLOSSARY_BLOCKS_EMPTY: "Тело термина не может быть пустым.",
   GLOSSARY_BLOCK_REFERENCED:

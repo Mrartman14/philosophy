@@ -171,6 +171,17 @@ const validation = {
     blocksNotArray: "Тело должно быть массивом блоков",
   },
 
+  // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---
+  tags: {
+    nameRequired: "Введите имя тега",
+    nameMax: "До 100 символов",
+    invalidId: "Некорректный id тега",
+    invalidLectureId: "Некорректный id лекции",
+    tagIdsEmpty: "Пустое поле tag_ids",
+    tagIdsInvalid: "tag_ids должен быть массивом целых положительных id",
+    tagIdsBadJson: "Битый JSON в tag_ids",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

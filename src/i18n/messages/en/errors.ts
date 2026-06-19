@@ -124,6 +124,10 @@ const errors = {
   // --- preferences slice: domain codes ---
   NOT_CONFIGURED: "Push notifications are not configured on the server.",
 
+  // --- tags slice: domain codes ---
+  TAG_CONFLICT: "A tag with this name already exists.",
+  TAG_NOT_FOUND: "Object not found — it may have already been deleted. Refresh the page.",
+
   // --- glossary slice: domain codes ---
   GLOSSARY_BLOCKS_EMPTY: "The term body cannot be empty.",
   GLOSSARY_BLOCK_REFERENCED:

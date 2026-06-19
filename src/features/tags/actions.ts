@@ -3,7 +3,8 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
-import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+import { getT } from "@/i18n";
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
@@ -22,10 +23,10 @@ import {
   canUpdateTag,
 } from "./permissions";
 import {
-  SetLectureTagsSchema,
-  TagCreateSchema,
+  makeSetLectureTagsSchema,
+  makeTagCreateSchema,
+  makeTagUpdateSchema,
   TagIdSchema,
-  TagUpdateSchema,
 } from "./schemas";
 
 
@@ -33,15 +34,16 @@ import {
  * Коды бекенда — UPPERCASE (internal/apperror, internal/middleware/auth.go,
  * internal/httputil/require_actor.go). Сверено с кодом, не со swagger.
  */
-const ERRORS: ApiErrorMessages = {
-  CONFLICT: "Тег с таким именем уже существует.",
-  NOT_FOUND: "Объект не найден — возможно, уже удалён. Обновите страницу.",
+const ERRORS: ApiErrorMessageKeys = {
+  CONFLICT: "TAG_CONFLICT",
+  NOT_FOUND: "TAG_NOT_FOUND",
 };
 
 export const createTag = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateTag);
-  const input = parseFormData(TagCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeTagCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/tags", {
     body: { name: input.name },
@@ -55,7 +57,8 @@ export const createTag = createFormAction(async (formData, ctx) => {
 export const updateTag = createFormAction(async (formData) => {
   const me = await getMe();
   requireCapability(me, canUpdateTag);
-  const input = parseFormData(TagUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeTagUpdateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/tags/{id}", {
     params: { path: { id: input.id } },
@@ -86,7 +89,8 @@ export const deleteTag = createAction(async (rawId: number) => {
 export const setLectureTags = createFormAction(async (formData) => {
   const me = await getMe();
   requireCapability(me, canAssignTags);
-  const input = parseFormData(SetLectureTagsSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeSetLectureTagsSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/lectures/{id}/tags", {
     params: { path: { id: input.lecture_id } },

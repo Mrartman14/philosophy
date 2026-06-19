@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteTag } from "../actions";
@@ -16,19 +17,20 @@ interface Props {
 export function TagDeleteButton({ id, name }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const tTags = useT("tags");
   const [, startTransition] = useTransition();
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">Удалить</Button>}
-      title={`Удалить тег «${name}»?`}
-      description="Тег будет снят со всех лекций. Действие необратимо."
+      trigger={<Button variant="danger">{tTags("delete")}</Button>}
+      title={tTags("deleteTitle", { name })}
+      description={tTags("deleteDescription")}
       destructive
-      confirmLabel="Удалить"
+      confirmLabel={tTags("delete")}
       onConfirm={async () => {
         const result = await deleteTag(id);
         if (!result.success) {
-          toastActionError(toast, result, { action: "удаление тега" });
+          toastActionError(toast, result, { action: tTags("deleteTagAction") });
           return;
         }
         startTransition(() => { router.refresh(); });

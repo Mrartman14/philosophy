@@ -2,24 +2,38 @@
 import "server-only";
 import { z } from "zod";
 
+import type { NamespaceT } from "@/i18n";
+
+type ValidationT = NamespaceT<"validation">;
+
 /** Бекенд: name required, min=1, max=100 (internal/tag/request.go). */
-const TagName = z
-  .string()
-  .trim()
-  .min(1, "Введите имя тега")
-  .max(100, "До 100 символов");
+function makeTagName(t: ValidationT) {
+  return z
+    .string()
+    .trim()
+    .min(1, t("tags.nameRequired"))
+    .max(100, t("tags.nameMax"));
+}
 
-export const TagCreateSchema = z.object({
-  name: TagName,
-});
+function makeTagId(t: ValidationT) {
+  return z.coerce.number().int(t("tags.invalidId")).positive(t("tags.invalidId"));
+}
 
-export const TagUpdateSchema = z.object({
-  id: z.coerce.number().int("Некорректный id тега").positive("Некорректный id тега"),
-  name: TagName,
-});
+export function makeTagCreateSchema(t: ValidationT) {
+  return z.object({
+    name: makeTagName(t),
+  });
+}
+
+export function makeTagUpdateSchema(t: ValidationT) {
+  return z.object({
+    id: makeTagId(t),
+    name: makeTagName(t),
+  });
+}
 
 export const TagIdSchema = z.object({
-  id: z.coerce.number().int("Некорректный id тега").positive("Некорректный id тега"),
+  id: z.coerce.number().int().positive(),
 });
 
 /**
@@ -27,38 +41,40 @@ export const TagIdSchema = z.object({
  * поддерживает multi-value поля — см. src/utils/create-action.ts).
  * Пустой массив валиден: бекенд трактует его как «снять все теги».
  */
-export const SetLectureTagsSchema = z.object({
-  lecture_id: z.uuid("Некорректный id лекции"),
-  tag_ids: z
-    .string()
-    .min(1, "Пустое поле tag_ids")
-    .transform((s, ctx) => {
-      try {
-        const parsed: unknown = JSON.parse(s);
-        if (
-          !Array.isArray(parsed) ||
-          !parsed.every(
-            (n) => typeof n === "number" && Number.isInteger(n) && n > 0,
-          )
-        ) {
+export function makeSetLectureTagsSchema(t: ValidationT) {
+  return z.object({
+    lecture_id: z.uuid(t("tags.invalidLectureId")),
+    tag_ids: z
+      .string()
+      .min(1, t("tags.tagIdsEmpty"))
+      .transform((s, ctx) => {
+        try {
+          const parsed: unknown = JSON.parse(s);
+          if (
+            !Array.isArray(parsed) ||
+            !parsed.every(
+              (n) => typeof n === "number" && Number.isInteger(n) && n > 0,
+            )
+          ) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("tags.tagIdsInvalid"),
+            });
+            return z.NEVER;
+          }
+          return parsed as number[];
+        } catch {
           ctx.addIssue({
             code: "custom",
-            message: "tag_ids должен быть массивом целых положительных id",
+            message: t("tags.tagIdsBadJson"),
           });
           return z.NEVER;
         }
-        return parsed as number[];
-      } catch {
-        ctx.addIssue({
-          code: "custom",
-          message: "Битый JSON в tag_ids",
-        });
-        return z.NEVER;
-      }
-    }),
-});
+      }),
+  });
+}
 
-export type TagCreateInput = z.infer<typeof TagCreateSchema>;
-export type TagUpdateInput = z.infer<typeof TagUpdateSchema>;
+export type TagCreateInput = z.infer<ReturnType<typeof makeTagCreateSchema>>;
+export type TagUpdateInput = z.infer<ReturnType<typeof makeTagUpdateSchema>>;
 export type TagIdInput = z.infer<typeof TagIdSchema>;
-export type SetLectureTagsInput = z.infer<typeof SetLectureTagsSchema>;
+export type SetLectureTagsInput = z.infer<ReturnType<typeof makeSetLectureTagsSchema>>;

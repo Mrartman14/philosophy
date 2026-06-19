@@ -1,12 +1,20 @@
 // src/features/tags/schemas.test.ts
 import { describe, it, expect } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  TagCreateSchema,
-  TagUpdateSchema,
+  makeTagCreateSchema,
+  makeTagUpdateSchema,
   TagIdSchema,
-  SetLectureTagsSchema,
+  makeSetLectureTagsSchema,
 } from "./schemas";
+
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const TagCreateSchema = makeTagCreateSchema(t);
+const TagUpdateSchema = makeTagUpdateSchema(t);
+const SetLectureTagsSchema = makeSetLectureTagsSchema(t);
 
 const LECTURE_ID = "550e8400-e29b-41d4-a716-446655440000";
 
