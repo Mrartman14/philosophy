@@ -45,6 +45,167 @@
 
 Своп-готовность = «фасад + форматтеры тонкие + ICU-формат стандартен», но **ICU-рантайм — осознанная привязка**, а не нулевая.
 
+## Делкатные кейсы — как локализовать
+
+Три рекуррентных кейса с готовыми паттернами. Sonnet-батчи КОПИРУЮТ дословно.
+Референс-реализации: `src/utils/api-error.ts`, `src/features/preferences/{schemas,actions}.ts`,
+`src/features/preferences/ui/push-send-form.tsx`. Namespace'ы: `errors`, `validation`,
+плюс per-feature (напр. `preferences`).
+
+### Архитектурный инвариант
+
+Server-only слой (`schemas.ts`, `api-error.ts`) остаётся СИНХРОННЫМ и НЕ импортирует
+`next-intl` (Guardrail 5). Перевод server-сообщений происходит:
+
+- для **Zod** — при разборе формы, через фабрику схемы `makeXSchema(t)`, где
+  `t = await getT("validation")` (request-scope);
+- для **api-error** — ОДИН раз на границе action: `rethrowApiError` несёт КЛЮЧ
+  каталога в `ApiMessageError`, а `createAction → toResult → resolveErrorMessage`
+  резолвит его в текст;
+- для **branded forbidden** (Case 3) — на КЛИЕНТЕ через `useT("errors")`.
+
+`resolveErrorMessage` (в `@/i18n`) деградирует к каталогу `DEFAULT_LOCALE` вне
+request-scope (юнит-тесты), поэтому action-тесты, проверяющие `result.error`,
+видят ru-текст без моков.
+
+### Case 1 — Zod-сообщения форм (схема-фабрика `makeSchema(t)`)
+
+Схема перестаёт быть `const` и становится фабрикой, принимающей переводчик
+namespace `validation`. Сообщения — КЛЮЧИ каталога, не литералы.
+
+Было (`src/features/<f>/schemas.ts`):
+
+```ts
+export const PushSendSchema = z.object({
+  title: z.string().trim().min(1, "Введите заголовок").max(200, "До 200 символов"),
+});
+export type PushSendInput = z.infer<typeof PushSendSchema>;
+```
+
+Стало:
+
+```ts
+import type { NamespaceT } from "@/i18n";
+type ValidationT = NamespaceT<"validation">;
+
+export function makePushSendSchema(t: ValidationT) {
+  return z.object({
+    title: z.string().trim().min(1, t("pushSend.titleRequired")).max(200, t("pushSend.titleMax")),
+  });
+}
+export type PushSendInput = z.infer<ReturnType<typeof makePushSendSchema>>;
+```
+
+В action (`src/features/<f>/actions.ts`):
+
+```ts
+import { getT } from "@/i18n";
+// было: const input = parseFormData(PushSendSchema, formData);
+const input = parseFormData(makePushSendSchema(await getT("validation")), formData);
+// для .parse(): makePushSubscribeSchema(await getT("validation")).parse(raw)
+```
+
+В тесте схемы (`schemas.test.ts`):
+
+```ts
+import type { NamespaceT } from "@/i18n";
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+const PushSendSchema = makePushSendSchema(t); // дальше — как раньше
+```
+
+Правила:
+
+- Фабрика нужна ТОЛЬКО если в схеме есть переводимая строка. Схемы только с
+  enum/типами (напр. `PreferencesUpdateSchema`) остаются `const`.
+- Ключи валидации кладутся в `src/i18n/messages/{ru,en}/validation.ts` под
+  под-объектом-неймспейсом формы (`pushSend.*`); переиспользуемые — в `common`-секцию.
+
+### Case 2 — api-error `DEFAULT_MESSAGES` + per-feature overrides (код → ключ)
+
+Карта значений переезжает с текста на КЛЮЧ namespace `errors`. Тип меняется на
+`ApiErrorMessageKeys`. `rethrowApiError` сам выберет ветку: значение-ключ каталога
+→ `ApiMessageError(key)` (локализуется), легаси-текст → `Error(text)`.
+
+Было (`src/features/<f>/actions.ts`):
+
+```ts
+import { rethrowApiError, type ApiErrorMessages } from "@/utils/api-error";
+const ERRORS: ApiErrorMessages = {
+  INVALID_DATE: "Бекенд отклонил дату: проверьте формат.",
+};
+```
+
+Стало:
+
+```ts
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
+const ERRORS: ApiErrorMessageKeys = {
+  INVALID_DATE: "INVALID_DATE", // ключ из ru/errors.ts + en/errors.ts
+};
+// вызов `rethrowApiError(error, ERRORS)` НЕ меняется
+```
+
+Плюс добавить ключ(и) в `src/i18n/messages/{ru,en}/errors.ts`:
+
+```ts
+// ru/errors.ts:  INVALID_DATE: "Бекенд отклонил дату: проверьте формат.",
+// en/errors.ts:  INVALID_DATE: "The backend rejected the date: check the format.",
+```
+
+Правила:
+
+- Общие коды (`REF_NOT_FOUND`, `VERSION_MISMATCH`, idempotency-коды) уже в
+  `DEFAULT_MESSAGES` (api-error.ts) — слайсу их перечислять НЕ нужно.
+- Тип `ApiErrorMessages` (text) ОСТАВЛЕН как легаси-канал на время миграции:
+  немигрированные слайсы компилируются без изменений.
+- Тесты `rethrow*`, проверявшие текст thrown-ошибки, переписать на класс+ключ:
+  `expect(thrown).toBeInstanceOf(ApiMessageError); expect(thrown.messageKey).toBe("…")`.
+  Тесты, проверяющие `result.error` через action-wrapper, остаются на ru-тексте
+  (резолвится фоллбеком `resolveErrorMessage`).
+- CONFLICT-под-маппинг по `err.error` (как в `users/errors.ts`) — отдельный
+  паттерн: локализуй его карту как обычный per-feature namespace (`getT` в UI
+  или ключ+ApiMessageError, если станет нужно).
+
+### Case 3 — branded forbidden/suspended (общий шаблон + per-feature действие)
+
+Один общий шаблон `errors.forbiddenAction = "У вас нет прав на {action}."` плюс
+ДЕЙСТВИЕ в родительном падеже из per-feature namespace. Рендерится на клиенте.
+
+Было (inline-литерал в `*.tsx`):
+
+```tsx
+{!state.success && state.code === "forbidden" && (
+  <p className="text-sm text-red-600">У вас нет прав на отправку push-уведомлений.</p>
+)}
+```
+
+Стало:
+
+```tsx
+import { useT } from "@/i18n/client";
+const tErrors = useT("errors");
+const tPrefs = useT("preferences"); // per-feature namespace слайса
+// …
+{!state.success && state.code === "forbidden" && (
+  <p className="text-sm text-red-600">
+    {tErrors("forbiddenAction", { action: tPrefs("pushSendAction") })}
+  </p>
+)}
+```
+
+Ключи:
+
+- `errors.forbiddenAction` / `errors.forbiddenGeneric` / `errors.accountRestricted`
+  / `errors.forbiddenTitle` / `errors.failureTitle` — уже в каталоге.
+- Действие («отправку push-уведомлений») — per-feature ключ (`preferences.pushSendAction`).
+
+Замечание про общий seam: `src/utils/action-message.ts` / `action-toast.ts` /
+`src/components/ui/form-feedback.tsx` (FROZEN-зоны UI-kit) ПОКА держат литерал
+«У вас нет прав на …» и не локализованы — их сигнатуры используют ~30 слайсов,
+поэтому миграция этого seam = ОТДЕЛЬНЫЙ foundation-PR (добавить `t: ErrorsT`
+параметр или сделать компоненты client+`useT`, синхронно обновив все вызовы).
+Sonnet локализует ТОЛЬКО inline-литералы в `*.tsx`, не трогая общий seam.
+
 ## Очередь слайсов для выноса строк
 
 Известные источники backend-/UI-текста (вынести в каталоги):

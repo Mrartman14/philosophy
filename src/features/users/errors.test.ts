@@ -1,6 +1,7 @@
 // src/features/users/errors.test.ts
 import { describe, it, expect } from "vitest";
 
+import { ApiMessageError } from "@/utils/create-action";
 import { BannedError, ForbiddenError } from "@/utils/permissions";
 
 import { rethrowUserApiError } from "./errors";
@@ -91,7 +92,14 @@ describe("rethrowUserApiError", () => {
     ).toThrow("internal server error");
   });
 
-  it("undefined → «Ошибка сервера»", () => {
-    expect(() => rethrowUserApiError(undefined)).toThrow("Ошибка сервера");
+  it("undefined → ApiMessageError('serverError') (локализуется на границе action)", () => {
+    let thrown: unknown;
+    try {
+      rethrowUserApiError(undefined);
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).toBeInstanceOf(ApiMessageError);
+    expect((thrown as ApiMessageError).messageKey).toBe("serverError");
   });
 });

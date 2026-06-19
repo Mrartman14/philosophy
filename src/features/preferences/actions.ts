@@ -3,6 +3,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import {
   rethrowApiError,
   type ApiErrorMessages,
@@ -24,10 +25,10 @@ import {
   canUpdatePreferences,
 } from "./permissions";
 import {
+  makePushSendSchema,
+  makePushSubscribeSchema,
+  makePushUnsubscribeSchema,
   PreferencesUpdateSchema,
-  PushSendSchema,
-  PushSubscribeSchema,
-  PushUnsubscribeSchema,
 } from "./schemas";
 
 
@@ -63,7 +64,9 @@ export const updatePreferences = createFormAction(async (formData) => {
 export const subscribePush = createAction(async (rawSubscription: unknown) => {
   const me = await getMe();
   requireCapability(me, canSubscribePush);
-  const input = PushSubscribeSchema.parse(rawSubscription);
+  const input = makePushSubscribeSchema(await getT("validation")).parse(
+    rawSubscription,
+  );
   const api = await createApiClient();
   const { error } = await api.POST("/api/push/subscribe", { body: input });
   if (error) rethrowApiError(error, ERRORS);
@@ -73,7 +76,9 @@ export const subscribePush = createAction(async (rawSubscription: unknown) => {
 export const unsubscribePush = createAction(async (rawEndpoint: string) => {
   const me = await getMe();
   requireCapability(me, canSubscribePush);
-  const { endpoint } = PushUnsubscribeSchema.parse({ endpoint: rawEndpoint });
+  const { endpoint } = makePushUnsubscribeSchema(await getT("validation")).parse(
+    { endpoint: rawEndpoint },
+  );
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/push/subscribe", {
     body: { endpoint },
@@ -85,7 +90,10 @@ export const unsubscribePush = createAction(async (rawEndpoint: string) => {
 export const sendPushBroadcast = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canSendPush);
-  const input = parseFormData(PushSendSchema, formData);
+  const input = parseFormData(
+    makePushSendSchema(await getT("validation")),
+    formData,
+  );
   const api = await createApiClient();
   const { error } = await api.POST("/api/admin/push/send", {
     body: {

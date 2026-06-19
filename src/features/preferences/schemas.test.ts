@@ -1,12 +1,21 @@
 // src/features/preferences/schemas.test.ts
 import { describe, it, expect } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
+  makePushSendSchema,
+  makePushSubscribeSchema,
+  makePushUnsubscribeSchema,
   PreferencesUpdateSchema,
-  PushSendSchema,
-  PushSubscribeSchema,
-  PushUnsubscribeSchema,
 } from "./schemas";
+
+// Фейковый переводчик: возвращает ключ как текст (сообщение не проверяем — только
+// success/data). Образец для тестов любой схемы-фабрики makeXSchema(t).
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+const PushSendSchema = makePushSendSchema(t);
+const PushSubscribeSchema = makePushSubscribeSchema(t);
+const PushUnsubscribeSchema = makePushUnsubscribeSchema(t);
 
 describe("PreferencesUpdateSchema", () => {
   it("принимает reading_mode=full", () => {
