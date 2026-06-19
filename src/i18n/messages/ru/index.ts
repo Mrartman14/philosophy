@@ -6,6 +6,7 @@
 // по одной строке импорта и одному ключу в каждый index (этот и ../en).
 // Литералы не нужно помечать `as const`: значения-свойства расширяются до string,
 // поэтому `typeof ru` даёт string-листья, а en satisfies Messages проходит.
+import annotations from "./annotations";
 import auth from "./auth";
 import banners from "./banners";
 import canvas from "./canvas";
@@ -22,6 +23,7 @@ import trails from "./trails";
 import validation from "./validation";
 
 const ru = {
+  annotations,
   auth,
   banners,
   canvas,

@@ -1,5 +1,6 @@
 // src/features/annotations/ui/annotation-card.tsx
 import { AstRender } from "@/components/ast-render";
+import { getT, getServerFmt } from "@/i18n";
 
 import type { Annotation } from "../types";
 
@@ -11,27 +12,26 @@ interface Props {
   anchorContext?: React.ReactNode;
 }
 
-const visibilityLabel: Record<string, string> = {
-  private: "приватная",
-  public: "публичная",
-};
-
 /**
  * Server-компонент: рендерит одну аннотацию (AST-тело + мета). Доменно-чистый,
  * без client-JS. Действия и контекст якоря приходят слотами.
  */
-export function AnnotationCard({ annotation, actions, anchorContext }: Props) {
+export async function AnnotationCard({ annotation, actions, anchorContext }: Props) {
+  const t = await getT("annotations");
+  const fmt = await getServerFmt();
   const updated = annotation.updated_at
     ? new Date(annotation.updated_at)
     : null;
+  const vis = annotation.visibility ?? "private";
+  const visLabel = vis === "public" ? t("visibility.public") : t("visibility.private");
   return (
     <article className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
       <header className="flex items-center justify-between gap-2 text-xs text-(--color-fg-muted)">
         <span>
-          {visibilityLabel[annotation.visibility ?? "private"] ?? "приватная"}
-          {annotation.is_edited ? " · изменена" : ""}
+          {visLabel}
+          {annotation.is_edited ? t("edited") : ""}
         </span>
-        {updated && <time>{updated.toLocaleDateString("ru-RU")}</time>}
+        {updated && <time>{fmt.dateTime(updated, { dateStyle: "short" })}</time>}
       </header>
       {anchorContext}
       <div className="content" data-size="sm">

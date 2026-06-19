@@ -5,6 +5,7 @@ import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteAnnotation, adminDeleteAnnotation } from "../actions";
@@ -23,22 +24,23 @@ interface Props {
 export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
   const router = useRouter();
   const toast = useToast();
+  const t = useT("annotations");
   const [, startTransition] = useTransition();
   const { key } = useIdempotencyKey();
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">Удалить</Button>}
-      title="Удалить аннотацию?"
-      description="Действие необратимо."
+      trigger={<Button variant="danger">{t("deleteButton")}</Button>}
+      title={t("deleteDialogTitle")}
+      description={t("deleteDialogDescription")}
       destructive
-      confirmLabel="Удалить"
+      confirmLabel={t("deleteDialogConfirm")}
       onConfirm={async () => {
         const result = admin
           ? await adminDeleteAnnotation(annotationId)
           : await deleteAnnotation(annotationId, key);
         if (!result.success) {
-          toastActionError(toast, result, { action: "удаление аннотации" });
+          toastActionError(toast, result, { action: t("deleteAction") });
           return;
         }
         startTransition(() => { router.refresh(); });

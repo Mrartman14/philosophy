@@ -109,6 +109,13 @@ const errors = {
   TRAIL_DUPLICATE_DOCUMENT: "A document was added to the trail twice. Remove the duplicate.",
   TRAIL_DOCUMENT_NOT_FOUND: "One of the documents was not found. Update the list and try again.",
 
+  // --- annotations slice: domain codes ---
+  ANNOTATION_BLOCKS_EMPTY: "The annotation body cannot be empty.",
+  ANNOTATION_BLOCKS_INVALID: "The annotation body failed AST validation.",
+  ANNOTATION_ANCHOR_INVALID: "Invalid annotation anchor.",
+  ANNOTATION_INVALID_PARENT_TYPE: "Annotations are not available for this entity type.",
+  ANNOTATION_REQUEST_BODY_TOO_LARGE: "The annotation is too large.",
+
   // --- api-error: rethrowApiError fallbacks ---
   serverError: "Server error",
   accountRestricted: "Account restricted.",

@@ -5,6 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
 import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createAnnotation } from "../actions";
@@ -28,6 +29,7 @@ interface Props {
  */
 export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
   const router = useRouter();
+  const t = useT("annotations");
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createAnnotation, initial);
 
@@ -50,21 +52,21 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
-      <FormField name="blocks" label="Текст аннотации">
+      <FormField name="blocks" label={t("createBodyLabel")}>
         <AstEditor
           defaultValue={[]}
           entityContext="annotation"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel="Текст аннотации"
+          ariaLabel={t("createBodyAriaLabel")}
         />
       </FormField>
 
       <AnnotationVisibilityField />
 
-      <FormFeedback result={state} forbiddenAction="создание аннотации" />
+      <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
 
       <div>
-        <SubmitButton>Добавить аннотацию</SubmitButton>
+        <SubmitButton>{t("createSubmit")}</SubmitButton>
       </div>
     </Form>
   );

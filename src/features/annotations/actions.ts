@@ -5,11 +5,12 @@ import { cookies } from "next/headers";
 
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import {
   rethrowApiError,
   type ApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
@@ -31,21 +32,21 @@ import {
   canAdminDeleteAnnotation,
 } from "./permissions";
 import {
-  AnnotationCreateSchema,
-  AnnotationUpdateSchema,
-  AnnotationIdSchema,
+  makeAnnotationCreateSchema,
+  makeAnnotationUpdateSchema,
+  makeAnnotationIdSchema,
 } from "./schemas";
 import { PER_ENTITY_PATH, type Annotation } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
-/** Маппинг UPPER_SNAKE-кодов бекенда на доменные ошибки фронта. */
-const ERRORS: ApiErrorMessages = {
-  BLOCKS_EMPTY: "Тело аннотации не может быть пустым.",
-  BLOCKS_INVALID: "Тело аннотации не прошло валидацию AST.",
-  ANCHOR_INVALID: "Некорректная привязка (якорь) аннотации.",
-  INVALID_PARENT_TYPE: "Аннотации недоступны для этого типа сущности.",
-  REQUEST_BODY_TOO_LARGE: "Аннотация слишком большая.",
+/** Маппинг UPPER_SNAKE-кодов бекенда на ключи каталога errors (локализуемый канал). */
+const ERRORS: ApiErrorMessageKeys = {
+  BLOCKS_EMPTY: "ANNOTATION_BLOCKS_EMPTY",
+  BLOCKS_INVALID: "ANNOTATION_BLOCKS_INVALID",
+  ANCHOR_INVALID: "ANNOTATION_ANCHOR_INVALID",
+  INVALID_PARENT_TYPE: "ANNOTATION_INVALID_PARENT_TYPE",
+  REQUEST_BODY_TOO_LARGE: "ANNOTATION_REQUEST_BODY_TOO_LARGE",
 };
 
 /**
@@ -58,7 +59,8 @@ const ERRORS: ApiErrorMessages = {
 export const createAnnotation = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateAnnotation);
-  const input = parseFormData(AnnotationCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeAnnotationCreateSchema(t), formData);
 
   const token = (await cookies()).get("token")?.value;
   const seg = PER_ENTITY_PATH[input.parent_entity_type];
@@ -101,11 +103,13 @@ export const createAnnotation = createFormAction(async (formData, ctx) => {
  */
 export const updateAnnotation = createFormAction(async (formData, ctx) => {
   const me = await getMe();
-  const input = parseFormData(AnnotationUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeAnnotationUpdateSchema(t), formData);
 
   // Defense-in-depth: грузим аннотацию, проверяем ownership.
   const existing = await getAnnotationById(input.id);
-  if (!existing) throw new Error("Аннотация не найдена.");
+  const tAnnotations = await getT("annotations");
+  if (!existing) throw new Error(tAnnotations("notFound"));
   requireCapability(me, (m) => canEditAnnotation(m, existing));
 
   const api = await createApiClient();
@@ -129,9 +133,11 @@ export const updateAnnotation = createFormAction(async (formData, ctx) => {
 /** Удаление своей аннотации (DELETE /api/annotations/{id}). */
 export const deleteAnnotation = createAction(async (rawId: string, ctx) => {
   const me = await getMe();
-  const { id } = AnnotationIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeAnnotationIdSchema(t).parse({ id: rawId });
   const existing = await getAnnotationById(id);
-  if (!existing) throw new Error("Аннотация не найдена.");
+  const tAnnotations = await getT("annotations");
+  if (!existing) throw new Error(tAnnotations("notFound"));
   requireCapability(me, (m) => canDeleteAnnotation(m, existing));
 
   const api = await createApiClient();
@@ -152,9 +158,11 @@ export const deleteAnnotation = createAction(async (rawId: string, ctx) => {
  */
 export const adminDeleteAnnotation = createAction(async (rawId: string) => {
   const me = await getMe();
-  const { id } = AnnotationIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeAnnotationIdSchema(t).parse({ id: rawId });
   const existing = await getAnnotationById(id);
-  if (!existing) throw new Error("Аннотация не найдена.");
+  const tAnnotations = await getT("annotations");
+  if (!existing) throw new Error(tAnnotations("notFound"));
   requireCapability(me, (m) => canAdminDeleteAnnotation(m, existing));
 
   const api = await createApiClient();

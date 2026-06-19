@@ -2,6 +2,8 @@
 // src/features/annotations/ui/annotation-admin-filter-form.tsx
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { useT } from "@/i18n/client";
+
 import { PARENT_ENTITY_TYPES as PARENT_TYPES } from "../types";
 
 /**
@@ -12,6 +14,7 @@ export function AnnotationAdminFilterForm() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useT("annotations");
   const current = searchParams.get("parent_entity_type") ?? "";
 
   function onChange(value: string) {
@@ -25,16 +28,16 @@ export function AnnotationAdminFilterForm() {
 
   return (
     <label className="flex items-center gap-2 text-sm">
-      Тип сущности:
+      {t("filterEntityTypeLabel")}
       <select
         value={current}
         onChange={(e) => { onChange(e.target.value); }}
         className="rounded border border-(--color-border) px-2 py-1"
       >
-        <option value="">Все</option>
-        {PARENT_TYPES.map((t) => (
-          <option key={t} value={t}>
-            {t}
+        <option value="">{t("filterEntityTypeAll")}</option>
+        {PARENT_TYPES.map((tp) => (
+          <option key={tp} value={tp}>
+            {tp}
           </option>
         ))}
       </select>

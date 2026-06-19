@@ -3,6 +3,7 @@
 // гарантирует паритет ключей с ru на этапе tsc.
 import type { Messages } from "../ru";
 
+import annotations from "./annotations";
 import auth from "./auth";
 import banners from "./banners";
 import canvas from "./canvas";
@@ -19,6 +20,7 @@ import trails from "./trails";
 import validation from "./validation";
 
 const en = {
+  annotations,
   auth,
   banners,
   canvas,

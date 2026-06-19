@@ -132,6 +132,19 @@ const validation = {
     invalidId: "Некорректный id события",
   },
 
+  // --- annotations: AnnotationCreateSchema / AnnotationUpdateSchema ---
+  annotations: {
+    blocksMinLength: "Тело аннотации не может быть пустым",
+    blocksInvalidJson: "Битый JSON в теле аннотации",
+    blocksNotArray: "Тело должно быть непустым массивом блоков",
+    blocksEmpty: "Тело должно быть непустым массивом блоков",
+    anchorNotObject: "Якорь должен быть объектом",
+    anchorInvalidJson: "Битый JSON в якоре",
+    invalidParentId: "Некорректный id родительской сущности",
+    invalidAnnotationId: "Некорректный id аннотации",
+    offsetMin: "offset >= 0",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

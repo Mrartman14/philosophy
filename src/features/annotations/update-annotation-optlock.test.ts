@@ -13,6 +13,12 @@ vi.mock("@/utils/me", () => ({
   getMe: () =>
     Promise.resolve({ id: "u1", status: "active", role: "user", capabilities: [] }),
 }));
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ вместо текста.
+// Позволяет схемам-фабрикам и getT("annotations") работать без request-scope next-intl.
+vi.mock("@/i18n", async (importOriginal) => {
+  const orig = await importOriginal<typeof import("@/i18n")>();
+  return { ...orig, getT: () => Promise.resolve((key: string) => key) };
+});
 // getAnnotationById (defense-in-depth ownership) → возвращаем свою аннотацию.
 vi.mock("./api", () => ({
   getAnnotationById: () => Promise.resolve({ id: "a1", owner_id: "u1" }),

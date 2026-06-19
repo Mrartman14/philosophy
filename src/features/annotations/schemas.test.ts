@@ -1,13 +1,22 @@
 // src/features/annotations/schemas.test.ts
 import { describe, it, expect } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  AnnotationCreateSchema,
-  AnnotationUpdateSchema,
-  AnnotationIdSchema,
+  makeAnnotationCreateSchema,
+  makeAnnotationUpdateSchema,
+  makeAnnotationIdSchema,
   AdminAnnotationFilterSchema,
   AnnotationOffsetSchema,
 } from "./schemas";
+
+// Stub translator: returns key as-is (паттерн из playbook)
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const AnnotationCreateSchema = makeAnnotationCreateSchema(t);
+const AnnotationUpdateSchema = makeAnnotationUpdateSchema(t);
+const AnnotationIdSchema = makeAnnotationIdSchema(t);
 
 const UUID = "550e8400-e29b-41d4-a716-446655440000";
 const blocksJson = JSON.stringify([{ type: "paragraph", content: [] }]);

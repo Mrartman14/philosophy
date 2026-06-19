@@ -113,6 +113,13 @@ const errors = {
   TRAIL_DUPLICATE_DOCUMENT: "Документ добавлен в маршрут дважды. Уберите дубликат.",
   TRAIL_DOCUMENT_NOT_FOUND: "Один из документов не найден. Обновите список и повторите.",
 
+  // --- annotations slice: доменные коды ---
+  ANNOTATION_BLOCKS_EMPTY: "Тело аннотации не может быть пустым.",
+  ANNOTATION_BLOCKS_INVALID: "Тело аннотации не прошло валидацию AST.",
+  ANNOTATION_ANCHOR_INVALID: "Некорректная привязка (якорь) аннотации.",
+  ANNOTATION_INVALID_PARENT_TYPE: "Аннотации недоступны для этого типа сущности.",
+  ANNOTATION_REQUEST_BODY_TOO_LARGE: "Аннотация слишком большая.",
+
   // --- api-error: фоллбеки rethrowApiError (когда у бека нет своего текста) ---
   serverError: "Ошибка сервера",
   accountRestricted: "Аккаунт ограничен.",

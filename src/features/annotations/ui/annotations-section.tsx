@@ -1,6 +1,7 @@
 // src/features/annotations/ui/annotations-section.tsx
 import { SchemaContextProvider } from "@/components/ast-editor";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { getAnnotationsFor } from "../api";
@@ -29,7 +30,7 @@ interface Props {
  * Интегрируется в страницы document/glossary/media/comment одним JSX-узлом.
  */
 export async function AnnotationsSection({ parentEntityType, parentId }: Props) {
-  const me = await getMe();
+  const [me, t] = await Promise.all([getMe(), getT("annotations")]);
   const { items } = await getAnnotationsFor(parentEntityType, parentId);
   const canCreate = canCreateAnnotation(me);
 
@@ -41,11 +42,11 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
   const astSchema = needsSchema ? await getAstSchema() : null;
 
   return (
-    <section className="flex flex-col gap-4" aria-label="Аннотации">
-      <h2 className="text-lg font-semibold">Аннотации</h2>
+    <section className="flex flex-col gap-4" aria-label={t("sectionLabel")}>
+      <h2 className="text-lg font-semibold">{t("sectionHeading")}</h2>
 
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-fg-muted)">Аннотаций пока нет.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((a) => {
@@ -79,7 +80,7 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
       {canCreate && (
         <SchemaContextProvider
           initial={astSchema ?? undefined}
-          fallback={<p className="text-sm">Загрузка редактора…</p>}
+          fallback={<p className="text-sm">{t("editorLoading")}</p>}
         >
           <AnnotationCreateForm
             parentEntityType={parentEntityType}

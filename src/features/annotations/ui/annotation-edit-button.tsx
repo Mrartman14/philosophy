@@ -6,6 +6,7 @@ import { useState } from "react";
 import { SchemaContextProvider } from "@/components/ast-editor";
 import type { SchemaResponse } from "@/components/ast-editor";
 import { Button, Dialog } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import type { Annotation } from "../types";
 
@@ -27,18 +28,19 @@ interface Props {
  */
 export function AnnotationEditButton({ annotation, initial }: Props) {
   const router = useRouter();
+  const t = useT("annotations");
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog
       open={open}
       onOpenChange={setOpen}
-      trigger={<Button variant="secondary">Редактировать</Button>}
-      title="Редактировать аннотацию"
+      trigger={<Button variant="secondary">{t("editButton")}</Button>}
+      title={t("editDialogTitle")}
     >
       <SchemaContextProvider
         initial={initial}
-        fallback={<p className="text-sm">Загрузка редактора…</p>}
+        fallback={<p className="text-sm">{t("editorLoading")}</p>}
       >
         <AnnotationEditForm
           annotation={annotation}

@@ -1,5 +1,6 @@
 // src/features/annotations/ui/annotation-admin-row.tsx
 import { AstRender } from "@/components/ast-render";
+import { getT } from "@/i18n";
 
 import type { Annotation } from "../types";
 
@@ -12,14 +13,15 @@ interface Props {
 }
 
 /** Строка admin-списка публичных аннотаций. */
-export function AnnotationAdminRow({ annotation, canAdminDelete }: Props) {
+export async function AnnotationAdminRow({ annotation, canAdminDelete }: Props) {
+  const t = await getT("annotations");
   return (
     <article className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
       <header className="flex items-center justify-between gap-2 text-xs text-(--color-fg-muted)">
         <span>
           {annotation.parent_entity_type} · {annotation.parent_entity_id}
         </span>
-        <span>автор: {annotation.owner_id}</span>
+        <span>{t("adminAuthorLabel")}: {annotation.owner_id}</span>
       </header>
       <div className="content" data-size="sm">
         <AstRender blocks={annotation.blocks ?? []} />

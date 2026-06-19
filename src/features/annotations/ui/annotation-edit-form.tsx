@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import { AstEditor, type AstBlock } from "@/components/ast-editor";
 import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateAnnotation } from "../actions";
@@ -25,6 +26,8 @@ interface Props {
  * её нет в форме, §6.8). Монтируется под <SchemaContextProvider>.
  */
 export function AnnotationEditForm({ annotation, onSuccess }: Props) {
+  const t = useT("annotations");
+  const tErrors = useT("errors");
   const [blocks, setBlocks] = useState<AstBlock[]>(
     (annotation.blocks ?? []),
   );
@@ -47,21 +50,21 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <IdempotencyField result={state} />
 
-      <FormField name="blocks" label="Текст аннотации">
+      <FormField name="blocks" label={t("editBodyLabel")}>
         <AstEditor
           defaultValue={(annotation.blocks ?? [])}
           entityContext="annotation"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel="Текст аннотации"
+          ariaLabel={t("editBodyAriaLabel")}
         />
       </FormField>
 
       {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">Сохранено.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
       )}
       {!state.success && state.code === "forbidden" && (
         <p className="text-sm text-red-600">
-          У вас нет прав на изменение аннотации.
+          {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
         </p>
       )}
       {!state.success && !state.code && (
@@ -69,7 +72,7 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
       )}
 
       <div>
-        <SubmitButton>Сохранить</SubmitButton>
+        <SubmitButton>{t("editSubmit")}</SubmitButton>
       </div>
     </Form>
   );

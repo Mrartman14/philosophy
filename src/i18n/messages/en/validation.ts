@@ -129,6 +129,19 @@ const validation = {
     invalidId: "Invalid event ID",
   },
 
+  // --- annotations: AnnotationCreateSchema / AnnotationUpdateSchema ---
+  annotations: {
+    blocksMinLength: "Annotation body cannot be empty",
+    blocksInvalidJson: "Invalid JSON in annotation body",
+    blocksNotArray: "Body must be a non-empty array of blocks",
+    blocksEmpty: "Body must be a non-empty array of blocks",
+    anchorNotObject: "Anchor must be an object",
+    anchorInvalidJson: "Invalid JSON in anchor",
+    invalidParentId: "Invalid parent entity ID",
+    invalidAnnotationId: "Invalid annotation ID",
+    offsetMin: "offset >= 0",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

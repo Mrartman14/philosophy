@@ -31,6 +31,12 @@ vi.mock("./permissions", () => ({
 }));
 
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ вместо текста.
+// Позволяет схемам-фабрикам и getT("annotations") работать без request-scope next-intl.
+vi.mock("@/i18n", async (importOriginal) => {
+  const orig = await importOriginal<typeof import("@/i18n")>();
+  return { ...orig, getT: () => Promise.resolve((key: string) => key) };
+});
 
 // Import AFTER vi.mock (hoisting).
 import { createAnnotation } from "./actions";
