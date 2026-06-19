@@ -19,11 +19,11 @@ const VisibilityEnum = z.enum(VISIBILITY);
 const TrailIdField = z.uuid("Некорректный id маршрута");
 
 /**
- * Парсит JSON-строку lecture_ids из скрытого поля формы в массив uuid лекций.
+ * Парсит JSON-строку document_ids из скрытого поля формы в массив uuid документов.
  * Пустой массив допустим (полная очистка содержимого). Дубликаты запрещены —
- * бек вернул бы 422 `duplicate lecture_id`, ловим заранее в UI.
+ * бек вернул бы 422 `duplicate document_id`, ловим заранее в UI.
  */
-const LectureIdsJsonSchema = z
+const DocumentIdsJsonSchema = z
   .string()
   .min(1, "Список не задан")
   .transform((s, ctx) => {
@@ -31,7 +31,7 @@ const LectureIdsJsonSchema = z
     try {
       parsed = JSON.parse(s);
     } catch {
-      ctx.addIssue({ code: "custom", message: "Битый JSON в списке лекций" });
+      ctx.addIssue({ code: "custom", message: "Битый JSON в списке документов" });
       return z.NEVER;
     }
     if (!Array.isArray(parsed)) {
@@ -48,11 +48,11 @@ const LectureIdsJsonSchema = z
       }
       // UUID v4 формат (как в остальных схемах слайса).
       if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item)) {
-        ctx.addIssue({ code: "custom", message: "Некорректный id лекции" });
+        ctx.addIssue({ code: "custom", message: "Некорректный id документа" });
         return z.NEVER;
       }
       if (seen.has(item)) {
-        ctx.addIssue({ code: "custom", message: "Лекция добавлена дважды" });
+        ctx.addIssue({ code: "custom", message: "Документ добавлен дважды" });
         return z.NEVER;
       }
       seen.add(item);
@@ -82,10 +82,10 @@ export const TrailVisibilitySchema = z.object({
   visibility: VisibilityEnum,
 });
 
-/** PUT /api/trails/{id}/items. lecture_ids — JSON-массив uuid в порядке. */
+/** PUT /api/trails/{id}/items. document_ids — JSON-массив uuid в порядке. */
 export const TrailItemsSchema = z.object({
   id: TrailIdField,
-  lecture_ids: LectureIdsJsonSchema,
+  document_ids: DocumentIdsJsonSchema,
 });
 
 /** Для delete: только id. */
@@ -97,4 +97,5 @@ export type TrailCreateInput = z.infer<typeof TrailCreateSchema>;
 export type TrailMetaInput = z.infer<typeof TrailMetaSchema>;
 export type TrailVisibilityInput = z.infer<typeof TrailVisibilitySchema>;
 export type TrailItemsInput = z.infer<typeof TrailItemsSchema>;
+export { DocumentIdsJsonSchema };
 export type TrailIdInput = z.infer<typeof TrailIdSchema>;

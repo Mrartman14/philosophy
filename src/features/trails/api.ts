@@ -5,7 +5,7 @@ import { cache } from "react";
 import { createApiClient } from "@/api/client";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
-import type { Trail, TrailWithItems, TrailLectureSummary } from "./types";
+import type { Trail, TrailWithItems, TrailDocumentSummary } from "./types";
 
 export interface TrailListFilter {
   offset?: number;
@@ -89,24 +89,24 @@ export const getAdminTrails = cache(
 );
 
 /**
- * Резолвит заголовки лекций для отображения items маршрута. Items приходят
- * только как lecture_id — отдельный GET за каждым. 404 (удалённая/недоступная
- * лекция) → элемент с заглушкой-заголовком, чтобы UI не падал.
+ * Резолвит метаданные документа для отображения items маршрута. Items приходят
+ * только как document_id — отдельный GET за каждым. 404 (удалённый/недоступный
+ * документ) → элемент с заглушкой-именем, чтобы UI не падал.
  *
- * НЕ импортируем @/features/lectures (cross-feature запрещён ESLint'ом) — зовём
- * /api/lectures/{id} напрямую. React.cache дедуплицирует одинаковые id в запросе.
+ * НЕ импортируем cross-feature — зовём /api/documents/{id} напрямую.
+ * React.cache дедуплицирует одинаковые id в запросе.
  */
-export const getLectureSummary = cache(
-  async (id: string): Promise<TrailLectureSummary> => {
+export const getDocumentSummary = cache(
+  async (id: string): Promise<TrailDocumentSummary> => {
     const api = await createApiClient();
-    const { data, error, response } = await api.GET("/api/lectures/{id}", {
-      params: { path: { id } },
+    const { data, error } = await api.GET("/api/documents/{document_id}", {
+      params: { path: { document_id: id } },
     });
-    if (response.status === 404 || error) {
-      return { id, title: "Лекция недоступна" };
+    if (error) {
+      return { id, filename: "Документ недоступен" };
     }
-    const lecture = data.data as { id?: string; title?: string } | undefined;
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- API может вернуть "", "" трактуется как «нет заголовка»
-    return { id, title: lecture?.title || "Без названия" };
+    const doc = data.data as { id?: string; filename?: string } | undefined;
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- API может вернуть "", "" трактуется как «нет имени»
+    return { id, filename: doc?.filename || "Без названия" };
   },
 );

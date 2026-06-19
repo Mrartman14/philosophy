@@ -4,7 +4,7 @@ export {
   getMyTrails,
   getTrailById,
   getAdminTrails,
-  getLectureSummary,
+  getDocumentSummary,
 } from "./api";
 export type {
   TrailListFilter,
@@ -34,6 +34,7 @@ export type {
   TrailWithItems,
   TrailItem,
   TrailVisibility,
+  TrailDocumentSummary,
   TrailLectureSummary,
 } from "./types";
 

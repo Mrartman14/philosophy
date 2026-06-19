@@ -16,6 +16,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
+import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { requireActive, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
@@ -40,11 +41,11 @@ const ERRORS: ApiErrorMessages = {
  * `rethrowApiError` (роль/статус-403, дефолты, фоллбек). */
 function rethrowTrailApiError(err: ApiError | undefined): never {
   const msg = err?.error ?? "";
-  if (msg.startsWith("duplicate lecture_id")) {
-    throw new Error("Лекция добавлена в маршрут дважды. Уберите дубликат.");
+  if (msg.startsWith("duplicate document_id")) {
+    throw new Error("Документ добавлен в маршрут дважды. Уберите дубликат.");
   }
-  if (msg.startsWith("lecture not found")) {
-    throw new Error("Одна из лекций не найдена. Обновите список и повторите.");
+  if (msg.startsWith("document not found")) {
+    throw new Error("Один из документов не найден. Обновите список и повторите.");
   }
   rethrowApiError(err, ERRORS);
 }
@@ -75,7 +76,7 @@ export const updateTrailMeta = createFormAction(async (formData) => {
   const input = parseFormData(TrailMetaSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/trails/{id}", {
-    params: { path: { id: input.id } },
+    params: { path: { id: input.id }, header: ifMatchHeader(formData, "маршрута") },
     body: { title: input.title, description: input.description },
   });
   if (error) rethrowTrailApiError(error);
@@ -84,15 +85,15 @@ export const updateTrailMeta = createFormAction(async (formData) => {
   return unwrap(data);
 }, "updateTrailMeta");
 
-/** PUT /api/trails/{id}/items (bulk-replace упорядоченного списка лекций). Owner-only. */
+/** PUT /api/trails/{id}/items (bulk-replace упорядоченного списка документов). Owner-only. */
 export const setTrailItems = createFormAction(async (formData) => {
   const me = await getMe();
   requireActive(me);
   const input = parseFormData(TrailItemsSchema, formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/trails/{id}/items", {
-    params: { path: { id: input.id } },
-    body: { lecture_ids: input.lecture_ids },
+    params: { path: { id: input.id }, header: ifMatchHeader(formData, "маршрута") },
+    body: { document_ids: input.document_ids },
   });
   if (error) rethrowTrailApiError(error);
   revalidateEntity(Tags.TRAILS, input.id);

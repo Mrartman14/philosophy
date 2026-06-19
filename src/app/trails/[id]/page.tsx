@@ -10,14 +10,14 @@ import {
   canEditTrail,
   canDeleteTrail,
   getTrailById,
-  getLectureSummary,
+  getDocumentSummary,
   TrailDetail,
   TrailMetaForm,
   TrailItemsEditor,
   TrailVisibilityButton,
   TrailDeleteButton,
 } from "@/features/trails";
-import type { TrailLectureSummary } from "@/features/trails";
+import type { TrailDocumentSummary } from "@/features/trails";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -31,11 +31,11 @@ export default async function TrailPage({ params, searchParams }: Props) {
   const [me, trail] = await Promise.all([getMe(), getTrailById(id, token)]);
   if (!trail) notFound();
 
-  // Резолвим заголовки лекций items в порядке position (items приходят
+  // Резолвим метаданные документов items в порядке position (items приходят
   // отсортированными по position с бека). React.cache дедуплицирует.
   const items = trail.items ?? [];
-  const lectures: TrailLectureSummary[] = await Promise.all(
-    items.map((item) => getLectureSummary(item.lecture_id ?? "")),
+  const documents: TrailDocumentSummary[] = await Promise.all(
+    items.map((item) => getDocumentSummary(item.document_id ?? "")),
   );
 
   const canEdit = canEditTrail(me, trail);
@@ -65,13 +65,13 @@ export default async function TrailPage({ params, searchParams }: Props) {
         )}
       </header>
 
-      <TrailDetail trail={trail} lectures={lectures} />
+      <TrailDetail trail={trail} documents={documents} />
 
       {canEdit && (
         <section className="flex flex-col gap-6 rounded border border-(--color-border) p-4">
           <h2 className="text-lg font-semibold">Редактирование</h2>
           <TrailMetaForm trail={trail} />
-          <TrailItemsEditor trailId={id} initialItems={lectures} />
+          <TrailItemsEditor trailId={id} trailVersion={trail.version} initialItems={documents} />
           {isPrivateOwned && trail.id && <TrailVisibilityButton id={trail.id} />}
         </section>
       )}

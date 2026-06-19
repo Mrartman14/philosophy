@@ -14,11 +14,16 @@ export type TrailItem = components["schemas"]["trail.TrailItem"];
 export type TrailVisibility = components["schemas"]["access.Visibility"];
 
 /**
- * Лёгкая сводка лекции для отображения items и пикера. Локальный тип, потому
- * что cross-feature импорт из @/features/lectures запрещён ESLint'ом; данные
- * структурно совместимы (приходят с /api/lectures).
+ * Лёгкая сводка документа для отображения items и пикера. Локальный тип, потому
+ * что cross-feature импорт запрещён ESLint'ом; данные приходят с /api/documents.
  */
-export interface TrailLectureSummary {
+export interface TrailDocumentSummary {
   id: string;
-  title: string;
+  filename: string;
 }
+
+/**
+ * @deprecated Используйте TrailDocumentSummary.
+ * Алиас для обратной совместимости с кодом, который ещё не обновлён.
+ */
+export type TrailLectureSummary = TrailDocumentSummary;

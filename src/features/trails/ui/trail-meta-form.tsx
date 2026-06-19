@@ -22,6 +22,7 @@ export function TrailMetaForm({ trail }: Props) {
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={trail.id} />
+      <input type="hidden" name="version" value={String(trail.version ?? "")} />
 
       <FormField name="title" label="Название" required>
         <TextInput name="title" required maxLength={200} defaultValue={trail.title} />

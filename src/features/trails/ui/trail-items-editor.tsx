@@ -3,27 +3,29 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
+import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker";
 import { Button, SubmitButton, Form, useToast } from "@/components/ui";
-// LecturePicker — client-компонент из @/components (НЕ cross-feature). В index.ts
-// ast-editor он не реэкспортнут, поэтому импортируем напрямую (см. Задача 9 шаг 0).
+// DocumentPicker — client-компонент из @/components (НЕ cross-feature). В index.ts
+// ast-editor он не реэкспортнут, поэтому импортируем напрямую.
 import type { ActionResult } from "@/utils/create-action";
 
 import { setTrailItems } from "../actions";
-import type { TrailWithItems, TrailLectureSummary } from "../types";
+import type { TrailWithItems, TrailDocumentSummary } from "../types";
 
 const initial: ActionResult<TrailWithItems | null> = { success: true, data: null };
 
 interface Props {
   trailId: string;
-  /** Текущие элементы в порядке (id + резолвнутый заголовок). */
-  initialItems: TrailLectureSummary[];
+  /** Версия маршрута для optimistic lock (If-Match). */
+  trailVersion?: number | undefined;
+  /** Текущие элементы в порядке (id + резолвнутое имя файла). */
+  initialItems: TrailDocumentSummary[];
 }
 
-export function TrailItemsEditor({ trailId, initialItems }: Props) {
+export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props) {
   const router = useRouter();
   const toast = useToast();
-  const [items, setItems] = useState<TrailLectureSummary[]>(initialItems);
+  const [items, setItems] = useState<TrailDocumentSummary[]>(initialItems);
   const [picking, setPicking] = useState(false);
   const [state, action] = useActionState(setTrailItems, initial);
 
@@ -41,13 +43,13 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
     }
   }, [state, toast]);
 
-  function addLecture(id: string, title: string) {
+  function addDocument(id: string, filename: string) {
     setPicking(false);
     if (items.some((it) => it.id === id)) {
-      toast.add({ title: "Уже добавлена", description: "Эта лекция уже в маршруте." });
+      toast.add({ title: "Уже добавлен", description: "Этот документ уже в маршруте." });
       return;
     }
-    setItems((prev) => [...prev, { id, title }]);
+    setItems((prev) => [...prev, { id, filename }]);
   }
 
   function removeAt(index: number) {
@@ -73,7 +75,7 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
       <h2 className="text-lg font-semibold">Содержимое маршрута</h2>
 
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-description)">Маршрут пуст. Добавьте лекции.</p>
+        <p className="text-sm text-(--color-description)">Маршрут пуст. Добавьте документы.</p>
       ) : (
         <ol className="flex flex-col gap-1">
           {items.map((item, index) => (
@@ -82,7 +84,7 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
               className="flex items-center justify-between gap-2 rounded border border-(--color-border) px-2 py-1.5"
             >
               <span className="text-sm">
-                {index + 1}. {item.title}
+                {index + 1}. {item.filename}
               </span>
               <span className="flex items-center gap-1">
                 <Button
@@ -122,26 +124,27 @@ export function TrailItemsEditor({ trailId, initialItems }: Props) {
 
       {picking ? (
         <div className="rounded border border-(--color-border) p-2">
-          <LecturePicker onSelect={addLecture} />
+          <DocumentPicker onSelect={addDocument} />
           <Button type="button" variant="ghost" size="sm" onClick={() => { setPicking(false); }}>
             Отмена
           </Button>
         </div>
       ) : (
         <Button type="button" variant="secondary" size="sm" onClick={() => { setPicking(true); }}>
-          + Добавить лекцию
+          + Добавить документ
         </Button>
       )}
 
       <Form action={action} className="flex items-center gap-2">
         <input type="hidden" name="id" value={trailId} />
-        <input type="hidden" name="lecture_ids" value={JSON.stringify(orderedIds)} />
+        <input type="hidden" name="version" value={String(trailVersion ?? "")} />
+        <input type="hidden" name="document_ids" value={JSON.stringify(orderedIds)} />
         <SubmitButton>Сохранить содержимое</SubmitButton>
         {!state.success && state.code === "forbidden" && (
           <span className="text-sm text-red-600">У вас нет прав на изменение маршрута.</span>
         )}
         {!state.success && state.code === "validation" && (
-          <span className="text-sm text-red-600">Проверьте список лекций.</span>
+          <span className="text-sm text-red-600">Проверьте список документов.</span>
         )}
       </Form>
     </section>

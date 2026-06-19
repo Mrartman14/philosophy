@@ -76,37 +76,37 @@ describe("TrailVisibilitySchema", () => {
 });
 
 describe("TrailItemsSchema", () => {
-  it("success: id + JSON-массив uuid лекций", () => {
+  it("success: id + JSON-массив uuid документов", () => {
     const r = TrailItemsSchema.safeParse({
       id: UUID,
-      lecture_ids: JSON.stringify([UUID, UUID2]),
+      document_ids: JSON.stringify([UUID, UUID2]),
     });
     expect(r.success).toBe(true);
     if (r.success) {
-      expect(r.data.lecture_ids).toEqual([UUID, UUID2]);
+      expect(r.data.document_ids).toEqual([UUID, UUID2]);
     }
   });
   it("success: пустой список (полная очистка содержимого)", () => {
-    const r = TrailItemsSchema.safeParse({ id: UUID, lecture_ids: JSON.stringify([]) });
+    const r = TrailItemsSchema.safeParse({ id: UUID, document_ids: JSON.stringify([]) });
     expect(r.success).toBe(true);
-    if (r.success) expect(r.data.lecture_ids).toEqual([]);
+    if (r.success) expect(r.data.document_ids).toEqual([]);
   });
   it("failure: битый JSON", () => {
-    expect(TrailItemsSchema.safeParse({ id: UUID, lecture_ids: "{not json" }).success).toBe(false);
+    expect(TrailItemsSchema.safeParse({ id: UUID, document_ids: "{not json" }).success).toBe(false);
   });
   it("failure: не массив", () => {
     expect(
-      TrailItemsSchema.safeParse({ id: UUID, lecture_ids: JSON.stringify({ x: 1 }) }).success,
+      TrailItemsSchema.safeParse({ id: UUID, document_ids: JSON.stringify({ x: 1 }) }).success,
     ).toBe(false);
   });
   it("failure: элемент не uuid", () => {
     expect(
-      TrailItemsSchema.safeParse({ id: UUID, lecture_ids: JSON.stringify(["nope"]) }).success,
+      TrailItemsSchema.safeParse({ id: UUID, document_ids: JSON.stringify(["nope"]) }).success,
     ).toBe(false);
   });
-  it("failure: дубликат лекции (бек вернул бы 422)", () => {
+  it("failure: дубликат документа (бек вернул бы 422)", () => {
     expect(
-      TrailItemsSchema.safeParse({ id: UUID, lecture_ids: JSON.stringify([UUID, UUID]) }).success,
+      TrailItemsSchema.safeParse({ id: UUID, document_ids: JSON.stringify([UUID, UUID]) }).success,
     ).toBe(false);
   });
 });
