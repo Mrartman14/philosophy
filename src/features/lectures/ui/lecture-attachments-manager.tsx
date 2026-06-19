@@ -9,6 +9,7 @@ import type {
   AttachmentItem,
   AttachmentActionResult,
 } from "@/components/attachments";
+import { useT } from "@/i18n/client";
 
 import {
   attachToLecture,
@@ -57,6 +58,8 @@ export function LectureAttachmentsManager({
   targetFetcher,
   title,
 }: Props) {
+  const tL = useT("lectures");
+
   const items: AttachmentItem[] = attachments.map((a) => ({
     id: `${a.entityType}:${a.entityId}`,
     label: a.label,
@@ -93,9 +96,10 @@ export function LectureAttachmentsManager({
       return {
         ok: false,
         error:
-          r.code === "forbidden" ? "У вас нет прав на открепление." : r.error,
+          r.code === "forbidden" ? tL("detachForbidden") : r.error,
       };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [lectureId],
   );
 
@@ -115,11 +119,10 @@ export function LectureAttachmentsManager({
       return {
         ok: false,
         error:
-          r.code === "forbidden"
-            ? "У вас нет прав на изменение порядка."
-            : r.error,
+          r.code === "forbidden" ? tL("reorderForbidden") : r.error,
       };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [lectureId],
   );
 
@@ -134,9 +137,10 @@ export function LectureAttachmentsManager({
       return {
         ok: false,
         error:
-          r.code === "forbidden" ? "У вас нет прав на прикрепление." : r.error,
+          r.code === "forbidden" ? tL("attachForbidden") : r.error,
       };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [lectureId, pickerEntityType],
   );
 
@@ -155,11 +159,13 @@ export function LectureAttachmentsManager({
           onSelect={onSelect}
           onClose={onClose}
           placeholder={
-            pickerEntityType === "document" ? "Поиск документа…" : "Поиск медиа…"
+            pickerEntityType === "document"
+              ? tL("searchDocumentPlaceholder")
+              : tL("searchMediaPlaceholder")
           }
         />
       )}
-      emptyText="Пока ничего не прикреплено."
+      emptyText={tL("attachmentsEmpty")}
     />
   );
 }

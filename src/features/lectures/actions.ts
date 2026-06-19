@@ -2,9 +2,10 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import {
   rethrowApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
@@ -29,40 +30,41 @@ import {
   canUpdateLecture,
 } from "./permissions";
 import {
-  LectureAttachSchema,
-  LectureCreateSchema,
-  LectureCoverClearSchema,
-  LectureCoverSchema,
-  LectureDetachSchema,
-  LectureIdSchema,
-  LectureReorderSchema,
-  LectureSuggestSchema,
-  LectureUpdateSchema,
-  LectureVisibilitySchema,
+  makeLectureAttachSchema,
+  makeLectureCreateSchema,
+  makeLectureCoverClearSchema,
+  makeLectureCoverSchema,
+  makeLectureDetachSchema,
+  makeLectureIdSchema,
+  makeLectureReorderSchema,
+  makeLectureSuggestSchema,
+  makeLectureUpdateSchema,
+  makeLectureVisibilitySchema,
 } from "./schemas";
 import type { Lecture, AttachmentEntityType } from "./types";
 
-/** Доменные коды лекций → русский текст. role-403 (ATTACH_FORBIDDEN/
+/** Доменные коды лекций → ключи каталога errors. role-403 (ATTACH_FORBIDDEN/
  * UPLOAD_FOREIGN/FORBIDDEN), SUSPENDED/BANNED и REF_NOT_FOUND обрабатывает
  * централизованный `rethrowApiError`. */
-const ERRORS: ApiErrorMessages = {
-  UPLOAD_NOT_FOUND: "Загруженное изображение не найдено. Попробуйте ещё раз.",
-  ALREADY_ATTACHED: "Эта сущность уже прикреплена к лекции.",
-  INVALID_ENTITY_TYPE: "Недопустимый тип сущности.",
-  NOT_FOUND: "Лекция не найдена.",
-  LECTURE_NOT_FOUND: "Лекция не найдена.",
+const ERRORS: ApiErrorMessageKeys = {
+  UPLOAD_NOT_FOUND: "UPLOAD_NOT_FOUND",
+  ALREADY_ATTACHED: "ALREADY_ATTACHED",
+  INVALID_ENTITY_TYPE: "INVALID_ENTITY_TYPE",
+  NOT_FOUND: "NOT_FOUND",
+  LECTURE_NOT_FOUND: "LECTURE_NOT_FOUND",
 };
 
 /** Грузит лекцию для owner-aware гейта. 404 → ForbiddenError (secure). */
 async function loadLectureForGate(id: string): Promise<Lecture> {
   const lecture = await getLectureById(id);
-  if (!lecture) throw new ForbiddenError("owner", "Лекция не найдена");
+  if (!lecture) throw new ForbiddenError("owner", "Lecture not found");
   return lecture;
 }
 
 export const createLecture = createFormAction(async (formData, ctx) => {
   const me = await getMe();
-  const input = parseFormData(LectureCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeLectureCreateSchema(t), formData);
   requireCapability(me, canCreateLecture);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/lectures", {
@@ -81,7 +83,8 @@ export const createLecture = createFormAction(async (formData, ctx) => {
 
 export const updateLecture = createFormAction(async (formData, ctx) => {
   const me = await getMe();
-  const input = parseFormData(LectureUpdateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeLectureUpdateSchema(t), formData);
   const lecture = await loadLectureForGate(input.id);
   requireCapability(me, (m) => canUpdateLecture(m, lecture));
   const api = await createApiClient();
@@ -101,7 +104,8 @@ export const updateLecture = createFormAction(async (formData, ctx) => {
 
 export const setLectureVisibility = createFormAction(async (formData, ctx) => {
   const me = await getMe();
-  const input = parseFormData(LectureVisibilitySchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeLectureVisibilitySchema(t), formData);
   const lecture = await loadLectureForGate(input.id);
   requireCapability(me, (m) => canSetLectureVisibility(m, lecture));
   const api = await createApiClient();
@@ -118,7 +122,8 @@ export const setLectureVisibility = createFormAction(async (formData, ctx) => {
 
 export const deleteLecture = createAction(async (rawId: string) => {
   const me = await getMe();
-  const { id } = LectureIdSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeLectureIdSchema(t).parse({ id: rawId });
   requireCapability(me, canDeleteLecture);
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/lectures/{id}", {
@@ -137,7 +142,8 @@ export const deleteLecture = createAction(async (rawId: string) => {
 export const setLectureCover = createAction(
   async (raw: { id: string; upload_id: string; alt_text?: string }) => {
     const me = await getMe();
-    const input = LectureCoverSchema.parse(raw);
+    const t = await getT("validation");
+    const input = makeLectureCoverSchema(t).parse(raw);
     const lecture = await loadLectureForGate(input.id);
     requireCapability(me, (m) => canManageCover(m, lecture));
     const api = await createApiClient();
@@ -159,7 +165,8 @@ export const setLectureCover = createAction(
 /** DELETE /api/lectures/{id}/cover — снять обложку. Owner-only. 204. */
 export const clearLectureCover = createAction(async (rawId: string) => {
   const me = await getMe();
-  const { id } = LectureCoverClearSchema.parse({ id: rawId });
+  const t = await getT("validation");
+  const { id } = makeLectureCoverClearSchema(t).parse({ id: rawId });
   const lecture = await loadLectureForGate(id);
   requireCapability(me, (m) => canManageCover(m, lecture));
   const api = await createApiClient();
@@ -184,7 +191,8 @@ export const attachToLecture = createAction(
     sort_order?: number;
   }) => {
     const me = await getMe();
-    const input = LectureAttachSchema.parse(raw);
+    const t = await getT("validation");
+    const input = makeLectureAttachSchema(t).parse(raw);
     const lecture = await loadLectureForGate(input.lecture_id);
     requireCapability(me, (m) => canAttachToLecture(m, lecture));
     const api = await createApiClient();
@@ -214,7 +222,8 @@ export const detachFromLecture = createAction(
     entity_type: AttachmentEntityType;
   }) => {
     const me = await getMe();
-    const input = LectureDetachSchema.parse(raw);
+    const t = await getT("validation");
+    const input = makeLectureDetachSchema(t).parse(raw);
     const lecture = await loadLectureForGate(input.lecture_id);
     requireCapability(me, (m) => canManageAttachments(m, lecture));
     const api = await createApiClient();
@@ -245,7 +254,8 @@ export const detachFromLecture = createAction(
  */
 export const suggestGlossaryTerms = createAction(
   async (raw: { blocks: { block_id: string; text: string }[] }, ctx) => {
-    const input = LectureSuggestSchema.parse(raw);
+    const t = await getT("validation");
+    const input = makeLectureSuggestSchema(t).parse(raw);
     const api = await createApiClient();
     const { data, error } = await api.POST("/api/glossary/suggest", {
       body: { blocks: input.blocks },
@@ -274,7 +284,7 @@ export const searchDocumentsForAttach = createAction(
         },
       },
     });
-    if (error) throw new Error(error.error ?? "Ошибка поиска документов");
+    if (error) throw new Error(error.error ?? "Error searching documents");
     const items = (data.data ?? []) as { id?: string; filename?: string }[];
     return {
       data: items
@@ -299,7 +309,7 @@ export const searchMediaForAttach = createAction(
         },
       },
     });
-    if (error) throw new Error(error.error ?? "Ошибка поиска медиа");
+    if (error) throw new Error(error.error ?? "Error searching media");
     const items = (data.data ?? []) as { id?: string; filename?: string }[];
     return {
       data: items
@@ -323,7 +333,8 @@ export const reorderLectureAttachment = createAction(
     sort_order: number;
   }) => {
     const me = await getMe();
-    const input = LectureReorderSchema.parse(raw);
+    const t = await getT("validation");
+    const input = makeLectureReorderSchema(t).parse(raw);
     const lecture = await loadLectureForGate(input.lecture_id);
     requireCapability(me, (m) => canManageAttachments(m, lecture));
     const api = await createApiClient();

@@ -65,6 +65,13 @@ const errors = {
   CANVAS_VALIDATION_ERROR:
     "Граф не прошёл валидацию (узлы/рёбра/ссылки на сущности).",
 
+  // --- lectures slice: доменные коды ---
+  UPLOAD_NOT_FOUND: "Загруженное изображение не найдено. Попробуйте ещё раз.",
+  ALREADY_ATTACHED: "Эта сущность уже прикреплена к лекции.",
+  INVALID_ENTITY_TYPE: "Недопустимый тип сущности.",
+  NOT_FOUND: "Лекция не найдена.",
+  LECTURE_NOT_FOUND: "Лекция не найдена.",
+
   // --- api-error: фоллбеки rethrowApiError (когда у бека нет своего текста) ---
   serverError: "Ошибка сервера",
   accountRestricted: "Аккаунт ограничен.",

@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 
 import { uploadImage } from "@/components/ast-editor/upload/upload-image";
 import { Button } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import { setLectureCover, clearLectureCover } from "../actions";
 import { lectureCoverUrl } from "../cover-url";
@@ -19,6 +20,8 @@ interface Props {
  * Owner-only гейт — на странице (canManageCover); здесь только UI.
  */
 export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Props) {
+  const tL = useT("lectures");
+  const tErrors = useT("errors");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [currentKey, setCurrentKey] = useState<string | null>(coverImageKey);
@@ -46,7 +49,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
       if (!res.success) {
         setError(
           res.code === "forbidden"
-            ? "У вас нет прав на изменение обложки."
+            ? tErrors("forbiddenAction", { action: tL("coverForbiddenAction") })
             : res.error,
         );
         return;
@@ -62,7 +65,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
       if (!res.success) {
         setError(
           res.code === "forbidden"
-            ? "У вас нет прав на изменение обложки."
+            ? tErrors("forbiddenAction", { action: tL("coverForbiddenAction") })
             : res.error,
         );
         return;
@@ -72,21 +75,21 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
   }
 
   return (
-    <section className="flex flex-col gap-3" aria-label="Обложка лекции">
-      <h2 className="text-lg font-semibold">Обложка</h2>
+    <section className="flex flex-col gap-3" aria-label={tL("coverSectionLabel")}>
+      <h2 className="text-lg font-semibold">{tL("coverHeading")}</h2>
       {previewUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={previewUrl}
-          alt={alt || "Обложка лекции"}
+          alt={alt || tL("coverAlt")}
           className="max-h-48 w-auto rounded border border-(--color-border) object-cover"
         />
       ) : (
-        <p className="text-sm text-(--color-fg-muted)">Обложка не задана.</p>
+        <p className="text-sm text-(--color-fg-muted)">{tL("coverEmpty")}</p>
       )}
 
       <label className="flex flex-col gap-1 text-sm">
-        Alt-текст (для доступности)
+        {tL("coverAltLabel")}
         <input
           type="text"
           value={alt}
@@ -98,7 +101,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
 
       <div className="flex items-center gap-2">
         <label className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 text-sm hover:bg-(--color-surface-subtle)">
-          {currentKey ? "Заменить обложку" : "Загрузить обложку"}
+          {currentKey ? tL("replaceCover") : tL("uploadCover")}
           <input
             type="file"
             accept="image/*"
@@ -109,7 +112,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
         </label>
         {currentKey && (
           <Button variant="danger" disabled={pending} onClick={onClear}>
-            Удалить обложку
+            {tL("deleteCover")}
           </Button>
         )}
       </div>

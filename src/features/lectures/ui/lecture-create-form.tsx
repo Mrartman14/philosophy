@@ -12,6 +12,7 @@ import {
   TextInput,
   Textarea,
 } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createLecture } from "../actions";
@@ -20,6 +21,7 @@ import type { Lecture } from "../types";
 const initial: ActionResult<Lecture | null> = { success: true, data: null };
 
 export function LectureCreateForm() {
+  const tL = useT("lectures");
   const router = useRouter();
   const [state, action] = useActionState(createLecture, initial);
   const fieldErrors: Record<string, string> =
@@ -34,33 +36,35 @@ export function LectureCreateForm() {
   return (
     <Form action={action} errors={fieldErrors} className="max-w-xl">
       <IdempotencyField result={state} />
-      <FormField name="title" label="Название" required>
+      <FormField name="title" label={tL("titleLabel")} required>
         <TextInput name="title" required maxLength={200} />
       </FormField>
 
-      <FormField name="date" label="Дата" required description="Формат ГГГГ-ММ-ДД">
+      <FormField name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
         <TextInput name="date" required placeholder="2026-04-27" />
       </FormField>
 
-      <FormField name="description" label="Описание">
+      <FormField name="description" label={tL("descriptionLabel")}>
         <Textarea name="description" rows={6} maxLength={5000} />
       </FormField>
 
-      <FormField name="visibility" label="Видимость">
+      <FormField name="visibility" label={tL("visibilityLabel")}>
         <Select
           name="visibility"
           defaultValue="private"
           options={[
-            { value: "private", label: "Приватная" },
-            { value: "public", label: "Публичная" },
+            { value: "private", label: tL("visibilityPrivate") },
+            { value: "public", label: tL("visibilityPublic") },
           ]}
         />
       </FormField>
 
+      {/* FormFeedback is a frozen UI-kit seam; forbiddenAction string is a legacy
+          plain-Russian prop until that seam gets its own i18n foundation-PR. */}
       <FormFeedback result={state} forbiddenAction="создание лекции" />
 
       <div>
-        <SubmitButton>Создать</SubmitButton>
+        <SubmitButton>{tL("createButton")}</SubmitButton>
       </div>
     </Form>
   );

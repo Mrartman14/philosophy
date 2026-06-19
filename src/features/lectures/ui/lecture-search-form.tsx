@@ -5,6 +5,7 @@ import { type FormEvent } from "react";
 
 import { Button, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
+import { useT } from "@/i18n/client";
 
 interface Props {
   basePath: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function LectureSearchForm({ basePath, tagOptions }: Props) {
+  const tL = useT("lectures");
   const params = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
   const initialQ = params.get("q") ?? "";
@@ -42,24 +44,24 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
       <TextInput
         name="q"
         defaultValue={initialQ}
-        placeholder="Поиск по названию или описанию"
-        aria-label="Поиск лекций"
+        placeholder={tL("searchPlaceholder")}
+        aria-label={tL("searchAriaLabel")}
         className="min-w-60 flex-1"
       />
       {hasTagFilter && (
         <Select
           name="tag"
           defaultValue={initialTag}
-          aria-label="Фильтр по тегу"
+          aria-label={tL("tagFilterAriaLabel")}
           className="w-48"
           options={[
-            { value: "", label: "Все теги" },
+            { value: "", label: tL("allTags") },
             ...tagOptions.map((name) => ({ value: name, label: name })),
           ]}
         />
       )}
       <Button type="submit" disabled={pending}>
-        {pending ? "…" : "Найти"}
+        {pending ? tL("searchPending") : tL("searchButton")}
       </Button>
     </form>
   );

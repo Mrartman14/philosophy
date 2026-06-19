@@ -1,18 +1,34 @@
 // src/features/lectures/schemas.test.ts
 import { describe, it, expect } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  LectureCreateSchema,
-  LectureUpdateSchema,
-  LectureVisibilitySchema,
-  LectureIdSchema,
-  LectureCoverSchema,
-  LectureCoverClearSchema,
-  LectureAttachSchema,
-  LectureDetachSchema,
-  LectureReorderSchema,
-  LectureSuggestSchema,
+  makeLectureCreateSchema,
+  makeLectureUpdateSchema,
+  makeLectureVisibilitySchema,
+  makeLectureIdSchema,
+  makeLectureCoverSchema,
+  makeLectureCoverClearSchema,
+  makeLectureAttachSchema,
+  makeLectureDetachSchema,
+  makeLectureReorderSchema,
+  makeLectureSuggestSchema,
 } from "./schemas";
+
+// Mock translator: returns the key as-is (paritied with preference schema tests).
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const LectureCreateSchema = makeLectureCreateSchema(t);
+const LectureUpdateSchema = makeLectureUpdateSchema(t);
+const LectureVisibilitySchema = makeLectureVisibilitySchema(t);
+const LectureIdSchema = makeLectureIdSchema(t);
+const LectureCoverSchema = makeLectureCoverSchema(t);
+const LectureCoverClearSchema = makeLectureCoverClearSchema(t);
+const LectureAttachSchema = makeLectureAttachSchema(t);
+const LectureDetachSchema = makeLectureDetachSchema(t);
+const LectureReorderSchema = makeLectureReorderSchema(t);
+const LectureSuggestSchema = makeLectureSuggestSchema(t);
 
 describe("LectureCreateSchema", () => {
   it("принимает валидные поля", () => {

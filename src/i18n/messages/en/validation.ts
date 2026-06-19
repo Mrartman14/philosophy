@@ -60,6 +60,19 @@ const validation = {
     blocksEmpty: "Comment cannot be empty",
   },
 
+  // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
+  lectures: {
+    titleRequired: "Enter a title",
+    titleMax: "Up to 200 characters",
+    descriptionMax: "Up to 5000 characters",
+    dateFormat: "Date must be in YYYY-MM-DD format",
+    invalidId: "Invalid lecture ID",
+    imageRequired: "No image selected",
+    altMax: "Up to 500 characters",
+    entityRequired: "No entity selected",
+    blocksMin: "At least one block is required",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

@@ -8,6 +8,7 @@ import {
   TextInput,
   Textarea,
 } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateLecture } from "../actions";
@@ -25,6 +26,8 @@ interface Props {
 }
 
 export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props) {
+  const tL = useT("lectures");
+  const tErrors = useT("errors");
   const [state, action] = useActionState(updateLecture, initial);
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation" ? state.fieldErrors : {};
@@ -35,15 +38,15 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
         <input type="hidden" name="id" value={lecture.id} />
         <input type="hidden" name="version" value={String(lecture.version ?? "")} />
 
-        <FormField name="title" label="Название" required>
+        <FormField name="title" label={tL("titleLabel")} required>
           <TextInput name="title" required maxLength={200} defaultValue={lecture.title} />
         </FormField>
 
-        <FormField name="date" label="Дата" required description="Формат ГГГГ-ММ-ДД">
+        <FormField name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
           <TextInput name="date" required defaultValue={lecture.date} />
         </FormField>
 
-        <FormField name="description" label="Описание">
+        <FormField name="description" label={tL("descriptionLabel")}>
           <Textarea
             name="description"
             rows={6}
@@ -53,17 +56,19 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
         </FormField>
 
         {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">У вас нет прав на редактирование.</p>
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: tL("editForbiddenAction") })}
+          </p>
         )}
         {!state.success && !state.code && (
           <p className="text-sm text-red-600">{state.error}</p>
         )}
         {state.success && state.data && (
-          <p className="text-sm text-green-600">Сохранено.</p>
+          <p className="text-sm text-green-600">{tL("savedMessage")}</p>
         )}
 
         <div>
-          <SubmitButton>Сохранить</SubmitButton>
+          <SubmitButton>{tL("saveButton")}</SubmitButton>
         </div>
       </Form>
 

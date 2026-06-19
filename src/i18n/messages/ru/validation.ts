@@ -63,6 +63,19 @@ const validation = {
     blocksEmpty: "Комментарий не может быть пустым",
   },
 
+  // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
+  lectures: {
+    titleRequired: "Введите название",
+    titleMax: "До 200 символов",
+    descriptionMax: "До 5000 символов",
+    dateFormat: "Дата должна быть в формате ГГГГ-ММ-ДД",
+    invalidId: "Некорректный id лекции",
+    imageRequired: "Не выбрано изображение",
+    altMax: "До 500 символов",
+    entityRequired: "Не выбрана сущность",
+    blocksMin: "Нужен хотя бы один блок",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

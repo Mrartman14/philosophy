@@ -3,42 +3,72 @@ import "server-only";
 import { z } from "zod";
 
 import { VISIBILITY } from "@/api/enums";
+import type { NamespaceT } from "@/i18n";
 import { DATE_ONLY as ISO_DATE } from "@/utils/datetime-form";
 
 import type { AttachmentEntityType } from "./types";
 
-export const LectureCreateSchema = z.object({
-  title: z.string().trim().min(1, "Введите название").max(200, "До 200 символов"),
-  description: z.string().max(5000, "До 5000 символов").optional().default(""),
-  date: z.string().regex(ISO_DATE, "Дата должна быть в формате ГГГГ-ММ-ДД"),
-  visibility: z.enum(VISIBILITY).optional(),
-});
+type ValidationT = NamespaceT<"validation">;
 
-export const LectureUpdateSchema = z.object({
-  id: z.uuid("Некорректный id лекции"),
-  title: z.string().trim().min(1, "Введите название").max(200, "До 200 символов"),
-  description: z.string().max(5000, "До 5000 символов").default(""),
-  date: z.string().regex(ISO_DATE, "Дата должна быть в формате ГГГГ-ММ-ДД"),
-});
+export function makeLectureCreateSchema(t: ValidationT) {
+  return z.object({
+    title: z
+      .string()
+      .trim()
+      .min(1, t("lectures.titleRequired"))
+      .max(200, t("lectures.titleMax")),
+    description: z
+      .string()
+      .max(5000, t("lectures.descriptionMax"))
+      .optional()
+      .default(""),
+    date: z.string().regex(ISO_DATE, t("lectures.dateFormat")),
+    visibility: z.enum(VISIBILITY).optional(),
+  });
+}
 
-export const LectureVisibilitySchema = z.object({
-  id: z.uuid("Некорректный id лекции"),
-  visibility: z.enum(VISIBILITY),
-});
+export function makeLectureUpdateSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("lectures.invalidId")),
+    title: z
+      .string()
+      .trim()
+      .min(1, t("lectures.titleRequired"))
+      .max(200, t("lectures.titleMax")),
+    description: z
+      .string()
+      .max(5000, t("lectures.descriptionMax"))
+      .default(""),
+    date: z.string().regex(ISO_DATE, t("lectures.dateFormat")),
+  });
+}
 
-export const LectureIdSchema = z.object({
-  id: z.uuid("Некорректный id лекции"),
-});
+export function makeLectureVisibilitySchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("lectures.invalidId")),
+    visibility: z.enum(VISIBILITY),
+  });
+}
 
-export const LectureCoverSchema = z.object({
-  id: z.uuid("Некорректный id лекции"),
-  upload_id: z.string().min(1, "Не выбрано изображение"),
-  alt_text: z.string().max(500, "До 500 символов").optional(),
-});
+export function makeLectureIdSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("lectures.invalidId")),
+  });
+}
 
-export const LectureCoverClearSchema = z.object({
-  id: z.uuid("Некорректный id лекции"),
-});
+export function makeLectureCoverSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("lectures.invalidId")),
+    upload_id: z.string().min(1, t("lectures.imageRequired")),
+    alt_text: z.string().max(500, t("lectures.altMax")).optional(),
+  });
+}
+
+export function makeLectureCoverClearSchema(t: ValidationT) {
+  return z.object({
+    id: z.uuid(t("lectures.invalidId")),
+  });
+}
 
 // drift-гард: ключи обязаны ТОЧНО совпадать с AttachmentEntityType (обе стороны).
 // `satisfies Record<AttachmentEntityType, true>` валит tsc, если бэк добавит/уберёт
@@ -53,45 +83,54 @@ const ENTITY_TYPE = z.enum(
   Object.keys(ENTITY_TYPE_SET) as [AttachmentEntityType, ...AttachmentEntityType[]],
 );
 
-export const LectureAttachSchema = z.object({
-  lecture_id: z.uuid("Некорректный id лекции"),
-  entity_id: z.string().min(1, "Не выбрана сущность"),
-  entity_type: ENTITY_TYPE,
-  sort_order: z.number().int().gte(0).optional(),
-});
+export function makeLectureAttachSchema(t: ValidationT) {
+  return z.object({
+    lecture_id: z.uuid(t("lectures.invalidId")),
+    entity_id: z.string().min(1, t("lectures.entityRequired")),
+    entity_type: ENTITY_TYPE,
+    sort_order: z.number().int().gte(0).optional(),
+  });
+}
 
-export const LectureDetachSchema = z.object({
-  lecture_id: z.uuid("Некорректный id лекции"),
-  entity_id: z.string().min(1),
-  entity_type: ENTITY_TYPE,
-});
+export function makeLectureDetachSchema(t: ValidationT) {
+  return z.object({
+    lecture_id: z.uuid(t("lectures.invalidId")),
+    entity_id: z.string().min(1),
+    entity_type: ENTITY_TYPE,
+  });
+}
 
-export const LectureReorderSchema = z.object({
-  lecture_id: z.uuid("Некорректный id лекции"),
-  entity_id: z.string().min(1),
-  entity_type: ENTITY_TYPE,
-  sort_order: z.number().int().gte(0),
-});
+export function makeLectureReorderSchema(t: ValidationT) {
+  return z.object({
+    lecture_id: z.uuid(t("lectures.invalidId")),
+    entity_id: z.string().min(1),
+    entity_type: ENTITY_TYPE,
+    sort_order: z.number().int().gte(0),
+  });
+}
 
-export const LectureSuggestSchema = z.object({
-  blocks: z
-    .array(
-      z.object({
-        block_id: z.string().min(1),
-        text: z.string().max(50000),
-      }),
-    )
-    .min(1, "Нужен хотя бы один блок")
-    .max(500),
-});
+export function makeLectureSuggestSchema(t: ValidationT) {
+  return z
+    .object({
+      blocks: z
+        .array(
+          z.object({
+            block_id: z.string().min(1),
+            text: z.string().max(50000),
+          }),
+        )
+        .min(1, t("lectures.blocksMin"))
+        .max(500),
+    });
+}
 
-export type LectureCreateInput = z.infer<typeof LectureCreateSchema>;
-export type LectureUpdateInput = z.infer<typeof LectureUpdateSchema>;
-export type LectureVisibilityInput = z.infer<typeof LectureVisibilitySchema>;
-export type LectureIdInput = z.infer<typeof LectureIdSchema>;
-export type LectureCoverInput = z.infer<typeof LectureCoverSchema>;
-export type LectureCoverClearInput = z.infer<typeof LectureCoverClearSchema>;
-export type LectureAttachInput = z.infer<typeof LectureAttachSchema>;
-export type LectureDetachInput = z.infer<typeof LectureDetachSchema>;
-export type LectureReorderInput = z.infer<typeof LectureReorderSchema>;
-export type LectureSuggestInput = z.infer<typeof LectureSuggestSchema>;
+export type LectureCreateInput = z.infer<ReturnType<typeof makeLectureCreateSchema>>;
+export type LectureUpdateInput = z.infer<ReturnType<typeof makeLectureUpdateSchema>>;
+export type LectureVisibilityInput = z.infer<ReturnType<typeof makeLectureVisibilitySchema>>;
+export type LectureIdInput = z.infer<ReturnType<typeof makeLectureIdSchema>>;
+export type LectureCoverInput = z.infer<ReturnType<typeof makeLectureCoverSchema>>;
+export type LectureCoverClearInput = z.infer<ReturnType<typeof makeLectureCoverClearSchema>>;
+export type LectureAttachInput = z.infer<ReturnType<typeof makeLectureAttachSchema>>;
+export type LectureDetachInput = z.infer<ReturnType<typeof makeLectureDetachSchema>>;
+export type LectureReorderInput = z.infer<ReturnType<typeof makeLectureReorderSchema>>;
+export type LectureSuggestInput = z.infer<ReturnType<typeof makeLectureSuggestSchema>>;

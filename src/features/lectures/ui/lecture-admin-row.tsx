@@ -1,5 +1,6 @@
 // src/features/lectures/ui/lecture-admin-row.tsx
 import { RouterLink, Td, Tr } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Lecture } from "../types";
 
@@ -11,12 +12,14 @@ interface Props {
   canDelete: boolean;
 }
 
-export function LectureAdminRow({ lecture, canEdit, canDelete }: Props) {
+export async function LectureAdminRow({ lecture, canEdit, canDelete }: Props) {
+  const tL = await getT("lectures");
+
   return (
     <Tr>
       <Td className="font-medium">{lecture.title}</Td>
       <Td className="text-(--color-fg-muted)">{lecture.date}</Td>
-      <Td>{lecture.visibility === "public" ? "Публичная" : "Приватная"}</Td>
+      <Td>{lecture.visibility === "public" ? tL("visibilityPublic") : tL("visibilityPrivate")}</Td>
       <Td>
         <div className="flex gap-2">
           {canEdit && (
@@ -24,7 +27,7 @@ export function LectureAdminRow({ lecture, canEdit, canDelete }: Props) {
               href={`/admin/lectures/${lecture.id}/edit`}
               className="text-sm underline hover:no-underline"
             >
-              Редактировать
+              {tL("editLink")}
             </RouterLink>
           )}
           {canDelete && <LectureDeleteButton lectureId={lecture.id} />}

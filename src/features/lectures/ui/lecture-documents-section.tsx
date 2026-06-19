@@ -1,4 +1,5 @@
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import { getLectureDocuments } from "../api";
 
@@ -13,11 +14,12 @@ interface Props {
  * собственной странице.
  */
 export async function LectureDocumentsSection({ lectureId }: Props) {
+  const tL = await getT("lectures");
   const docs = await getLectureDocuments(lectureId);
   if (docs.length === 0) return null;
   return (
-    <section className="flex flex-col gap-2" aria-label="Документы лекции">
-      <h2 className="text-lg font-semibold">Документы лекции</h2>
+    <section className="flex flex-col gap-2" aria-label={tL("documentsSectionLabel")}>
+      <h2 className="text-lg font-semibold">{tL("documentsSectionHeading")}</h2>
       <ul className="flex flex-col gap-1">
         {docs.map((d) => (
           <li key={d.id}>

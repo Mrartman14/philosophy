@@ -1,4 +1,5 @@
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import { getLectureMedia } from "../api";
 
@@ -13,11 +14,12 @@ interface Props {
  * через страницу, рендер плеера — слайс media на своей странице).
  */
 export async function LectureMediaSection({ lectureId }: Props) {
+  const tL = await getT("lectures");
   const items = await getLectureMedia(lectureId);
   if (items.length === 0) return null;
   return (
-    <section className="flex flex-col gap-2" aria-label="Медиа лекции">
-      <h2 className="text-lg font-semibold">Медиа лекции</h2>
+    <section className="flex flex-col gap-2" aria-label={tL("mediaSectionLabel")}>
+      <h2 className="text-lg font-semibold">{tL("mediaSectionHeading")}</h2>
       <ul className="flex flex-col gap-1">
         {items.map((m) => (
           <li key={m.id}>

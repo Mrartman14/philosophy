@@ -48,6 +48,17 @@ vi.mock("./api", () => ({
 // reference outer vars). Access via the imported module binding below.
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
 
+// getT is called per-action to obtain the validation translator for schema factories.
+// In tests, we return a pass-through translator (key → key) to avoid next-intl request scope.
+// resolveErrorMessage is kept real (uses DEFAULT_LOCALE fallback outside request scope).
+vi.mock("@/i18n", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/i18n")>();
+  return {
+    ...actual,
+    getT: () => Promise.resolve((key: string) => key),
+  };
+});
+
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {
     const err = new Error("NEXT_REDIRECT") as Error & { digest: string };

@@ -62,6 +62,13 @@ const errors = {
   CANVAS_VALIDATION_ERROR:
     "Graph failed validation (nodes/edges/entity references).",
 
+  // --- lectures slice: domain codes ---
+  UPLOAD_NOT_FOUND: "Uploaded image not found. Please try again.",
+  ALREADY_ATTACHED: "This entity is already attached to the lecture.",
+  INVALID_ENTITY_TYPE: "Invalid entity type.",
+  NOT_FOUND: "Lecture not found.",
+  LECTURE_NOT_FOUND: "Lecture not found.",
+
   // --- api-error: rethrowApiError fallbacks ---
   serverError: "Server error",
   accountRestricted: "Account restricted.",

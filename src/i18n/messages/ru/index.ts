@@ -11,6 +11,7 @@ import canvas from "./canvas";
 import comments from "./comments";
 import errors from "./errors";
 import forms from "./forms";
+import lectures from "./lectures";
 import metadata from "./metadata";
 import notifications from "./notifications";
 import preferences from "./preferences";
@@ -22,6 +23,7 @@ const ru = {
   comments,
   errors,
   forms,
+  lectures,
   metadata,
   notifications,
   preferences,
