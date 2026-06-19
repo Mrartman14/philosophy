@@ -2,6 +2,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { CONTRASTS, DENSITIES, FONTS, THEMES, TEXT_SIZES } from "@/styles/tokens/enums";
+
 import { READING_MODES } from "./types";
 
 /** PATCH /api/me/preferences — единственное поле reading_mode. */
@@ -55,7 +57,17 @@ export const PushSendSchema = z.object({
     .optional(),
 });
 
+/** Валидация payload appearance при сохранении (snake_case, используется в Task 21). */
+export const AppearancePrefsSchema = z.object({
+  theme: z.enum(THEMES),
+  contrast: z.enum(CONTRASTS),
+  density: z.enum(DENSITIES),
+  font: z.enum(FONTS),
+  text_size: z.enum(TEXT_SIZES),
+});
+
 export type PreferencesUpdateInput = z.infer<typeof PreferencesUpdateSchema>;
 export type PushSubscribeInput = z.infer<typeof PushSubscribeSchema>;
 export type PushUnsubscribeInput = z.infer<typeof PushUnsubscribeSchema>;
 export type PushSendInput = z.infer<typeof PushSendSchema>;
+export type AppearancePrefsInput = z.infer<typeof AppearancePrefsSchema>;

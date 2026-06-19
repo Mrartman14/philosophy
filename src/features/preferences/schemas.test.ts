@@ -2,6 +2,7 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  AppearancePrefsSchema,
   PreferencesUpdateSchema,
   PushSendSchema,
   PushSubscribeSchema,
@@ -125,6 +126,31 @@ describe("PushSendSchema", () => {
   it("отклоняет body длиннее 1000", () => {
     expect(
       PushSendSchema.safeParse({ title: "t", body: "a".repeat(1001) }).success,
+    ).toBe(false);
+  });
+});
+
+describe("AppearancePrefsSchema", () => {
+  it("accepts valid snake_case appearance", () => {
+    expect(
+      AppearancePrefsSchema.safeParse({
+        theme: "dark",
+        contrast: "high",
+        density: "compact",
+        font: "serif",
+        text_size: "lg",
+      }).success,
+    ).toBe(true);
+  });
+  it("rejects unknown enum", () => {
+    expect(
+      AppearancePrefsSchema.safeParse({
+        theme: "neon",
+        contrast: "normal",
+        density: "comfortable",
+        font: "sans",
+        text_size: "md",
+      }).success,
     ).toBe(false);
   });
 });
