@@ -1,6 +1,6 @@
 // src/features/notifications/client.ts
-// Client-safe entry: чистый рендерер + типы. НЕ реэкспортит api/actions/permissions.
-export { renderNotification, type RenderedNotification } from "./notification-content";
+// Client-safe entry: дескриптор + типы. НЕ реэкспортит api/actions/permissions.
+export { describeNotification, type NotificationDescriptor } from "./notification-content";
 export type {
   AppNotification,
   NotificationCounts,

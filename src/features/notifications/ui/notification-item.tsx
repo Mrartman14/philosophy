@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useT } from "@/i18n/client";
+
 import { markRead } from "../actions";
-import { renderNotification } from "../notification-content";
+import { describeNotification } from "../notification-content";
 import type { AppNotification } from "../types";
 
 interface NotificationItemProps {
@@ -15,8 +17,21 @@ interface NotificationItemProps {
 
 export function NotificationItem({ notification, onNavigate }: NotificationItemProps) {
   const router = useRouter();
+  const t = useT("notifications");
   const [read, setRead] = useState(notification.readAt !== null);
-  const { text, href } = renderNotification(notification);
+  const d = describeNotification(notification);
+  const href = d.href;
+
+  let text: string;
+  if (d.kind === "raw") {
+    const base = d.text || t("fallback");
+    text = d.count > 1 ? `${base} (${d.count})` : base;
+  } else if (d.kind === "commentCreated") {
+    text = t("commentCreated", { count: d.count });
+  } else {
+    // documentUpdated | commentReply | annotationCreated | mention
+    text = t(d.kind);
+  }
 
   function handleClick() {
     if (!read) {

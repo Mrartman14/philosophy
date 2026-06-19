@@ -1,12 +1,15 @@
 // src/features/notifications/notification-content.ts
-// Чистый client-safe рендерер уведомлений. Без server-зависимостей.
+// Чистый client-safe дескриптор уведомления. Текст рендерится в компоненте через @/i18n.
 import type { AppNotification } from "./types";
 
-export interface RenderedNotification {
-  text: string;
-  /** Куда вести по клику; null — некуда (рендерим без ссылки). */
-  href: string | null;
-}
+/** Дискриминированный дескриптор: какой ключ каталога рендерить + куда вести. */
+export type NotificationDescriptor =
+  | { kind: "documentUpdated"; href: string | null }
+  | { kind: "commentCreated"; count: number; href: string | null }
+  | { kind: "commentReply"; href: string | null }
+  | { kind: "annotationCreated"; href: string | null }
+  | { kind: "mention"; href: string | null }
+  | { kind: "raw"; text: string; count: number; href: string | null };
 
 /** Fallback-ссылка на сущность по target_type. */
 function entityHref(targetType: string | null, targetId: string | null): string | null {
@@ -24,26 +27,23 @@ function entityHref(targetType: string | null, targetId: string | null): string 
 }
 
 /**
- * Provisional-реестр известных типов → текст.
- * TODO(backend-ask): сверить значения `type` с philosophy-api; пока значения —
- * правдоподобная заглушка, неизвестные типы деградируют через fallback ниже.
+ * Маппинг type → дескриптор. Тексты НЕ здесь (они в каталоге @/i18n).
+ * TODO(backend-ask): сверить значения `type` с philosophy-api.
  */
-const TEMPLATES: Record<string, (n: AppNotification) => string> = {
-  "document.updated": () => "Документ, на который вы подписаны, обновлён",
-  "comment.created": (n) =>
-    n.groupCount > 1 ? `Новые комментарии (${n.groupCount})` : "Новый комментарий",
-  "comment.reply": () => "Ответ на ваш комментарий",
-  "annotation.created": () => "Новая аннотация",
-  mention: () => "Вас упомянули",
-};
-
-export function renderNotification(n: AppNotification): RenderedNotification {
-  const template = TEMPLATES[n.type];
-  if (template) {
-    return { text: template(n), href: entityHref(n.targetType, n.targetId) };
+export function describeNotification(n: AppNotification): NotificationDescriptor {
+  const href = entityHref(n.targetType, n.targetId);
+  switch (n.type) {
+    case "document.updated":
+      return { kind: "documentUpdated", href };
+    case "comment.created":
+      return { kind: "commentCreated", count: n.groupCount, href };
+    case "comment.reply":
+      return { kind: "commentReply", href };
+    case "annotation.created":
+      return { kind: "annotationCreated", href };
+    case "mention":
+      return { kind: "mention", href };
+    default:
+      return { kind: "raw", text: n.reason, count: n.groupCount, href };
   }
-  // fallback: текст из reason (или нейтральный) + суффикс группировки.
-  const base = n.reason || "Новое уведомление";
-  const text = n.groupCount > 1 ? `${base} (${n.groupCount})` : base;
-  return { text, href: entityHref(n.targetType, n.targetId) };
 }
