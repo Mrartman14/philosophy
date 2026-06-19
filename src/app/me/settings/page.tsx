@@ -1,4 +1,6 @@
 // src/app/me/settings/page.tsx
+import type { Metadata } from "next";
+
 import { RouterLink } from "@/components/ui";
 import { LogoutAllForm, LogoutForm } from "@/features/auth";
 import { SubscriptionsSection } from "@/features/notifications";
@@ -15,13 +17,16 @@ import {
   canManageOwnHistory,
   getHistorySettings,
 } from "@/features/statistics";
-import { getStoredLocale } from "@/i18n";
+import { getStoredLocale, getT } from "@/i18n";
 import { requireUserOrRedirect } from "@/utils/me";
 
 import { AppearanceSettings } from "./appearance/appearance-settings";
 import { LocaleSettings } from "./locale-settings";
 
-export const metadata = { title: "Настройки" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("metadata");
+  return { title: t("settingsTitle") };
+}
 
 export default async function SettingsPage() {
   const me = await requireUserOrRedirect("/me/settings");

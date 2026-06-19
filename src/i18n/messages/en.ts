@@ -2,6 +2,12 @@
 import type { Messages } from "./ru";
 
 const en = {
+  metadata: {
+    appTitle: "Philosophy Primer",
+    appDescription: "Archive of the Philosophy Primer course sessions",
+    appShortName: "PHIL",
+    settingsTitle: "Settings",
+  },
   notifications: {
     documentUpdated: "A document you follow was updated",
     commentCreated: "{count, plural, one{# new comment} other{# new comments}}",

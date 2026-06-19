@@ -2,6 +2,12 @@
 // Источник истины формы каталога (Messages = typeof ru). Подмножество ICU:
 // только {var} и {count, plural, …}. Никаких select/rich-тегов.
 const ru = {
+  metadata: {
+    appTitle: "Философия-ликбез",
+    appDescription: "Архив занятий курса Философия-ликбез",
+    appShortName: "ФЛБЗ",
+    settingsTitle: "Настройки",
+  },
   notifications: {
     documentUpdated: "Документ, на который вы подписаны, обновлён",
     commentCreated:

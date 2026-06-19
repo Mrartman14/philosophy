@@ -13,7 +13,7 @@ import { StatusBanner } from "@/components/permission/status-banner";
 import { ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
-import { getLocale, getMessages } from "@/i18n";
+import { getLocale, getMessages, getT } from "@/i18n";
 import { I18nProvider } from "@/i18n/client";
 import { WebVitalsReporter } from "@/services/observability/web-vitals-reporter";
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
@@ -38,16 +38,19 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin", "cyrillic"],
 });
 
-export const metadata: Metadata = {
-  title: "Философия-ликбез",
-  description: "Архив занятий курса Философия-ликбез",
-  manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    title: "ФЛБЗ",
-    capable: true,
-    statusBarStyle: "black-translucent",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("metadata");
+  return {
+    title: t("appTitle"),
+    description: t("appDescription"),
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+      title: t("appShortName"),
+      capable: true,
+      statusBarStyle: "black-translucent",
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
