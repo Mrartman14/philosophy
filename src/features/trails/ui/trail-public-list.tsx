@@ -1,5 +1,6 @@
 // src/features/trails/ui/trail-public-list.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Trail } from "../types";
 
@@ -7,9 +8,11 @@ interface Props {
   trails: Trail[];
 }
 
-export function TrailPublicList({ trails }: Props) {
+export async function TrailPublicList({ trails }: Props) {
+  const t = await getT("trails");
+
   if (trails.length === 0) {
-    return <p className="text-sm text-(--color-fg-muted)">Маршрутов пока нет.</p>;
+    return <p className="text-sm text-(--color-fg-muted)">{t("publicListEmpty")}</p>;
   }
   return (
     <ul className="flex flex-col gap-3">
@@ -20,7 +23,7 @@ export function TrailPublicList({ trails }: Props) {
         >
           <RouterLink href={`/trails/${trail.id}`} className="block">
             <span className="text-base font-semibold hover:underline">
-              {trail.title || "Без названия"}
+              {trail.title || t("publicListUntitled")}
             </span>
             {trail.description && (
               <span className="mt-1 block text-sm text-(--color-fg-muted) line-clamp-2 whitespace-pre-line">

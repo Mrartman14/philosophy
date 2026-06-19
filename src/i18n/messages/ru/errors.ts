@@ -100,6 +100,11 @@ const errors = {
   // Слайс lectures маппит NOT_FOUND → LECTURE_NOT_FOUND в своей ERRORS-карте.
   LECTURE_NOT_FOUND: "Лекция не найдена.",
 
+  // --- trails slice: доменные коды ---
+  TRAIL_PUBLIC_IMMUTABLE: "Публичный маршрут нельзя сделать приватным — только удалить.",
+  TRAIL_DUPLICATE_DOCUMENT: "Документ добавлен в маршрут дважды. Уберите дубликат.",
+  TRAIL_DOCUMENT_NOT_FOUND: "Один из документов не найден. Обновите список и повторите.",
+
   // --- api-error: фоллбеки rethrowApiError (когда у бека нет своего текста) ---
   serverError: "Ошибка сервера",
   accountRestricted: "Аккаунт ограничен.",

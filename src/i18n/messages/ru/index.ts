@@ -17,6 +17,7 @@ import lectures from "./lectures";
 import metadata from "./metadata";
 import notifications from "./notifications";
 import preferences from "./preferences";
+import trails from "./trails";
 import validation from "./validation";
 
 const ru = {
@@ -31,6 +32,7 @@ const ru = {
   metadata,
   notifications,
   preferences,
+  trails,
   validation,
 };
 

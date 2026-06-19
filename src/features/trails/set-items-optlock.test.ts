@@ -13,6 +13,12 @@ vi.mock("@/utils/me", () => ({
     Promise.resolve({ id: "u1", status: "active", role: "user", capabilities: [] }),
 }));
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ вместо текста.
+// Позволяет схемам-фабрикам работать без request-scope next-intl.
+vi.mock("@/i18n", async (importOriginal) => {
+  const orig = await importOriginal<typeof import("@/i18n")>();
+  return { ...orig, getT: () => Promise.resolve((key: string) => key) };
+});
 
 // импорт ПОСЛЕ vi.mock (hoisted)
 import { setTrailItems } from "./actions";

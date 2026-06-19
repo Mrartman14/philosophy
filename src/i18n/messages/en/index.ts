@@ -14,6 +14,7 @@ import lectures from "./lectures";
 import metadata from "./metadata";
 import notifications from "./notifications";
 import preferences from "./preferences";
+import trails from "./trails";
 import validation from "./validation";
 
 const en = {
@@ -28,6 +29,7 @@ const en = {
   metadata,
   notifications,
   preferences,
+  trails,
   validation,
 } satisfies Messages;
 

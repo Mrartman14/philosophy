@@ -1,5 +1,6 @@
 // src/features/trails/ui/trail-detail.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { TrailWithItems, TrailDocumentSummary } from "../types";
 
@@ -9,7 +10,9 @@ interface Props {
   documents: TrailDocumentSummary[];
 }
 
-export function TrailDetail({ trail, documents }: Props) {
+export async function TrailDetail({ trail, documents }: Props) {
+  const t = await getT("trails");
+
   return (
     <div className="flex flex-col gap-6">
       {trail.description && (
@@ -19,9 +22,9 @@ export function TrailDetail({ trail, documents }: Props) {
       )}
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Документы маршрута</h2>
+        <h2 className="text-lg font-semibold">{t("detailDocumentsHeading")}</h2>
         {documents.length === 0 ? (
-          <p className="text-sm text-(--color-fg-muted)">В маршруте пока нет документов.</p>
+          <p className="text-sm text-(--color-fg-muted)">{t("detailDocumentsEmpty")}</p>
         ) : (
           <ol className="flex flex-col gap-1">
             {documents.map((doc, index) => (

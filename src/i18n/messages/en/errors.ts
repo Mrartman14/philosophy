@@ -96,6 +96,11 @@ const errors = {
   // The lectures slice maps NOT_FOUND → LECTURE_NOT_FOUND in its ERRORS map.
   LECTURE_NOT_FOUND: "Lecture not found.",
 
+  // --- trails slice: domain codes ---
+  TRAIL_PUBLIC_IMMUTABLE: "A public trail cannot be made private — you can only delete it.",
+  TRAIL_DUPLICATE_DOCUMENT: "A document was added to the trail twice. Remove the duplicate.",
+  TRAIL_DOCUMENT_NOT_FOUND: "One of the documents was not found. Update the list and try again.",
+
   // --- api-error: rethrowApiError fallbacks ---
   serverError: "Server error",
   accountRestricted: "Account restricted.",

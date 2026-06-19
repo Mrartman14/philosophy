@@ -99,6 +99,20 @@ const validation = {
     invalidId: "Invalid banner ID",
   },
 
+  // --- trails: TrailCreateSchema / TrailMetaSchema / TrailItemsSchema / TrailIdSchema ---
+  trails: {
+    titleRequired: "Enter a title",
+    titleMax: "Up to 200 characters",
+    descriptionMax: "Up to 2000 characters",
+    invalidId: "Invalid trail ID",
+    documentIdsRequired: "Document list is not set",
+    documentIdsBadJson: "Invalid JSON in document list",
+    documentIdsNotArray: "Document list must be an array",
+    documentItemNotString: "List item is not a string",
+    documentItemInvalidId: "Invalid document ID",
+    documentItemDuplicate: "Document added twice",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

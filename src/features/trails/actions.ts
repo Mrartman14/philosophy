@@ -3,13 +3,15 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import {
   rethrowApiError,
   type ApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
+  ApiMessageError,
   createAction,
   createFormAction,
   parseFormData,
@@ -22,18 +24,17 @@ import { revalidateEntity } from "@/utils/revalidate";
 
 import { canCreateTrail, canListAdminTrails } from "./permissions";
 import {
-  TrailCreateSchema,
-  TrailMetaSchema,
+  makeTrailCreateSchema,
+  makeTrailMetaSchema,
   TrailVisibilitySchema,
-  TrailItemsSchema,
+  makeTrailItemsSchema,
   TrailIdSchema,
 } from "./schemas";
 
 
-/** Доменные коды маршрутов → русский текст. */
-const ERRORS: ApiErrorMessages = {
-  PUBLIC_IMMUTABLE:
-    "Публичный маршрут нельзя сделать приватным — только удалить.",
+/** Доменные коды маршрутов → ключ каталога errors. */
+const ERRORS: ApiErrorMessageKeys = {
+  PUBLIC_IMMUTABLE: "TRAIL_PUBLIC_IMMUTABLE",
 };
 
 /** Локальная обёртка: SetItems-ошибки приходят без uppercase-кода (строки
@@ -42,10 +43,10 @@ const ERRORS: ApiErrorMessages = {
 function rethrowTrailApiError(err: ApiError | undefined): never {
   const msg = err?.error ?? "";
   if (msg.startsWith("duplicate document_id")) {
-    throw new Error("Документ добавлен в маршрут дважды. Уберите дубликат.");
+    throw new ApiMessageError("TRAIL_DUPLICATE_DOCUMENT");
   }
   if (msg.startsWith("document not found")) {
-    throw new Error("Один из документов не найден. Обновите список и повторите.");
+    throw new ApiMessageError("TRAIL_DOCUMENT_NOT_FOUND");
   }
   rethrowApiError(err, ERRORS);
 }
@@ -54,7 +55,8 @@ function rethrowTrailApiError(err: ApiError | undefined): never {
 export const createTrail = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateTrail);
-  const input = parseFormData(TrailCreateSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeTrailCreateSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/trails", {
     body: {
@@ -73,7 +75,8 @@ export const createTrail = createFormAction(async (formData, ctx) => {
 export const updateTrailMeta = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(TrailMetaSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeTrailMetaSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/trails/{id}", {
     params: { path: { id: input.id }, header: ifMatchHeader(formData, "маршрута") },
@@ -90,7 +93,8 @@ export const updateTrailMeta = createFormAction(async (formData, ctx) => {
 export const setTrailItems = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireActive(me);
-  const input = parseFormData(TrailItemsSchema, formData);
+  const t = await getT("validation");
+  const input = parseFormData(makeTrailItemsSchema(t), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/trails/{id}/items", {
     params: { path: { id: input.id }, header: ifMatchHeader(formData, "маршрута") },

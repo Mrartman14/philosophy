@@ -1,13 +1,22 @@
 // src/features/trails/schemas.test.ts
 import { describe, expect, it } from "vitest";
 
+import type { NamespaceT } from "@/i18n";
+
 import {
-  TrailCreateSchema,
-  TrailMetaSchema,
+  makeTrailCreateSchema,
+  makeTrailMetaSchema,
   TrailVisibilitySchema,
-  TrailItemsSchema,
+  makeTrailItemsSchema,
   TrailIdSchema,
 } from "./schemas";
+
+// Stub translator: returns the key as-is, satisfies NamespaceT<"validation"> shape.
+const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
+
+const TrailCreateSchema = makeTrailCreateSchema(t);
+const TrailMetaSchema = makeTrailMetaSchema(t);
+const TrailItemsSchema = makeTrailItemsSchema(t);
 
 const UUID = "550e8400-e29b-41d4-a716-446655440000";
 const UUID2 = "550e8400-e29b-41d4-a716-446655440001";

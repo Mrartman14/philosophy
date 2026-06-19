@@ -102,6 +102,20 @@ const validation = {
     invalidId: "Некорректный id баннера",
   },
 
+  // --- trails: TrailCreateSchema / TrailMetaSchema / TrailItemsSchema / TrailIdSchema ---
+  trails: {
+    titleRequired: "Введите название",
+    titleMax: "До 200 символов",
+    descriptionMax: "До 2000 символов",
+    invalidId: "Некорректный id маршрута",
+    documentIdsRequired: "Список не задан",
+    documentIdsBadJson: "Битый JSON в списке документов",
+    documentIdsNotArray: "Список должен быть массивом",
+    documentItemNotString: "Элемент списка не строка",
+    documentItemInvalidId: "Некорректный id документа",
+    documentItemDuplicate: "Документ добавлен дважды",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

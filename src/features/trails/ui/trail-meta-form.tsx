@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { Form, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateTrailMeta } from "../actions";
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export function TrailMetaForm({ trail }: Props) {
+  const t = useT("trails");
+  const tErrors = useT("errors");
   const initial: ActionResult<Trail | null> = { success: true, data: null };
   const [state, action] = useActionState(updateTrailMeta, initial);
 
@@ -25,26 +28,28 @@ export function TrailMetaForm({ trail }: Props) {
       <input type="hidden" name="version" value={String(trail.version ?? "")} />
       <IdempotencyField result={state} />
 
-      <FormField name="title" label="Название" required>
+      <FormField name="title" label={t("metaTitleLabel")} required>
         <TextInput name="title" required maxLength={200} defaultValue={trail.title} />
       </FormField>
 
-      <FormField name="description" label="Описание">
+      <FormField name="description" label={t("metaDescriptionLabel")}>
         <Textarea name="description" maxLength={2000} rows={3} defaultValue={trail.description ?? ""} />
       </FormField>
 
       {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">У вас нет прав на редактирование маршрута.</p>
+        <p className="text-sm text-red-600">
+          {tErrors("forbiddenGeneric")}
+        </p>
       )}
       {!state.success && !state.code && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
       {state.success && state.data && (
-        <p className="text-sm text-green-600">Сохранено.</p>
+        <p className="text-sm text-green-600">{t("metaSaved")}</p>
       )}
 
       <div>
-        <SubmitButton>Сохранить</SubmitButton>
+        <SubmitButton>{t("metaSubmit")}</SubmitButton>
       </div>
     </Form>
   );

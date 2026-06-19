@@ -3,99 +3,113 @@ import "server-only";
 import { z } from "zod";
 
 import { VISIBILITY } from "@/api/enums";
+import type { NamespaceT } from "@/i18n";
 
-const TitleSchema = z
-  .string()
-  .trim()
-  .min(1, "Введите название")
-  .max(200, "До 200 символов");
-
-const DescriptionSchema = z
-  .string()
-  .max(2000, "До 2000 символов");
+type ValidationT = NamespaceT<"validation">;
 
 const VisibilityEnum = z.enum(VISIBILITY);
 
-const TrailIdField = z.uuid("Некорректный id маршрута");
+function makeTitleSchema(t: ValidationT) {
+  return z
+    .string()
+    .trim()
+    .min(1, t("trails.titleRequired"))
+    .max(200, t("trails.titleMax"));
+}
+
+function makeDescriptionSchema(t: ValidationT) {
+  return z.string().max(2000, t("trails.descriptionMax"));
+}
+
+function makeTrailIdField(t: ValidationT) {
+  return z.uuid(t("trails.invalidId"));
+}
 
 /**
  * Парсит JSON-строку document_ids из скрытого поля формы в массив uuid документов.
  * Пустой массив допустим (полная очистка содержимого). Дубликаты запрещены —
  * бек вернул бы 422 `duplicate document_id`, ловим заранее в UI.
  */
-const DocumentIdsJsonSchema = z
-  .string()
-  .min(1, "Список не задан")
-  .transform((s, ctx) => {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(s);
-    } catch {
-      ctx.addIssue({ code: "custom", message: "Битый JSON в списке документов" });
-      return z.NEVER;
-    }
-    if (!Array.isArray(parsed)) {
-      ctx.addIssue({ code: "custom", message: "Список должен быть массивом" });
-      return z.NEVER;
-    }
-    const ids = parsed as unknown[];
-    const out: string[] = [];
-    const seen = new Set<string>();
-    for (const item of ids) {
-      if (typeof item !== "string") {
-        ctx.addIssue({ code: "custom", message: "Элемент списка не строка" });
+function makeDocumentIdsJsonSchema(t: ValidationT) {
+  return z
+    .string()
+    .min(1, t("trails.documentIdsRequired"))
+    .transform((s, ctx) => {
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(s);
+      } catch {
+        ctx.addIssue({ code: "custom", message: t("trails.documentIdsBadJson") });
         return z.NEVER;
       }
-      // UUID v4 формат (как в остальных схемах слайса).
-      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item)) {
-        ctx.addIssue({ code: "custom", message: "Некорректный id документа" });
+      if (!Array.isArray(parsed)) {
+        ctx.addIssue({ code: "custom", message: t("trails.documentIdsNotArray") });
         return z.NEVER;
       }
-      if (seen.has(item)) {
-        ctx.addIssue({ code: "custom", message: "Документ добавлен дважды" });
-        return z.NEVER;
+      const ids = parsed as unknown[];
+      const out: string[] = [];
+      const seen = new Set<string>();
+      for (const item of ids) {
+        if (typeof item !== "string") {
+          ctx.addIssue({ code: "custom", message: t("trails.documentItemNotString") });
+          return z.NEVER;
+        }
+        // UUID v4 формат (как в остальных схемах слайса).
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item)) {
+          ctx.addIssue({ code: "custom", message: t("trails.documentItemInvalidId") });
+          return z.NEVER;
+        }
+        if (seen.has(item)) {
+          ctx.addIssue({ code: "custom", message: t("trails.documentItemDuplicate") });
+          return z.NEVER;
+        }
+        seen.add(item);
+        out.push(item);
       }
-      seen.add(item);
-      out.push(item);
-    }
-    return out;
-  });
+      return out;
+    });
+}
 
 /** POST /api/trails. visibility/description опциональны. */
-export const TrailCreateSchema = z.object({
-  title: TitleSchema,
-  description: DescriptionSchema.optional(),
-  visibility: VisibilityEnum.optional(),
-});
+export function makeTrailCreateSchema(t: ValidationT) {
+  return z.object({
+    title: makeTitleSchema(t),
+    description: makeDescriptionSchema(t).optional(),
+    visibility: VisibilityEnum.optional(),
+  });
+}
 
 /** PUT /api/trails/{id} (метаданные: title + description). */
-export const TrailMetaSchema = z.object({
-  id: TrailIdField,
-  title: TitleSchema,
-  // Пустая строка допустима — очищает описание. Поэтому без .min(1).
-  description: DescriptionSchema,
-});
+export function makeTrailMetaSchema(t: ValidationT) {
+  return z.object({
+    id: makeTrailIdField(t),
+    title: makeTitleSchema(t),
+    // Пустая строка допустима — очищает описание. Поэтому без .min(1).
+    description: makeDescriptionSchema(t),
+  });
+}
 
 /** PATCH /api/trails/{id}/visibility. UI предлагает только private→public. */
 export const TrailVisibilitySchema = z.object({
-  id: TrailIdField,
+  id: z.uuid(),
   visibility: VisibilityEnum,
 });
 
 /** PUT /api/trails/{id}/items. document_ids — JSON-массив uuid в порядке. */
-export const TrailItemsSchema = z.object({
-  id: TrailIdField,
-  document_ids: DocumentIdsJsonSchema,
-});
+export function makeTrailItemsSchema(t: ValidationT) {
+  return z.object({
+    id: makeTrailIdField(t),
+    document_ids: makeDocumentIdsJsonSchema(t),
+  });
+}
 
 /** Для delete: только id. */
 export const TrailIdSchema = z.object({
-  id: TrailIdField,
+  id: z.uuid(),
 });
 
-export type TrailCreateInput = z.infer<typeof TrailCreateSchema>;
-export type TrailMetaInput = z.infer<typeof TrailMetaSchema>;
+export type TrailCreateInput = z.infer<ReturnType<typeof makeTrailCreateSchema>>;
+export type TrailMetaInput = z.infer<ReturnType<typeof makeTrailMetaSchema>>;
 export type TrailVisibilityInput = z.infer<typeof TrailVisibilitySchema>;
-export type TrailItemsInput = z.infer<typeof TrailItemsSchema>;
-export { DocumentIdsJsonSchema };
+export type TrailItemsInput = z.infer<ReturnType<typeof makeTrailItemsSchema>>;
 export type TrailIdInput = z.infer<typeof TrailIdSchema>;

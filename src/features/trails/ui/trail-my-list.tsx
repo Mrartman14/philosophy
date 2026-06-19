@@ -1,5 +1,6 @@
 // src/features/trails/ui/trail-my-list.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Trail } from "../types";
 
@@ -7,15 +8,12 @@ interface Props {
   trails: Trail[];
 }
 
-const visibilityLabel: Record<string, string> = {
-  private: "приватный",
-  public: "публичный",
-};
+export async function TrailMyList({ trails }: Props) {
+  const t = await getT("trails");
 
-export function TrailMyList({ trails }: Props) {
   if (trails.length === 0) {
     return (
-      <p className="text-sm text-(--color-fg-muted)">У вас пока нет маршрутов.</p>
+      <p className="text-sm text-(--color-fg-muted)">{t("myListEmpty")}</p>
     );
   }
   return (
@@ -23,10 +21,10 @@ export function TrailMyList({ trails }: Props) {
       {trails.map((trail) => (
         <li key={trail.id} className="flex items-center justify-between gap-2 py-2">
           <RouterLink href={`/trails/${trail.id}`} className="text-sm hover:underline">
-            {trail.title || "Без названия"}
+            {trail.title || t("myListUntitled")}
           </RouterLink>
           <span className="text-xs text-(--color-fg-muted)">
-            {visibilityLabel[trail.visibility ?? "private"] ?? trail.visibility}
+            {trail.visibility === "private" ? t("visibilityPrivate") : t("visibilityPublic")}
           </span>
         </li>
       ))}

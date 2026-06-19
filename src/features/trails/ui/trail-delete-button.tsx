@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteTrail, adminDeleteTrail } from "../actions";
@@ -22,23 +23,28 @@ export function TrailDeleteButton({
   id,
   redirectTo = "/trails/my",
   admin = false,
-  label = "Удалить",
+  label,
 }: Props) {
   const router = useRouter();
+  const t = useT("trails");
   const toast = useToast();
   const [, startTransition] = useTransition();
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{label}</Button>}
-      title="Удалить маршрут?"
-      description="Действие необратимо. Лекции в маршруте удалены не будут — только сам маршрут."
+      trigger={<Button variant="danger">{label ?? t("deleteLabel")}</Button>}
+      title={t("deleteDialogTitle")}
+      description={t("deleteDialogDescription")}
       destructive
-      confirmLabel="Удалить"
+      confirmLabel={t("deleteDialogConfirm")}
       onConfirm={async () => {
         const result = admin ? await adminDeleteTrail(id) : await deleteTrail(id);
         if (!result.success) {
-          toastActionError(toast, result, { action: "удаление маршрута" });
+          toastActionError(toast, result, {
+            action: t("deleteAction"),
+            forbiddenTitle: t("deleteForbiddenTitle"),
+            failureTitle: t("deleteFailureTitle"),
+          });
           return;
         }
         startTransition(() => { router.push(redirectTo); });

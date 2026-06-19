@@ -7,6 +7,7 @@ import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker"
 import { Button, IdempotencyField, SubmitButton, Form, useToast } from "@/components/ui";
 // DocumentPicker — client-компонент из @/components (НЕ cross-feature). В index.ts
 // ast-editor он не реэкспортнут, поэтому импортируем напрямую.
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { setTrailItems } from "../actions";
@@ -24,6 +25,8 @@ interface Props {
 
 export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props) {
   const router = useRouter();
+  const t = useT("trails");
+  const tErrors = useT("errors");
   const toast = useToast();
   const [items, setItems] = useState<TrailDocumentSummary[]>(initialItems);
   const [picking, setPicking] = useState(false);
@@ -32,21 +35,21 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
   // После успешного сохранения — рефреш страницы (порядок/состав на беке).
   useEffect(() => {
     if (state.success && state.data) {
-      toast.add({ title: "Сохранено", description: "Содержимое маршрута обновлено." });
+      toast.add({ title: t("itemsSavedTitle"), description: t("itemsSavedDescription") });
       router.refresh();
     }
-  }, [state, router, toast]);
+  }, [state, router, toast, t]);
 
   useEffect(() => {
     if (!state.success && !state.code) {
-      toast.add({ title: "Ошибка", description: state.error });
+      toast.add({ title: t("itemsErrorTitle"), description: state.error });
     }
-  }, [state, toast]);
+  }, [state, toast, t]);
 
   function addDocument(id: string, filename: string) {
     setPicking(false);
     if (items.some((it) => it.id === id)) {
-      toast.add({ title: "Уже добавлен", description: "Этот документ уже в маршруте." });
+      toast.add({ title: t("itemsAlreadyAddedTitle"), description: t("itemsAlreadyAddedDescription") });
       return;
     }
     setItems((prev) => [...prev, { id, filename }]);
@@ -72,10 +75,10 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
 
   return (
     <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
-      <h2 className="text-lg font-semibold">Содержимое маршрута</h2>
+      <h2 className="text-lg font-semibold">{t("itemsHeading")}</h2>
 
       {items.length === 0 ? (
-        <p className="text-sm text-(--color-fg-muted)">Маршрут пуст. Добавьте документы.</p>
+        <p className="text-sm text-(--color-fg-muted)">{t("itemsEmpty")}</p>
       ) : (
         <ol className="flex flex-col gap-1">
           {items.map((item, index) => (
@@ -92,7 +95,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                   variant="ghost"
                   size="sm"
                   disabled={index === 0}
-                  aria-label="Вверх"
+                  aria-label={t("itemsMoveUp")}
                   onClick={() => { move(index, -1); }}
                 >
                   ↑
@@ -102,7 +105,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                   variant="ghost"
                   size="sm"
                   disabled={index === items.length - 1}
-                  aria-label="Вниз"
+                  aria-label={t("itemsMoveDown")}
                   onClick={() => { move(index, 1); }}
                 >
                   ↓
@@ -111,7 +114,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                   type="button"
                   variant="danger"
                   size="sm"
-                  aria-label="Убрать"
+                  aria-label={t("itemsRemove")}
                   onClick={() => { removeAt(index); }}
                 >
                   ✕
@@ -126,12 +129,12 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
         <div className="rounded border border-(--color-border) p-2">
           <DocumentPicker onSelect={addDocument} />
           <Button type="button" variant="ghost" size="sm" onClick={() => { setPicking(false); }}>
-            Отмена
+            {t("itemsPickerCancel")}
           </Button>
         </div>
       ) : (
         <Button type="button" variant="secondary" size="sm" onClick={() => { setPicking(true); }}>
-          + Добавить документ
+          {t("itemsAddDocument")}
         </Button>
       )}
 
@@ -140,12 +143,14 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
         <input type="hidden" name="version" value={String(trailVersion ?? "")} />
         <input type="hidden" name="document_ids" value={JSON.stringify(orderedIds)} />
         <IdempotencyField result={state} />
-        <SubmitButton>Сохранить содержимое</SubmitButton>
+        <SubmitButton>{t("itemsSaveSubmit")}</SubmitButton>
         {!state.success && state.code === "forbidden" && (
-          <span className="text-sm text-red-600">У вас нет прав на изменение маршрута.</span>
+          <span className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: t("itemsForbiddenAction") })}
+          </span>
         )}
         {!state.success && state.code === "validation" && (
-          <span className="text-sm text-red-600">Проверьте список документов.</span>
+          <span className="text-sm text-red-600">{t("itemsValidationError")}</span>
         )}
       </Form>
     </section>

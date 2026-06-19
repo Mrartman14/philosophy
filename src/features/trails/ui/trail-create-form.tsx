@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTrail } from "../actions";
@@ -13,6 +14,7 @@ const initial: ActionResult<Trail | null> = { success: true, data: null };
 
 export function TrailCreateForm() {
   const router = useRouter();
+  const t = useT("trails");
   const [state, action] = useActionState(createTrail, initial);
 
   const fieldErrors: Record<string, string> =
@@ -27,32 +29,32 @@ export function TrailCreateForm() {
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <IdempotencyField result={state} />
-      <FormField name="title" label="Название" required>
-        <TextInput name="title" required maxLength={200} placeholder="Название маршрута" />
+      <FormField name="title" label={t("createTitleLabel")} required>
+        <TextInput name="title" required maxLength={200} placeholder={t("createTitlePlaceholder")} />
       </FormField>
 
-      <FormField name="description" label="Описание">
-        <Textarea name="description" maxLength={2000} rows={3} placeholder="Краткое описание (необязательно)" />
+      <FormField name="description" label={t("createDescriptionLabel")}>
+        <Textarea name="description" maxLength={2000} rows={3} placeholder={t("createDescriptionPlaceholder")} />
       </FormField>
 
-      <FormField name="visibility" label="Видимость">
+      <FormField name="visibility" label={t("createVisibilityLabel")}>
         <select
           name="visibility"
           defaultValue="private"
           className="rounded border border-(--color-border) px-2 py-1 text-sm"
         >
-          <option value="private">Приватный</option>
-          <option value="public">Публичный</option>
+          <option value="private">{t("createVisibilityPrivate")}</option>
+          <option value="public">{t("createVisibilityPublic")}</option>
         </select>
       </FormField>
       <p className="text-xs text-(--color-fg-muted)">
-        Публичный маршрут нельзя будет вернуть в приватный — только удалить.
+        {t("createVisibilityNote")}
       </p>
 
       <FormFeedback result={state} forbiddenAction="создание маршрута" />
 
       <div>
-        <SubmitButton>Создать</SubmitButton>
+        <SubmitButton>{t("createSubmit")}</SubmitButton>
       </div>
     </Form>
   );
