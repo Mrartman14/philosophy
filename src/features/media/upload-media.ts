@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 import { API_URL } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import type { ApiError } from "@/utils/api-error";
 import { getMe } from "@/utils/me";
@@ -36,12 +37,14 @@ export type UploadMediaResult =
 export async function uploadMedia(
   formData: FormData,
 ): Promise<UploadMediaResult> {
+  const t = await getT("media");
+
   // Ранний RBAC-отказ (defense-in-depth; бек тоже гейтит media.create).
   const me = await getMe();
   if (!canCreateMedia(me)) {
     return {
       success: false,
-      error: "У вас нет прав на загрузку медиа.",
+      error: t("uploadAction"),
       code: "forbidden",
     };
   }
@@ -49,10 +52,10 @@ export async function uploadMedia(
   const file = formData.get("file");
   const type = formData.get("type");
   if (!(file instanceof File) || file.size === 0) {
-    return { success: false, error: "Выберите файл." };
+    return { success: false, error: t("uploadToastNoFile") };
   }
   if (type !== "video" && type !== "audio") {
-    return { success: false, error: "Выберите тип: видео или аудио." };
+    return { success: false, error: t("uploadSelectType") };
   }
 
   const cookieStore = await cookies();
@@ -68,7 +71,7 @@ export async function uploadMedia(
   } catch (e) {
     return {
       success: false,
-      error: e instanceof Error ? e.message : "Сетевая ошибка",
+      error: e instanceof Error ? e.message : t("uploadErrorTitle"),
     };
   }
 
@@ -92,14 +95,14 @@ export async function uploadMedia(
   if (res.status === 401 || res.status === 403) {
     return {
       success: false,
-      error: body.error ?? "Нет доступа.",
+      error: body.error ?? t("uploadAction"),
       code: "forbidden",
     };
   }
   if (res.status === 413) {
     return {
       success: false,
-      error: body.error ?? "Файл слишком большой (макс 100 MB).",
+      error: body.error ?? t("uploadFileTooLarge"),
       code: "file_too_large",
     };
   }
@@ -107,14 +110,12 @@ export async function uploadMedia(
   if (res.status === 400 || res.status === 422) {
     return {
       success: false,
-      error:
-        body.error ??
-        "Неподдерживаемый формат. Видео: mp4/webm. Аудио: mp3/m4a/ogg.",
+      error: body.error ?? t("uploadInvalidFormat"),
       code: "invalid_file",
     };
   }
   return {
     success: false,
-    error: body.error ?? `Ошибка загрузки: ${res.status}`,
+    error: body.error ?? `${t("uploadErrorTitle")}: ${res.status}`,
   };
 }

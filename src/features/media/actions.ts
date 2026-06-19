@@ -3,9 +3,10 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import {
   rethrowApiError,
-  type ApiErrorMessages,
+  type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
@@ -13,15 +14,14 @@ import { ForbiddenError, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import { canDeleteMedia, canChangeMediaVisibility } from "./permissions";
-import { MediaIdSchema, MediaVisibilitySchema } from "./schemas";
+import { makeMediaIdSchema, makeMediaVisibilitySchema } from "./schemas";
 import type { Media } from "./types";
 
-/** Доменные коды media → русский текст. role-403/SUSPENDED/BANNED и REF_NOT_FOUND
+/** Доменные коды media → ключ каталога errors. role-403/SUSPENDED/BANNED и REF_NOT_FOUND
  * обрабатывает централизованный `rethrowApiError`. */
-const ERRORS: ApiErrorMessages = {
-  PUBLIC_IMMUTABLE:
-    "Публичное медиа нельзя сделать приватным. Удалите и загрузите заново.",
-  NOT_FOUND: "Медиа не найдено.",
+const ERRORS: ApiErrorMessageKeys = {
+  PUBLIC_IMMUTABLE: "MEDIA_PUBLIC_IMMUTABLE",
+  NOT_FOUND: "MEDIA_NOT_FOUND",
 };
 
 /** Загружает media-запись для owner-aware RBAC. 404 → ForbiddenError (secure). */
@@ -32,7 +32,7 @@ async function loadMediaForGate(id: string): Promise<Media> {
   });
   if (response.status === 404) {
     // Не видно ≡ не существует. Для гейта это отказ.
-    throw new ForbiddenError("owner", "Медиа не найдено");
+    throw new ForbiddenError("owner", "media-not-found");
   }
   if (error) rethrowApiError(error, ERRORS);
   return (data.data ?? null) as Media;
@@ -45,7 +45,7 @@ async function loadMediaForGate(id: string): Promise<Media> {
  */
 export const deleteMedia = createAction(async (rawId: string) => {
   const me = await getMe();
-  const { id } = MediaIdSchema.parse({ id: rawId });
+  const { id } = makeMediaIdSchema(await getT("validation")).parse({ id: rawId });
   const media = await loadMediaForGate(id);
   requireCapability(me, (m) => canDeleteMedia(m, media));
   const api = await createApiClient();
@@ -65,7 +65,7 @@ export const deleteMedia = createAction(async (rawId: string) => {
 export const setMediaVisibility = createAction(
   async (raw: { id: string; visibility: string }) => {
     const me = await getMe();
-    const input = MediaVisibilitySchema.parse(raw);
+    const input = makeMediaVisibilitySchema(await getT("validation")).parse(raw);
     const media = await loadMediaForGate(input.id);
     requireCapability(me, (m) => canChangeMediaVisibility(m, media));
     const api = await createApiClient();

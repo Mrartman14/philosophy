@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
 import { deleteMedia } from "../actions";
@@ -19,22 +20,23 @@ export function MediaDeleteButton({ id, isAdminDelete = false }: Props) {
   const pathname = usePathname();
   const toast = useToast();
   const [, startTransition] = useTransition();
+  const t = useT("media");
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">Удалить</Button>}
-      title="Удалить медиа?"
+      trigger={<Button variant="danger">{t("deleteButton")}</Button>}
+      title={t("deleteTitle")}
       description={
         isAdminDelete
-          ? "Удаление администратором. Действие необратимо: файл будет удалён, ссылки на него перестанут работать."
-          : "Действие необратимо. Файл будет удалён, ссылки на него перестанут работать."
+          ? t("deleteDescriptionAdmin")
+          : t("deleteDescription")
       }
       destructive
-      confirmLabel="Удалить"
+      confirmLabel={t("deleteButton")}
       onConfirm={async () => {
         const result = await deleteMedia(id);
         if (!result.success) {
-          toastActionError(toast, result, { action: "удаление медиа" });
+          toastActionError(toast, result, { action: t("deleteAction") });
           return;
         }
         if (pathname === `/media/${id}`) {

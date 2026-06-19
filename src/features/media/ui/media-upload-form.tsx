@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
 import { Button, useToast } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import { uploadMedia } from "../upload-media";
 
@@ -26,6 +27,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
   const [type, setType] = useState<"video" | "audio">("video");
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState(false);
+  const t = useT("media");
 
   if (!canUpload) return null;
 
@@ -33,7 +35,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
     e.preventDefault();
     const file = inputRef.current?.files?.[0];
     if (!file) {
-      toast.add({ title: "Выберите файл" });
+      toast.add({ title: t("uploadToastNoFile") });
       return;
     }
     const fd = new FormData();
@@ -45,12 +47,12 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
     if (!result.success) {
       const description =
         result.code === "forbidden"
-          ? "У вас нет прав на загрузку медиа."
+          ? t("uploadAction")
           : result.error;
-      toast.add({ title: "Ошибка загрузки", description });
+      toast.add({ title: t("uploadErrorTitle"), description });
       return;
     }
-    toast.add({ title: "Загружено", description: result.data.filename });
+    toast.add({ title: t("uploadSuccessTitle"), description: result.data.filename });
     if (inputRef.current) inputRef.current.value = "";
     startTransition(() => { router.refresh(); });
   }
@@ -59,7 +61,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
     <form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <label htmlFor="media-type" className="text-sm font-medium">
-          Тип
+          {t("uploadTypeLabel")}
         </label>
         <select
           id="media-type"
@@ -67,13 +69,13 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
           onChange={(e) => { setType(e.target.value as "video" | "audio"); }}
           className="rounded border border-(--color-border) bg-transparent px-3 py-2"
         >
-          <option value="video">Видео (mp4, webm)</option>
-          <option value="audio">Аудио (mp3, m4a, ogg)</option>
+          <option value="video">{t("uploadVideoOption")}</option>
+          <option value="audio">{t("uploadAudioOption")}</option>
         </select>
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="media-file" className="text-sm font-medium">
-          Файл
+          {t("uploadFileLabel")}
         </label>
         <input
           id="media-file"
@@ -84,10 +86,10 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
         />
       </div>
       <Button type="submit" className="self-start" disabled={busy || pending}>
-        {busy ? "Загрузка…" : "Загрузить"}
+        {busy ? t("uploadBusy") : t("uploadSubmit")}
       </Button>
       <p className="text-xs text-(--color-fg-muted)">
-        Новое медиа создаётся приватным. Опубликовать можно на его странице.
+        {t("uploadHint")}
       </p>
     </form>
   );

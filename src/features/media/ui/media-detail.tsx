@@ -1,4 +1,6 @@
 // src/features/media/ui/media-detail.tsx
+import { getT } from "@/i18n";
+
 import type { Media, MediaAttachment } from "../types";
 
 import { MediaContainers } from "./media-containers";
@@ -17,20 +19,21 @@ interface MediaDetailProps {
   isAdminDelete: boolean;
 }
 
-const typeLabel: Record<string, string> = {
-  video: "Видео",
-  audio: "Аудио",
-};
-
 /** Композиция страницы просмотра одного медиа. */
-export function MediaDetail({
+export async function MediaDetail({
   media,
   containers,
   canDelete,
   canChangeVisibility,
   isAdminDelete,
 }: MediaDetailProps) {
+  const t = await getT("media");
   const isPublic = media.visibility === "public";
+  const typeLabel: Record<string, string> = {
+    video: t("typeVideo"),
+    audio: t("typeAudio"),
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
@@ -39,7 +42,7 @@ export function MediaDetail({
           <span className="rounded bg-(--color-surface-subtle) px-2 py-0.5">
             {typeLabel[media.type] ?? media.type}
           </span>
-          <span>{isPublic ? "Опубликовано" : "Приватно"}</span>
+          <span>{isPublic ? t("statusPublic") : t("statusPrivate")}</span>
         </div>
       </header>
 
@@ -47,7 +50,7 @@ export function MediaDetail({
         <MediaPlayer url={media.url} type={media.type} filename={media.filename} />
       ) : (
         <p className="text-sm text-(--color-fg-muted)">
-          Файл недоступен для воспроизведения.
+          {t("unavailable")}
         </p>
       )}
 
@@ -61,7 +64,7 @@ export function MediaDetail({
       )}
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Лекции</h2>
+        <h2 className="text-lg font-semibold">{t("lecturesSection")}</h2>
         <MediaContainers containers={containers} />
       </section>
     </div>

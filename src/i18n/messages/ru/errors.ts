@@ -113,6 +113,11 @@ const errors = {
   TRAIL_DUPLICATE_DOCUMENT: "Документ добавлен в маршрут дважды. Уберите дубликат.",
   TRAIL_DOCUMENT_NOT_FOUND: "Один из документов не найден. Обновите список и повторите.",
 
+  // --- media slice: доменные коды ---
+  MEDIA_PUBLIC_IMMUTABLE:
+    "Публичное медиа нельзя сделать приватным. Удалите и загрузите заново.",
+  MEDIA_NOT_FOUND: "Медиа не найдено.",
+
   // --- annotations slice: доменные коды ---
   ANNOTATION_BLOCKS_EMPTY: "Тело аннотации не может быть пустым.",
   ANNOTATION_BLOCKS_INVALID: "Тело аннотации не прошло валидацию AST.",

@@ -1,5 +1,7 @@
 "use client";
 // src/features/media/ui/media-player.tsx
+import { useT } from "@/i18n/client";
+
 import type { FileType } from "../types";
 
 interface MediaPlayerProps {
@@ -14,6 +16,8 @@ interface MediaPlayerProps {
  * <audio> для type=audio. url — подписанная ссылка с бекенда.
  */
 export function MediaPlayer({ url, type, filename }: MediaPlayerProps) {
+  const t = useT("media");
+
   if (type === "video") {
     return (
       <video
@@ -23,7 +27,7 @@ export function MediaPlayer({ url, type, filename }: MediaPlayerProps) {
       >
         <source src={url} />
         <track kind="captions" />
-        Ваш браузер не поддерживает воспроизведение видео.
+        {t("videoBrowserFallback")}
       </video>
     );
   }
@@ -31,7 +35,7 @@ export function MediaPlayer({ url, type, filename }: MediaPlayerProps) {
     <audio controls preload="metadata" className="w-full" aria-label={filename}>
       <source src={url} />
       <track kind="captions" />
-      Ваш браузер не поддерживает воспроизведение аудио.
+      {t("audioBrowserFallback")}
     </audio>
   );
 }

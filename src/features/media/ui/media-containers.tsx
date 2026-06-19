@@ -1,5 +1,6 @@
 // src/features/media/ui/media-containers.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { MediaAttachment } from "../types";
 
@@ -15,12 +16,13 @@ interface Props {
  * documents) здесь намеренно НЕ используется: он может быть ещё не смержен
  * на момент мержа media, и cross-feature-импорт сломал бы сборку.
  */
-export function MediaContainers({ containers }: Props) {
+export async function MediaContainers({ containers }: Props) {
+  const t = await getT("media");
   const lectures = containers.filter((c) => c.container_type === "lecture");
   if (lectures.length === 0) {
     return (
       <p className="text-sm text-(--color-fg-muted)">
-        Медиа не прикреплено ни к одной лекции.
+        {t("noContainers")}
       </p>
     );
   }
@@ -32,7 +34,7 @@ export function MediaContainers({ containers }: Props) {
             href={`/lectures/${c.container_id ?? ""}`}
             className="underline hover:no-underline"
           >
-            Лекция {(c.container_id ?? "").slice(0, 8)}…
+            {t("lectureLink", { id: (c.container_id ?? "").slice(0, 8) })}
           </RouterLink>
         </li>
       ))}

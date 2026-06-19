@@ -8,6 +8,12 @@ vi.mock("@/utils/me", () => ({ getMe: () => ({ id: "u1", status: "active" }) }))
 vi.mock("./permissions", () => ({ canCreateMedia: () => true }));
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
 
+// Мок @/i18n: getT возвращает переводчик, возвращающий ключ вместо текста.
+vi.mock("@/i18n", async (importOriginal) => {
+  const orig = await importOriginal<typeof import("@/i18n")>();
+  return { ...orig, getT: () => Promise.resolve((key: string) => key) };
+});
+
 const instrumentedFetch = vi.fn();
 vi.mock("@/services/observability/server-fetch", () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument

@@ -109,6 +109,11 @@ const errors = {
   TRAIL_DUPLICATE_DOCUMENT: "A document was added to the trail twice. Remove the duplicate.",
   TRAIL_DOCUMENT_NOT_FOUND: "One of the documents was not found. Update the list and try again.",
 
+  // --- media slice: domain codes ---
+  MEDIA_PUBLIC_IMMUTABLE:
+    "Public media cannot be made private. Delete it and upload again.",
+  MEDIA_NOT_FOUND: "Media not found.",
+
   // --- annotations slice: domain codes ---
   ANNOTATION_BLOCKS_EMPTY: "The annotation body cannot be empty.",
   ANNOTATION_BLOCKS_INVALID: "The annotation body failed AST validation.",

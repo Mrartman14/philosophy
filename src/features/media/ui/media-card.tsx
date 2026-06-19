@@ -1,5 +1,6 @@
 // src/features/media/ui/media-card.tsx
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Media } from "../types";
 
@@ -7,14 +8,15 @@ interface MediaCardProps {
   media: Media;
 }
 
-const typeLabel: Record<string, string> = {
-  video: "Видео",
-  audio: "Аудио",
-};
-
 /** Карточка медиа в списке «Мои медиа». Ссылка на /media/{id} + бейджи. */
-export function MediaCard({ media }: MediaCardProps) {
+export async function MediaCard({ media }: MediaCardProps) {
+  const t = await getT("media");
   const isPublic = media.visibility === "public";
+  const typeLabel: Record<string, string> = {
+    video: t("typeVideo"),
+    audio: t("typeAudio"),
+  };
+
   return (
     <RouterLink
       href={`/media/${media.id}`}
@@ -34,7 +36,7 @@ export function MediaCard({ media }: MediaCardProps) {
               : "rounded px-2 py-0.5 text-(--color-fg-muted)"
           }
         >
-          {isPublic ? "Опубликовано" : "Приватно"}
+          {isPublic ? t("statusPublic") : t("statusPrivate")}
         </span>
       </span>
     </RouterLink>

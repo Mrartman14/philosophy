@@ -1,5 +1,6 @@
 // src/features/media/ui/media-grid.tsx
 import { EmptyState } from "@/components/ui";
+import { getT } from "@/i18n";
 
 import type { Media } from "../types";
 
@@ -10,12 +11,14 @@ interface MediaGridProps {
 }
 
 /** Грид карточек «Мои медиа» с пустым состоянием. */
-export function MediaGrid({ items }: MediaGridProps) {
+export async function MediaGrid({ items }: MediaGridProps) {
+  const t = await getT("media");
+
   if (items.length === 0) {
     return (
       <EmptyState
-        title="Пока нет медиа"
-        description="Загрузите видео или аудио — оно появится здесь."
+        title={t("emptyTitle")}
+        description={t("emptyDescription")}
       />
     );
   }

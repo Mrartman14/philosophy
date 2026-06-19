@@ -13,6 +13,7 @@ import errors from "./errors";
 import events from "./events";
 import forms from "./forms";
 import lectures from "./lectures";
+import media from "./media";
 import metadata from "./metadata";
 import notifications from "./notifications";
 import preferences from "./preferences";
@@ -30,6 +31,7 @@ const en = {
   events,
   forms,
   lectures,
+  media,
   metadata,
   notifications,
   preferences,

@@ -142,6 +142,11 @@ const validation = {
     offsetMin: "offset >= 0",
   },
 
+  // --- media: MediaIdSchema / MediaVisibilitySchema ---
+  media: {
+    invalidId: "Invalid media ID",
+  },
+
   // --- forms: form builder + response submission ---
   forms: {
     invalidId: "Invalid identifier",

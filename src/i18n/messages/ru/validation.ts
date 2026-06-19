@@ -145,6 +145,11 @@ const validation = {
     offsetMin: "offset >= 0",
   },
 
+  // --- media: MediaIdSchema / MediaVisibilitySchema ---
+  media: {
+    invalidId: "Некорректный id медиа",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",
