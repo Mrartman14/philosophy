@@ -51,7 +51,7 @@
 
 ### 2. Типовая утечка NamespaceT/ErrorsT (находка A2)
 
-`NamespaceT<NS>` (`src/i18n/index.ts`) и `ErrorsT` (`src/i18n/client.tsx`) выведены из типа переводчика next-intl (`ReturnType<typeof getTranslations<NS>>` / `ReturnType<typeof useTranslations<"errors">>`). Эти типы расползаются параметром `t` по Zod-фабрикам `makeXSchema(t)` и error-seam-утилитам — около 42 файлов. При свопе потребуется заменить оба типа на собственный generic (например, `(key: KeysOf<NS>, params?) => string`). Поверхность управляема, но ненулевая.
+`NamespaceT<NS>` (`src/i18n/index.ts`) и `ErrorsT` (`src/i18n/client.tsx`) выведены из типа переводчика next-intl (`Awaited<ReturnType<typeof getTranslations<NS>>>` / `ReturnType<typeof useTranslations<"errors">>`). Эти типы расползаются параметром `t` по Zod-фабрикам `makeXSchema(t)` и error-seam-утилитам — около 42 файлов. При свопе потребуется заменить оба типа на собственный generic (например, `(key: KeysOf<NS>, params?) => string`). Поверхность управляема, но ненулевая.
 
 ### 3. Key-safety через AppConfig (находка A3)
 
