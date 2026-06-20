@@ -15,6 +15,7 @@ import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
 import { getClientMessages, getLocale, getT } from "@/i18n";
 import { I18nProvider } from "@/i18n/client";
+import { metadataBaseUrl } from "@/seo/site-url";
 import { WebVitalsReporter } from "@/services/observability/web-vitals-reporter";
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
 import { getAppearance } from "@/utils/appearance";
@@ -40,14 +41,32 @@ const sourceSerif = Source_Serif_4({
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT("metadata");
+  const siteName = t("appTitle");
   return {
-    title: t("appTitle"),
+    metadataBase: metadataBaseUrl(),
+    // title.template добавляет бренд к титулам страниц: "<page> — <siteName>".
+    // default — для корня (home). Per-page возвращают просто строку.
+    title: { default: siteName, template: `%s — ${siteName}` },
     description: t("appDescription"),
     manifest: "/manifest.webmanifest",
     appleWebApp: {
       title: t("appShortName"),
       capable: true,
       statusBarStyle: "black-translucent",
+    },
+    openGraph: {
+      type: "website",
+      siteName,
+      title: siteName,
+      description: t("appDescription"),
+      images: ["/logo.png"],
+    },
+    twitter: {
+      // дефолтная картинка — логотип (не 1200×630) → summary, не large.
+      card: "summary",
+      title: siteName,
+      description: t("appDescription"),
+      images: ["/logo.png"],
     },
   };
 }
