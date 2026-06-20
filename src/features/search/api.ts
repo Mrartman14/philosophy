@@ -8,6 +8,9 @@ import { unwrap } from "@/utils/api-unwrap";
 
 import type { SearchHit } from "./types";
 
+/** Единый лимит выдачи поиска — используется и на /search, и на /map. */
+export const SEARCH_RESULT_LIMIT = 20;
+
 export interface SearchFilter {
   /** Поисковый запрос. Уже тримленый/валидный (см. schemas.ts). */
   q: string;
@@ -37,7 +40,7 @@ export interface SearchResult {
 export const getSearchResults = cache(
   async (filter: SearchFilter): Promise<SearchResult> => {
     const api = await createApiClient();
-    const limit = filter.limit ?? 20;
+    const limit = filter.limit ?? SEARCH_RESULT_LIMIT;
 
     const { data, error } = await api.POST("/api/search", {
       body: { query: filter.q, limit },

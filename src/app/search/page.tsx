@@ -5,13 +5,14 @@ import { RouterLink } from "@/components/ui";
 import {
   getSearchResults,
   makeSearchParamsSchema,
+  SEARCH_RESULT_LIMIT,
   SearchInput,
   SearchResults,
   SearchResultsSkeleton,
 } from "@/features/search";
 import { getT } from "@/i18n";
 
-const PAGE_LIMIT = 20;
+const PAGE_LIMIT = SEARCH_RESULT_LIMIT;
 
 interface Props {
   searchParams: Promise<{

@@ -3,6 +3,7 @@
 // (deep-imports запрещены ESLint'ом).
 
 export {
+  SEARCH_RESULT_LIMIT,
   getSearchResults,
   type SearchFilter,
   type SearchResult,
