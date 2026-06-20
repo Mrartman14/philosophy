@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   AuditFilterForm,
   makeAuditLogFilterSchema,
@@ -52,6 +53,7 @@ export default async function AdminAuditPage({ searchParams }: Props) {
     limit: PAGE_LIMIT,
   });
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <section className="flex flex-col gap-6">
       <header>
@@ -71,6 +73,7 @@ export default async function AdminAuditPage({ searchParams }: Props) {
         limit={result.limit}
         total={result.total}
         searchParams={raw}
+        labels={paginationLabels}
       />
     </section>
   );

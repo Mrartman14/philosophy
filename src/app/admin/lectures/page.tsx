@@ -13,6 +13,7 @@ import {
   Thead,
   Tr,
 } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   canCreateLecture,
   canDeleteLecture,
@@ -44,6 +45,7 @@ export default async function AdminLecturesPage({ searchParams }: Props) {
 
   const t = await getT("admin");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="flex flex-col gap-4">
       <header className="flex items-center justify-between">
@@ -90,7 +92,7 @@ export default async function AdminLecturesPage({ searchParams }: Props) {
             </Tbody>
           </Table>
           {total > limit && (
-            <Pagination basePath="/admin/lectures" offset={offset} limit={limit} total={total} />
+            <Pagination basePath="/admin/lectures" offset={offset} limit={limit} total={total} labels={paginationLabels} />
           )}
         </>
       )}

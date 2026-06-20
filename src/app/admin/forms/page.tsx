@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   canListAdminForms,
   canAdminDeleteForm,
@@ -32,6 +33,7 @@ export default async function AdminFormsPage({ searchParams }: Props) {
 
   const t = await getT("admin");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <section className="flex flex-col gap-6">
       <header>
@@ -49,7 +51,7 @@ export default async function AdminFormsPage({ searchParams }: Props) {
         ))}
       </ul>
 
-      <Pagination basePath="/admin/forms" offset={result.offset} limit={result.limit} total={result.total} />
+      <Pagination basePath="/admin/forms" offset={result.offset} limit={result.limit} total={result.total} labels={paginationLabels} />
     </section>
   );
 }

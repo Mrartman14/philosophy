@@ -1,5 +1,6 @@
 // src/app/canvases/page.tsx
 import { Button, Pagination, RouterLink } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   canCreateCanvas,
   getCanvases,
@@ -34,6 +35,7 @@ export default async function CanvasesPage({ searchParams }: Props) {
   const canCreate = canCreateCanvas(me);
   const t = await getT("pages");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header className="flex items-center justify-between gap-4">
@@ -50,7 +52,7 @@ export default async function CanvasesPage({ searchParams }: Props) {
 
       <CanvasSearch />
       <CanvasMyList canvases={result.items} />
-      <Pagination basePath="/canvases" offset={result.offset} limit={result.limit} total={result.total} searchParams={sp} />
+      <Pagination basePath="/canvases" offset={result.offset} limit={result.limit} total={result.total} searchParams={sp} labels={paginationLabels} />
     </div>
   );
 }

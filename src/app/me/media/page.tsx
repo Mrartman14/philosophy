@@ -1,5 +1,6 @@
 // src/app/me/media/page.tsx
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   MediaGrid,
   MediaUploadForm,
@@ -30,6 +31,7 @@ export default async function MyMediaPage({ searchParams }: Props) {
   const { items, total, limit } = await getMyMedia({ offset, freeFloating });
   const t = await getT("pages");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 p-4">
       <h1 className="text-2xl font-bold">{t("myMediaHeading")}</h1>
@@ -41,7 +43,7 @@ export default async function MyMediaPage({ searchParams }: Props) {
 
       <section className="flex flex-col gap-4">
         <MediaGrid items={items} />
-        <Pagination basePath="/me/media" offset={offset} limit={limit} total={total} searchParams={sp} />
+        <Pagination basePath="/me/media" offset={offset} limit={limit} total={total} searchParams={sp} labels={paginationLabels} />
       </section>
     </div>
   );

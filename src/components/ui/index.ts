@@ -21,7 +21,7 @@ export { Table, Thead, Tbody, Tr, Th, Td } from "./table";
 export { ToastProvider, useToast } from "./toast";
 export { Toaster } from "./toaster";
 export { EmptyState } from "./empty-state";
-export { Pagination } from "./pagination";
+export { Pagination, type PaginationLabels } from "./pagination";
 export { Skeleton, type SkeletonProps } from "./skeleton";
 export { RouterLink, type RouterLinkProps } from "./router-link";
 export { chipClass } from "./chip";

@@ -2,6 +2,7 @@
 import { Suspense } from "react";
 
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   getSearchResults,
   makeSearchParamsSchema,
@@ -95,6 +96,7 @@ async function SearchBody({
     );
   }
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <>
       <SearchResults hits={result.items} total={result.total} />
@@ -105,6 +107,7 @@ async function SearchBody({
           limit={result.limit}
           total={result.total}
           searchParams={searchParams}
+          labels={paginationLabels}
         />
         <SearchExportLinks q={q} type={type} />
       </div>

@@ -2,6 +2,8 @@
 // src/components/ui/confirm-dialog.tsx
 import { useRef, useState, type ReactNode } from "react";
 
+import { useT } from "@/i18n/client";
+
 import { Button } from "./button";
 import { Dialog, DialogClose } from "./dialog";
 
@@ -9,7 +11,9 @@ interface ConfirmDialogProps {
   trigger: ReactNode;
   title: ReactNode;
   description?: ReactNode;
+  /** По умолчанию локализованное «Подтвердить» (common.confirmDialog.confirm). */
   confirmLabel?: string;
+  /** По умолчанию локализованное «Отмена» (common.confirmDialog.cancel). */
   cancelLabel?: string;
   destructive?: boolean;
   onConfirm: () => void | Promise<void>;
@@ -32,12 +36,15 @@ export function ConfirmDialog({
   trigger,
   title,
   description,
-  confirmLabel = "Подтвердить",
-  cancelLabel = "Отмена",
+  confirmLabel,
+  cancelLabel,
   destructive = false,
   onConfirm,
   shouldConfirm,
 }: ConfirmDialogProps) {
+  const t = useT("common");
+  const confirmText = confirmLabel ?? t("confirmDialog.confirm");
+  const cancelText = cancelLabel ?? t("confirmDialog.cancel");
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const gatingRef = useRef(false);
@@ -83,13 +90,13 @@ export function ConfirmDialog({
       {...(description !== undefined ? { description } : {})}
     >
       <div className="flex justify-end gap-2">
-        <DialogClose render={<Button variant="ghost">{cancelLabel}</Button>} />
+        <DialogClose render={<Button variant="ghost">{cancelText}</Button>} />
         <Button
           variant={destructive ? "danger" : "primary"}
           disabled={pending}
           onClick={() => { void handleConfirm(); }}
         >
-          {pending ? "…" : confirmLabel}
+          {pending ? "…" : confirmText}
         </Button>
       </div>
     </Dialog>

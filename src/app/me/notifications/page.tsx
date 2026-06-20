@@ -1,5 +1,6 @@
 // src/app/me/notifications/page.tsx
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   getNotifications,
   NotificationItem,
@@ -27,6 +28,7 @@ export default async function NotificationsPage({ searchParams }: Props) {
   const { items, total } = await getNotifications(offset, limit);
   const t = await getT("pages");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4">
       <div className="flex items-center justify-between gap-4">
@@ -45,7 +47,7 @@ export default async function NotificationsPage({ searchParams }: Props) {
       )}
 
       {total > 0 && (
-        <Pagination basePath="/me/notifications" offset={offset} limit={limit} total={total} />
+        <Pagination basePath="/me/notifications" offset={offset} limit={limit} total={total} labels={paginationLabels} />
       )}
     </div>
   );

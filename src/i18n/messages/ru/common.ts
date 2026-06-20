@@ -31,6 +31,27 @@ const common = {
   // shared/go-back
   back: "Назад",
 
+  // UI-kit: pagination (рендерится в server-компонентах — резолвится через getT
+  // на стороне caller и пробрасывается пропом labels)
+  pagination: {
+    ariaLabel: "Пагинация",
+    prev: "← Назад",
+    next: "Вперёд →",
+    range: "{from}–{to} из {total}",
+    rangeEmpty: "0 из 0",
+  },
+
+  // UI-kit: confirm-dialog (client)
+  confirmDialog: {
+    confirm: "Подтвердить",
+    cancel: "Отмена",
+  },
+
+  // UI-kit: select (client)
+  select: {
+    placeholder: "Выберите…",
+  },
+
   // permission/action-tooltip
   actionTooltip: {
     loginToAction: "Войдите, чтобы {action}",

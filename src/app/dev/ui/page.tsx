@@ -20,13 +20,15 @@ import {
   Skeleton,
   Pagination,
 } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 
 export const metadata = { title: "UI Kit smoke" };
 
-export default function UiKitSmokePage() {
+export default async function UiKitSmokePage() {
   // Dev-only витрина UI-кита — в проде маршрут недоступен.
   if (process.env.NODE_ENV === "production") notFound();
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="flex flex-col gap-8 p-8">
       <section className="flex flex-col gap-2">
@@ -98,7 +100,7 @@ export default function UiKitSmokePage() {
 
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-bold">Pagination</h2>
-        <Pagination basePath="/dev/ui" offset={20} limit={20} total={100} />
+        <Pagination basePath="/dev/ui" offset={20} limit={20} total={100} labels={paginationLabels} />
       </section>
     </div>
   );

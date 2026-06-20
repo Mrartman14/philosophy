@@ -1,5 +1,6 @@
 // src/app/me/annotations/page.tsx
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   getMyAnnotations,
   AnnotationCard,
@@ -30,6 +31,7 @@ export default async function MyAnnotationsPage({ searchParams }: Props) {
   const { items, total } = await getMyAnnotations(offset, LIMIT);
   const t = await getT("pages");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-bold">{t("myAnnotationsHeading")}</h1>
@@ -55,7 +57,7 @@ export default async function MyAnnotationsPage({ searchParams }: Props) {
           ))}
         </ul>
       )}
-      <Pagination basePath="/me/annotations" offset={offset} limit={LIMIT} total={total} searchParams={sp} />
+      <Pagination basePath="/me/annotations" offset={offset} limit={LIMIT} total={total} searchParams={sp} labels={paginationLabels} />
     </div>
   );
 }

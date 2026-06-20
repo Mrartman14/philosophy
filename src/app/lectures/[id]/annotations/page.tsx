@@ -1,5 +1,6 @@
 // src/app/lectures/[id]/annotations/page.tsx
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   getLectureAnnotations,
   AnnotationCard,
@@ -36,6 +37,7 @@ export default async function LectureAnnotationsPage({
   const { items, total } = await getLectureAnnotations(id, offset, LIMIT);
   const t = await getT("pages");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-bold">{t("lectureAnnotationsHeading")}</h1>
@@ -56,7 +58,7 @@ export default async function LectureAnnotationsPage({
           ))}
         </ul>
       )}
-      <Pagination basePath={`/lectures/${id}/annotations`} offset={offset} limit={LIMIT} total={total} searchParams={sp} />
+      <Pagination basePath={`/lectures/${id}/annotations`} offset={offset} limit={LIMIT} total={total} searchParams={sp} labels={paginationLabels} />
     </div>
   );
 }

@@ -3,6 +3,8 @@
 import { Select as BaseSelect } from "@base-ui/react/select";
 import type { ReactNode } from "react";
 
+import { useT } from "@/i18n/client";
+
 import { cn, FOCUS_RING_INPUT, SHELL_BASE } from "./cn";
 
 interface SelectOption {
@@ -16,6 +18,7 @@ export interface SelectProps {
   value?: string;
   onValueChange?: (value: string) => void;
   options: SelectOption[];
+  /** По умолчанию локализованное «Выберите…» (common.select.placeholder). */
   placeholder?: ReactNode;
   disabled?: boolean;
   className?: string;
@@ -32,11 +35,13 @@ export function Select({
   value,
   onValueChange,
   options,
-  placeholder = "Выберите…",
+  placeholder,
   disabled,
   className,
   "aria-label": ariaLabel,
 }: SelectProps) {
+  const t = useT("common");
+  const placeholderText = placeholder ?? t("select.placeholder");
   const labelByValue = new Map(options.map((o) => [o.value, o.label]));
 
   return (
@@ -58,7 +63,7 @@ export function Select({
         )}
       >
         <BaseSelect.Value>
-          {(v: string | null) => (v != null ? (labelByValue.get(v) ?? v) : placeholder)}
+          {(v: string | null) => (v != null ? (labelByValue.get(v) ?? v) : placeholderText)}
         </BaseSelect.Value>
         <BaseSelect.Icon>▾</BaseSelect.Icon>
       </BaseSelect.Trigger>

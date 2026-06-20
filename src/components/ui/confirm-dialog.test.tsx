@@ -7,6 +7,16 @@ import {
 } from "@testing-library/react";
 import { afterEach, describe, it, expect, vi } from "vitest";
 
+// ConfirmDialog тянет useT("common") внутри — мокаем client-фасад на реальный
+// ru-каталог (резолв dotted-ключа `confirmDialog.confirm` без next-intl-провайдера).
+vi.mock("@/i18n/client", async () => {
+  const common = (await import("@/i18n/messages/ru/common")).default;
+  const useT = () => (key: string) =>
+    key.split(".").reduce<unknown>((acc, k) =>
+      (acc as Record<string, unknown> | undefined)?.[k], common) ?? key;
+  return { useT };
+});
+
 import { ConfirmDialog } from "./confirm-dialog";
 
 afterEach(cleanup);

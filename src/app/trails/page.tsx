@@ -1,5 +1,6 @@
 // src/app/trails/page.tsx
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import { getTrails, TrailPublicList } from "@/features/trails";
 import { getT } from "@/i18n";
 import { parseNonNegativeInt } from "@/utils/paging";
@@ -18,6 +19,7 @@ export default async function TrailsPage({ searchParams }: Props) {
   const result = await getTrails({ offset: parseNonNegativeInt(offset, 0), limit: 20 });
   const t = await getT("pages");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header>
@@ -34,6 +36,7 @@ export default async function TrailsPage({ searchParams }: Props) {
         offset={result.offset}
         limit={result.limit}
         total={result.total}
+        labels={paginationLabels}
       />
     </div>
   );

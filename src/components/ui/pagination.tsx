@@ -19,6 +19,39 @@ interface PaginationProps {
    * старое поведение: `basePath?<offsetParam>=<value>`.
    */
   searchParams?: Record<string, string | string[] | undefined>;
+  /**
+   * Локализованные подписи. Компонент рендерится в SERVER-компонентах
+   * (списки/таблицы), поэтому не может тянуть `useT` сам без поломки
+   * server/client-границы. Caller-сервер резолвит их через `getT("common")`
+   * и пробрасывает (см. `paginationLabels` в `@/components/ui`). Без пропа —
+   * ru-дефолты (back-compat для dev/демо-callsites).
+   */
+  labels?: PaginationLabels;
+}
+
+export interface PaginationLabels {
+  ariaLabel: string;
+  prev: string;
+  next: string;
+  /** Шаблон диапазона с плейсхолдерами `{from}` `{to}` `{total}`. */
+  range: string;
+  /** Текст при `total === 0`. */
+  rangeEmpty: string;
+}
+
+const RU_DEFAULT_LABELS: PaginationLabels = {
+  ariaLabel: "Пагинация",
+  prev: "← Назад",
+  next: "Вперёд →",
+  range: "{from}–{to} из {total}",
+  rangeEmpty: "0 из 0",
+};
+
+function formatRange(template: string, from: number, to: number, total: number): string {
+  return template
+    .replace("{from}", String(from))
+    .replace("{to}", String(to))
+    .replace("{total}", String(total));
 }
 
 function buildHref(
@@ -68,6 +101,7 @@ export function Pagination({
   total,
   className,
   searchParams,
+  labels = RU_DEFAULT_LABELS,
 }: PaginationProps) {
   const hasPrev = offset > 0;
   const hasNext = offset + limit < total;
@@ -79,7 +113,7 @@ export function Pagination({
 
   return (
     <nav
-      aria-label="Пагинация"
+      aria-label={labels.ariaLabel}
       className={cn("flex items-center gap-2 text-sm", className)}
     >
       {hasPrev ? (
@@ -87,28 +121,28 @@ export function Pagination({
           href={buildHref(basePath, offsetParam, prev, searchParams)}
           className={linkCls}
         >
-          ← Назад
+          {labels.prev}
         </RouterLink>
       ) : (
         <span className={disabledCls}>
-          ← Назад
+          {labels.prev}
         </span>
       )}
       <span className="text-(--color-fg-muted)">
         {total === 0
-          ? "0 из 0"
-          : `${offset + 1}–${Math.min(offset + limit, total)} из ${total}`}
+          ? labels.rangeEmpty
+          : formatRange(labels.range, offset + 1, Math.min(offset + limit, total), total)}
       </span>
       {hasNext ? (
         <RouterLink
           href={buildHref(basePath, offsetParam, next, searchParams)}
           className={linkCls}
         >
-          Вперёд →
+          {labels.next}
         </RouterLink>
       ) : (
         <span className={disabledCls}>
-          Вперёд →
+          {labels.next}
         </span>
       )}
     </nav>

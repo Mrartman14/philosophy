@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { EmptyState, Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   canCreateTag,
   canDeleteTag,
@@ -44,6 +45,7 @@ export default async function AdminTagsPage({ searchParams }: Props) {
     a.name.localeCompare(b.name, locale),
   );
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <section className="flex flex-col gap-6">
       <header>
@@ -77,6 +79,7 @@ export default async function AdminTagsPage({ searchParams }: Props) {
           offset={result.offset}
           limit={result.limit}
           total={result.total}
+          labels={paginationLabels}
         />
       )}
     </section>

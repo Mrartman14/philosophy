@@ -1,5 +1,6 @@
 // src/app/lectures/page.tsx
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import { getLectures, LectureList, LectureSearchForm } from "@/features/lectures";
 import { getLectureTags, getTags } from "@/features/tags";
 import { getT } from "@/i18n";
@@ -42,6 +43,7 @@ export default async function LecturesPage({ searchParams }: Props) {
   const tagsByLectureId = Object.fromEntries(tagsEntries);
   const t = await getT("pages");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
       <h1 className="text-3xl font-bold">{t("lecturesHeading")}</h1>
@@ -51,7 +53,7 @@ export default async function LecturesPage({ searchParams }: Props) {
       />
       <LectureList items={items} tagsByLectureId={tagsByLectureId} />
       {total > limit && (
-        <Pagination basePath="/lectures" offset={offset} limit={limit} total={total} searchParams={sp} />
+        <Pagination basePath="/lectures" offset={offset} limit={limit} total={total} searchParams={sp} labels={paginationLabels} />
       )}
     </div>
   );

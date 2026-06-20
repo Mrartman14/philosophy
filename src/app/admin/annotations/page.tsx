@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
+import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   getAdminAnnotations,
   canModerateAnnotations,
@@ -44,6 +45,7 @@ export default async function AdminAnnotationsPage({ searchParams }: Props) {
 
   const t = await getT("admin");
 
+  const paginationLabels = await getPaginationLabels();
   return (
     <section className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">{t("annotationsTitle")}</h1>
@@ -65,7 +67,7 @@ export default async function AdminAnnotationsPage({ searchParams }: Props) {
           ))}
         </ul>
       )}
-      <Pagination basePath="/admin/annotations" offset={offset} limit={LIMIT} total={total} searchParams={sp} />
+      <Pagination basePath="/admin/annotations" offset={offset} limit={LIMIT} total={total} searchParams={sp} labels={paginationLabels} />
     </section>
   );
 }
