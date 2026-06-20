@@ -27,7 +27,7 @@ import { makeShareLinkCreateSchema, makeRevokeTokenSchema } from "./schemas";
  * фоллбек "err.error ?? Ошибка сервера" (бывший BAD_REQUEST) — в rethrowApiError. */
 const ERRORS: ApiErrorMessageKeys = {
   // Создать ссылку может только владелец; бек маскирует отказ под 404.
-  NOT_FOUND: "NOT_FOUND",
+  NOT_FOUND: "SHARE_LINK_NOT_FOUND",
   RESOURCE_NOT_PRIVATE: "RESOURCE_NOT_PRIVATE",
 };
 

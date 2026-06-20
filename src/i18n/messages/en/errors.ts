@@ -118,7 +118,7 @@ const errors = {
   MEDIA_NOT_FOUND: "Media not found.",
 
   // --- share-links slice: domain codes ---
-  NOT_FOUND: "Resource not found or you are not its owner.",
+  SHARE_LINK_NOT_FOUND: "Resource not found or you are not its owner.",
   RESOURCE_NOT_PRIVATE: "A share link can only be created for a private resource.",
 
   // --- preferences slice: domain codes ---

@@ -122,7 +122,7 @@ const errors = {
   MEDIA_NOT_FOUND: "Медиа не найдено.",
 
   // --- share-links slice: доменные коды ---
-  NOT_FOUND: "Ресурс не найден или вы не его владелец.",
+  SHARE_LINK_NOT_FOUND: "Ресурс не найден или вы не его владелец.",
   RESOURCE_NOT_PRIVATE: "Ссылку можно создать только для приватного ресурса.",
 
   // --- preferences slice: доменные коды ---

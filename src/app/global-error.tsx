@@ -2,6 +2,38 @@
 
 import { useReportBoundaryError } from "@/services/observability/use-report-boundary-error";
 
+// Этот компонент заменяет root layout целиком (Next.js global-error),
+// поэтому I18nProvider недоступен. useT/getT нельзя.
+// Единственное санкционированное исключение: мини client-резолв локали.
+
+const MESSAGES = {
+  ru: {
+    title: "Что-то пошло не так",
+    description: "Произошла критическая ошибка. Попробуйте обновить страницу.",
+    retry: "Повторить",
+  },
+  en: {
+    title: "Something went wrong",
+    description: "A critical error occurred. Try refreshing the page.",
+    retry: "Retry",
+  },
+} as const;
+
+type Lang = keyof typeof MESSAGES;
+
+function resolveLocale(): Lang {
+  if (typeof document === "undefined") return "ru";
+  const match = document.cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith("locale="));
+  if (!match) return "ru";
+  const value = match.slice("locale=".length).trim();
+  if (value === "en") return "en";
+  // "system" или любое другое значение → "ru"
+  return "ru";
+}
+
 export default function GlobalError({
   error,
   reset,
@@ -10,8 +42,10 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useReportBoundaryError(error);
+  const lang = resolveLocale();
+  const m = MESSAGES[lang];
   return (
-    <html lang="ru">
+    <html lang={lang}>
       <body>
         <div
           style={{
@@ -26,10 +60,10 @@ export default function GlobalError({
           }}
         >
           <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>
-            Что-то пошло не так
+            {m.title}
           </h1>
           <p style={{ margin: 0, color: "#6b7280" }}>
-            Произошла критическая ошибка. Попробуйте обновить страницу.
+            {m.description}
           </p>
           <button
             type="button"
@@ -43,7 +77,7 @@ export default function GlobalError({
               fontSize: "0.875rem",
             }}
           >
-            Повторить
+            {m.retry}
           </button>
         </div>
       </body>
