@@ -2703,6 +2703,139 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/map/rebuild": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Форсировать пересборку семантической карты (admin)
+         * @description Ставит запрос на немедленную пересборку (неблокирующе; воркер — единственный исполнитель, гонок нет). Возвращает текущий статус; следи за завершением через GET /api/admin/map/status (building → false, обновятся last_rebuilt_at + layout_version).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["semmap.MapStatus"];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description MAP_NOT_READY */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/map/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Статус сборки семантической карты (admin) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["semmap.MapStatus"];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description MAP_NOT_READY */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/push/send": {
         parameters: {
             query?: never;
@@ -4146,6 +4279,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description EMBEDDER_UNAVAILABLE */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -10599,6 +10741,77 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Семантическая карта корпуса
+         * @description Координаты документов и терминов глоссария в 3D-пространстве смысла (PCA), отфильтрованные по видимости актора, + кластеры. Бэкенд отдаёт 3 координаты; 2D/3D выбирает фронт. Overlay-маркер запроса фронт считает сам из этих координат и хитов поиска. До первой фоновой сборки — 503 MAP_NOT_READY.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Предыдущий ETag; совпал → 304 */
+                    "If-None-Match"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Per-viewer content token */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["semmap.Layout"];
+                        };
+                    };
+                };
+                /** @description Not Modified */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description MAP_NOT_READY */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me": {
         parameters: {
             query?: never;
@@ -12142,7 +12355,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.Response"];
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["pat.MintResult"];
+                        };
                     };
                 };
                 /** @description Unauthorized */
@@ -12901,24 +13116,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Глобальный поиск */
-        get: {
+        get?: never;
+        put?: never;
+        /**
+         * Семантический поиск по корпусу
+         * @description Возвращает до limit релевантных документов и терминов глоссария (со сниппетом и score), отфильтрованных по видимости актора. Поиск — векторный через embedding-sidecar; при недоступности сайдкара возвращает 503. Сервис сам LLM не вызывает.
+         */
+        post: {
             parameters: {
-                query: {
-                    /** @description Поисковый запрос */
-                    q: string;
-                    /** @description Тип результата */
-                    type?: "lecture" | "glossary";
-                    /** @description Лимит результатов */
-                    limit?: number;
-                    /** @description Смещение */
-                    offset?: number;
-                };
+                query?: never;
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            /** @description Поисковый запрос */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["llmretrieval.searchRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -12926,8 +13142,8 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["search.Hit"][];
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["llmretrieval.Hit"][];
                         };
                     };
                 };
@@ -12949,64 +13165,17 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/search.md": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Markdown-поиск */
-        get: {
-            parameters: {
-                query: {
-                    /** @description Поисковый запрос */
-                    q: string;
-                    /** @description Тип результата */
-                    type?: "lecture" | "glossary";
-                    /** @description Лимит результатов */
-                    limit?: number;
-                    /** @description Смещение */
-                    offset?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Markdown-список результатов */
-                200: {
+                /** @description EMBEDDER_UNAVAILABLE */
+                503: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/markdown": string;
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/markdown": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
         };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -14624,7 +14793,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -15344,6 +15513,15 @@ export interface components {
         "llmretrieval.ContextItem": {
             content_markdown?: string;
             entity_id?: string;
+            score?: number;
+            snippet?: string;
+            source_url?: string;
+            title?: string;
+            type?: components["schemas"]["llmretrieval.HitType"];
+        };
+        "llmretrieval.Hit": {
+            entity_id?: string;
+            score?: number;
             snippet?: string;
             source_url?: string;
             title?: string;
@@ -15352,6 +15530,10 @@ export interface components {
         /** @enum {string} */
         "llmretrieval.HitType": "document" | "glossary";
         "llmretrieval.contextRequest": {
+            limit?: number;
+            query?: string;
+        };
+        "llmretrieval.searchRequest": {
             limit?: number;
             query?: string;
         };
@@ -15402,6 +15584,15 @@ export interface components {
             target_id?: string;
             target_type?: string;
             user_id?: string;
+        };
+        "pat.MintResult": {
+            created_at?: number;
+            /** @description Unix sec, nil = no expiry */
+            expires_at?: number;
+            id?: string;
+            label?: string;
+            token?: string;
+            token_hint?: string;
         };
         "pat.Token": {
             created_at?: number;
@@ -15486,7 +15677,7 @@ export interface components {
             endpoint: string;
         };
         /** @enum {string} */
-        "rbac.Capability": "lecture.create" | "lecture.delete" | "media.create" | "media.delete_any" | "comment.delete_any" | "comment.create" | "annotation.delete_any" | "user.list" | "user.moderate" | "push.send" | "glossary.create" | "glossary.update" | "glossary.delete" | "audit.read" | "tag.create" | "tag.update" | "tag.delete" | "tag.assign" | "document.create" | "document.delete_any" | "trail.create" | "trail.delete_any" | "annotation.create" | "entity.attach" | "share_link.moderate" | "event.read" | "event.create" | "event.update" | "event.delete" | "banner.read" | "banner.create" | "banner.update" | "banner.delete" | "banner.view_admin_audience" | "form.create" | "form.delete_any" | "canvas.create" | "canvas.delete_any";
+        "rbac.Capability": "lecture.create" | "lecture.delete" | "media.create" | "media.delete_any" | "comment.delete_any" | "comment.create" | "annotation.delete_any" | "user.list" | "user.moderate" | "push.send" | "glossary.create" | "glossary.update" | "glossary.delete" | "audit.read" | "tag.create" | "tag.update" | "tag.delete" | "tag.assign" | "document.create" | "document.delete_any" | "trail.create" | "trail.delete_any" | "annotation.create" | "entity.attach" | "share_link.moderate" | "event.read" | "event.create" | "event.update" | "event.delete" | "banner.read" | "banner.create" | "banner.update" | "banner.delete" | "banner.view_admin_audience" | "form.create" | "form.delete_any" | "canvas.create" | "canvas.delete_any" | "map.rebuild";
         /** @enum {string} */
         "rbac.Role": "user" | "admin";
         /** @enum {string} */
@@ -15503,29 +15694,38 @@ export interface components {
             editor_id?: string;
             id?: string;
         };
-        "search.GlossaryData": {
-            definition?: string;
+        "semmap.Bounds": {
+            max?: number[];
+            min?: number[];
+        };
+        "semmap.Cluster": {
+            color?: string;
+            id?: number;
+            label?: string;
+            size?: number;
+        };
+        "semmap.Layout": {
+            bounds?: components["schemas"]["semmap.Bounds"];
+            clusters?: components["schemas"]["semmap.Cluster"][];
+            dims?: number;
+            layout_version?: string;
+            points?: components["schemas"]["semmap.Point"][];
+        };
+        "semmap.MapStatus": {
+            building?: boolean;
+            generation?: number;
+            last_duration_ms?: number;
+            last_error?: string;
+            last_rebuilt_at?: number;
+            layout_version?: string;
+            ready?: boolean;
+        };
+        "semmap.Point": {
+            cluster?: number;
+            coords?: number[];
             id?: string;
-            title?: string;
-        };
-        "search.Hit": {
-            glossary_term?: components["schemas"]["search.GlossaryData"];
-            lecture?: components["schemas"]["search.LectureData"];
-            matches?: components["schemas"]["search.Match"][];
-            type?: components["schemas"]["search.HitType"];
-        };
-        /** @enum {string} */
-        "search.HitType": "lecture" | "glossary";
-        "search.LectureData": {
-            date?: string;
-            lecture_id?: string;
-            title?: string;
-        };
-        "search.Match": {
-            block_id?: string;
-            block_type?: string;
-            snippet?: string;
-            source?: string;
+            /** @description "document" | "glossary" */
+            type?: string;
         };
         "sharelink.CreateRequest": {
             expires_at?: string;
