@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { parseMapResponse } from "./schemas";
 
 const ok = {
-  layout_version: 7,
+  layout_version: "v7",
   dims: 3,
   bounds: { min: [-1, -1, -1], max: [1, 1, 1] },
   clusters: [{ id: 0, label: "A", color: "#5B8FF9", size: 2 }],
@@ -13,7 +13,7 @@ const ok = {
 describe("parseMapResponse", () => {
   it("парсит валидный ответ", () => {
     const r = parseMapResponse(ok);
-    expect(r.layout_version).toBe(7);
+    expect(r.layout_version).toBe("v7");
     expect(r.points).toHaveLength(1);
   });
 

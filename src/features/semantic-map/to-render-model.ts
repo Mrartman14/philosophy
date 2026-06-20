@@ -81,7 +81,9 @@ function computeBounds(
   positions: Float32Array,
   count: number,
 ): { min: [number, number, number]; max: [number, number, number] } {
-  if (b && b.min.length >= 2 && b.max.length >= 2) {
+  // Number.isFinite-guard: вырожденные bounds [±Infinity] (пустой корпус) уходят в
+  // расчёт-из-точек/дефолт, иначе centerX=(Inf+-Inf)/2=NaN ломал бы камеру.
+  if (b && b.min.length >= 2 && b.max.length >= 2 && Number.isFinite(b.min[0])) {
     return {
       min: [b.min[0] ?? -1, b.min[1] ?? -1, b.min[2] ?? -1],
       max: [b.max[0] ?? 1, b.max[1] ?? 1, b.max[2] ?? 1],

@@ -24,7 +24,8 @@ export interface MapPoint {
 }
 
 export interface MapData {
-  layout_version: number;
+  /** Непрозрачная строка-версия раскладки (content-hash, напр. `sha256-…`) — см. контракт. */
+  layout_version: string;
   dims: number;
   bounds: MapBounds;
   clusters: MapCluster[];

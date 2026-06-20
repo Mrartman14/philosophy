@@ -8,7 +8,7 @@ import type { MapData } from "./types";
 
 function baseData(overrides: Partial<MapData> = {}): MapData {
   return {
-    layout_version: 1,
+    layout_version: "v1",
     dims: 3,
     bounds: { min: [-1, -1, -1], max: [1, 1, 1] },
     clusters: [{ id: 0, label: "A", color: "#ffffff", size: 1 }],

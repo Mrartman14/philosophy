@@ -2,9 +2,8 @@
 // src/features/semantic-map/ui/semantic-map-view.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { ThreeMapRenderer } from "../renderer";
-import type { RenderMode } from "../renderer";
-import { projectToScreen } from "../renderer/project";
+import { ThreeMapRenderer, projectToScreen } from "../renderer";
+import type { MapRenderer, RenderMode } from "../renderer";
 import { toRenderModel } from "../to-render-model";
 import type { MapData } from "../types";
 
@@ -13,19 +12,23 @@ import { MapRegionLabels, type ProjectedLabel } from "./map-region-labels";
 
 const MODE_KEY = "semantic-map:mode";
 
+// Восстановить сохранённый режим (только клиент — ssr:false гарантирует window).
+function readSavedMode(): RenderMode {
+  const saved =
+    typeof window !== "undefined" ? window.localStorage.getItem(MODE_KEY) : null;
+  return saved === "2d" || saved === "3d" ? saved : "2d";
+}
+
 export default function SemanticMapView({ data }: { data: MapData }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const rendererRef = useRef<ThreeMapRenderer | null>(null);
-  const [mode, setMode] = useState<RenderMode>(() => {
-    // Восстановить сохранённый режим (lazy initializer — только на клиенте, ssr:false гарантирует это).
-    const saved =
-      typeof window !== "undefined" ? window.localStorage.getItem(MODE_KEY) : null;
-    return saved === "2d" || saved === "3d" ? saved : "2d";
-  });
-  // Текущий режим в ref — чтобы lifecycle-эффект (ключ [model]) применял его после
-  // пере-создания рендерера при смене data, не теряя выбор пользователя.
-  const modeRef = useRef<RenderMode>("2d");
+  // Тип рефа — ПОРТ MapRenderer (не конкретный ThreeMapRenderer): своп рисовалки
+  // меняет только `new ThreeMapRenderer()`, не UI.
+  const rendererRef = useRef<MapRenderer | null>(null);
+  const [mode, setMode] = useState<RenderMode>(readSavedMode);
+  // modeRef синхронизирован с mode (тот же восстановленный старт) — lifecycle-эффект
+  // ([model]) применяет актуальный режим после пере-создания рендерера при смене data.
+  const modeRef = useRef<RenderMode>(readSavedMode());
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
   const model = useMemo(() => toRenderModel(data), [data]);
 
@@ -35,7 +38,7 @@ export default function SemanticMapView({ data }: { data: MapData }) {
     const canvas = canvasRef.current;
     if (!wrap || !canvas) return;
 
-    const r = new ThreeMapRenderer();
+    const r: MapRenderer = new ThreeMapRenderer();
     rendererRef.current = r;
 
     const updateLabels = () => {

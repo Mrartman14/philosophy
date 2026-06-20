@@ -27,7 +27,7 @@ const PointSchema = z
 
 const MapResponseSchema = z
   .object({
-    layout_version: z.number(),
+    layout_version: z.string(),
     dims: z.number(),
     bounds: z.object({ min: z.array(z.number()), max: z.array(z.number()) })
       // eslint-disable-next-line @typescript-eslint/no-deprecated

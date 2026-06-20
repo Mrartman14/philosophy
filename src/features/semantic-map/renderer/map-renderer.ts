@@ -20,7 +20,7 @@ export interface MapRenderer {
   getViewProjection(): Float32Array | null;
   /** Подписка на каждый отрисованный кадр (для синхронизации HTML-overlay подписей). */
   onChange(cb: () => void): void;
-  /** Стаб v1: hover/click-picking (overlay/lazy-детали — будущая фаза). */
+  /** Стаб v1: hover/click-picking (overlay/lazy-детали — будущая фаза). Реализация может игнорировать cb. */
   onPick?(cb: (id: string | null) => void): void;
   /** Освободить GPU-ресурсы и остановить loop. */
   destroy(): void;

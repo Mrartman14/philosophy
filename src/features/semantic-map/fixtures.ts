@@ -75,8 +75,10 @@ export function makeFixtureMap(opts: FixtureOptions = {}): MapData {
     ];
     for (let d = 0; d < 3; d++) {
       const cd = coords[d] ?? 0; // индекс кортежа переменной d → number | undefined
-      if (cd < (min[d] ?? 0)) min[d] = cd;
-      if (cd > (max[d] ?? 0)) max[d] = cd;
+      // fallback совпадает с инициализацией (Infinity/-Infinity), а не 0 — самосогласованно
+      // с to-render-model.computeBounds (недостижимо при d∈{0,1,2}, но корректно).
+      if (cd < (min[d] ?? Infinity)) min[d] = cd;
+      if (cd > (max[d] ?? -Infinity)) max[d] = cd;
     }
     points.push({
       type: isGloss ? "glossary" : "document",
@@ -87,7 +89,7 @@ export function makeFixtureMap(opts: FixtureOptions = {}): MapData {
   }
 
   return {
-    layout_version: 1,
+    layout_version: "fixture-1",
     dims: 3,
     bounds: { min, max },
     clusters,

@@ -171,8 +171,8 @@ export class ThreeMapRenderer implements MapRenderer {
     this.changeCb = cb;
   }
 
-  onPick(): void {
-    // Стаб v1: hover/click-picking — будущая фаза (overlay/lazy-детали).
+  onPick(_cb: (id: string | null) => void): void {
+    // Стаб v1: hover/click-picking — будущая фаза (overlay/lazy-детали). cb игнорируется.
   }
 
   private readonly loop = (): void => {
