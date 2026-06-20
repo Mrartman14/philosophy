@@ -100,4 +100,13 @@ describe("classifyBlocks", () => {
       "structural-conflict",
     );
   });
+
+  it("сервер удалил, я изменил → structural-conflict", () => {
+    const base = [p("a", "A"), p("b", "B")];
+    const mine = [p("a", "A"), p("b", "B2")]; // я изменил b
+    const theirs = [p("a", "A")]; // сервер удалил b
+    expect(statusById(classifyBlocks(base, mine, theirs)).b).toBe(
+      "structural-conflict",
+    );
+  });
 });
