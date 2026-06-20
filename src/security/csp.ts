@@ -94,9 +94,9 @@ export function buildSecurityHeaders(): SecurityHeaders {
     // storage резолвится ТАК ЖЕ, как в src/utils/storage-url.ts: STORAGE || API.
     // ВАЖНО: эти переменные должны быть заданы перед CSP_ENFORCE=1, иначе
     // cross-origin картинки/запросы заблокируются (см. .env.example, Task 6).
-    storageOrigin: originFromUrl(
-      process.env.NEXT_PUBLIC_STORAGE_URL || process.env.NEXT_PUBLIC_API_URL,
-    ),
+    storageOrigin:
+      originFromUrl(process.env.NEXT_PUBLIC_STORAGE_URL) ??
+      originFromUrl(process.env.NEXT_PUBLIC_API_URL),
     isDev: process.env.NODE_ENV !== "production",
   });
   return {

@@ -6,7 +6,7 @@ vi.mock("@/services/observability/server", () => ({
 
 const warn = vi.fn();
 vi.mock("@/services/observability", () => ({
-  log: { warn: (...a: unknown[]) => warn(...a) },
+  log: { warn: (...a: unknown[]): void => { warn(...a); } },
 }));
 
 import { POST } from "./route";
