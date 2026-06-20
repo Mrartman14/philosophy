@@ -65,7 +65,7 @@ export function toRenderModel(data: MapData): RenderModel {
     return {
       id: cid,
       label: c.label ?? "",
-      color: clusterColor(cid, c.color),
+      color: colorByCluster.get(cid) ?? clusterColor(cid, c.color),
       size: c.size ?? a?.n ?? 0,
       centroid,
     };
