@@ -1,6 +1,7 @@
 "use client";
 // src/features/semantic-map/ui/map-mode-toggle.tsx
 import { Button } from "@/components/ui";
+import { useT } from "@/i18n/client";
 
 import type { RenderMode } from "../renderer";
 
@@ -11,11 +12,11 @@ export function MapModeToggle({
   mode: RenderMode;
   onChange: (m: RenderMode) => void;
 }) {
+  const t = useT("semanticMap");
   return (
-    // i18n: aria-label «Размерность карты» вынести в namespace semanticMap при интеграции
     <div
       role="group"
-      aria-label="Размерность карты"
+      aria-label={t("dimensionAriaLabel")}
       className="inline-flex gap-1 rounded-md bg-(--color-surface) p-1 shadow"
     >
       {(["2d", "3d"] as const).map((m) => (

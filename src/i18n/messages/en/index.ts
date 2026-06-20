@@ -24,6 +24,7 @@ import notifications from "./notifications";
 import pages from "./pages";
 import preferences from "./preferences";
 import search from "./search";
+import semanticMap from "./semanticMap";
 import settings from "./settings";
 import shareLinks from "./shareLinks";
 import statistics from "./statistics";
@@ -55,6 +56,7 @@ const en = {
   pages,
   preferences,
   search,
+  semanticMap,
   settings,
   shareLinks,
   statistics,

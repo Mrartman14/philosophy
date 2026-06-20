@@ -111,6 +111,9 @@ const pages = {
   searchPlaceholder: "Enter a query to start searching.",
   searchUnavailable: "Search is temporarily unavailable. Try again later.",
 
+  // ─── /map ────────────────────────────────────────────────────────────
+  mapTitle: "Semantic map",
+
   // ─── /me/tokens ──────────────────────────────────────────────────────
   tokensTitle: "Personal tokens",
   tokensHeading: "Personal access tokens",

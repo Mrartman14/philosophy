@@ -1,10 +1,11 @@
 // src/app/map/page.tsx
 import { getMap, SemanticMap } from "@/features/semantic-map";
+import { getT } from "@/i18n";
 
-export const metadata = {
-  // i18n: заголовок вынести при интеграции
-  title: "Карта смыслов",
-};
+export async function generateMetadata() {
+  const t = await getT("pages");
+  return { title: t("mapTitle") };
+}
 
 export default async function MapPage({
   searchParams,

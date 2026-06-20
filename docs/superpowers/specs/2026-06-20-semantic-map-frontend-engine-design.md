@@ -13,9 +13,9 @@
 `/map`; план [../plans/2026-06-20-semantic-map-frontend-engine.md](../plans/2026-06-20-semantic-map-frontend-engine.md)).
 Бэкенд (`/api/map`) ещё не реализован — движок работает против фикстур контрактной
 формы (`getMap()` — точка swap'а), подключение к реальной ручке за тем же
-интерфейсом данных без переделки. Открытые follow-ups: i18n-строки (namespace
-`semanticMap`), nav-ссылка на `/map`, swap `getMap`→`/api/map`, overlay
-(`onPick`/`query_point`/подсветка хитов).
+интерфейсом данных без переделки. i18n-строки вынесены в namespace `semanticMap`
+(+ `pages.mapTitle`). Открытые follow-ups: nav-ссылка на `/map`, swap
+`getMap`→`/api/map`, overlay (`onPick`/`query_point`/подсветка хитов).
 
 ## Цель и рамки
 

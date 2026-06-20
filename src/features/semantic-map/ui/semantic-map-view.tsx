@@ -2,6 +2,8 @@
 // src/features/semantic-map/ui/semantic-map-view.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useT } from "@/i18n/client";
+
 import { ThreeMapRenderer, projectToScreen } from "../renderer";
 import type { MapRenderer, RenderMode } from "../renderer";
 import { toRenderModel } from "../to-render-model";
@@ -31,6 +33,7 @@ export default function SemanticMapView({ data }: { data: MapData }) {
   const modeRef = useRef<RenderMode>(readSavedMode());
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
   const model = useMemo(() => toRenderModel(data), [data]);
+  const t = useT("semanticMap");
 
   // Жизненный цикл рендерера.
   useEffect(() => {
@@ -89,9 +92,8 @@ export default function SemanticMapView({ data }: { data: MapData }) {
         <MapModeToggle mode={mode} onChange={setMode} />
       </div>
       {model.count === 0 && (
-        // i18n: вынести строку при интеграции
         <div className="absolute inset-0 flex items-center justify-center text-sm text-(--color-fg-muted)">
-          Карта пуста
+          {t("empty")}
         </div>
       )}
     </div>
