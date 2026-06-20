@@ -72,17 +72,25 @@ describe("toRenderModel", () => {
   });
 
   it("без bounds — считает из точек", () => {
-    const data = baseData({
+    const m = toRenderModel({
+      layout_version: "v1",
+      dims: 3,
+      clusters: [{ id: 0, label: "A", size: 1 }],
       points: [
         { type: "document", id: "a", coords: [-2, 0, 0], cluster: 0 },
         { type: "document", id: "b", coords: [3, 1, -1], cluster: 0 },
       ],
     });
-    // @ts-expect-error — намеренно убираем bounds для проверки фолбэка
-    delete data.bounds;
-    const result = toRenderModel(data);
-    expect(result.bounds.min[0]).toBe(-2);
-    expect(result.bounds.max[0]).toBe(3);
+    expect(m.bounds.min[0]).toBe(-2);
+    expect(m.bounds.max[0]).toBe(3);
+  });
+
+  it("пустой/частичный ответ (все поля отсутствуют) — не падает", () => {
+    const m = toRenderModel({});
+    expect(m.count).toBe(0);
+    expect(m.clusters).toEqual([]);
+    expect(m.bounds.min).toEqual([-1, -1, -1]);
+    expect(m.bounds.max).toEqual([1, 1, 1]);
   });
 
   it("вычисляет центроид кластера", () => {

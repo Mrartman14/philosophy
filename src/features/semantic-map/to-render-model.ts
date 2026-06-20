@@ -7,11 +7,10 @@ import type { MapBounds, MapData, RenderCluster, RenderModel } from "./types";
 const KNOWN_TYPES = ["document", "glossary"];
 
 export function toRenderModel(data: MapData): RenderModel {
-  // Поля контракта (dims/points/clusters) non-nullable по типу — без `?? …`
-  // (ESLint strictTypeChecked: no-unnecessary-condition). Защита от malformed —
-  // на слое parseMapResponse (schemas.ts), фикстуры всегда well-formed.
-  const dims = data.dims;
-  const pts = data.points;
+  // Все поля контракта optional (semmap.*) — дефолтим; устойчивость к malformed/пустому.
+  const dims = data.dims ?? 3;
+  const pts = data.points ?? [];
+  const cls = data.clusters ?? [];
   const count = pts.length;
 
   const positions = new Float32Array(count * 3);
@@ -19,21 +18,20 @@ export function toRenderModel(data: MapData): RenderModel {
   const ids: string[] = [];
   const typeCodes = new Uint8Array(count);
 
-  // Таблица типов: известные + единый слот "other" для неизвестных.
   const typeTable: string[] = [...KNOWN_TYPES, "other"];
   const genericIdx = typeTable.length - 1;
   const typeIndex = new Map<string, number>(KNOWN_TYPES.map((t, i) => [t, i]));
 
-  // Резолв цвета кластера один раз.
   const colorByCluster = new Map<number, string>();
-  for (const c of data.clusters) colorByCluster.set(c.id, clusterColor(c.id, c.color));
+  for (const c of cls) {
+    const cid = c.id ?? 0;
+    colorByCluster.set(cid, clusterColor(cid, c.color));
+  }
 
-  // Аккумулятор центроидов.
   const agg = new Map<number, { x: number; y: number; z: number; n: number }>();
 
-  // forEach даёт `p: MapPoint` (определён), без `pts[i]: MapPoint | undefined`.
   pts.forEach((p, i) => {
-    const co = p.coords; // number[]; элементы — `number | undefined` (noUncheckedIndexedAccess)
+    const co = p.coords ?? [];
     const x = co[0] ?? 0;
     const y = co[1] ?? 0;
     const z = dims >= 3 ? co[2] ?? 0 : 0;
@@ -41,31 +39,33 @@ export function toRenderModel(data: MapData): RenderModel {
     positions[i * 3 + 1] = y;
     positions[i * 3 + 2] = z;
 
-    const hex = colorByCluster.get(p.cluster) ?? clusterColor(p.cluster);
+    const cl = p.cluster ?? 0;
+    const hex = colorByCluster.get(cl) ?? clusterColor(cl);
     const [r, g, b] = hexToRgb01(hex);
     colors[i * 3] = r;
     colors[i * 3 + 1] = g;
     colors[i * 3 + 2] = b;
 
-    ids[i] = p.id;
-    typeCodes[i] = typeIndex.get(p.type) ?? genericIdx; // неизвестный type → generic
+    ids[i] = p.id ?? "";
+    typeCodes[i] = typeIndex.get(p.type ?? "") ?? genericIdx;
 
-    const a = agg.get(p.cluster) ?? { x: 0, y: 0, z: 0, n: 0 };
+    const a = agg.get(cl) ?? { x: 0, y: 0, z: 0, n: 0 };
     a.x += x;
     a.y += y;
     a.z += z;
     a.n += 1;
-    agg.set(p.cluster, a);
+    agg.set(cl, a);
   });
 
-  const clusters: RenderCluster[] = data.clusters.map((c) => {
-    const a = agg.get(c.id);
+  const clusters: RenderCluster[] = cls.map((c) => {
+    const cid = c.id ?? 0;
+    const a = agg.get(cid);
     const centroid: [number, number, number] =
       a?.n ? [a.x / a.n, a.y / a.n, a.z / a.n] : [0, 0, 0];
     return {
-      id: c.id,
+      id: cid,
       label: c.label ?? "",
-      color: clusterColor(c.id, c.color),
+      color: clusterColor(cid, c.color),
       size: c.size ?? a?.n ?? 0,
       centroid,
     };
@@ -74,8 +74,7 @@ export function toRenderModel(data: MapData): RenderModel {
   return { count, positions, colors, ids, typeCodes, typeTable, bounds: computeBounds(data.bounds, positions, count), clusters };
 }
 
-// Параметр типизирован `MapBounds | undefined`, чтобы рантайм-фолбэк «нет bounds →
-// считаем из точек» был легитимен под no-unnecessary-condition (тест удаляет bounds).
+// MapBounds теперь all-optional из semmap.Bounds — b?.min/b?.max тоже optional.
 function computeBounds(
   b: MapBounds | undefined,
   positions: Float32Array,
@@ -83,7 +82,7 @@ function computeBounds(
 ): { min: [number, number, number]; max: [number, number, number] } {
   // Number.isFinite-guard: вырожденные bounds [±Infinity] (пустой корпус) уходят в
   // расчёт-из-точек/дефолт, иначе centerX=(Inf+-Inf)/2=NaN ломал бы камеру.
-  if (b && b.min.length >= 2 && b.max.length >= 2 && Number.isFinite(b.min[0])) {
+  if (b?.min && b.max && b.min.length >= 2 && b.max.length >= 2 && Number.isFinite(b.min[0])) {
     return {
       min: [b.min[0] ?? -1, b.min[1] ?? -1, b.min[2] ?? -1],
       max: [b.max[0] ?? 1, b.max[1] ?? 1, b.max[2] ?? 1],
