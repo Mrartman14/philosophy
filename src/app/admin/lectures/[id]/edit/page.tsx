@@ -1,4 +1,5 @@
 // src/app/admin/lectures/[id]/edit/page.tsx
+import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
 import {
@@ -19,7 +20,10 @@ import {
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
-export const metadata = { title: "Редактирование лекции" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("editLectureMetaTitle") };
+}
 
 interface Props {
   params: Promise<{ id: string }>;

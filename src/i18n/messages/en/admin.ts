@@ -95,6 +95,29 @@ const admin = {
   // --- push ---
   pushTitle: "Push notifications",
   pushDescription: "The broadcast is sent to all subscribed users. Sending is asynchronous — delivery takes time.",
+
+  // --- SEO meta: page <title> ---
+  dashboardMetaTitle: "Admin panel",
+  trailsMetaTitle: "Trails — admin",
+  commentsMetaTitle: "Comment moderation",
+  formsMetaTitle: "Forms — admin",
+  shareLinksMetaTitle: "Link moderation — admin",
+  bannersMetaTitle: "Banners — admin",
+  bannerEditMetaTitle: "Banners — edit",
+  tagsMetaTitle: "Tags — admin",
+  annotationsMetaTitle: "Annotations — moderation",
+  pushMetaTitle: "Push notifications — admin",
+  auditMetaTitle: "Audit — admin",
+  usersMetaTitle: "Users — admin",
+  glossaryMetaTitle: "Glossary — admin",
+  glossaryEditMetaTitle: "Glossary — edit term",
+  documentsMetaTitle: "Documents — admin",
+  lecturesMetaTitle: "Lectures — admin",
+  newLectureMetaTitle: "New lecture",
+  editLectureMetaTitle: "Edit lecture",
+  attachmentsMetaTitle: "Lecture attachments",
+  eventsMetaTitle: "Events — admin",
+  eventEditMetaTitle: "Events — edit",
 };
 
 export default admin;

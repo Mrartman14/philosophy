@@ -1,11 +1,15 @@
 // src/app/admin/lectures/new/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { canCreateLecture, LectureCreateForm } from "@/features/lectures";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
-export const metadata = { title: "Новая лекция" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("newLectureMetaTitle") };
+}
 
 export default async function NewLecturePage() {
   const me = await getMe();

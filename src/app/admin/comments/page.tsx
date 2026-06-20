@@ -1,4 +1,5 @@
 // src/app/admin/comments/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Button, TextInput } from "@/components/ui";
@@ -14,7 +15,10 @@ interface Props {
   searchParams: Promise<{ lecture_id?: string }>;
 }
 
-export const metadata = { title: "Модерация комментариев" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("commentsMetaTitle") };
+}
 
 /**
  * Admin-модерация комментариев ПЕР-ЛЕКЦИОННАЯ: бек требует lecture_id

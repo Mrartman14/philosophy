@@ -1,4 +1,5 @@
 // src/app/admin/trails/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
@@ -12,7 +13,10 @@ import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
-export const metadata = { title: "Маршруты — админ" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("trailsMetaTitle") };
+}
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;

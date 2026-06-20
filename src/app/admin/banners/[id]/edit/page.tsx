@@ -1,4 +1,5 @@
 // src/app/admin/banners/[id]/edit/page.tsx
+import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
 import { SchemaContextProvider } from "@/components/ast-editor";
@@ -17,7 +18,10 @@ import {
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
-export const metadata = { title: "Баннеры — редактирование" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("bannerEditMetaTitle") };
+}
 
 interface Props {
   params: Promise<{ id: string }>;

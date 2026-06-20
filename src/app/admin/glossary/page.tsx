@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import {
@@ -12,6 +13,11 @@ import {
 import { getT, getLocale } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("glossaryMetaTitle") };
+}
 
 interface Props {
   searchParams: Promise<{ q?: string; offset?: string }>;
@@ -63,4 +69,3 @@ export default async function AdminGlossaryPage({ searchParams }: Props) {
   );
 }
 
-export const metadata = { title: "Глоссарий — админ" };

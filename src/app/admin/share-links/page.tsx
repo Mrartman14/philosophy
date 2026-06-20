@@ -1,4 +1,5 @@
 // src/app/admin/share-links/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import {
@@ -10,6 +11,11 @@ import {
 } from "@/features/share-links";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("shareLinksMetaTitle") };
+}
 
 interface Props {
   searchParams: Promise<{ resource_type?: string; resource_id?: string }>;
@@ -55,4 +61,3 @@ export default async function AdminShareLinksPage({ searchParams }: Props) {
   );
 }
 
-export const metadata = { title: "Модерация ссылок — админ" };

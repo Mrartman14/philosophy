@@ -1,4 +1,5 @@
 // src/app/admin/documents/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
@@ -12,7 +13,10 @@ import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
-export const metadata = { title: "Документы — админ" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("documentsMetaTitle") };
+}
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;

@@ -1,4 +1,5 @@
 // src/app/admin/audit/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
@@ -11,6 +12,11 @@ import {
 } from "@/features/audit";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("auditMetaTitle") };
+}
 
 const PAGE_LIMIT = 50;
 
@@ -70,4 +76,3 @@ export default async function AdminAuditPage({ searchParams }: Props) {
   );
 }
 
-export const metadata = { title: "Аудит — админ" };

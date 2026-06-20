@@ -1,4 +1,5 @@
 // src/app/admin/tags/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { EmptyState, Pagination } from "@/components/ui";
@@ -14,7 +15,10 @@ import { getT, getLocale } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
-export const metadata = { title: "Теги — админ" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("tagsMetaTitle") };
+}
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;

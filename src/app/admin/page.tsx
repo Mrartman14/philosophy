@@ -1,7 +1,12 @@
 // src/app/admin/page.tsx
+import type { Metadata } from "next";
+
 import { getT } from "@/i18n";
 
-export const metadata = { title: "Админ-панель" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("dashboardMetaTitle") };
+}
 
 export default async function AdminDashboardPage() {
   const t = await getT("admin");

@@ -95,6 +95,29 @@ const admin = {
   // --- push ---
   pushTitle: "Push-уведомления",
   pushDescription: "Рассылка уходит всем подписанным пользователям. Отправка асинхронная — доставка занимает время.",
+
+  // --- SEO-мета: <title> страниц ---
+  dashboardMetaTitle: "Админ-панель",
+  trailsMetaTitle: "Маршруты — админ",
+  commentsMetaTitle: "Модерация комментариев",
+  formsMetaTitle: "Формы — админ",
+  shareLinksMetaTitle: "Модерация ссылок — админ",
+  bannersMetaTitle: "Баннеры — админ",
+  bannerEditMetaTitle: "Баннеры — редактирование",
+  tagsMetaTitle: "Теги — админ",
+  annotationsMetaTitle: "Аннотации — модерация",
+  pushMetaTitle: "Push-уведомления — админ",
+  auditMetaTitle: "Аудит — админ",
+  usersMetaTitle: "Пользователи — админ",
+  glossaryMetaTitle: "Глоссарий — админ",
+  glossaryEditMetaTitle: "Глоссарий — редактирование термина",
+  documentsMetaTitle: "Документы — админ",
+  lecturesMetaTitle: "Лекции — админ",
+  newLectureMetaTitle: "Новая лекция",
+  editLectureMetaTitle: "Редактирование лекции",
+  attachmentsMetaTitle: "Прикрепления лекции",
+  eventsMetaTitle: "События — админ",
+  eventEditMetaTitle: "События — редактирование",
 };
 
 export default admin;

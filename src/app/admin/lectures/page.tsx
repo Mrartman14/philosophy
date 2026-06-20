@@ -1,4 +1,5 @@
 // src/app/admin/lectures/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import {
@@ -23,7 +24,10 @@ import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parsePaging } from "@/utils/paging";
 
-export const metadata = { title: "Админ — лекции" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("lecturesMetaTitle") };
+}
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

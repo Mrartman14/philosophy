@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
 import {
@@ -14,7 +15,10 @@ import type { ManagedAttachment } from "@/features/lectures";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
-export const metadata = { title: "Прикрепления лекции" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("attachmentsMetaTitle") };
+}
 
 interface Props {
   params: Promise<{ id: string }>;

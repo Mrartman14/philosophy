@@ -1,4 +1,5 @@
 // src/app/admin/banners/page.tsx
+import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
@@ -14,6 +15,11 @@ import {
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT("admin");
+  return { title: t("bannersMetaTitle") };
+}
 
 interface Props {
   searchParams: Promise<{ offset?: string }>;
@@ -66,4 +72,3 @@ export default async function AdminBannersPage({ searchParams }: Props) {
   );
 }
 
-export const metadata = { title: "Баннеры — админ" };
