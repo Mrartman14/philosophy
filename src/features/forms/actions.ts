@@ -76,15 +76,21 @@ export const createForm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   if (!canCreateForm(me)) throw new ForbiddenError(me ? (me.status !== "active" ? "status" : "role") : "guest");
   const input = parseFormData(makeFormCreateSchema(await getT("validation")), formData);
+  // submission_mode/visibility гарантированы superRefine FormCreateSchema
+  // (иначе parseFormData бросит 422 до сюда). Явная проверка инварианта вместо
+  // фиктивного дефолта: ломаемся громко, если гарантия когда-нибудь ослабнет.
+  if (!input.submission_mode || !input.visibility) {
+    throw new Error(
+      "forms invariant: superRefine guarantees submission_mode & visibility",
+    );
+  }
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/forms", {
     body: {
       title: input.title,
       fields: buildFieldsBody(input.fields),
-      // visibility/submission_mode гарантированы superRefine FormCreateSchema
-      // (краснеют 422 на беке иначе) — у Zod тип optional; fallback — unreachable.
-      submission_mode: input.submission_mode ?? "editable",
-      visibility: input.visibility ?? "private",
+      submission_mode: input.submission_mode,
+      visibility: input.visibility,
       ...(input.description ? { description: input.description } : {}),
       ...(input.after_submit ? { after_submit: input.after_submit } : {}),
     },
