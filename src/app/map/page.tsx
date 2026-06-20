@@ -1,5 +1,6 @@
 // src/app/map/page.tsx
-import { getMap, MapStatePanel, SemanticMap } from "@/features/semantic-map";
+import { getSearchResults } from "@/features/search";
+import { getMap, MapStatePanel, SemanticMap, type MapOverlay } from "@/features/semantic-map";
 import { getT } from "@/i18n";
 
 export async function generateMetadata() {
@@ -7,12 +8,41 @@ export async function generateMetadata() {
   return { title: t("mapTitle") };
 }
 
-export default async function MapPage() {
+export default async function MapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const sp = await searchParams;
+  const q = sp.q?.trim();
+
   const result = await getMap();
+  if (!result.ok) {
+    return (
+      <main className="h-[80vh] w-full">
+        <MapStatePanel reason={result.reason} />
+      </main>
+    );
+  }
+
+  let overlay: MapOverlay | undefined;
+  if (q) {
+    try {
+      const search = await getSearchResults({ q });
+      overlay = {
+        query: q,
+        hits: search.items.flatMap((h) =>
+          h.entity_id && h.type ? [{ id: h.entity_id, type: h.type, score: h.score ?? 0 }] : [],
+        ),
+      };
+    } catch {
+      overlay = { query: q, hits: [] }; // поиск недоступен — карта без overlay
+    }
+  }
 
   return (
     <main className="h-[80vh] w-full">
-      {result.ok ? <SemanticMap data={result.map} /> : <MapStatePanel reason={result.reason} />}
+      <SemanticMap data={result.map} {...(overlay !== undefined ? { overlay } : {})} />
     </main>
   );
 }
