@@ -20,7 +20,10 @@
 - **Именование** файлов/папок в `src/` — kebab-case.
 - **Слайс не импортит другие `@/features/*`** (форсит ESLint). Read-only: actions/permissions/revalidate не нужны.
 - **three.js только внутри `renderer/`** — ни один three-тип не торчит наружу.
-- Перед завершением зелёные: `pnpm lint && pnpm test && pnpm build`.
+- **Каждый `git commit` завершать trailer'ом** (требование проекта, в commit-шагах ниже показан на Task 1 как канонический образец; добавлять в КАЖДЫЙ коммит):
+  `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`
+- **ESLint = `strictTypeChecked`** (`no-unnecessary-condition` активен): НЕ ставить `??`/`&&`/`?.` над НЕ-nullable типизированными полями — это lint-ошибка. Защищаться только там, где тип реально допускает `undefined` (опциональные поля контракта, доступ по индексу массива при `noUncheckedIndexedAccess`).
+- **CI гоняет `pnpm test:coverage`** (пороги enforced: statements 41 / branches 30 / functions 40 / lines 42). Перед завершением зелёные: `pnpm lint && pnpm test && pnpm build`; финально проверить и `pnpm test:coverage` (Task 10).
 
 ---
 
@@ -30,10 +33,10 @@
 
 **Files:**
 - Modify: `package.json` (dependencies += `three`, devDependencies += `@types/three`)
-- Modify: `package-lock.json`/`pnpm-lock.yaml` (через pnpm)
+- Modify: `pnpm-lock.yaml` (через pnpm; репозиторий на pnpm, `package-lock.json` отсутствует)
 
 **Interfaces:**
-- Produces: рантайм-модуль `three` и его типы, `three/examples/jsm/controls/OrbitControls.js`.
+- Produces: рантайм-модуль `three` и его типы, `three/addons/controls/OrbitControls.js` (документированный exports-map алиас; именно он используется в Task 7).
 
 - [ ] **Step 1: Добавить зависимости через pnpm**
 
@@ -49,11 +52,12 @@ pnpm add -D @types/three
 Run: `pnpm exec node -e "require.resolve('three'); console.log('three ok')"`
 Expected: `three ok`
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (канонический образец trailer'а — повторять в КАЖДОМ коммите ниже)
 
 ```bash
 git add package.json pnpm-lock.yaml
-git commit -m "build(deps): add three.js for semantic-map render engine"
+git commit -m "build(deps): add three.js for semantic-map render engine" \
+  -m "Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -193,7 +197,8 @@ export function clusterColor(id: number, explicit?: string | null): string {
   if (explicit && HEX6.test(explicit)) return explicit;
   const n = FALLBACK_PALETTE.length;
   const i = ((id % n) + n) % n;
-  return FALLBACK_PALETTE[i];
+  // `?? [0]` — индекс кортежа вычисляемым i под noUncheckedIndexedAccess даёт `| undefined`.
+  return FALLBACK_PALETTE[i] ?? FALLBACK_PALETTE[0];
 }
 
 /** "#rrggbb" → [r, g, b] в диапазоне 0..1. */
@@ -300,10 +305,8 @@ function gauss(rng: () => number): number {
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
 
-const PALETTE = [
-  "#5B8FF9", "#61DDAA", "#65789B", "#F6BD16", "#7262FD",
-  "#78D3F8", "#9661BC", "#F6903D",
-];
+// Цвета НЕ дублируем: fixtures не задаёт cluster.color — цвет берёт нормализатор
+// из палитры-фолбэка по id (см. palette.ts `clusterColor`). Единый источник истины.
 const LABELS = [
   "немецкий идеализм", "феноменология", "стоицизм", "эмпиризм",
   "экзистенциализм", "схоластика", "прагматизм", "аналитическая философия",
@@ -329,8 +332,7 @@ export function makeFixtureMap(opts: FixtureOptions = {}): MapData {
 
   const clusters: MapCluster[] = centroids.map((_, i) => ({
     id: i,
-    label: LABELS[i % LABELS.length],
-    color: PALETTE[i % PALETTE.length],
+    label: LABELS[i % LABELS.length] ?? "",
     size: 0,
   }));
 
@@ -340,8 +342,10 @@ export function makeFixtureMap(opts: FixtureOptions = {}): MapData {
 
   for (let i = 0; i < count; i++) {
     const c = i % k;
-    clusters[c].size = (clusters[c].size ?? 0) + 1;
-    const [cx, cy, cz] = centroids[c];
+    const cluster = clusters[c];
+    if (cluster) cluster.size = (cluster.size ?? 0) + 1;
+    const centroid = centroids[c] ?? [0, 0, 0];
+    const [cx, cy, cz] = centroid;
     const isGloss = rng() < 0.04;
     const coords: [number, number, number] = [
       cx + gauss(rng) * spread,
@@ -349,8 +353,9 @@ export function makeFixtureMap(opts: FixtureOptions = {}): MapData {
       cz + gauss(rng) * spread,
     ];
     for (let d = 0; d < 3; d++) {
-      if (coords[d] < min[d]) min[d] = coords[d];
-      if (coords[d] > max[d]) max[d] = coords[d];
+      const cd = coords[d] ?? 0; // индекс кортежа переменной d → number | undefined
+      if (cd < (min[d] ?? 0)) min[d] = cd;
+      if (cd > (max[d] ?? 0)) max[d] = cd;
     }
     points.push({
       type: isGloss ? "glossary" : "document",
@@ -444,7 +449,11 @@ describe("toRenderModel", () => {
     const m = toRenderModel(
       baseData({ dims: 2, points: [{ type: "document", id: "y", coords: [0.1, 0.2], cluster: 0 }] }),
     );
-    expect(Array.from(m.positions)).toEqual([0.1, 0.2, 0]);
+    // positions — Float32Array: 0.1/0.2 НЕ точны в float32 → toBeCloseTo, не toEqual.
+    const pos = Array.from(m.positions);
+    expect(pos[0]).toBeCloseTo(0.1, 6);
+    expect(pos[1]).toBeCloseTo(0.2, 6);
+    expect(pos[2]).toBe(0);
   });
 
   it("без bounds — считает из точек", () => {
@@ -487,13 +496,16 @@ Expected: FAIL (`Cannot find module './to-render-model'`).
 // Чистая нормализация MapData → RenderModel (типизированные массивы для one-draw-call).
 // Здесь живёт вся «контрактная устойчивость»: additive-игнор, неизвестный type, нет цвета/bounds.
 import { clusterColor, hexToRgb01 } from "./palette";
-import type { MapData, RenderCluster, RenderModel } from "./types";
+import type { MapBounds, MapData, RenderCluster, RenderModel } from "./types";
 
 const KNOWN_TYPES = ["document", "glossary"];
 
 export function toRenderModel(data: MapData): RenderModel {
-  const dims = data.dims ?? 3;
-  const pts = data.points ?? [];
+  // Поля контракта (dims/points/clusters) non-nullable по типу — без `?? …`
+  // (ESLint strictTypeChecked: no-unnecessary-condition). Защита от malformed —
+  // на слое parseMapResponse (schemas.ts), фикстуры всегда well-formed.
+  const dims = data.dims;
+  const pts = data.points;
   const count = pts.length;
 
   const positions = new Float32Array(count * 3);
@@ -508,17 +520,17 @@ export function toRenderModel(data: MapData): RenderModel {
 
   // Резолв цвета кластера один раз.
   const colorByCluster = new Map<number, string>();
-  for (const c of data.clusters ?? []) colorByCluster.set(c.id, clusterColor(c.id, c.color));
+  for (const c of data.clusters) colorByCluster.set(c.id, clusterColor(c.id, c.color));
 
   // Аккумулятор центроидов.
   const agg = new Map<number, { x: number; y: number; z: number; n: number }>();
 
-  for (let i = 0; i < count; i++) {
-    const p = pts[i];
-    const c = p.coords ?? [];
-    const x = c[0] ?? 0;
-    const y = c[1] ?? 0;
-    const z = dims >= 3 ? c[2] ?? 0 : 0;
+  // forEach даёт `p: MapPoint` (определён), без `pts[i]: MapPoint | undefined`.
+  pts.forEach((p, i) => {
+    const co = p.coords; // number[]; элементы — `number | undefined` (noUncheckedIndexedAccess)
+    const x = co[0] ?? 0;
+    const y = co[1] ?? 0;
+    const z = dims >= 3 ? co[2] ?? 0 : 0;
     positions[i * 3] = x;
     positions[i * 3 + 1] = y;
     positions[i * 3 + 2] = z;
@@ -530,7 +542,7 @@ export function toRenderModel(data: MapData): RenderModel {
     colors[i * 3 + 2] = b;
 
     ids[i] = p.id;
-    typeCodes[i] = typeIndex.has(p.type) ? typeIndex.get(p.type)! : genericIdx;
+    typeCodes[i] = typeIndex.get(p.type) ?? genericIdx; // неизвестный type → generic
 
     const a = agg.get(p.cluster) ?? { x: 0, y: 0, z: 0, n: 0 };
     a.x += x;
@@ -538,9 +550,9 @@ export function toRenderModel(data: MapData): RenderModel {
     a.z += z;
     a.n += 1;
     agg.set(p.cluster, a);
-  }
+  });
 
-  const clusters: RenderCluster[] = (data.clusters ?? []).map((c) => {
+  const clusters: RenderCluster[] = data.clusters.map((c) => {
     const a = agg.get(c.id);
     const centroid: [number, number, number] =
       a && a.n ? [a.x / a.n, a.y / a.n, a.z / a.n] : [0, 0, 0];
@@ -553,16 +565,17 @@ export function toRenderModel(data: MapData): RenderModel {
     };
   });
 
-  return { count, positions, colors, ids, typeCodes, typeTable, bounds: computeBounds(data, positions, count), clusters };
+  return { count, positions, colors, ids, typeCodes, typeTable, bounds: computeBounds(data.bounds, positions, count), clusters };
 }
 
+// Параметр типизирован `MapBounds | undefined`, чтобы рантайм-фолбэк «нет bounds →
+// считаем из точек» был легитимен под no-unnecessary-condition (тест удаляет bounds).
 function computeBounds(
-  data: MapData,
+  b: MapBounds | undefined,
   positions: Float32Array,
   count: number,
 ): { min: [number, number, number]; max: [number, number, number] } {
-  const b = data.bounds;
-  if (b && b.min?.length >= 2 && b.max?.length >= 2) {
+  if (b && b.min.length >= 2 && b.max.length >= 2) {
     return {
       min: [b.min[0] ?? -1, b.min[1] ?? -1, b.min[2] ?? -1],
       max: [b.max[0] ?? 1, b.max[1] ?? 1, b.max[2] ?? 1],
@@ -572,9 +585,9 @@ function computeBounds(
   const max: [number, number, number] = [-Infinity, -Infinity, -Infinity];
   for (let i = 0; i < count; i++) {
     for (let d = 0; d < 3; d++) {
-      const v = positions[i * 3 + d];
-      if (v < min[d]) min[d] = v;
-      if (v > max[d]) max[d] = v;
+      const v = positions[i * 3 + d] ?? 0;
+      if (v < (min[d] ?? 0)) min[d] = v;
+      if (v > (max[d] ?? 0)) max[d] = v;
     }
   }
   if (!Number.isFinite(min[0])) return { min: [-1, -1, -1], max: [1, 1, 1] };
@@ -604,7 +617,7 @@ git commit -m "feat(semantic-map): MapData → RenderModel normalizer"
 
 **Interfaces:**
 - Consumes: `MapData` из `./types`; `zod`.
-- Produces: `parseMapResponse(raw: unknown): MapData` — additive-толерантный (незнакомые поля игнор, неизвестный `type` проходит как строка). Включится в `api.ts`, когда `/api/map` появится в `schema.ts`.
+- Produces: `parseMapResponse(raw: unknown): MapData` — additive-толерантный (незнакомые поля игнор, неизвестный `type` проходит как строка). **DORMANT в v1**: не вызывается нигде (в `api.ts` — только в комментарии-инструкции swap'а), покрыт лишь собственным юнит-тестом; включится, когда `/api/map` появится в `schema.ts` (см. Task 9-комментарий + Task 10 follow-up 3).
 
 > Примечание: файл начинается с `import "server-only";`. В Vitest `server-only` застаблен алиасом (`vitest.config.ts`), поэтому тест импортируется без `vi.mock`.
 
@@ -721,7 +734,7 @@ git commit -m "feat(semantic-map): defensive additive-tolerant response parse"
 
 **Interfaces:**
 - Produces:
-  - `fit2D(min, max, aspect, pad?): { centerX, centerY, halfW, halfH }`
+  - `fit2D(min, max, aspect, pad?): { centerX, centerY, halfH }` — только полу-высота (ширину рендерер выводит как `halfH*aspect` на ресайзе; aspect-only ресайз не сбивает pan/zoom)
   - `fit3D(min, max, fovDeg, pad?): { center: [number,number,number]; distance: number }`
   - `projectToScreen(p, viewProj, width, height): { x: number; y: number; visible: boolean }` — `viewProj` = column-major 4×4 (`THREE.Matrix4.elements`).
 
@@ -739,14 +752,16 @@ describe("fit2D", () => {
     expect(f.centerX).toBe(0);
     expect(f.centerY).toBe(0);
   });
-  it("половины подогнаны под aspect", () => {
-    const f = fit2D([-1, -1, 0], [1, 1, 0], 2);
-    expect(f.halfW / f.halfH).toBeCloseTo(2, 5);
+  it("кадр покрывает и ширину, и высоту при широком aspect", () => {
+    const aspect = 2;
+    const f = fit2D([-1, -1, 0], [1, 1, 0], aspect); // worldW=worldH=2
+    expect(f.halfH).toBeGreaterThanOrEqual(1); // высота 2 влезает (2*halfH>=2)
+    expect(f.halfH * aspect).toBeGreaterThanOrEqual(1); // ширина 2 влезает (2*halfH*aspect>=2)
   });
   it("не делит на ноль на вырожденных bounds", () => {
     const f = fit2D([0, 0, 0], [0, 0, 0], 1);
-    expect(Number.isFinite(f.halfW)).toBe(true);
-    expect(f.halfW).toBeGreaterThan(0);
+    expect(Number.isFinite(f.halfH)).toBe(true);
+    expect(f.halfH).toBeGreaterThan(0);
   });
 });
 
@@ -811,20 +826,22 @@ type Vec3 = [number, number, number];
 export interface Frame2D {
   centerX: number;
   centerY: number;
-  halfW: number;
+  /** Половина ВЕРТИКАЛЬНОГО мирового размера кадра (уже учитывает aspect, чтобы влезла ширина). */
   halfH: number;
 }
 
+// Возвращает только полу-высоту + центр; ширину рендерер выводит как halfH*aspect
+// на каждом resize. Это даёт aspect-only ресайз без перекадрирования (см. ThreeMapRenderer.resize),
+// и единственное число halfH переживает смену пропорций окна.
 export function fit2D(min: Vec3, max: Vec3, aspect: number, pad = 1.1): Frame2D {
   const a = aspect > 0 ? aspect : 1;
   const centerX = (min[0] + max[0]) / 2;
   const centerY = (min[1] + max[1]) / 2;
-  let halfW = (Math.max(max[0] - min[0], 1e-6) * pad) / 2;
-  let halfH = (Math.max(max[1] - min[1], 1e-6) * pad) / 2;
-  // Расширяем меньшую ось до aspect, чтобы bounds целиком влезли.
-  if (halfW / halfH < a) halfW = halfH * a;
-  else halfH = halfW / a;
-  return { centerX, centerY, halfW, halfH };
+  const worldW = Math.max(max[0] - min[0], 1e-6);
+  const worldH = Math.max(max[1] - min[1], 1e-6);
+  // halfH должен покрыть и высоту (worldH/2), и ширину (worldW/2/aspect).
+  const halfH = Math.max(worldH / 2, worldW / 2 / a) * pad;
+  return { centerX, centerY, halfH };
 }
 
 export interface Frame3D {
@@ -860,11 +877,12 @@ export function projectToScreen(
   height: number,
 ): { x: number; y: number; visible: boolean } {
   const [x, y, z] = p;
-  const e = viewProj;
-  const cx = e[0] * x + e[4] * y + e[8] * z + e[12];
-  const cy = e[1] * x + e[5] * y + e[9] * z + e[13];
-  const cz = e[2] * x + e[6] * y + e[10] * z + e[14];
-  const cw = e[3] * x + e[7] * y + e[11] * z + e[15];
+  // ArrayLike-индекс под noUncheckedIndexedAccess — `number | undefined`; хелпер с `?? 0`.
+  const e = (i: number): number => viewProj[i] ?? 0;
+  const cx = e(0) * x + e(4) * y + e(8) * z + e(12);
+  const cy = e(1) * x + e(5) * y + e(9) * z + e(13);
+  const cz = e(2) * x + e(6) * y + e(10) * z + e(14);
+  const cw = e(3) * x + e(7) * y + e(11) * z + e(15);
   if (cw === 0) return { x: 0, y: 0, visible: false };
   const ndcX = cx / cw;
   const ndcY = cy / cw;
@@ -944,7 +962,7 @@ export interface MapRenderer {
 ```ts
 // src/features/semantic-map/renderer/three-map-renderer.ts
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import type { RenderModel } from "../types";
 import { fit2D, fit3D } from "./camera-fit";
@@ -962,6 +980,8 @@ export class ThreeMapRenderer implements MapRenderer {
   private width = 1;
   private height = 1;
   private dpr = 1;
+  /** Полу-высота ортокадра (мировые ед.) — для aspect-only ресайза без перекадрирования. */
+  private orthoHalfH = 1;
   private dirty = true;
   private raf = 0;
   private disposed = false;
@@ -976,6 +996,9 @@ export class ThreeMapRenderer implements MapRenderer {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     this.renderer.setClearColor(0x000000, 0);
     this.applyMode();
+    // Первый кадр сразу в правильном буфере (иначе мелькнёт 1×1, растянутый CSS).
+    this.resize(canvas.clientWidth || 1, canvas.clientHeight || 1, window.devicePixelRatio || 1);
+    this.dirty = true;
     this.loop();
   }
 
@@ -990,11 +1013,15 @@ export class ThreeMapRenderer implements MapRenderer {
     geom.setAttribute("position", new THREE.BufferAttribute(model.positions, 3));
     geom.setAttribute("color", new THREE.BufferAttribute(model.colors, 3));
     const mat = new THREE.PointsMaterial({
-      size: this.mode === "3d" ? 0.02 : 6,
-      sizeAttenuation: this.mode === "3d",
+      // Размер в ПИКСЕЛЯХ (sizeAttenuation:false) в ОБОИХ режимах — предсказуемо и не зависит
+      // от масштаба bounds. (В 3D с world-unit-размером на нормализованных ~[-1,1] координатах
+      // точки вырождались бы в субпиксельные пятна.) depthWrite:false — убрать blending-артефакты.
+      size: 3,
+      sizeAttenuation: false,
       vertexColors: true,
       transparent: true,
       opacity: 0.9,
+      depthWrite: false,
     });
     this.points = new THREE.Points(geom, mat);
     this.scene.add(this.points);
@@ -1025,12 +1052,7 @@ export class ThreeMapRenderer implements MapRenderer {
         this.dirty = true;
       });
     }
-    if (this.points) {
-      const m = this.points.material as THREE.PointsMaterial;
-      m.sizeAttenuation = this.mode === "3d";
-      m.size = this.mode === "3d" ? 0.02 : 6;
-      m.needsUpdate = true;
-    }
+    // Материал mode-агностичен (пиксельный размер) — пере-настраивать при смене режима не нужно.
     this.fitToBounds();
   }
 
@@ -1044,10 +1066,12 @@ export class ThreeMapRenderer implements MapRenderer {
     const aspect = this.width / this.height || 1;
     if (this.mode === "2d") {
       const f = fit2D(min, max, aspect);
-      this.ortho.left = -f.halfW;
-      this.ortho.right = f.halfW;
+      this.orthoHalfH = f.halfH;
+      this.ortho.left = -f.halfH * aspect;
+      this.ortho.right = f.halfH * aspect;
       this.ortho.top = f.halfH;
       this.ortho.bottom = -f.halfH;
+      this.ortho.zoom = 1; // сбросить накопленный пользователем zoom при пере-фите
       this.ortho.position.set(f.centerX, f.centerY, 10);
       this.ortho.up.set(0, 1, 0);
       this.ortho.lookAt(f.centerX, f.centerY, 0);
@@ -1081,19 +1105,26 @@ export class ThreeMapRenderer implements MapRenderer {
       this.renderer.setPixelRatio(this.dpr);
       this.renderer.setSize(this.width, this.height, false);
     }
-    this.persp.aspect = this.width / this.height;
+    const aspect = this.width / this.height;
+    // Ресайз меняет ТОЛЬКО aspect, НЕ перекадрирует (иначе сбивал бы pan/zoom/орбиту).
+    this.persp.aspect = aspect;
     this.persp.updateProjectionMatrix();
-    this.fitToBounds();
+    this.ortho.left = -this.orthoHalfH * aspect;
+    this.ortho.right = this.orthoHalfH * aspect;
+    this.ortho.top = this.orthoHalfH;
+    this.ortho.bottom = -this.orthoHalfH;
+    this.ortho.updateProjectionMatrix();
+    this.dirty = true;
   }
 
   getViewProjection(): Float32Array | null {
     if (!this.renderer) return null;
-    const cam = this.activeCamera();
+    const cam = this.activeCamera() as THREE.OrthographicCamera | THREE.PerspectiveCamera;
     cam.updateMatrixWorld();
-    const m = new THREE.Matrix4().multiplyMatrices(
-      (cam as THREE.OrthographicCamera | THREE.PerspectiveCamera).projectionMatrix,
-      cam.matrixWorldInverse,
-    );
+    // Считаем inverse САМИ: matrixWorldInverse обновляет только renderer.render(), а нас
+    // зовут и вне render-тика (post-mount/resize) — иначе подписи легли бы по устаревшей матрице.
+    const viewInverse = cam.matrixWorld.clone().invert();
+    const m = new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, viewInverse);
     return new Float32Array(m.elements);
   }
 
@@ -1270,6 +1301,9 @@ export default function SemanticMapView({ data }: { data: MapData }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<ThreeMapRenderer | null>(null);
   const [mode, setMode] = useState<RenderMode>("2d");
+  // Текущий режим в ref — чтобы lifecycle-эффект (ключ [model]) применял его после
+  // пере-создания рендерера при смене data, не теряя выбор пользователя.
+  const modeRef = useRef<RenderMode>("2d");
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
   const model = useMemo(() => toRenderModel(data), [data]);
 
@@ -1287,17 +1321,12 @@ export default function SemanticMapView({ data }: { data: MapData }) {
 
     const r = new ThreeMapRenderer();
     rendererRef.current = r;
-    r.mount(canvas);
-    r.setModel(model);
 
     const updateLabels = () => {
-      const vp = r.getViewProjection();
       const w = wrap.clientWidth;
       const h = wrap.clientHeight;
-      if (!vp) {
-        setLabels([]);
-        return;
-      }
+      const vp = r.getViewProjection();
+      if (!vp || w === 0 || h === 0) return; // скрытая вкладка / до первого кадра
       const next: ProjectedLabel[] = [];
       for (const c of model.clusters) {
         if (!c.label) continue;
@@ -1307,14 +1336,17 @@ export default function SemanticMapView({ data }: { data: MapData }) {
       setLabels(next);
     };
 
-    r.onChange(updateLabels);
+    r.mount(canvas);
+    r.resize(wrap.clientWidth || 1, wrap.clientHeight || 1, window.devicePixelRatio || 1);
+    r.onChange(updateLabels); // ДО setModel — чтобы первый отрисованный кадр обновил подписи
+    r.setModel(model);
+    r.setMode(modeRef.current); // применить текущий/восстановленный режим (переживает смену data)
+
     const ro = new ResizeObserver(() => {
       r.resize(wrap.clientWidth, wrap.clientHeight, window.devicePixelRatio || 1);
       updateLabels();
     });
     ro.observe(wrap);
-    r.resize(wrap.clientWidth, wrap.clientHeight, window.devicePixelRatio || 1);
-    updateLabels();
 
     return () => {
       ro.disconnect();
@@ -1323,8 +1355,9 @@ export default function SemanticMapView({ data }: { data: MapData }) {
     };
   }, [model]);
 
-  // Применять смену режима + персист.
+  // Применять смену режима + персист. modeRef переживает пере-маунт рендерера при смене data.
   useEffect(() => {
+    modeRef.current = mode;
     rendererRef.current?.setMode(mode);
     window.localStorage.setItem(MODE_KEY, mode);
   }, [mode]);
@@ -1483,10 +1516,11 @@ git commit -m "feat(semantic-map): server fetcher, slice public API, /map route"
 
 **Interfaces:** —
 
-- [ ] **Step 1: Полный прогон гейтов**
+- [ ] **Step 1: Полный прогон гейтов (включая coverage — его гоняет CI)**
 
-Run: `pnpm lint && pnpm test && pnpm build`
-Expected: всё зелёное; покрытие не падает ниже порогов `vitest.config.ts`.
+Run: `pnpm lint && pnpm test && pnpm build && pnpm test:coverage`
+Expected: lint/test/build зелёные. `pnpm test:coverage` — пороги (statements 41 / branches 30 / functions 40 / lines 42) НЕ упали: чистые слои (palette/fixtures/to-render-model/camera-fit/project/schemas) покрыты юнитами и компенсируют непокрытые three-glue + UI.
+Контингенция: если coverage просел из-за `renderer/three-map-renderer.ts` + `ui/*.tsx` (jsdom не исполняет WebGL → их не покрыть юнитами) — добавить эти пути в `coverage.exclude` в `vitest.config.ts`. Это **запретная зона** → отдельным coordinated foundation-PR (как Task 1), НЕ внутри фичи.
 
 - [ ] **Step 2: Ручной smoke (dev)**
 
@@ -1537,4 +1571,6 @@ git commit -m "docs(semantic-map): mark v1 engine implemented"
 
 **2. Placeholder scan:** Кода-плейсхолдеров нет; все шаги содержат полный код/команды. `// i18n:`-пометки — намеренные маркеры follow-up, не пропуски логики.
 
-**3. Type consistency:** `MapData`/`RenderModel`/`RenderCluster` (Task 2) используются согласованно в Tasks 3–9. `RenderMode`/`MapRenderer` (Task 7) — в Task 8. `ProjectedLabel` определён в Task 8 (`map-region-labels.tsx`) и импортируется в `semantic-map-view.tsx`. `getViewProjection`/`onChange`/`fitToBounds`/`setMode`/`setModel`/`resize`/`destroy` — имена совпадают между портом (Task 7), реализацией (Task 7) и потребителем (Task 8). `makeFixtureMap`/`toRenderModel`/`clusterColor`/`hexToRgb01`/`projectToScreen`/`fit2D`/`fit3D`/`parseMapResponse` — сигнатуры единообразны между определением и вызовами.
+**3. Type consistency:** `MapData`/`RenderModel`/`RenderCluster` (Task 2) используются согласованно в Tasks 3–9. `RenderMode`/`MapRenderer` (Task 7) — в Task 8. `ProjectedLabel` определён в Task 8 (`map-region-labels.tsx`) и импортируется в `semantic-map-view.tsx`. `getViewProjection`/`onChange`/`fitToBounds`/`setMode`/`setModel`/`resize`/`destroy` — имена совпадают между портом (Task 7), реализацией (Task 7) и потребителем (Task 8). `makeFixtureMap`/`toRenderModel`/`clusterColor`/`hexToRgb01`/`projectToScreen`/`fit2D`/`fit3D`/`parseMapResponse` — сигнатуры единообразны между определением и вызовами (учтена новая сигнатура `fit2D → {centerX,centerY,halfH}`).
+
+**4. Strict-конфиг + ревью агентами (правки внесены):** код приведён под `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + ESLint `strictTypeChecked` — индекс-доступ через `forEach`/`?? fallback` (не `arr[i]` напрямую), без `??`/`&&`/`?.` над НЕ-nullable полями. Проверено изолированным `tsc` с теми же флагами на репрезентативных сниппетах. Внесено по итогам 4-агентного ревью: (а) **DRY** — `fixtures.ts` не дублирует палитру (цвет берёт `clusterColor`-фолбэк); (б) **Float32-тест** `dims=2` → `toBeCloseTo`, не `toEqual`; (в) рендер — пиксельный размер точек в обоих режимах (3D-точки не вырождаются), **aspect-only** ресайз (pan/zoom не сбивается, `ortho.zoom` сброс на фите), `getViewProjection` считает inverse явно, режим переживает смену data через `modeRef`, `onChange` до `setModel`, guard 0×0; (г) `three/addons/...` импорт; (д) `Co-Authored-By` trailer в каждом коммите; (е) `schemas.ts` помечен DORMANT; (ж) Task 10 — честный `pnpm test:coverage` (CI его гоняет) с контингенцией на frozen `vitest.config.ts`.
