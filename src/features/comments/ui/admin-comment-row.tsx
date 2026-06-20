@@ -1,6 +1,6 @@
 // src/features/comments/ui/admin-comment-row.tsx
 import { AstRender } from "@/components/ast-render";
-import { getT } from "@/i18n";
+import { getLocale, getT } from "@/i18n";
 
 import { formatCommentDate } from "../comment-format";
 import type { Comment } from "../types";
@@ -9,7 +9,7 @@ import { CommentDeleteButton } from "./comment-delete-button";
 import { CommentTypeBadge } from "./comment-type-badge";
 
 export async function AdminCommentRow({ comment }: { comment: Comment }) {
-  const t = await getT("comments");
+  const [t, locale] = await Promise.all([getT("comments"), getLocale()]);
   const deleted = comment.is_deleted;
   return (
     <div className="flex items-start justify-between gap-3 rounded border border-(--color-border) p-3">
@@ -17,7 +17,7 @@ export async function AdminCommentRow({ comment }: { comment: Comment }) {
         <div className="flex items-center gap-2 text-xs text-(--color-fg-muted)">
           <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
           <span>{comment.author?.username ?? "—"}</span>
-          <span>{formatCommentDate(comment.created_at)}</span>
+          <span>{formatCommentDate(comment.created_at, locale)}</span>
           {deleted && <span className="text-red-600">{t("adminDeleted")}</span>}
         </div>
         {!deleted && (

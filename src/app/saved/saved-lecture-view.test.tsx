@@ -26,6 +26,7 @@ vi.mock("@/i18n/client", async () => {
       };
     },
     useFmt: () => getFmt("ru"),
+    useLocale: () => "ru" as const,
   };
 });
 

@@ -30,6 +30,23 @@ describe("CommentNodeView", () => {
     expect(screen.getByText(/2026/)).toBeTruthy();
   });
 
+  it("locale='en' → дата в en-формате (по умолчанию ru)", () => {
+    render(<CommentNodeView comment={base()} locale="en" />);
+    // en short date → "6/14/26" (со слэшами), ru → "14.06.2026" (с точками).
+    expect(screen.getByText(/6\/14\/26/)).toBeTruthy();
+    expect(screen.queryByText(/14\.06\.2026/)).toBeNull();
+  });
+
+  it("locale='ru' (дефолт) → дата в ru-формате", () => {
+    render(<CommentNodeView comment={base()} locale="ru" />);
+    expect(screen.getByText(/14\.06\.2026/)).toBeTruthy();
+  });
+
+  it("без locale → ru-fallback (офлайн hook-free контракт)", () => {
+    render(<CommentNodeView comment={base()} />);
+    expect(screen.getByText(/14\.06\.2026/)).toBeTruthy();
+  });
+
   it("is_deleted → плашка, без тела", () => {
     render(<CommentNodeView comment={base({ is_deleted: true })} />);
     expect(screen.getByText("Комментарий удалён")).toBeTruthy();

@@ -40,4 +40,25 @@ describe("CommentTreeView", () => {
     expect(screen.getByText("root-author")).toBeTruthy();
     expect(screen.getByText("child-author")).toBeTruthy();
   });
+
+  it("locale='en' пробрасывается во все узлы → даты в en-формате", () => {
+    const subtrees: RootSubtree[] = [
+      {
+        root: node("r", "root-author"),
+        descendants: [node("a", "child-author", "r")],
+      },
+    ];
+    render(<CommentTreeView subtrees={subtrees} locale="en" />);
+    // обе даты (корень + потомок) в en-формате со слэшами, без ru-точек.
+    expect(screen.getAllByText(/6\/14\/26/)).toHaveLength(2);
+    expect(screen.queryByText(/14\.06\.2026/)).toBeNull();
+  });
+
+  it("без locale → ru-fallback в датах (офлайн hook-free контракт)", () => {
+    const subtrees: RootSubtree[] = [
+      { root: node("r", "root-author"), descendants: [] },
+    ];
+    render(<CommentTreeView subtrees={subtrees} />);
+    expect(screen.getByText(/14\.06\.2026/)).toBeTruthy();
+  });
 });

@@ -8,9 +8,13 @@
 // Переводимые строки передаются через опциональные пропы; дефолт — русский
 // литерал (совпадает с каталогом comments.deleted / comments.edited).
 // Онлайн-контейнер (CommentNode) передаёт значения из getT("comments").
+// Локаль даты — опциональный проп `locale`; дефолт (undefined) → ru-fallback
+// внутри formatCommentDate. Онлайн-контейнеры резолвят её (getLocale/useLocale)
+// и прокидывают, чтобы en-юзер видел дату в своём формате.
 import type { ReactNode } from "react";
 
 import { AstRender } from "@/components/ast-render";
+import type { ResolvedLocale } from "@/i18n/locales";
 
 import { formatCommentDate } from "../comment-format";
 import type { Comment } from "../types";
@@ -42,6 +46,13 @@ interface Props {
    * t("type.<type>") из каталога comments.
    */
   typeLabel?: string;
+  /**
+   * Локаль форматирования даты. Дефолт (undefined) → ru-fallback внутри
+   * formatCommentDate (офлайн hook-free путь). Онлайн-контейнеры (CommentNode —
+   * server, SavedLectureView → CommentTreeView — client) резолвят локаль через
+   * getLocale()/useLocale() и прокидывают, чтобы дата была в формате локали.
+   */
+  locale?: ResolvedLocale | undefined;
 }
 
 export function CommentNodeView({
@@ -52,6 +63,7 @@ export function CommentNodeView({
   deletedLabel = "Комментарий удалён",
   editedLabel = "(изменён)",
   typeLabel,
+  locale,
 }: Props): ReactNode {
   if (comment.is_deleted) {
     return (
@@ -66,7 +78,7 @@ export function CommentNodeView({
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <CommentTypeBadge type={comment.type} label={typeLabel} />
         <span>{comment.author?.username ?? "—"}</span>
-        <span>{formatCommentDate(comment.created_at)}</span>
+        <span>{formatCommentDate(comment.created_at, locale)}</span>
         {comment.is_edited && <span>{editedLabel}</span>}
       </div>
 
