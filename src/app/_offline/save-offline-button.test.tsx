@@ -91,6 +91,7 @@ describe("SaveOfflineButton", () => {
     render(<SaveOfflineButton entity="lectures" id="l1" />);
     expect(await screen.findByText(/Сохранено офлайн/)).toBeTruthy();
     expect(screen.getByText("Удалить копию")).toBeTruthy();
+    expect(revalidate).toHaveBeenCalledWith("lectures", "l1");
   });
 
   it("ревалидация → stale: «Доступно обновление» + «Обновить»", async () => {
@@ -135,6 +136,19 @@ describe("SaveOfflineButton", () => {
     fireEvent.click(screen.getByTestId("confirm-remove"));
     expect(await screen.findByText("Сохранить офлайн")).toBeTruthy();
     expect(deleteSavedBundle).toHaveBeenCalledWith("lectures", "l1");
+  });
+
+  it("сбой удаления → возврат к «Сохранено», тост ошибки", async () => {
+    getSavedBundle.mockResolvedValue(complete());
+    revalidate.mockResolvedValue("fresh");
+    deleteSavedBundle.mockRejectedValue(new Error("idb"));
+    render(<SaveOfflineButton entity="lectures" id="l1" />);
+    await screen.findByText("Удалить копию");
+    fireEvent.click(screen.getByTestId("confirm-remove"));
+    await waitFor(() => {
+      expect(toastAdd).toHaveBeenCalled();
+    });
+    expect(await screen.findByText(/Сохранено офлайн/)).toBeTruthy();
   });
 
   it("оффлайн → ревалидация не зовётся, показывает последний статус", async () => {

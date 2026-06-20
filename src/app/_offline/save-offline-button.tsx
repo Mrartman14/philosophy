@@ -98,7 +98,20 @@ export function SaveOfflineButton({
 
   const doRemove = async (): Promise<void> => {
     setState({ kind: "removing" });
-    await deleteSavedBundle(entity, id);
+    try {
+      await deleteSavedBundle(entity, id);
+    } catch {
+      // Сбой IDB-delete: не залипаем в "removing" — восстанавливаем актуальное
+      // состояние копии (она ещё на устройстве) и сообщаем об ошибке.
+      const rec = await getSavedBundle(entity, id);
+      setState(
+        rec?.status === "complete"
+          ? { kind: "saved", stale: rec.remoteStatus === "stale" }
+          : { kind: "not-saved" },
+      );
+      toast.add({ title: t("saveOfflineRemoveFailTitle") });
+      return;
+    }
     setState({ kind: "not-saved" });
     toast.add({ title: t("saveOfflineRemovedToast") });
   };

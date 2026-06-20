@@ -236,6 +236,7 @@ const pages = {
     "Копия будет удалена с устройства. Восстановить её можно только онлайн — сохранив лекцию заново.",
   saveOfflineRemoveConfirmAction: "Удалить",
   saveOfflineRemovedToast: "Офлайн-копия удалена",
+  saveOfflineRemoveFailTitle: "Не удалось удалить копию",
 
   // ─── saved-list stale sweep ──────────────────────────────────────────
   savedListStaleSaving: "Сохранение прервано — откройте лекцию и сохраните заново.",

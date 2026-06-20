@@ -236,6 +236,7 @@ const pages = {
     "The copy will be deleted from this device. You can restore it only online by saving the lecture again.",
   saveOfflineRemoveConfirmAction: "Remove",
   saveOfflineRemovedToast: "Offline copy removed",
+  saveOfflineRemoveFailTitle: "Could not remove copy",
 
   // ─── saved-list stale sweep ──────────────────────────────────────────
   savedListStaleSaving: "Saving interrupted — open the lecture and save again.",

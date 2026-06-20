@@ -59,6 +59,11 @@ describe("probeBundleFreshness", () => {
     expect(await probeBundleFreshness("lectures", "l1", undefined)).toEqual({ status: "gone" });
   });
 
+  it("probeMarker skip → skip", async () => {
+    probeMarker.mockResolvedValue({ status: "skip" });
+    expect(await probeBundleFreshness("lectures", "l1", undefined)).toEqual({ status: "skip" });
+  });
+
   it("нет probeMarker + manifest skip → skip", async () => {
     resolveDescriptor.mockReturnValue({ freshness: { probeManifest } });
     probeManifest.mockResolvedValue({ status: "skip" });
