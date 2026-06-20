@@ -7,7 +7,7 @@ import { getMe } from "@/utils/me";
 
 import type { Appearance } from "./appearance-cookie";
 
-type AppearancePayload = components["schemas"]["preference.Appearance"];
+type AppearancePayload = components["schemas"]["preference.AppearancePatch"];
 
 /**
  * FE Appearance → backend preference.Appearance (nested under preferences).
@@ -36,12 +36,11 @@ export async function persistAppearance(appearance: Appearance): Promise<void> {
     const me = await getMe();
     if (!me) return;
     const api = await createApiClient();
-    // openapi-typescript doesn't describe the PATCH request body (it's only in
-    // the response schema), so the body slot is typed `undefined` → `as never`,
-    // same as the existing updatePreferences. The payload shape itself is typed
-    // via toAppearancePayload (→ preference.Appearance).
+    // PATCH body типизирован через preference.UpdatePreferencesRequest (regen
+    // 2026-06-20): appearance — частичный preference.AppearancePatch. Cast снят.
+    // Contrast "auto" по-прежнему опускается (AppearancePatch.contrast = normal|high).
     await api.PATCH("/api/me/preferences", {
-      body: { appearance: toAppearancePayload(appearance) } as never,
+      body: { appearance: toAppearancePayload(appearance) },
     });
   } catch {
     /* graceful: network/5xx must not break the UI (write-through is best-effort) */

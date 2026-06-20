@@ -12,10 +12,9 @@ export async function persistLocale(locale: Locale): Promise<void> {
     const me = await getMe();
     if (!me) return; // аноним — только cookie
     const api = await createApiClient();
-    // PATCH-боди в схеме типизирован как Record<string, never> (бэк не описывает
-    // partial-преференсы) → cast обязателен, как в persistAppearance. preference.Locale
-    // уже в контракте, но тело PATCH остаётся нетипизированным — as never НЕ снимать.
-    await api.PATCH("/api/me/preferences", { body: { locale } as never });
+    // PATCH body типизирован через preference.UpdatePreferencesRequest (regen
+    // 2026-06-20): locale = "system" | "ru" | "en". Cast снят.
+    await api.PATCH("/api/me/preferences", { body: { locale } });
   } catch {
     /* graceful: бэк может не знать про locale */
   }

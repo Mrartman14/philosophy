@@ -44,13 +44,11 @@ export const updatePreferences = createFormAction(async (formData) => {
   requireCapability(me, canUpdatePreferences);
   const input = parseFormData(PreferencesUpdateSchema, formData);
   const api = await createApiClient();
-  // PATCH-body в schema.ts типизирован как Record<string, never> (swagger не
-  // описывает partial-формат). Реальный формат — частичный
-  // preference.Preferences (merge-семантика бекенда,
-  // philosophy-api internal/preference/service.go). Регенерация schema.ts
-  // запрещена (CLAUDE.md) — поэтому cast.
+  // PATCH-body типизирован схемой как preference.UpdatePreferencesRequest
+  // (regen 2026-06-20): partial appearance/locale/reading_mode. Cast `as never`
+  // снят — тело проверяется типом.
   const { data, error } = await api.PATCH("/api/me/preferences", {
-    body: { reading_mode: input.reading_mode } as never,
+    body: { reading_mode: input.reading_mode },
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.PREFERENCES);
