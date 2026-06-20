@@ -36,7 +36,8 @@ export default async function MapPage({
         ),
       };
     } catch {
-      overlay = { query: q, hits: [] }; // поиск недоступен — карта без overlay
+      // поиск недоступен (не «0 результатов») — карта без overlay и без ложной заметки
+      overlay = undefined;
     }
   }
 
