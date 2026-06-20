@@ -5,7 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import type { RenderModel } from "../types";
 
 import { fit2D, fit3D } from "./camera-fit";
-import type { MapRenderer, RenderMode } from "./map-renderer";
+import type { MapOverlayState, MapRenderer, RenderMode } from "./map-renderer";
 
 export class ThreeMapRenderer implements MapRenderer {
   private renderer: THREE.WebGLRenderer | null = null;
@@ -25,6 +25,9 @@ export class ThreeMapRenderer implements MapRenderer {
   private raf = 0;
   private disposed = false;
   private changeCb: (() => void) | null = null;
+  private baseColors: Float32Array | null = null;
+  private colorAttr: THREE.BufferAttribute | null = null;
+  private marker: THREE.Sprite | null = null;
 
   constructor() {
     this.ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, -1000, 1000);
@@ -50,7 +53,10 @@ export class ThreeMapRenderer implements MapRenderer {
     }
     const geom = new THREE.BufferGeometry();
     geom.setAttribute("position", new THREE.BufferAttribute(model.positions, 3));
-    geom.setAttribute("color", new THREE.BufferAttribute(model.colors, 3));
+    const colorAttr = new THREE.BufferAttribute(model.colors, 3);
+    geom.setAttribute("color", colorAttr);
+    this.colorAttr = colorAttr;
+    this.baseColors = model.colors.slice(); // копия для восстановления при снятии overlay
     const mat = new THREE.PointsMaterial({
       // Размер в ПИКСЕЛЯХ (sizeAttenuation:false) в ОБОИХ режимах — предсказуемо и не зависит
       // от масштаба bounds. (В 3D с world-unit-размером на нормализованных ~[-1,1] координатах
@@ -175,6 +181,45 @@ export class ThreeMapRenderer implements MapRenderer {
     // Стаб v1: hover/click-picking — будущая фаза (overlay/lazy-детали). cb игнорируется.
   }
 
+  setOverlay(overlay: MapOverlayState | null): void {
+    if (!this.model || !this.colorAttr || !this.baseColors) return;
+    const ids = this.model.ids;
+    const arr = this.colorAttr.array as Float32Array;
+    const DIM = 0.18;
+    if (!overlay || overlay.highlightIds.size === 0) {
+      arr.set(this.baseColors); // восстановить полные цвета
+    } else {
+      for (let i = 0; i < ids.length; i++) {
+        const hit = overlay.highlightIds.has(ids[i] ?? "");
+        const k = hit ? 1 : DIM;
+        arr[i * 3] = (this.baseColors[i * 3] ?? 0) * k;
+        arr[i * 3 + 1] = (this.baseColors[i * 3 + 1] ?? 0) * k;
+        arr[i * 3 + 2] = (this.baseColors[i * 3 + 2] ?? 0) * k;
+      }
+    }
+    this.colorAttr.needsUpdate = true;
+    this.updateMarker(overlay?.marker ?? null);
+    this.dirty = true;
+  }
+
+  private updateMarker(pos: [number, number, number] | null): void {
+    if (!pos) {
+      if (this.marker) this.marker.visible = false;
+      return;
+    }
+    if (!this.marker) {
+      const mat = new THREE.SpriteMaterial({ map: makeRingTexture(), transparent: true, depthTest: false });
+      this.marker = new THREE.Sprite(mat);
+      this.scene.add(this.marker);
+    }
+    const { min, max } = this.model?.bounds ?? { min: [-1, -1, -1], max: [1, 1, 1] };
+    const diag = Math.hypot(max[0] - min[0], max[1] - min[1], max[2] - min[2]) || 1;
+    const s = diag * 0.06;
+    this.marker.scale.set(s, s, 1);
+    this.marker.position.set(pos[0], pos[1], pos[2]);
+    this.marker.visible = true;
+  }
+
   private readonly loop = (): void => {
     if (this.disposed) return;
     this.raf = requestAnimationFrame(this.loop);
@@ -190,6 +235,10 @@ export class ThreeMapRenderer implements MapRenderer {
     cancelAnimationFrame(this.raf);
     this.controls?.dispose();
     if (this.points) disposePoints(this.points);
+    if (this.marker) {
+      this.marker.material.map?.dispose();
+      this.marker.material.dispose();
+    }
     this.renderer?.dispose();
     this.renderer = null;
   }
@@ -200,4 +249,19 @@ function disposePoints(p: THREE.Points): void {
   const m = p.material;
   if (Array.isArray(m)) m.forEach((x) => { x.dispose(); });
   else m.dispose();
+}
+
+function makeRingTexture(): THREE.CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = 64;
+  c.height = 64;
+  const ctx = c.getContext("2d");
+  if (ctx) {
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(32, 32, 24, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  return new THREE.CanvasTexture(c);
 }

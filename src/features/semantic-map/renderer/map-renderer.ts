@@ -5,6 +5,12 @@ import type { RenderModel } from "../types";
 
 export type RenderMode = "2d" | "3d";
 
+/** Состояние overlay поиска: какие точки подсветить (по id) + позиция маркера-центроида. */
+export interface MapOverlayState {
+  highlightIds: Set<string>;
+  marker: [number, number, number] | null;
+}
+
 export interface MapRenderer {
   /** Привязать к <canvas> и запустить render-loop. */
   mount(canvas: HTMLCanvasElement): void;
@@ -22,6 +28,8 @@ export interface MapRenderer {
   onChange(cb: () => void): void;
   /** Стаб v1: hover/click-picking (overlay/lazy-детали — будущая фаза). Реализация может игнорировать cb. */
   onPick?(cb: (id: string | null) => void): void;
+  /** Overlay поиска: подсветить точки (по id) + маркер. null — снять overlay. */
+  setOverlay(overlay: MapOverlayState | null): void;
   /** Освободить GPU-ресурсы и остановить loop. */
   destroy(): void;
 }
