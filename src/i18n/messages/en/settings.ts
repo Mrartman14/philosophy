@@ -8,6 +8,7 @@ const settings = {
   sectionHistory: "Browsing History",
   sectionAccount: "Account",
   viewMyStats: "View my statistics →",
+  manageTokens: "Personal access tokens →",
   // locale-settings.tsx
   localeLabelRow: "Language",
   localeAriaLabel: "Interface language",

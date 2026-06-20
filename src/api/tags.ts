@@ -34,6 +34,7 @@ export const Tags = {
   SHARE_LINKS: "share-links",
   SUBMISSIONS: "submissions",
   TAGS: "tags",
+  TOKENS: "tokens",
   TRAILS: "trails",
   USERS: "users",
 } as const;

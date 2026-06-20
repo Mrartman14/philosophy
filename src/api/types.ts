@@ -61,6 +61,3 @@ export type PushSubscribeRequest = Schemas["push.SubscribeRequest"];
 export type PushUnsubscribeRequest = Schemas["push.UnsubscribeRequest"];
 export type PushSendRequest = Schemas["push.SendRequest"];
 export type PushSubscribeKeys = Schemas["push.SubscribeKeys"];
-
-// --- Search ---
-export type SearchMatch = Schemas["search.Match"];

@@ -1,12 +1,9 @@
 // src/app/search/page.tsx
 import { Suspense } from "react";
 
-import { Pagination } from "@/components/ui";
-import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
   getSearchResults,
   makeSearchParamsSchema,
-  SearchExportLinks,
   SearchInput,
   SearchResults,
   SearchResultsSkeleton,
@@ -18,8 +15,6 @@ const PAGE_LIMIT = 20;
 interface Props {
   searchParams: Promise<{
     q?: string;
-    type?: string;
-    offset?: string;
   }>;
 }
 
@@ -32,7 +27,7 @@ export default async function SearchPage({ searchParams }: Props) {
   const raw = await searchParams;
   const tValidation = await getT("validation");
   const t = await getT("pages");
-  // parse не бросает: каждое поле обёрнуто в .catch(undefined),
+  // parse не бросает: поле обёрнуто в .catch(undefined),
   // битые параметры молча отбрасываются.
   const params = makeSearchParamsSchema(tValidation).parse(raw);
 
@@ -48,16 +43,8 @@ export default async function SearchPage({ searchParams }: Props) {
       <SearchInput variant="page" />
 
       {params.q ? (
-        <Suspense
-          key={`${params.q}|${params.type ?? ""}|${params.offset ?? 0}`}
-          fallback={<SearchResultsSkeleton />}
-        >
-          <SearchBody
-            q={params.q}
-            type={params.type}
-            offset={params.offset ?? 0}
-            searchParams={raw}
-          />
+        <Suspense key={params.q} fallback={<SearchResultsSkeleton />}>
+          <SearchBody q={params.q} />
         </Suspense>
       ) : (
         <p className="text-sm text-(--color-fg-muted)">
@@ -68,26 +55,11 @@ export default async function SearchPage({ searchParams }: Props) {
   );
 }
 
-async function SearchBody({
-  q,
-  type,
-  offset,
-  searchParams,
-}: {
-  q: string;
-  type?: "lecture" | "glossary" | undefined;
-  offset: number;
-  searchParams: Record<string, string | string[] | undefined>;
-}) {
+async function SearchBody({ q }: { q: string }) {
   const t = await getT("pages");
   let result;
   try {
-    result = await getSearchResults({
-      q,
-      ...(type ? { type } : {}),
-      offset,
-      limit: PAGE_LIMIT,
-    });
+    result = await getSearchResults({ q, limit: PAGE_LIMIT });
   } catch {
     return (
       <p className="text-sm text-(--color-fg-muted)">
@@ -96,21 +68,5 @@ async function SearchBody({
     );
   }
 
-  const paginationLabels = await getPaginationLabels();
-  return (
-    <>
-      <SearchResults hits={result.items} total={result.total} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Pagination
-          basePath="/search"
-          offset={result.offset}
-          limit={result.limit}
-          total={result.total}
-          searchParams={searchParams}
-          labels={paginationLabels}
-        />
-        <SearchExportLinks q={q} type={type} />
-      </div>
-    </>
-  );
+  return <SearchResults hits={result.items} />;
 }

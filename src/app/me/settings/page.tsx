@@ -86,6 +86,9 @@ export default async function SettingsPage() {
 
       <section className="flex flex-col items-start gap-3 border-t border-(--color-border) pt-8">
         <h2 className="text-lg font-semibold">{t("sectionAccount")}</h2>
+        <RouterLink href="/me/tokens" className="text-sm">
+          {t("manageTokens")}
+        </RouterLink>
         <LogoutForm />
         <LogoutAllForm />
       </section>

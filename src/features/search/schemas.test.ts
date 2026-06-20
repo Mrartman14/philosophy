@@ -5,8 +5,6 @@ import type { NamespaceT } from "@/i18n";
 import {
   makeSearchQuerySchema,
   makeSearchParamsSchema,
-  SearchTypeSchema,
-  SearchOffsetSchema,
 } from "./schemas";
 
 // Заглушка переводчика: возвращает ключ как текст (достаточно для тестов схемы).
@@ -38,62 +36,22 @@ describe("SearchQuerySchema", () => {
   });
 });
 
-describe("SearchTypeSchema", () => {
-  it("принимает lecture", () => {
-    expect(SearchTypeSchema.safeParse("lecture").success).toBe(true);
-  });
-  it("принимает glossary", () => {
-    expect(SearchTypeSchema.safeParse("glossary").success).toBe(true);
-  });
-  it("отклоняет неизвестный тип", () => {
-    expect(SearchTypeSchema.safeParse("document").success).toBe(false);
-  });
-});
-
-describe("SearchOffsetSchema", () => {
-  it("приводит строку к числу", () => {
-    const r = SearchOffsetSchema.safeParse("20");
-    expect(r.success).toBe(true);
-    if (r.success) expect(r.data).toBe(20);
-  });
-  it("отклоняет отрицательное", () => {
-    expect(SearchOffsetSchema.safeParse("-1").success).toBe(false);
-  });
-  it("отклоняет не-число", () => {
-    expect(SearchOffsetSchema.safeParse("abc").success).toBe(false);
-  });
-});
-
 describe("SearchParamsSchema", () => {
-  it("парсит полный валидный набор", () => {
-    const r = SearchParamsSchema.parse({
-      q: "  гегель ",
-      type: "glossary",
-      offset: "20",
-    });
-    expect(r).toEqual({ q: "гегель", type: "glossary", offset: 20 });
+  it("парсит валидный q (с тримом)", () => {
+    const r = SearchParamsSchema.parse({ q: "  гегель " });
+    expect(r).toEqual({ q: "гегель" });
   });
-  it("пустой объект → q undefined, прочие undefined", () => {
+  it("пустой объект → q undefined", () => {
     const r = SearchParamsSchema.parse({});
     expect(r.q).toBeUndefined();
-    expect(r.type).toBeUndefined();
-    expect(r.offset).toBeUndefined();
-  });
-  it("битый type отбрасывается, q выживает", () => {
-    const r = SearchParamsSchema.parse({ q: "кант", type: "bogus" });
-    expect(r.q).toBe("кант");
-    expect(r.type).toBeUndefined();
-  });
-  it("битый offset отбрасывается", () => {
-    const r = SearchParamsSchema.parse({ q: "кант", offset: "-5" });
-    expect(r.offset).toBeUndefined();
   });
   it("слишком длинный q отбрасывается в undefined (parse не бросает)", () => {
     const r = SearchParamsSchema.parse({ q: "a".repeat(201) });
     expect(r.q).toBeUndefined();
   });
   it("неизвестные ключи не просачиваются", () => {
-    const r = SearchParamsSchema.parse({ q: "кант", limit: "999" });
-    expect("limit" in r).toBe(false);
+    const r = SearchParamsSchema.parse({ q: "кант", type: "glossary", offset: "20" });
+    expect("type" in r).toBe(false);
+    expect("offset" in r).toBe(false);
   });
 });

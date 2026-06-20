@@ -31,6 +31,7 @@ import settings from "./settings";
 import shareLinks from "./shareLinks";
 import statistics from "./statistics";
 import tags from "./tags";
+import tokens from "./tokens";
 import trails from "./trails";
 import users from "./users";
 import validation from "./validation";
@@ -61,6 +62,7 @@ const ru = {
   shareLinks,
   statistics,
   tags,
+  tokens,
   trails,
   users,
   validation,

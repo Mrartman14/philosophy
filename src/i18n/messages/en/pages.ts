@@ -107,9 +107,15 @@ const pages = {
   // ─── /search ─────────────────────────────────────────────────────────
   searchTitle: "Search",
   searchHeading: "Search",
-  searchSubtitle: "Global search across lectures and glossary terms.",
+  searchSubtitle: "Semantic search across documents and glossary terms.",
   searchPlaceholder: "Enter a query to start searching.",
   searchUnavailable: "Search is temporarily unavailable. Try again later.",
+
+  // ─── /me/tokens ──────────────────────────────────────────────────────
+  tokensTitle: "Personal tokens",
+  tokensHeading: "Personal access tokens",
+  tokensSubtitle:
+    "Tokens for API access on your behalf — e.g. to connect an external service with its own LLM.",
 
   // ─── /share-links ────────────────────────────────────────────────────
   shareLinksTitle: "My links",

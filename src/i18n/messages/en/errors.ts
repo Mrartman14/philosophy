@@ -124,6 +124,9 @@ const errors = {
   // --- preferences slice: domain codes ---
   NOT_CONFIGURED: "Push notifications are not configured on the server.",
 
+  // --- tokens slice: domain codes ---
+  TOKEN_LIMIT: "Token limit reached. Revoke unused tokens and try again.",
+
   // --- tags slice: domain codes ---
   TAG_CONFLICT: "A tag with this name already exists.",
   TAG_NOT_FOUND: "Object not found — it may have already been deleted. Refresh the page.",

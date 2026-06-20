@@ -8,6 +8,7 @@ const settings = {
   sectionHistory: "История просмотров",
   sectionAccount: "Аккаунт",
   viewMyStats: "Посмотреть мою статистику →",
+  manageTokens: "Персональные токены доступа →",
   // locale-settings.tsx
   localeLabelRow: "Язык",
   localeAriaLabel: "Язык интерфейса",

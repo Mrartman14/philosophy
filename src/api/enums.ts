@@ -68,8 +68,7 @@ export const COMMENT_TYPES = enumValues<S["comment.CommentType"]>()(
 );
 export const REACTION_AXES = enumValues<S["comment.ReactionAxis"]>()("agreement", "quality", "insight");
 
-// --- Search / Preferences ---
-export const SEARCH_HIT_TYPES = enumValues<S["search.HitType"]>()("lecture", "glossary");
+// --- Preferences ---
 export const READING_MODES = enumValues<S["preference.ReadingMode"]>()("full", "focused");
 
 // --- Canvas ---

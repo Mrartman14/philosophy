@@ -194,6 +194,15 @@ const validation = {
     queryMax: "Не более 200 символов",
   },
 
+  // --- tokens: CreateTokenSchema ---
+  tokens: {
+    labelRequired: "Введите название",
+    labelMax: "Не более 100 символов",
+    expiresInt: "Введите целое число дней",
+    expiresMin: "Минимум 1 день",
+    expiresMax: "Не более 3650 дней",
+  },
+
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",

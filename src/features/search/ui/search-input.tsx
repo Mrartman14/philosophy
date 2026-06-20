@@ -11,11 +11,9 @@ import {
   type SVGProps,
 } from "react";
 
-import { Button, Select, TextInput } from "@/components/ui";
+import { Button, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
-
-import { SEARCH_TYPES } from "../types";
 
 // Иконки поиска нет в src/assets (UI-kit — запретная зона). Inline-SVG,
 // как делала старая фича.
@@ -40,33 +38,21 @@ function SearchIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Полная форма для страницы /search: строка + фильтр типа + кнопка. */
+/** Полная форма для страницы /search: строка + кнопка. */
 function PageForm() {
   const t = useT("search");
   const params = useSearchParams();
   const { navigate, pending } = useQueryFormSubmit();
   const initialQ = params.get("q") ?? "";
-  const initialType = params.get("type") ?? "";
-
-  const typeOptions = [
-    { value: "", label: t("filterAll") },
-    ...SEARCH_TYPES.map((type) => ({
-      value: type,
-      label: type === "lecture" ? t("filterLectures") : t("filterTerms"),
-    })),
-  ];
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const rawQ = fd.get("q");
-    const rawType = fd.get("type");
     const q = (typeof rawQ === "string" ? rawQ : "").trim();
-    const type = (typeof rawType === "string" ? rawType : "").trim();
-    // Fresh URLSearchParams — intentionally drops all other params and offset.
+    // Fresh URLSearchParams — intentionally drops all other params.
     const next = new URLSearchParams();
     if (q) next.set("q", q);
-    if (type) next.set("type", type);
     navigate(next, "/search");
   }
 
@@ -79,13 +65,6 @@ function PageForm() {
         aria-label={t("inputAriaLabel")}
         maxLength={200}
         className="min-w-60 flex-1"
-      />
-      <Select
-        name="type"
-        defaultValue={initialType}
-        options={typeOptions}
-        aria-label={t("filterAriaLabel")}
-        className="w-40"
       />
       <Button type="submit" disabled={pending}>
         {pending ? "…" : t("submitButton")}

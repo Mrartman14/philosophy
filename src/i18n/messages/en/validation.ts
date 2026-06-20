@@ -192,6 +192,15 @@ const validation = {
     queryMax: "Up to 200 characters",
   },
 
+  // --- tokens: CreateTokenSchema ---
+  tokens: {
+    labelRequired: "Enter a label",
+    labelMax: "Up to 100 characters",
+    expiresInt: "Enter a whole number of days",
+    expiresMin: "At least 1 day",
+    expiresMax: "Up to 3650 days",
+  },
+
   forms: {
     invalidId: "Invalid identifier",
     titleMax: "Up to 500 characters",

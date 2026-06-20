@@ -2,20 +2,15 @@
 import type { components } from "@/api/schema";
 
 /**
- * Результаты GET /api/search. Бек индексирует ДВА типа источников —
- * lecture и glossary (internal/search: NewGlossarySource + NewLectureSource);
- * документы/медиа/комментарии в глобальный поиск НЕ попадают.
+ * Результат POST /api/search — семантический (векторный) поиск по корпусу
+ * через embedding-sidecar (бек: llmretrieval). Корпус — ДВА типа источников:
+ * document и glossary; лекции/медиа/комментарии в поиск НЕ попадают.
  *
- * Все поля в сгенерированных типах optional — UI обязан граничить
- * отсутствующие значения (рендер "—" / skip).
+ * Hit плоский: бек отдаёт готовые title/snippet/score/source_url и entity_id
+ * для внутренней навигации. Все поля optional — UI граничит отсутствие
+ * (рендер "—" / skip хита без ссылки).
  */
-export type SearchHit = components["schemas"]["search.Hit"];
-export type SearchLectureData = components["schemas"]["search.LectureData"];
-export type SearchGlossaryData = components["schemas"]["search.GlossaryData"];
-export type SearchMatch = components["schemas"]["search.Match"];
+export type SearchHit = components["schemas"]["llmretrieval.Hit"];
 
-/** Тип источника поиска (бек: `search.HitType`). */
-export type SearchType = components["schemas"]["search.HitType"];
-
-/** Рантайм-значения для Zod/UI — единый источник в `@/api/enums`. */
-export { SEARCH_HIT_TYPES as SEARCH_TYPES } from "@/api/enums";
+/** Тип источника результата (бек: `llmretrieval.HitType`). */
+export type SearchType = components["schemas"]["llmretrieval.HitType"];
