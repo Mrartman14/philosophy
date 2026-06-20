@@ -61,4 +61,32 @@ describe("assembleMerged", () => {
     ];
     expect(assembleMerged(entries, {}).map((b) => b.position)).toEqual([0, 1]);
   });
+
+  it("conflict: выбор mine берёт мой блок", () => {
+    const entries: MergeEntry[] = [
+      entry({ key: "c", status: "conflict", mine: block("c", "mine"), theirs: block("c", "srv") }),
+    ];
+    expect(assembleMerged(entries, { c: "mine" }).map((b) => b.text)).toEqual([
+      "mine",
+    ]);
+  });
+
+  it("added-server берёт theirs; added-mine берёт mine", () => {
+    const entries: MergeEntry[] = [
+      entry({ key: "s", status: "added-server", theirs: block("s", "srv") }),
+      entry({ key: "m", status: "added-mine", mine: block("m", "mine") }),
+    ];
+    expect(assembleMerged(entries, {}).map((b) => b.text)).toEqual([
+      "srv",
+      "mine",
+    ]);
+  });
+
+  it("removed-mine также выкидывается", () => {
+    const entries: MergeEntry[] = [
+      entry({ key: "a", status: "unchanged", theirs: block("a", "A"), mine: block("a", "A") }),
+      entry({ key: "b", status: "removed-mine", theirs: block("b", "B") }),
+    ];
+    expect(assembleMerged(entries, {}).map((b) => b.text)).toEqual(["A"]);
+  });
 });
