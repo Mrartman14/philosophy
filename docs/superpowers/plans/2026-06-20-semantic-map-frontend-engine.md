@@ -586,8 +586,10 @@ function computeBounds(
   for (let i = 0; i < count; i++) {
     for (let d = 0; d < 3; d++) {
       const v = positions[i * 3 + d] ?? 0;
-      if (v < (min[d] ?? 0)) min[d] = v;
-      if (v > (max[d] ?? 0)) max[d] = v;
+      // fallback должен совпадать с инициализацией (Infinity/-Infinity), а не 0,
+      // чтобы первая точка корректно сужала диапазон (недостижимо при d∈{0,1,2}, но самосогласованно).
+      if (v < (min[d] ?? Infinity)) min[d] = v;
+      if (v > (max[d] ?? -Infinity)) max[d] = v;
     }
   }
   if (!Number.isFinite(min[0])) return { min: [-1, -1, -1], max: [1, 1, 1] };
