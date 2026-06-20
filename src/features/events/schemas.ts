@@ -13,7 +13,7 @@ function makeEventFieldsSchema(t: ValidationT) {
     title: z
       .string()
       .trim()
-      .min(1, t("events.titleRequired"))
+      .min(1, t("common.titleRequired"))
       .max(500, t("events.titleMax")),
     // Чекбокс: ключ есть в FormData только если включён (значение "on").
     all_day: z.string().optional(),
@@ -106,7 +106,7 @@ export function makeEventUpdateSchema(t: ValidationT) {
     allowEmpty: true,
     messages: {
       invalidJson: t("events.blocksInvalidJson"),
-      notArray: t("events.blocksNotArray"),
+      notArray: t("common.blocksNotArray"),
     },
   });
 

@@ -24,7 +24,7 @@ export function makeTermBlocksUpdateSchema(t: ValidationT) {
       allowEmpty: true,
       messages: {
         invalidJson: t("glossary.blocksInvalidJson"),
-        notArray: t("glossary.blocksNotArray"),
+        notArray: t("common.blocksNotArray"),
       },
     }),
   });

@@ -13,7 +13,7 @@ function makeTitleSchema(t: ValidationT) {
   return z
     .string()
     .trim()
-    .min(1, t("trails.titleRequired"))
+    .min(1, t("common.titleRequired"))
     .max(200, t("trails.titleMax"));
 }
 

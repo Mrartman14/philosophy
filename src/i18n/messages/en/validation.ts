@@ -5,6 +5,16 @@ const validation = {
   required: "Required field",
   maxLen: "Up to {n} characters",
 
+  // --- shared messages used across multiple forms ---
+  common: {
+    // "Enter a title" — canvas/lectures/documents/trails/events/forms
+    titleRequired: "Enter a title",
+    // "Body must be an array of blocks" — documents/banners/events/glossary
+    blocksNotArray: "Body must be an array of blocks",
+    // "Invalid date" — shareLinks/audit
+    invalidDate: "Invalid date",
+  },
+
   // --- preferences: push.SendRequest ---
   pushSend: {
     titleRequired: "Enter a title",
@@ -38,7 +48,6 @@ const validation = {
 
   // --- canvas: CanvasCreateSchema / CanvasUpdateSchema / CanvasIdSchema ---
   canvas: {
-    titleRequired: "Enter a title",
     titleMax: "Up to 200 characters",
     invalidId: "Invalid canvas ID",
     badJson: "Invalid JSON in graph data",
@@ -62,7 +71,6 @@ const validation = {
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
   lectures: {
-    titleRequired: "Enter a title",
     titleMax: "Up to 200 characters",
     descriptionMax: "Up to 5000 characters",
     dateFormat: "Date must be in YYYY-MM-DD format",
@@ -75,12 +83,10 @@ const validation = {
 
   // --- documents: DocumentCreateSchema / DocumentBlocksSchema / DocumentMetaSchema / etc. ---
   documents: {
-    titleRequired: "Enter a title",
     titleMax: "Up to 500 characters",
     invalidId: "Invalid document ID",
     blocksMinLength: "Document body cannot be empty",
     blocksInvalidJson: "Invalid JSON in document body",
-    blocksNotArray: "Body must be an array of blocks",
     blocksEmpty: "Add at least one block",
   },
 
@@ -95,13 +101,11 @@ const validation = {
     endAtBeforeStart: "Show end must be after show start",
     eventIdUuid: "Event ID must be a UUID",
     blocksInvalidJson: "Invalid JSON in the form body",
-    blocksNotArray: "Body must be an array of blocks",
     invalidId: "Invalid banner ID",
   },
 
   // --- trails: TrailCreateSchema / TrailMetaSchema / TrailItemsSchema / TrailIdSchema ---
   trails: {
-    titleRequired: "Enter a title",
     titleMax: "Up to 200 characters",
     descriptionMax: "Up to 2000 characters",
     invalidId: "Invalid trail ID",
@@ -115,7 +119,6 @@ const validation = {
 
   // --- events: EventFieldsSchema / EventCreateSchema / EventUpdateSchema / EventIdSchema ---
   events: {
-    titleRequired: "Enter a title",
     titleMax: "Up to 500 characters",
     startDateRequired: "Enter a start date",
     rruleMax: "Up to 500 characters",
@@ -125,7 +128,6 @@ const validation = {
     endBeforeStart: "End date is before start date",
     rrulePrefix: "RRULE must start with FREQ=",
     blocksInvalidJson: "Invalid JSON in form body",
-    blocksNotArray: "Body must be an array of blocks",
     invalidId: "Invalid event ID",
   },
 
@@ -144,7 +146,6 @@ const validation = {
 
   // --- share-links: ExpiresAtSchema / ShareLinkCreateSchema / RevokeTokenSchema ---
   shareLinks: {
-    invalidDate: "Invalid date",
     resourceIdRequired: "Enter resource ID",
     tokenRequired: "Token is required",
   },
@@ -165,7 +166,6 @@ const validation = {
     titleMax: "Up to 300 characters",
     invalidTermId: "Invalid term ID",
     blocksInvalidJson: "Invalid JSON in the form body",
-    blocksNotArray: "Body must be an array of blocks",
   },
 
   // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---
@@ -183,7 +183,6 @@ const validation = {
   audit: {
     invalidActorUuid: "Invalid actor UUID",
     invalidActionFormat: "Format: domain.verb",
-    invalidDate: "Invalid date",
   },
 
   // --- forms: form builder + response submission ---
@@ -195,7 +194,6 @@ const validation = {
 
   forms: {
     invalidId: "Invalid identifier",
-    titleRequired: "Enter a title",
     titleMax: "Up to 500 characters",
     promptRequired: "Question text is required",
     emptyOption: "Empty option",

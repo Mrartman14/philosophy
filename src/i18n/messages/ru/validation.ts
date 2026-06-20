@@ -8,6 +8,16 @@ const validation = {
   required: "Обязательное поле",
   maxLen: "До {n} символов",
 
+  // --- общие сообщения, используемые в нескольких формах ---
+  common: {
+    // «Введите название» — canvas/lectures/documents/trails/events/forms
+    titleRequired: "Введите название",
+    // «Тело должно быть массивом блоков» — documents/banners/events/glossary
+    blocksNotArray: "Тело должно быть массивом блоков",
+    // «Некорректная дата» — shareLinks/audit
+    invalidDate: "Некорректная дата",
+  },
+
   // --- preferences: push.SendRequest (POST /api/admin/push/send) ---
   pushSend: {
     titleRequired: "Введите заголовок",
@@ -41,7 +51,6 @@ const validation = {
 
   // --- canvas: CanvasCreateSchema / CanvasUpdateSchema / CanvasIdSchema ---
   canvas: {
-    titleRequired: "Введите название",
     titleMax: "До 200 символов",
     invalidId: "Некорректный id канваса",
     badJson: "Битый JSON в данных графа",
@@ -65,7 +74,6 @@ const validation = {
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
   lectures: {
-    titleRequired: "Введите название",
     titleMax: "До 200 символов",
     descriptionMax: "До 5000 символов",
     dateFormat: "Дата должна быть в формате ГГГГ-ММ-ДД",
@@ -78,12 +86,10 @@ const validation = {
 
   // --- documents: DocumentCreateSchema / DocumentBlocksSchema / DocumentMetaSchema / etc. ---
   documents: {
-    titleRequired: "Введите название",
     titleMax: "До 500 символов",
     invalidId: "Некорректный id документа",
     blocksMinLength: "Тело документа не может быть пустым",
     blocksInvalidJson: "Битый JSON в теле документа",
-    blocksNotArray: "Тело должно быть массивом блоков",
     blocksEmpty: "Добавьте хотя бы один блок",
   },
 
@@ -98,13 +104,11 @@ const validation = {
     endAtBeforeStart: "Окончание показа должно быть позже начала",
     eventIdUuid: "id события — UUID",
     blocksInvalidJson: "Битый JSON в теле формы",
-    blocksNotArray: "Тело должно быть массивом блоков",
     invalidId: "Некорректный id баннера",
   },
 
   // --- trails: TrailCreateSchema / TrailMetaSchema / TrailItemsSchema / TrailIdSchema ---
   trails: {
-    titleRequired: "Введите название",
     titleMax: "До 200 символов",
     descriptionMax: "До 2000 символов",
     invalidId: "Некорректный id маршрута",
@@ -118,7 +122,6 @@ const validation = {
 
   // --- events: EventFieldsSchema / EventCreateSchema / EventUpdateSchema / EventIdSchema ---
   events: {
-    titleRequired: "Введите название",
     titleMax: "До 500 символов",
     startDateRequired: "Укажите дату начала",
     rruleMax: "До 500 символов",
@@ -128,7 +131,6 @@ const validation = {
     endBeforeStart: "Дата окончания раньше даты начала",
     rrulePrefix: "RRULE должен начинаться с FREQ=",
     blocksInvalidJson: "Битый JSON в теле формы",
-    blocksNotArray: "Тело должно быть массивом блоков",
     invalidId: "Некорректный id события",
   },
 
@@ -147,7 +149,6 @@ const validation = {
 
   // --- share-links: ExpiresAtSchema / ShareLinkCreateSchema / RevokeTokenSchema ---
   shareLinks: {
-    invalidDate: "Некорректная дата",
     resourceIdRequired: "Укажите ID ресурса",
     tokenRequired: "Токен обязателен",
   },
@@ -168,7 +169,6 @@ const validation = {
     titleMax: "До 300 символов",
     invalidTermId: "Некорректный id термина",
     blocksInvalidJson: "Битый JSON в теле формы",
-    blocksNotArray: "Тело должно быть массивом блоков",
   },
 
   // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---
@@ -186,7 +186,6 @@ const validation = {
   audit: {
     invalidActorUuid: "Некорректный UUID актора",
     invalidActionFormat: "Формат: domain.verb",
-    invalidDate: "Некорректная дата",
   },
 
   // --- search: SearchQuerySchema ---
@@ -198,7 +197,6 @@ const validation = {
   // --- forms: конструктор формы + отправка отклика ---
   forms: {
     invalidId: "Некорректный идентификатор",
-    titleRequired: "Введите название",
     titleMax: "До 500 символов",
     promptRequired: "Текст вопроса обязателен",
     emptyOption: "Пустой вариант",

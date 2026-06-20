@@ -15,7 +15,7 @@ function makeBlocksJsonSchema(t: ValidationT) {
     messages: {
       minLength: t("documents.blocksMinLength"),
       invalidJson: t("documents.blocksInvalidJson"),
-      notArray: t("documents.blocksNotArray"),
+      notArray: t("common.blocksNotArray"),
       empty: t("documents.blocksEmpty"),
     },
   });
@@ -25,7 +25,7 @@ function makeTitleSchema(t: ValidationT) {
   return z
     .string()
     .trim()
-    .min(1, t("documents.titleRequired"))
+    .min(1, t("common.titleRequired"))
     .max(500, t("documents.titleMax"));
 }
 

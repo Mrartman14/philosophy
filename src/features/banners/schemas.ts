@@ -117,7 +117,7 @@ export function makeBannerUpdateSchema(t: ValidationT) {
     allowEmpty: true,
     messages: {
       invalidJson: t("banners.blocksInvalidJson"),
-      notArray: t("banners.blocksNotArray"),
+      notArray: t("common.blocksNotArray"),
     },
   });
 

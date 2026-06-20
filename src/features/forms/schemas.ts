@@ -12,7 +12,7 @@ function makeUUID(t: ValidationT) {
 }
 
 function makeTitleSchema(t: ValidationT) {
-  return z.string().trim().min(1, t("forms.titleRequired")).max(500, t("forms.titleMax"));
+  return z.string().trim().min(1, t("common.titleRequired")).max(500, t("forms.titleMax"));
 }
 
 const VisibilityEnum = z.enum(VISIBILITY);

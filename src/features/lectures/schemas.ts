@@ -15,7 +15,7 @@ export function makeLectureCreateSchema(t: ValidationT) {
     title: z
       .string()
       .trim()
-      .min(1, t("lectures.titleRequired"))
+      .min(1, t("common.titleRequired"))
       .max(200, t("lectures.titleMax")),
     description: z
       .string()
@@ -33,7 +33,7 @@ export function makeLectureUpdateSchema(t: ValidationT) {
     title: z
       .string()
       .trim()
-      .min(1, t("lectures.titleRequired"))
+      .min(1, t("common.titleRequired"))
       .max(200, t("lectures.titleMax")),
     description: z
       .string()

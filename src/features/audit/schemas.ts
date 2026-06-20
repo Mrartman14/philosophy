@@ -41,7 +41,7 @@ export function makeAuditDateSchema(t: ValidationT) {
   return z.string().transform((s, ctx) => {
     const d = new Date(s);
     if (Number.isNaN(d.getTime())) {
-      ctx.addIssue({ code: "custom", message: t("audit.invalidDate") });
+      ctx.addIssue({ code: "custom", message: t("common.invalidDate") });
       return z.NEVER;
     }
     return d.toISOString();

@@ -161,7 +161,7 @@ function makeDataJsonField(t: ValidationT) {
 /** POST /api/canvases. visibility/data опциональны. */
 export function makeCanvasCreateSchema(t: ValidationT) {
   return z.object({
-    title: z.string().trim().min(1, t("canvas.titleRequired")).max(200, t("canvas.titleMax")),
+    title: z.string().trim().min(1, t("common.titleRequired")).max(200, t("canvas.titleMax")),
     visibility: z.enum(VISIBILITY).optional(),
     data: makeDataJsonField(t),
   });
@@ -171,7 +171,7 @@ export function makeCanvasCreateSchema(t: ValidationT) {
 export function makeCanvasUpdateSchema(t: ValidationT) {
   return z.object({
     id: z.uuid(t("canvas.invalidId")),
-    title: z.string().trim().min(1, t("canvas.titleRequired")).max(200, t("canvas.titleMax")),
+    title: z.string().trim().min(1, t("common.titleRequired")).max(200, t("canvas.titleMax")),
     data: makeDataJsonField(t),
   });
 }
