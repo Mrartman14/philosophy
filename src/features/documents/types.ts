@@ -1,5 +1,6 @@
 // src/features/documents/types.ts
 import type { components } from "@/api/schema";
+import type { AstBlock } from "@/components/ast-editor";
 
 /** Полный документ (GET /api/documents/{id}, /api/me/documents, admin). */
 export type Document = components["schemas"]["document.Document"];
@@ -18,3 +19,10 @@ export type DocumentRevision = components["schemas"]["revision.Revision"];
 
 /** Один attachment (reverse-lookup лекций-контейнеров). */
 export type AttachmentDTO = components["schemas"]["attachment.AttachmentDTO"];
+
+/** Результат updateDocumentBlocks. `conflict` несёт свежую серверную пару
+ *  blocks+version (single-GET после 412); `gone` — документ удалён в другом месте. */
+export type DocumentBlocksSaveResult =
+  | { kind: "saved"; document: Document | null }
+  | { kind: "conflict"; theirs: { blocks: AstBlock[]; version: number } }
+  | { kind: "gone" };

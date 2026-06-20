@@ -28,6 +28,7 @@ import {
 } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
+import { getDocumentById } from "./api";
 import { canCreateDocument, canListAdminDocuments } from "./permissions";
 import {
   makeDocumentCreateSchema,
@@ -36,7 +37,7 @@ import {
   makeDocumentVisibilitySchema,
   makeDocumentIdSchema,
 } from "./schemas";
-import type { Document } from "./types";
+import type { Document, DocumentBlocksSaveResult } from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
@@ -150,25 +151,41 @@ export const updateDocumentMeta = createFormAction(async (formData) => {
  * docs/conventions/optimistic-locking.md). Версия берётся из `document.version`
  * (тело single-GET) через hidden-поле формы. Отсутствие → 428, расхождение → 412.
  */
-export const updateDocumentBlocks = createFormAction(async (formData, ctx) => {
-  const me = await getMe();
-  requireActive(me);
-  const t = await getT("validation");
-  const input = parseFormData(makeDocumentBlocksSchema(t), formData);
-  const api = await createApiClient();
-  const { data, error } = await api.PUT("/api/documents/{document_id}/blocks", {
-    params: {
-      path: { document_id: input.id },
-      header: ifMatchHeader(formData, "документа"),
-    },
-    body: { blocks: input.blocks },
-    headers: idempotencyHeaders(ctx.idempotencyKey),
-  });
-  if (error) rethrowApiError(error, ERRORS);
-  revalidateEntity(Tags.DOCUMENTS, input.id);
-  revalidateEntity(Tags.DOCUMENTS);
-  return unwrap(data);
-}, "updateDocumentBlocks");
+export const updateDocumentBlocks = createFormAction(
+  async (formData, ctx): Promise<DocumentBlocksSaveResult> => {
+    const me = await getMe();
+    requireActive(me);
+    const t = await getT("validation");
+    const input = parseFormData(makeDocumentBlocksSchema(t), formData);
+    const api = await createApiClient();
+    const { data, error } = await api.PUT("/api/documents/{document_id}/blocks", {
+      params: {
+        path: { document_id: input.id },
+        header: ifMatchHeader(formData, "документа"),
+      },
+      body: { blocks: input.blocks },
+      headers: idempotencyHeaders(ctx.idempotencyKey),
+    });
+    if (error) {
+      // Конфликт версий: тянем свежую серверную пару blocks+version (single-GET)
+      // и отдаём её как conflict-данные — форма откроет merge-вью. Версию берём
+      // из тела GET (согласованная пара), а не из ETag 412.
+      if (error.code === "VERSION_MISMATCH") {
+        const fresh = await getDocumentById(input.id);
+        if (!fresh) return { kind: "gone" };
+        return {
+          kind: "conflict",
+          theirs: { blocks: fresh.blocks ?? [], version: fresh.version ?? 0 },
+        };
+      }
+      rethrowApiError(error, ERRORS);
+    }
+    revalidateEntity(Tags.DOCUMENTS, input.id);
+    revalidateEntity(Tags.DOCUMENTS);
+    return { kind: "saved", document: unwrap(data) };
+  },
+  "updateDocumentBlocks",
+);
 
 /** PATCH /api/documents/{id}/visibility. UI шлёт только private→public. */
 export const setDocumentVisibility = createFormAction(async (formData) => {
