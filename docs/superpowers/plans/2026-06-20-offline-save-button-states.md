@@ -66,6 +66,8 @@
 - Modify: `src/app/_offline/descriptors/lecture-descriptor.ts`
 - Test: `src/app/_offline/revalidate-saved-bundle.test.ts`
 
+> **Отличие от спеки (намеренное, отмечено в ревью):** спека перечисляла `snapshotUpdatedAt` как поле `descriptor.freshness`. Здесь извлечение маркера из снимка вынесено в **client-safe** `SNAPSHOT_MARKERS` (Step 5), а на дескрипторе (`server-only`) остаются только сетевые пробы (`probeManifest`/`probeMarker`). Причина: дескриптор `server-only` и не импортируем в client-оркестратор, а marker-сравнение читает локальный снимок и обязано выполняться на клиенте. Поведение идентично спеке.
+
 **Interfaces:**
 - Consumes: `getSavedBundle/putSavedBundle/updateSavedBundle` ([src/services/offline/store/saved-bundles.ts](../../../src/services/offline/store/saved-bundles.ts)), `resolveDescriptor` ([src/app/_offline/registry.ts](../../../src/app/_offline/registry.ts)), `probeLectureManifest` ([src/app/_offline/probe-lecture-manifest-action.ts](../../../src/app/_offline/probe-lecture-manifest-action.ts)), `probeLectureForOffline` ([src/app/_offline/probe-lecture-action.ts](../../../src/app/_offline/probe-lecture-action.ts)), `Tags` (`@/api/tags`).
 - Produces:
@@ -267,6 +269,21 @@ describe("revalidateSavedBundle", () => {
     await seed({});
     probeMock.mockRejectedValue(new Error("boom"));
     expect(await revalidateSavedBundle("lectures", "l1")).toBe("skip");
+  });
+
+  it("marker, но в снимке нет updated_at → fresh (не штампует ложный stale)", async () => {
+    await putSavedBundle({
+      entity: "lectures",
+      id: "l1",
+      savedAt: "2026-06-10T00:00:00.000Z",
+      schemaVersion: OFFLINE_SCHEMA_VERSION,
+      status: "complete",
+      snapshot: { lecture: { id: "l1", title: "t" }, tags: [], documents: [], comments: [] },
+      imageKeys: [],
+    });
+    probeMock.mockResolvedValue({ status: "marker", marker: "2026-06-12T00:00:00Z" });
+    expect(await revalidateSavedBundle("lectures", "l1")).toBe("fresh");
+    expect((await getSavedBundle("lectures", "l1"))?.remoteStatus).toBeUndefined();
   });
 });
 ```
@@ -510,13 +527,145 @@ EOF
 
 ---
 
+## Task 1b: Unit tests for probe-bundle-action
+
+`probe-bundle-action.ts` (Task 1) — самый логически плотный новый модуль (manifest-preferred → fallback на marker; `captureFreshnessToken`), а тест оркестратора (Task 1) мокает его целиком, поэтому его внутренняя логика без этого таска нигде не покрыта. Тесты характеризационные: модуль уже создан в Task 1, тут фиксируем его ветвление, мокая `./registry`.
+
+**Files:**
+- Test: `src/app/_offline/probe-bundle-action.test.ts`
+
+**Interfaces:**
+- Consumes: `probeBundleFreshness`, `captureFreshnessToken` (Task 1); `resolveDescriptor` (мокается).
+
+- [ ] **Step 1: Написать тест**
+
+Создать `src/app/_offline/probe-bundle-action.test.ts`:
+
+```ts
+import { describe, it, expect, beforeEach, vi } from "vitest";
+
+const resolveDescriptor = vi.hoisted(() => vi.fn());
+vi.mock("./registry", () => ({ resolveDescriptor }));
+
+import { captureFreshnessToken, probeBundleFreshness } from "./probe-bundle-action";
+
+const probeManifest = vi.fn();
+const probeMarker = vi.fn();
+
+beforeEach(() => {
+  resolveDescriptor.mockReset();
+  probeManifest.mockReset();
+  probeMarker.mockReset();
+  resolveDescriptor.mockReturnValue({ freshness: { probeManifest, probeMarker } });
+});
+
+describe("probeBundleFreshness", () => {
+  it("нет дескриптора → skip", async () => {
+    resolveDescriptor.mockReturnValue(undefined);
+    expect(await probeBundleFreshness("x", "1", undefined)).toEqual({ status: "skip" });
+  });
+
+  it("нет freshness → skip", async () => {
+    resolveDescriptor.mockReturnValue({});
+    expect(await probeBundleFreshness("x", "1", undefined)).toEqual({ status: "skip" });
+  });
+
+  it("token + manifest != skip → результат manifest, probeMarker НЕ зовётся", async () => {
+    probeManifest.mockResolvedValue({ status: "stale", freshnessToken: '"v2"' });
+    expect(await probeBundleFreshness("lectures", "l1", '"v1"')).toEqual({
+      status: "stale",
+      freshnessToken: '"v2"',
+    });
+    expect(probeManifest).toHaveBeenCalledWith("l1", '"v1"');
+    expect(probeMarker).not.toHaveBeenCalled();
+  });
+
+  it("token + manifest skip → fallback на probeMarker", async () => {
+    probeManifest.mockResolvedValue({ status: "skip" });
+    probeMarker.mockResolvedValue({ status: "present", marker: "2026-06-12" });
+    expect(await probeBundleFreshness("lectures", "l1", '"v1"')).toEqual({
+      status: "marker",
+      marker: "2026-06-12",
+    });
+  });
+
+  it("без token → manifest НЕ зовётся, сразу probeMarker", async () => {
+    probeMarker.mockResolvedValue({ status: "present", marker: "2026-06-12" });
+    expect(await probeBundleFreshness("lectures", "l1", undefined)).toEqual({
+      status: "marker",
+      marker: "2026-06-12",
+    });
+    expect(probeManifest).not.toHaveBeenCalled();
+  });
+
+  it("probeMarker gone → gone", async () => {
+    probeMarker.mockResolvedValue({ status: "gone" });
+    expect(await probeBundleFreshness("lectures", "l1", undefined)).toEqual({ status: "gone" });
+  });
+
+  it("нет probeMarker + manifest skip → skip", async () => {
+    resolveDescriptor.mockReturnValue({ freshness: { probeManifest } });
+    probeManifest.mockResolvedValue({ status: "skip" });
+    expect(await probeBundleFreshness("lectures", "l1", '"v1"')).toEqual({ status: "skip" });
+  });
+
+  it("probeManifest бросает → skip (best-effort)", async () => {
+    probeManifest.mockRejectedValue(new Error("x"));
+    expect(await probeBundleFreshness("lectures", "l1", '"v1"')).toEqual({ status: "skip" });
+  });
+});
+
+describe("captureFreshnessToken", () => {
+  it("manifest stale → токен", async () => {
+    probeManifest.mockResolvedValue({ status: "stale", freshnessToken: '"v1"' });
+    expect(await captureFreshnessToken("lectures", "l1")).toBe('"v1"');
+  });
+
+  it("manifest fresh → null", async () => {
+    probeManifest.mockResolvedValue({ status: "fresh" });
+    expect(await captureFreshnessToken("lectures", "l1")).toBeNull();
+  });
+
+  it("нет freshness → null", async () => {
+    resolveDescriptor.mockReturnValue({});
+    expect(await captureFreshnessToken("lectures", "l1")).toBeNull();
+  });
+
+  it("бросает → null", async () => {
+    probeManifest.mockRejectedValue(new Error("x"));
+    expect(await captureFreshnessToken("lectures", "l1")).toBeNull();
+  });
+});
+```
+
+- [ ] **Step 2: Запустить тест — PASS (модуль уже есть из Task 1)**
+
+Run: `pnpm vitest run src/app/_offline/probe-bundle-action.test.ts`
+Expected: PASS (12 тестов). Если какой-то падает — баг в `probe-bundle-action.ts` из Task 1, чинить там.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src/app/_offline/probe-bundle-action.test.ts
+git commit -m "$(cat <<'EOF'
+test(offline): unit tests for probe-bundle-action (manifest-preferred + capture)
+
+Покрывает ветвление, которое тест оркестратора мокает целиком.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+EOF
+)"
+```
+
+---
+
 ## Task 2: Migrate `/saved` to `revalidateSavedBundle`, remove lecture-specific revalidate
 
 `/saved` переводится на обобщённую функцию; старый `revalidateSavedLecture` и его тест удаляются (единый источник истины).
 
 **Files:**
 - Modify: `src/app/saved/saved-lecture-view.tsx:7,91`
-- Modify: `src/app/saved/saved-lecture-view.test.tsx:44-46`
+- Modify: `src/app/saved/saved-lecture-view.test.tsx:44-47`
 - Delete: `src/app/_offline/revalidate-saved-lecture.ts`
 - Delete: `src/app/_offline/revalidate-saved-lecture.test.ts`
 
@@ -594,7 +743,7 @@ EOF
 Убрать lecture-захардкоженный захват токена в `saveOffline`, заменить на generic `captureFreshnessToken`.
 
 **Files:**
-- Modify: `src/app/_offline/save-offline.ts:13,103-117`
+- Modify: `src/app/_offline/save-offline.ts:13,106-117` (lecture-gated `if`-блок начинается на 106; 103-105 — комментарий)
 - Modify: `src/app/_offline/save-offline.test.ts`
 
 **Interfaces:**
@@ -737,7 +886,10 @@ EOF
 
 ```tsx
 import { cleanup, render, screen, fireEvent, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, describe, it, expect, vi } from "vitest";
+
+import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 
 const saveOffline = vi.hoisted(() => vi.fn());
 const revalidate = vi.hoisted(() => vi.fn());
@@ -761,7 +913,7 @@ vi.mock("@/components/ui", () => ({
     trigger,
     onConfirm,
   }: {
-    trigger: React.ReactNode;
+    trigger: ReactNode;
     onConfirm: () => void | Promise<void>;
   }) => (
     <>
@@ -799,7 +951,7 @@ const complete = (over: Record<string, unknown> = {}) => ({
   id: "l1",
   key: "lectures:l1",
   savedAt: "2026-06-10T00:00:00.000Z",
-  schemaVersion: 1,
+  schemaVersion: OFFLINE_SCHEMA_VERSION,
   status: "complete",
   snapshot: {},
   imageKeys: [],
@@ -888,6 +1040,29 @@ describe("SaveOfflineButton", () => {
     fireEvent.click(screen.getByText("Сохранить офлайн"));
     await waitFor(() => expect(toastAdd).toHaveBeenCalled());
     expect(screen.getByText("Сохранить офлайн")).toBeTruthy();
+  });
+
+  it("ревалидация → gone: бейдж «Сохранено» (копия цела), не падает", async () => {
+    getSavedBundle
+      .mockResolvedValueOnce(complete())
+      .mockResolvedValueOnce(complete({ remoteStatus: "gone" }));
+    revalidate.mockResolvedValue("gone");
+    render(<SaveOfflineButton entity="lectures" id="l1" />);
+    await waitFor(() => expect(screen.getByText(/Сохранено офлайн/)).toBeTruthy());
+    expect(screen.getByText("Удалить копию")).toBeTruthy();
+  });
+
+  it("сбой «Обновить» → откат в stale, кнопка «Обновить» остаётся", async () => {
+    getSavedBundle
+      .mockResolvedValueOnce(complete())
+      .mockResolvedValueOnce(complete({ remoteStatus: "stale" }));
+    revalidate.mockResolvedValue("stale");
+    saveOffline.mockResolvedValue({ ok: false, error: "нет сети" });
+    render(<SaveOfflineButton entity="lectures" id="l1" />);
+    await waitFor(() => expect(screen.getByText("Обновить")).toBeTruthy());
+    fireEvent.click(screen.getByText("Обновить"));
+    await waitFor(() => expect(toastAdd).toHaveBeenCalled());
+    expect(screen.getByText("Обновить")).toBeTruthy();
   });
 });
 ```
@@ -1125,6 +1300,20 @@ Expected: успешная сборка без ошибок типов.
 Запустить локальный стек (бэк :8090, фронт :3001), открыть лекцию: убедиться, что кнопка показывает «Сохранить офлайн» → после сохранения «Сохранено офлайн ✓» + «Удалить копию»; изменить лекцию на бэке → перезагрузить страницу → «Доступно обновление» + «Обновить»; «Обновить» возвращает к бейджу; «Удалить копию» (с подтверждением) → «Сохранить офлайн».
 
 ---
+
+## Follow-up (вне объёма этого плана)
+
+- **De-action lecture-проб.** После рефактора `probe-lecture-manifest-action.ts` и
+  `probe-lecture-action.ts` вызываются только server→server (из дескриптора внутри
+  `probeBundleFreshness`), а не как RPC с клиента. Можно конвертировать их из
+  `"use server"` в обычные `server-only`-функции (и снять суффикс `-action`), убрав
+  мёртвую Server-Action-поверхность из бандл-манифеста. Не блокер: оставлять `"use server"`
+  корректно (вызов в процессе — обычная функция). Отдельным мелким PR.
+- **MINOR (принято как косметика):** при удалении `doRemove` синхронно переключает кнопку
+  в `removing`, из-за чего `ConfirmDialog` размонтируется до своего `setOpen(false)`. В
+  React 18/19 это без варнинга; теряется лишь анимация закрытия/возврат фокуса. Если
+  захочется идеально — отдать индикацию удаления собственному `pending` диалога вместо
+  отдельного `removing`.
 
 ## Self-Review
 

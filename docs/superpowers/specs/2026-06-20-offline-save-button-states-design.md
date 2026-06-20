@@ -88,10 +88,16 @@ freshness?: {
   probeManifest: (id: string, token?: string) => Promise<ProbeResult>;
   /** legacy-fallback: текущий маркер свежести с сервера. */
   fetchUpdatedAt: (id: string) => Promise<string | null>;
-  /** достать маркер свежести из СВОЕГО снимка (форма снимка известна дескриптору). */
-  snapshotUpdatedAt: (snapshot: TSnapshot) => string | null;
 };
 ```
+
+> **Уточнение (по итогам ревью плана):** извлечение маркера из снимка (`snapshotUpdatedAt`)
+> НЕ остаётся полем `server-only`-дескриптора, а выносится в отдельный **client-safe**
+> реестр `SNAPSHOT_MARKERS` (`src/app/_offline/freshness/snapshot-markers.ts`). Причина:
+> дескриптор `server-only` и не импортируется в client-оркестратор `revalidateSavedBundle`,
+> а сравнение маркера читает локальный снимок и обязано выполняться на клиенте. На дескрипторе
+> остаются только сетевые пробы — `probeManifest` (manifest/ETag) и `probeMarker` (legacy-fetch
+> текущего маркера + детект gone). Поведение идентично описанному ниже.
 
 `ProbeResult` — существующий union из
 [probe-lecture-manifest-action.ts](../../../src/app/_offline/probe-lecture-manifest-action.ts)
