@@ -51,6 +51,27 @@ const documents = {
   uploadAction: "загрузку документа",
   deleteAction: "удаление документа",
 
+  // --- conflict merge (AstMergeView) ---
+  merge: {
+    title: "Документ изменён в другом месте",
+    intro:
+      "Пока вы редактировали, документ сохранил другой пользователь. Объедините изменения поблочно.",
+    badgeServerChanged: "изменено на сервере",
+    badgeYourEdit: "ваша правка",
+    badgeAddedByYou: "добавлено вами",
+    badgeAddedOnServer: "добавлено на сервере",
+    badgeRemovedByYou: "удалено вами",
+    badgeRemovedOnServer: "удалено на сервере",
+    conflictHeading: "Конфликт — выберите версию блока",
+    optionServer: "Серверная версия",
+    optionMine: "Ваша версия",
+    unchangedLabel: "блоков без изменений",
+    applyButton: "Применить и продолжить",
+    cancelButton: "Отмена",
+    goneMessage:
+      "Документ был удалён в другом месте. Скопируйте свои правки и обновите страницу.",
+  },
+
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
     loadMyFailed: "Не удалось загрузить документы",

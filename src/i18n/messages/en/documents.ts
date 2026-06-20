@@ -51,6 +51,27 @@ const documents = {
   uploadAction: "uploading a document",
   deleteAction: "deleting the document",
 
+  // --- conflict merge (AstMergeView) ---
+  merge: {
+    title: "Document changed elsewhere",
+    intro:
+      "While you were editing, another user saved this document. Merge the changes block by block.",
+    badgeServerChanged: "changed on server",
+    badgeYourEdit: "your edit",
+    badgeAddedByYou: "added by you",
+    badgeAddedOnServer: "added on server",
+    badgeRemovedByYou: "removed by you",
+    badgeRemovedOnServer: "removed on server",
+    conflictHeading: "Conflict — choose a block version",
+    optionServer: "Server version",
+    optionMine: "Your version",
+    unchangedLabel: "blocks unchanged",
+    applyButton: "Apply and continue",
+    cancelButton: "Cancel",
+    goneMessage:
+      "The document was deleted elsewhere. Copy your edits and reload the page.",
+  },
+
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
     loadMyFailed: "Failed to load documents",
