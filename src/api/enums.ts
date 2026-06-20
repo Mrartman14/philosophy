@@ -100,6 +100,7 @@ export const AUDIT_TARGET_TYPES = enumValues<S["audit.TargetType"]>()(
   "form",
   "glossary_term",
   "lecture",
+  "map",
   "media",
   "push",
   "tag",
