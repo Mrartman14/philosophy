@@ -1,8 +1,9 @@
 // src/features/canvas/ui/canvas-detail.tsx
 import type { RenderData, RenderEdge, RenderNode } from "@/components/canvas-render";
 import { CanvasRender } from "@/components/canvas-render/canvas-render";
+import { getT } from "@/i18n";
 
-import { resolveEntityRefView } from "../entity-ref";
+import { makeEntityRefResolver } from "../entity-ref";
 import type { CanvasData } from "../types";
 
 interface Props {
@@ -49,11 +50,12 @@ function toRenderData(data: CanvasData | undefined): RenderData {
 }
 
 /** Read-only SSR-визуализация графа канваса. */
-export function CanvasDetail({ data }: Props) {
+export async function CanvasDetail({ data }: Props) {
+  const t = await getT("canvas");
   return (
     <CanvasRender
       data={toRenderData(data)}
-      resolveEntityRef={resolveEntityRefView}
+      resolveEntityRef={makeEntityRefResolver(t)}
       className="rounded border border-(--color-border) bg-(--color-surface) p-2"
     />
   );

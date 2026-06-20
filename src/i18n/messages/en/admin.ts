@@ -1,9 +1,33 @@
 // src/i18n/messages/en/admin.ts
-// English translations for admin pages (src/app/admin/**).
-// Machine-generated; requires native-speaker review.
+// English translations for admin pages (src/app/admin/**), including the
+// frozen shell (layout.tsx, admin-sidebar.tsx). Machine-generated; requires
+// native-speaker review.
 const admin = {
   // --- общие ---
   totalCount: "Total: {total}",
+
+  // --- shell (layout.tsx + admin-sidebar.tsx) ---
+  shellTitle: "Admin panel",
+  shellBackToSite: "← To the site",
+  shellNavAriaLabel: "Admin panel navigation",
+
+  // --- nav items (admin-sidebar.tsx; key comes from NavItem.labelKey) ---
+  nav: {
+    lectures: "Lectures",
+    glossary: "Glossary",
+    tags: "Tags",
+    events: "Events",
+    banners: "Banners",
+    documents: "Documents",
+    forms: "Forms",
+    trails: "Trails",
+    shareLinks: "Links",
+    comments: "Comments",
+    annotations: "Annotations",
+    users: "Users",
+    push: "Push notifications",
+    audit: "Audit",
+  },
 
   // --- страница /admin (dashboard) ---
   dashboardTitle: "Admin panel",

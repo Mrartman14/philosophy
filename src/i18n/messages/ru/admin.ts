@@ -1,9 +1,32 @@
 // src/i18n/messages/ru/admin.ts
-// UI-строки admin-страниц (src/app/admin/**).
-// Строки frozen-оболочки (layout.tsx, admin-sidebar.tsx) — НЕ здесь; они заморожены.
+// UI-строки admin-страниц (src/app/admin/**), включая frozen-оболочку
+// (layout.tsx, admin-sidebar.tsx) — локализованы координированным foundation-PR.
 const admin = {
   // --- общие ---
   totalCount: "Всего: {total}",
+
+  // --- shell (layout.tsx + admin-sidebar.tsx) ---
+  shellTitle: "Админ-панель",
+  shellBackToSite: "← На сайт",
+  shellNavAriaLabel: "Навигация админ-панели",
+
+  // --- nav-итемы (admin-sidebar.tsx; ключ берётся из NavItem.labelKey) ---
+  nav: {
+    lectures: "Лекции",
+    glossary: "Глоссарий",
+    tags: "Теги",
+    events: "События",
+    banners: "Баннеры",
+    documents: "Документы",
+    forms: "Формы",
+    trails: "Маршруты",
+    shareLinks: "Ссылки",
+    comments: "Комментарии",
+    annotations: "Аннотации",
+    users: "Пользователи",
+    push: "Push-уведомления",
+    audit: "Аудит",
+  },
 
   // --- страница /admin (dashboard) ---
   dashboardTitle: "Админ-панель",

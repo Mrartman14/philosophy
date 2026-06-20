@@ -125,6 +125,22 @@ const canvas: Messages["canvas"] = {
     typeEvent: "Event",
   },
 
+  // --- entity-ref labels (resolveEntityRefView; entity-reference node chip) ---
+  // 10 entity_ref types + fallback for an unknown type.
+  entityType: {
+    document: "Document",
+    lecture: "Lecture",
+    media: "Media",
+    comment: "Comment",
+    glossary: "Glossary",
+    form: "Form",
+    canvas: "Canvas",
+    annotation: "Annotation",
+    banner: "Banner",
+    event: "Event",
+    fallback: "Object",
+  },
+
   // --- canvas-my-list ---
   myList: {
     empty: "No canvases yet.",

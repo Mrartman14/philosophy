@@ -124,6 +124,22 @@ const canvas = {
     typeEvent: "Событие",
   },
 
+  // --- entity-ref-метки (resolveEntityRefView; node-плашка ссылки на сущность) ---
+  // 10 типов entity_ref + fallback для неизвестного типа.
+  entityType: {
+    document: "Документ",
+    lecture: "Лекция",
+    media: "Медиа",
+    comment: "Комментарий",
+    glossary: "Глоссарий",
+    form: "Форма",
+    canvas: "Канвас",
+    annotation: "Аннотация",
+    banner: "Баннер",
+    event: "Событие",
+    fallback: "Объект",
+  },
+
   // --- canvas-my-list ---
   myList: {
     empty: "Канвасов пока нет.",

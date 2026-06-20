@@ -14,7 +14,7 @@ import {
   screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
-import { resolveEntityRefView } from "../entity-ref";
+import { makeEntityRefResolver } from "../entity-ref";
 import type { Canvas, CanvasRefEntityType } from "../types";
 
 import { CanvasEditForm } from "./canvas-edit-form";
@@ -92,6 +92,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
   }, []);
 
   const renderData = useMemo(() => canvasDataToRenderData(state.data), [state.data]);
+  const resolveEntityRef = useMemo(() => makeEntityRefResolver(t), [t]);
   const nodesById = useMemo(() => new Map<string, RenderNode>(renderData.nodes.map((n) => [n.id, n])), [renderData.nodes]);
   const selectedNodeIds = useMemo(() => new Set(state.selection.nodeIds), [state.selection.nodeIds]);
   const selectedEdgeIds = useMemo(() => new Set(state.selection.edgeIds), [state.selection.edgeIds]);
@@ -385,7 +386,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
             <EditorNodeLayer
               nodes={renderData.nodes}
               selectedNodeIds={selectedNodeIds}
-              resolveEntityRef={resolveEntityRefView}
+              resolveEntityRef={resolveEntityRef}
               invalidNodeId={invalidNodeId}
               onNodePointerDown={onNodePointerDown}
               onNodeDoubleClick={onNodeDoubleClick}

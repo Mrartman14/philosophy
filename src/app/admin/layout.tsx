@@ -2,12 +2,16 @@
 import { forbidden } from "next/navigation";
 
 import { RouterLink } from "@/components/ui";
+import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { buildNavItems, canAccessAdmin } from "./admin-access";
 import { AdminSidebar } from "./admin-sidebar";
 
-export const metadata = { title: "Админ-панель" };
+export async function generateMetadata() {
+  const t = await getT("admin");
+  return { title: t("shellTitle") };
+}
 
 export default async function AdminLayout({
   children,
@@ -18,6 +22,7 @@ export default async function AdminLayout({
   if (!canAccessAdmin(me)) forbidden();
 
   const navItems = buildNavItems(me);
+  const t = await getT("admin");
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] w-full">
@@ -27,9 +32,9 @@ export default async function AdminLayout({
             href="/"
             className="text-xs text-(--color-fg-muted) hover:underline"
           >
-            ← На сайт
+            {t("shellBackToSite")}
           </RouterLink>
-          <h2 className="text-lg font-bold">Админ-панель</h2>
+          <h2 className="text-lg font-bold">{t("shellTitle")}</h2>
           {me && (
             <span className="text-xs text-(--color-fg-muted) break-all">
               {me.username}
