@@ -171,6 +171,34 @@ const eslintConfig = [
     files: ["src/features/canvas/editor/render-map.test.ts"],
     rules: { "testing-library/render-result-naming-convention": "off" },
   },
+  // Guardrail 6: запрет вызовов переводчика .rich()/.markup() в прикладном коде.
+  // Каталог сообщений намеренно держит ПРОСТОЕ подмножество ICU ({var} + {count, plural, …}),
+  // без rich/markup/select — ради дешёвого свопа i18n-библиотеки за фасадом @/i18n.
+  // useT/getT сейчас — прямой ре-экспорт next-intl-переводчика, у которого ЕСТЬ .rich()/.markup();
+  // Guardrail 5 ловит только импорт next-intl, не вызовы методов переводчика. Это правило
+  // форсит дисциплину машинно. no-restricted-syntax — отдельное правило (НЕ no-restricted-imports),
+  // его rules не перезатираются Guardrail 1–5; отдельный блок на src/** гарантирует применение
+  // ко всему прикладному коду (features/app/components) — ни один более поздний блок его не трогает.
+  // Селектор по callee.property.name ловит ЛЮБОЙ .rich(...)/.markup(...) — на текущем коде
+  // 0 вхождений (grep пуст), приемлемо для guard-heavy стиля проекта.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "CallExpression[callee.property.name='rich']",
+          message:
+            "t.rich(...) запрещён: каталог сообщений держит простое подмножество ICU ради дешёвого свопа i18n-библиотеки за фасадом @/i18n (см. docs/frontend-i18n.md). Используй plain t(key, params).",
+        },
+        {
+          selector: "CallExpression[callee.property.name='markup']",
+          message:
+            "t.markup(...) запрещён: каталог сообщений держит простое подмножество ICU ради дешёвого свопа i18n-библиотеки за фасадом @/i18n (см. docs/frontend-i18n.md). Используй plain t(key, params).",
+        },
+      ],
+    },
+  },
   // Guardrail 1: deep-imports into other features must go through their index.ts
   // + Guardrail 5: прямой импорт next-intl запрещён (кроме src/i18n/** — см. ниже)
   {
