@@ -1,23 +1,46 @@
 "use client";
 import { useAppearance } from "@/components/appearance";
 import { Select } from "@/components/ui";
-
-const THEME = [{ value: "system", label: "Как в системе" }, { value: "light", label: "Светлая" }, { value: "dark", label: "Тёмная" }];
-const CONTRAST = [{ value: "auto", label: "Как в системе" }, { value: "normal", label: "Обычный" }, { value: "high", label: "Высокий" }];
-const DENSITY = [{ value: "comfortable", label: "Просторно" }, { value: "compact", label: "Компактно" }];
-const FONT = [{ value: "sans", label: "Стандартный" }, { value: "legible", label: "Высоко-разборчивый" }, { value: "serif", label: "С засечками (для чтения)" }];
-const TEXT_SIZE = [{ value: "sm", label: "Меньше" }, { value: "md", label: "Обычный" }, { value: "lg", label: "Крупнее" }, { value: "xl", label: "Максимальный" }];
+import { useT } from "@/i18n/client";
 
 export function AppearanceSettings() {
   const { appearance, setAxis } = useAppearance();
+  const t = useT("settings");
+
+  const THEME = [
+    { value: "system", label: t("appearance.theme.system") },
+    { value: "light", label: t("appearance.theme.light") },
+    { value: "dark", label: t("appearance.theme.dark") },
+  ];
+  const CONTRAST = [
+    { value: "auto", label: t("appearance.contrast.auto") },
+    { value: "normal", label: t("appearance.contrast.normal") },
+    { value: "high", label: t("appearance.contrast.high") },
+  ];
+  const DENSITY = [
+    { value: "comfortable", label: t("appearance.density.comfortable") },
+    { value: "compact", label: t("appearance.density.compact") },
+  ];
+  const FONT = [
+    { value: "sans", label: t("appearance.font.sans") },
+    { value: "legible", label: t("appearance.font.legible") },
+    { value: "serif", label: t("appearance.font.serif") },
+  ];
+  const TEXT_SIZE = [
+    { value: "sm", label: t("appearance.textSize.sm") },
+    { value: "md", label: t("appearance.textSize.md") },
+    { value: "lg", label: t("appearance.textSize.lg") },
+    { value: "xl", label: t("appearance.textSize.xl") },
+  ];
+
   return (
     <section className="flex max-w-xl flex-col gap-4">
-      <h2 className="text-lg font-semibold">Внешний вид</h2>
-      <Row label="Тема"><Select aria-label="Тема" options={THEME} value={appearance.theme} onValueChange={(v) => { setAxis("theme", v as typeof appearance.theme); }} /></Row>
-      <Row label="Контраст"><Select aria-label="Контраст" options={CONTRAST} value={appearance.contrast} onValueChange={(v) => { setAxis("contrast", v as typeof appearance.contrast); }} /></Row>
-      <Row label="Плотность интерфейса"><Select aria-label="Плотность" options={DENSITY} value={appearance.density} onValueChange={(v) => { setAxis("density", v as typeof appearance.density); }} /></Row>
-      <Row label="Шрифт"><Select aria-label="Шрифт" options={FONT} value={appearance.font} onValueChange={(v) => { setAxis("font", v as typeof appearance.font); }} /></Row>
-      <Row label="Размер текста"><Select aria-label="Размер текста" options={TEXT_SIZE} value={appearance.textSize} onValueChange={(v) => { setAxis("textSize", v as typeof appearance.textSize); }} /></Row>
+      <h2 className="text-lg font-semibold">{t("appearance.heading")}</h2>
+      <Row label={t("appearance.themeLabel")}><Select aria-label={t("appearance.themeAriaLabel")} options={THEME} value={appearance.theme} onValueChange={(v) => { setAxis("theme", v as typeof appearance.theme); }} /></Row>
+      <Row label={t("appearance.contrastLabel")}><Select aria-label={t("appearance.contrastAriaLabel")} options={CONTRAST} value={appearance.contrast} onValueChange={(v) => { setAxis("contrast", v as typeof appearance.contrast); }} /></Row>
+      <Row label={t("appearance.densityLabel")}><Select aria-label={t("appearance.densityAriaLabel")} options={DENSITY} value={appearance.density} onValueChange={(v) => { setAxis("density", v as typeof appearance.density); }} /></Row>
+      <Row label={t("appearance.fontLabel")}><Select aria-label={t("appearance.fontAriaLabel")} options={FONT} value={appearance.font} onValueChange={(v) => { setAxis("font", v as typeof appearance.font); }} /></Row>
+      <Row label={t("appearance.textSizeLabel")}><Select aria-label={t("appearance.textSizeAriaLabel")} options={TEXT_SIZE} value={appearance.textSize} onValueChange={(v) => { setAxis("textSize", v as typeof appearance.textSize); }} /></Row>
     </section>
   );
 }
