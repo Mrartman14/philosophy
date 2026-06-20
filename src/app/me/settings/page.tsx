@@ -30,6 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SettingsPage() {
   const me = await requireUserOrRedirect("/me/settings");
+  const t = await getT("settings");
 
   const [prefs, vapidPublicKey, historySettings, storedLocale] =
     await Promise.all([
@@ -45,22 +46,22 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 p-4">
-      <h1 className="text-2xl font-bold">Настройки</h1>
+      <h1 className="text-2xl font-bold">{t("pageTitle")}</h1>
 
       <AppearanceSettings />
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Язык интерфейса</h2>
+        <h2 className="text-lg font-semibold">{t("sectionLanguage")}</h2>
         <LocaleSettings initial={storedLocale} />
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Чтение</h2>
+        <h2 className="text-lg font-semibold">{t("sectionReading")}</h2>
         <PreferencesForm initialReadingMode={readingMode} />
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Push-уведомления</h2>
+        <h2 className="text-lg font-semibold">{t("sectionPush")}</h2>
         <PushSubscriptionToggle
           vapidPublicKey={vapidPublicKey}
           canSubscribe={canSubscribePush(me)}
@@ -68,23 +69,23 @@ export default async function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Подписки на документы</h2>
+        <h2 className="text-lg font-semibold">{t("sectionSubscriptions")}</h2>
         <SubscriptionsSection />
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">История просмотров</h2>
+        <h2 className="text-lg font-semibold">{t("sectionHistory")}</h2>
         <HistoryTrackingToggle
           initialEnabled={historySettings.tracking_enabled ?? false}
           canManage={canManageOwnHistory(me)}
         />
         <RouterLink href="/me/stats" className="text-sm">
-          Посмотреть мою статистику →
+          {t("viewMyStats")}
         </RouterLink>
       </section>
 
       <section className="flex flex-col items-start gap-3 border-t border-(--color-border) pt-8">
-        <h2 className="text-lg font-semibold">Аккаунт</h2>
+        <h2 className="text-lg font-semibold">{t("sectionAccount")}</h2>
         <LogoutForm />
         <LogoutAllForm />
       </section>

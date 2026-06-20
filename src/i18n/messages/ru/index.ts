@@ -27,6 +27,7 @@ import notifications from "./notifications";
 import pages from "./pages";
 import preferences from "./preferences";
 import search from "./search";
+import settings from "./settings";
 import shareLinks from "./shareLinks";
 import statistics from "./statistics";
 import tags from "./tags";
@@ -56,6 +57,7 @@ const ru = {
   pages,
   preferences,
   search,
+  settings,
   shareLinks,
   statistics,
   tags,

@@ -21,24 +21,20 @@ vi.mock("@/services/offline/store/saved-bundles", () => ({
   countSavedBundles: countMock,
 }));
 
-// Мок i18n/client: useT("auth") возвращает переводчик по реальному каталогу ru.
+// Мок i18n/client: useT возвращает переводчик по реальным каталогам ru (auth + common).
 vi.mock("@/i18n/client", async () => {
   const { default: auth } = await import("@/i18n/messages/ru/auth");
-  return {
-    useT: (ns: string) => {
-      const catalog = ns === "auth" ? auth : {};
-      return (key: string) => {
-        const parts = key.split(".");
-        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-        let val: any = catalog;
-        for (const part of parts) {
-          val = val?.[part];
-        }
-        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-        return typeof val === "string" ? val : key;
-      };
-    },
+  const common = (await import("@/i18n/messages/ru/common")).default;
+  const catalogs: Record<string, unknown> = { auth, common };
+  const useT = (ns: string) => {
+    const catalog = catalogs[ns] ?? {};
+    return (key: string) =>
+      key.split(".").reduce<unknown>(
+        (acc, k) => (acc as Record<string, unknown> | undefined)?.[k],
+        catalog,
+      ) ?? key;
   };
+  return { useT };
 });
 
 beforeEach(() => {

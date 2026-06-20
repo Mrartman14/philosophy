@@ -24,6 +24,7 @@ import notifications from "./notifications";
 import pages from "./pages";
 import preferences from "./preferences";
 import search from "./search";
+import settings from "./settings";
 import shareLinks from "./shareLinks";
 import statistics from "./statistics";
 import tags from "./tags";
@@ -53,6 +54,7 @@ const en = {
   pages,
   preferences,
   search,
+  settings,
   shareLinks,
   statistics,
   tags,

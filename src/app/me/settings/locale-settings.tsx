@@ -4,18 +4,20 @@ import type { ReactNode } from "react";
 import { useTransition } from "react";
 
 import { Select } from "@/components/ui";
+import { useT } from "@/i18n/client";
 import { LOCALE_COOKIE, type Locale } from "@/i18n/locales";
 import { persistLocale } from "@/i18n/persist-locale";
 
-const OPTIONS = [
-  { value: "system", label: "Как в системе" },
-  { value: "ru", label: "Русский" },
-  { value: "en", label: "English" },
-];
-
 export function LocaleSettings({ initial }: { initial: Locale }) {
+  const t = useT("settings");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+
+  const OPTIONS = [
+    { value: "system", label: t("localeSystem") },
+    { value: "ru", label: t("localeRu") },
+    { value: "en", label: "English" },
+  ];
 
   function onChange(v: string) {
     const next = v as Locale;
@@ -28,9 +30,9 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
   }
 
   return (
-    <Row label="Язык">
+    <Row label={t("localeLabelRow")}>
       <Select
-        aria-label="Язык интерфейса"
+        aria-label={t("localeAriaLabel")}
         options={OPTIONS}
         value={initial}
         onValueChange={onChange}
