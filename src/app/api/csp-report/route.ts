@@ -6,7 +6,7 @@ import { initServerObservability } from "@/services/observability/server";
 
 export async function POST(req: Request): Promise<Response> {
   initServerObservability();
-  let body: unknown = null;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {

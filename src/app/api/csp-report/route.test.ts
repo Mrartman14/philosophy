@@ -23,6 +23,7 @@ describe("POST /api/csp-report", () => {
   });
 
   it("не падает на битом теле, отвечает 204", async () => {
+    warn.mockClear();
     const res = await POST(
       new Request("http://localhost/api/csp-report", { method: "POST", body: "{не json" }),
     );

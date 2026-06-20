@@ -51,7 +51,7 @@ export function buildCsp({
     ...(storageOrigin ? [storageOrigin] : []),
   ];
   const externalOrigins = [apiOrigin, storageOrigin].filter(
-    (o): o is string => o !== null,
+    (o): o is string => o !== null && o.length > 0,
   );
   const connectSrc = [
     "'self'",

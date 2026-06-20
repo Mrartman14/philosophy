@@ -56,9 +56,21 @@ describe("buildCsp", () => {
       "connect-src 'self' https://api.example.com https://cdn.example.com",
     );
   });
+  it("дедуплицирует connect-src при apiOrigin === storageOrigin", () => {
+    const csp = buildCsp({
+      ...base,
+      apiOrigin: "https://api.example.com",
+      storageOrigin: "https://api.example.com",
+    });
+    expect(csp).toContain("connect-src 'self' https://api.example.com;");
+    expect(csp).not.toContain(
+      "https://api.example.com https://api.example.com",
+    );
+  });
   it("без внешних origin когда null", () => {
     const csp = buildCsp(base);
     expect(csp).toContain("img-src 'self' data: blob:");
+    // "; " — разделитель директив: после connect-src 'self' идёт "; <next-directive>"
     expect(csp).toContain("connect-src 'self';");
   });
   it("unsafe-eval и ws: только в dev", () => {

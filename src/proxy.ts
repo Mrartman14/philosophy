@@ -29,6 +29,7 @@ const API_URL = process.env.API_URL ?? "http://localhost:8080";
  * Безопасность держит data-layer (getMe()→бэк на каждый запрос):
  * обход middleware = «refresh не случился» → гость, не дыра.
  */
+
 /**
  * Ответ, рендерящий страницу, с проставленными CSP+nonce.
  * Nonce кладётся в request-заголовок Content-Security-Policy (Next извлекает
