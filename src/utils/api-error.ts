@@ -81,6 +81,11 @@ const DEFAULT_MESSAGES: ApiErrorMessageKeys = {
   IDEMPOTENCY_KEY_IN_USE: "IDEMPOTENCY_KEY_IN_USE",
   IDEMPOTENCY_KEY_REUSED: "IDEMPOTENCY_KEY_REUSED",
   IDEMPOTENCY_KEY_INVALID: "IDEMPOTENCY_KEY_INVALID",
+  // 413 — общий дефолт для всех ручек с лимитом тела (создание комментария,
+  // поиск/контекст и др.). Слайс может переопределить entity-ключом
+  // (canvas → CANVAS_PAYLOAD_TOO_LARGE, annotation → ANNOTATION_REQUEST_BODY_TOO_LARGE).
+  REQUEST_BODY_TOO_LARGE: "REQUEST_BODY_TOO_LARGE",
+  PAYLOAD_TOO_LARGE: "PAYLOAD_TOO_LARGE",
 };
 
 /**

@@ -153,3 +153,27 @@ describe("rethrowApiError idempotency codes (несут ключ каталог�
     expect((err as ApiMessageError).messageKey).toBe("IDEMPOTENCY_KEY_INVALID");
   });
 });
+
+describe("rethrowApiError — 413 (несут ключ каталога)", () => {
+  it("REQUEST_BODY_TOO_LARGE → ApiMessageError('REQUEST_BODY_TOO_LARGE')", () => {
+    const err = caught(() => rethrowApiError({ code: "REQUEST_BODY_TOO_LARGE" }));
+    expect(err).toBeInstanceOf(ApiMessageError);
+    expect((err as ApiMessageError).messageKey).toBe("REQUEST_BODY_TOO_LARGE");
+  });
+
+  it("PAYLOAD_TOO_LARGE → ApiMessageError('PAYLOAD_TOO_LARGE')", () => {
+    const err = caught(() => rethrowApiError({ code: "PAYLOAD_TOO_LARGE" }));
+    expect(err).toBeInstanceOf(ApiMessageError);
+    expect((err as ApiMessageError).messageKey).toBe("PAYLOAD_TOO_LARGE");
+  });
+
+  it("слайс-override приоритетнее общего ключа", () => {
+    const err = caught(() =>
+      rethrowApiError(
+        { code: "REQUEST_BODY_TOO_LARGE" },
+        { REQUEST_BODY_TOO_LARGE: "CANVAS_PAYLOAD_TOO_LARGE" },
+      ),
+    );
+    expect((err as ApiMessageError).messageKey).toBe("CANVAS_PAYLOAD_TOO_LARGE");
+  });
+});

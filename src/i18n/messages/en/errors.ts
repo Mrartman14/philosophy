@@ -68,6 +68,10 @@ const errors = {
   DOCUMENT_DUPLICATE_BLOCK_ID: "Block ID error. Please reload the editor.",
   DOCUMENT_IMAGE_UNKNOWN_KEY: "The document contains an image with an unknown key.",
 
+  // --- api-error: 413 — generic default (comment create, search/context, etc.) ---
+  REQUEST_BODY_TOO_LARGE: "The request is too large. Reduce the content and try again.",
+  PAYLOAD_TOO_LARGE: "The request is too large. Reduce the content and try again.",
+
   // --- canvas slice: domain codes ---
   PUBLIC_IMMUTABLE: "A public canvas cannot be made private.",
   CANVAS_VERSION_MISMATCH:
