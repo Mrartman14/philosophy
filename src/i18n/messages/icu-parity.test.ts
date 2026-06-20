@@ -51,7 +51,8 @@ function extractArgNames(value: string): Set<string> {
   const re = /\{(\w+)\s*(?:,|\})/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(value)) !== null) {
-    names.add(m[1]);
+    const name = m[1];
+    if (name !== undefined) names.add(name);
   }
   return names;
 }
@@ -94,11 +95,13 @@ function extractPluralCategories(pluralBody: string): Set<string> {
   const wordRe = /\b(zero|one|two|few|many|other)\s*\{/g;
   let m: RegExpExecArray | null;
   while ((m = wordRe.exec(pluralBody)) !== null) {
-    cats.add(m[1]);
+    const cat = m[1];
+    if (cat !== undefined) cats.add(cat);
   }
   const numRe = /=([\d]+)\s*\{/g;
   while ((m = numRe.exec(pluralBody)) !== null) {
-    cats.add(`=${m[1]}`);
+    const num = m[1];
+    if (num !== undefined) cats.add(`=${num}`);
   }
   return cats;
 }
