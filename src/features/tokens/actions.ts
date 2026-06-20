@@ -17,7 +17,7 @@ import { ForbiddenError } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import { canManageTokens } from "./permissions";
-import { makeCreateTokenSchema } from "./schemas";
+import { makeCreateTokenSchema, UsageTrackingSchema } from "./schemas";
 import type { CreatedToken } from "./types";
 
 /** Доменные коды слайса. Остальное (FORBIDDEN/SUSPENDED/фоллбек) — rethrowApiError. */
@@ -72,4 +72,25 @@ export const revokeToken = createAction(
     return true;
   },
   "revokeToken",
+);
+
+/**
+ * Включить/выключить трекинг использования PAT. PUT /api/me/tokens/usage-tracking.
+ * Выключение на бэке безвозвратно удаляет накопленные счётчики (purge) —
+ * предупреждение в UI (ConfirmDialog в usage-tracking-toggle).
+ */
+export const setUsageTracking = createAction(
+  async (raw: unknown): Promise<true> => {
+    const me = await getMe();
+    if (!canManageTokens(me)) throw new ForbiddenError(me ? "status" : "guest");
+    const enabled = UsageTrackingSchema.parse(raw);
+    const api = await createApiClient();
+    const { error } = await api.PUT("/api/me/tokens/usage-tracking", {
+      body: { enabled },
+    });
+    if (error) rethrowApiError(error);
+    revalidateEntity(Tags.TOKENS);
+    return true;
+  },
+  "setUsageTracking",
 );
