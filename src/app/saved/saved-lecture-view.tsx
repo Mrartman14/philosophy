@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 
 import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descriptor";
-import { revalidateSavedLecture } from "@/app/_offline/revalidate-saved-lecture";
+import { revalidateSavedBundle } from "@/app/_offline/revalidate-saved-bundle";
 import { saveOffline } from "@/app/_offline/save-offline";
 import { AstRender } from "@/components/ast-render";
 import { Button, chipClass, Skeleton } from "@/components/ui";
@@ -88,7 +88,7 @@ export function SavedLectureView({ id }: { id: string }) {
       // Фоновая ревалидация (SWR): снимок уже показан выше, сверка его не
       // блокирует. Один раз на id; офлайн — не сверяем (best-effort).
       if (next.kind === "ready" && navigator.onLine) {
-        const outcome = await revalidateSavedLecture(id);
+        const outcome = await revalidateSavedBundle("lectures", id);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
         if (cancelled) return;
         if (outcome !== "skip") {

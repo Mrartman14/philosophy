@@ -42,8 +42,8 @@ const saveOfflineMock = vi.hoisted(() => vi.fn());
 vi.mock("@/app/_offline/save-offline", () => ({ saveOffline: saveOfflineMock }));
 
 const revalidateMock = vi.hoisted(() => vi.fn());
-vi.mock("@/app/_offline/revalidate-saved-lecture", () => ({
-  revalidateSavedLecture: revalidateMock,
+vi.mock("@/app/_offline/revalidate-saved-bundle", () => ({
+  revalidateSavedBundle: revalidateMock,
 }));
 
 beforeEach(() => {
