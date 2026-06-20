@@ -226,6 +226,16 @@ const pages = {
   saveOfflineButton: "Save offline",
   saveOfflineSuccessTitle: "Saved for offline",
   saveOfflineFailTitle: "Could not save offline",
+  saveOfflineUpdateAvailable: "Update available",
+  saveOfflineUpdate: "Update",
+  saveOfflineUpdating: "Updating…",
+  saveOfflineRemove: "Remove copy",
+  saveOfflineRemoving: "Removing…",
+  saveOfflineRemoveConfirmTitle: "Remove offline copy?",
+  saveOfflineRemoveConfirmBody:
+    "The copy will be deleted from this device. You can restore it only online by saving the lecture again.",
+  saveOfflineRemoveConfirmAction: "Remove",
+  saveOfflineRemovedToast: "Offline copy removed",
 
   // ─── saved-list stale sweep ──────────────────────────────────────────
   savedListStaleSaving: "Saving interrupted — open the lecture and save again.",

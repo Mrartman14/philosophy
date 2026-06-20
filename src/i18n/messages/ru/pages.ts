@@ -226,6 +226,16 @@ const pages = {
   saveOfflineButton: "Сохранить офлайн",
   saveOfflineSuccessTitle: "Сохранено для офлайна",
   saveOfflineFailTitle: "Не удалось сохранить офлайн",
+  saveOfflineUpdateAvailable: "Доступно обновление",
+  saveOfflineUpdate: "Обновить",
+  saveOfflineUpdating: "Обновление…",
+  saveOfflineRemove: "Удалить копию",
+  saveOfflineRemoving: "Удаление…",
+  saveOfflineRemoveConfirmTitle: "Удалить офлайн-копию?",
+  saveOfflineRemoveConfirmBody:
+    "Копия будет удалена с устройства. Восстановить её можно только онлайн — сохранив лекцию заново.",
+  saveOfflineRemoveConfirmAction: "Удалить",
+  saveOfflineRemovedToast: "Офлайн-копия удалена",
 
   // ─── saved-list stale sweep ──────────────────────────────────────────
   savedListStaleSaving: "Сохранение прервано — откройте лекцию и сохраните заново.",
