@@ -23,8 +23,8 @@ import {
   getShareLinksFor,
 } from "@/features/share-links";
 import { getLectureTags } from "@/features/tags";
-import { getT } from "@/i18n";
-import { buildPageMetadata } from "@/seo/page-metadata";
+import { getLocale, getT } from "@/i18n";
+import { buildPageMetadata, ogLocale } from "@/seo/page-metadata";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -92,10 +92,11 @@ export default async function LecturePage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const [lecture, t, tMeta] = await Promise.all([
+  const [lecture, t, tMeta, locale] = await Promise.all([
     getLectureById(id),
     getT("pages"),
     getT("metadata"),
+    getLocale(),
   ]);
   return buildPageMetadata({
     title: lecture?.title ?? t("lectureDefaultTitle"),
@@ -103,6 +104,8 @@ export async function generateMetadata({ params }: Props) {
     description: lecture?.description,
     image: lectureCoverUrl(lecture?.cover_image_key),
     imageAlt: lecture?.cover_image_alt,
+    locale: ogLocale(locale),
+    publishedTime: lecture?.created_at,
     path: `/lectures/${id}`,
   });
 }

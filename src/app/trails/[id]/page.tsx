@@ -18,8 +18,8 @@ import {
   TrailDeleteButton,
 } from "@/features/trails";
 import type { TrailDocumentSummary } from "@/features/trails";
-import { getT } from "@/i18n";
-import { buildPageMetadata } from "@/seo/page-metadata";
+import { getLocale, getT } from "@/i18n";
+import { buildPageMetadata, ogLocale } from "@/seo/page-metadata";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -93,15 +93,17 @@ export default async function TrailPage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const [trail, t, tMeta] = await Promise.all([
+  const [trail, t, tMeta, locale] = await Promise.all([
     getTrailById(id),
     getT("pages"),
     getT("metadata"),
+    getLocale(),
   ]);
   return buildPageMetadata({
     title: trail?.title ?? t("trailDefaultTitle"),
     siteName: tMeta("appTitle"),
     description: trail?.description,
+    locale: ogLocale(locale),
     path: `/trails/${id}`,
   });
 }

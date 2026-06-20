@@ -6,8 +6,8 @@ import {
   GlossaryDetail,
   GlossaryExportLinks,
 } from "@/features/glossary";
-import { getT } from "@/i18n";
-import { buildPageMetadata } from "@/seo/page-metadata";
+import { getLocale, getT } from "@/i18n";
+import { buildPageMetadata, ogLocale } from "@/seo/page-metadata";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -30,14 +30,16 @@ export default async function GlossaryTermPage({ params }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const [term, t, tMeta] = await Promise.all([
+  const [term, t, tMeta, locale] = await Promise.all([
     getTermById(id),
     getT("pages"),
     getT("metadata"),
+    getLocale(),
   ]);
   return buildPageMetadata({
     title: term?.title ?? t("termDefaultTitle"),
     siteName: tMeta("appTitle"),
+    locale: ogLocale(locale),
     path: `/glossary/${id}`,
   });
 }

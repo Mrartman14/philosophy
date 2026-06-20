@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { buildPageMetadata } from "./page-metadata";
+import { buildPageMetadata, ogLocale } from "./page-metadata";
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -59,5 +59,25 @@ describe("buildPageMetadata", () => {
   it("без description — поле отсутствует", () => {
     withBase();
     expect(buildPageMetadata({ ...base }).description).toBeUndefined();
+  });
+  it("og:locale и article:published_time когда заданы", () => {
+    withBase();
+    expect(
+      buildPageMetadata({
+        ...base,
+        locale: "ru_RU",
+        publishedTime: "2026-01-02T03:04:05Z",
+      }),
+    ).toMatchObject({
+      openGraph: { locale: "ru_RU", publishedTime: "2026-01-02T03:04:05Z" },
+    });
+  });
+});
+
+describe("ogLocale", () => {
+  it("маппит ru→ru_RU, en→en_US, иначе как есть", () => {
+    expect(ogLocale("ru")).toBe("ru_RU");
+    expect(ogLocale("en")).toBe("en_US");
+    expect(ogLocale("xx")).toBe("xx");
   });
 });

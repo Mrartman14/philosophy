@@ -7,6 +7,13 @@ import { siteUrl } from "./site-url";
 
 const DEFAULT_OG_IMAGE = "/logo.png";
 
+const OG_LOCALE: Record<string, string> = { ru: "ru_RU", en: "en_US" };
+
+/** Резолвит UI-локаль ("ru"/"en") в og:locale ("ru_RU"/"en_US"); иначе — как есть. */
+export function ogLocale(resolved: string): string {
+  return OG_LOCALE[resolved] ?? resolved;
+}
+
 export interface PageMetadataInput {
   title: string;
   /** og:site_name. Next ЗАМЕНЯЕТ (не мержит) openGraph дочерней страницы — поэтому
@@ -20,6 +27,10 @@ export interface PageMetadataInput {
   image?: string | null;
   /** alt для og:image (у лекций — cover_image_alt). */
   imageAlt?: string | undefined;
+  /** og:locale в BCP-47-стиле "ru_RU"/"en_US" (используй ogLocale()). */
+  locale?: string | undefined;
+  /** article:published_time (ISO datetime, напр. created_at). */
+  publishedTime?: string | undefined;
   /** Путь страницы для canonical/og:url, напр. "/lectures/42". */
   path: string;
 }
@@ -30,6 +41,8 @@ export function buildPageMetadata({
   description,
   image,
   imageAlt,
+  locale,
+  publishedTime,
   path,
 }: PageMetadataInput): Metadata {
   const url = siteUrl(path);
@@ -47,6 +60,8 @@ export function buildPageMetadata({
       url,
       images: [imageEntry],
       ...(description ? { description } : {}),
+      ...(locale ? { locale } : {}),
+      ...(publishedTime ? { publishedTime } : {}),
     },
     twitter: {
       // summary_large_image только при настоящей обложке; для дефолт-логотипа —

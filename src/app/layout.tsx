@@ -15,6 +15,7 @@ import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
 import { getClientMessages, getLocale, getT } from "@/i18n";
 import { I18nProvider } from "@/i18n/client";
+import { ogLocale } from "@/seo/page-metadata";
 import { metadataBaseUrl } from "@/seo/site-url";
 import { WebVitalsReporter } from "@/services/observability/web-vitals-reporter";
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
@@ -42,6 +43,7 @@ const sourceSerif = Source_Serif_4({
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT("metadata");
   const siteName = t("appTitle");
+  const locale = await getLocale();
   return {
     metadataBase: metadataBaseUrl(),
     // title.template добавляет бренд к титулам страниц: "<page> — <siteName>".
@@ -60,6 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: siteName,
       description: t("appDescription"),
       images: ["/logo.png"],
+      locale: ogLocale(locale),
     },
     twitter: {
       // дефолтная картинка — логотип (не 1200×630) → summary, не large.
