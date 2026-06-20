@@ -52,7 +52,7 @@ export const getSearchResults = cache(
     });
     if (error) {
       const t = await getT("search");
-      throw new Error(error.error ?? t("fetchFailed"));
+      throw new Error(error.error ?? t("api.fetchFailed"));
     }
     return unwrapList(data, { offset, limit });
   },

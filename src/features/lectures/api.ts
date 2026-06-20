@@ -40,7 +40,7 @@ export const getLectures = cache(
 
     const { data, error } = await api.GET("/api/lectures", { params: { query } });
     if (error) {
-      throw new Error(error.error ?? (await getT("lectures"))("loadListError"));
+      throw new Error(error.error ?? (await getT("lectures"))("api.loadListFailed"));
     }
     return unwrapList(data, { offset, limit });
   },
@@ -63,7 +63,7 @@ export const getLectureById = cache(
     });
     if (response.status === 404) return null;
     if (error) {
-      throw new Error(error.error ?? (await getT("lectures"))("loadItemError"));
+      throw new Error(error.error ?? (await getT("lectures"))("api.loadItemFailed"));
     }
     return unwrap(data);
   },
@@ -77,7 +77,7 @@ export const getLectureDocuments = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return [];
-    if (error) throw new Error(error.error ?? (await getT("lectures"))("loadDocumentsError"));
+    if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadDocumentsFailed"));
     return unwrap(data) ?? [];
   },
 );
@@ -90,7 +90,7 @@ export const getLectureMedia = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return [];
-    if (error) throw new Error(error.error ?? (await getT("lectures"))("loadMediaError"));
+    if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadMediaFailed"));
     return unwrap(data) ?? [];
   },
 );

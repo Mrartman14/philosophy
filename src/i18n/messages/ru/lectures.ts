@@ -71,12 +71,14 @@ const lectures = {
   // (NB: эти ключи живут в errors.ts, здесь только для справки — см. ERRORS в actions.ts)
 
   // --- server throws (api.ts fallback messages) ---
-  loadListError: "Не удалось загрузить лекции",
-  loadItemError: "Не удалось загрузить лекцию",
-  loadDocumentsError: "Не удалось загрузить документы лекции",
-  loadMediaError: "Не удалось загрузить медиа лекции",
-  searchDocumentsError: "Ошибка поиска документов",
-  searchMediaError: "Ошибка поиска медиа",
+  api: {
+    loadListFailed: "Не удалось загрузить лекции",
+    loadItemFailed: "Не удалось загрузить лекцию",
+    loadDocumentsFailed: "Не удалось загрузить документы лекции",
+    loadMediaFailed: "Не удалось загрузить медиа лекции",
+    searchDocumentsFailed: "Ошибка поиска документов",
+    searchMediaFailed: "Ошибка поиска медиа",
+  },
 };
 
 export default lectures;

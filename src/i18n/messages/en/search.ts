@@ -28,7 +28,9 @@ const search = {
   loadingAriaLabel: "Loading results…",
 
   // --- API errors (api.ts) ---
-  fetchFailed: "Search is currently unavailable",
+  api: {
+    fetchFailed: "Search is currently unavailable",
+  },
 };
 
 export default search;

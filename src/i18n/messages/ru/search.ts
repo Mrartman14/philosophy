@@ -28,7 +28,9 @@ const search = {
   loadingAriaLabel: "Загрузка результатов…",
 
   // --- Ошибки запроса (api.ts) ---
-  fetchFailed: "Не удалось выполнить поиск",
+  api: {
+    fetchFailed: "Не удалось выполнить поиск",
+  },
 
   // --- Валидация (validation namespace: search секция) ---
   // Перенесены в validation.search.*
