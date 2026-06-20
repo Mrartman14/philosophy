@@ -1,5 +1,7 @@
 // src/components/canvas-render/index.ts
-export { CanvasRender } from "./canvas-render";
+// NOTE: CanvasRender (async server component) is NOT re-exported here to avoid
+// contaminating client-side module graphs. Import it directly from
+// "@/components/canvas-render/canvas-render" in server-only files.
 export type {
   CanvasRenderProps,
   RenderData,

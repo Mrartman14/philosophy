@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 // Мок i18n/client: useT("pages") возвращает переводчик по реальному каталогу ru.
 vi.mock("@/i18n/client", async () => {
   const { default: pages } = await import("@/i18n/messages/ru/pages");
+  const { getFmt } = await import("@/i18n/format");
   return {
     useT: (ns: string) => {
       const catalog = ns === "pages" ? pages : {};
@@ -24,6 +25,7 @@ vi.mock("@/i18n/client", async () => {
         return val.replace(/\{(\w+)\}/g, (_: string, k: string) => String(params[k] ?? k));
       };
     },
+    useFmt: () => getFmt("ru"),
   };
 });
 

@@ -1,6 +1,6 @@
 // src/features/canvas/ui/canvas-detail.tsx
-import { CanvasRender } from "@/components/canvas-render";
 import type { RenderData, RenderEdge, RenderNode } from "@/components/canvas-render";
+import { CanvasRender } from "@/components/canvas-render/canvas-render";
 
 import { resolveEntityRefView } from "../entity-ref";
 import type { CanvasData } from "../types";
