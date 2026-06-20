@@ -85,6 +85,11 @@ export function TokenList({ tokens, canManage }: Props) {
     return d ? fmt.dateTime(d, DATE_FMT) : t("neverExpires");
   }
 
+  function fmtLastUsed(sec?: number): string {
+    const d = unixSecToDate(sec);
+    return d ? fmt.dateTime(d, DATE_FMT) : "—";
+  }
+
   function onRevoke(id: string) {
     startTransition(async () => {
       const result = await revokeToken({ id });
@@ -113,6 +118,8 @@ export function TokenList({ tokens, canManage }: Props) {
           <Th>{t("colHint")}</Th>
           <Th>{t("colCreated")}</Th>
           <Th>{t("colExpires")}</Th>
+          <Th>{t("colLastUsed")}</Th>
+          <Th>{t("colRequests")}</Th>
           {canManage && <Th>{t("colAction")}</Th>}
         </Tr>
       </Thead>
@@ -134,6 +141,8 @@ export function TokenList({ tokens, canManage }: Props) {
                 {fmtExpires(token.expires_at)}
                 {status === "active" && expiryNote(token.expires_at, fmt)}
               </Td>
+              <Td className="whitespace-nowrap">{fmtLastUsed(token.last_used_at)}</Td>
+              <Td className="tabular-nums">{token.request_count ?? "—"}</Td>
               {canManage && (
                 <Td>
                   {status === "active" && id ? (
