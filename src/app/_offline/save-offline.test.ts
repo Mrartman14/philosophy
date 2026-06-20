@@ -21,6 +21,10 @@ vi.mock("@/services/offline/store/persistence", () => ({
   requestPersistentStorage: persistMock,
 }));
 
+vi.mock("./probe-bundle-action", () => ({
+  captureFreshnessToken: vi.fn().mockResolvedValue(null),
+}));
+
 import { getSavedBundle } from "@/services/offline/store/saved-bundles";
 import { resolveStorageUrl } from "@/utils/storage-url";
 
