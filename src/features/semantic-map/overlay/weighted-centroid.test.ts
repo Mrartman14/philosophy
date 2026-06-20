@@ -27,4 +27,23 @@ describe("weightedCentroid", () => {
     ]);
     expect(c?.[0]).toBeCloseTo(2, 6);
   });
+
+  it("один элемент с weight:0 → сама точка (total===0 → равновесное среднее)", () => {
+    const c = weightedCentroid([{ pos: [3, 7, 1], weight: 0 }]);
+    expect(c).not.toBeNull();
+    expect(c?.[0]).toBeCloseTo(3, 6);
+    expect(c?.[1]).toBeCloseTo(7, 6);
+    expect(c?.[2]).toBeCloseTo(1, 6);
+  });
+
+  it("отрицательные веса клэмпятся к 0 → равновесное среднее", () => {
+    const c = weightedCentroid([
+      { pos: [2, 0, 0], weight: -5 },
+      { pos: [0, 0, 0], weight: 0 },
+    ]);
+    expect(c).not.toBeNull();
+    expect(c?.[0]).toBeCloseTo(1, 6); // (2+0)/2
+    expect(c?.[1]).toBeCloseTo(0, 6);
+    expect(c?.[2]).toBeCloseTo(0, 6);
+  });
 });
