@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 
 import { API_URL } from "@/api/client";
-import { canManageTokens, getTokens, TokensManager } from "@/features/tokens";
+import { canManageTokens, getTokens, getUsageTracking, TokensManager } from "@/features/tokens";
 import { getT } from "@/i18n";
 import { trimApiBase } from "@/utils/export-urls";
 import { requireUserOrRedirect } from "@/utils/me";
@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function TokensPage() {
   const me = await requireUserOrRedirect("/me/tokens");
   const t = await getT("pages");
-  const tokens = await getTokens();
+  const [tokens, usageTracking] = await Promise.all([getTokens(), getUsageTracking()]);
   // MCP-эндпоинт живёт в корне бека (не под /api): <origin>/mcp.
   const mcpUrl = `${trimApiBase(API_URL)}/mcp`;
 
@@ -30,6 +30,7 @@ export default async function TokensPage() {
         initialTokens={tokens}
         canManage={canManageTokens(me)}
         mcpUrl={mcpUrl}
+        trackingEnabled={usageTracking.tracking_enabled ?? false}
       />
     </div>
   );

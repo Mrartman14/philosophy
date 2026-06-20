@@ -20,6 +20,7 @@ import type { CreatedToken, PatToken } from "../types";
 import { ConnectInstructions } from "./connect-instructions";
 import { CopyButton } from "./copy-button";
 import { TokenList } from "./token-list";
+import { UsageTrackingToggle } from "./usage-tracking-toggle";
 
 const initialState: ActionResult<CreatedToken | null> = {
   success: true,
@@ -31,6 +32,8 @@ interface Props {
   canManage: boolean;
   /** Абсолютный URL MCP-эндпоинта для блока «как подключить». */
   mcpUrl: string;
+  /** pat.UsageTracking.tracking_enabled со страницы. */
+  trackingEnabled: boolean;
 }
 
 /**
@@ -39,7 +42,7 @@ interface Props {
  * createToken; после успеха router.refresh() обновляет список (reveal-блок
  * переживает refresh, т.к. живёт в client-state).
  */
-export function TokensManager({ initialTokens, canManage, mcpUrl }: Props) {
+export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnabled }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("tokens");
@@ -144,6 +147,10 @@ export function TokensManager({ initialTokens, canManage, mcpUrl }: Props) {
       )}
 
       <ConnectInstructions mcpUrl={mcpUrl} token={revealed} />
+
+      {canManage && (
+        <UsageTrackingToggle initialEnabled={trackingEnabled} canManage={canManage} />
+      )}
 
       <TokenList tokens={initialTokens} canManage={canManage} />
     </div>
