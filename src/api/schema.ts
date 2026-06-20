@@ -12360,8 +12360,26 @@ export interface paths {
                         };
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -15605,7 +15623,7 @@ export interface components {
         };
         "pat.createTokenRequest": {
             expires_in_days?: number;
-            label?: string;
+            label: string;
         };
         "preference.Appearance": {
             contrast?: components["schemas"]["preference.Contrast"];
