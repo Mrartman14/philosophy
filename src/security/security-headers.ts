@@ -1,13 +1,16 @@
 // src/security/security-headers.ts
 // Статические security-заголовки (не зависят от запроса). Применяются глобально
-// через next.config.ts headers(). HSTS — только в проде, без preload (необратимо).
+// через next.config.ts headers().
+// HSTS здесь НЕ ставим: на проде edge — nginx (philosophy-api/nginx/tls.conf) —
+// уже шлёт Strict-Transport-Security (2 года). Дубль из app перебил бы её более
+// коротким max-age (браузер берёт первый заголовок) → единственный владелец HSTS — edge.
 export interface HeaderKV {
   key: string;
   value: string;
 }
 
-export function staticSecurityHeaders(isProd: boolean): HeaderKV[] {
-  const headers: HeaderKV[] = [
+export function staticSecurityHeaders(): HeaderKV[] {
+  return [
     { key: "X-Content-Type-Options", value: "nosniff" },
     { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
     { key: "X-Frame-Options", value: "DENY" },
@@ -20,11 +23,4 @@ export function staticSecurityHeaders(isProd: boolean): HeaderKV[] {
         "xr-spatial-tracking=(), display-capture=(), idle-detection=()",
     },
   ];
-  if (isProd) {
-    headers.push({
-      key: "Strict-Transport-Security",
-      value: "max-age=31536000; includeSubDomains",
-    });
-  }
-  return headers;
 }

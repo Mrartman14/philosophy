@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        headers: staticSecurityHeaders(process.env.NODE_ENV === "production"),
+        headers: staticSecurityHeaders(),
       },
     ];
   },

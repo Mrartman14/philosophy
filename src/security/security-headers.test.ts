@@ -4,7 +4,7 @@ import { staticSecurityHeaders } from "./security-headers";
 
 describe("staticSecurityHeaders", () => {
   it("всегда содержит nosniff/referrer/frame/permissions", () => {
-    const keys = staticSecurityHeaders(false).map((h) => h.key);
+    const keys = staticSecurityHeaders().map((h) => h.key);
     expect(keys).toEqual(
       expect.arrayContaining([
         "X-Content-Type-Options",
@@ -15,20 +15,13 @@ describe("staticSecurityHeaders", () => {
     );
   });
   it("nosniff именно nosniff", () => {
-    const h = staticSecurityHeaders(false).find(
+    const h = staticSecurityHeaders().find(
       (x) => x.key === "X-Content-Type-Options",
     );
     expect(h?.value).toBe("nosniff");
   });
-  it("без HSTS вне прода", () => {
-    const keys = staticSecurityHeaders(false).map((h) => h.key);
+  it("НЕ ставит HSTS — им владеет edge (nginx)", () => {
+    const keys = staticSecurityHeaders().map((h) => h.key);
     expect(keys).not.toContain("Strict-Transport-Security");
-  });
-  it("HSTS в проде", () => {
-    const hsts = staticSecurityHeaders(true).find(
-      (h) => h.key === "Strict-Transport-Security",
-    );
-    expect(hsts?.value).toContain("max-age=31536000");
-    expect(hsts?.value).not.toContain("preload");
   });
 });
