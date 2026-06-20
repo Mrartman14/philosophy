@@ -7,7 +7,15 @@ const DEFAULT_BASE = "http://localhost:3001";
 
 function rawBase(): string {
   const configured = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "");
-  return configured && configured.length > 0 ? configured : DEFAULT_BASE;
+  if (configured && configured.length > 0) {
+    try {
+      new URL(configured);
+      return configured;
+    } catch {
+      return DEFAULT_BASE;
+    }
+  }
+  return DEFAULT_BASE;
 }
 
 export function siteUrl(path = "/"): string {

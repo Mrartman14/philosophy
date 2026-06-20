@@ -28,6 +28,11 @@ describe("siteUrl", () => {
     vi.stubEnv("NEXT_PUBLIC_BASE_URL", "");
     expect(siteUrl("/a")).toBe("http://localhost:3001/a");
   });
+  it("кривой env без схемы → дефолт (не throw)", () => {
+    vi.stubEnv("NEXT_PUBLIC_BASE_URL", "example.com");
+    expect(siteUrl("/x")).toBe("http://localhost:3001/x");
+    expect(metadataBaseUrl().origin).toBe("http://localhost:3001");
+  });
 });
 
 describe("metadataBaseUrl", () => {
