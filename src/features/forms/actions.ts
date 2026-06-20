@@ -2,6 +2,7 @@
 "use server";
 import "server-only";
 import { createApiClient } from "@/api/client";
+import type { components } from "@/api/schema";
 import { Tags } from "@/api/tags";
 import { getT } from "@/i18n";
 import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
@@ -46,17 +47,20 @@ const ERRORS: ApiErrorMessageKeys = {
   SUBMISSION_NOT_FOUND: "SUBMISSION_NOT_FOUND",
 };
 
+type FieldType = components["schemas"]["form.FieldType"];
+type CreateFieldRequest = components["schemas"]["form.CreateFieldRequest"];
+
 /** Собирает тело CreateFormRequest из payload (опускает undefined-ключи: exactOptionalPropertyTypes). */
 function buildFieldsBody(
   fields: {
-    type: string;
+    type: FieldType;
     prompt: string;
     help_text?: string | undefined;
     required: boolean;
     sort_order: number;
     options?: string[] | undefined;
   }[],
-) {
+): CreateFieldRequest[] {
   return fields.map((f) => ({
     type: f.type,
     prompt: f.prompt,
@@ -76,11 +80,11 @@ export const createForm = createFormAction(async (formData, ctx) => {
   const { data, error } = await api.POST("/api/forms", {
     body: {
       title: input.title,
-      fields: buildFieldsBody(input.fields) as never,
-      // visibility/submission_mode гарантированы superRefine FormCreateSchema;
-      // спред исключает явный undefined-ключ (exactOptionalPropertyTypes).
-      ...(input.visibility ? { visibility: input.visibility } : {}),
-      ...(input.submission_mode ? { submission_mode: input.submission_mode } : {}),
+      fields: buildFieldsBody(input.fields),
+      // visibility/submission_mode гарантированы superRefine FormCreateSchema
+      // (краснеют 422 на беке иначе) — у Zod тип optional; fallback — unreachable.
+      submission_mode: input.submission_mode ?? "editable",
+      visibility: input.visibility ?? "private",
       ...(input.description ? { description: input.description } : {}),
       ...(input.after_submit ? { after_submit: input.after_submit } : {}),
     },
@@ -102,7 +106,7 @@ export const updateForm = createFormAction(async (formData) => {
     params: { path: { id: input.id } },
     body: {
       title: payload.title,
-      fields: buildFieldsBody(payload.fields) as never,
+      fields: buildFieldsBody(payload.fields),
       // description/after_submit: пустая строка = очистить (бек: nil=unchanged, ""=clear).
       // Передаём всегда (даже ""), чтобы изменения вступали.
       description: payload.description ?? "",
