@@ -12,6 +12,7 @@ import {
   LectureExportLinks,
   LectureMediaSection,
 } from "@/features/lectures";
+import { lectureCoverUrl } from "@/features/lectures/cover-url";
 import {
   getLectureSubscription,
   LectureSubscribeButton,
@@ -23,6 +24,7 @@ import {
 } from "@/features/share-links";
 import { getLectureTags } from "@/features/tags";
 import { getT } from "@/i18n";
+import { buildPageMetadata } from "@/seo/page-metadata";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -90,6 +92,17 @@ export default async function LecturePage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const [lecture, t] = await Promise.all([getLectureById(id), getT("pages")]);
-  return { title: lecture?.title ?? t("lectureDefaultTitle") };
+  const [lecture, t, tMeta] = await Promise.all([
+    getLectureById(id),
+    getT("pages"),
+    getT("metadata"),
+  ]);
+  return buildPageMetadata({
+    title: lecture?.title ?? t("lectureDefaultTitle"),
+    siteName: tMeta("appTitle"),
+    description: lecture?.description,
+    image: lectureCoverUrl(lecture?.cover_image_key),
+    imageAlt: lecture?.cover_image_alt,
+    path: `/lectures/${id}`,
+  });
 }

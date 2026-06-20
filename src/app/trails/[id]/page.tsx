@@ -19,6 +19,7 @@ import {
 } from "@/features/trails";
 import type { TrailDocumentSummary } from "@/features/trails";
 import { getT } from "@/i18n";
+import { buildPageMetadata } from "@/seo/page-metadata";
 import { getMe } from "@/utils/me";
 
 interface Props {
@@ -92,6 +93,15 @@ export default async function TrailPage({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const [trail, t] = await Promise.all([getTrailById(id), getT("pages")]);
-  return { title: trail?.title ?? t("trailDefaultTitle") };
+  const [trail, t, tMeta] = await Promise.all([
+    getTrailById(id),
+    getT("pages"),
+    getT("metadata"),
+  ]);
+  return buildPageMetadata({
+    title: trail?.title ?? t("trailDefaultTitle"),
+    siteName: tMeta("appTitle"),
+    description: trail?.description,
+    path: `/trails/${id}`,
+  });
 }
