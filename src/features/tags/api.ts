@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Tag } from "./types";
@@ -36,7 +37,7 @@ export const getTags = cache(
     if (error) {
       // openapi-типизирует error этого роута как `never` (нет error-body в
       // схеме) — пробросить error.error нельзя, отдаём фиксированный текст.
-      throw new Error("Не удалось загрузить теги");
+      throw new Error((await getT("tags"))("api.loadListFailed"));
     }
     return unwrapList(data, { offset, limit });
   },
@@ -52,7 +53,7 @@ export const getLectureTags = cache(async (lectureId: string): Promise<Tag[]> =>
     params: { path: { id: lectureId }, query: { offset: 0, limit: 100 } },
   });
   if (error) {
-    throw new Error(error.error ?? "Не удалось загрузить теги лекции");
+    throw new Error(error.error ?? (await getT("tags"))("api.loadLectureTagsFailed"));
   }
   return unwrap(data) ?? [];
 });

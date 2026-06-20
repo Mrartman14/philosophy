@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Banner, BannerRevision, BannerRevisionMeta } from "./types";
@@ -29,7 +30,7 @@ export const getAdminBanners = cache(
       params: { query: { offset, limit } },
     });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить баннеры");
+      throw new Error(error.error ?? (await getT("banners"))("api.loadListFailed"));
     }
     return unwrapList(data, { offset, limit });
   },
@@ -43,7 +44,7 @@ export const getAdminBannerById = cache(
     });
     if (response.status === 404) return null;
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить баннер");
+      throw new Error(error.error ?? (await getT("banners"))("api.loadItemFailed"));
     }
     return unwrap(data);
   },
@@ -58,7 +59,7 @@ export const getBannerRevisions = cache(
       { params: { path: { id } } },
     );
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ревизии");
+      throw new Error(error.error ?? (await getT("banners"))("api.loadRevisionsFailed"));
     }
     return unwrap(data) ?? [];
   },
@@ -73,7 +74,7 @@ export const getBannerRevision = cache(
     );
     if (response.status === 404) return null;
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ревизию");
+      throw new Error(error.error ?? (await getT("banners"))("api.loadRevisionFailed"));
     }
     return unwrap(data);
   },
@@ -92,7 +93,7 @@ export const getActiveBanners = cache(async (): Promise<Banner[]> => {
   const { data, error } = await api.GET("/api/banners/active");
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- openapi types this route's error as never, but openapi-fetch sets it at runtime on network/non-2xx failures
   if (error) {
-    throw new Error("Не удалось загрузить баннеры");
+    throw new Error((await getT("banners"))("api.loadListFailed"));
   }
   return unwrap(data) ?? [];
 });

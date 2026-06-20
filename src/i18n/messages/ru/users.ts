@@ -47,6 +47,11 @@ const users = {
   conflictDemoteLastAdmin:
     "Нельзя понизить роль последнего активного администратора.",
   conflictFallback: "Операция отклонена сервером (конфликт).",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Не удалось загрузить пользователей",
+  },
 };
 
 export default users;

@@ -48,6 +48,13 @@ const statistics = {
   disableConfirmLabel: "Delete history",
   // Action phrase for "You don't have permission for {action}."
   manageSettingsAction: "changing settings",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadStatsFailed: "Failed to load statistics",
+    loadViewStatsFailed: "Failed to load view statistics",
+    loadHistorySettingsFailed: "Failed to load history settings",
+  },
 };
 
 export default statistics;

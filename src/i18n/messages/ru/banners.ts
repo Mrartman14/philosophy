@@ -61,6 +61,14 @@ const banners = {
 
   // --- create-form: forbiddenAction (Case 3) ---
   createAction: "создание баннера",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Не удалось загрузить баннеры",
+    loadItemFailed: "Не удалось загрузить баннер",
+    loadRevisionsFailed: "Не удалось загрузить ревизии",
+    loadRevisionFailed: "Не удалось загрузить ревизию",
+  },
 };
 
 export default banners;

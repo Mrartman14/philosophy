@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
@@ -38,7 +39,7 @@ export const getFormById = cache(
       params: { path: { id }, query },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить форму");
+    if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadItemFailed"));
     return unwrap(data);
   },
 );
@@ -47,7 +48,7 @@ export const getFormById = cache(
 export const getMyForms = cache(async (): Promise<FormListItem[]> => {
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/me/forms");
-  if (error) throw new Error(error.error ?? "Не удалось загрузить формы");
+  if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadMyFailed"));
   return unwrap(data) ?? [];
 });
 
@@ -55,7 +56,7 @@ export const getMyForms = cache(async (): Promise<FormListItem[]> => {
 export const getMySubmissions = cache(async (): Promise<SubmissionListItem[]> => {
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/me/submissions");
-  if (error) throw new Error(error.error ?? "Не удалось загрузить отклики");
+  if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadMySubmissionsFailed"));
   return unwrap(data) ?? [];
 });
 
@@ -70,7 +71,7 @@ export const getSubmissionsByForm = cache(
       params: { path: { id: formId } },
     });
     if (response.status === 403 || response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить отклики");
+    if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadSubmissionsFailed"));
     return unwrap(data) ?? [];
   },
 );
@@ -86,7 +87,7 @@ export const getSubmissionById = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить отклик");
+    if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadSubmissionFailed"));
     return unwrap(data);
   },
 );
@@ -100,7 +101,7 @@ export const getAdminForms = cache(
     const query: { offset: number; limit: number; owner_id?: string } = { offset, limit };
     if (filter.ownerId) query.owner_id = filter.ownerId;
     const { data, error } = await api.GET("/api/admin/forms", { params: { query } });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить формы");
+    if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadAdminFailed"));
     return unwrapList(data, { offset, limit });
   },
 );

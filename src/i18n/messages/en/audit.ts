@@ -28,6 +28,11 @@ const audit = {
   detailsToggle: "Show",
   emptyTitle: "No records found",
   emptyDescription: "Try relaxing the filters or expanding the date range.",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadLogFailed: "Failed to load audit log",
+  },
 };
 
 export default audit;

@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 
 import type { Preferences } from "./types";
 
@@ -17,7 +18,7 @@ export const getPreferences = cache(async (): Promise<Preferences> => {
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/me/preferences");
   if (error) {
-    throw new Error(error.error ?? "Не удалось загрузить настройки");
+    throw new Error(error.error ?? (await getT("preferences"))("api.loadFailed"));
   }
   return data.data ?? {};
 });

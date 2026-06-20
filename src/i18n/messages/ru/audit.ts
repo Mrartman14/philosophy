@@ -28,6 +28,11 @@ const audit = {
   detailsToggle: "Показать",
   emptyTitle: "Записей не найдено",
   emptyDescription: "Попробуйте ослабить фильтры или расширить период.",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadLogFailed: "Не удалось загрузить audit-лог",
+  },
 };
 
 export default audit;

@@ -51,6 +51,11 @@ const shareLinks = {
   // --- toastActionError actions (phrase for errors.forbiddenAction) ---
   createLinkAction: "creating the link",
   revokeLinkAction: "revoking the link",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadLinksFailed: "Failed to load share links",
+  },
 };
 
 export default shareLinks;

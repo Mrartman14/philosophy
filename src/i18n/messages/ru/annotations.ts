@@ -56,6 +56,18 @@ const annotations = {
 
   // --- actions.ts: internal error when annotation not found ---
   notFound: "Аннотация не найдена.",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Не удалось загрузить аннотации",
+    loadListFailedStatus: "Не удалось загрузить аннотации ({status})",
+    loadItemFailed: "Не удалось загрузить аннотацию",
+    loadMyFailed: "Не удалось загрузить мои аннотации",
+    loadLectureFailed: "Не удалось загрузить аннотации лекции",
+    loadAdminFailed: "Не удалось загрузить список аннотаций",
+    loadRevisionsFailed: "Не удалось загрузить ревизии",
+    loadRevisionFailed: "Не удалось загрузить ревизию",
+  },
 };
 
 export default annotations;

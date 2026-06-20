@@ -40,6 +40,13 @@ const notifications = {
   // --- Секция подписок (subscriptions-section) ---
   subscriptionsError: "Не удалось загрузить подписки.",
   subscriptionsEmpty: "У вас нет активных подписок.",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadNotificationsFailed: "Не удалось загрузить уведомления",
+    loadCountsFailed: "Не удалось загрузить счётчики",
+    loadSubscriptionsFailed: "Не удалось загрузить подписки",
+  },
 };
 
 export default notifications;

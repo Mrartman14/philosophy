@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap } from "@/utils/api-unwrap";
 
 import type { ShareLink, ResourceType } from "./types";
@@ -29,7 +30,7 @@ export const getShareLinksFor = cache(
     });
     if (response.status === 404) return [];
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ссылки");
+      throw new Error(error.error ?? (await getT("shareLinks"))("api.loadLinksFailed"));
     }
     return unwrap(data) ?? [];
   },
@@ -53,7 +54,7 @@ export const getAdminShareLinksFor = cache(
     });
     if (response.status === 404) return [];
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ссылки");
+      throw new Error(error.error ?? (await getT("shareLinks"))("api.loadLinksFailed"));
     }
     return unwrap(data) ?? [];
   },

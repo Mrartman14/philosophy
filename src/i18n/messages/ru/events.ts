@@ -45,6 +45,15 @@ const events = {
     "Действие необратимо. Событие исчезнет из публичного календаря.",
   deleteConfirmLabel: "Удалить",
   deleteAction: "удаление события",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Не удалось загрузить события",
+    loadItemFailed: "Не удалось загрузить событие",
+    loadRevisionsFailed: "Не удалось загрузить ревизии",
+    loadRevisionFailed: "Не удалось загрузить ревизию",
+    loadCalendarFailed: "Не удалось загрузить календарь",
+  },
 };
 
 export default events;

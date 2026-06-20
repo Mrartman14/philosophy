@@ -48,6 +48,13 @@ const statistics = {
   disableConfirmLabel: "Удалить историю",
   // Действие для «У вас нет прав на {action}.»
   manageSettingsAction: "изменение настроек",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadStatsFailed: "Не удалось загрузить статистику",
+    loadViewStatsFailed: "Не удалось загрузить статистику просмотров",
+    loadHistorySettingsFailed: "Не удалось загрузить настройки истории",
+  },
 };
 
 export default statistics;

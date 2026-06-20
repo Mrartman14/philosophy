@@ -5,6 +5,7 @@ import { cache } from "react";
 
 import { createApiClient, createPublicApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
@@ -38,7 +39,7 @@ export const getCommentSchema = unstable_cache(
     const api = createPublicApiClient();
     const { data, error } = await api.GET("/api/comments/schema");
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- openapi types this route error as never, but openapi-fetch sets it at runtime on network/non-2xx failures
-    if (error) throw new Error("Не удалось загрузить схему комментариев");
+    if (error) throw new Error((await getT("comments"))("api.loadSchemaFailed"));
     return unwrap(data);
   },
   ["comments-schema"],
@@ -62,7 +63,7 @@ export const getLectureComments = cache(
     const { data, error } = await api.GET("/api/lectures/{id}/comments", {
       params: { path: { id: lectureId }, query },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить комментарии");
+    if (error) throw new Error(error.error ?? (await getT("comments"))("api.loadListFailed"));
     return {
       subtrees: data.data ?? [],
       total: data.pagination?.total ?? 0,
@@ -80,7 +81,7 @@ export const getCommentSubtree = cache(
       params: { path: { id: commentId } },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ветку");
+    if (error) throw new Error(error.error ?? (await getT("comments"))("api.loadSubtreeFailed"));
     return unwrap(data);
   },
 );
@@ -101,7 +102,7 @@ export const searchComments = cache(
     const { data, error } = await api.GET("/api/lectures/{id}/comments/search", {
       params: { path: { id: lectureId }, query: { q, offset, limit } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось выполнить поиск");
+    if (error) throw new Error(error.error ?? (await getT("comments"))("api.searchFailed"));
     return {
       items: data.data ?? [],
       total: data.pagination?.total ?? 0,
@@ -116,7 +117,7 @@ export const getCommentRevisions = cache(
     const { data, error } = await api.GET("/api/comments/{id}/revisions", {
       params: { path: { id: commentId } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
+    if (error) throw new Error(error.error ?? (await getT("comments"))("api.loadRevisionsFailed"));
     return unwrap(data) ?? [];
   },
 );
@@ -129,7 +130,7 @@ export const getCommentRevision = cache(
       { params: { path: { id: commentId, revisionID: revisionId } } },
     );
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
+    if (error) throw new Error(error.error ?? (await getT("comments"))("api.loadRevisionFailed"));
     return unwrap(data);
   },
 );
@@ -145,7 +146,7 @@ export const getBlock = cache(
       params: { path: { block_id: blockId } },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить блок");
+    if (error) throw new Error(error.error ?? (await getT("comments"))("api.loadBlockFailed"));
     return data.data ?? null;
   },
 );
@@ -162,7 +163,7 @@ export const getAdminLectureComments = cache(
     const { data, error } = await api.GET("/api/admin/comments", {
       params: { query: { lecture_id: lectureId, offset, limit } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить комментарии");
+    if (error) throw new Error(error.error ?? (await getT("comments"))("api.loadListFailed"));
     return unwrapList(data, { offset, limit });
   },
 );

@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Media, MediaAttachment } from "./types";
@@ -41,7 +42,7 @@ export const getMyMedia = cache(
       params: { query },
     });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить медиа");
+      throw new Error(error.error ?? (await getT("media"))("api.loadMyFailed"));
     }
     return unwrapList(data, { offset, limit });
   },
@@ -71,7 +72,7 @@ export const getMediaById = cache(
     });
     if (response.status === 404) return null;
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить медиа");
+      throw new Error(error.error ?? (await getT("media"))("api.loadItemFailed"));
     }
     return unwrap(data);
   },
@@ -91,7 +92,7 @@ export const getMediaContainers = cache(
     );
     if (response.status === 404) return [];
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить контейнеры");
+      throw new Error(error.error ?? (await getT("media"))("api.loadContainersFailed"));
     }
     return unwrap(data) ?? [];
   },

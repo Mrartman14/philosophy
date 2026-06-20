@@ -49,6 +49,13 @@ const media = {
   uploadFileTooLarge: "File is too large (max 100 MB).",
   uploadInvalidFormat: "Unsupported format. Video: mp4/webm. Audio: mp3/m4a/ogg.",
   uploadSelectType: "Choose a type: video or audio.",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadMyFailed: "Failed to load media",
+    loadItemFailed: "Failed to load media",
+    loadContainersFailed: "Failed to load containers",
+  },
 };
 
 export default media;

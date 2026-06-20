@@ -50,6 +50,16 @@ const documents = {
   createAction: "создание документа",
   uploadAction: "загрузку документа",
   deleteAction: "удаление документа",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadMyFailed: "Не удалось загрузить документы",
+    loadItemFailed: "Не удалось загрузить документ",
+    loadContainersFailed: "Не удалось загрузить привязки",
+    loadRevisionsFailed: "Не удалось загрузить ревизии",
+    loadRevisionFailed: "Не удалось загрузить ревизию",
+    loadAdminFailed: "Не удалось загрузить документы",
+  },
 };
 
 export default documents;

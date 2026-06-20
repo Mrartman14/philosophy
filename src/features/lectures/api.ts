@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
@@ -39,7 +40,7 @@ export const getLectures = cache(
 
     const { data, error } = await api.GET("/api/lectures", { params: { query } });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить лекции");
+      throw new Error(error.error ?? (await getT("lectures"))("loadListError"));
     }
     return unwrapList(data, { offset, limit });
   },
@@ -62,7 +63,7 @@ export const getLectureById = cache(
     });
     if (response.status === 404) return null;
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить лекцию");
+      throw new Error(error.error ?? (await getT("lectures"))("loadItemError"));
     }
     return unwrap(data);
   },
@@ -76,7 +77,7 @@ export const getLectureDocuments = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return [];
-    if (error) throw new Error(error.error ?? "Не удалось загрузить документы лекции");
+    if (error) throw new Error(error.error ?? (await getT("lectures"))("loadDocumentsError"));
     return unwrap(data) ?? [];
   },
 );
@@ -89,7 +90,7 @@ export const getLectureMedia = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return [];
-    if (error) throw new Error(error.error ?? "Не удалось загрузить медиа лекции");
+    if (error) throw new Error(error.error ?? (await getT("lectures"))("loadMediaError"));
     return unwrap(data) ?? [];
   },
 );

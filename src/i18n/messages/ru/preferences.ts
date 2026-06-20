@@ -39,6 +39,11 @@ const preferences = {
   pushUnsubscribeError: "Не удалось отписаться. Попробуйте ещё раз.",
   // Action для «У вас нет прав на {action}.» (Case 3)
   pushSubscribeAction: "подписку на уведомления",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadFailed: "Не удалось загрузить настройки",
+  },
 };
 
 export default preferences;

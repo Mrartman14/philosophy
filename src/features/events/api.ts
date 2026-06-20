@@ -5,6 +5,7 @@ import { cache } from "react";
 
 import { createApiClient, createPublicApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
@@ -36,7 +37,7 @@ export const getAdminEvents = cache(
       params: { query: { offset, limit } },
     });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить события");
+      throw new Error(error.error ?? (await getT("events"))("api.loadListFailed"));
     }
     return unwrapList(data, { offset, limit });
   },
@@ -50,7 +51,7 @@ export const getAdminEventById = cache(
     });
     if (response.status === 404) return null;
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить событие");
+      throw new Error(error.error ?? (await getT("events"))("api.loadItemFailed"));
     }
     return unwrap(data);
   },
@@ -65,7 +66,7 @@ export const getEventRevisions = cache(
       { params: { path: { id } } },
     );
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ревизии");
+      throw new Error(error.error ?? (await getT("events"))("api.loadRevisionsFailed"));
     }
     return unwrap(data) ?? [];
   },
@@ -80,7 +81,7 @@ export const getEventRevision = cache(
     );
     if (response.status === 404) return null;
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ревизию");
+      throw new Error(error.error ?? (await getT("events"))("api.loadRevisionFailed"));
     }
     return unwrap(data);
   },
@@ -106,7 +107,7 @@ export const getCalendarOccurrences = unstable_cache(
       params: { query: { from, to } },
     });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить календарь");
+      throw new Error(error.error ?? (await getT("events"))("api.loadCalendarFailed"));
     }
     return unwrap(data) ?? [];
   },

@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 
 import type {
   AppNotification,
@@ -46,7 +47,7 @@ export const getNotifications = cache(
     const { data, error } = await api.GET("/api/me/notifications", {
       params: { query: { offset, limit } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить уведомления");
+    if (error) throw new Error(error.error ?? (await getT("notifications"))("api.loadNotificationsFailed"));
     return {
       items: (data.data ?? []).map(normalizeNotification),
       total: data.pagination?.total ?? 0,
@@ -60,7 +61,7 @@ export const getNotifications = cache(
 export const getNotificationCounts = cache(async (): Promise<NotificationCounts> => {
   const api = await createApiClient();
   const { data, error } = await api.GET("/api/me/notifications/counts", {});
-  if (error) throw new Error(error.error ?? "Не удалось загрузить счётчики");
+  if (error) throw new Error(error.error ?? (await getT("notifications"))("api.loadCountsFailed"));
   return { unread: data.data?.unread ?? 0, unseen: data.data?.unseen ?? 0 };
 });
 
@@ -71,7 +72,7 @@ export const getSubscriptions = cache(
     const { data, error } = await api.GET("/api/me/subscriptions", {
       params: { query: { offset, limit } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить подписки");
+    if (error) throw new Error(error.error ?? (await getT("notifications"))("api.loadSubscriptionsFailed"));
     return {
       items: (data.data ?? []).map(normalizeSubscription),
       total: data.pagination?.total ?? 0,

@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Term, TermRevision, TermRevisionMeta } from "./types";
@@ -30,7 +31,7 @@ export const getTerms = cache(
 
     const { data, error } = await api.GET("/api/glossary", { params: { query } });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить термины");
+      throw new Error(error.error ?? (await getT("glossary"))("api.loadListFailed"));
     }
     return unwrapList(data, { offset, limit });
   },
@@ -43,7 +44,7 @@ export const getTermById = cache(async (id: string): Promise<Term | null> => {
   });
   if (response.status === 404) return null;
   if (error) {
-    throw new Error(error.error ?? "Не удалось загрузить термин");
+    throw new Error(error.error ?? (await getT("glossary"))("api.loadItemFailed"));
   }
   return unwrap(data);
 });
@@ -64,7 +65,7 @@ export const getTermRevisions = cache(
     );
     if (response.status === 404) return [];
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ревизии термина");
+      throw new Error(error.error ?? (await getT("glossary"))("api.loadRevisionsFailed"));
     }
     return unwrap(data) ?? [];
   },
@@ -84,7 +85,7 @@ export const getTermRevision = cache(
     );
     if (response.status === 404 || response.status === 400) return null;
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить ревизию термина");
+      throw new Error(error.error ?? (await getT("glossary"))("api.loadRevisionFailed"));
     }
     return unwrap(data);
   },

@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
@@ -43,7 +44,7 @@ export const getMyDocuments = cache(
     };
     if (filter.freeFloating) query.free_floating = true;
     const { data, error } = await api.GET("/api/me/documents", { params: { query } });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить документы");
+    if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadMyFailed"));
     return unwrapList(data, { offset, limit });
   },
 );
@@ -64,7 +65,7 @@ export const getDocumentById = cache(
       },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить документ");
+    if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadItemFailed"));
     return unwrap(data);
   },
 );
@@ -76,7 +77,7 @@ export const getDocumentContainers = cache(
     const { data, error } = await api.GET("/api/documents/{id}/attachments", {
       params: { path: { id } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить привязки");
+    if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadContainersFailed"));
     return unwrap(data) ?? [];
   },
 );
@@ -92,7 +93,7 @@ export const getDocumentRevisions = cache(
     const { data, error } = await api.GET("/api/documents/{id}/revisions", {
       params: { path: { id } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
+    if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadRevisionsFailed"));
     return unwrap(data) ?? [];
   },
 );
@@ -106,7 +107,7 @@ export const getDocumentRevision = cache(
       { params: { path: { id, revisionID: revisionId } } },
     );
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
+    if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadRevisionFailed"));
     return unwrap(data);
   },
 );
@@ -120,7 +121,7 @@ export const getAdminDocuments = cache(
     const query: { offset: number; limit: number; owner_id?: string } = { offset, limit };
     if (filter.ownerId) query.owner_id = filter.ownerId;
     const { data, error } = await api.GET("/api/admin/documents", { params: { query } });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить документы");
+    if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadAdminFailed"));
     return unwrapList(data, { offset, limit });
   },
 );

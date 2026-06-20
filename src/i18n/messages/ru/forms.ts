@@ -136,6 +136,16 @@ const forms = {
   // --- forbiddenAction per-feature действия (для FormFeedback.forbiddenAction) ---
   editFormForbiddenAction: "изменение формы",
   createFormForbiddenAction: "создание формы",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadItemFailed: "Не удалось загрузить форму",
+    loadMyFailed: "Не удалось загрузить формы",
+    loadMySubmissionsFailed: "Не удалось загрузить отклики",
+    loadSubmissionsFailed: "Не удалось загрузить отклики",
+    loadSubmissionFailed: "Не удалось загрузить отклик",
+    loadAdminFailed: "Не удалось загрузить формы",
+  },
 };
 
 export default forms;

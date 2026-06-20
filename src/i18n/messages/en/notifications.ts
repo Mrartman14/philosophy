@@ -39,6 +39,13 @@ const notifications = {
   // --- Subscriptions section (subscriptions-section) ---
   subscriptionsError: "Failed to load subscriptions.",
   subscriptionsEmpty: "You have no active subscriptions.",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadNotificationsFailed: "Failed to load notifications",
+    loadCountsFailed: "Failed to load counts",
+    loadSubscriptionsFailed: "Failed to load subscriptions",
+  },
 };
 
 export default notifications;

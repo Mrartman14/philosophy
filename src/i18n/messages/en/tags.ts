@@ -26,6 +26,12 @@ const tags = {
   saveTags: "Save tags",
   tagsSaved: "Tags saved.",
   assignTagsAction: "assigning tags",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Failed to load tags",
+    loadLectureTagsFailed: "Failed to load lecture tags",
+  },
 };
 
 export default tags;

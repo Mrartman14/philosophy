@@ -26,6 +26,12 @@ const tags = {
   saveTags: "Сохранить теги",
   tagsSaved: "Теги сохранены.",
   assignTagsAction: "назначение тегов",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Не удалось загрузить теги",
+    loadLectureTagsFailed: "Не удалось загрузить теги лекции",
+  },
 };
 
 export default tags;

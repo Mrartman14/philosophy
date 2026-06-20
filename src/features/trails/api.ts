@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type { Trail, TrailWithItems, TrailDocumentSummary } from "./types";
@@ -34,7 +35,7 @@ export const getTrails = cache(
     const { data, error } = await api.GET("/api/trails", {
       params: { query: { offset, limit } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
+    if (error) throw new Error(error.error ?? (await getT("trails"))("api.loadListFailed"));
     return unwrapList(data, { offset, limit });
   },
 );
@@ -48,7 +49,7 @@ export const getMyTrails = cache(
     const { data, error } = await api.GET("/api/trails/my", {
       params: { query: { offset, limit } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
+    if (error) throw new Error(error.error ?? (await getT("trails"))("api.loadListFailed"));
     return unwrapList(data, { offset, limit });
   },
 );
@@ -69,7 +70,7 @@ export const getTrailById = cache(
       },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить маршрут");
+    if (error) throw new Error(error.error ?? (await getT("trails"))("api.loadItemFailed"));
     return unwrap(data);
   },
 );
@@ -83,7 +84,7 @@ export const getAdminTrails = cache(
     const query: { offset: number; limit: number; owner_id?: string } = { offset, limit };
     if (filter.ownerId) query.owner_id = filter.ownerId;
     const { data, error } = await api.GET("/api/admin/trails", { params: { query } });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить маршруты");
+    if (error) throw new Error(error.error ?? (await getT("trails"))("api.loadListFailed"));
     return unwrapList(data, { offset, limit });
   },
 );

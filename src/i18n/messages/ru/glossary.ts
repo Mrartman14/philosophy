@@ -44,6 +44,14 @@ const glossary = {
   searchPlaceholder: "Поиск по названию",
   searchButton: "Найти",
   searchPending: "…",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Не удалось загрузить термины",
+    loadItemFailed: "Не удалось загрузить термин",
+    loadRevisionsFailed: "Не удалось загрузить ревизии термина",
+    loadRevisionFailed: "Не удалось загрузить ревизию термина",
+  },
 };
 
 export default glossary;

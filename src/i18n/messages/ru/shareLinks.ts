@@ -51,6 +51,11 @@ const shareLinks = {
   // --- toastActionError actions (родительный падеж для errors.forbiddenAction) ---
   createLinkAction: "создание ссылки",
   revokeLinkAction: "отзыв ссылки",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadLinksFailed: "Не удалось загрузить ссылки",
+  },
 };
 
 export default shareLinks;

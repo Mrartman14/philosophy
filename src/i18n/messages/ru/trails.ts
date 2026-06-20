@@ -66,6 +66,12 @@ const trails = {
   // --- trail-admin-row ---
   adminUntitled: "Без названия",
   adminAuthorLabel: "автор",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Не удалось загрузить маршруты",
+    loadItemFailed: "Не удалось загрузить маршрут",
+  },
 };
 
 export default trails;

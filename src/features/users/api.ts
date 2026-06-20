@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrapList } from "@/utils/api-unwrap";
 
 import type { AdminUser } from "./types";
@@ -34,7 +35,7 @@ export const getUsers = cache(
       params: { query: { offset, limit } },
     });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить пользователей");
+      throw new Error(error.error ?? (await getT("users"))("api.loadListFailed"));
     }
     return unwrapList(data, { offset, limit });
   },

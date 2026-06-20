@@ -104,6 +104,17 @@ const comments = {
     qualityNeg: "low quality",
     insightMark: "mark as insight",
   },
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadSchemaFailed: "Failed to load comment schema",
+    loadListFailed: "Failed to load comments",
+    loadSubtreeFailed: "Failed to load thread",
+    searchFailed: "Search failed",
+    loadRevisionsFailed: "Failed to load revisions",
+    loadRevisionFailed: "Failed to load revision",
+    loadBlockFailed: "Failed to load block",
+  },
 };
 
 export default comments;

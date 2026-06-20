@@ -136,6 +136,16 @@ const forms = {
   // --- forbiddenAction per-feature phrases (for FormFeedback.forbiddenAction) ---
   editFormForbiddenAction: "editing the form",
   createFormForbiddenAction: "creating the form",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadItemFailed: "Failed to load form",
+    loadMyFailed: "Failed to load forms",
+    loadMySubmissionsFailed: "Failed to load responses",
+    loadSubmissionsFailed: "Failed to load responses",
+    loadSubmissionFailed: "Failed to load response",
+    loadAdminFailed: "Failed to load forms",
+  },
 };
 
 export default forms;

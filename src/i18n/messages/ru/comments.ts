@@ -106,6 +106,17 @@ const comments = {
     qualityNeg: "низкое качество",
     insightMark: "отметить как инсайт",
   },
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadSchemaFailed: "Не удалось загрузить схему комментариев",
+    loadListFailed: "Не удалось загрузить комментарии",
+    loadSubtreeFailed: "Не удалось загрузить ветку",
+    searchFailed: "Не удалось выполнить поиск",
+    loadRevisionsFailed: "Не удалось загрузить ревизии",
+    loadRevisionFailed: "Не удалось загрузить ревизию",
+    loadBlockFailed: "Не удалось загрузить блок",
+  },
 };
 
 export default comments;

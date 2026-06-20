@@ -41,6 +41,14 @@ const glossary = {
   searchPlaceholder: "Search by name",
   searchButton: "Find",
   searchPending: "…",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Failed to load terms",
+    loadItemFailed: "Failed to load term",
+    loadRevisionsFailed: "Failed to load term revisions",
+    loadRevisionFailed: "Failed to load term revision",
+  },
 };
 
 export default glossary;

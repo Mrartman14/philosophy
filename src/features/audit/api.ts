@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { unwrapList } from "@/utils/api-unwrap";
 
 import type { AuditTargetType } from "./target-types";
@@ -63,7 +64,7 @@ export const getAuditLog = cache(
       params: { query },
     });
     if (error) {
-      throw new Error(error.error ?? "Не удалось загрузить audit-лог");
+      throw new Error(error.error ?? (await getT("audit"))("api.loadLogFailed"));
     }
     return unwrapList(data, { offset, limit });
   },

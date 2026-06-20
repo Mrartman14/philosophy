@@ -39,6 +39,11 @@ const preferences = {
   pushUnsubscribeError: "Failed to unsubscribe. Please try again.",
   // Action phrase for "You don't have permission for {action}."
   pushSubscribeAction: "subscribing to notifications",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadFailed: "Failed to load preferences",
+  },
 };
 
 export default preferences;

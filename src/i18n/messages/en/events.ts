@@ -45,6 +45,15 @@ const events = {
     "This action is irreversible. The event will disappear from the public calendar.",
   deleteConfirmLabel: "Delete",
   deleteAction: "deleting the event",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadListFailed: "Failed to load events",
+    loadItemFailed: "Failed to load event",
+    loadRevisionsFailed: "Failed to load revisions",
+    loadRevisionFailed: "Failed to load revision",
+    loadCalendarFailed: "Failed to load calendar",
+  },
 };
 
 export default events;

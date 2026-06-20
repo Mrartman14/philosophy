@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
@@ -60,7 +61,8 @@ export const getAnnotationsFor = cache(
     // 404 (parent невидим) → пустой список, не валим страницу.
     if (res.status === 404) return toResult(null, offset, limit);
     if (!res.ok) {
-      throw new Error(`Не удалось загрузить аннотации (${res.status})`);
+      const t = await getT("annotations");
+      throw new Error(t("api.loadListFailedStatus", { status: res.status }));
     }
     const json = (await res.json()) as AnnotationListResponse;
     return toResult(json, offset, limit);
@@ -75,7 +77,7 @@ export const getAnnotationById = cache(
       params: { path: { id } },
     });
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить аннотацию");
+    if (error) throw new Error(error.error ?? (await getT("annotations"))("api.loadItemFailed"));
     return unwrap(data);
   },
 );
@@ -97,7 +99,7 @@ export const getMyAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить мои аннотации");
+    if (error) throw new Error(error.error ?? (await getT("annotations"))("api.loadMyFailed"));
     return unwrapList(data, { offset, limit });
   },
 );
@@ -121,7 +123,7 @@ export const getLectureAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить аннотации лекции");
+    if (error) throw new Error(error.error ?? (await getT("annotations"))("api.loadLectureFailed"));
     return unwrapList(data, { offset, limit });
   },
 );
@@ -159,7 +161,7 @@ export const getAdminAnnotations = cache(
         },
       },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить список аннотаций");
+    if (error) throw new Error(error.error ?? (await getT("annotations"))("api.loadAdminFailed"));
     return unwrapList(data, { offset, limit });
   },
 );
@@ -171,7 +173,7 @@ export const getAnnotationRevisions = cache(
     const { data, error } = await api.GET("/api/annotations/{id}/revisions", {
       params: { path: { id } },
     });
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизии");
+    if (error) throw new Error(error.error ?? (await getT("annotations"))("api.loadRevisionsFailed"));
     return unwrap(data) ?? [];
   },
 );
@@ -185,7 +187,7 @@ export const getAnnotationRevision = cache(
       { params: { path: { id, revisionID: revisionId } } },
     );
     if (response.status === 404) return null;
-    if (error) throw new Error(error.error ?? "Не удалось загрузить ревизию");
+    if (error) throw new Error(error.error ?? (await getT("annotations"))("api.loadRevisionFailed"));
     return unwrap(data);
   },
 );
