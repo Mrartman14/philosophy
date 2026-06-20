@@ -10,7 +10,7 @@ import type { Appearance } from "./appearance-cookie";
 type AppearancePayload = components["schemas"]["preference.AppearancePatch"];
 
 /**
- * FE Appearance → backend preference.Appearance (nested under preferences).
+ * FE Appearance → backend preference.AppearancePatch (write-only PATCH shape).
  * `textSize` → `text_size`. Contrast "auto" means "follow OS / unset" and the
  * backend enum is only normal|high, so we OMIT contrast when auto (absent ≡ auto
  * on read-back). Theme's "system" IS a valid backend value, so it's sent as-is.
