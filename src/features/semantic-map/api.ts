@@ -2,28 +2,27 @@
 import "server-only";
 import { cache } from "react";
 
-import { makeFixtureMap } from "./fixtures";
+import { createApiClient } from "@/api/client";
+
 import type { MapData } from "./types";
 
+/** Результат загрузки карты: готова / ещё строится (503 MAP_NOT_READY) / ошибка. */
+export type MapResult =
+  | { ok: true; map: MapData }
+  | { ok: false; reason: "building" | "error" };
+
 /**
- * Карта смыслов. Read-only.
- *
- * БЭКЕНД-АГНОСТИК-ГРАНИЦА: сейчас возвращает фикстуру контрактной формы. Бэкенд
- * `/api/map` УЖЕ В СХЕМЕ (@/api/schema: `semmap.Layout`/`semmap.Point`). При swap'е
- * учесть реальный контракт (отличается от ручных типов в ./types):
- *   const api = await createApiClient();
- *   const { data, error } = await api.GET("/api/map");   // ответ в .data-конверте (httputil.Response)
- *   if (error) throw new Error(error.message);
- *   return parseMapResponse(data.data);                  // распаковать .data
- * Реальная схема: ВСЕ поля optional; `layout_version` — string (content-hash);
- * статусы 503 MAP_NOT_READY (карта до первой сборки) и 304/ETag (If-None-Match).
- * Перед swap'ом: сузить ./types и ./schemas из @/api/schema (semmap.*),
- * ослабить required-поля в parseMapResponse, обработать 503/ETag. Нормализатор уже
- * толерантен (нет bounds → из точек; нет coords → 0; неизвестный type → generic).
- *
- * `count` — dev-only stress-параметр (см. /map?n=). В реальном пути игнорируется.
+ * Карта смыслов. Read-only, optional-auth (createApiClient приложит JWT из cookie —
+ * бэк скоупит срез по видимости). ETag/304 в v1 не используем (свежий запрос).
  */
-// eslint-disable-next-line @typescript-eslint/require-await -- fixture stub; real path uses await api.GET(...)
-export const getMap = cache(async (count?: number): Promise<MapData> => {
-  return makeFixtureMap(count ? { count } : {});
+export const getMap = cache(async (): Promise<MapResult> => {
+  const api = await createApiClient();
+  const { data, error, response } = await api.GET("/api/map");
+  if (error) {
+    if (response.status === 503) return { ok: false, reason: "building" };
+    return { ok: false, reason: "error" };
+  }
+  const layout = data.data;
+  if (!layout) return { ok: false, reason: "error" };
+  return { ok: true, map: layout };
 });

@@ -5,6 +5,9 @@ const semanticMap = {
   dimensionAriaLabel: "Размерность карты",
   // semantic-map-view.tsx — пустое облако
   empty: "Карта пуста",
+  // map-state-panel.tsx — состояния загрузки карты
+  building: "Карта ещё строится. Загляните чуть позже.",
+  loadError: "Не удалось загрузить карту.",
 };
 
 export default semanticMap;
