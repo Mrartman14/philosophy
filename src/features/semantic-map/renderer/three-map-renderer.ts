@@ -53,10 +53,11 @@ export class ThreeMapRenderer implements MapRenderer {
     }
     const geom = new THREE.BufferGeometry();
     geom.setAttribute("position", new THREE.BufferAttribute(model.positions, 3));
-    const colorAttr = new THREE.BufferAttribute(model.colors, 3);
+    const working = model.colors.slice(); // рабочий буфер атрибута (мутируется overlay'ем)
+    const colorAttr = new THREE.BufferAttribute(working, 3);
     geom.setAttribute("color", colorAttr);
     this.colorAttr = colorAttr;
-    this.baseColors = model.colors.slice(); // копия для восстановления при снятии overlay
+    this.baseColors = model.colors; // вход трактуем как неизменяемую базу (только чтение в setOverlay)
     const mat = new THREE.PointsMaterial({
       // Размер в ПИКСЕЛЯХ (sizeAttenuation:false) в ОБОИХ режимах — предсказуемо и не зависит
       // от масштаба bounds. (В 3D с world-unit-размером на нормализованных ~[-1,1] координатах
@@ -70,6 +71,7 @@ export class ThreeMapRenderer implements MapRenderer {
     });
     this.points = new THREE.Points(geom, mat);
     this.scene.add(this.points);
+    this.updateMarker(null); // спрятать устаревший маркер при смене модели; overlay реаплаит call-site
     this.fitToBounds();
   }
 
@@ -205,6 +207,7 @@ export class ThreeMapRenderer implements MapRenderer {
   private updateMarker(pos: [number, number, number] | null): void {
     if (!pos) {
       if (this.marker) this.marker.visible = false;
+      this.dirty = true;
       return;
     }
     if (!this.marker) {
@@ -218,6 +221,7 @@ export class ThreeMapRenderer implements MapRenderer {
     this.marker.scale.set(s, s, 1);
     this.marker.position.set(pos[0], pos[1], pos[2]);
     this.marker.visible = true;
+    this.dirty = true;
   }
 
   private readonly loop = (): void => {
@@ -236,9 +240,14 @@ export class ThreeMapRenderer implements MapRenderer {
     this.controls?.dispose();
     if (this.points) disposePoints(this.points);
     if (this.marker) {
+      this.scene.remove(this.marker);
       this.marker.material.map?.dispose();
       this.marker.material.dispose();
     }
+    this.marker = null;
+    this.points = null;
+    this.colorAttr = null;
+    this.baseColors = null;
     this.renderer?.dispose();
     this.renderer = null;
   }
