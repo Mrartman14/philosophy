@@ -5,12 +5,14 @@ const tokens = {
   labelPlaceholder: "e.g. Claude Desktop",
   expiresField: "Expiry",
   expiresNever: "Never",
+  expires7: "7 days",
   expires30: "30 days",
   expires90: "90 days",
-  expires365: "365 days",
   createButton: "Create token",
   createHint:
     "A token grants API access on your behalf — e.g. to connect an external service with its own LLM.",
+  limitsHint:
+    "Label is required. Maximum lifetime is 90 days (or never expires). The secret is shown only once.",
   createAction: "create token",
 
   // --- One-time secret reveal ---

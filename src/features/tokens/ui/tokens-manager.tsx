@@ -49,9 +49,9 @@ export function TokensManager({ initialTokens, canManage, mcpUrl }: Props) {
 
   const expiryOptions = [
     { value: "", label: t("expiresNever") },
+    { value: "7", label: t("expires7") },
     { value: "30", label: t("expires30") },
     { value: "90", label: t("expires90") },
-    { value: "365", label: t("expires365") },
   ];
 
   useEffect(() => {
@@ -113,6 +113,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl }: Props) {
             </Button>
           </div>
           <p className="text-xs text-(--color-fg-muted)">{t("createHint")}</p>
+          <p className="text-xs text-(--color-fg-muted)">{t("limitsHint")}</p>
         </form>
       )}
 

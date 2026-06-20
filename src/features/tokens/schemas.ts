@@ -11,7 +11,7 @@ type ValidationT = NamespaceT<"validation">;
  *  - label ОБЯЗАТЕЛЕН (бек 422-ит пустой; в OpenAPI-типе помечен optional, но
  *    правило живёт в хендлере — поэтому требуем здесь явно), 1..100;
  *  - expires_in_days опционален; пусто → undefined (бессрочный токен), иначе
- *    целое 1..3650. Точные границы валидирует бек (422), здесь — базовый guard.
+ *    целое 1..90 (границы из swagger бека: pat.createTokenRequest).
  */
 export function makeCreateTokenSchema(t: ValidationT) {
   return z.object({
@@ -37,7 +37,7 @@ export function makeCreateTokenSchema(t: ValidationT) {
           ctx.addIssue({ code: "custom", message: t("tokens.expiresMin") });
           return z.NEVER;
         }
-        if (n > 3650) {
+        if (n > 90) {
           ctx.addIssue({ code: "custom", message: t("tokens.expiresMax") });
           return z.NEVER;
         }

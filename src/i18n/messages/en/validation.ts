@@ -198,7 +198,7 @@ const validation = {
     labelMax: "Up to 100 characters",
     expiresInt: "Enter a whole number of days",
     expiresMin: "At least 1 day",
-    expiresMax: "Up to 3650 days",
+    expiresMax: "Up to 90 days",
   },
 
   forms: {

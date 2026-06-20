@@ -5,12 +5,14 @@ const tokens = {
   labelPlaceholder: "Например, Claude Desktop",
   expiresField: "Срок",
   expiresNever: "Бессрочно",
+  expires7: "7 дней",
   expires30: "30 дней",
   expires90: "90 дней",
-  expires365: "365 дней",
   createButton: "Создать токен",
   createHint:
     "Токен даёт доступ к API от вашего имени — например, для подключения внешнего сервиса со своим LLM.",
+  limitsHint:
+    "Название обязательно. Максимальный срок — 90 дней (или бессрочно). Секрет показывается один раз.",
   createAction: "создать токен",
 
   // --- Одноразовый показ секрета (reveal) ---

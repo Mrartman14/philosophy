@@ -27,10 +27,13 @@ describe("CreateTokenSchema", () => {
   it("expires_in_days: строка → число", () => {
     expect(Schema.parse({ label: "ci", expires_in_days: "30" }).expires_in_days).toBe(30);
   });
-  it("отклоняет нецелое/0/слишком большое (при валидном label)", () => {
+  it("принимает максимум 90 дней", () => {
+    expect(Schema.parse({ label: "ci", expires_in_days: "90" }).expires_in_days).toBe(90);
+  });
+  it("отклоняет 0 / нецелое / > 90 (при валидном label)", () => {
     expect(Schema.safeParse({ label: "ci", expires_in_days: "0" }).success).toBe(false);
     expect(Schema.safeParse({ label: "ci", expires_in_days: "1.5" }).success).toBe(false);
-    expect(Schema.safeParse({ label: "ci", expires_in_days: "99999" }).success).toBe(false);
+    expect(Schema.safeParse({ label: "ci", expires_in_days: "91" }).success).toBe(false);
   });
   it("отклоняет label длиннее 100", () => {
     expect(Schema.safeParse({ label: "a".repeat(101) }).success).toBe(false);
