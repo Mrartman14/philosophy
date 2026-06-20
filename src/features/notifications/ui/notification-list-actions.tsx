@@ -14,6 +14,7 @@ export function NotificationListActions() {
   const router = useRouter();
   const toast = useToast();
   const t = useT("notifications");
+  const tErrors = useT("errors");
   const [pending, setPending] = useState(false);
 
   async function run(action: () => Promise<ActionResult>, okMsg: string) {
@@ -21,7 +22,7 @@ export function NotificationListActions() {
     try {
       const result = await action();
       if (!result.success) {
-        toastActionError(toast, result, { action: t("notificationsAction") });
+        toastActionError(toast, tErrors, result, { action: t("notificationsAction") });
         return;
       }
       toast.add({ title: okMsg });

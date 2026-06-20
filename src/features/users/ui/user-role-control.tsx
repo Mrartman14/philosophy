@@ -18,6 +18,7 @@ interface Props {
 
 export function UserRoleControl({ userId, username, current }: Props) {
   const t = useT("users");
+  const tErrors = useT("errors");
   const [value, setValue] = useState<string>(current);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -32,7 +33,7 @@ export function UserRoleControl({ userId, username, current }: Props) {
   async function apply() {
     const result = await setUserRole({ id: userId, role: value });
     if (!result.success) {
-      toastActionError(toast, result, {
+      toastActionError(toast, tErrors, result, {
         action: t("changeRoleAction"),
         forbiddenTitle: t("changeRoleFailed"),
         failureTitle: t("changeRoleFailed"),

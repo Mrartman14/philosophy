@@ -20,6 +20,7 @@ export function SubmissionActions({ submissionId, kind, redirectTo = "/me/submis
   const router = useRouter();
   const toast = useToast();
   const t = useT("forms");
+  const tErrors = useT("errors");
   const [, startTransition] = useTransition();
 
   const isDelete = kind === "delete";
@@ -40,7 +41,9 @@ export function SubmissionActions({ submissionId, kind, redirectTo = "/me/submis
           ? await deleteSubmission(submissionId)
           : await retractSubmission(submissionId);
         if (!result.success) {
-          toastActionError(toast, result, { action: `${isDelete ? "удаление" : "отзыв"} отклика` });
+          toastActionError(toast, tErrors, result, {
+            action: isDelete ? t("deleteSubmissionAction") : t("retractSubmissionAction"),
+          });
           return;
         }
         startTransition(() => { router.push(redirectTo); });

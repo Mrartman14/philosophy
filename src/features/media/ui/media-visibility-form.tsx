@@ -25,6 +25,7 @@ export function MediaVisibilityForm({ id, canChange }: Props) {
   const toast = useToast();
   const [, startTransition] = useTransition();
   const t = useT("media");
+  const tErrors = useT("errors");
 
   if (!canChange) return null;
 
@@ -37,7 +38,7 @@ export function MediaVisibilityForm({ id, canChange }: Props) {
       onConfirm={async () => {
         const result = await setMediaVisibility({ id, visibility: "public" });
         if (!result.success) {
-          toastActionError(toast, result, { action: t("publishAction") });
+          toastActionError(toast, tErrors, result, { action: t("publishAction") });
           return;
         }
         toast.add({ title: t("publishedToast") });

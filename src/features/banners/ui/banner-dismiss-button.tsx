@@ -22,6 +22,7 @@ interface Props {
  */
 export function BannerDismissButton({ id }: Props) {
   const t = useT("banners");
+  const tErrors = useT("errors");
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
@@ -34,7 +35,7 @@ export function BannerDismissButton({ id }: Props) {
         startTransition(async () => {
           const result = await dismissBanner(id);
           if (!result.success) {
-            toastActionError(toast, result, {
+            toastActionError(toast, tErrors, result, {
               action: t("dismissAction"),
               forbiddenTitle: t("dismissFailTitle"),
               failureTitle: t("dismissFailTitle"),

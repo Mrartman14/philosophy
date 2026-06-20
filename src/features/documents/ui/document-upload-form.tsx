@@ -46,10 +46,7 @@ export function DocumentUploadForm() {
         </select>
       </FormField>
 
-      {/* FormFeedback.forbiddenAction flows through frozen action-message seam;
-          the literal "загрузку документа" remains until that seam gets its i18n
-          foundation-PR. */}
-      <FormFeedback result={state} forbiddenAction="загрузку документа" />
+      <FormFeedback result={state} forbiddenAction={t("uploadAction")} />
 
       <div>
         <SubmitButton>{t("uploadButton")}</SubmitButton>

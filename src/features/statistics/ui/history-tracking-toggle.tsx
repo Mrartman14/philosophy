@@ -28,7 +28,7 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
     try {
       const result = await setHistoryTracking(next);
       if (!result.success) {
-        toastActionError(toast, result, { action: t("manageSettingsAction") });
+        toastActionError(toast, tErrors, result, { action: t("manageSettingsAction") });
         return;
       }
       setEnabled(next);

@@ -27,6 +27,7 @@ export function TrailDeleteButton({
 }: Props) {
   const router = useRouter();
   const t = useT("trails");
+  const tErrors = useT("errors");
   const toast = useToast();
   const [, startTransition] = useTransition();
 
@@ -40,7 +41,7 @@ export function TrailDeleteButton({
       onConfirm={async () => {
         const result = admin ? await adminDeleteTrail(id) : await deleteTrail(id);
         if (!result.success) {
-          toastActionError(toast, result, {
+          toastActionError(toast, tErrors, result, {
             action: t("deleteAction"),
             forbiddenTitle: t("deleteForbiddenTitle"),
             failureTitle: t("deleteFailureTitle"),

@@ -8,9 +8,7 @@ const glossary = {
   titleLabel: "Название",
   titlePlaceholder: "Например: «Эпистемология»",
   createButton: "Создать",
-  // Action для «У вас нет прав на {action}.» (Case 3) — forbiddenAction в FormFeedback.
-  // ОТЛОЖЕНО: FormFeedback.forbiddenAction — frozen seam; строка локализована здесь для
-  // будущего Case 3, но сам prop пока остаётся захардкоженным (см. concerns).
+  // Action для «У вас нет прав на {action}.» (Case 3) — prop forbiddenAction в FormFeedback.
   createTermAction: "создание термина",
 
   // --- glossary-delete-button ---
@@ -19,8 +17,7 @@ const glossary = {
   deleteConfirmDescription:
     "Действие необратимо. Если на блоки термина ссылаются другие материалы — удаление будет отклонено.",
   deleteConfirmLabel: "Удалить",
-  // Action для toastActionError — frozen seam (action-toast.ts);
-  // строка здесь для документации, вызов оставлен с литералом.
+  // Action для toastActionError (родительный падеж для errors.forbiddenAction).
   deleteTermAction: "удаление термина",
 
   // --- glossary-detail ---

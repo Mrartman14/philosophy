@@ -199,12 +199,33 @@ const tPrefs = useT("preferences"); // per-feature namespace слайса
   / `errors.forbiddenTitle` / `errors.failureTitle` — уже в каталоге.
 - Действие («отправку push-уведомлений») — per-feature ключ (`preferences.pushSendAction`).
 
-Замечание про общий seam: `src/utils/action-message.ts` / `action-toast.ts` /
-`src/components/ui/form-feedback.tsx` (FROZEN-зоны UI-kit) ПОКА держат литерал
-«У вас нет прав на …» и не локализованы — их сигнатуры используют ~30 слайсов,
-поэтому миграция этого seam = ОТДЕЛЬНЫЙ foundation-PR (добавить `t: ErrorsT`
-параметр или сделать компоненты client+`useT`, синхронно обновив все вызовы).
-Sonnet локализует ТОЛЬКО inline-литералы в `*.tsx`, не трогая общий seam.
+#### Общий error-feedback seam — СДЕЛАНО (foundation-PR `feat(i18n): localize error-feedback seam`)
+
+`src/utils/action-message.ts` / `action-toast.ts` / `src/components/ui/form-feedback.tsx`
+БОЛЬШЕ не держат русский литерал «У вас нет прав на …». Все ~30 слайсов-вызывателей
+оказались `"use client"`, поэтому итоговый паттерн:
+
+- **`FormFeedback`** (UI-kit) стал `"use client"`-компонентом и сам тянет
+  `useT("errors")`, применяя шаблон `errors.forbiddenAction` к пропу `forbiddenAction`.
+  Вызыватель передаёт УЖЕ-локализованное действие (`forbiddenAction={t("createAction")}`)
+  — сигнатура пропа не изменилась, новые callsites просто дают `t(...)` вместо литерала.
+- **`actionErrorMessage` / `toastActionError`** — это утилиты (хуки нельзя), поэтому
+  принимают первым/вторым аргументом `tErrors: ErrorsT`. Клиент-вызыватель добавляет
+  `const tErrors = useT("errors")` и прокидывает его:
+  `toastActionError(toast, tErrors, result, { action: t("deleteAction") })`. Шаблон,
+  `forbiddenTitle`-/`failureTitle`-дефолты резолвятся из namespace `errors`
+  (`forbiddenTitle`/`failureTitle`); опц. `opts.forbiddenTitle`/`opts.failureTitle`
+  переопределяют их уже-локализованной строкой.
+- **Тип `ErrorsT`** живёт в client-фасаде `@/i18n/client` (зеркало server-only
+  `NamespaceT<"errors">`), импортится как `type` → Guardrail 5 не нарушается, директива
+  `"use client"` не «протекает» в утилиты.
+- **Тесты**: фабрика `makeErrorsT()` (`src/test/errors-t.ts`) строит `ErrorsT` из
+  реального ru-каталога `errors` (юнит-тесты seam без next-intl-провайдера); тесты
+  компонентов, рендерящих `FormFeedback`, мокают `@/i18n/client` на эту фабрику.
+
+Новые слайсы: для toast — `useT("errors")` + проброс `tErrors`; для форм —
+`forbiddenAction={t("<feature>Action>")}`. Действие — per-feature ключ в родительном
+падеже (напр. `documents.createAction`).
 
 ## Подводные камни (для механических батчей)
 

@@ -16,6 +16,7 @@ interface Props {
 
 export function EventDeleteButton({ id }: Props) {
   const t = useT("events");
+  const tErrors = useT("errors");
   const router = useRouter();
   const pathname = usePathname();
   const toast = useToast();
@@ -32,7 +33,7 @@ export function EventDeleteButton({ id }: Props) {
       onConfirm={async () => {
         const result = await deleteEvent(id, key);
         if (!result.success) {
-          toastActionError(toast, result, { action: t("deleteAction") });
+          toastActionError(toast, tErrors, result, { action: t("deleteAction") });
           return;
         }
         // С edit-страницы — на список; из списка — refresh.

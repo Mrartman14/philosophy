@@ -21,6 +21,7 @@ export function MediaDeleteButton({ id, isAdminDelete = false }: Props) {
   const toast = useToast();
   const [, startTransition] = useTransition();
   const t = useT("media");
+  const tErrors = useT("errors");
 
   return (
     <ConfirmDialog
@@ -36,7 +37,7 @@ export function MediaDeleteButton({ id, isAdminDelete = false }: Props) {
       onConfirm={async () => {
         const result = await deleteMedia(id);
         if (!result.success) {
-          toastActionError(toast, result, { action: t("deleteAction") });
+          toastActionError(toast, tErrors, result, { action: t("deleteAction") });
           return;
         }
         if (pathname === `/media/${id}`) {

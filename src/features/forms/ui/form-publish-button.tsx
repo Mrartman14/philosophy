@@ -17,6 +17,7 @@ export function FormPublishButton({ formId }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("forms");
+  const tErrors = useT("errors");
   const [, startTransition] = useTransition();
 
   return (
@@ -31,7 +32,7 @@ export function FormPublishButton({ formId }: Props) {
         fd.set("visibility", "public");
         const result = await publishForm({ success: true, data: null }, fd);
         if (!result.success) {
-          toastActionError(toast, result, { action: "публикацию формы" });
+          toastActionError(toast, tErrors, result, { action: t("publishAction") });
           return;
         }
         startTransition(() => { router.refresh(); });

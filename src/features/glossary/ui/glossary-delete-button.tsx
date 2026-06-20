@@ -18,6 +18,7 @@ export function GlossaryDeleteButton({ id }: Props) {
   const pathname = usePathname();
   const toast = useToast();
   const t = useT("glossary");
+  const tErrors = useT("errors");
   const [, startTransition] = useTransition();
   const { key } = useIdempotencyKey();
 
@@ -31,9 +32,7 @@ export function GlossaryDeleteButton({ id }: Props) {
       onConfirm={async () => {
         const result = await deleteTerm(id, key);
         if (!result.success) {
-          // toastActionError — frozen seam (src/utils/action-toast.ts); action-литерал
-          // оставлен до foundation-PR локализации этого seam.
-          toastActionError(toast, result, { action: "удаление термина" });
+          toastActionError(toast, tErrors, result, { action: t("deleteTermAction") });
           return;
         }
         // Если мы на edit-странице термина — редирект на список; иначе refresh.

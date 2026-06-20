@@ -11,6 +11,7 @@ const trails = {
   createVisibilityPublic: "Публичный",
   createVisibilityNote: "Публичный маршрут нельзя будет вернуть в приватный — только удалить.",
   createSubmit: "Создать",
+  createForbiddenAction: "создание маршрута",
 
   // --- trail-meta-form ---
   metaTitleLabel: "Название",

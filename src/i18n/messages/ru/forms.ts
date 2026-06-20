@@ -121,13 +121,21 @@ const forms = {
   noSubmissionsAdmin: "Откликов пока нет.",
   submissionLinkPrefix: "Отклик {id}",
 
-  // --- toastActionError actions (через frozen seam toastActionError) ---
-  // Используются как строки action в toastActionError — через frozen seam,
-  // не подлежат прямой локализации в этом PR (замечание в concerns).
+  // --- toastActionError actions (родительный падеж для errors.forbiddenAction) ---
+  fillAction: "отправку отклика",
+  submissionEditAction: "изменение отклика",
+  publishAction: "публикацию формы",
+  deleteFormAction: "удаление формы",
+  deleteSubmissionAction: "удаление отклика",
+  retractSubmissionAction: "отзыв отклика",
 
-  // --- forbiddenAction per-feature действия (для formFeedback.forbiddenAction) ---
-  // Используются как prop forbiddenAction FormFeedback — через frozen seam,
-  // не подлежат прямой локализации в этом PR.
+  // --- toastActionError failureTitle переопределения ---
+  fillFailureTitle: "Не удалось отправить",
+  submissionEditFailureTitle: "Не удалось сохранить",
+
+  // --- forbiddenAction per-feature действия (для FormFeedback.forbiddenAction) ---
+  editFormForbiddenAction: "изменение формы",
+  createFormForbiddenAction: "создание формы",
 };
 
 export default forms;

@@ -11,6 +11,7 @@ const trails = {
   createVisibilityPublic: "Public",
   createVisibilityNote: "A public trail cannot be made private again — you can only delete it.",
   createSubmit: "Create",
+  createForbiddenAction: "creating the trail",
 
   // --- trail-meta-form ---
   metaTitleLabel: "Title",

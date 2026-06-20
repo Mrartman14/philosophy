@@ -19,6 +19,7 @@ export function FormDeleteButton({ id, redirectTo = "/me/forms", label }: Props)
   const router = useRouter();
   const toast = useToast();
   const t = useT("forms");
+  const tErrors = useT("errors");
   const [, startTransition] = useTransition();
 
   return (
@@ -31,7 +32,7 @@ export function FormDeleteButton({ id, redirectTo = "/me/forms", label }: Props)
       onConfirm={async () => {
         const result = await deleteForm(id);
         if (!result.success) {
-          toastActionError(toast, result, { action: "удаление формы" });
+          toastActionError(toast, tErrors, result, { action: t("deleteFormAction") });
           return;
         }
         startTransition(() => { router.push(redirectTo); });

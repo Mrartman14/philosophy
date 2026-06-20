@@ -40,9 +40,7 @@ export function GlossaryCreateForm() {
         <TextInput name="title" required maxLength={300} placeholder={t("titlePlaceholder")} />
       </FormField>
 
-      {/* FormFeedback.forbiddenAction — frozen seam (src/components/ui); литерал оставлен
-          намеренно до foundation-PR локализации FormFeedback. */}
-      <FormFeedback result={state} forbiddenAction="создание термина" />
+      <FormFeedback result={state} forbiddenAction={t("createTermAction")} />
 
       <div>
         <SubmitButton>{t("createButton")}</SubmitButton>

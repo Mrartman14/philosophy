@@ -42,6 +42,7 @@ export function ShareButton({
   const router = useRouter();
   const toast = useToast();
   const t = useT("shareLinks");
+  const tErrors = useT("errors");
   const [open, setOpen] = useState(false);
   const [state, formAction, pending] = useActionState(
     createShareLink,
@@ -53,7 +54,10 @@ export function ShareButton({
       toast.add({ title: t("linkCreatedToast") });
       router.refresh();
     } else if (!state.success) {
-      toastActionError(toast, state, { action: "создание ссылки", forbiddenTitle: "Ошибка" });
+      toastActionError(toast, tErrors, state, {
+        action: t("createLinkAction"),
+        forbiddenTitle: tErrors("failureTitle"),
+      });
     }
     // state — единственный триггер; toast/router стабильны
     // eslint-disable-next-line react-hooks/exhaustive-deps

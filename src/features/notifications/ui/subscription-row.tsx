@@ -16,6 +16,7 @@ interface SubscriptionRowProps {
 export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
   const toast = useToast();
   const t = useT("notifications");
+  const tErrors = useT("errors");
   const [removed, setRemoved] = useState(false);
   const [pending, setPending] = useState(false);
 
@@ -26,7 +27,7 @@ export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
     try {
       const result = await unsubscribeDocument(subscription.targetId);
       if (!result.success) {
-        toastActionError(toast, result, { action: t("subscribeAction") });
+        toastActionError(toast, tErrors, result, { action: t("subscribeAction") });
         return;
       }
       setRemoved(true);

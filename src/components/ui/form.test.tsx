@@ -11,9 +11,16 @@
  */
 import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ActionResult } from "@/utils/create-action";
+
+// FormFeedback тянет useT("errors") внутри — мокаем client-фасад на реальный ru-каталог.
+vi.mock("@/i18n/client", async () => {
+  const { makeErrorsT } = await import("@/test/errors-t");
+  const tErrors = makeErrorsT();
+  return { useT: () => tErrors };
+});
 
 import { Form } from "./form";
 import { FormFeedback } from "./form-feedback";

@@ -1,24 +1,28 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { makeErrorsT } from "@/test/errors-t";
+
 import { toastActionError } from "./action-toast";
+
+const tErrors = makeErrorsT();
 
 function makeToast() {
   return { add: vi.fn() };
 }
 
 describe("toastActionError", () => {
-  it("shows forbidden toast with branded description", () => {
+  it("shows forbidden toast with branded description and default title", () => {
     const toast = makeToast();
-    toastActionError(toast, { success: false, error: "Forbidden", code: "forbidden" }, { action: "удаление лекции" });
+    toastActionError(toast, tErrors, { success: false, error: "Forbidden", code: "forbidden" }, { action: "удаление лекции" });
     expect(toast.add).toHaveBeenCalledWith({
       title: "Нет прав",
       description: "У вас нет прав на удаление лекции.",
     });
   });
 
-  it("shows error toast for generic error", () => {
+  it("shows error toast for generic error with default title", () => {
     const toast = makeToast();
-    toastActionError(toast, { success: false, error: "Server error" }, { action: "удаление" });
+    toastActionError(toast, tErrors, { success: false, error: "Server error" }, { action: "удаление" });
     expect(toast.add).toHaveBeenCalledWith({
       title: "Ошибка",
       description: "Server error",
@@ -29,6 +33,7 @@ describe("toastActionError", () => {
     const toast = makeToast();
     toastActionError(
       toast,
+      tErrors,
       { success: false, error: "Forbidden", code: "forbidden" },
       { action: "публикацию", forbiddenTitle: "Доступ закрыт" },
     );

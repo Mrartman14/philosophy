@@ -19,6 +19,7 @@ export function FormAdminRow({ form, canDelete }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("forms");
+  const tErrors = useT("errors");
   const [, startTransition] = useTransition();
 
   return (
@@ -39,7 +40,7 @@ export function FormAdminRow({ form, canDelete }: Props) {
               if (!form.id) return;
               const result = await deleteForm(form.id);
               if (!result.success) {
-                toastActionError(toast, result, { action: "удаление формы" });
+                toastActionError(toast, tErrors, result, { action: t("deleteFormAction") });
                 return;
               }
               startTransition(() => { router.refresh(); });

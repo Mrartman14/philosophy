@@ -25,6 +25,7 @@ export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("annotations");
+  const tErrors = useT("errors");
   const [, startTransition] = useTransition();
   const { key } = useIdempotencyKey();
 
@@ -40,7 +41,7 @@ export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
           ? await adminDeleteAnnotation(annotationId)
           : await deleteAnnotation(annotationId, key);
         if (!result.success) {
-          toastActionError(toast, result, { action: t("deleteAction") });
+          toastActionError(toast, tErrors, result, { action: t("deleteAction") });
           return;
         }
         startTransition(() => { router.refresh(); });

@@ -51,7 +51,7 @@ export function TrailCreateForm() {
         {t("createVisibilityNote")}
       </p>
 
-      <FormFeedback result={state} forbiddenAction="создание маршрута" />
+      <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
 
       <div>
         <SubmitButton>{t("createSubmit")}</SubmitButton>

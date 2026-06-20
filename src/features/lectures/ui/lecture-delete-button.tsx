@@ -15,6 +15,7 @@ interface Props {
 
 export function LectureDeleteButton({ lectureId, redirectTo }: Props) {
   const tL = useT("lectures");
+  const tErrors = useT("errors");
   const router = useRouter();
   const toast = useToast();
   const [, startTransition] = useTransition();
@@ -29,9 +30,7 @@ export function LectureDeleteButton({ lectureId, redirectTo }: Props) {
       onConfirm={async () => {
         const result = await deleteLecture(lectureId);
         if (!result.success) {
-          // toastActionError is a frozen seam (action-toast.ts); the action string
-          // is a legacy plain-Russian prop until that seam gets its i18n foundation-PR.
-          toastActionError(toast, result, { action: "удаление лекции" });
+          toastActionError(toast, tErrors, result, { action: tL("deleteAction") });
           return;
         }
         if (redirectTo) {

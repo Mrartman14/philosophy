@@ -47,6 +47,10 @@ const shareLinks = {
   resourceIdLabel: "Resource ID",
   resourceIdPlaceholder: "Resource UUID",
   showLinksButton: "Show links",
+
+  // --- toastActionError actions (phrase for errors.forbiddenAction) ---
+  createLinkAction: "creating the link",
+  revokeLinkAction: "revoking the link",
 };
 
 export default shareLinks;

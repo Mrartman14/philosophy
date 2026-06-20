@@ -18,6 +18,7 @@ export function TagDeleteButton({ id, name }: Props) {
   const router = useRouter();
   const toast = useToast();
   const tTags = useT("tags");
+  const tErrors = useT("errors");
   const [, startTransition] = useTransition();
 
   return (
@@ -30,7 +31,7 @@ export function TagDeleteButton({ id, name }: Props) {
       onConfirm={async () => {
         const result = await deleteTag(id);
         if (!result.success) {
-          toastActionError(toast, result, { action: tTags("deleteTagAction") });
+          toastActionError(toast, tErrors, result, { action: tTags("deleteTagAction") });
           return;
         }
         startTransition(() => { router.refresh(); });

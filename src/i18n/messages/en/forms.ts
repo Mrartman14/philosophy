@@ -120,6 +120,22 @@ const forms = {
   // --- submission-list ---
   noSubmissionsAdmin: "No responses yet.",
   submissionLinkPrefix: "Response {id}",
+
+  // --- toastActionError actions (phrase for errors.forbiddenAction) ---
+  fillAction: "submitting the response",
+  submissionEditAction: "editing the response",
+  publishAction: "publishing the form",
+  deleteFormAction: "deleting the form",
+  deleteSubmissionAction: "deleting the response",
+  retractSubmissionAction: "retracting the response",
+
+  // --- toastActionError failureTitle overrides ---
+  fillFailureTitle: "Couldn't submit",
+  submissionEditFailureTitle: "Couldn't save",
+
+  // --- forbiddenAction per-feature phrases (for FormFeedback.forbiddenAction) ---
+  editFormForbiddenAction: "editing the form",
+  createFormForbiddenAction: "creating the form",
 };
 
 export default forms;

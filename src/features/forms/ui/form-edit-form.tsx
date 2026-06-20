@@ -56,7 +56,7 @@ export function FormEditForm({ form }: Props) {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={form.id ?? ""} />
       <FormBuilder mode="edit" initial={toBuilderInitial(form)} />
-      <FormFeedback result={state} forbiddenAction="изменение формы" />
+      <FormFeedback result={state} forbiddenAction={t("editFormForbiddenAction")} />
       <div><SubmitButton>{t("editSubmit")}</SubmitButton></div>
     </Form>
   );

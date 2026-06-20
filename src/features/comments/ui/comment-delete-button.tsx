@@ -17,6 +17,7 @@ interface Props {
 
 export function CommentDeleteButton({ commentId, admin = false }: Props) {
   const t = useT("comments");
+  const tErrors = useT("errors");
   const [done, setDone] = useState(false);
   const toast = useToast();
   const { key } = useIdempotencyKey();
@@ -39,7 +40,7 @@ export function CommentDeleteButton({ commentId, admin = false }: Props) {
         if (result.success) {
           setDone(true);
         } else {
-          toastActionError(toast, result, {
+          toastActionError(toast, tErrors, result, {
             action: t("deleteAction"),
             forbiddenTitle: t("deleteForbiddenTitle"),
             failureTitle: t("deleteFailureTitle"),

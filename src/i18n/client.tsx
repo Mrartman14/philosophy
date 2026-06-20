@@ -15,6 +15,15 @@ export function I18nProvider(props: ComponentProps<typeof NextIntlClientProvider
 /** Клиентский переводчик. Ключи типизированы через AppConfig. */
 export const useT = useTranslations;
 
+/**
+ * Тип переводчика namespace «errors» для КЛИЕНТСКОГО кода (без прямого импорта
+ * next-intl — Guardrail 5). Зеркало server-only `NamespaceT<"errors">` из `@/i18n`,
+ * но импортируемое из client-фасада. Нужно утилитам, которым клиент-вызыватель
+ * прокидывает уже сконфигурированный `useT("errors")` (branded forbidden seam:
+ * `action-message` / `action-toast`).
+ */
+export type ErrorsT = ReturnType<typeof useTranslations<"errors">>;
+
 /** Текущая UI-локаль (ru|en). */
 export function useLocale(): ResolvedLocale {
   return useIntlLocale();

@@ -52,6 +52,7 @@ export function ShareLinkList({
   const router = useRouter();
   const toast = useToast();
   const t = useT("shareLinks");
+  const tErrors = useT("errors");
   const fmt = useFmt();
   const [pending, startTransition] = useTransition();
 
@@ -77,7 +78,10 @@ export function ShareLinkList({
         toast.add({ title: t("revokedToast") });
         router.refresh();
       } else {
-        toastActionError(toast, result, { action: "отзыв ссылки", forbiddenTitle: "Ошибка" });
+        toastActionError(toast, tErrors, result, {
+          action: t("revokeLinkAction"),
+          forbiddenTitle: tErrors("failureTitle"),
+        });
       }
     });
   }

@@ -24,6 +24,7 @@ interface Props {
 export function FormFill({ form, token }: Props) {
   const toast = useToast();
   const t = useT("forms");
+  const tErrors = useT("errors");
   const { key: idempotencyKey, rotate } = useIdempotencyKey();
   const fields: FormField[] = (form.fields ?? [])
     .slice()
@@ -74,7 +75,10 @@ export function FormFill({ form, token }: Props) {
     setPending(false);
 
     if (!result.success) {
-      toastActionError(toast, result, { action: "отправку отклика", failureTitle: "Не удалось отправить" });
+      toastActionError(toast, tErrors, result, {
+        action: t("fillAction"),
+        failureTitle: t("fillFailureTitle"),
+      });
       return;
     }
     rotate();

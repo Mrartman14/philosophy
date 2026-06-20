@@ -60,10 +60,7 @@ export function DocumentCreateForm() {
         />
       </FormField>
 
-      {/* FormFeedback.forbiddenAction flows through frozen action-message seam;
-          the literal "создание документа" remains until that seam gets its i18n
-          foundation-PR. */}
-      <FormFeedback result={state} forbiddenAction="создание документа" />
+      <FormFeedback result={state} forbiddenAction={t("createAction")} />
 
       <div>
         <SubmitButton>{t("createButton")}</SubmitButton>

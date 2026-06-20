@@ -24,6 +24,7 @@ export function SubscribeButton({
 }: SubscribeButtonProps) {
   const toast = useToast();
   const t = useT("notifications");
+  const tErrors = useT("errors");
   const [subscribed, setSubscribed] = useState(initialSubscribed);
   const [pending, setPending] = useState(false);
 
@@ -37,7 +38,7 @@ export function SubscribeButton({
         : await unsubscribeAction(entityId);
       if (!result.success) {
         setSubscribed(!next); // откат
-        toastActionError(toast, result, { action: t("subscribeAction") });
+        toastActionError(toast, tErrors, result, { action: t("subscribeAction") });
       }
     } finally {
       setPending(false);

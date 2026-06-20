@@ -29,7 +29,7 @@ export function FormCreateForm() {
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
       <IdempotencyField result={state} />
       <FormBuilder mode="create" />
-      <FormFeedback result={state} forbiddenAction="создание формы" />
+      <FormFeedback result={state} forbiddenAction={t("createFormForbiddenAction")} />
       <div><SubmitButton>{t("createSubmit")}</SubmitButton></div>
     </Form>
   );

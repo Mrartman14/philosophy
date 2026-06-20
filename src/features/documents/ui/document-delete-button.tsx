@@ -27,6 +27,7 @@ export function DocumentDeleteButton({
   label,
 }: Props) {
   const t = useT("documents");
+  const tErrors = useT("errors");
   const router = useRouter();
   const toast = useToast();
   const [, startTransition] = useTransition();
@@ -42,9 +43,7 @@ export function DocumentDeleteButton({
       onConfirm={async () => {
         const result = admin ? await adminDeleteDocument(id, key) : await deleteDocument(id, key);
         if (!result.success) {
-          // toastActionError is a frozen seam (action-toast.ts); the action string
-          // is a legacy plain-Russian prop until that seam gets its i18n foundation-PR.
-          toastActionError(toast, result, { action: "удаление документа" });
+          toastActionError(toast, tErrors, result, { action: t("deleteAction") });
           return;
         }
         startTransition(() => { router.push(redirectTo); });

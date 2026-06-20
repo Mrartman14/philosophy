@@ -59,9 +59,7 @@ export function LectureCreateForm() {
         />
       </FormField>
 
-      {/* FormFeedback is a frozen UI-kit seam; forbiddenAction string is a legacy
-          plain-Russian prop until that seam gets its own i18n foundation-PR. */}
-      <FormFeedback result={state} forbiddenAction="создание лекции" />
+      <FormFeedback result={state} forbiddenAction={tL("createAction")} />
 
       <div>
         <SubmitButton>{tL("createButton")}</SubmitButton>

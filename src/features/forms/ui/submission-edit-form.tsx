@@ -43,6 +43,7 @@ export function SubmissionEditForm({ form, submission }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("forms");
+  const tErrors = useT("errors");
   const fields: FormField[] = (form.fields ?? [])
     .slice()
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
@@ -76,7 +77,10 @@ export function SubmissionEditForm({ form, submission }: Props) {
     const result = await editSubmission({ success: true, data: null }, fd);
     setPending(false);
     if (!result.success) {
-      toastActionError(toast, result, { action: "изменение отклика", failureTitle: "Не удалось сохранить" });
+      toastActionError(toast, tErrors, result, {
+        action: t("submissionEditAction"),
+        failureTitle: t("submissionEditFailureTitle"),
+      });
       return;
     }
     router.refresh();

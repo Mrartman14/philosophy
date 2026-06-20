@@ -47,6 +47,10 @@ const shareLinks = {
   resourceIdLabel: "ID ресурса",
   resourceIdPlaceholder: "UUID ресурса",
   showLinksButton: "Показать ссылки",
+
+  // --- toastActionError actions (родительный падеж для errors.forbiddenAction) ---
+  createLinkAction: "создание ссылки",
+  revokeLinkAction: "отзыв ссылки",
 };
 
 export default shareLinks;

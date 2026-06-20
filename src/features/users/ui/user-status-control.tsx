@@ -18,6 +18,7 @@ interface Props {
 
 export function UserStatusControl({ userId, username, current }: Props) {
   const t = useT("users");
+  const tErrors = useT("errors");
   const [value, setValue] = useState<string>(current);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -33,7 +34,7 @@ export function UserStatusControl({ userId, username, current }: Props) {
   async function apply() {
     const result = await setUserStatus({ id: userId, status: value });
     if (!result.success) {
-      toastActionError(toast, result, {
+      toastActionError(toast, tErrors, result, {
         action: t("changeStatusAction"),
         forbiddenTitle: t("changeStatusFailed"),
         failureTitle: t("changeStatusFailed"),
