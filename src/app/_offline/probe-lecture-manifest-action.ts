@@ -6,8 +6,6 @@ import "server-only";
 import { createApiClient } from "@/api/client";
 import type { ManifestProbe } from "@/services/offline/contract/descriptor";
 
-export type { ManifestProbe };
-
 /**
  * Дешёвая проверка свежести лекции: GET манифеста с If-None-Match.
  * 304 → не менялось (fresh). 200 → изменилось (stale + новый токен). 404 → gone.
