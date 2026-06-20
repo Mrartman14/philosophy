@@ -1,6 +1,7 @@
 // src/app/search/page.tsx
 import { Suspense } from "react";
 
+import { RouterLink } from "@/components/ui";
 import {
   getSearchResults,
   makeSearchParamsSchema,
@@ -68,5 +69,14 @@ async function SearchBody({ q }: { q: string }) {
     );
   }
 
-  return <SearchResults hits={result.items} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <SearchResults hits={result.items} />
+      {result.items.length > 0 && (
+        <RouterLink href={`/map?q=${encodeURIComponent(q)}`} className="text-sm text-(--color-accent) hover:underline">
+          {t("mapLink")}
+        </RouterLink>
+      )}
+    </div>
+  );
 }

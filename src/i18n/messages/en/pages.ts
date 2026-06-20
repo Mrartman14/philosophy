@@ -113,6 +113,7 @@ const pages = {
 
   // ─── /map ────────────────────────────────────────────────────────────
   mapTitle: "Semantic map",
+  mapLink: "View on map",
 
   // ─── /me/tokens ──────────────────────────────────────────────────────
   tokensTitle: "Personal tokens",
