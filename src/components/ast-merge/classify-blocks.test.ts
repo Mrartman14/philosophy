@@ -69,11 +69,11 @@ describe("classifyBlocks", () => {
 
   it("я добавил несохранённый блок (пустой id) → added-mine после предшественника", () => {
     const base = [p("a", "A")];
-    const mine = [p("a", "A"), { id: "", type: "paragraph", text: "NEW" }];
+    const mine = [p("a", "A"), { id: "", type: "paragraph", text: "NEW" } satisfies AstBlock];
     const theirs = [p("a", "A")];
     const entries = classifyBlocks(base, mine, theirs);
     expect(entries.map((e) => e.status)).toEqual(["unchanged", "added-mine"]);
-    expect(entries[1].mine?.text).toBe("NEW");
+    expect(entries[1]?.mine?.text).toBe("NEW");
   });
 
   it("я удалил, сервер не трогал → removed-mine", () => {

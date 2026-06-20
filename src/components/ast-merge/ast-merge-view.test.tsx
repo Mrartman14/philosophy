@@ -61,7 +61,8 @@ describe("AstMergeView", () => {
 
     fireEvent.click(apply);
     expect(onApply).toHaveBeenCalledTimes(1);
-    expect(onApply.mock.calls[0][0].map((b) => b.text)).toEqual(["A-srv"]);
+    const appliedBlocks = onApply.mock.calls[0]?.[0] ?? [];
+    expect(appliedBlocks.map((b) => b.text)).toEqual(["A-srv"]);
   });
 
   it("onCancel вызывается по кнопке cancel", () => {
