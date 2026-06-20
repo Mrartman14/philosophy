@@ -15,6 +15,9 @@ import {
 import { getLectureTags, type Tag } from "@/features/tags";
 import type { OfflineDescriptor } from "@/services/offline/contract/descriptor";
 
+import { probeLectureForOffline } from "../probe-lecture-action";
+import { probeLectureManifest } from "../probe-lecture-manifest-action";
+
 /** Офлайн-снимок лекции (форма знает дескриптор + SavedLectureView из L2). */
 export interface LectureSnapshot {
   lecture: Lecture;
@@ -89,5 +92,16 @@ export const lectureDescriptor: OfflineDescriptor<LectureSnapshot> = {
       }
     }
     return [...new Set(keys)].filter((k) => STORAGE_KEY_RE.test(k));
+  },
+
+  freshness: {
+    probeManifest: (id, token) => probeLectureManifest(id, token),
+    probeMarker: async (id) => {
+      const res = await probeLectureForOffline({ id });
+      if (!res.success) return { status: "skip" };
+      return res.data.status === "gone"
+        ? { status: "gone" }
+        : { status: "present", marker: res.data.updatedAt };
+    },
   },
 };

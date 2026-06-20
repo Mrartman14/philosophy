@@ -4,6 +4,19 @@
 // Ядро (repository/sync) зависит ТОЛЬКО от этого типа, не от фич.
 import type { ActionResult } from "@/utils/create-action";
 
+/** Результат лёгкой manifest-пробы свежести (ETag/version, If-None-Match). */
+export type ManifestProbe =
+  | { status: "fresh" }
+  | { status: "stale"; freshnessToken: string }
+  | { status: "gone" }
+  | { status: "skip" };
+
+/** Результат legacy-пробы маркера (напр. updated_at) для бандлов без freshnessToken. */
+export type MarkerProbe =
+  | { status: "present"; marker: string }
+  | { status: "gone" }
+  | { status: "skip" };
+
 export interface OfflineDescriptor<TSnapshot = unknown, TWritePayload = unknown> {
   /**
    * Стабильный ключ сущности. ОБЯЗАН быть значением из `Tags` (@/api/tags),
@@ -27,4 +40,16 @@ export interface OfflineDescriptor<TSnapshot = unknown, TWritePayload = unknown>
     payload: TWritePayload,
     idempotencyKey: string,
   ) => Promise<ActionResult<{ id: string }>>;
+
+  // ── СВЕЖЕСТЬ (опционально; lectures сейчас, documents позже) ──
+  /**
+   * server-only пробы свежести сохранённой копии. Нет capability → ревалидация
+   * для сущности no-op (кнопка живёт в режиме saved/not-saved).
+   */
+  freshness?: {
+    /** Дешёвая manifest-проба по If-None-Match (типизированный openapi-путь внутри). */
+    probeManifest: (id: string, token: string | undefined) => Promise<ManifestProbe>;
+    /** legacy-fallback для бандлов без freshnessToken; необязателен для новых сущностей. */
+    probeMarker?: (id: string) => Promise<MarkerProbe>;
+  };
 }

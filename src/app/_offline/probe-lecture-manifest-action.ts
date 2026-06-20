@@ -4,13 +4,9 @@
 import "server-only";
 
 import { createApiClient } from "@/api/client";
+import type { ManifestProbe } from "@/services/offline/contract/descriptor";
 
-/** Результат лёгкой проверки свежести лекции через манифест. */
-export type ManifestProbe =
-  | { status: "fresh" }
-  | { status: "stale"; freshnessToken: string }
-  | { status: "gone" }
-  | { status: "skip" };
+export type { ManifestProbe };
 
 /**
  * Дешёвая проверка свежести лекции: GET манифеста с If-None-Match.
