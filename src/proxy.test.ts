@@ -92,3 +92,32 @@ describe("middleware — admin-гейт", () => {
     expect(res.cookies.get(REFRESH_COOKIE)?.value).toBe("");
   });
 });
+
+describe("middleware — security headers (CSP)", () => {
+  it("гость получает Report-Only CSP с nonce на странице", async () => {
+    const res = await proxy(req({}));
+    const csp = res.headers.get("content-security-policy-report-only");
+    expect(csp).toBeTruthy();
+    expect(csp).toMatch(/script-src [^;]*'nonce-/);
+    // enforce-заголовка быть не должно (по умолчанию report-only)
+    expect(res.headers.get("content-security-policy")).toBeNull();
+  });
+
+  it("nonce уникален на каждый запрос", async () => {
+    const a = await proxy(req({}));
+    const b = await proxy(req({}));
+    const nonceA = a.headers
+      .get("content-security-policy-report-only")
+      ?.match(/'nonce-([^']+)'/)?.[1];
+    const nonceB = b.headers
+      .get("content-security-policy-report-only")
+      ?.match(/'nonce-([^']+)'/)?.[1];
+    expect(nonceA).toBeTruthy();
+    expect(nonceA).not.toBe(nonceB);
+  });
+
+  it("объявлен Reporting-Endpoints", async () => {
+    const res = await proxy(req({}));
+    expect(res.headers.get("reporting-endpoints")).toContain("csp-endpoint");
+  });
+});

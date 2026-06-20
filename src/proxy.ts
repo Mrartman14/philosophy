@@ -7,6 +7,7 @@ import {
   REFRESH_MAX_AGE,
   authCookieOptions,
 } from "@/features/auth/cookie-config";
+import { buildSecurityHeaders, type SecurityHeaders } from "@/security/csp";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
@@ -28,7 +29,30 @@ const API_URL = process.env.API_URL ?? "http://localhost:8080";
  * Безопасность держит data-layer (getMe()→бэк на каждый запрос):
  * обход middleware = «refresh не случился» → гость, не дыра.
  */
+/**
+ * Ответ, рендерящий страницу, с проставленными CSP+nonce.
+ * Nonce кладётся в request-заголовок Content-Security-Policy (Next извлекает
+ * его и стампит на свои скрипты) и в ответ — под именем по режиму (enforce/report-only).
+ */
+function pageResponse(request: NextRequest, sec: SecurityHeaders): NextResponse {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", sec.nonce);
+  // Request-заголовок Content-Security-Policy — ТОЛЬКО для render-слоя: Next
+  // извлекает из него nonce и стампит на свои скрипты. В браузер он НЕ уходит
+  // (браузер видит лишь res.headers ниже). Поэтому имя тут всегда enforce-имя
+  // (для извлечения nonce), а фактический режим задаёт sec.responseHeaderName на
+  // ОТВЕТЕ. НЕ отражай этот request-заголовок в ответ.
+  requestHeaders.set("Content-Security-Policy", sec.csp);
+  const res = NextResponse.next({ request: { headers: requestHeaders } });
+  // НЕ добавляй 'unsafe-inline' в script-src как «фолбэк»: современные браузеры
+  // игнорируют его при наличии nonce, а на игнорящих nonce он заново открывает XSS.
+  res.headers.set(sec.responseHeaderName, sec.csp);
+  res.headers.set("Reporting-Endpoints", 'csp-endpoint="/api/csp-report"');
+  return res;
+}
+
 export async function proxy(request: NextRequest): Promise<NextResponse> {
+  const sec = buildSecurityHeaders();
   const hasAccess = Boolean(request.cookies.get(ACCESS_COOKIE)?.value);
   const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
 
@@ -37,7 +61,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   let pending: NextResponse | null = null;
 
   if (!hasAccess && refresh) {
-    const { response, refreshedAccess } = await performRefresh(request, refresh);
+    const { response, refreshedAccess } = await performRefresh(request, refresh, sec);
     pending = response;
 
     if (!refreshedAccess) {
@@ -70,7 +94,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   // Возвращаем pending (с Set-Cookie ротированной пары) или обычный next
-  return pending ?? NextResponse.next({ request });
+  return pending ?? pageResponse(request, sec);
 }
 
 /**
@@ -85,6 +109,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 async function performRefresh(
   request: NextRequest,
   refresh: string,
+  sec: SecurityHeaders,
 ): Promise<{ response: NextResponse; refreshedAccess: string | null }> {
   let rotated: { access: string; refresh: string; expiresIn?: number } | null = null;
 
@@ -129,7 +154,7 @@ async function performRefresh(
   if (!rotated) {
     // refresh невалиден/протух/сбой → чистим обе cookie
     // { request } для симметрии с успешной веткой и защиты от будущих правок
-    const errRes = NextResponse.next({ request });
+    const errRes = pageResponse(request, sec);
     errRes.cookies.delete(ACCESS_COOKIE);
     errRes.cookies.delete(REFRESH_COOKIE);
     return { response: errRes, refreshedAccess: null };
@@ -143,7 +168,7 @@ async function performRefresh(
   request.cookies.set(REFRESH_COOKIE, rotated.refresh);
 
   // Формируем ответ с Set-Cookie ротированной пары для браузера
-  const successRes = NextResponse.next({ request });
+  const successRes = pageResponse(request, sec);
   successRes.cookies.set(ACCESS_COOKIE, rotated.access, authCookieOptions(accessMaxAge));
   successRes.cookies.set(REFRESH_COOKIE, rotated.refresh, authCookieOptions(REFRESH_MAX_AGE));
 
