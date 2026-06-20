@@ -16,13 +16,17 @@ export type MapResult =
  * бэк скоупит срез по видимости). ETag/304 в v1 не используем (свежий запрос).
  */
 export const getMap = cache(async (): Promise<MapResult> => {
-  const api = await createApiClient();
-  const { data, error, response } = await api.GET("/api/map");
-  if (error) {
-    if (response.status === 503) return { ok: false, reason: "building" };
+  try {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/map");
+    if (error) {
+      if (response.status === 503) return { ok: false, reason: "building" };
+      return { ok: false, reason: "error" };
+    }
+    const layout = data.data;
+    if (!layout) return { ok: false, reason: "error" };
+    return { ok: true, map: layout };
+  } catch {
     return { ok: false, reason: "error" };
   }
-  const layout = data.data;
-  if (!layout) return { ok: false, reason: "error" };
-  return { ok: true, map: layout };
 });
