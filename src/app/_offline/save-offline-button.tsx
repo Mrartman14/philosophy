@@ -39,8 +39,10 @@ export function SaveOfflineButton({
     void (async () => {
       // Не показываем чужое сохранённое состояние до сверки личности.
       await whenIdentityReconciled();
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
       if (cancelled) return;
       const rec = await getSavedBundle(entity, id);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
       if (cancelled) return;
       if (rec?.status !== "complete") {
         setState({ kind: "not-saved" });
@@ -50,9 +52,11 @@ export function SaveOfflineButton({
       // Фоновая сверка свежести (SWR); офлайн — пропускаем (best-effort).
       if (navigator.onLine) {
         const outcome = await revalidateSavedBundle(entity, id);
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
         if (cancelled) return;
         if (outcome !== "skip") {
           const refreshed = await getSavedBundle(entity, id);
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- race guard, мутируется в cleanup
           if (cancelled) return;
           setState(
             refreshed?.status === "complete"
@@ -123,7 +127,7 @@ export function SaveOfflineButton({
   }
   if (state.kind === "not-saved") {
     return (
-      <Button type="button" variant="secondary" onClick={() => doSave("saving")}>
+      <Button type="button" variant="secondary" onClick={() => { doSave("saving"); }}>
         {t("saveOfflineButton")}
       </Button>
     );
@@ -160,7 +164,7 @@ export function SaveOfflineButton({
           <Button
             type="button"
             variant="secondary"
-            onClick={() => doSave("updating")}
+            onClick={() => { doSave("updating"); }}
           >
             {t("saveOfflineUpdate")}
           </Button>

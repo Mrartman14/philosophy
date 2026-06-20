@@ -81,7 +81,7 @@ describe("SaveOfflineButton", () => {
   it("нет копии → «Сохранить офлайн», ревалидация не зовётся", async () => {
     getSavedBundle.mockResolvedValue(undefined);
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Сохранить офлайн")).toBeTruthy());
+    expect(await screen.findByText("Сохранить офлайн")).toBeTruthy();
     expect(revalidate).not.toHaveBeenCalled();
   });
 
@@ -89,7 +89,7 @@ describe("SaveOfflineButton", () => {
     getSavedBundle.mockResolvedValue(complete());
     revalidate.mockResolvedValue("fresh");
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText(/Сохранено офлайн/)).toBeTruthy());
+    expect(await screen.findByText(/Сохранено офлайн/)).toBeTruthy();
     expect(screen.getByText("Удалить копию")).toBeTruthy();
   });
 
@@ -99,7 +99,7 @@ describe("SaveOfflineButton", () => {
       .mockResolvedValueOnce(complete({ remoteStatus: "stale" }));
     revalidate.mockResolvedValue("stale");
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Доступно обновление")).toBeTruthy());
+    expect(await screen.findByText("Доступно обновление")).toBeTruthy();
     expect(screen.getByText("Обновить")).toBeTruthy();
   });
 
@@ -107,9 +107,9 @@ describe("SaveOfflineButton", () => {
     getSavedBundle.mockResolvedValue(undefined);
     saveOffline.mockResolvedValue({ ok: true });
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Сохранить офлайн")).toBeTruthy());
+    expect(await screen.findByText("Сохранить офлайн")).toBeTruthy();
     fireEvent.click(screen.getByText("Сохранить офлайн"));
-    await waitFor(() => expect(screen.getByText(/Сохранено офлайн/)).toBeTruthy());
+    expect(await screen.findByText(/Сохранено офлайн/)).toBeTruthy();
     expect(saveOffline).toHaveBeenCalledWith("lectures", "l1");
   });
 
@@ -120,9 +120,9 @@ describe("SaveOfflineButton", () => {
     revalidate.mockResolvedValue("stale");
     saveOffline.mockResolvedValue({ ok: true });
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Обновить")).toBeTruthy());
+    expect(await screen.findByText("Обновить")).toBeTruthy();
     fireEvent.click(screen.getByText("Обновить"));
-    await waitFor(() => expect(screen.getByText(/Сохранено офлайн/)).toBeTruthy());
+    expect(await screen.findByText(/Сохранено офлайн/)).toBeTruthy();
     expect(saveOffline).toHaveBeenCalledWith("lectures", "l1");
   });
 
@@ -131,9 +131,9 @@ describe("SaveOfflineButton", () => {
     revalidate.mockResolvedValue("fresh");
     deleteSavedBundle.mockResolvedValue(undefined);
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Удалить копию")).toBeTruthy());
+    expect(await screen.findByText("Удалить копию")).toBeTruthy();
     fireEvent.click(screen.getByTestId("confirm-remove"));
-    await waitFor(() => expect(screen.getByText("Сохранить офлайн")).toBeTruthy());
+    expect(await screen.findByText("Сохранить офлайн")).toBeTruthy();
     expect(deleteSavedBundle).toHaveBeenCalledWith("lectures", "l1");
   });
 
@@ -141,7 +141,7 @@ describe("SaveOfflineButton", () => {
     Object.defineProperty(navigator, "onLine", { value: false, configurable: true });
     getSavedBundle.mockResolvedValue(complete({ remoteStatus: "stale" }));
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Доступно обновление")).toBeTruthy());
+    expect(await screen.findByText("Доступно обновление")).toBeTruthy();
     expect(revalidate).not.toHaveBeenCalled();
   });
 
@@ -149,9 +149,9 @@ describe("SaveOfflineButton", () => {
     getSavedBundle.mockResolvedValue(undefined);
     saveOffline.mockResolvedValue({ ok: false, error: "нет сети" });
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Сохранить офлайн")).toBeTruthy());
+    expect(await screen.findByText("Сохранить офлайн")).toBeTruthy();
     fireEvent.click(screen.getByText("Сохранить офлайн"));
-    await waitFor(() => expect(toastAdd).toHaveBeenCalled());
+    await waitFor(() => { expect(toastAdd).toHaveBeenCalled(); });
     expect(screen.getByText("Сохранить офлайн")).toBeTruthy();
   });
 
@@ -161,7 +161,7 @@ describe("SaveOfflineButton", () => {
       .mockResolvedValueOnce(complete({ remoteStatus: "gone" }));
     revalidate.mockResolvedValue("gone");
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText(/Сохранено офлайн/)).toBeTruthy());
+    expect(await screen.findByText(/Сохранено офлайн/)).toBeTruthy();
     expect(screen.getByText("Удалить копию")).toBeTruthy();
   });
 
@@ -172,9 +172,9 @@ describe("SaveOfflineButton", () => {
     revalidate.mockResolvedValue("stale");
     saveOffline.mockResolvedValue({ ok: false, error: "нет сети" });
     render(<SaveOfflineButton entity="lectures" id="l1" />);
-    await waitFor(() => expect(screen.getByText("Обновить")).toBeTruthy());
+    expect(await screen.findByText("Обновить")).toBeTruthy();
     fireEvent.click(screen.getByText("Обновить"));
-    await waitFor(() => expect(toastAdd).toHaveBeenCalled());
+    await waitFor(() => { expect(toastAdd).toHaveBeenCalled(); });
     expect(screen.getByText("Обновить")).toBeTruthy();
   });
 });
