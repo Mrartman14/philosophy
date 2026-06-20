@@ -13,7 +13,7 @@ import { StatusBanner } from "@/components/permission/status-banner";
 import { ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
-import { getLocale, getMessages, getT } from "@/i18n";
+import { getClientMessages, getLocale, getT } from "@/i18n";
 import { I18nProvider } from "@/i18n/client";
 import { WebVitalsReporter } from "@/services/observability/web-vitals-reporter";
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
@@ -70,7 +70,7 @@ export default async function RootLayout({
 
   const appearance = await getAppearance();
   const locale = await getLocale();
-  const messages = await getMessages();
+  const messages = await getClientMessages();
   const { style, colorScheme, ...dataAttrs } = htmlAttrs(appearance);
 
   return (

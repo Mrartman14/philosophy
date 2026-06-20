@@ -8,7 +8,7 @@ import { getMessages as getIntlMessages, getTranslations } from "next-intl/serve
 import { getFmt, type Formatters } from "./format";
 import { getLocale, getStoredLocale } from "./locale.server";
 import { DEFAULT_LOCALE } from "./locales";
-import { loadMessages } from "./messages";
+import { loadMessages, toClientMessages } from "./messages";
 import type { Messages as IntlMessages } from "./messages/ru";
 import type ruErrors from "./messages/ru/errors";
 
@@ -64,6 +64,16 @@ export async function resolveErrorMessage(
 /** Сообщения текущего запроса (для передачи в I18nProvider из layout). */
 export function getMessages() {
   return getIntlMessages();
+}
+
+/**
+ * Клиентский набор сообщений: полный каталог минус server-only namespace'ы.
+ * Используется в I18nProvider (layout.tsx) — не слать validation/metadata на клиент.
+ * Серверный getT работает через next-intl request-config (loadMessages, полный каталог).
+ */
+export async function getClientMessages() {
+  const all = await getIntlMessages();
+  return toClientMessages(all);
 }
 
 /** Форматтеры для текущей серверной локали. */
