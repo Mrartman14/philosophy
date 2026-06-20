@@ -1,0 +1,108 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import {
+  buildCsp,
+  buildSecurityHeaders,
+  cspHeaderName,
+  originFromUrl,
+} from "./csp";
+
+describe("originFromUrl", () => {
+  it("возвращает origin без пути", () => {
+    expect(originFromUrl("https://cdn.example.com/static/files")).toBe(
+      "https://cdn.example.com",
+    );
+  });
+  it("null для пустого/невалидного", () => {
+    expect(originFromUrl(undefined)).toBeNull();
+    expect(originFromUrl("")).toBeNull();
+    expect(originFromUrl("не url")).toBeNull();
+  });
+});
+
+describe("cspHeaderName", () => {
+  it("report-only по умолчанию", () => {
+    expect(cspHeaderName(false)).toBe("Content-Security-Policy-Report-Only");
+  });
+  it("enforce при true", () => {
+    expect(cspHeaderName(true)).toBe("Content-Security-Policy");
+  });
+});
+
+describe("buildCsp", () => {
+  const base = { nonce: "abc123", apiOrigin: null, storageOrigin: null, isDev: false };
+
+  it("script-src с nonce и strict-dynamic, без unsafe-inline", () => {
+    const csp = buildCsp(base);
+    expect(csp).toContain("script-src 'self' 'nonce-abc123' 'strict-dynamic'");
+    expect(csp).not.toContain("script-src 'self' 'unsafe-inline'");
+  });
+  it("style-src сохраняет unsafe-inline", () => {
+    expect(buildCsp(base)).toContain("style-src 'self' 'unsafe-inline'");
+  });
+  it("frame-ancestors none и object-src none", () => {
+    const csp = buildCsp(base);
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).toContain("object-src 'none'");
+  });
+  it("добавляет внешние origin в img-src и connect-src", () => {
+    const csp = buildCsp({
+      ...base,
+      apiOrigin: "https://api.example.com",
+      storageOrigin: "https://cdn.example.com",
+    });
+    expect(csp).toContain("img-src 'self' data: blob: https://cdn.example.com");
+    expect(csp).toContain(
+      "connect-src 'self' https://api.example.com https://cdn.example.com",
+    );
+  });
+  it("без внешних origin когда null", () => {
+    const csp = buildCsp(base);
+    expect(csp).toContain("img-src 'self' data: blob:");
+    expect(csp).toContain("connect-src 'self';");
+  });
+  it("unsafe-eval и ws: только в dev", () => {
+    const dev = buildCsp({ ...base, isDev: true });
+    expect(dev).toContain("'unsafe-eval'");
+    expect(dev).toContain("ws:");
+    expect(buildCsp(base)).not.toContain("'unsafe-eval'");
+    expect(buildCsp(base)).not.toContain("ws:");
+  });
+  it("директивы репортинга", () => {
+    const csp = buildCsp(base);
+    expect(csp).toContain("report-uri /api/csp-report");
+    expect(csp).toContain("report-to csp-endpoint");
+  });
+  it("worker-src и manifest-src 'self'", () => {
+    const csp = buildCsp(base);
+    expect(csp).toContain("worker-src 'self'");
+    expect(csp).toContain("manifest-src 'self'");
+  });
+  it("upgrade-insecure-requests в проде, не в dev", () => {
+    expect(buildCsp(base)).toContain("upgrade-insecure-requests");
+    expect(buildCsp({ ...base, isDev: true })).not.toContain(
+      "upgrade-insecure-requests",
+    );
+  });
+});
+
+describe("buildSecurityHeaders", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+  it("report-only по умолчанию, enforce при CSP_ENFORCE=1", () => {
+    vi.stubEnv("CSP_ENFORCE", "");
+    expect(buildSecurityHeaders().responseHeaderName).toBe(
+      "Content-Security-Policy-Report-Only",
+    );
+    vi.stubEnv("CSP_ENFORCE", "1");
+    expect(buildSecurityHeaders().responseHeaderName).toBe(
+      "Content-Security-Policy",
+    );
+  });
+  it("nonce непустой и присутствует в csp", () => {
+    const sec = buildSecurityHeaders();
+    expect(sec.nonce.length).toBeGreaterThan(0);
+    expect(sec.csp).toContain(`'nonce-${sec.nonce}'`);
+  });
+});
