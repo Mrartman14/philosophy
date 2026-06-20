@@ -62,7 +62,7 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
           <FormField name="name" label={tTags("newNameLabel")} className="flex-1">
             <TextInput name="name" required maxLength={100} defaultValue={tag.name} />
           </FormField>
-          <SubmitButton>{tTags("save")}</SubmitButton>
+          <SubmitButton>{tTags("saveButton")}</SubmitButton>
         </Form>
       )}
       {editing && !state.success && state.code === "forbidden" && (

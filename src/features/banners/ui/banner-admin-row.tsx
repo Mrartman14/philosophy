@@ -48,7 +48,7 @@ export async function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
             href={`/admin/banners/${banner.id}/edit`}
             className="text-sm hover:underline"
           >
-            {t("btnEdit")}
+            {t("editButton")}
           </RouterLink>
         )}
         {canDelete && banner.id && <BannerDeleteButton id={banner.id} />}

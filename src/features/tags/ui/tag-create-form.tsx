@@ -40,7 +40,7 @@ export function TagCreateForm() {
       )}
 
       <div>
-        <SubmitButton>{tTags("create")}</SubmitButton>
+        <SubmitButton>{tTags("createButton")}</SubmitButton>
       </div>
     </Form>
   );

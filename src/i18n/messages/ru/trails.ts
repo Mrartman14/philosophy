@@ -20,7 +20,7 @@ const trails = {
   metaSaved: "Сохранено.",
 
   // --- trail-delete-button ---
-  deleteLabel: "Удалить",
+  deleteButton: "Удалить",
   deleteDialogTitle: "Удалить маршрут?",
   deleteDialogDescription: "Действие необратимо. Лекции в маршруте удалены не будут — только сам маршрут.",
   deleteDialogConfirm: "Удалить",

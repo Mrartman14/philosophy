@@ -5,18 +5,18 @@ const tags = {
   newTagLabel: "New tag",
   namePlaceholder: "E.g. «ethics»",
   tagCreated: "Tag «{name}» created.",
-  create: "Create",
+  createButton: "Create",
   createTagAction: "creating a tag",
 
   // --- UI: tag-admin-row ---
   rename: "Rename",
   cancel: "Cancel",
   newNameLabel: "New name",
-  save: "Save",
+  saveButton: "Save",
   renameTagAction: "renaming the tag",
 
   // --- UI: tag-delete-button ---
-  delete: "Delete",
+  deleteButton: "Delete",
   deleteTitle: "Delete tag «{name}»?",
   deleteDescription: "The tag will be removed from all lectures. This action is irreversible.",
   deleteTagAction: "deleting the tag",

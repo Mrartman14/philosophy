@@ -17,7 +17,6 @@ const audit = {
   // --- admin audit page ---
   pageTitle: "Audit",
   pageDescription: "Admin action log. Total records: {total}",
-  metaTitle: "Audit — admin",
 
   // --- audit-table: column headers and empty state ---
   colTime: "Time",

@@ -32,14 +32,14 @@ const events = {
   editAction: "editing the event",
 
   // --- submit buttons ---
-  btnSave: "Save",
-  btnCreate: "Create",
+  saveButton: "Save",
+  createButton: "Create",
 
   // Case 3: per-feature action phrase for create form forbiddenAction
   createAction: "creating an event",
 
   // --- event-delete-button ---
-  btnDelete: "Delete",
+  deleteButton: "Delete",
   deleteDialogTitle: "Delete event?",
   deleteDialogDescription:
     "This action is irreversible. The event will disappear from the public calendar.",

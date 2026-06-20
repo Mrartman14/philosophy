@@ -292,7 +292,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
       if (m?.[1]) setInvalidNodeId(m[1]);
       const msg =
         result.code === "forbidden"
-          ? tErrors("forbiddenAction", { action: t("editor.forbiddenUpdate") })
+          ? tErrors("forbiddenAction", { action: t("editorUpdateForbiddenAction") })
           : result.error;
       toast.add({ title: t("editor.toastSaveErrorTitle"), description: msg });
     }

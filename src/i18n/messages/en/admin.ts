@@ -3,9 +3,6 @@
 // frozen shell (layout.tsx, admin-sidebar.tsx). Machine-generated; requires
 // native-speaker review.
 const admin = {
-  // --- общие ---
-  totalCount: "Total: {total}",
-
   // --- shell (layout.tsx + admin-sidebar.tsx) ---
   shellTitle: "Admin panel",
   shellBackToSite: "← To the site",

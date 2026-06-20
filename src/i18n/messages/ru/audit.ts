@@ -17,7 +17,6 @@ const audit = {
   // --- admin audit page ---
   pageTitle: "Аудит",
   pageDescription: "Журнал админ-действий. Всего записей: {total}",
-  metaTitle: "Аудит — админ",
 
   // --- audit-table: заголовки и пустое состояние ---
   colTime: "Время",

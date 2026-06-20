@@ -115,7 +115,7 @@ export async function SearchResults({ hits, total }: Props) {
   }
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-(--color-fg-muted)">{t("foundCount", { total })}</p>
+      <p className="text-xs text-(--color-fg-muted)">{t("foundCount", { count: total })}</p>
       <ul className="flex flex-col gap-3">
         {hits.map((hit, i) => (
           <li key={hitHref(hit) ?? i}>

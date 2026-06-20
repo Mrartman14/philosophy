@@ -43,7 +43,7 @@ export function CanvasEditForm({ canvas, etag }: Props) {
     } else if (!state.success && state.code !== "validation") {
       const msg =
         state.code === "forbidden"
-          ? tErrors("forbiddenAction", { action: t("editForm.forbiddenUpdate") })
+          ? tErrors("forbiddenAction", { action: t("updateForbiddenAction") })
           : state.error;
       toast.add({ title: t("editForm.toastErrorTitle"), description: msg });
     }

@@ -18,10 +18,10 @@ const banners = {
   hintEventId: "Чтобы отвязать событие — очистите поле и сохраните.",
 
   // --- Кнопки / submit ---
-  btnCreate: "Создать",
-  btnSave: "Сохранить",
-  btnDelete: "Удалить",
-  btnEdit: "Редактировать",
+  createButton: "Создать",
+  saveButton: "Сохранить",
+  deleteButton: "Удалить",
+  editButton: "Редактировать",
 
   // --- Статусы ---
   saved: "Сохранено.",

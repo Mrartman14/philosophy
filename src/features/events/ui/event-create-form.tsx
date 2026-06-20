@@ -87,7 +87,7 @@ export function EventCreateForm() {
       <FormFeedback result={state} forbiddenAction={t("createAction")} />
 
       <div>
-        <SubmitButton>{t("btnCreate")}</SubmitButton>
+        <SubmitButton>{t("createButton")}</SubmitButton>
       </div>
     </Form>
   );

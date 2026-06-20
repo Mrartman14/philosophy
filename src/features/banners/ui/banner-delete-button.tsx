@@ -25,11 +25,11 @@ export function BannerDeleteButton({ id }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{t("btnDelete")}</Button>}
+      trigger={<Button variant="danger">{t("deleteButton")}</Button>}
       title={t("deleteTitle")}
       description={t("deleteDescription")}
       destructive
-      confirmLabel={t("btnDelete")}
+      confirmLabel={t("deleteButton")}
       onConfirm={async () => {
         const result = await deleteBanner(id, key);
         if (!result.success) {

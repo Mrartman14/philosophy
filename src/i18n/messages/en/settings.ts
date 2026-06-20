@@ -13,6 +13,7 @@ const settings = {
   localeAriaLabel: "Interface language",
   localeSystem: "System",
   localeRu: "Russian",
+  localeEn: "English",
   // appearance-settings.tsx
   appearance: {
     heading: "Appearance",

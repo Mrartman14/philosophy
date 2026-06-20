@@ -16,7 +16,7 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
   const OPTIONS = [
     { value: "system", label: t("localeSystem") },
     { value: "ru", label: t("localeRu") },
-    { value: "en", label: "English" },
+    { value: "en", label: t("localeEn") },
   ];
 
   function onChange(v: string) {

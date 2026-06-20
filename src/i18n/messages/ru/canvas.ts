@@ -22,7 +22,6 @@ const canvas = {
     submitSave: "Сохранить",
     toastSavedTitle: "Сохранено",
     toastErrorTitle: "Ошибка",
-    forbiddenUpdate: "изменение канваса",
   },
 
   // --- canvas-delete-button ---
@@ -32,7 +31,6 @@ const canvas = {
     description: "Действие необратимо.",
     confirmLabel: "Удалить",
     toastDeletedTitle: "Канвас удалён",
-    forbiddenDelete: "удаление канваса",
   },
 
   // --- canvas-visibility-button ---
@@ -40,7 +38,6 @@ const canvas = {
     makePublic: "Сделать публичным",
     toastPublishedTitle: "Канвас опубликован",
     toastErrorTitle: "Ошибка",
-    forbiddenVisibility: "изменение видимости канваса",
   },
 
   // --- canvas-editor ---
@@ -50,7 +47,6 @@ const canvas = {
     toastValidationFallback: "Исправьте ошибки.",
     toastSavedTitle: "Сохранено",
     toastSaveErrorTitle: "Ошибка сохранения",
-    forbiddenUpdate: "изменение канваса",
     confirmLeave: "Есть несохранённые изменения. Уйти без сохранения?",
   },
 
@@ -187,7 +183,11 @@ const canvas = {
 
   // --- forbidden actions (for Case 3 per-feature action strings) ---
   // These are passed as {action} in errors.forbiddenAction
-  forbiddenCreateAction: "создание канваса",
+  createForbiddenAction: "создание канваса",
+  updateForbiddenAction: "изменение канваса",
+  editorUpdateForbiddenAction: "изменение канваса",
+  deleteForbiddenAction: "удаление канваса",
+  visibilityForbiddenAction: "изменение видимости канваса",
 
   // --- api.ts: fetch error messages (thrown to React error boundary) ---
   api: {

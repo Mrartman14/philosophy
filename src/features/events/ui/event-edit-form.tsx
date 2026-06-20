@@ -153,7 +153,7 @@ export function EventEditForm({ event }: Props) {
       )}
 
       <div>
-        <SubmitButton>{t("btnSave")}</SubmitButton>
+        <SubmitButton>{t("saveButton")}</SubmitButton>
       </div>
     </Form>
   );

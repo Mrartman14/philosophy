@@ -20,7 +20,7 @@ const trails = {
   metaSaved: "Saved.",
 
   // --- trail-delete-button ---
-  deleteLabel: "Delete",
+  deleteButton: "Delete",
   deleteDialogTitle: "Delete trail?",
   deleteDialogDescription: "This action is irreversible. Lectures in the trail will not be deleted — only the trail itself.",
   deleteDialogConfirm: "Delete",

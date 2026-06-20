@@ -33,7 +33,7 @@ export function CanvasDeleteButton({ id }: Props) {
         } else if (result.code === "forbidden") {
           toast.add({
             title: tErrors("forbiddenTitle"),
-            description: tErrors("forbiddenAction", { action: t("deleteButton.forbiddenDelete") }),
+            description: tErrors("forbiddenAction", { action: t("deleteForbiddenAction") }),
           });
         } else {
           toast.add({

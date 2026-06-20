@@ -18,10 +18,10 @@ const banners = {
   hintEventId: "To unlink the event — clear the field and save.",
 
   // --- Buttons / submit ---
-  btnCreate: "Create",
-  btnSave: "Save",
-  btnDelete: "Delete",
-  btnEdit: "Edit",
+  createButton: "Create",
+  saveButton: "Save",
+  deleteButton: "Delete",
+  editButton: "Edit",
 
   // --- Status ---
   saved: "Saved.",

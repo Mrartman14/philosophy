@@ -23,7 +23,6 @@ const canvas: Messages["canvas"] = {
     submitSave: "Save",
     toastSavedTitle: "Saved",
     toastErrorTitle: "Error",
-    forbiddenUpdate: "editing the canvas",
   },
 
   // --- canvas-delete-button ---
@@ -33,7 +32,6 @@ const canvas: Messages["canvas"] = {
     description: "This action is irreversible.",
     confirmLabel: "Delete",
     toastDeletedTitle: "Canvas deleted",
-    forbiddenDelete: "deleting the canvas",
   },
 
   // --- canvas-visibility-button ---
@@ -41,7 +39,6 @@ const canvas: Messages["canvas"] = {
     makePublic: "Make public",
     toastPublishedTitle: "Canvas published",
     toastErrorTitle: "Error",
-    forbiddenVisibility: "changing canvas visibility",
   },
 
   // --- canvas-editor ---
@@ -51,7 +48,6 @@ const canvas: Messages["canvas"] = {
     toastValidationFallback: "Fix the errors.",
     toastSavedTitle: "Saved",
     toastSaveErrorTitle: "Save error",
-    forbiddenUpdate: "editing the canvas",
     confirmLeave: "There are unsaved changes. Leave without saving?",
   },
 
@@ -187,7 +183,11 @@ const canvas: Messages["canvas"] = {
   },
 
   // --- forbidden actions ---
-  forbiddenCreateAction: "creating a canvas",
+  createForbiddenAction: "creating a canvas",
+  updateForbiddenAction: "editing the canvas",
+  editorUpdateForbiddenAction: "editing the canvas",
+  deleteForbiddenAction: "deleting the canvas",
+  visibilityForbiddenAction: "changing canvas visibility",
 
   // --- api.ts: fetch error messages (thrown to React error boundary) ---
   api: {

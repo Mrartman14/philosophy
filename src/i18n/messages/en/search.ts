@@ -19,7 +19,7 @@ const search = {
   hitFallbackTitle: "Result",
   emptyTitle: "Nothing found",
   emptyDescription: "Try adjusting your query or removing the type filter.",
-  foundCount: "Found: {total}",
+  foundCount: "Found: {count}",
 
   // --- Export (search-export-links.tsx) ---
   exportLabel: "Export:",

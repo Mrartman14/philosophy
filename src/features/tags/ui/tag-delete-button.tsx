@@ -23,11 +23,11 @@ export function TagDeleteButton({ id, name }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{tTags("delete")}</Button>}
+      trigger={<Button variant="danger">{tTags("deleteButton")}</Button>}
       title={tTags("deleteTitle", { name })}
       description={tTags("deleteDescription")}
       destructive
-      confirmLabel={tTags("delete")}
+      confirmLabel={tTags("deleteButton")}
       onConfirm={async () => {
         const result = await deleteTag(id);
         if (!result.success) {

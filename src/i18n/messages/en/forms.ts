@@ -15,12 +15,16 @@ const forms = {
   visibility: {
     private: "Private",
     public: "Public",
+    // *Lower — lowercase variant for mid-sentence interpolation
+    // (my-forms-list: "Visibility: {privateLower}"). Intentional convention.
     privateLower: "private",
     publicLower: "public",
   },
   submissionMode: {
     editable: "Response can be edited or deleted",
     immutable: "Response can only be retracted",
+    // *Lower — lowercase variant for mid-sentence interpolation
+    // (my-forms-list: "Mode: {editableLower}"). Intentional convention.
     editableLower: "editable",
     immutableLower: "immutable",
   },

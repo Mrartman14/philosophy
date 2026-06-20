@@ -2,9 +2,6 @@
 // UI-строки admin-страниц (src/app/admin/**), включая frozen-оболочку
 // (layout.tsx, admin-sidebar.tsx) — локализованы координированным foundation-PR.
 const admin = {
-  // --- общие ---
-  totalCount: "Всего: {total}",
-
   // --- shell (layout.tsx + admin-sidebar.tsx) ---
   shellTitle: "Админ-панель",
   shellBackToSite: "← На сайт",

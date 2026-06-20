@@ -32,14 +32,14 @@ const events = {
   editAction: "изменение события",
 
   // --- submit buttons ---
-  btnSave: "Сохранить",
-  btnCreate: "Создать",
+  saveButton: "Сохранить",
+  createButton: "Создать",
 
   // Case 3: per-feature action phrase for create form forbiddenAction
   createAction: "создание события",
 
   // --- event-delete-button ---
-  btnDelete: "Удалить",
+  deleteButton: "Удалить",
   deleteDialogTitle: "Удалить событие?",
   deleteDialogDescription:
     "Действие необратимо. Событие исчезнет из публичного календаря.",

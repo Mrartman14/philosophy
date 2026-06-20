@@ -30,7 +30,7 @@ export function CanvasCreateForm() {
     } else if (!state.success && state.code !== "validation") {
       const msg =
         state.code === "forbidden"
-          ? tErrors("forbiddenAction", { action: t("forbiddenCreateAction") })
+          ? tErrors("forbiddenAction", { action: t("createForbiddenAction") })
           : state.error;
       toast.add({ title: t("createForm.toastErrorTitle"), description: msg });
     }

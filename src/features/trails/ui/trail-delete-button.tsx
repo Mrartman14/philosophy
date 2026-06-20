@@ -33,7 +33,7 @@ export function TrailDeleteButton({
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{label ?? t("deleteLabel")}</Button>}
+      trigger={<Button variant="danger">{label ?? t("deleteButton")}</Button>}
       title={t("deleteDialogTitle")}
       description={t("deleteDialogDescription")}
       destructive

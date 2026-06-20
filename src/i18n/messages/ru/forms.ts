@@ -15,12 +15,16 @@ const forms = {
   visibility: {
     private: "Приватная",
     public: "Публичная",
+    // *Lower — строчный вариант для интерполяции в середине предложения
+    // (my-forms-list: «Видимость: {privateLower}»). Намеренная конвенция.
     privateLower: "приватная",
     publicLower: "публичная",
   },
   submissionMode: {
     editable: "Отклик можно менять и удалять",
     immutable: "Отклик можно только отозвать",
+    // *Lower — строчный вариант для интерполяции в середине предложения
+    // (my-forms-list: «Режим: {editableLower}»). Намеренная конвенция.
     editableLower: "редактируемый",
     immutableLower: "без изменений",
   },

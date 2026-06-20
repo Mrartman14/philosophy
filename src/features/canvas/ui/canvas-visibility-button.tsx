@@ -31,7 +31,7 @@ export function CanvasVisibilityButton({ id }: Props) {
     } else if (!state.success) {
       const msg =
         state.code === "forbidden"
-          ? tErrors("forbiddenAction", { action: t("visibilityButton.forbiddenVisibility") })
+          ? tErrors("forbiddenAction", { action: t("visibilityForbiddenAction") })
           : state.error;
       toast.add({ title: t("visibilityButton.toastErrorTitle"), description: msg });
     }

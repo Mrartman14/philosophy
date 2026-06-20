@@ -19,7 +19,7 @@ const search = {
   hitFallbackTitle: "Результат",
   emptyTitle: "Ничего не найдено",
   emptyDescription: "Попробуйте изменить запрос или снять фильтр по типу.",
-  foundCount: "Найдено: {total}",
+  foundCount: "Найдено: {count}",
 
   // --- Экспорт (search-export-links.tsx) ---
   exportLabel: "Экспорт:",
