@@ -4,7 +4,7 @@ import {
   resolveMonthRange,
   CalendarView,
 } from "@/features/events";
-import { getT } from "@/i18n";
+import { getT, getLocale } from "@/i18n";
 
 interface Props {
   searchParams: Promise<{ month?: string }>;
@@ -17,9 +17,9 @@ export async function generateMetadata() {
 
 export default async function CalendarPage({ searchParams }: Props) {
   const { month } = await searchParams;
-  const range = resolveMonthRange(month);
+  const [locale, t] = await Promise.all([getLocale(), getT("pages")]);
+  const range = resolveMonthRange(month, undefined, locale);
   const occurrences = await getCalendarOccurrences(range.from, range.to);
-  const t = await getT("pages");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">

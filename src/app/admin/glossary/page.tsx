@@ -9,7 +9,7 @@ import {
   GlossaryCreateForm,
   GlossarySearchForm,
 } from "@/features/glossary";
-import { getT } from "@/i18n";
+import { getT, getLocale } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
@@ -25,16 +25,18 @@ export default async function AdminGlossaryPage({ searchParams }: Props) {
   if (!canCreate && !canUpdate && !canDelete) forbidden();
 
   const { q, offset } = await searchParams;
-  const result = await getTerms({
-    ...(q ? { q } : {}),
-    offset: parseNonNegativeInt(offset, 0),
-    limit: 50,
-  });
+  const [result, locale, t] = await Promise.all([
+    getTerms({
+      ...(q ? { q } : {}),
+      offset: parseNonNegativeInt(offset, 0),
+      limit: 50,
+    }),
+    getLocale(),
+    getT("admin"),
+  ]);
   const sorted = [...result.items].sort((a, b) =>
-    (a.title ?? "").localeCompare(b.title ?? "", "ru")
+    (a.title ?? "").localeCompare(b.title ?? "", locale)
   );
-
-  const t = await getT("admin");
 
   return (
     <section className="flex flex-col gap-6">

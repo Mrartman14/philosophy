@@ -1,6 +1,9 @@
 // src/features/banners/display.ts
 // Чистые display-хелперы домена banners. Без "server-only": нужны тестам,
 // server-safe UI и client-формам; никаких side effects и зависимостей.
+import { getFmt } from "@/i18n/format";
+import { DEFAULT_LOCALE, type ResolvedLocale } from "@/i18n/locales";
+
 import type { Banner, BannerTargetAudience } from "./types";
 
 export const AUDIENCE_LABELS: Record<BannerTargetAudience, string> = {
@@ -19,28 +22,35 @@ export function audienceLabel(audience?: BannerTargetAudience): string {
   return AUDIENCE_LABELS[audience];
 }
 
-const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
+const BANNER_DATE_OPTS: Intl.DateTimeFormatOptions = {
   day: "numeric",
   month: "long",
   year: "numeric",
   hour: "2-digit",
   minute: "2-digit",
   timeZone: "UTC",
-});
+};
 
 /** RFC3339 → «1 июля 2026 г., 19:00» (UTC — как и формы). */
-export function formatBannerDate(value?: string): string {
+export function formatBannerDate(
+  value?: string,
+  locale: ResolvedLocale = DEFAULT_LOCALE,
+): string {
   if (!value) return "";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
-  return dateTimeFormat.format(d);
+  return getFmt(locale).dateTime(d, BANNER_DATE_OPTS);
 }
 
 /** Период показа: «с X по Y» / «с X» / "". */
-export function formatBannerPeriod(startAt?: string, endAt?: string): string {
-  const start = formatBannerDate(startAt);
+export function formatBannerPeriod(
+  startAt?: string,
+  endAt?: string,
+  locale: ResolvedLocale = DEFAULT_LOCALE,
+): string {
+  const start = formatBannerDate(startAt, locale);
   if (!start) return "";
-  const end = formatBannerDate(endAt);
+  const end = formatBannerDate(endAt, locale);
   return end ? `с ${start} по ${end}` : `с ${start}`;
 }
 

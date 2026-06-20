@@ -10,7 +10,7 @@ import {
   TagAdminRow,
   TagCreateForm,
 } from "@/features/tags";
-import { getT } from "@/i18n";
+import { getT, getLocale } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
 
@@ -31,12 +31,14 @@ export default async function AdminTagsPage({ searchParams }: Props) {
   const safeOffset = parseNonNegativeInt(offset, 0);
 
   // Admin-GET на беке не существует — список из публичного GET /api/tags.
-  const result = await getTags({ offset: safeOffset, limit: 100 });
+  const [result, locale, t] = await Promise.all([
+    getTags({ offset: safeOffset, limit: 100 }),
+    getLocale(),
+    getT("admin"),
+  ]);
   const sorted = [...result.items].sort((a, b) =>
-    a.name.localeCompare(b.name, "ru"),
+    a.name.localeCompare(b.name, locale),
   );
-
-  const t = await getT("admin");
 
   return (
     <section className="flex flex-col gap-6">

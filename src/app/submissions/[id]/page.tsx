@@ -11,7 +11,7 @@ import {
   SubmissionEditForm,
   SubmissionActions,
 } from "@/features/forms";
-import { getT } from "@/i18n";
+import { getT, getServerFmt } from "@/i18n";
 import { requireActiveUserOrRedirect } from "@/utils/me";
 
 interface Props {
@@ -49,7 +49,7 @@ export default async function SubmissionPage({ params }: Props) {
   const canEdit = canEditSubmission(me, form, submission);
   const canDelete = canDeleteSubmission(me, form, submission);
   const canRetract = canRetractSubmission(me, form, submission);
-  const t = await getT("pages");
+  const [t, fmt] = await Promise.all([getT("pages"), getServerFmt()]);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
@@ -58,7 +58,7 @@ export default async function SubmissionPage({ params }: Props) {
         <p className="text-sm text-(--color-fg-muted)">
           {submission.retracted_at
             ? t("submissionRetracted")
-            : t("submissionSent", { date: new Date(submission.submitted_at ?? "").toLocaleString("ru-RU") })}
+            : t("submissionSent", { date: fmt.dateTime(new Date(submission.submitted_at ?? ""), { dateStyle: "short", timeStyle: "short" }) })}
         </p>
       </header>
 

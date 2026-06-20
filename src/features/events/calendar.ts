@@ -2,7 +2,7 @@
 // Чистые date-хелперы домена events. Без "server-only": нужны тестам и
 // server-safe UI-компонентам; никаких side effects и зависимостей.
 import { getFmt } from "@/i18n/format";
-import type { ResolvedLocale } from "@/i18n/locales";
+import { DEFAULT_LOCALE, type ResolvedLocale } from "@/i18n/locales";
 
 import type { EventOccurrence } from "./types";
 
@@ -75,10 +75,11 @@ export interface OccurrenceGroup {
 
 /**
  * GET /api/calendar отдаёт ПЛОСКИЙ список occurrences — группируем по дате
- * на фронте. Даты по возрастанию, внутри даты — по title (ru).
+ * на фронте. Даты по возрастанию, внутри даты — по title (locale).
  */
 export function groupOccurrencesByDate(
   occurrences: EventOccurrence[],
+  locale: ResolvedLocale = DEFAULT_LOCALE,
 ): OccurrenceGroup[] {
   const byDate = new Map<string, EventOccurrence[]>();
   for (const occ of occurrences) {
@@ -92,7 +93,7 @@ export function groupOccurrencesByDate(
     .map(([date, items]) => ({
       date,
       items: [...items].sort((a, b) =>
-        (a.title ?? "").localeCompare(b.title ?? "", "ru"),
+        (a.title ?? "").localeCompare(b.title ?? "", locale),
       ),
     }));
 }

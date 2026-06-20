@@ -6,6 +6,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 // Мок @/i18n: getT возвращает переводчик по реальному каталогу ru.
 vi.mock("@/i18n", async () => {
   const { default: common } = await import("@/i18n/messages/ru/common");
+  const { getFmt } = await import("@/i18n/format");
   return {
     getT: (_ns: string) =>
       Promise.resolve((key: string) => {
@@ -16,6 +17,7 @@ vi.mock("@/i18n", async () => {
         /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
         return typeof val === "string" ? val : key;
       }),
+    getServerFmt: () => Promise.resolve(getFmt("ru")),
   };
 });
 

@@ -1,23 +1,17 @@
 // src/components/revision-history/revision-history.tsx
 import { RouterLink } from "@/components/ui";
-import { getT } from "@/i18n";
+import { getT, getServerFmt } from "@/i18n";
 
 import type { RevisionHistoryProps } from "./types";
 
-const dateFormat = new Intl.DateTimeFormat("ru-RU", {
+const DATE_OPTS: Intl.DateTimeFormatOptions = {
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
   hour: "2-digit",
   minute: "2-digit",
   timeZone: "UTC",
-});
-
-function formatCreatedAt(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return dateFormat.format(d);
-}
+};
 
 /**
  * Generic-компонент истории ревизий. НЕ знает о доменах: список ревизий и
@@ -37,7 +31,7 @@ export async function RevisionHistory({
   emptyText,
   className,
 }: RevisionHistoryProps) {
-  const t = await getT("common");
+  const [t, fmt] = await Promise.all([getT("common"), getServerFmt()]);
   const resolvedTitle = title ?? t("revisionHistory.title");
   const resolvedEmptyText = emptyText ?? t("revisionHistory.empty");
 
@@ -61,7 +55,7 @@ export async function RevisionHistory({
                       : "text-sm hover:underline"
                   }
                 >
-                  {formatCreatedAt(rev.createdAt)}
+                  {fmt.dateTime(rev.createdAt, DATE_OPTS)}
                   {rev.label ? ` — ${rev.label}` : ""}
                 </RouterLink>
               </li>

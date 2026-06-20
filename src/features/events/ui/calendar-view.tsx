@@ -1,7 +1,7 @@
 // src/features/events/ui/calendar-view.tsx
 import { AstRender } from "@/components/ast-render";
 import { RouterLink } from "@/components/ui";
-import { getT, getServerFmt } from "@/i18n";
+import { getT, getServerFmt, getLocale } from "@/i18n";
 
 import { groupOccurrencesByDate, type MonthRange } from "../calendar";
 import type { EventOccurrence } from "../types";
@@ -12,9 +12,8 @@ interface Props {
 }
 
 export async function CalendarView({ range, occurrences }: Props) {
-  const t = await getT("events");
-  const fmt = await getServerFmt();
-  const groups = groupOccurrencesByDate(occurrences);
+  const [t, fmt, locale] = await Promise.all([getT("events"), getServerFmt(), getLocale()]);
+  const groups = groupOccurrencesByDate(occurrences, locale);
 
   const formatDay = (date: string): string => {
     const d = new Date(`${date}T00:00:00Z`);

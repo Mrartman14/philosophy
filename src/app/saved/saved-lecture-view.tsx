@@ -9,7 +9,7 @@ import { saveOffline } from "@/app/_offline/save-offline";
 import { AstRender } from "@/components/ast-render";
 import { Button, chipClass, Skeleton } from "@/components/ui";
 import { CommentTreeView } from "@/features/comments/client";
-import { useT } from "@/i18n/client";
+import { useT, useFmt } from "@/i18n/client";
 import { OFFLINE_SCHEMA_VERSION } from "@/services/offline/contract/storage";
 import { whenIdentityReconciled } from "@/services/offline/identity-gate";
 import { getSavedBundle } from "@/services/offline/store/saved-bundles";
@@ -71,6 +71,7 @@ export function SavedLectureView({ id }: { id: string }) {
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const t = useT("pages");
+  const fmt = useFmt();
 
   useEffect(() => {
     let cancelled = false;
@@ -177,7 +178,8 @@ export function SavedLectureView({ id }: { id: string }) {
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-(--color-fg-muted)">
           {t("savedLectureSavedAt")}{" "}
-          {new Date(state.savedAt).toLocaleDateString("ru-RU", {
+          {fmt.dateTime(new Date(state.savedAt), {
+            dateStyle: "short",
             timeZone: "UTC",
           })}
         </span>
