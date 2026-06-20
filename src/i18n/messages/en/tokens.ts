@@ -59,6 +59,26 @@ const tokens = {
   copyFailTitle: "Copy failed",
   copyFailDesc: "Copy it manually.",
 
+  // --- Usage tracking (usage-tracking-toggle.tsx) ---
+  usageTrackingHeading: "Usage tracking",
+  usageTrackingIntro:
+    "When enabled, each token records its request count and last-used time.",
+  usageTrackingEnabledStatus: "Tracking is enabled.",
+  usageTrackingDisabledStatus: "Tracking is disabled.",
+  usageTrackingEnableButton: "Enable tracking",
+  usageTrackingDisableButton: "Disable tracking",
+  usageTrackingDisableDialogTitle: "Disable usage tracking?",
+  usageTrackingDisableDialogDescription:
+    "All accumulated counters (request count and last-used time) will be deleted permanently.",
+  usageTrackingDisableConfirmLabel: "Disable and delete",
+  usageTrackingSavedTitle: "Saved",
+  usageTrackingEnabledToast: "Usage tracking enabled.",
+  usageTrackingDisabledToast: "Tracking disabled, counters deleted.",
+  usageTrackingManageAction: "change tracking settings",
+  // token table columns
+  colLastUsed: "Last used",
+  colRequests: "Requests",
+
   // --- API errors (api.ts) ---
   api: {
     loadFailed: "Failed to load tokens",

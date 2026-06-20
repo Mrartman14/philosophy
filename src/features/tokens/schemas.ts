@@ -47,3 +47,6 @@ export function makeCreateTokenSchema(t: ValidationT) {
 }
 
 export type CreateTokenInput = z.infer<ReturnType<typeof makeCreateTokenSchema>>;
+
+/** PUT /api/me/tokens/usage-tracking — булево enabled (без сообщений → const). */
+export const UsageTrackingSchema = z.boolean();

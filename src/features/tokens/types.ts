@@ -18,3 +18,10 @@ export type CreateTokenRequest = components["schemas"]["pat.createTokenRequest"]
 export interface CreatedToken {
   token: string;
 }
+
+/** Состояние трекинга использования PAT (GET/PUT /api/me/tokens/usage-tracking). */
+export type UsageTracking = components["schemas"]["pat.UsageTracking"];
+
+/** Тело PUT /api/me/tokens/usage-tracking. */
+export type SetUsageTrackingRequest =
+  components["schemas"]["pat.setUsageTrackingRequest"];

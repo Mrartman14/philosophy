@@ -59,6 +59,26 @@ const tokens = {
   copyFailTitle: "Не удалось скопировать",
   copyFailDesc: "Скопируйте вручную.",
 
+  // --- Трекинг использования (usage-tracking-toggle.tsx) ---
+  usageTrackingHeading: "Трекинг использования",
+  usageTrackingIntro:
+    "Когда включён, для каждого токена записываются число запросов и время последнего использования.",
+  usageTrackingEnabledStatus: "Трекинг включён.",
+  usageTrackingDisabledStatus: "Трекинг выключен.",
+  usageTrackingEnableButton: "Включить трекинг",
+  usageTrackingDisableButton: "Выключить трекинг",
+  usageTrackingDisableDialogTitle: "Выключить трекинг использования?",
+  usageTrackingDisableDialogDescription:
+    "Все накопленные счётчики (число запросов и время последнего обращения) будут удалены безвозвратно.",
+  usageTrackingDisableConfirmLabel: "Выключить и удалить",
+  usageTrackingSavedTitle: "Сохранено",
+  usageTrackingEnabledToast: "Трекинг использования включён.",
+  usageTrackingDisabledToast: "Трекинг выключен, счётчики удалены.",
+  usageTrackingManageAction: "изменить настройки трекинга",
+  // колонки таблицы токенов
+  colLastUsed: "Последнее использование",
+  colRequests: "Запросов",
+
   // --- Ошибки запроса (api.ts) ---
   api: {
     loadFailed: "Не удалось загрузить токены",
