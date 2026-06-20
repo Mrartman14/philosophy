@@ -105,6 +105,12 @@ const eslintConfig = [
       ...react.configs.flat["jsx-runtime"].rules,
       // prop-types не нужен в TS-проекте — валидацию пропсов даёт typescript.
       "react/prop-types": "off",
+      // XSS-гард: запрет dangerouslySetInnerHTML. Пользовательский контент
+      // рендерится структурно (ast-render/canvas-render: AST → DOM), сырой HTML
+      // в проект не попадает — правило фиксирует этот инвариант, а не отлавливает
+      // существующие нарушения (их 0). Точечный сырой HTML (если правда понадобится)
+      // — через локальный eslint-disable c обоснованием и санитайзером.
+      "react/no-danger": "error",
       // jsx-a11y strict.
       ...jsxA11y.flatConfigs.strict.rules,
       // import-гигиена.

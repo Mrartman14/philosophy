@@ -29,3 +29,19 @@ jobs:
       - run: pnpm lint
       - run: pnpm test:coverage
       - run: pnpm build
+
+  # Аудит уязвимостей в зависимостях — независимый от кода концерн, поэтому
+  # отдельным job (идёт параллельно verify, не маскирует code-quality сигнал).
+  # Порог high: low/moderate не валят CI (часто транзитивные, без фикса).
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Dependency vulnerability audit
+        run: pnpm audit --audit-level=high --prod
