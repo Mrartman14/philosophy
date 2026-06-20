@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/render-result-naming-convention --
+   toRenderModel — доменная нормализация MapData→RenderModel, не RTL render(); правило ложно матчит «render» в имени. */
 // src/features/semantic-map/to-render-model.test.ts
 import { describe, it, expect } from "vitest";
 

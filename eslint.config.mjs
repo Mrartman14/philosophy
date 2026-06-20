@@ -171,12 +171,6 @@ const eslintConfig = [
     files: ["src/features/canvas/editor/render-map.test.ts"],
     rules: { "testing-library/render-result-naming-convention": "off" },
   },
-  {
-    // toRenderModel — доменная нормализация MapData→RenderModel, не RTL render();
-    // render-result-naming-convention ложно матчит переменную result по «render» в имени функции.
-    files: ["src/features/semantic-map/to-render-model.test.ts"],
-    rules: { "testing-library/render-result-naming-convention": "off" },
-  },
   // Guardrail 6: запрет вызовов переводчика .rich()/.markup() в прикладном коде.
   // Каталог сообщений намеренно держит ПРОСТОЕ подмножество ICU ({var} + {count, plural, …}),
   // без rich/markup/select — ради дешёвого свопа i18n-библиотеки за фасадом @/i18n.
