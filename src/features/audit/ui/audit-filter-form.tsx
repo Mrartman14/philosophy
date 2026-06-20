@@ -37,7 +37,12 @@ export function AuditFilterForm() {
 
   const TARGET_TYPE_OPTIONS = [
     { value: ALL_TYPES, label: t("filterAllTypes") },
-    ...AUDIT_TARGET_TYPES.map((type) => ({ value: type, label: type })),
+    // "map" опущен: записи могут указывать на карту, но фильтр листинга на
+    // беке его не принимает (контракт-дрейф). Вернуть, когда бэк выровняет enum.
+    ...AUDIT_TARGET_TYPES.filter((type) => type !== "map").map((type) => ({
+      value: type,
+      label: type,
+    })),
   ];
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {

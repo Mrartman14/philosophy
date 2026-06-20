@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { createApiClient } from "@/api/client";
+import type { paths } from "@/api/schema";
 import { getT } from "@/i18n";
 import { unwrapList } from "@/utils/api-unwrap";
 
@@ -43,18 +44,18 @@ export const getAuditLog = cache(
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 50;
-    const query: {
-      offset: number;
-      limit: number;
-      actor?: string;
-      target_type?: AuditTargetType;
-      target_id?: string;
-      action?: string;
-      from?: string;
-      to?: string;
-    } = { offset, limit };
+    // Тип query — из самого эндпоинта (а не из общего audit.TargetType): это
+    // источник истины «по чему фильтрует листинг». audit.TargetType шире
+    // (содержит "map", т.к. записи МОГУТ указывать на карту), но фильтр на
+    // беке "map" пока не принимает — контракт-дрейф, бэк-аск выдан.
+    type AuditListQuery = NonNullable<
+      paths["/api/admin/audit"]["get"]["parameters"]["query"]
+    >;
+    const query: AuditListQuery = { offset, limit };
     if (filter.actor) query.actor = filter.actor;
-    if (filter.target_type) query.target_type = filter.target_type;
+    if (filter.target_type && filter.target_type !== "map") {
+      query.target_type = filter.target_type;
+    }
     if (filter.target_id) query.target_id = filter.target_id;
     if (filter.action) query.action = filter.action;
     if (filter.from) query.from = filter.from;
