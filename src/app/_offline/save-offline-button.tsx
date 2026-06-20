@@ -1,14 +1,28 @@
 // src/app/_offline/save-offline-button.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Button, useToast } from "@/components/ui";
+import { Button, ConfirmDialog, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
+import { whenIdentityReconciled } from "@/services/offline/identity-gate";
+import {
+  deleteSavedBundle,
+  getSavedBundle,
+} from "@/services/offline/store/saved-bundles";
 
+import { revalidateSavedBundle } from "./revalidate-saved-bundle";
 import { saveOffline } from "./save-offline";
 
-/** Generic-кнопка «Сохранить офлайн» для любой сущности из OFFLINE_REGISTRY. */
+type ViewState =
+  | { kind: "unknown" }
+  | { kind: "not-saved" }
+  | { kind: "saving" }
+  | { kind: "saved"; stale: boolean }
+  | { kind: "updating" }
+  | { kind: "removing" };
+
+/** Generic stateful-кнопка офлайн-сохранения для любой сущности из OFFLINE_REGISTRY. */
 export function SaveOfflineButton({
   entity,
   id,
@@ -16,28 +30,60 @@ export function SaveOfflineButton({
   entity: string;
   id: string;
 }) {
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [state, setState] = useState<ViewState>({ kind: "unknown" });
   const toast = useToast();
   const t = useT("pages");
 
-  if (saved) {
-    return (
-      <span className="text-sm text-(--color-fg-muted)">{t("savedLectureSavedBadge")}</span>
-    );
-  }
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      // Не показываем чужое сохранённое состояние до сверки личности.
+      await whenIdentityReconciled();
+      if (cancelled) return;
+      const rec = await getSavedBundle(entity, id);
+      if (cancelled) return;
+      if (rec?.status !== "complete") {
+        setState({ kind: "not-saved" });
+        return;
+      }
+      setState({ kind: "saved", stale: rec.remoteStatus === "stale" });
+      // Фоновая сверка свежести (SWR); офлайн — пропускаем (best-effort).
+      if (navigator.onLine) {
+        const outcome = await revalidateSavedBundle(entity, id);
+        if (cancelled) return;
+        if (outcome !== "skip") {
+          const refreshed = await getSavedBundle(entity, id);
+          if (cancelled) return;
+          setState(
+            refreshed?.status === "complete"
+              ? { kind: "saved", stale: refreshed.remoteStatus === "stale" }
+              : { kind: "not-saved" },
+          );
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [entity, id]);
 
-  const onClick = (): void => {
-    setSaving(true);
+  // saving — из not-saved; updating — из saved-stale («Обновить»).
+  const doSave = (transient: "saving" | "updating"): void => {
+    setState({ kind: transient });
     void saveOffline(entity, id).then((result) => {
-      setSaving(false);
       if (result.ok) {
-        setSaved(true);
+        setState({ kind: "saved", stale: false });
         toast.add({
           title: t("saveOfflineSuccessTitle"),
           description: result.warning,
         });
       } else {
+        // Откат: из save → not-saved; из update → копия осталась устаревшей.
+        setState(
+          transient === "saving"
+            ? { kind: "not-saved" }
+            : { kind: "saved", stale: true },
+        );
         toast.add({
           title: t("saveOfflineFailTitle"),
           description: result.error,
@@ -46,9 +92,85 @@ export function SaveOfflineButton({
     });
   };
 
+  const doRemove = async (): Promise<void> => {
+    setState({ kind: "removing" });
+    await deleteSavedBundle(entity, id);
+    setState({ kind: "not-saved" });
+    toast.add({ title: t("saveOfflineRemovedToast") });
+  };
+
+  const removeButton = (
+    <ConfirmDialog
+      trigger={
+        <Button type="button" variant="ghost">
+          {t("saveOfflineRemove")}
+        </Button>
+      }
+      title={t("saveOfflineRemoveConfirmTitle")}
+      description={t("saveOfflineRemoveConfirmBody")}
+      confirmLabel={t("saveOfflineRemoveConfirmAction")}
+      destructive
+      onConfirm={doRemove}
+    />
+  );
+
+  if (state.kind === "unknown") {
+    return (
+      <Button type="button" variant="secondary" disabled>
+        {t("saveOfflineButton")}
+      </Button>
+    );
+  }
+  if (state.kind === "not-saved") {
+    return (
+      <Button type="button" variant="secondary" onClick={() => doSave("saving")}>
+        {t("saveOfflineButton")}
+      </Button>
+    );
+  }
+  if (state.kind === "saving") {
+    return (
+      <Button type="button" variant="secondary" disabled>
+        {t("saveOfflineSaving")}
+      </Button>
+    );
+  }
+  if (state.kind === "updating") {
+    return (
+      <Button type="button" variant="secondary" disabled>
+        {t("saveOfflineUpdating")}
+      </Button>
+    );
+  }
+  if (state.kind === "removing") {
+    return (
+      <Button type="button" variant="ghost" disabled>
+        {t("saveOfflineRemoving")}
+      </Button>
+    );
+  }
+  // state.kind === "saved"
   return (
-    <Button type="button" variant="secondary" disabled={saving} onClick={onClick}>
-      {saving ? t("saveOfflineSaving") : t("saveOfflineButton")}
-    </Button>
+    <div className="flex items-center gap-3">
+      {state.stale ? (
+        <>
+          <span className="text-sm text-(--color-fg-muted)">
+            {t("saveOfflineUpdateAvailable")}
+          </span>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => doSave("updating")}
+          >
+            {t("saveOfflineUpdate")}
+          </Button>
+        </>
+      ) : (
+        <span className="text-sm text-(--color-fg-muted)">
+          {t("savedLectureSavedBadge")}
+        </span>
+      )}
+      {removeButton}
+    </div>
   );
 }
