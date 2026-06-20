@@ -16,6 +16,7 @@ import {
 } from "@/components/ui";
 import { useT, useFmt } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
+import { isPast } from "@/utils/dates";
 
 import { revokeShareLink, adminRevokeShareLink } from "../actions";
 import { buildShareUrl } from "../share-url";
@@ -27,10 +28,6 @@ const DATE_FMT_OPTS: Intl.DateTimeFormatOptions = {
   dateStyle: "short",
   timeStyle: "short",
 };
-
-function isExpired(isoDate: string): boolean {
-  return new Date(isoDate).getTime() < Date.now();
-}
 
 interface Props {
   links: ShareLink[];
@@ -64,7 +61,7 @@ export function ShareLinkList({
 
   function statusLabel(link: ShareLink): string {
     if (link.revoked_at) return t("statusRevoked");
-    if (link.expires_at && isExpired(link.expires_at)) {
+    if (link.expires_at && isPast(link.expires_at)) {
       return t("statusExpired");
     }
     return t("statusActive");

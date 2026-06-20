@@ -1,7 +1,7 @@
 "use client";
 // src/features/tokens/ui/token-list.tsx
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, type ReactNode } from "react";
 
 import {
   Button,
@@ -16,10 +16,12 @@ import {
   useToast,
 } from "@/components/ui";
 import { useT, useFmt } from "@/i18n/client";
+import type { Formatters } from "@/i18n/format";
 import { toastActionError } from "@/utils/action-toast";
+import { relativeTimeParts, unixSecToDate } from "@/utils/dates";
 
 import { revokeToken } from "../actions";
-import { tokenStatus, unixSecToDate, type TokenStatus } from "../token-format";
+import { tokenStatus, type TokenStatus } from "../token-format";
 import type { PatToken } from "../types";
 
 const DATE_FMT: Intl.DateTimeFormatOptions = {
@@ -27,10 +29,31 @@ const DATE_FMT: Intl.DateTimeFormatOptions = {
   timeStyle: "short",
 };
 
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
 /** Статус токена «сейчас». Date.now() инкапсулирован в функцию (вне тела
  *  рендера), как isExpired в share-links — иначе react-hooks/purity. */
 function statusOf(token: PatToken): TokenStatus {
-  return tokenStatus(token, Date.now() / 1000);
+  return tokenStatus(token, Date.now());
+}
+
+/**
+ * Относительный остаток до истечения («через N дней»). null для бессрочного и
+ * уже истёкшего (статус и так это показывает). Акцент при < 7 дней. Date.now()
+ * и fmt — внутри plain-функции (не компонент/хук), как statusOf.
+ */
+function expiryNote(sec: number | undefined, fmt: Formatters): ReactNode {
+  const d = unixSecToDate(sec);
+  if (!d) return null;
+  const ms = d.getTime();
+  const now = Date.now();
+  if (ms <= now) return null;
+  const { value, unit } = relativeTimeParts(ms, now);
+  const cls =
+    ms - now < SEVEN_DAYS_MS
+      ? "block text-xs text-(--color-warning-fg)"
+      : "block text-xs text-(--color-fg-muted)";
+  return <span className={cls}>{fmt.relativeTime(value, unit, { numeric: "auto" })}</span>;
 }
 
 interface Props {
@@ -107,7 +130,10 @@ export function TokenList({ tokens, canManage }: Props) {
                 <code className="text-xs">{hint && hint !== "" ? hint : "—"}</code>
               </Td>
               <Td className="whitespace-nowrap">{fmtCreated(token.created_at)}</Td>
-              <Td className="whitespace-nowrap">{fmtExpires(token.expires_at)}</Td>
+              <Td className="whitespace-nowrap">
+                {fmtExpires(token.expires_at)}
+                {status === "active" && expiryNote(token.expires_at, fmt)}
+              </Td>
               {canManage && (
                 <Td>
                   {status === "active" && id ? (

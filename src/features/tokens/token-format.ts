@@ -1,26 +1,21 @@
 // src/features/tokens/token-format.ts
-// Чистые хелперы статуса/времени PAT. Без "server-only": нужны и UI, и тестам.
+// Доменный статус PAT. Чистые date-вычисления — из общего @/utils/dates.
+import { isPast, unixSecToDate } from "@/utils/dates";
+
 import type { PatToken } from "./types";
 
 export type TokenStatus = "active" | "revoked" | "expired";
 
 /**
- * Статус токена на момент `nowSec` (Unix-секунды). nowSec приходит снаружи,
- * чтобы функция оставалась чистой и тестируемой.
+ * Статус токена на момент `nowMs` (мс). nowMs приходит снаружи — функция
+ * чистая и тестируемая.
  *  - revoked_at задан → revoked (приоритетнее срока);
- *  - expires_at задан и уже прошёл → expired;
+ *  - expires_at прошёл → expired;
  *  - иначе → active (в т.ч. бессрочный токен без expires_at).
  */
-export function tokenStatus(token: PatToken, nowSec: number): TokenStatus {
+export function tokenStatus(token: PatToken, nowMs: number): TokenStatus {
   if (token.revoked_at) return "revoked";
-  if (token.expires_at !== undefined && token.expires_at <= nowSec) {
-    return "expired";
-  }
+  const exp = unixSecToDate(token.expires_at);
+  if (exp && isPast(exp, nowMs)) return "expired";
   return "active";
-}
-
-/** Unix-секунды → Date. null, если значение отсутствует (бессрочно/нет даты). */
-export function unixSecToDate(sec?: number): Date | null {
-  if (sec === undefined) return null;
-  return new Date(sec * 1000);
 }
