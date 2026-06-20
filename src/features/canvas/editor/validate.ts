@@ -6,12 +6,40 @@ const MAX_EDGES = 2000;
 const MAX_NODE_TEXT = 10_000;
 const MAX_EDGE_LABEL = 200;
 
-/** Одна ошибка валидации с привязкой к узлу/ребру для подсветки в UI. */
+/**
+ * Одна ошибка валидации с привязкой к узлу/ребру для подсветки в UI.
+ *
+ * ИЗОМОРФНЫЙ КОНТРАКТ: validate.ts чистый (вызывается из client ДО сохранения,
+ * покрыт юнит-тестом) и НЕ держит getT/useT. Сообщение несётся как КЛЮЧ каталога
+ * canvas.validate.* + ICU-параметры; client-вызыватель (canvas-editor) резолвит
+ * через useT("canvas") при показе.
+ */
 export interface GraphError {
-  message: string;
+  /** Ключ каталога под namespace canvas.validate.* */
+  messageKey: GraphErrorKey;
+  /** ICU-параметры для подстановки в шаблон сообщения. */
+  params?: Record<string, string | number>;
   nodeId?: string;
   edgeId?: string;
 }
+
+/** Ключи сообщений валидации (под-объект canvas.validate.* в каталоге). */
+export type GraphErrorKey =
+  | "tooManyNodes"
+  | "tooManyEdges"
+  | "nodeNoId"
+  | "duplicateNodeId"
+  | "nodeSizePositive"
+  | "textNodeNoText"
+  | "nodeTextTooLong"
+  | "shapeNoKind"
+  | "entityRefNoType"
+  | "entityRefNoId"
+  | "nodeUnknownType"
+  | "edgeNoId"
+  | "edgeFromNotFound"
+  | "edgeToNotFound"
+  | "edgeLabelTooLong";
 
 export interface GraphValidation {
   ok: boolean;
@@ -31,54 +59,54 @@ export function validateGraph(data: CanvasData): GraphValidation {
   const edges = data.edges ?? [];
 
   if (nodes.length > MAX_NODES) {
-    errors.push({ message: `Слишком много узлов: ${nodes.length} > ${MAX_NODES}` });
+    errors.push({ messageKey: "tooManyNodes", params: { count: nodes.length, max: MAX_NODES } });
   }
   if (edges.length > MAX_EDGES) {
-    errors.push({ message: `Слишком много рёбер: ${edges.length} > ${MAX_EDGES}` });
+    errors.push({ messageKey: "tooManyEdges", params: { count: edges.length, max: MAX_EDGES } });
   }
 
   const ids = new Set<string>();
   for (const n of nodes) {
     if (!n.id) {
-      errors.push({ message: "У узла нет id" });
+      errors.push({ messageKey: "nodeNoId" });
       continue;
     }
     if (ids.has(n.id)) {
-      errors.push({ nodeId: n.id, message: `Дубликат id узла "${n.id}"` });
+      errors.push({ nodeId: n.id, messageKey: "duplicateNodeId", params: { id: n.id } });
     }
     ids.add(n.id);
 
     if ((n.width ?? 0) <= 0 || (n.height ?? 0) <= 0) {
-      errors.push({ nodeId: n.id, message: `Узел "${n.id}": размеры должны быть положительными` });
+      errors.push({ nodeId: n.id, messageKey: "nodeSizePositive", params: { id: n.id } });
     }
 
     if (n.type === "text") {
-      if (n.text == null) errors.push({ nodeId: n.id, message: `Текстовый узел "${n.id}" без текста` });
-      else if (n.text.length > MAX_NODE_TEXT) errors.push({ nodeId: n.id, message: `Узел "${n.id}": текст слишком длинный` });
+      if (n.text == null) errors.push({ nodeId: n.id, messageKey: "textNodeNoText", params: { id: n.id } });
+      else if (n.text.length > MAX_NODE_TEXT) errors.push({ nodeId: n.id, messageKey: "nodeTextTooLong", params: { id: n.id } });
     } else if (n.type === "shape") {
-      if (!n.shape_kind) errors.push({ nodeId: n.id, message: `Фигура "${n.id}" без типа фигуры` });
-      if (n.text != null && n.text.length > MAX_NODE_TEXT) errors.push({ nodeId: n.id, message: `Узел "${n.id}": текст слишком длинный` });
+      if (!n.shape_kind) errors.push({ nodeId: n.id, messageKey: "shapeNoKind", params: { id: n.id } });
+      if (n.text != null && n.text.length > MAX_NODE_TEXT) errors.push({ nodeId: n.id, messageKey: "nodeTextTooLong", params: { id: n.id } });
     } else if (n.type === "entity_ref") {
-      if (!n.entity_type) errors.push({ nodeId: n.id, message: `Ссылка "${n.id}" без типа сущности` });
-      if (!n.entity_id) errors.push({ nodeId: n.id, message: `Ссылка "${n.id}" без id сущности` });
+      if (!n.entity_type) errors.push({ nodeId: n.id, messageKey: "entityRefNoType", params: { id: n.id } });
+      if (!n.entity_id) errors.push({ nodeId: n.id, messageKey: "entityRefNoId", params: { id: n.id } });
     } else {
-      errors.push({ nodeId: n.id, message: `Узел "${n.id}": неизвестный тип` });
+      errors.push({ nodeId: n.id, messageKey: "nodeUnknownType", params: { id: n.id } });
     }
   }
 
   for (const e of edges) {
     if (!e.id) {
-      errors.push({ message: "У ребра нет id" });
+      errors.push({ messageKey: "edgeNoId" });
       continue;
     }
     if (!e.from_node || !ids.has(e.from_node)) {
-      errors.push({ edgeId: e.id, message: `Ребро "${e.id}": from_node не найден` });
+      errors.push({ edgeId: e.id, messageKey: "edgeFromNotFound", params: { id: e.id } });
     }
     if (!e.to_node || !ids.has(e.to_node)) {
-      errors.push({ edgeId: e.id, message: `Ребро "${e.id}": to_node не найден` });
+      errors.push({ edgeId: e.id, messageKey: "edgeToNotFound", params: { id: e.id } });
     }
     if (e.label != null && e.label.length > MAX_EDGE_LABEL) {
-      errors.push({ edgeId: e.id, message: `Ребро "${e.id}": подпись слишком длинная` });
+      errors.push({ edgeId: e.id, messageKey: "edgeLabelTooLong", params: { id: e.id } });
     }
   }
 

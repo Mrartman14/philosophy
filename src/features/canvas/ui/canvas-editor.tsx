@@ -267,7 +267,9 @@ export function CanvasEditor({ canvas, etag }: Props) {
       if (first?.nodeId) setInvalidNodeId(first.nodeId);
       toast.add({
         title: t("editor.toastValidationTitle"),
-        description: first?.message ?? t("editor.toastValidationFallback"),
+        description: first
+          ? t(`validate.${first.messageKey}`, first.params)
+          : t("editor.toastValidationFallback"),
       });
       return;
     }

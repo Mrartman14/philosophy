@@ -13,13 +13,12 @@ import {
 } from "../api";
 import type { CommentListResult, CommentSearchResult } from "../api";
 import { canCreateComment, canSearchComments } from "../permissions";
-import type { CommentSchema } from "../types";
+import type { CommentSchema, CommentType } from "../types";
 
 import { CommentCreateForm } from "./comment-create-form";
 import { CommentExportLinks } from "./comment-export-links";
 import { CommentSearch } from "./comment-search";
 import { CommentTree } from "./comment-tree";
-import { commentTypeLabel } from "./comment-type-badge";
 
 
 interface Props {
@@ -43,6 +42,7 @@ function renderContent(
   schema: CommentSchema,
   noSnippet: string,
   searchFoundCount: (count: number) => string,
+  typeLabel: (type: CommentType) => string,
 ): ReactNode {
   if (searching && search) {
     return (
@@ -52,7 +52,7 @@ function renderContent(
           {search.items.map((item) => (
             <li key={item.id} className="rounded border border-(--color-border) p-2 text-sm">
               <span className="text-xs text-(--color-fg-muted)">
-                {commentTypeLabel((item.type ?? "claim"))} ·{" "}
+                {typeLabel(item.type ?? "claim")} ·{" "}
                 {item.author?.username ?? "—"}
               </span>
               <p>
@@ -105,6 +105,7 @@ export async function CommentSection({ lectureId, query }: Props) {
     schema,
     t("noSnippet"),
     (count) => t("searchFoundCount", { count }),
+    (type) => t(`type.${type}`),
   );
   const canCreate = canCreateComment(me);
 

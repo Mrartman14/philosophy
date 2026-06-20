@@ -22,7 +22,8 @@ export {
 } from "./permissions";
 export {
   AUDIENCE_LABELS,
-  AUDIENCE_OPTIONS,
+  AUDIENCE_VALUES,
+  audienceOptions,
   audienceLabel,
   formatBannerDate,
   formatBannerPeriod,

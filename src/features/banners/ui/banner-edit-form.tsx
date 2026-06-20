@@ -17,7 +17,7 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateBanner } from "../actions";
-import { AUDIENCE_OPTIONS, toColorInputValue } from "../display";
+import { audienceOptions, toColorInputValue } from "../display";
 import type { Banner } from "../types";
 
 const initial: ActionResult<Banner | null> = {
@@ -73,7 +73,7 @@ export function BannerEditForm({ banner }: Props) {
         <Select
           name="target_audience"
           defaultValue={banner.target_audience ?? "all"}
-          options={AUDIENCE_OPTIONS}
+          options={audienceOptions(t)}
           aria-label={t("fieldAudienceAriaLabel")}
         />
       </FormField>

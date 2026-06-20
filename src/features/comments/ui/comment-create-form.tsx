@@ -10,7 +10,6 @@ import type { ActionResult } from "@/utils/create-action";
 import { createComment } from "../actions";
 import type { Comment, CommentType } from "../types";
 
-import { commentTypeLabel } from "./comment-type-badge";
 import { LazyAstEditor } from "./lazy-ast-editor";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
@@ -28,7 +27,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation" ? state.fieldErrors : {};
 
-  const options = rootTypes.map((t) => ({ value: t, label: commentTypeLabel(t) }));
+  const options = rootTypes.map((type) => ({ value: type, label: t(`type.${type}`) }));
 
   return (
     <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">

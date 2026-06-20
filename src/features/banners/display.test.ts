@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 
 import {
   audienceLabel,
+  audienceOptions,
   formatBannerDate,
   formatBannerPeriod,
   toColorInputValue,
@@ -11,13 +12,37 @@ import {
 import type { Banner } from "./types";
 
 describe("audienceLabel", () => {
-  it("известная аудитория → русская метка", () => {
+  it("известная аудитория → русский дефолт (без переводчика)", () => {
     expect(audienceLabel("all")).toBe("Всем");
     expect(audienceLabel("authenticated")).toBe("Авторизованным");
     expect(audienceLabel("admin")).toBe("Администраторам");
   });
   it("undefined → пустая строка", () => {
     expect(audienceLabel(undefined)).toBe("");
+  });
+  it("с переводчиком → catalog-ключ", () => {
+    const t = (key: string) => `[${key}]`;
+    expect(audienceLabel("all", t)).toBe("[audienceAll]");
+    expect(audienceLabel("authenticated", t)).toBe("[audienceAuthenticated]");
+    expect(audienceLabel("admin", t)).toBe("[audienceAdmin]");
+  });
+});
+
+describe("audienceOptions", () => {
+  it("без переводчика → значения + русские дефолты", () => {
+    expect(audienceOptions()).toEqual([
+      { value: "all", label: "Всем" },
+      { value: "authenticated", label: "Авторизованным" },
+      { value: "admin", label: "Администраторам" },
+    ]);
+  });
+  it("с переводчиком → ключи каталога", () => {
+    const t = (key: string) => `[${key}]`;
+    expect(audienceOptions(t).map((o) => o.label)).toEqual([
+      "[audienceAll]",
+      "[audienceAuthenticated]",
+      "[audienceAdmin]",
+    ]);
   });
 });
 
@@ -48,6 +73,16 @@ describe("formatBannerPeriod", () => {
   });
   it("нет начала → пустая строка", () => {
     expect(formatBannerPeriod(undefined, "2026-07-02T10:00:00Z")).toBe("");
+  });
+  it("с переводчиком → catalog-ключ шаблона + параметры", () => {
+    const t = (key: string, params: { start: string; end?: string }) =>
+      key === "periodFromTo" ? `[from ${params.start} to ${params.end}]` : `[from ${params.start}]`;
+    const both = formatBannerPeriod("2026-07-01T10:00:00Z", "2026-07-02T10:00:00Z", "ru", t);
+    expect(both.startsWith("[from ")).toBe(true);
+    expect(both).toContain(" to ");
+    const onlyStart = formatBannerPeriod("2026-07-01T10:00:00Z", undefined, "ru", t);
+    expect(onlyStart.startsWith("[from ")).toBe(true);
+    expect(onlyStart).not.toContain(" to ");
   });
 });
 

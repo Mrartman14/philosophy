@@ -151,6 +151,25 @@ const canvas: Messages["canvas"] = {
     submit: "Find",
   },
 
+  // --- editor/validate.ts (graph structural validation; keys + ICU params) ---
+  validate: {
+    tooManyNodes: "Too many nodes: {count} > {max}",
+    tooManyEdges: "Too many edges: {count} > {max}",
+    nodeNoId: "Node has no id",
+    duplicateNodeId: 'Duplicate node id "{id}"',
+    nodeSizePositive: 'Node "{id}": dimensions must be positive',
+    textNodeNoText: 'Text node "{id}" has no text',
+    nodeTextTooLong: 'Node "{id}": text is too long',
+    shapeNoKind: 'Shape "{id}" has no shape kind',
+    entityRefNoType: 'Reference "{id}" has no entity type',
+    entityRefNoId: 'Reference "{id}" has no entity id',
+    nodeUnknownType: 'Node "{id}": unknown type',
+    edgeNoId: "Edge has no id",
+    edgeFromNotFound: 'Edge "{id}": from_node not found',
+    edgeToNotFound: 'Edge "{id}": to_node not found',
+    edgeLabelTooLong: 'Edge "{id}": label is too long',
+  },
+
   // --- forbidden actions ---
   forbiddenCreateAction: "creating a canvas",
 

@@ -15,7 +15,7 @@ export async function AdminCommentRow({ comment }: { comment: Comment }) {
     <div className="flex items-start justify-between gap-3 rounded border border-(--color-border) p-3">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 text-xs text-(--color-fg-muted)">
-          <CommentTypeBadge type={comment.type} />
+          <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
           <span>{comment.author?.username ?? "—"}</span>
           <span>{formatCommentDate(comment.created_at)}</span>
           {deleted && <span className="text-red-600">{t("adminDeleted")}</span>}

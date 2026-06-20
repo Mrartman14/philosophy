@@ -41,6 +41,7 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
       comment={comment}
       deletedLabel={t("deleted")}
       editedLabel={t("edited")}
+      typeLabel={t(`type.${type}`)}
       anchorSlot={
         comment.anchor ? <CommentAnchorContext anchor={comment.anchor} /> : undefined
       }

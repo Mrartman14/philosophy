@@ -17,7 +17,7 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createBanner } from "../actions";
-import { AUDIENCE_OPTIONS } from "../display";
+import { audienceOptions } from "../display";
 import type { Banner } from "../types";
 
 const initial: ActionResult<Banner | null> = {
@@ -66,7 +66,7 @@ export function BannerCreateForm() {
         <Select
           name="target_audience"
           defaultValue="all"
-          options={AUDIENCE_OPTIONS}
+          options={audienceOptions(t)}
           aria-label={t("fieldAudienceAriaLabel")}
         />
       </FormField>

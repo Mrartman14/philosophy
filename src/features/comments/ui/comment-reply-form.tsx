@@ -10,7 +10,6 @@ import type { ActionResult } from "@/utils/create-action";
 import { createComment } from "../actions";
 import type { Comment, CommentType } from "../types";
 
-import { commentTypeLabel } from "./comment-type-badge";
 import { LazyAstEditor } from "./lazy-ast-editor";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
@@ -39,7 +38,7 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
     );
   }
 
-  const options = childTypes.map((type) => ({ value: type, label: commentTypeLabel(type) }));
+  const options = childTypes.map((type) => ({ value: type, label: t(`type.${type}`) }));
 
   return (
     <Form action={action} errors={fieldErrors} className="mt-2 flex flex-col gap-2 border-l border-(--color-border) pl-3">

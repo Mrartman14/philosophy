@@ -150,6 +150,25 @@ const canvas = {
     submit: "Найти",
   },
 
+  // --- editor/validate.ts (структурная валидация графа; ключи + ICU-параметры) ---
+  validate: {
+    tooManyNodes: "Слишком много узлов: {count} > {max}",
+    tooManyEdges: "Слишком много рёбер: {count} > {max}",
+    nodeNoId: "У узла нет id",
+    duplicateNodeId: 'Дубликат id узла "{id}"',
+    nodeSizePositive: 'Узел "{id}": размеры должны быть положительными',
+    textNodeNoText: 'Текстовый узел "{id}" без текста',
+    nodeTextTooLong: 'Узел "{id}": текст слишком длинный',
+    shapeNoKind: 'Фигура "{id}" без типа фигуры',
+    entityRefNoType: 'Ссылка "{id}" без типа сущности',
+    entityRefNoId: 'Ссылка "{id}" без id сущности',
+    nodeUnknownType: 'Узел "{id}": неизвестный тип',
+    edgeNoId: "У ребра нет id",
+    edgeFromNotFound: 'Ребро "{id}": from_node не найден',
+    edgeToNotFound: 'Ребро "{id}": to_node не найден',
+    edgeLabelTooLong: 'Ребро "{id}": подпись слишком длинная',
+  },
+
   // --- forbidden actions (for Case 3 per-feature action strings) ---
   // These are passed as {action} in errors.forbiddenAction
   forbiddenCreateAction: "создание канваса",

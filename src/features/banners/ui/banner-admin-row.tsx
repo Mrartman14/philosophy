@@ -34,8 +34,8 @@ export async function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
             {preview || t("noText")}
           </span>
           <span className="text-xs text-(--color-fg-muted)">
-            {formatBannerPeriod(banner.start_at, banner.end_at, locale)}
-            {` · ${audienceLabel(banner.target_audience)}`}
+            {formatBannerPeriod(banner.start_at, banner.end_at, locale, t)}
+            {` · ${audienceLabel(banner.target_audience, t)}`}
             {banner.dismissible === false ? t("notDismissible") : ""}
             {banner.event_id ? t("hasEvent") : ""}
           </span>

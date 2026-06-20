@@ -6,20 +6,44 @@ import { DEFAULT_LOCALE, type ResolvedLocale } from "@/i18n/locales";
 
 import type { Banner, BannerTargetAudience } from "./types";
 
+// ИЗОМОРФНЫЙ КОНТРАКТ: display.ts чистый (server + client + display.test.ts), без
+// хуков. Переводимые строки приходят через ключ-резолверы (callers переводят);
+// дефолты — русские литералы из каталога banners.* (offline/test fallback).
+
+/** Источник истины: значения enum аудитории + их catalog-ключи (banners.audience*). */
+export const AUDIENCE_VALUES: readonly BannerTargetAudience[] = ["all", "authenticated", "admin"];
+
+const AUDIENCE_KEYS = {
+  all: "audienceAll",
+  authenticated: "audienceAuthenticated",
+  admin: "audienceAdmin",
+} as const satisfies Record<BannerTargetAudience, string>;
+
+/** Русские дефолты меток аудитории (offline/test fallback; зеркало banners.audience*). */
 export const AUDIENCE_LABELS: Record<BannerTargetAudience, string> = {
   all: "Всем",
   authenticated: "Авторизованным",
   admin: "Администраторам",
 };
 
-/** Опции для <Select> в формах — производная от AUDIENCE_LABELS (DRY). */
-export const AUDIENCE_OPTIONS = (
-  Object.entries(AUDIENCE_LABELS) as [BannerTargetAudience, string][]
-).map(([value, label]) => ({ value, label }));
+/** Переводчик метки аудитории по catalog-ключу (для caller'ов с useT/getT). */
+export type AudienceLabelT = (key: (typeof AUDIENCE_KEYS)[BannerTargetAudience]) => string;
 
-export function audienceLabel(audience?: BannerTargetAudience): string {
+/**
+ * Метка аудитории. Без `t` — русский дефолт (offline/test). Caller-онлайн
+ * (server/client с переводчиком banners) передаёт `t` → catalog-перевод.
+ */
+export function audienceLabel(audience?: BannerTargetAudience, t?: AudienceLabelT): string {
   if (!audience) return "";
-  return AUDIENCE_LABELS[audience];
+  return t ? t(AUDIENCE_KEYS[audience]) : AUDIENCE_LABELS[audience];
+}
+
+/**
+ * Опции для <Select> в формах. Без `t` — русские дефолты; caller с useT("banners")
+ * передаёт `t` для перевода. (Заменяет прежнюю статическую AUDIENCE_OPTIONS.)
+ */
+export function audienceOptions(t?: AudienceLabelT): { value: BannerTargetAudience; label: string }[] {
+  return AUDIENCE_VALUES.map((value) => ({ value, label: audienceLabel(value, t) }));
 }
 
 const BANNER_DATE_OPTS: Intl.DateTimeFormatOptions = {
@@ -42,15 +66,29 @@ export function formatBannerDate(
   return getFmt(locale).dateTime(d, BANNER_DATE_OPTS);
 }
 
+/**
+ * Резолвер шаблона периода: `t("periodFrom"|"periodFromTo", {start, end})`.
+ * Caller-онлайн (banner-admin-row — server с getT) передаёт переводчик banners;
+ * без него — русский дефолт (offline/test).
+ */
+export type BannerPeriodT = (
+  key: "periodFrom" | "periodFromTo",
+  params: { start: string; end?: string },
+) => string;
+
 /** Период показа: «с X по Y» / «с X» / "". */
 export function formatBannerPeriod(
   startAt?: string,
   endAt?: string,
   locale: ResolvedLocale = DEFAULT_LOCALE,
+  t?: BannerPeriodT,
 ): string {
   const start = formatBannerDate(startAt, locale);
   if (!start) return "";
   const end = formatBannerDate(endAt, locale);
+  if (t) {
+    return end ? t("periodFromTo", { start, end }) : t("periodFrom", { start });
+  }
   return end ? `с ${start} по ${end}` : `с ${start}`;
 }
 

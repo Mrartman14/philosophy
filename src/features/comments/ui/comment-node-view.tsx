@@ -36,6 +36,12 @@ interface Props {
    * Онлайн-контейнер передаёт t("edited") из каталога comments.
    */
   editedLabel?: string;
+  /**
+   * Переведённая метка типа комментария для badge. Дефолт (undefined): badge сам
+   * берёт русский литерал commentTypeLabel(type). Онлайн-контейнер передаёт
+   * t("type.<type>") из каталога comments.
+   */
+  typeLabel?: string;
 }
 
 export function CommentNodeView({
@@ -45,6 +51,7 @@ export function CommentNodeView({
   actionsSlot,
   deletedLabel = "Комментарий удалён",
   editedLabel = "(изменён)",
+  typeLabel,
 }: Props): ReactNode {
   if (comment.is_deleted) {
     return (
@@ -57,7 +64,7 @@ export function CommentNodeView({
   return (
     <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
-        <CommentTypeBadge type={comment.type} />
+        <CommentTypeBadge type={comment.type} label={typeLabel} />
         <span>{comment.author?.username ?? "—"}</span>
         <span>{formatCommentDate(comment.created_at)}</span>
         {comment.is_edited && <span>{editedLabel}</span>}
