@@ -1,8 +1,8 @@
 "use client";
 import { useActionState, useState } from "react";
 
-import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   Form,
   FormField,
@@ -40,7 +40,7 @@ export function GlossaryEditForm({ term }: Props) {
       <IdempotencyField result={state} />
 
       <FormField name="blocks" label={t("blocksLabel")}>
-        <AstEditor
+        <LazyAstEditor
           defaultValue={term.blocks ?? []}
           entityContext="glossary"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}

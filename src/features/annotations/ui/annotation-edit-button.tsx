@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { SchemaContextProvider } from "@/components/ast-editor";
 import type { SchemaResponse } from "@/components/ast-editor";
+import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { Button, Dialog } from "@/components/ui";
 import { useT } from "@/i18n/client";
 

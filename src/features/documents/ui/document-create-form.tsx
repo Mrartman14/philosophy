@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
@@ -53,7 +53,7 @@ export function DocumentCreateForm() {
       </p>
 
       <FormField name="blocks" label={t("contentLabel")}>
-        <AstEditor
+        <LazyAstEditor
           defaultValue={[]}
           entityContext="document"
           onChange={setBlocks}

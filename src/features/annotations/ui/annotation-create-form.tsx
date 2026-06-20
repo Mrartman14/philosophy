@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { AstEditor, type AstBlock } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
@@ -53,7 +54,7 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
       <IdempotencyField result={state} />
 
       <FormField name="blocks" label={t("createBodyLabel")}>
-        <AstEditor
+        <LazyAstEditor
           defaultValue={[]}
           entityContext="annotation"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}

@@ -2,8 +2,8 @@
 // src/features/events/ui/event-edit-form.tsx
 import { useActionState, useState } from "react";
 
-import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   Checkbox,
   Form,
@@ -133,7 +133,7 @@ export function EventEditForm({ event }: Props) {
       </p>
 
       <FormField name="blocks" label={t("fieldBlocks")}>
-        <AstEditor
+        <LazyAstEditor
           defaultValue={event.blocks ?? []}
           entityContext="event"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}

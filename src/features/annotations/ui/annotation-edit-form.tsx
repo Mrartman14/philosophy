@@ -2,7 +2,8 @@
 // src/features/annotations/ui/annotation-edit-form.tsx
 import { useActionState, useEffect, useState } from "react";
 
-import { AstEditor, type AstBlock } from "@/components/ast-editor";
+import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
@@ -51,7 +52,7 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
       <IdempotencyField result={state} />
 
       <FormField name="blocks" label={t("editBodyLabel")}>
-        <AstEditor
+        <LazyAstEditor
           defaultValue={(annotation.blocks ?? [])}
           entityContext="annotation"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}

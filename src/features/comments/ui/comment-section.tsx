@@ -1,7 +1,7 @@
 // src/features/comments/ui/comment-section.tsx
 import type { ReactNode } from "react";
 
-import { SchemaContextProvider } from "@/components/ast-editor";
+import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";

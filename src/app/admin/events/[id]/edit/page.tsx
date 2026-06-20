@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
-import { SchemaContextProvider } from "@/components/ast-editor";
+import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
   canDeleteEvent,

@@ -2,8 +2,8 @@
 // src/features/banners/ui/banner-edit-form.tsx
 import { useActionState, useState } from "react";
 
-import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   Checkbox,
   Form,
@@ -115,7 +115,7 @@ export function BannerEditForm({ banner }: Props) {
       </p>
 
       <FormField name="blocks" label={t("fieldBlocks")}>
-        <AstEditor
+        <LazyAstEditor
           defaultValue={banner.blocks ?? []}
           entityContext="banner"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}

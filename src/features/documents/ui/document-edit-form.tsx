@@ -2,8 +2,8 @@
 // src/features/documents/ui/document-edit-form.tsx
 import { useActionState, useState } from "react";
 
-import { AstEditor } from "@/components/ast-editor";
 import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
@@ -31,7 +31,7 @@ export function DocumentEditForm({ document }: Props) {
       <IdempotencyField result={state} />
 
       <FormField name="blocks" label={t("contentLabel")}>
-        <AstEditor
+        <LazyAstEditor
           defaultValue={document.blocks ?? []}
           entityContext="document"
           onChange={(next: AstBlock[]) => { setBlocks(next); }}

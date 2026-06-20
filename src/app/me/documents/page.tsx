@@ -1,5 +1,5 @@
 // src/app/me/documents/page.tsx
-import { SchemaContextProvider } from "@/components/ast-editor";
+import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
 import {
   canCreateDocument,

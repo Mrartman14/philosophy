@@ -1,7 +1,7 @@
 // src/app/documents/[id]/edit/page.tsx
 import { forbidden, notFound } from "next/navigation";
 
-import { SchemaContextProvider } from "@/components/ast-editor";
+import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { RouterLink } from "@/components/ui";
 import {
