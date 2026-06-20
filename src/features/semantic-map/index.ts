@@ -3,3 +3,4 @@
 export { getMap, type MapResult } from "./api";
 export { SemanticMap } from "./ui/semantic-map";
 export { MapStatePanel } from "./ui/map-state-panel";
+export type { MapOverlay } from "./types";

@@ -4,13 +4,13 @@ import dynamic from "next/dynamic";
 
 import { Skeleton } from "@/components/ui";
 
-import type { MapData } from "../types";
+import type { MapData, MapOverlay } from "../types";
 
 const View = dynamic(() => import("./semantic-map-view"), {
   ssr: false,
   loading: () => <Skeleton className="h-full w-full" />,
 });
 
-export function SemanticMap({ data }: { data: MapData }) {
-  return <View data={data} />;
+export function SemanticMap({ data, overlay }: { data: MapData; overlay?: MapOverlay }) {
+  return <View data={data} {...(overlay !== undefined ? { overlay } : {})} />;
 }

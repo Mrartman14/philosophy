@@ -30,3 +30,9 @@ export interface RenderModel {
   bounds: { min: [number, number, number]; max: [number, number, number] };
   clusters: RenderCluster[];
 }
+
+/** Overlay поиска: запрос + хиты (из llmretrieval.Hit, спроецированные на форму карты). */
+export interface MapOverlay {
+  query: string;
+  hits: { id: string; type: string; score: number }[];
+}
