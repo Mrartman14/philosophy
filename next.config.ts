@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { staticSecurityHeaders } from "./src/security/security-headers";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -17,6 +18,14 @@ const nextConfig: NextConfig = {
     // Используется в src/app/admin/layout.tsx для гейта по canAccessAdmin.
     // По состоянию на Next 16.1.4 — всё ещё experimental.
     authInterrupts: true,
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: staticSecurityHeaders(process.env.NODE_ENV === "production"),
+      },
+    ];
   },
 };
 
