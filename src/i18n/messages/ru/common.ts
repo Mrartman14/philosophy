@@ -52,22 +52,9 @@ const common = {
     placeholder: "Выберите…",
   },
 
-  // permission/action-tooltip
-  actionTooltip: {
-    loginToAction: "Войдите, чтобы {action}",
-    accountRestrictedAction: "Аккаунт ограничен — нельзя {action}",
-    actionUnavailable: "Действие недоступно",
-  },
-
   // permission/status-banner
   statusBanner: {
     suspended: "Ваш аккаунт временно ограничен. Чтение доступно, новые действия — нет.",
-  },
-
-  // permission/login-cta
-  loginCta: {
-    loginToContinue: "Войдите, чтобы продолжить",
-    loginButton: "Войти",
   },
 
   // canvas-render

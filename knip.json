@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignore": [
+    "src/features/_template/**",
+    "src/features/*/client.ts",
+    "src/sw.template.js",
+    "public/sw.js"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": []
+}

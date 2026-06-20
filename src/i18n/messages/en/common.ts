@@ -52,22 +52,9 @@ const common = {
     placeholder: "Select…",
   },
 
-  // permission/action-tooltip
-  actionTooltip: {
-    loginToAction: "Log in to {action}",
-    accountRestrictedAction: "Account restricted — cannot {action}",
-    actionUnavailable: "Action unavailable",
-  },
-
   // permission/status-banner
   statusBanner: {
     suspended: "Your account is temporarily restricted. Reading is available, new actions are not.",
-  },
-
-  // permission/login-cta
-  loginCta: {
-    loginToContinue: "Log in to continue",
-    loginButton: "Log in",
   },
 
   // canvas-render
