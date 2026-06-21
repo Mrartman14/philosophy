@@ -33,6 +33,7 @@ export function EditorTextOverlay({ node, viewport, onCommit, onCancel }: Props)
   const h = (node.height ?? 40) * viewport.zoom;
 
   return (
+    // eslint-disable-next-line no-restricted-syntax -- абсолютно-позиционированный inline-редактор узла канваса, не форм-контрол; shell-стиль Textarea мешает позиционированию
     <textarea
       ref={ref}
       value={value}

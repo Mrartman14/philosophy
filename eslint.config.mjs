@@ -199,6 +199,76 @@ const eslintConfig = [
       ],
     },
   },
+  // Guardrail 7: ноль прямых @base-ui/react вне UI-kit + ноль нативных
+  // интерактивных тегов вне kit. Flat-config НЕ мержит no-restricted-syntax →
+  // последний матчнувший блок перезатирает; этот блок матчит src/** КРОМЕ
+  // src/components/ui/** и КРОМЕ *.test.{ts,tsx} последним, поэтому ПОВТОРЯЕТ
+  // rich/markup-селекторы G6 (иначе они слетели бы для прикладного кода).
+  // Файлы в ui/ и тесты этот блок игнорит — для ui/ последним остаётся G6
+  // (rich/markup), а base-ui/нативные теги там разрешены.
+  // ВАЖНО (тесты исключены намеренно): mock-стабы kit-компонентов и тест-харнессы
+  // легитимно рендерят нативные <button>/<form> и импортируют @base-ui/react
+  // (напр. image-button.test.tsx) — гард на них не распространяется. Подтверждённый
+  // ревью список таких файлов: save-offline-button.test, appearance-provider.test,
+  // ast-merge-view.test, document-edit-form-conflict.test (и smoke-тесты обёрток в ui/).
+  // <input> в гард НЕ включён — отдельный фоллоу-ап (нужны новые примитивы).
+  // Исключения в ПРОДАКШН-коде (построчный eslint-disable + комментарий):
+  // global-error.tsx (критический root error-boundary на inline-style),
+  // canvas editor-text-overlay (абсолютно-позиционированный inline-style textarea).
+  // КРИТИЧНО про base-ui-селектор: литеральный «/» внутри тела regex обрывает
+  // regex-литерал в грамматике esquery (и /^@base-ui\/react/, и /^@base-ui/react/
+  // РУШАТ eslint с «Invalid regular expression»). Слеш кодируем через / —
+  // проверено сквозным Linter.verify (esquery 1.6.0 / eslint 9.29.0): матчит
+  // @base-ui/react и подпути, пропускает @/components/ui и @base-ui-*.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/components/ui/**", "src/**/*.test.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "CallExpression[callee.property.name='rich']",
+          message:
+            "t.rich(...) запрещён: каталог сообщений держит простое подмножество ICU ради дешёвого свопа i18n-библиотеки за фасадом @/i18n (см. docs/frontend-i18n.md). Используй plain t(key, params).",
+        },
+        {
+          selector: "CallExpression[callee.property.name='markup']",
+          message:
+            "t.markup(...) запрещён: каталог сообщений держит простое подмножество ICU ради дешёвого свопа i18n-библиотеки за фасадом @/i18n (см. docs/frontend-i18n.md). Используй plain t(key, params).",
+        },
+        {
+          // / === "/"; литеральный слеш в теле esquery-regex рушит парсер (см. коммент выше)
+          selector: "ImportDeclaration[source.value=/^@base-ui\\u002freact/]",
+          message:
+            "Прямой импорт @base-ui/react вне src/components/ui запрещён. Используй обёртку из @/components/ui (новый примитив — добавь обёртку в UI-kit).",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='button']",
+          message: "Нативный <button> запрещён вне UI-kit. Используй Button/IconButton из @/components/ui.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='select']",
+          message: "Нативный <select> запрещён вне UI-kit. Используй Select из @/components/ui.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='form']",
+          message: "Нативный <form> запрещён вне UI-kit. Используй Form из @/components/ui.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='fieldset']",
+          message: "Нативный <fieldset> запрещён вне UI-kit. Используй Fieldset из @/components/ui.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='legend']",
+          message: "Нативный <legend> запрещён вне UI-kit. Используй Fieldset (legend-проп) из @/components/ui.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='textarea']",
+          message: "Нативный <textarea> запрещён вне UI-kit. Используй Textarea из @/components/ui.",
+        },
+      ],
+    },
+  },
   // Guardrail 1: deep-imports into other features must go through their index.ts
   // + Guardrail 5: прямой импорт next-intl запрещён (кроме src/i18n/** — см. ниже)
   {

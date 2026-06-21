@@ -65,6 +65,7 @@ export default function GlobalError({
           <p style={{ margin: 0, color: "#6b7280" }}>
             {m.description}
           </p>
+          {/* eslint-disable-next-line no-restricted-syntax -- критический root error-boundary: inline-style ради надёжности при несработавшем CSS, kit-Button недоступен (нет провайдеров) */}
           <button
             type="button"
             onClick={reset}
