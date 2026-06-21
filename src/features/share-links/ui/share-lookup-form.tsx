@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, Form, FormField, Select, TextInput } from "@/components/ui";
+import { Button, Form, FormField, Inline, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -48,26 +48,28 @@ export function ShareLookupForm({ admin = false }: Props) {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
-      <FormField name="resource_type" label={t("resourceTypeLabel")}>
-        <Select
-          name="resource_type"
-          defaultValue={searchParams.get("resource_type") ?? types[0]}
-          options={options}
-          aria-label={t("resourceTypeLabel")}
-        />
-      </FormField>
-      <FormField name="resource_id" label={t("resourceIdLabel")} className="flex-1">
-        <TextInput
-          id="resource_id"
-          name="resource_id"
-          defaultValue={searchParams.get("resource_id") ?? ""}
-          placeholder={t("resourceIdPlaceholder")}
-        />
-      </FormField>
-      <Button type="submit" disabled={pending}>
-        {pending ? "…" : t("showLinksButton")}
-      </Button>
+    <Form onSubmit={onSubmit}>
+      <Inline align="end">
+        <FormField name="resource_type" label={t("resourceTypeLabel")}>
+          <Select
+            name="resource_type"
+            defaultValue={searchParams.get("resource_type") ?? types[0]}
+            options={options}
+            aria-label={t("resourceTypeLabel")}
+          />
+        </FormField>
+        <FormField name="resource_id" label={t("resourceIdLabel")} className="flex-1">
+          <TextInput
+            id="resource_id"
+            name="resource_id"
+            defaultValue={searchParams.get("resource_id") ?? ""}
+            placeholder={t("resourceIdPlaceholder")}
+          />
+        </FormField>
+        <Button type="submit" disabled={pending}>
+          {pending ? "…" : t("showLinksButton")}
+        </Button>
+      </Inline>
     </Form>
   );
 }

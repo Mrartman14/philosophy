@@ -11,7 +11,7 @@ import {
   type SVGProps,
 } from "react";
 
-import { Button, Form, IconButton, TextInput } from "@/components/ui";
+import { Button, Form, IconButton, Inline, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -57,18 +57,20 @@ function PageForm() {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
-      <TextInput
-        name="q"
-        defaultValue={initialQ}
-        placeholder={t("inputPlaceholder")}
-        aria-label={t("inputAriaLabel")}
-        maxLength={200}
-        className="min-w-60 flex-1"
-      />
-      <Button type="submit" disabled={pending}>
-        {pending ? "…" : t("submitButton")}
-      </Button>
+    <Form onSubmit={onSubmit}>
+      <Inline align="end">
+        <TextInput
+          name="q"
+          defaultValue={initialQ}
+          placeholder={t("inputPlaceholder")}
+          aria-label={t("inputAriaLabel")}
+          maxLength={200}
+          className="min-w-60 flex-1"
+        />
+        <Button type="submit" disabled={pending}>
+          {pending ? "…" : t("submitButton")}
+        </Button>
+      </Inline>
     </Form>
   );
 }
@@ -112,28 +114,30 @@ function HeaderInput() {
 
   if (open) {
     return (
-      <Form onSubmit={onSubmit} className="flex items-center gap-2">
-        <input
-          ref={inputRef}
-          type="search"
-          value={value}
-          onChange={(e) => { setValue(e.target.value); }}
-          onKeyDown={onKeyDown}
-          onBlur={() => {
-            if (!value.trim()) setOpen(false);
-          }}
-          maxLength={200}
-          placeholder={t("headerInputPlaceholder")}
-          aria-label={t("inputAriaLabel")}
-          className="h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm outline-0 focus:border-(--color-accent) sm:w-[200px]"
-        />
-        <IconButton
-          type="submit"
-          aria-label={t("headerSubmitAriaLabel")}
-          className="text-xl text-(--color-fg-muted) hover:bg-transparent hover:text-(--color-accent)"
-        >
-          <SearchIcon />
-        </IconButton>
+      <Form onSubmit={onSubmit}>
+        <Inline align="center">
+          <input
+            ref={inputRef}
+            type="search"
+            value={value}
+            onChange={(e) => { setValue(e.target.value); }}
+            onKeyDown={onKeyDown}
+            onBlur={() => {
+              if (!value.trim()) setOpen(false);
+            }}
+            maxLength={200}
+            placeholder={t("headerInputPlaceholder")}
+            aria-label={t("inputAriaLabel")}
+            className="h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm outline-0 focus:border-(--color-accent) sm:w-[200px]"
+          />
+          <IconButton
+            type="submit"
+            aria-label={t("headerSubmitAriaLabel")}
+            className="text-xl text-(--color-fg-muted) hover:bg-transparent hover:text-(--color-accent)"
+          >
+            <SearchIcon />
+          </IconButton>
+        </Inline>
       </Form>
     );
   }

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormField, TextInput, Textarea, SubmitButton, useToast } from "@/components/ui";
+import { Form, FormField, TextInput, Textarea, Stack, SubmitButton, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -56,15 +56,17 @@ export function CanvasEditForm({ canvas, etag }: Props) {
 
   return (
     <Form action={action} errors={fieldErrors}>
-      <input type="hidden" name="id" value={canvas.id ?? ""} />
-      <input type="hidden" name="etag" value={etag ?? ""} />
-      <FormField name="title" label={t("editForm.titleLabel")} required>
-        <TextInput name="title" defaultValue={canvas.title ?? ""} required />
-      </FormField>
-      <FormField name="data" label={t("editForm.dataLabel")}>
-        <Textarea name="data" rows={14} defaultValue={dataJson} className="font-mono text-xs" />
-      </FormField>
-      <SubmitButton>{t("editForm.submitSave")}</SubmitButton>
+      <Stack>
+        <input type="hidden" name="id" value={canvas.id ?? ""} />
+        <input type="hidden" name="etag" value={etag ?? ""} />
+        <FormField name="title" label={t("editForm.titleLabel")} required>
+          <TextInput name="title" defaultValue={canvas.title ?? ""} required />
+        </FormField>
+        <FormField name="data" label={t("editForm.dataLabel")}>
+          <Textarea name="data" rows={14} defaultValue={dataJson} className="font-mono text-xs" />
+        </FormField>
+        <SubmitButton>{t("editForm.submitSave")}</SubmitButton>
+      </Stack>
     </Form>
   );
 }

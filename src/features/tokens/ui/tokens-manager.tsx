@@ -9,6 +9,7 @@ import {
   FormField,
   IdempotencyField,
   Select,
+  Stack,
   TextInput,
   useToast,
 } from "@/components/ui";
@@ -84,35 +85,34 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
   return (
     <div className="flex flex-col gap-6">
       {canManage && (
-        <Form
-          action={formAction}
-          className="flex flex-col gap-3 rounded-lg border border-(--color-border) bg-(--color-surface) p-4"
-        >
-          <IdempotencyField result={state} />
-          <div className="flex flex-wrap items-end gap-3">
-            <FormField name="label" label={t("labelField")} required className="flex-1">
-              <TextInput
-                name="label"
-                required
-                maxLength={100}
-                placeholder={t("labelPlaceholder")}
-              />
-            </FormField>
-            <FormField name="expires_in_days" label={t("expiresField")}>
-              <Select
-                name="expires_in_days"
-                defaultValue=""
-                options={expiryOptions}
-                aria-label={t("expiresField")}
-                className="w-40"
-              />
-            </FormField>
-            <Button type="submit" disabled={pending}>
-              {pending ? "…" : t("createButton")}
-            </Button>
-          </div>
-          <p className="text-xs text-(--color-fg-muted)">{t("createHint")}</p>
-          <p className="text-xs text-(--color-fg-muted)">{t("limitsHint")}</p>
+        <Form action={formAction}>
+          <Stack className="rounded-lg border border-(--color-border) bg-(--color-surface) p-4">
+            <IdempotencyField result={state} />
+            <div className="flex flex-wrap items-end gap-3">
+              <FormField name="label" label={t("labelField")} required className="flex-1">
+                <TextInput
+                  name="label"
+                  required
+                  maxLength={100}
+                  placeholder={t("labelPlaceholder")}
+                />
+              </FormField>
+              <FormField name="expires_in_days" label={t("expiresField")}>
+                <Select
+                  name="expires_in_days"
+                  defaultValue=""
+                  options={expiryOptions}
+                  aria-label={t("expiresField")}
+                  className="w-40"
+                />
+              </FormField>
+              <Button type="submit" disabled={pending}>
+                {pending ? "…" : t("createButton")}
+              </Button>
+            </div>
+            <p className="text-xs text-(--color-fg-muted)">{t("createHint")}</p>
+            <p className="text-xs text-(--color-fg-muted)">{t("limitsHint")}</p>
+          </Stack>
         </Form>
       )}
 

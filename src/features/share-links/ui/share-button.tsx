@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { Button, Dialog, Form, FormField, IdempotencyField, TextInput, useToast } from "@/components/ui";
+import { Button, Dialog, Form, FormField, IdempotencyField, Inline, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
@@ -78,16 +78,18 @@ export function ShareButton({
       description={t("shareDialogDesc")}
     >
       <div className="flex flex-col gap-4">
-        <Form action={formAction} className="flex items-end gap-2">
-          <input type="hidden" name="resource_type" value={resourceType} />
-          <input type="hidden" name="resource_id" value={resourceId} />
-          <IdempotencyField result={state} />
-          <FormField name="expires_at" label={t("expiresAtLabel")} className="flex-1">
-            <TextInput id="expires_at" type="datetime-local" name="expires_at" />
-          </FormField>
-          <Button type="submit" disabled={pending}>
-            {pending ? "…" : t("createLinkButton")}
-          </Button>
+        <Form action={formAction}>
+          <Inline align="end">
+            <input type="hidden" name="resource_type" value={resourceType} />
+            <input type="hidden" name="resource_id" value={resourceId} />
+            <IdempotencyField result={state} />
+            <FormField name="expires_at" label={t("expiresAtLabel")} className="flex-1">
+              <TextInput id="expires_at" type="datetime-local" name="expires_at" />
+            </FormField>
+            <Button type="submit" disabled={pending}>
+              {pending ? "…" : t("createLinkButton")}
+            </Button>
+          </Inline>
         </Form>
 
         <ShareLinkList

@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, Form, TextInput } from "@/components/ui";
+import { Button, Form, Inline, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -26,11 +26,13 @@ export function CanvasSearch() {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="flex items-center gap-2">
-      <TextInput name="q" defaultValue={searchParams.get("q") ?? ""} placeholder={t("search.placeholder")} />
-      <Button type="submit" disabled={pending}>
-        {pending ? "…" : t("search.submit")}
-      </Button>
+    <Form onSubmit={onSubmit}>
+      <Inline align="center">
+        <TextInput name="q" defaultValue={searchParams.get("q") ?? ""} placeholder={t("search.placeholder")} />
+        <Button type="submit" disabled={pending}>
+          {pending ? "…" : t("search.submit")}
+        </Button>
+      </Inline>
     </Form>
   );
 }

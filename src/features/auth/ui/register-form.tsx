@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import {
   Form,
   FormField,
+  Stack,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -40,33 +41,35 @@ export function RegisterForm({ next }: RegisterFormProps) {
       : null;
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-sm">
-      <input type="hidden" name="next" value={next} />
-      <FormField name="username" label={t("register.usernameLabel")} required>
-        <TextInput name="username" required autoComplete="username" />
-      </FormField>
-      <FormField name="password" label={t("register.passwordLabel")} required>
-        <TextInput
-          name="password"
-          type="password"
-          required
-          autoComplete="new-password"
-        />
-      </FormField>
-      <FormField name="password_confirm" label={t("register.passwordConfirmLabel")} required>
-        <TextInput
-          name="password_confirm"
-          type="password"
-          required
-          autoComplete="new-password"
-        />
-      </FormField>
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-sm">
+        <input type="hidden" name="next" value={next} />
+        <FormField name="username" label={t("register.usernameLabel")} required>
+          <TextInput name="username" required autoComplete="username" />
+        </FormField>
+        <FormField name="password" label={t("register.passwordLabel")} required>
+          <TextInput
+            name="password"
+            type="password"
+            required
+            autoComplete="new-password"
+          />
+        </FormField>
+        <FormField name="password_confirm" label={t("register.passwordConfirmLabel")} required>
+          <TextInput
+            name="password_confirm"
+            type="password"
+            required
+            autoComplete="new-password"
+          />
+        </FormField>
 
-      {genericError && <p className="text-sm text-red-600">{genericError}</p>}
+        {genericError && <p className="text-sm text-red-600">{genericError}</p>}
 
-      <div>
-        <SubmitButton>{t("register.submit")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("register.submit")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

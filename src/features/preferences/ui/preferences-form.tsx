@@ -2,7 +2,7 @@
 // src/features/preferences/ui/preferences-form.tsx
 import { useActionState } from "react";
 
-import { Form, FormField, Select, SubmitButton } from "@/components/ui";
+import { Form, FormField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -30,39 +30,37 @@ export function PreferencesForm({
   ];
 
   return (
-    <Form
-      action={action}
-      errors={fieldErrors}
-      className="flex max-w-xl flex-col gap-4"
-    >
-      <FormField
-        name="reading_mode"
-        label={t("readingModeLabel")}
-        description={t("readingModeDescription")}
-      >
-        <Select
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-xl">
+        <FormField
           name="reading_mode"
-          defaultValue={initialReadingMode}
-          options={READING_MODE_OPTIONS}
-          aria-label={t("readingModeAriaLabel")}
-        />
-      </FormField>
+          label={t("readingModeLabel")}
+          description={t("readingModeDescription")}
+        >
+          <Select
+            name="reading_mode"
+            defaultValue={initialReadingMode}
+            options={READING_MODE_OPTIONS}
+            aria-label={t("readingModeAriaLabel")}
+          />
+        </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: t("updateSettingsAction") })}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
-      {state.success && state.data !== null && (
-        <p className="text-sm text-(--color-fg-muted)">{t("settingsSaved")}</p>
-      )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: t("updateSettingsAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
+        {state.success && state.data !== null && (
+          <p className="text-sm text-(--color-fg-muted)">{t("settingsSaved")}</p>
+        )}
 
-      <div>
-        <SubmitButton>{t("saveButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("saveButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

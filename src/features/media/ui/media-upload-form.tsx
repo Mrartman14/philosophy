@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
-import { Button, Form, Label, Select, useToast } from "@/components/ui";
+import { Button, Form, Label, Select, Stack, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { uploadMedia } from "../upload-media";
@@ -58,37 +58,39 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
   }
 
   return (
-    <Form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1">
-        <Label>{t("uploadTypeLabel")}</Label>
-        <Select
-          aria-label={t("uploadTypeLabel")}
-          value={type}
-          onValueChange={(v) => { setType(v as "video" | "audio"); }}
-          options={[
-            { value: "video", label: t("uploadVideoOption") },
-            { value: "audio", label: t("uploadAudioOption") },
-          ]}
-        />
-      </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="media-file">
-          {t("uploadFileLabel")}
-        </Label>
-        <input
-          id="media-file"
-          ref={inputRef}
-          type="file"
-          accept={ACCEPT}
-          className="text-sm"
-        />
-      </div>
-      <Button type="submit" className="self-start" disabled={busy || pending}>
-        {busy ? t("uploadBusy") : t("uploadSubmit")}
-      </Button>
-      <p className="text-xs text-(--color-fg-muted)">
-        {t("uploadHint")}
-      </p>
+    <Form onSubmit={(e) => { void handleSubmit(e); }}>
+      <Stack>
+        <div className="flex flex-col gap-1">
+          <Label>{t("uploadTypeLabel")}</Label>
+          <Select
+            aria-label={t("uploadTypeLabel")}
+            value={type}
+            onValueChange={(v) => { setType(v as "video" | "audio"); }}
+            options={[
+              { value: "video", label: t("uploadVideoOption") },
+              { value: "audio", label: t("uploadAudioOption") },
+            ]}
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="media-file">
+            {t("uploadFileLabel")}
+          </Label>
+          <input
+            id="media-file"
+            ref={inputRef}
+            type="file"
+            accept={ACCEPT}
+            className="text-sm"
+          />
+        </div>
+        <Button type="submit" className="self-start" disabled={busy || pending}>
+          {busy ? t("uploadBusy") : t("uploadSubmit")}
+        </Button>
+        <p className="text-xs text-(--color-fg-muted)">
+          {t("uploadHint")}
+        </p>
+      </Stack>
     </Form>
   );
 }

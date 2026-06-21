@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormField, TextInput, Textarea, Select, SubmitButton, useToast } from "@/components/ui";
+import { Form, FormField, TextInput, Textarea, Select, Stack, SubmitButton, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -42,27 +42,29 @@ export function CanvasCreateForm() {
 
   return (
     <Form action={action} errors={fieldErrors}>
-      <FormField name="title" label={t("createForm.titleLabel")} required>
-        <TextInput name="title" required />
-      </FormField>
-      <FormField name="visibility" label={t("createForm.visibilityLabel")}>
-        <Select
-          name="visibility"
-          defaultValue="private"
-          options={[
-            { value: "private", label: t("createForm.visibilityPrivate") },
-            { value: "public", label: t("createForm.visibilityPublic") },
-          ]}
-        />
-      </FormField>
-      <FormField
-        name="data"
-        label={t("createForm.dataLabel")}
-        description={t("createForm.dataDescription")}
-      >
-        <Textarea name="data" rows={6} placeholder='{"nodes":[],"edges":[]}' />
-      </FormField>
-      <SubmitButton>{t("createForm.submitCreate")}</SubmitButton>
+      <Stack>
+        <FormField name="title" label={t("createForm.titleLabel")} required>
+          <TextInput name="title" required />
+        </FormField>
+        <FormField name="visibility" label={t("createForm.visibilityLabel")}>
+          <Select
+            name="visibility"
+            defaultValue="private"
+            options={[
+              { value: "private", label: t("createForm.visibilityPrivate") },
+              { value: "public", label: t("createForm.visibilityPublic") },
+            ]}
+          />
+        </FormField>
+        <FormField
+          name="data"
+          label={t("createForm.dataLabel")}
+          description={t("createForm.dataDescription")}
+        >
+          <Textarea name="data" rows={6} placeholder='{"nodes":[],"edges":[]}' />
+        </FormField>
+        <SubmitButton>{t("createForm.submitCreate")}</SubmitButton>
+      </Stack>
     </Form>
   );
 }

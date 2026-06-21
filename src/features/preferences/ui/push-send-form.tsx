@@ -6,6 +6,7 @@ import {
   Form,
   FormField,
   IdempotencyField,
+  Stack,
   SubmitButton,
   TextInput,
   Textarea,
@@ -30,50 +31,48 @@ export function PushSendForm() {
       : {};
 
   return (
-    <Form
-      action={action}
-      errors={fieldErrors}
-      className="flex max-w-xl flex-col gap-4"
-    >
-      <IdempotencyField result={state} />
-      <FormField name="title" label={tPrefs("pushTitleLabel")} required>
-        <TextInput
-          name="title"
-          required
-          maxLength={200}
-          placeholder={tPrefs("pushTitlePlaceholder")}
-        />
-      </FormField>
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-xl">
+        <IdempotencyField result={state} />
+        <FormField name="title" label={tPrefs("pushTitleLabel")} required>
+          <TextInput
+            name="title"
+            required
+            maxLength={200}
+            placeholder={tPrefs("pushTitlePlaceholder")}
+          />
+        </FormField>
 
-      <FormField name="body" label={tPrefs("pushBodyLabel")}>
-        <Textarea name="body" maxLength={1000} rows={4} />
-      </FormField>
+        <FormField name="body" label={tPrefs("pushBodyLabel")}>
+          <Textarea name="body" maxLength={1000} rows={4} />
+        </FormField>
 
-      <FormField
-        name="url"
-        label={tPrefs("pushUrlLabel")}
-        description={tPrefs("pushUrlDescription")}
-      >
-        <TextInput name="url" placeholder="/lectures/…" />
-      </FormField>
+        <FormField
+          name="url"
+          label={tPrefs("pushUrlLabel")}
+          description={tPrefs("pushUrlDescription")}
+        >
+          <TextInput name="url" placeholder="/lectures/…" />
+        </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: tPrefs("pushSendAction") })}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">
-          {tPrefs("pushSendAccepted")}
-        </p>
-      )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: tPrefs("pushSendAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">
+            {tPrefs("pushSendAccepted")}
+          </p>
+        )}
 
-      <div>
-        <SubmitButton>{tPrefs("pushSendButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{tPrefs("pushSendButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }
