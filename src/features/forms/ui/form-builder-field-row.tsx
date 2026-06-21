@@ -1,6 +1,6 @@
 "use client";
 // src/features/forms/ui/form-builder-field-row.tsx
-import { Button, Fieldset, Label, Select, TextInput, Textarea, Checkbox } from "@/components/ui";
+import { Button, Checkbox, Fieldset, FormField, Inline, Label, Select, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { FIELD_TYPES, fieldTypeHasOptions } from "../field-kinds";
@@ -68,8 +68,7 @@ export function FormBuilderFieldRow({
         />
       </div>
 
-      <Label htmlFor={`field-${String(index)}-prompt`} className="flex flex-col gap-1 text-sm">
-        {t("fieldRow.promptLabel")}
+      <FormField name={`prompt-${String(index)}`} label={t("fieldRow.promptLabel")}>
         <TextInput
           id={`field-${String(index)}-prompt`}
           value={field.prompt}
@@ -77,10 +76,9 @@ export function FormBuilderFieldRow({
           maxLength={2000}
           onChange={(e) => { onChange({ ...field, prompt: e.target.value }); }}
         />
-      </Label>
+      </FormField>
 
-      <Label htmlFor={`field-${String(index)}-help`} className="flex flex-col gap-1 text-sm">
-        {t("fieldRow.helpLabel")}
+      <FormField name={`help-${String(index)}`} label={t("fieldRow.helpLabel")}>
         <Textarea
           id={`field-${String(index)}-help`}
           value={field.help_text}
@@ -88,17 +86,17 @@ export function FormBuilderFieldRow({
           rows={2}
           onChange={(e) => { onChange({ ...field, help_text: e.target.value }); }}
         />
-      </Label>
+      </FormField>
 
-      <Label htmlFor={`field-${String(index)}-required`} className="flex items-center gap-2 text-sm">
+      <Inline align="center" className="text-sm">
         <Checkbox
           id={`field-${String(index)}-required`}
           checked={field.required}
           disabled={disabled}
           onCheckedChange={(v) => { onChange({ ...field, required: v }); }}
         />
-        {t("fieldRow.requiredLabel")}
-      </Label>
+        <Label htmlFor={`field-${String(index)}-required`}>{t("fieldRow.requiredLabel")}</Label>
+      </Inline>
 
       {hasOptions && (
         <div className="flex flex-col gap-2">

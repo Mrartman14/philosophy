@@ -2,7 +2,7 @@
 // src/features/forms/ui/form-builder.tsx
 import { useState } from "react";
 
-import { Button, Label, Select, TextInput, Textarea } from "@/components/ui";
+import { Button, FormField, Label, Select, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { FieldType, SubmissionMode, Visibility } from "../types";
@@ -96,20 +96,17 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
     <div className="flex flex-col gap-4">
       <input type="hidden" name="payload" value={payload} />
 
-      <Label htmlFor="form-builder-title" className="flex flex-col gap-1 text-sm">
-        {t("builder.titleLabel")}
+      <FormField name="title" label={t("builder.titleLabel")} required>
         <TextInput id="form-builder-title" value={title} disabled={disabled} maxLength={500} onChange={(e) => { setTitle(e.target.value); }} required />
-      </Label>
+      </FormField>
 
-      <Label htmlFor="form-builder-description" className="flex flex-col gap-1 text-sm">
-        {t("builder.descriptionLabel")}
+      <FormField name="description" label={t("builder.descriptionLabel")}>
         <Textarea id="form-builder-description" value={description} disabled={disabled} rows={3} onChange={(e) => { setDescription(e.target.value); }} />
-      </Label>
+      </FormField>
 
-      <Label htmlFor="form-builder-after-submit" className="flex flex-col gap-1 text-sm">
-        {t("builder.afterSubmitLabel")}
+      <FormField name="after_submit" label={t("builder.afterSubmitLabel")}>
         <Textarea id="form-builder-after-submit" value={afterSubmit} disabled={disabled} rows={2} onChange={(e) => { setAfterSubmit(e.target.value); }} />
-      </Label>
+      </FormField>
 
       {mode === "create" && (
         <div className="flex flex-col gap-2">

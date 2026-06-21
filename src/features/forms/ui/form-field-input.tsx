@@ -1,7 +1,7 @@
 "use client";
 // src/features/forms/ui/form-field-input.tsx
 import { AstRender } from "@/components/ast-render";
-import { Label, TextInput, Textarea } from "@/components/ui";
+import { Inline, Label, TextInput, Textarea } from "@/components/ui";
 
 import type { AnswerInput } from "../answer-codec";
 import type { FormField } from "../types";
@@ -63,16 +63,17 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
       {type === "single_choice" && (
         <div className="flex flex-col gap-1">
           {options.map((o) => (
-            <Label key={o.id} className="flex items-center gap-2 text-sm">
+            <Inline key={o.id} align="center" className="text-sm">
               <input
+                id={`field-${field.id}-opt-${o.id}`}
                 type="radio"
                 name={`field-${field.id}`}
                 disabled={disabled}
                 checked={"optionId" in value && value.optionId === o.id}
                 onChange={() => { onChange({ optionId: o.id ?? "" }); }}
               />
-              {o.label}
-            </Label>
+              <Label htmlFor={`field-${field.id}-opt-${o.id}`}>{o.label}</Label>
+            </Inline>
           ))}
         </div>
       )}
@@ -82,8 +83,9 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
             const ids = "optionIds" in value ? value.optionIds : [];
             const checked = ids.includes(o.id ?? "");
             return (
-              <Label key={o.id} className="flex items-center gap-2 text-sm">
+              <Inline key={o.id} align="center" className="text-sm">
                 <input
+                  id={`field-${field.id}-opt-${o.id}`}
                   type="checkbox"
                   disabled={disabled}
                   checked={checked}
@@ -93,8 +95,8 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
                     onChange({ optionIds: next });
                   }}
                 />
-                {o.label}
-              </Label>
+                <Label htmlFor={`field-${field.id}-opt-${o.id}`}>{o.label}</Label>
+              </Inline>
             );
           })}
         </div>
