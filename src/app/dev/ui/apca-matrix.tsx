@@ -86,6 +86,9 @@ export function ApcaMatrix() {
                 {abs === null ? "" : pass ? "pass" : "FAIL"}
               </span>
             </div>
+            {/* p.note намеренно остаётся английским техническим лейблом (зеркалит лейблы пар в CI-гарде):
+                динамический ключ t(`notes.${fg}__${bg}`) не типизируется при strict typed-messages
+                (декартово произведение ColorTokenName × ColorTokenName даёт ~900 несуществующих ключей). */}
             <span className="text-xs text-(--color-fg-subtle)">{p.note}</span>
           </li>
         );

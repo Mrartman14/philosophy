@@ -1,6 +1,9 @@
 // src/app/dev/ui/page.tsx — публичная витрина дизайн-системы (APCA + appearance + motion)
 import type { Metadata } from "next";
 
+// ВНИМАНИЕ: это ПУБЛИЧНАЯ страница, тянущая компонент из аутентифицированного /me-дерева.
+// AppearanceSettings ОБЯЗАН оставаться чистым client-компонентом (без getMe/server-only импортов),
+// иначе публичная витрина сломается или утечёт что-то из приватной зоны.
 import { AppearanceSettings } from "@/app/me/settings/appearance/appearance-settings";
 import { getT } from "@/i18n";
 

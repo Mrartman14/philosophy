@@ -23,6 +23,7 @@ export function srgbToY([r, g, b]: [number, number, number]): number {
 
 /** APCA-контраст Lc (~ -108..106). txtY — текст, bgY — фон. */
 export function apcaContrast(txtY: number, bgY: number): number {
+  if (Number.isNaN(txtY) || Number.isNaN(bgY) || Math.min(txtY, bgY) < 0 || Math.max(txtY, bgY) > 1.1) return 0;
   const tY = txtY > BLK_THRS ? txtY : txtY + Math.pow(BLK_THRS - txtY, BLK_CLMP);
   const bY = bgY > BLK_THRS ? bgY : bgY + Math.pow(BLK_THRS - bgY, BLK_CLMP);
   if (Math.abs(bY - tY) < DELTA_Y_MIN) return 0;

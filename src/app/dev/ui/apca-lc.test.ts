@@ -25,4 +25,8 @@ describe("apca-lc", () => {
     expect(apcaContrast(srgbToY([0, 0, 0]), srgbToY([255, 255, 255]))).toBeCloseTo(106.04, 0);
     expect(apcaContrast(srgbToY([255, 255, 255]), srgbToY([0, 0, 0]))).toBeCloseTo(-107.88, 0);
   });
+  it("input guard: NaN or Y out of [0, 1.1] → 0", () => {
+    expect(apcaContrast(NaN, 0.5)).toBe(0);
+    expect(apcaContrast(0.5, 2)).toBe(0);
+  });
 });

@@ -341,10 +341,14 @@ Vitest с `jsdom`. Конфиг — `vitest.config.ts`. `server-only` алиас
   `create-action`).
 
 Что НЕ пишем здесь: e2e, скриншот-тесты, тесты UI-примитивов
-(они покрываются использованием в `/dev/ui` smoke-page).
+(они покрываются использованием в `/dev/kit` smoke-page — dev-only).
 
-`/dev/ui` (`src/app/dev/ui/page.tsx`) — визуальный smoke check для UI-kit.
-Удалится, когда фичи покроют примитивы реальным использованием.
+`/dev/kit` (`src/app/dev/kit/page.tsx`) — визуальный smoke check для UI-kit,
+только для dev (`notFound()` в проде). Удалится, когда фичи покроют примитивы
+реальным использованием.
+
+`/dev/ui` (`src/app/dev/ui/page.tsx`) — публичная витрина дизайн-системы
+(APCA + appearance + motion), не smoke-страница.
 
 ---
 
