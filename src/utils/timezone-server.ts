@@ -24,6 +24,8 @@ import {
  * (флаг `allowUnsafeDynamicCyclicDependency` не включён), поэтому единственный
  * способ разорвать цикл — убрать статическое ребро на слайс целиком.
  * Семантика сохранена: только поле `timezone`, грейсфул на любой ошибке.
+ * Канонический читатель преференсов — `getPreferences` (`@/features/preferences`);
+ * здесь намеренный точечный дубль одного поля ради разрыва цикла.
  */
 const getBackendTzPref = cache(async (): Promise<string | undefined> => {
   const api = await createApiClient();

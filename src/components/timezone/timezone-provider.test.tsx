@@ -53,6 +53,25 @@ describe("TimezoneProvider", () => {
     expect(document.cookie).toBe("");
   });
 
+  it("system: невалидная браузерная зона → коррекции нет, cookie не пишется", () => {
+    // Браузер отдаёт мусорную зону; isValidZone бросает на ней (opts.timeZone),
+    // поэтому ветка коррекции не срабатывает и resolved остаётся серверным.
+    vi.spyOn(Intl, "DateTimeFormat").mockImplementation(function (
+      _locale?: unknown,
+      opts?: Intl.DateTimeFormatOptions,
+    ) {
+      if (opts?.timeZone) throw new RangeError("invalid time zone");
+      return { resolvedOptions: () => ({ timeZone: "Not/AZone" }) };
+    } as unknown as typeof Intl.DateTimeFormat);
+    render(
+      <TimezoneProvider initial={{ pref: "system", resolved: "Europe/Moscow" }}>
+        <Probe />
+      </TimezoneProvider>,
+    );
+    expect(screen.getByTestId("tz").textContent).toBe("Europe/Moscow");
+    expect(document.cookie).toBe("");
+  });
+
   it("useTz вне провайдера → фолбэк", () => {
     render(<Probe />);
     expect(screen.getByTestId("tz").textContent).toBe("Europe/Moscow");

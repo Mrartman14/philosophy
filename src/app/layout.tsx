@@ -122,24 +122,24 @@ export default async function RootLayout({
       >
         <I18nProvider locale={locale} messages={messages}>
           <TimezoneProvider initial={{ pref: tzPref, resolved: tzResolved }}>
-          <AppearanceProvider initial={appearance}>
-            <ToastProvider>
-              <OfflineIdentityGuard userId={me?.id ?? null} />
-              <AppHeader />
-              <StatusBanner me={me} />
-              <ActiveBanners />
-              <InstallBanner />
-              <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
-                {children}
-              </main>
-              <WebVitalsReporter />
-              <UpdatePrompt />
-              <Suspense>
-                <YandexMetrika />
-              </Suspense>
-              <Toaster />
-            </ToastProvider>
-          </AppearanceProvider>
+            <AppearanceProvider initial={appearance}>
+              <ToastProvider>
+                <OfflineIdentityGuard userId={me?.id ?? null} />
+                <AppHeader />
+                <StatusBanner me={me} />
+                <ActiveBanners />
+                <InstallBanner />
+                <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
+                  {children}
+                </main>
+                <WebVitalsReporter />
+                <UpdatePrompt />
+                <Suspense>
+                  <YandexMetrika />
+                </Suspense>
+                <Toaster />
+              </ToastProvider>
+            </AppearanceProvider>
           </TimezoneProvider>
         </I18nProvider>
       </body>
