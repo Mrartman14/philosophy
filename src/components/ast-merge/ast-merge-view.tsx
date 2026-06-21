@@ -2,6 +2,9 @@
 import { useMemo, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
+// Deep-импорт: модуль normalize tiptap-free, держим его глубоким импортом, чтобы
+// не тянуть баррель редактора (@/components/ast-editor) в этот клиентский вьюх.
+import { normalizeBlocks } from "@/components/ast-editor/normalize";
 import { AstRender } from "@/components/ast-render";
 import { Button } from "@/components/ui";
 
@@ -69,13 +72,22 @@ function badgeFor(status: MergeStatus, l: MergeViewLabels): string | null {
 }
 
 export function AstMergeView({
-  base,
-  mine,
-  theirs,
+  base: rawBase,
+  mine: rawMine,
+  theirs: rawTheirs,
   labels,
   onApply,
   onCancel,
 }: Props) {
+  // Нормализуем все три набора в каноническую редакторную форму перед classify+diff:
+  // base/theirs приходят серверной формой (произвольный порядок ключей, без `text`),
+  // mine — из сериализатора редактора. Без нормализации даже нетронутый блок выходит
+  // неравным → ложный mine-only/conflict → серверная правка предлагается к отбросу
+  // (потеря данных). См. normalize-classify.test.ts.
+  const base = useMemo(() => normalizeBlocks(rawBase), [rawBase]);
+  const mine = useMemo(() => normalizeBlocks(rawMine), [rawMine]);
+  const theirs = useMemo(() => normalizeBlocks(rawTheirs), [rawTheirs]);
+
   const entries = useMemo(
     () => classifyBlocks(base, mine, theirs),
     [base, mine, theirs],

@@ -32,8 +32,11 @@ const labels: MergeViewLabels = {
   applyButton: "apply",
   cancelButton: "cancel",
 };
+// Реалистичная редакторная форма блока: параграф несёт `content` (источник
+// истины), `text` — производное. Без `content` нормализация (normalizeBlocks)
+// схлопнула бы `text` в "" — реальный редактор такие блоки не выдаёт.
 function p(id: string, text: string): AstBlock {
-  return { id, type: "paragraph", text };
+  return { id, type: "paragraph", text, content: [{ type: "text", text }] };
 }
 const noop = () => undefined;
 
