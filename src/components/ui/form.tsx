@@ -3,8 +3,6 @@
 import { Form as BaseForm } from "@base-ui/react/form";
 import { forwardRef, type ComponentProps, type ReactNode } from "react";
 
-import { cn } from "./cn";
-
 interface FormProps extends Omit<ComponentProps<typeof BaseForm>, "children" | "errors"> {
   errors?: Record<string, string>;
   className?: string;
@@ -25,7 +23,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
     <BaseForm
       ref={ref}
       errors={errors}
-      className={cn("flex flex-col gap-4", className)}
+      className={className ?? "flex flex-col gap-4"}
       {...rest}
     >
       {children}

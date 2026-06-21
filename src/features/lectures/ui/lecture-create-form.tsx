@@ -34,7 +34,7 @@ export function LectureCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="max-w-xl">
+    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
       <IdempotencyField result={state} />
       <FormField name="title" label={tL("titleLabel")} required>
         <TextInput name="title" required maxLength={200} />

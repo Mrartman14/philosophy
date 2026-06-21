@@ -34,7 +34,7 @@ export function GlossaryCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="max-w-xl">
+    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
       <IdempotencyField result={state} />
       <FormField name="title" label={t("titleLabel")} required>
         <TextInput name="title" required maxLength={300} placeholder={t("titlePlaceholder")} />

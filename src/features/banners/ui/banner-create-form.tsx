@@ -43,7 +43,7 @@ export function BannerCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="max-w-xl">
+    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
       {/* Hidden input: omitted-чекбокс в FormData неотличим от «не менять». */}
       <input
         type="hidden"

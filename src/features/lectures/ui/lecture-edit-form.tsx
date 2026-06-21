@@ -34,7 +34,7 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
 
   return (
     <div className="flex flex-col gap-6">
-      <Form action={action} errors={fieldErrors} className="max-w-xl">
+      <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
         <input type="hidden" name="id" value={lecture.id} />
         <input type="hidden" name="version" value={String(lecture.version ?? "")} />
 

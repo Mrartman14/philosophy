@@ -40,7 +40,7 @@ export function RegisterForm({ next }: RegisterFormProps) {
       : null;
 
   return (
-    <Form action={action} errors={fieldErrors} className="max-w-sm">
+    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-sm">
       <input type="hidden" name="next" value={next} />
       <FormField name="username" label={t("register.usernameLabel")} required>
         <TextInput name="username" required autoComplete="username" />
