@@ -8,9 +8,16 @@ import vitest from "eslint-plugin-vitest";
 
 // Общие паттерны no-restricted-imports (flat-config перезаписывает, не мержит опции
 // правила → каждый матчнувший блок должен нести нужные паттерны целиком).
+// Блокируем любой deep-import @/features/<entity>/<…>, КРОМЕ публичных входов
+// слайса: index.ts (server) и client.ts (client-safe, конвенции §2.1).
+// Прежний extglob `@/features/*/!(index)` был МЁРТВ — no-restricted-imports
+// (minimatch) не разворачивает negation-extglob, поэтому одноуровневые
+// deep-imports (`@/features/auth/cookie-config`, `@/features/lectures/cover-url`)
+// проходили мимо гарда. Явная пара globs + gitignore-style `!` для client.
 const DEEP_IMPORT_PATTERN = {
-  group: ["@/features/*/!(index)", "@/features/*/*/**"],
-  message: "Импортируй фичу через её index.ts (@/features/<entity>).",
+  group: ["@/features/*/*", "@/features/*/*/**", "!@/features/*/client"],
+  message:
+    "Импортируй фичу через её публичный вход: @/features/<entity> (index.ts) или @/features/<entity>/client (client-safe).",
 };
 const NO_NEXT_INTL_PATTERN = {
   group: ["next-intl", "next-intl/*"],

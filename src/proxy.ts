@@ -6,7 +6,7 @@ import {
   ACCESS_FALLBACK_MAX_AGE,
   REFRESH_MAX_AGE,
   authCookieOptions,
-} from "@/features/auth/cookie-config";
+} from "@/features/auth/client";
 import { buildSecurityHeaders, type SecurityHeaders } from "@/security/csp";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8080";

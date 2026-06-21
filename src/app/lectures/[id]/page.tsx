@@ -7,12 +7,12 @@ import { Skeleton } from "@/components/ui";
 import { CommentSection } from "@/features/comments";
 import {
   getLectureById,
+  lectureCoverUrl,
   LectureDetail,
   LectureDocumentsSection,
   LectureExportLinks,
   LectureMediaSection,
 } from "@/features/lectures";
-import { lectureCoverUrl } from "@/features/lectures/cover-url";
 import {
   getLectureSubscription,
   LectureSubscribeButton,
