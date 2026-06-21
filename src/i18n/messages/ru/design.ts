@@ -6,6 +6,7 @@ const design = {
   tokensTitle: "Токены — APCA-контраст",
   tokensHint:
     "Контраст каждой пары посчитан в браузере (APCA Lc) и сверяется с целевым минимумом — как CI-гард.",
+  matrixUnavailable: "Не удалось вычислить контраст в этом браузере.",
   motionTitle: "Движение",
   motionStatusPrefix: "Reduced motion сейчас:",
   motionOn: "ДА",

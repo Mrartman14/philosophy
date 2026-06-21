@@ -36,18 +36,3 @@ export function apcaContrast(txtY: number, bgY: number): number {
   }
   return out * 100;
 }
-
-/** Парсит CSS `rgb(r,g,b)` / `rgb(r g b)` / `rgba(...)` → [r,g,b] (0..255) или null. */
-export function parseRgb(s: string): [number, number, number] | null {
-  const m = /rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(s);
-  if (!m) return null;
-  return [Number(m[1]), Number(m[2]), Number(m[3])];
-}
-
-/** Lc для пары CSS-цветов (текст, фон) как их вернул getComputedStyle. null — если не распарсилось. */
-export function apcaLc(fgColor: string, bgColor: string): number | null {
-  const fg = parseRgb(fgColor);
-  const bg = parseRgb(bgColor);
-  if (!fg || !bg) return null;
-  return apcaContrast(srgbToY(fg), srgbToY(bg));
-}

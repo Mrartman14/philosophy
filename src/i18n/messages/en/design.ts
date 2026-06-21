@@ -8,6 +8,7 @@ const design = {
   tokensTitle: "Tokens — APCA contrast",
   tokensHint:
     "Each pair's contrast is computed in the browser (APCA Lc) and checked against its target minimum — same as the CI guard.",
+  matrixUnavailable: "Could not compute contrast in this browser.",
   motionTitle: "Motion",
   motionStatusPrefix: "Reduced motion now:",
   motionOn: "YES",

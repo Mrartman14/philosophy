@@ -2,14 +2,33 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useAppearance } from "@/components/appearance";
+import { useT } from "@/i18n/client";
 import { CONTRAST_PAIRS } from "@/styles/tokens/apca-targets";
 
-import { apcaLc } from "./apca-lc";
+import { srgbToY, apcaContrast } from "./apca-lc";
+
+// module-level (outside component): 1px canvas resolver — конвертит ЛЮБОЙ CSS-цвет (oklch/oklab/color/rgb) в sRGB 0..255
+let _ctx: CanvasRenderingContext2D | null | undefined;
+function cssToRgb(color: string): [number, number, number] | null {
+  if (typeof document === "undefined") return null;
+  if (_ctx === undefined) {
+    const c = document.createElement("canvas");
+    c.width = 1; c.height = 1;
+    _ctx = c.getContext("2d", { colorSpace: "srgb" });
+  }
+  if (!_ctx) return null;
+  _ctx.fillStyle = color;
+  _ctx.fillRect(0, 0, 1, 1);
+  const d = _ctx.getImageData(0, 0, 1, 1, { colorSpace: "srgb" }).data;
+  return [d[0] ?? 0, d[1] ?? 0, d[2] ?? 0];
+}
 
 export function ApcaMatrix() {
   const { appearance } = useAppearance();
+  const t = useT("design");
   const rootRef = useRef<HTMLUListElement>(null);
   const [lcs, setLcs] = useState<(number | null)[]>(() => CONTRAST_PAIRS.map(() => null));
+  const [ran, setRan] = useState(false);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -20,9 +39,12 @@ export function ApcaMatrix() {
           const fgEl = root.querySelector<HTMLElement>(`[data-i="${i}"] [data-fg]`);
           const bgEl = root.querySelector<HTMLElement>(`[data-i="${i}"] [data-bg]`);
           if (!fgEl || !bgEl) return null;
-          return apcaLc(getComputedStyle(fgEl).color, getComputedStyle(bgEl).backgroundColor);
+          const fg = cssToRgb(getComputedStyle(fgEl).color);
+          const bg = cssToRgb(getComputedStyle(bgEl).backgroundColor);
+          return fg && bg ? apcaContrast(srgbToY(fg), srgbToY(bg)) : null;
         }),
       );
+      setRan(true);
     };
     recompute();
     const mqs = [
@@ -33,7 +55,13 @@ export function ApcaMatrix() {
     return () => { mqs.forEach((m) => { m.removeEventListener("change", recompute); }); };
   }, [appearance.theme, appearance.contrast]);
 
+  const allNull = lcs.every((x) => x == null);
+
   return (
+    <>
+    {ran && allNull ? (
+      <p className="text-sm text-(--color-danger)">{t("matrixUnavailable")}</p>
+    ) : null}
     <ul ref={rootRef} className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
       {CONTRAST_PAIRS.map((p, i) => {
         const lc = lcs[i];
@@ -63,5 +91,6 @@ export function ApcaMatrix() {
         );
       })}
     </ul>
+    </>
   );
 }
