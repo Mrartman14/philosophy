@@ -2,7 +2,7 @@
 "use client";
 import { useActionState, useState } from "react";
 
-import { Checkbox, Form, SubmitButton } from "@/components/ui";
+import { Checkbox, Form, Label, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -66,9 +66,9 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
               onCheckedChange={(checked) => { toggle(tag.id, checked); }}
               aria-label={tag.name}
             />
-            <label htmlFor={`lecture-tag-${tag.id}`} className="cursor-pointer text-sm">
+            <Label htmlFor={`lecture-tag-${tag.id}`} className="cursor-pointer text-sm">
               {tag.name}
-            </label>
+            </Label>
           </li>
         ))}
       </ul>

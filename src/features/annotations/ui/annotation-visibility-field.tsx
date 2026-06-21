@@ -2,6 +2,7 @@
 // src/features/annotations/ui/annotation-visibility-field.tsx
 import { useState } from "react";
 
+import { Fieldset, Label } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 /**
@@ -13,10 +14,9 @@ export function AnnotationVisibilityField() {
   const t = useT("annotations");
   const [visibility, setVisibility] = useState<"private" | "public">("private");
   return (
-    <fieldset className="flex flex-col gap-1 text-sm">
-      <legend className="text-(--color-fg-muted)">{t("visibilityLegend")}</legend>
+    <Fieldset legend={t("visibilityLegend")} className="text-sm">
       <input type="hidden" name="visibility" value={visibility} />
-      <label className="flex items-center gap-2">
+      <Label className="flex items-center gap-2">
         <input
           type="radio"
           name="visibility-radio"
@@ -24,8 +24,8 @@ export function AnnotationVisibilityField() {
           onChange={() => { setVisibility("private"); }}
         />
         {t("visibilityPrivateLabel")}
-      </label>
-      <label className="flex items-center gap-2">
+      </Label>
+      <Label className="flex items-center gap-2">
         <input
           type="radio"
           name="visibility-radio"
@@ -33,10 +33,10 @@ export function AnnotationVisibilityField() {
           onChange={() => { setVisibility("public"); }}
         />
         {t("visibilityPublicLabel")}
-      </label>
+      </Label>
       <p className="text-xs text-(--color-fg-muted)">
         {t("visibilityImmutableNote")}
       </p>
-    </fieldset>
+    </Fieldset>
   );
 }

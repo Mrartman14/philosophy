@@ -1,6 +1,6 @@
 "use client";
 // src/features/forms/ui/form-builder-field-row.tsx
-import { Button, Label, Select, TextInput, Textarea, Checkbox } from "@/components/ui";
+import { Button, Fieldset, Label, Select, TextInput, Textarea, Checkbox } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { FIELD_TYPES, fieldTypeHasOptions } from "../field-kinds";
@@ -41,7 +41,7 @@ export function FormBuilderFieldRow({
   const hasOptions = fieldTypeHasOptions(field.type);
 
   return (
-    <fieldset className="flex flex-col gap-3 rounded border border-(--color-border) p-3">
+    <Fieldset className="gap-3 rounded border border-(--color-border) p-3">
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium">{t("fieldRow.heading", { index: index + 1 })}</span>
         <div className="flex gap-1">
@@ -68,7 +68,7 @@ export function FormBuilderFieldRow({
         />
       </div>
 
-      <label htmlFor={`field-${String(index)}-prompt`} className="flex flex-col gap-1 text-sm">
+      <Label htmlFor={`field-${String(index)}-prompt`} className="flex flex-col gap-1 text-sm">
         {t("fieldRow.promptLabel")}
         <TextInput
           id={`field-${String(index)}-prompt`}
@@ -77,9 +77,9 @@ export function FormBuilderFieldRow({
           maxLength={2000}
           onChange={(e) => { onChange({ ...field, prompt: e.target.value }); }}
         />
-      </label>
+      </Label>
 
-      <label htmlFor={`field-${String(index)}-help`} className="flex flex-col gap-1 text-sm">
+      <Label htmlFor={`field-${String(index)}-help`} className="flex flex-col gap-1 text-sm">
         {t("fieldRow.helpLabel")}
         <Textarea
           id={`field-${String(index)}-help`}
@@ -88,9 +88,9 @@ export function FormBuilderFieldRow({
           rows={2}
           onChange={(e) => { onChange({ ...field, help_text: e.target.value }); }}
         />
-      </label>
+      </Label>
 
-      <label htmlFor={`field-${String(index)}-required`} className="flex items-center gap-2 text-sm">
+      <Label htmlFor={`field-${String(index)}-required`} className="flex items-center gap-2 text-sm">
         <Checkbox
           id={`field-${String(index)}-required`}
           checked={field.required}
@@ -98,7 +98,7 @@ export function FormBuilderFieldRow({
           onCheckedChange={(v) => { onChange({ ...field, required: v }); }}
         />
         {t("fieldRow.requiredLabel")}
-      </label>
+      </Label>
 
       {hasOptions && (
         <div className="flex flex-col gap-2">
@@ -136,6 +136,6 @@ export function FormBuilderFieldRow({
           </Button>
         </div>
       )}
-    </fieldset>
+    </Fieldset>
   );
 }

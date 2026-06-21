@@ -9,6 +9,7 @@ import {
   FormFeedback,
   FormField,
   IdempotencyField,
+  Label,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -52,10 +53,10 @@ export function EventCreateForm() {
         />
       </FormField>
 
-      <label htmlFor="all_day" className="flex items-center gap-2 text-sm">
+      <Label htmlFor="all_day" className="flex items-center gap-2 text-sm">
         <Checkbox id="all_day" name="all_day" checked={allDay} onCheckedChange={setAllDay} />
         {t("fieldAllDay")}
-      </label>
+      </Label>
 
       <FormField
         name="start_date"

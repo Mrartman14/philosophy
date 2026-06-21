@@ -7,6 +7,7 @@ import {
   Button,
   Form,
   IdempotencyField,
+  Label,
   Select,
   TextInput,
   useToast,
@@ -89,7 +90,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
         >
           <IdempotencyField result={state} />
           <div className="flex flex-wrap items-end gap-3">
-            <label className="flex flex-1 flex-col gap-1">
+            <Label className="flex flex-1 flex-col gap-1">
               <span className="text-xs text-(--color-fg-muted)">
                 {t("labelField")}
               </span>
@@ -99,8 +100,8 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
                 maxLength={100}
                 placeholder={t("labelPlaceholder")}
               />
-            </label>
-            <label className="flex flex-col gap-1">
+            </Label>
+            <Label className="flex flex-col gap-1">
               <span className="text-xs text-(--color-fg-muted)">
                 {t("expiresField")}
               </span>
@@ -111,7 +112,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
                 aria-label={t("expiresField")}
                 className="w-40"
               />
-            </label>
+            </Label>
             <Button type="submit" disabled={pending}>
               {pending ? "…" : t("createButton")}
             </Button>

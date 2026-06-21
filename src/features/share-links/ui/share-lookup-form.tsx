@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, Form, Select, TextInput } from "@/components/ui";
+import { Button, Form, Label, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -58,7 +58,7 @@ export function ShareLookupForm({ admin = false }: Props) {
           aria-label={t("resourceTypeLabel")}
         />
       </div>
-      <label htmlFor="resource_id" className="flex flex-1 flex-col gap-1">
+      <Label htmlFor="resource_id" className="flex flex-1 flex-col gap-1">
         <span className="text-xs text-(--color-fg-muted)">{t("resourceIdLabel")}</span>
         <TextInput
           id="resource_id"
@@ -66,7 +66,7 @@ export function ShareLookupForm({ admin = false }: Props) {
           defaultValue={searchParams.get("resource_id") ?? ""}
           placeholder={t("resourceIdPlaceholder")}
         />
-      </label>
+      </Label>
       <Button type="submit" disabled={pending}>
         {pending ? "…" : t("showLinksButton")}
       </Button>

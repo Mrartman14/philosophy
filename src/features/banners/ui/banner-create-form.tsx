@@ -9,6 +9,7 @@ import {
   FormFeedback,
   FormField,
   IdempotencyField,
+  Label,
   Select,
   SubmitButton,
   TextInput,
@@ -71,10 +72,10 @@ export function BannerCreateForm() {
         />
       </FormField>
 
-      <label htmlFor="dismissible" className="flex items-center gap-2 text-sm">
+      <Label htmlFor="dismissible" className="flex items-center gap-2 text-sm">
         <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
         {t("fieldDismissible")}
-      </label>
+      </Label>
 
       <FormField name="start_at" label={t("fieldStartAt")} required>
         <TextInput name="start_at" type="datetime-local" required />

@@ -9,6 +9,7 @@ import {
   Form,
   FormField,
   IdempotencyField,
+  Label,
   Select,
   SubmitButton,
   TextInput,
@@ -78,10 +79,10 @@ export function BannerEditForm({ banner }: Props) {
         />
       </FormField>
 
-      <label htmlFor="dismissible" className="flex items-center gap-2 text-sm">
+      <Label htmlFor="dismissible" className="flex items-center gap-2 text-sm">
         <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
         {t("fieldDismissible")}
-      </label>
+      </Label>
 
       <FormField name="start_at" label={t("fieldStartAt")} required>
         <TextInput

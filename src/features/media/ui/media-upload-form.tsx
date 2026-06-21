@@ -72,9 +72,9 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="media-file" className="text-sm font-medium">
+        <Label htmlFor="media-file">
           {t("uploadFileLabel")}
-        </label>
+        </Label>
         <input
           id="media-file"
           ref={inputRef}

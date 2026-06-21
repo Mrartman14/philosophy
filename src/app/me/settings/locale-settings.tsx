@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useTransition } from "react";
 
-import { Select } from "@/components/ui";
+import { Label, Select } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { LOCALE_COOKIE, type Locale } from "@/i18n/locales";
 import { persistLocale } from "@/i18n/persist-locale";
@@ -44,9 +44,9 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="flex flex-col gap-1">
+    <Label className="flex flex-col gap-1">
       <span className="text-sm font-medium">{label}</span>
       {children}
-    </label>
+    </Label>
   );
 }

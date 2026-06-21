@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent, type ReactNode } from "react";
 
-import { Button, Form, Select, TextInput } from "@/components/ui";
+import { Button, Form, Label, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -23,10 +23,10 @@ const FILTER_FIELDS = [
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="flex flex-col gap-1">
+    <Label className="flex flex-col gap-1">
       <span className="text-xs text-(--color-fg-muted)">{label}</span>
       {children}
-    </label>
+    </Label>
   );
 }
 

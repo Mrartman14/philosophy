@@ -96,20 +96,20 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
     <div className="flex flex-col gap-4">
       <input type="hidden" name="payload" value={payload} />
 
-      <label htmlFor="form-builder-title" className="flex flex-col gap-1 text-sm">
+      <Label htmlFor="form-builder-title" className="flex flex-col gap-1 text-sm">
         {t("builder.titleLabel")}
         <TextInput id="form-builder-title" value={title} disabled={disabled} maxLength={500} onChange={(e) => { setTitle(e.target.value); }} required />
-      </label>
+      </Label>
 
-      <label htmlFor="form-builder-description" className="flex flex-col gap-1 text-sm">
+      <Label htmlFor="form-builder-description" className="flex flex-col gap-1 text-sm">
         {t("builder.descriptionLabel")}
         <Textarea id="form-builder-description" value={description} disabled={disabled} rows={3} onChange={(e) => { setDescription(e.target.value); }} />
-      </label>
+      </Label>
 
-      <label htmlFor="form-builder-after-submit" className="flex flex-col gap-1 text-sm">
+      <Label htmlFor="form-builder-after-submit" className="flex flex-col gap-1 text-sm">
         {t("builder.afterSubmitLabel")}
         <Textarea id="form-builder-after-submit" value={afterSubmit} disabled={disabled} rows={2} onChange={(e) => { setAfterSubmit(e.target.value); }} />
-      </label>
+      </Label>
 
       {mode === "create" && (
         <div className="flex flex-col gap-2">

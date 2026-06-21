@@ -1,6 +1,6 @@
 "use client";
 // src/features/canvas/ui/editor-inspector.tsx
-import { Select, TextInput } from "@/components/ui";
+import { Label, Select, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { EditorCommand, Side } from "../editor";
@@ -69,7 +69,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           </div>
         )}
         <div className="flex gap-2">
-          <label htmlFor="inspector-node-width" className="flex flex-1 flex-col gap-1 text-sm">
+          <Label htmlFor="inspector-node-width" className="flex flex-1 flex-col gap-1 text-sm">
             {t("inspector.widthLabel")}
             <TextInput
               id="inspector-node-width"
@@ -77,8 +77,8 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
               value={String(node.width ?? 0)}
               onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: Number(e.target.value), height: node.height ?? 0 }); }}
             />
-          </label>
-          <label htmlFor="inspector-node-height" className="flex flex-1 flex-col gap-1 text-sm">
+          </Label>
+          <Label htmlFor="inspector-node-height" className="flex flex-1 flex-col gap-1 text-sm">
             {t("inspector.heightLabel")}
             <TextInput
               id="inspector-node-height"
@@ -86,7 +86,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
               value={String(node.height ?? 0)}
               onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: node.width ?? 0, height: Number(e.target.value) }); }}
             />
-          </label>
+          </Label>
         </div>
         {node.type === "entity_ref" && (
           <p className="text-xs text-(--color-fg-muted)">
@@ -109,7 +109,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
   return (
     <div className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold">{t("inspector.edgeHeading")}</h3>
-      <label htmlFor="inspector-edge-label" className="flex flex-col gap-1 text-sm">
+      <Label htmlFor="inspector-edge-label" className="flex flex-col gap-1 text-sm">
         {t("inspector.edgeCaptionLabel")}
         <TextInput
           id="inspector-edge-label"
@@ -117,7 +117,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           maxLength={200}
           onChange={(e) => { dispatch({ type: "setEdgeLabel", edgeId, label: e.target.value }); }}
         />
-      </label>
+      </Label>
       <div className="flex flex-col gap-1 text-sm">
         {t("inspector.edgeStyleLabel")}
         <Select

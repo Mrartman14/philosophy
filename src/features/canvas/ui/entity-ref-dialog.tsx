@@ -7,7 +7,7 @@ import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker"
 import { GlossaryPicker } from "@/components/ast-editor/pickers/glossary-picker";
 import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
 import { MediaPicker } from "@/components/ast-editor/pickers/media-picker";
-import { Dialog, Select, TextInput, Button } from "@/components/ui";
+import { Dialog, Label, Select, TextInput, Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { CanvasRefEntityType } from "../types";
@@ -89,7 +89,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <label htmlFor="entity_id" className="flex flex-col gap-1 text-sm">
+            <Label htmlFor="entity_id" className="flex flex-col gap-1 text-sm">
               {t("entityRefDialog.idLabel")}
               <TextInput
                 id="entity_id"
@@ -98,7 +98,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
                 onChange={(e) => { setManualId(e.target.value); }}
                 placeholder="00000000-0000-0000-0000-000000000000"
               />
-            </label>
+            </Label>
             <Button
               type="button"
               disabled={manualId.trim() === ""}

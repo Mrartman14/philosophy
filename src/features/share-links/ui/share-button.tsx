@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { Button, Dialog, Form, IdempotencyField, TextInput, useToast } from "@/components/ui";
+import { Button, Dialog, Form, IdempotencyField, Label, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
@@ -82,12 +82,12 @@ export function ShareButton({
           <input type="hidden" name="resource_type" value={resourceType} />
           <input type="hidden" name="resource_id" value={resourceId} />
           <IdempotencyField result={state} />
-          <label htmlFor="expires_at" className="flex flex-1 flex-col gap-1">
+          <Label htmlFor="expires_at" className="flex flex-1 flex-col gap-1">
             <span className="text-xs text-(--color-fg-muted)">
               {t("expiresAtLabel")}
             </span>
             <TextInput id="expires_at" type="datetime-local" name="expires_at" />
-          </label>
+          </Label>
           <Button type="submit" disabled={pending}>
             {pending ? "…" : t("createLinkButton")}
           </Button>

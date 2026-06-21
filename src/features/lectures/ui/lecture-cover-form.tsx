@@ -2,7 +2,7 @@
 import { useState, useTransition } from "react";
 
 import { uploadImage } from "@/components/ast-editor/upload/upload-image";
-import { Button } from "@/components/ui";
+import { Button, Label } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { setLectureCover, clearLectureCover } from "../actions";
@@ -88,7 +88,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
         <p className="text-sm text-(--color-fg-muted)">{tL("coverEmpty")}</p>
       )}
 
-      <label className="flex flex-col gap-1 text-sm">
+      <Label className="flex flex-col gap-1 text-sm">
         {tL("coverAltLabel")}
         <input
           type="text"
@@ -97,10 +97,10 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
           onChange={(e) => { setAlt(e.target.value); }}
           className="rounded border border-(--color-border) px-2 py-1"
         />
-      </label>
+      </Label>
 
       <div className="flex items-center gap-2">
-        <label className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 text-sm hover:bg-(--color-surface-subtle)">
+        <Label className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 text-sm hover:bg-(--color-surface-subtle)">
           {currentKey ? tL("replaceCover") : tL("uploadCover")}
           <input
             type="file"
@@ -109,7 +109,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
             disabled={pending}
             onChange={onFile}
           />
-        </label>
+        </Label>
         {currentKey && (
           <Button variant="danger" disabled={pending} onClick={onClear}>
             {tL("deleteCover")}

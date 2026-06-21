@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { forbidden } from "next/navigation";
 
-import { Button, Form, TextInput } from "@/components/ui";
+import { Button, Form, Label, TextInput } from "@/components/ui";
 import {
   canModerateComments,
   getAdminLectureComments,
@@ -42,7 +42,7 @@ export default async function AdminCommentsPage({ searchParams }: Props) {
       <h1 className="text-2xl font-bold">{t("commentsTitle")}</h1>
 
       <Form method="get" className="flex items-end gap-2">
-        <label htmlFor="lecture_id" className="flex flex-col gap-1 text-sm">
+        <Label htmlFor="lecture_id" className="flex flex-col gap-1 text-sm">
           <span className="text-xs text-(--color-fg-muted)">{t("commentsLectureIdLabel")}</span>
           <TextInput
             id="lecture_id"
@@ -50,7 +50,7 @@ export default async function AdminCommentsPage({ searchParams }: Props) {
             defaultValue={lecture_id ?? ""}
             placeholder={t("commentsLectureIdPlaceholder")}
           />
-        </label>
+        </Label>
         <Button type="submit">{t("commentsShowButton")}</Button>
       </Form>
 

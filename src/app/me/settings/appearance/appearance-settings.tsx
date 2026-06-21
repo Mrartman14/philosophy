@@ -1,6 +1,6 @@
 "use client";
 import { useAppearance } from "@/components/appearance";
-import { Select } from "@/components/ui";
+import { Label, Select } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 export function AppearanceSettings() {
@@ -51,5 +51,5 @@ export function AppearanceSettings() {
   );
 }
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="flex flex-col gap-1"><span className="text-sm font-medium">{label}</span>{children}</label>;
+  return <Label className="flex flex-col gap-1"><span className="text-sm font-medium">{label}</span>{children}</Label>;
 }
