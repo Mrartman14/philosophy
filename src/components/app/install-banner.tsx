@@ -15,13 +15,15 @@ export const InstallBanner: React.FC = () => {
     return (
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-(--color-border) bg-(--color-surface-subtle)">
         <span className="text-sm">{t("installBanner.installApp")}</span>
-        <Button
-          compact
-          onClick={() => { void promptInstall(); }}
-          className="shrink-0"
-        >
-          {t("installBanner.install")}
-        </Button>
+        {/* Позиция (shrink-0) — на структурном обёртке, не на styled-контроле (Guardrail 8). */}
+        <span className="shrink-0">
+          <Button
+            compact
+            onClick={() => { void promptInstall(); }}
+          >
+            {t("installBanner.install")}
+          </Button>
+        </span>
       </div>
     );
   }

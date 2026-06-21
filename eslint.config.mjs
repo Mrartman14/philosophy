@@ -200,12 +200,14 @@ const eslintConfig = [
     },
   },
   // Guardrail 7: ноль прямых @base-ui/react вне UI-kit + ноль нативных
-  // интерактивных тегов вне kit. Flat-config НЕ мержит no-restricted-syntax →
+  // интерактивных тегов вне kit. + Guardrail 8 (см. ниже): закрытие className/
+  // variant/size на kit-контролах. Flat-config НЕ мержит no-restricted-syntax →
   // последний матчнувший блок перезатирает; этот блок матчит src/** КРОМЕ
   // src/components/ui/** и КРОМЕ *.test.{ts,tsx} последним, поэтому ПОВТОРЯЕТ
-  // rich/markup-селекторы G6 (иначе они слетели бы для прикладного кода).
+  // rich/markup-селекторы G6 (иначе они слетели бы для прикладного кода) И несёт
+  // G8-селекторы в ТОМ ЖЕ блоке — отдельный блок с тем же scope затёр бы G7.
   // Файлы в ui/ и тесты этот блок игнорит — для ui/ последним остаётся G6
-  // (rich/markup), а base-ui/нативные теги там разрешены.
+  // (rich/markup), а base-ui/нативные теги/className-эскейпы там разрешены.
   // ВАЖНО (тесты исключены намеренно): mock-стабы kit-компонентов и тест-харнессы
   // легитимно рендерят нативные <button>/<form> и импортируют @base-ui/react
   // (напр. image-button.test.tsx) — гард на них не распространяется. Подтверждённый
@@ -265,6 +267,77 @@ const eslintConfig = [
         {
           selector: "JSXOpeningElement[name.name='textarea']",
           message: "Нативный <textarea> запрещён вне UI-kit. Используй Textarea из @/components/ui.",
+        },
+        // Guardrail 8: «вид» kit-контролов закрыт — позиция через Inline/Stack,
+        // вид через tone/compact (или unstyled-escape только у Button). Эти
+        // селекторы — backstop поверх TS (discriminated union / Omit<…,"className">):
+        // TS не ловит className на styled-<Button> надёжно в JSX, а здесь даёт
+        // явное сообщение и работает даже в нестрогих местах. no-restricted-syntax
+        // не мержится между блоками — поэтому G8 живёт в блоке G7 (тот же scope).
+        //
+        // G8.1 — className на styled-<Button> (НЕ unstyled): unstyled-ветка
+        // легитимно несёт className (escape для кликабельных строк), её
+        // :not(:has(unstyled)) исключает.
+        {
+          selector:
+            "JSXOpeningElement[name.name='Button']:has(JSXAttribute[name.name='className']):not(:has(JSXAttribute[name.name='unstyled']))",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        // G8.2 — className на полностью закрытых leaf-контролах (нет unstyled-escape).
+        {
+          selector: "JSXOpeningElement[name.name='IconButton']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='Select']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='TextInput']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='Textarea']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='Checkbox']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='Label']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='ColorInput']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        // G8.3 — устаревшие variant=/size= на kit-кнопках. Привязка к имени
+        // компонента (НЕ голый JSXAttribute[name.name='size']), чтобы не задеть
+        // чужие size (нативный <input size>, сторонние компоненты).
+        {
+          selector: "JSXOpeningElement[name.name='Button']:has(JSXAttribute[name.name='variant'])",
+          message: "kit использует tone/compact, не variant/size.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='Button']:has(JSXAttribute[name.name='size'])",
+          message: "kit использует tone/compact, не variant/size.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='IconButton']:has(JSXAttribute[name.name='variant'])",
+          message: "kit использует tone/compact, не variant/size.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='IconButton']:has(JSXAttribute[name.name='size'])",
+          message: "kit использует tone/compact, не variant/size.",
         },
       ],
     },

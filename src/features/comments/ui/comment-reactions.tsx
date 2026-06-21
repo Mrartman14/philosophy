@@ -2,7 +2,7 @@
 // src/features/comments/ui/comment-reactions.tsx
 import { useState, useOptimistic, startTransition } from "react";
 
-import { Button } from "@/components/ui";
+import { Button, cn } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { setReaction, removeReaction } from "../actions";
@@ -127,19 +127,21 @@ export function CommentReactions({
               {values.map((v) => {
                 const active = current === v;
                 return (
+                  // Реакция-чип — кликабельный элемент НЕ фиксированной геометрии
+                  // контрола (h-auto, свой padding/border): kit-режим `unstyled`
+                  // (Guardrail 8 — единственный className-escape у Button), вид
+                  // задаёт вызывающий поверх авто-focus-ring.
                   <Button
                     key={v}
-                    tone="quiet"
-                    compact
+                    unstyled
                     disabled={!canReact}
                     onClick={() => { toggle(axis, v); }}
                     aria-pressed={active}
                     aria-label={`${axisLabel(axis)}: ${axisValueAriaLabel(axis, v)}`}
-                    className={
-                      active
-                        ? "h-auto border border-(--color-border) bg-(--color-surface-subtle) px-1.5 disabled:opacity-40"
-                        : "h-auto border border-(--color-border) px-1.5 disabled:opacity-40"
-                    }
+                    className={cn(
+                      "inline-flex items-center rounded border border-(--color-border) px-1.5 transition hover:bg-(--color-surface-subtle) disabled:opacity-40",
+                      active && "bg-(--color-surface-subtle)",
+                    )}
                   >
                     <span aria-hidden="true">{axis === "insight" ? "★" : v === 1 ? "+" : "−"}</span>
                   </Button>
