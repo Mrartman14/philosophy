@@ -16,17 +16,27 @@ vi.mock("@/components/ui", () => ({
   Button: (props: Record<string, unknown>) => <button {...props} />,
   // Минимальный Dialog: реальный Base UI Dialog с порталом/focus-trap трудно
   // драйвить в jsdom; для рендера достаточно отрисовать содержимое при open.
+  // Кнопка dialog-close драйвит onOpenChange(false) — путь Escape/backdrop-close,
+  // прошитый на onCancel (иначе эта проводка осталась бы без покрытия).
   Dialog: ({
     open,
     title,
     children,
+    onOpenChange,
   }: {
     open?: boolean;
     title?: string;
     children?: React.ReactNode;
+    onOpenChange?: (open: boolean) => void;
   }) =>
     open ? (
       <div role="dialog" aria-label={title}>
+        <button
+          data-testid="dialog-close"
+          onClick={() => onOpenChange?.(false)}
+        >
+          x
+        </button>
         {children}
       </div>
     ) : null,
@@ -108,6 +118,23 @@ describe("AstMergeView", () => {
       />,
     );
     fireEvent.click(screen.getByText("cancel"));
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("onCancel вызывается при закрытии диалога (Escape/backdrop → onOpenChange(false))", () => {
+    const onCancel = vi.fn();
+    render(
+      <AstMergeView
+        base={[p("a", "A")]}
+        mine={[p("a", "A")]}
+        theirs={[p("a", "A")]}
+        labels={labels}
+        onApply={noop}
+        onCancel={onCancel}
+        onTakeServer={noop}
+      />,
+    );
+    fireEvent.click(screen.getByTestId("dialog-close"));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 

@@ -1,4 +1,43 @@
+import type { AstBlock } from "@/components/ast-editor";
+// Deep type-only импорт: `AstNode` не реэкспортится баррелем редактора, а тянуть
+// весь tiptap-баррель ради типа не нужно (см. ту же мотивацию в ast-merge-view).
+import type { AstNode } from "@/components/ast-editor/types";
+
 import type { DiffToken } from "./types";
+
+/** Типы узлов, чьи дети — блочного уровня: их склеиваем переносом строки, чтобы
+ *  diff списков/таблиц/цитат не схлопывался в «суп» без разделителей. */
+const STRUCTURAL: ReadonlySet<string> = new Set([
+  "list",
+  "list_item",
+  "table",
+  "table_row",
+  "blockquote",
+]);
+
+/** Рекурсивная склейка содержимого узла в строку для DISPLAY пословного diff.
+ *  Структурные дети (`list`/`table`/…) разделяются `"\n"`, инлайновые (текстовые
+ *  узлы параграфа/заголовка) — пустой строкой (слова не дробятся). */
+function nodeDiffText(node: AstNode): string {
+  const children = node.content;
+  if (!children || children.length === 0) return node.text ?? "";
+  const sep = STRUCTURAL.has(node.type ?? "") ? "\n" : "";
+  return children.map(nodeDiffText).join(sep);
+}
+
+/** Текст блока для пословного diff с разделителями между блочными детьми.
+ *  Классификация при этом не затрагивается — она сравнивает нормализованный JSON;
+ *  это сугубо про читаемость отображаемого diff. Чистая.
+ *
+ *  - Обычный параграф → ровно его плоский текст (поведение как у `block.text`).
+ *  - Список из двух пунктов → `"item1\nitem2"` вместо «item1item2».
+ *  - Лист/code_block без `content` → `block.text ?? ""` (контентный fallback). */
+export function blockDiffText(block: AstBlock): string {
+  const children = block.content;
+  if (!children || children.length === 0) return block.text ?? "";
+  const sep = STRUCTURAL.has(block.type ?? "") ? "\n" : "";
+  return children.map(nodeDiffText).join(sep);
+}
 
 /** Делит строку на токены-слова и токены-пробелы, чтобы склейка была без потерь. */
 function tokenize(s: string): string[] {

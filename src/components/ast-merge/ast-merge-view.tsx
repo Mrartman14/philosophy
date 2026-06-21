@@ -19,7 +19,7 @@ import {
   type MergeEntry,
   type MergeStatus,
 } from "./types";
-import { wordDiff } from "./word-diff";
+import { blockDiffText, wordDiff } from "./word-diff";
 import { WordDiffView } from "./word-diff-view";
 
 /** Плоский набор локализованных строк — компонент i18n-агностичен, строки
@@ -126,9 +126,9 @@ export function AstMergeView({
         if (!o) onCancel();
       }}
       title={labels.title}
-      className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden"
+      className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden"
     >
-      <div className="flex max-h-[70vh] flex-col gap-4 overflow-auto">
+      <div className="flex flex-1 flex-col gap-4 overflow-auto">
         <p className="text-sm text-(--color-fg-muted)">{labels.intro}</p>
 
         {unchangedN > 0 && (
@@ -253,7 +253,7 @@ function ConflictOption({
             <AstRender blocks={[block]} />
             <SideDiff
               baseText={baseText}
-              sideText={block.text ?? ""}
+              sideText={blockDiffText(block)}
               contentChangedLabel={contentChangedLabel}
             />
           </>
@@ -297,7 +297,7 @@ function EntryView({
   choice: MergeChoice | undefined;
   onChoose: (c: MergeChoice) => void;
 }) {
-  const baseText = entry.base?.text ?? "";
+  const baseText = entry.base ? blockDiffText(entry.base) : "";
 
   if (isConflict(entry.status)) {
     return (
@@ -358,7 +358,7 @@ function EntryView({
         {entry.status === "server-only" && entry.theirs && (
           <SideDiff
             baseText={baseText}
-            sideText={entry.theirs.text ?? ""}
+            sideText={blockDiffText(entry.theirs)}
             contentChangedLabel={labels.contentChanged}
           />
         )}
