@@ -528,6 +528,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -1599,6 +1601,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2404,6 +2408,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -2754,15 +2760,6 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description MAP_NOT_READY */
-                503: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -2810,15 +2807,6 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description MAP_NOT_READY */
-                503: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3832,6 +3820,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -4263,8 +4253,26 @@ export interface paths {
                         };
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5235,6 +5243,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -5700,7 +5710,68 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Получить комментарий
+         * @description Single-resource read: returns the comment with its blocks and
+         *     optimistic-lock `version` (also as a strong `ETag`). Use it to
+         *     re-fetch a comment after a 412 VERSION_MISMATCH on the blocks
+         *     update — rebuild `If-Match` and merge — without pulling the
+         *     whole subtree. Gated by the parent lecture's visibility.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID комментария */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on blocks update) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["comment.Comment"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
         /** Удалить комментарий */
@@ -5898,6 +5969,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -7190,6 +7263,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -9172,6 +9247,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -10554,13 +10631,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description INVALID_ENTITY_TYPE */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -10728,13 +10805,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description INVALID_ENTITY_TYPE */
+                /** @description Unprocessable Entity */
                 422: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
             };
@@ -12043,10 +12120,10 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description Partial preferences */
+            /** @description Partial preferences (omitted fields unchanged) */
             requestBody: {
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["preference.UpdatePreferencesRequest"];
                 };
             };
             responses: {
@@ -12398,6 +12475,128 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/tokens/usage-tracking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Состояние трекинга использования токенов */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["pat.UsageTracking"];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /**
+         * Включить/выключить трекинг использования (выключение = безвозвратный purge)
+         * @description При enabled=false все накопленные счётчики использования удаляются безвозвратно.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Новое состояние трекинга */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["pat.setUsageTrackingRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["pat.UsageTracking"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -13165,8 +13364,26 @@ export interface paths {
                         };
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -14125,6 +14342,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14305,6 +14524,8 @@ export interface paths {
                 /** @description VERSION_MISMATCH */
                 412: {
                     headers: {
+                        /** @description Current version as strong ETag — rebuild If-Match and re-fetch without an extra read */
+                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -14720,7 +14941,7 @@ export interface paths {
         };
         /**
          * sitemap.xml
-         * @description sitemaps.org 0.9 document covering every lecture/document/term detail URL plus the /api/lectures.md and /api/glossary.md root lists. Content-Language is intentionally empty.
+         * @description sitemaps.org 0.9 document covering frontend page URLs: /, /lectures, /trails, /glossary root pages plus /lectures/{id}, /trails/{id} (public only), and /glossary/{id} detail pages. Documents are not enumerated. Content-Language is intentionally empty.
          */
         get: {
             parameters: {
@@ -14934,7 +15155,7 @@ export interface components {
             target_type?: components["schemas"]["audit.TargetType"];
         };
         /** @enum {string} */
-        "audit.TargetType": "annotation" | "banner" | "canvas" | "comment" | "document" | "event" | "form" | "glossary_term" | "lecture" | "media" | "push" | "tag" | "trail" | "user";
+        "audit.TargetType": "annotation" | "banner" | "canvas" | "comment" | "document" | "event" | "form" | "glossary_term" | "lecture" | "map" | "media" | "push" | "tag" | "trail" | "user";
         "banner.Banner": {
             background_color?: string;
             blocks?: components["schemas"]["ast.Block"][];
@@ -15008,12 +15229,12 @@ export interface components {
         };
         "canvas.Edge": {
             end?: components["schemas"]["canvas.EdgeEnd"];
-            from_node?: string;
+            from_node: string;
             from_side?: components["schemas"]["canvas.EdgeSide"];
-            id?: string;
+            id: string;
             label?: string;
             style?: components["schemas"]["canvas.EdgeStyle"];
-            to_node?: string;
+            to_node: string;
             to_side?: components["schemas"]["canvas.EdgeSide"];
         };
         /** @enum {string} */
@@ -15028,12 +15249,13 @@ export interface components {
             /** @description entity_ref */
             entity_type?: components["schemas"]["canvas.RefEntityType"];
             height?: number;
-            id?: string;
+            id: string;
             /** @description shape */
             shape_kind?: components["schemas"]["canvas.ShapeKind"];
             /** @description text / shape */
             text?: string;
-            type?: components["schemas"]["canvas.NodeType"];
+            /** @enum {unknown} */
+            type: "text" | "shape" | "entity_ref";
             width?: number;
             x?: number;
             y?: number;
@@ -15105,12 +15327,12 @@ export interface components {
             updated_at: string;
             user_id?: string;
             /**
-             * @description Version is the optimistic-lock counter. Comment has NO single-GET
-             *     endpoint, so this body field — present on every read shape (subtree
-             *     root + descendants, lecture list, admin list) — is the load-bearing
-             *     source the client echoes into If-Match on PUT /api/comments/{id}/blocks.
-             *     The PUT response also emits it as a strong ETag, but the body field is
-             *     the authoritative way to obtain it in a multi-item response.
+             * @description Version is the optimistic-lock counter, present on every read shape
+             *     (single GET /api/comments/{id}, subtree root + descendants, lecture list,
+             *     admin list) and echoed into If-Match on PUT /api/comments/{id}/blocks.
+             *     The single GET and the PUT/412 responses also emit it as a strong ETag,
+             *     but this body field is the authoritative way to obtain it in a multi-item
+             *     response (subtree/list), where a per-element ETag header is impossible.
              */
             version?: number;
         };
@@ -15276,25 +15498,26 @@ export interface components {
         "form.CreateFieldRequest": {
             help_text?: string;
             options?: components["schemas"]["form.CreateOptionInput"][];
-            prompt?: string;
+            prompt: string;
             required?: boolean;
             sort_order?: number;
-            type?: components["schemas"]["form.FieldType"];
+            /** @enum {unknown} */
+            type: "text" | "long_text" | "single_choice" | "multi_choice" | "number" | "date";
         };
         "form.CreateFormRequest": {
             /** @description markdown, optional */
             after_submit?: string;
             /** @description markdown */
             description?: string;
-            fields?: components["schemas"]["form.CreateFieldRequest"][];
-            /** @description "editable" | "immutable" */
-            submission_mode?: components["schemas"]["form.SubmissionMode"];
-            title?: string;
-            /** @description "private" | "public" */
-            visibility?: components["schemas"]["access.Visibility"];
+            fields: components["schemas"]["form.CreateFieldRequest"][];
+            /** @enum {unknown} */
+            submission_mode: "editable" | "immutable";
+            title: string;
+            /** @enum {unknown} */
+            visibility: "private" | "public";
         };
         "form.CreateOptionInput": {
-            label?: string;
+            label: string;
         };
         "form.EditSubmissionRequest": {
             answers?: components["schemas"]["form.SubmitAnswer"][];
@@ -15357,7 +15580,7 @@ export interface components {
         /** @enum {string} */
         "form.SubmissionMode": "editable" | "immutable";
         "form.SubmitAnswer": {
-            field_id?: string;
+            field_id: string;
             value?: {
                 [key: string]: unknown;
             };
@@ -15375,10 +15598,11 @@ export interface components {
             /** @description markdown; nil = unchanged, "" = clear */
             description?: string;
             fields?: components["schemas"]["form.CreateFieldRequest"][];
-            submission_mode?: components["schemas"]["form.SubmissionMode"];
+            /** @enum {unknown} */
+            submission_mode?: "editable" | "immutable";
             title?: string;
-            /** @description "private" | "public" */
-            visibility?: components["schemas"]["access.Visibility"];
+            /** @enum {unknown} */
+            visibility?: "private" | "public";
         };
         "freshness.Manifest": {
             own_version?: number;
@@ -15440,7 +15664,8 @@ export interface components {
         };
         "history.RecordViewRequest": {
             target_id: string;
-            target_type: string;
+            /** @enum {unknown} */
+            target_type: "lecture" | "document" | "trail" | "canvas" | "form";
         };
         "history.SetTrackingRequest": {
             tracking_enabled?: boolean;
@@ -15549,11 +15774,11 @@ export interface components {
         "llmretrieval.HitType": "document" | "glossary";
         "llmretrieval.contextRequest": {
             limit?: number;
-            query?: string;
+            query: string;
         };
         "llmretrieval.searchRequest": {
             limit?: number;
-            query?: string;
+            query: string;
         };
         /** @enum {string} */
         "media.FileType": "video" | "audio";
@@ -15618,12 +15843,21 @@ export interface components {
             expires_at?: number;
             id?: string;
             label?: string;
+            /** @description Usage — заполняются только при включённом трекинге (иначе nil). */
+            last_used_at?: number;
+            request_count?: number;
             revoked_at?: number;
             token_hint?: string;
+        };
+        "pat.UsageTracking": {
+            tracking_enabled?: boolean;
         };
         "pat.createTokenRequest": {
             expires_in_days?: number;
             label: string;
+        };
+        "pat.setUsageTrackingRequest": {
+            enabled?: boolean;
         };
         "preference.Appearance": {
             contrast?: components["schemas"]["preference.Contrast"];
@@ -15631,6 +15865,18 @@ export interface components {
             font?: components["schemas"]["preference.Font"];
             text_size?: components["schemas"]["preference.TextSize"];
             theme?: components["schemas"]["preference.Theme"];
+        };
+        "preference.AppearancePatch": {
+            /** @enum {unknown} */
+            contrast?: "normal" | "high";
+            /** @enum {unknown} */
+            density?: "comfortable" | "compact";
+            /** @enum {unknown} */
+            font?: "sans" | "legible" | "serif";
+            /** @enum {unknown} */
+            text_size?: "sm" | "md" | "lg" | "xl";
+            /** @enum {unknown} */
+            theme?: "system" | "light" | "dark";
         };
         /** @enum {string} */
         "preference.Contrast": "normal" | "high";
@@ -15651,6 +15897,13 @@ export interface components {
         "preference.TextSize": "sm" | "md" | "lg" | "xl";
         /** @enum {string} */
         "preference.Theme": "system" | "light" | "dark";
+        "preference.UpdatePreferencesRequest": {
+            appearance?: components["schemas"]["preference.AppearancePatch"];
+            /** @enum {unknown} */
+            locale?: "system" | "ru" | "en";
+            /** @enum {unknown} */
+            reading_mode?: "full" | "focused";
+        };
         "productionstats.EntityInventory": {
             entity_type?: components["schemas"]["productionstats.EntityType"];
             private?: number;
@@ -15748,7 +16001,8 @@ export interface components {
         "sharelink.CreateRequest": {
             expires_at?: string;
             resource_id: string;
-            resource_type: components["schemas"]["sharelink.ResourceType"];
+            /** @enum {unknown} */
+            resource_type: "lecture" | "document" | "trail" | "media" | "canvas" | "form";
         };
         /** @enum {string} */
         "sharelink.ResourceType": "lecture" | "document" | "trail" | "media" | "form" | "canvas";
