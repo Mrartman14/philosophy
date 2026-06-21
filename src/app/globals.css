@@ -92,12 +92,18 @@ body:has(dialog[open]) {
    Активно, если пользователь выбрал "reduced" ([data-motion="reduced"]),
    ЛИБО OS просит reduce и пользователь НЕ форснул "full"
    (:root:not([data-motion="full"])).
-   Нюансная политика: глушим looping/keyframe-анимации и движение
-   (transform/позиция); одноразовый opacity-fade и hover-цвет — оставляем.
+   Нюансная политика. Гейт глушит ТОЛЬКО: keyframe-`animation` (через
+   `* { animation: none }`), navmenu `scale` (через `.app-nav-popup { scale: 1 }`)
+   и обнуляет `--app-motion-duration`. Он НЕ подавляет общие transition-движения
+   (transform/translate на `transition`) — такие переходы продолжат проигрываться.
+   Одноразовые opacity/цвет-transition оставлены НАМЕРЕННО: Base UI завязан на
+   transition при размонтировании (unmount), их глушение сломало бы закрытие
+   поповеров/диалогов.
    `* { animation: none }` глушит skeleton `animate-pulse` и router-link wave
-   (!important перебивает Tailwind utility-слой). Будущие СМЫСЛОВЫЕ анимации
-   (прогресс/статус) должны иметь opacity/цвет-fallback или опрашивать
-   useReducedMotion, а не полагаться на keyframes.
+   (!important перебивает Tailwind utility-слой). Будущие СМЫСЛОВЫЕ transform/
+   translate-переходы НЕ будут авто-подавлены этим гейтом — им нужен
+   opacity/цвет-fallback ЛИБО опрос useReducedMotion (JS-сторона); на keyframes
+   полагаться нельзя.
    `--app-motion-duration` читает только навменю (app-header) → обнуление
    делает открытие/позиционирование мгновенным; `.app-nav-popup { scale: 1 }`
    убирает scale-«схлопывание» на закрытии (opacity-fade закрытия остаётся).

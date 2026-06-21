@@ -21,6 +21,16 @@ function getOSReduce(): boolean {
  *
  * ВАЖНО: это JS-ЗЕРКАЛО CSS-формулы из globals.css (reduced-motion gate).
  * При правке логики здесь — синхронно правь CSS-gate, и наоборот.
+ *
+ * ОБЛАСТЬ ПРИМЕНЕНИЯ: только клиент — `dynamic(ssr:false)`-поддеревья и
+ * рантайм-поведение/эффекты (напр. Three OrbitControls damping). НЕ использовать
+ * для условной SSR-разметки: getServerSnapshot возвращает false, поэтому при
+ * наличии OS-настройки reduce клиентский гидрейт разойдётся с серверным (hydration
+ * mismatch). Для SSR-безопасного статического подавления движения полагайся на
+ * CSS-gate (`data-motion` + `@media`) — он работает без FOUC.
+ *
+ * (Здесь намеренно НЕТ `typeof window`-гарда: он триггерит ESLint
+ * `no-unnecessary-condition`, поэтому был удалён.)
  */
 export function useReducedMotion(): boolean {
   const { appearance } = useAppearance();

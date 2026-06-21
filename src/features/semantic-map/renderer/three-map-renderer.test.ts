@@ -56,4 +56,15 @@ describe("ThreeMapRenderer.setReducedMotion", () => {
     expect(controls?.enableDamping).toBe(true);
     r.destroy();
   });
+
+  it("setMode пере-создаёт controls, но сохраняет enableDamping=false при reduce", () => {
+    const r = new ThreeMapRenderer();
+    r.setReducedMotion(true);
+    r.mount(fakeCanvas());
+    // applyMode внутри setMode создаёт НОВЫЙ OrbitControls — флаг reduce должен дожить.
+    r.setMode("3d");
+    const controls = (r as unknown as WithControls).controls; // перечитать после пере-создания
+    expect(controls?.enableDamping).toBe(false);
+    r.destroy();
+  });
 });

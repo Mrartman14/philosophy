@@ -11,6 +11,10 @@ describe("appearance-cookie", () => {
     const a = { theme: "dark", contrast: "high", density: "compact", font: "serif", textSize: "lg", motion: "reduced" } as const;
     expect(parseAppearance(serializeAppearance(a))).toEqual(a);
   });
+  it("round-trips motion: full", () => {
+    const a = { ...DEFAULT_APPEARANCE, motion: "full" } as const;
+    expect(parseAppearance(serializeAppearance(a))).toEqual(a);
+  });
   it("coerces unknown per field", () => {
     const a = parseAppearance(JSON.stringify({ theme: "neon", textSize: "huge" }));
     expect(a.theme).toBe("system"); expect(a.textSize).toBe("md");

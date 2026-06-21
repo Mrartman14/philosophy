@@ -15,6 +15,7 @@ function Probe() {
     <button onClick={() => { setAxis("theme", "system"); }}>system</button>
     <button onClick={() => { setAxis("density", "compact"); }}>compact</button>
     <button onClick={() => { setAxis("motion", "reduced"); }}>reduce</button>
+    <button onClick={() => { setAxis("motion", "full"); }}>motion-full</button>
     <button onClick={() => { setAxis("motion", "system"); }}>motion-system</button>
   </>);
 }
@@ -58,5 +59,10 @@ describe("AppearanceProvider", () => {
     expect(document.documentElement.getAttribute("data-motion")).toBe("reduced");
     fireEvent.click(screen.getByText("motion-system"));
     expect(document.documentElement.hasAttribute("data-motion")).toBe(false);
+  });
+  it("setAxis motion: full sets data-motion=full (force-on, opt-out OS reduce)", () => {
+    render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>);
+    fireEvent.click(screen.getByText("motion-full"));
+    expect(document.documentElement.getAttribute("data-motion")).toBe("full");
   });
 });
