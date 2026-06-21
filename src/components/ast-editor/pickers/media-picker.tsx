@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useState } from "react";
 
+import { Fieldset } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { searchMedia, type MediaSummary } from "./actions";
@@ -17,12 +18,11 @@ export function MediaPicker({ onSelect }: MediaPickerProps) {
   );
   return (
     <div>
-      <fieldset>
-        <legend>{t("mediaTypeLabel")}</legend>
+      <Fieldset legend={t("mediaTypeLabel")}>
         <label><input type="radio" name="media-type" checked={type === undefined} onChange={() => { setType(undefined); }} /> {t("mediaTypeAll")}</label>
         <label><input type="radio" name="media-type" checked={type === "video"} onChange={() => { setType("video"); }} /> {t("mediaTypeVideo")}</label>
         <label><input type="radio" name="media-type" checked={type === "audio"} onChange={() => { setType("audio"); }} /> {t("mediaTypeAudio")}</label>
-      </fieldset>
+      </Fieldset>
       <AsyncCombobox<MediaSummary>
         fetcher={fetcher}
         renderItem={(m) => <span>{m.filename ?? "—"}</span>}

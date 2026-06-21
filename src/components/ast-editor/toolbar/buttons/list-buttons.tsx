@@ -1,9 +1,9 @@
 "use client";
-import { Toolbar } from "@base-ui/react/toolbar";
 import type { Editor } from "@tiptap/core";
 
 import { ListBulletIcon } from "@/assets/icons/list-bullet-icon";
 import { ListOrderedIcon } from "@/assets/icons/list-ordered-icon";
+import { Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
@@ -38,7 +38,7 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
   const isTaskActive = editor.isActive("list_item") && itemChecked != null;
 
   return (
-    <Toolbar.Group className={`flex items-center gap-1`}>
+    <Toolbar.Group>
       <Toolbar.Button
         aria-label={t("bulletList")}
         aria-pressed={editor.isActive("list", { ordered: false })}

@@ -12,7 +12,11 @@ import { EditorToolbar } from "./toolbar";
 
 // Фабрики vi.mock не должны ссылаться на внешние переменные (hoisting).
 // toolbar.test не ассертит вызовы toast — достаточно inline vi.fn().
-vi.mock("@/components/ui", () => ({
+// importActual подтягивает реальные kit-части (Toolbar/Popover/Button/…),
+// иначе после миграции импортов редактора на @/components/ui они станут
+// undefined → краш «Cannot read properties of undefined (reading 'Root')».
+vi.mock("@/components/ui", async (importActual) => ({
+  ...(await importActual<typeof import("@/components/ui")>()),
   useToast: () => ({ add: vi.fn() }),
 }));
 // Мок i18n/client: useT возвращает переводчик по реальному каталогу ru.

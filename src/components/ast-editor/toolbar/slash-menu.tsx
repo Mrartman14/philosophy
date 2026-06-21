@@ -2,6 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import { useEffect, useId, useState } from "react";
 
+import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../types";
@@ -208,12 +209,14 @@ export function SlashMenu({ editor, schema, context }: Props) {
   return (
     <div id={listboxId} role="listbox" aria-label={t("slashMenuAriaLabel")} className="ast-slash-menu">
       {cmds.map((c, i) => (
-        <button
+        <Button
           key={c.id}
           id={`${listboxId}-opt-${String(i)}`}
-          type="button"
+          variant="ghost"
+          size="sm"
           role="option"
           aria-selected={safeActive === i}
+          className="w-full justify-start"
           onMouseDown={(e) => {
             e.preventDefault();
             apply(c);
@@ -221,11 +224,16 @@ export function SlashMenu({ editor, schema, context }: Props) {
           onMouseEnter={() => { setActive(i); }}
         >
           {c.label}
-        </button>
+        </Button>
       ))}
-      <button type="button" onClick={() => { closeSlashMenu(editor.view); }}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="w-full justify-start"
+        onClick={() => { closeSlashMenu(editor.view); }}
+      >
         {t("slashMenuClose")}
-      </button>
+      </Button>
     </div>
   );
 }

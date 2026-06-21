@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
+import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 export interface AsyncComboboxProps<T> {
@@ -124,14 +125,14 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
         {s.error && (
           <div role="presentation">
             {errorCopy}
-            <button type="button" onClick={() => void load(debouncedQ, 0)}>{t("comboboxRetry")}</button>
+            <Button variant="ghost" size="sm" onClick={() => void load(debouncedQ, 0)}>{t("comboboxRetry")}</Button>
           </div>
         )}
         {canLoadMore && (
           <div role="presentation">
-            <button type="button" onClick={() => void load(debouncedQ, s.items.length)}>
+            <Button variant="ghost" size="sm" onClick={() => void load(debouncedQ, s.items.length)}>
               {t("comboboxLoadMore")}
-            </button>
+            </Button>
           </div>
         )}
       </div>

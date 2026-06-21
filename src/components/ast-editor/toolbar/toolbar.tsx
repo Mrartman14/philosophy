@@ -1,7 +1,8 @@
 "use client";
-import { Toolbar } from "@base-ui/react/toolbar";
 import type { Editor } from "@tiptap/core";
 import { Fragment } from "react";
+
+import { Toolbar } from "@/components/ui";
 
 import type { SchemaSnapshot, EntityContext } from "../types";
 
@@ -65,7 +66,7 @@ export function EditorToolbar({ editor, schema, context, defaultLectureId }: Edi
   ].filter((g) => g.visible);
 
   return (
-    <Toolbar.Root className={`flex items-center gap-1 p-1`}>
+    <Toolbar.Root>
       {groups.map((g, i) => (
         <Fragment key={i}>
           {i > 0 && <Toolbar.Separator />}

@@ -1,10 +1,10 @@
 "use client";
-import { Toolbar } from "@base-ui/react/toolbar";
 import type { Editor } from "@tiptap/core";
 
 import { BoldIcon } from "@/assets/icons/bold-icon";
 import { CodeIcon } from "@/assets/icons/code-icon";
 import { ItalicIcon } from "@/assets/icons/italic-icon";
+import { Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot } from "../../types";
@@ -24,7 +24,7 @@ export function InlineMarksGroup({ editor, schema }: Props) {
     return null;
   }
   return (
-    <Toolbar.Group className={`flex items-center gap-1`}>
+    <Toolbar.Group>
       {schema.marks.has("bold") && (
         <Toolbar.Button
           aria-label={t("bold")}

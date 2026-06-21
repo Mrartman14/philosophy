@@ -1,10 +1,9 @@
 "use client";
-import { Popover } from "@base-ui/react/popover";
-import { Toolbar } from "@base-ui/react/toolbar";
 import type { Editor } from "@tiptap/core";
 import { useRef, useState } from "react";
 
 import { LinkIcon } from "@/assets/icons/link-icon";
+import { Button, Popover, Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot } from "../../types";
@@ -95,11 +94,8 @@ export function LinkPopover({ editor, schema }: Props) {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
-          <Popover.Popup
-            initialFocus={inputRef}
-            className="bg-(--color-surface) border border-(--color-border) rounded p-3 shadow-lg"
-          >
-            <Popover.Arrow className="fill-(--color-surface) stroke-(--color-border)" />
+          <Popover.Popup initialFocus={inputRef} className="p-3">
+            <Popover.Arrow />
             <div className="flex flex-col gap-2 min-w-[260px]">
               <input
                 ref={inputRef}
@@ -118,22 +114,13 @@ export function LinkPopover({ editor, schema }: Props) {
               ) : null}
               <div className="flex items-center gap-2 justify-end">
                 {isActive && (
-                  <button
-                    type="button"
-                    onClick={handleRemove}
-                    className="text-(--color-fg-muted) rounded px-3 py-1 text-sm hover:bg-(--color-surface-subtle)"
-                  >
+                  <Button variant="ghost" size="sm" onClick={handleRemove}>
                     {t("linkRemove")}
-                  </button>
+                  </Button>
                 )}
-                <button
-                  type="button"
-                  onClick={onApply}
-                  disabled={!href.trim()}
-                  className="bg-(--color-accent) text-white rounded px-3 py-1 text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                <Button size="sm" onClick={onApply} disabled={!href.trim()}>
                   {t("linkApply")}
-                </button>
+                </Button>
               </div>
             </div>
           </Popover.Popup>

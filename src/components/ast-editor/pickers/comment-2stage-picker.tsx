@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 
+import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { CommentPicker } from "./comment-picker";
@@ -25,7 +26,7 @@ export function Comment2StagePicker({ defaultLectureId, onSelect }: Comment2Stag
   }
   return (
     <div>
-      <button type="button" onClick={() => { setLectureId(undefined); }}>{t("commentPickerChangeLecture")}</button>
+      <Button variant="ghost" size="sm" onClick={() => { setLectureId(undefined); }}>{t("commentPickerChangeLecture")}</Button>
       <p>{t("commentPickerStep2")}</p>
       <CommentPicker lectureId={lectureId} onSelect={onSelect} />
     </div>

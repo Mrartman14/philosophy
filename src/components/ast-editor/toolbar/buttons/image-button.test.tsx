@@ -15,7 +15,11 @@ import { ImageButton } from "./image-button";
 // vi.mock поднимается выше всех объявлений файла — внешние переменные внутри
 // фабрики допустимы только через vi.hoisted, иначе ReferenceError.
 const { toastAdd } = vi.hoisted(() => ({ toastAdd: vi.fn() }));
-vi.mock("@/components/ui", () => ({
+// importActual подтягивает реальные kit-части (Toolbar/…): image-button после
+// миграции импортирует Toolbar из @/components/ui — без этого Toolbar === undefined
+// → краш «Cannot read properties of undefined (reading 'Button')».
+vi.mock("@/components/ui", async (importActual) => ({
+  ...(await importActual<typeof import("@/components/ui")>()),
   useToast: () => ({ add: toastAdd }),
 }));
 vi.mock("../../upload/upload-image", () => ({

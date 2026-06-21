@@ -1,10 +1,9 @@
 "use client";
-import { Popover } from "@base-ui/react/popover";
-import { Toolbar } from "@base-ui/react/toolbar";
 import type { Editor } from "@tiptap/core";
 import { useState } from "react";
 
 import { BookmarkIcon } from "@/assets/icons/bookmark-icon";
+import { Popover, Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { RefMenu } from "../../pickers/ref-menu";
@@ -32,8 +31,8 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
-          <Popover.Popup className="bg-(--color-surface) border border-(--color-border) rounded p-3 shadow-lg min-w-[320px] max-w-[480px]">
-            <Popover.Arrow className="fill-(--color-surface) stroke-(--color-border)" />
+          <Popover.Popup className="p-3 min-w-[320px] max-w-[480px]">
+            <Popover.Arrow />
             <RefMenu
               editor={editor}
               defaultLectureId={defaultLectureId}

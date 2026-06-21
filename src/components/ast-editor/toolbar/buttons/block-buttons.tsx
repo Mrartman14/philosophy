@@ -1,11 +1,11 @@
 "use client";
-import { Toolbar } from "@base-ui/react/toolbar";
 import type { Editor } from "@tiptap/core";
 
 import { CodeBlockIcon } from "@/assets/icons/code-block-icon";
 import { HorizontalRuleIcon } from "@/assets/icons/horizontal-rule-icon";
 import { QuoteIcon } from "@/assets/icons/quote-icon";
 import { TableIcon } from "@/assets/icons/table-icon";
+import { Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
@@ -30,7 +30,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
   }
 
   return (
-    <Toolbar.Group className={`flex items-center gap-1`}>
+    <Toolbar.Group>
       {allowed.has("blockquote") && (
         <Toolbar.Button
           aria-label={t("blockquote")}
