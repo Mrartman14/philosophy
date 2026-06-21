@@ -63,7 +63,7 @@ export function CanvasEditForm({ canvas, etag }: Props) {
           <TextInput name="title" defaultValue={canvas.title ?? ""} required />
         </FormField>
         <FormField name="data" label={t("editForm.dataLabel")}>
-          <Textarea name="data" rows={14} defaultValue={dataJson} className="font-mono text-xs" />
+          <Textarea name="data" rows={14} defaultValue={dataJson} mono />
         </FormField>
         <SubmitButton>{t("editForm.submitSave")}</SubmitButton>
       </Stack>
