@@ -102,13 +102,14 @@ export function DocumentEditForm({ document }: Props) {
     setConflict(null);
   }
 
-  if (gone) {
-    return <p className="text-sm text-red-600">{t("merge.goneMessage")}</p>;
-  }
-
   return (
     <>
       <Form action={action} className="flex flex-col gap-4">
+        {gone && (
+          <p role="alert" className="text-sm font-medium text-red-600">
+            {t("merge.goneMessage")}
+          </p>
+        )}
         <input type="hidden" name="id" value={document.id ?? ""} />
         <input type="hidden" name="version" value={baseVersion ?? ""} />
         <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />

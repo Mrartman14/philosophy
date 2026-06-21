@@ -103,15 +103,20 @@ describe("DocumentEditForm — конфликт версий", () => {
     expect(versionInput(container)).toHaveValue("8");
   });
 
-  it("gone-результат показывает сообщение об удалении", async () => {
+  it("gone-результат показывает сообщение об удалении, но редактор остаётся смонтированным (правки можно скопировать)", async () => {
     updateDocumentBlocks.mockResolvedValue({
       success: true,
       data: { kind: "gone" },
     });
     const { container } = render(<DocumentEditForm document={doc as never} />);
+    // редактор смонтирован до сабмита
+    expect(screen.getByTestId("editor")).toBeInTheDocument();
     fireEvent.submit(formEl(container));
     await waitFor(() => {
       expect(screen.getByText("merge.goneMessage")).toBeInTheDocument();
     });
+    // ключевая проверка data-loss-фикса: gone не размонтирует редактор —
+    // несохранённые правки остаются доступны для копирования.
+    expect(screen.getByTestId("editor")).toBeInTheDocument();
   });
 });
