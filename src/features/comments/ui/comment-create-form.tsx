@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -30,32 +30,34 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
   const options = rootTypes.map((type) => ({ value: type, label: t(`type.${type}`) }));
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
-      <input type="hidden" name="lecture_id" value={lectureId} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="lecture_id" value={lectureId} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
 
-      <FormField name="type" label={t("createTypeLabel")} required>
-        <Select name="type" options={options} defaultValue={rootTypes[0] ?? ""} aria-label={t("createTypeAriaLabel")} />
-      </FormField>
+        <FormField name="type" label={t("createTypeLabel")} required>
+          <Select name="type" options={options} defaultValue={rootTypes[0] ?? ""} aria-label={t("createTypeAriaLabel")} />
+        </FormField>
 
-      <FormField name="blocks" label={t("createBodyLabel")}>
-        <LazyAstEditor
-          entityContext="comment"
-          defaultLectureId={lectureId}
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel={t("createBodyAriaLabel")}
-        />
-      </FormField>
+        <FormField name="blocks" label={t("createBodyLabel")}>
+          <LazyAstEditor
+            entityContext="comment"
+            defaultLectureId={lectureId}
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+            ariaLabel={t("createBodyAriaLabel")}
+          />
+        </FormField>
 
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">{t("createSuccess")}</p>
-      )}
-      <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">{t("createSuccess")}</p>
+        )}
+        <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
 
-      <div>
-        <SubmitButton>{t("createSubmit")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("createSubmit")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

@@ -36,6 +36,7 @@ vi.mock("@/components/ui", () => ({
   Form: ({ action, children }: { action: (fd: FormData) => void; children: ReactNode }) => (
     <form action={action as never}>{children}</form>
   ),
+  Stack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   FormField: ({ children }: { children: ReactNode }) => <>{children}</>,
   IdempotencyField: () => null,
   SubmitButton: ({ children }: { children: ReactNode }) => (

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormFeedback, FormField, Select, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -24,33 +24,35 @@ export function DocumentUploadForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} className="flex flex-col gap-4">
-      <FormField name="file" label={t("fileLabel")} required>
-        <input
-          type="file"
-          name="file"
-          accept=".md,.markdown,text/markdown"
-          required
-          className="text-sm"
-        />
-      </FormField>
+    <Form action={action}>
+      <Stack>
+        <FormField name="file" label={t("fileLabel")} required>
+          <input
+            type="file"
+            name="file"
+            accept=".md,.markdown,text/markdown"
+            required
+            className="text-sm"
+          />
+        </FormField>
 
-      <FormField name="visibility" label={t("visibilityLabel")}>
-        <Select
-          name="visibility"
-          defaultValue="private"
-          options={[
-            { value: "private", label: t("visibilityPrivate") },
-            { value: "public", label: t("visibilityPublic") },
-          ]}
-        />
-      </FormField>
+        <FormField name="visibility" label={t("visibilityLabel")}>
+          <Select
+            name="visibility"
+            defaultValue="private"
+            options={[
+              { value: "private", label: t("visibilityPrivate") },
+              { value: "public", label: t("visibilityPublic") },
+            ]}
+          />
+        </FormField>
 
-      <FormFeedback result={state} forbiddenAction={t("uploadAction")} />
+        <FormFeedback result={state} forbiddenAction={t("uploadAction")} />
 
-      <div>
-        <SubmitButton>{t("uploadButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("uploadButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

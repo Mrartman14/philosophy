@@ -5,7 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton, TextInput } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Select, Stack, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -30,41 +30,43 @@ export function DocumentCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
 
-      <FormField name="title" label={t("titleLabel")} required>
-        <TextInput name="title" required maxLength={500} placeholder={t("titlePlaceholder")} />
-      </FormField>
+        <FormField name="title" label={t("titleLabel")} required>
+          <TextInput name="title" required maxLength={500} placeholder={t("titlePlaceholder")} />
+        </FormField>
 
-      <FormField name="visibility" label={t("visibilityLabel")}>
-        <Select
-          name="visibility"
-          defaultValue="private"
-          options={[
-            { value: "private", label: t("visibilityPrivate") },
-            { value: "public", label: t("visibilityPublic") },
-          ]}
-        />
-      </FormField>
-      <p className="text-xs text-(--color-fg-muted)">
-        {t("publicWarning")}
-      </p>
+        <FormField name="visibility" label={t("visibilityLabel")}>
+          <Select
+            name="visibility"
+            defaultValue="private"
+            options={[
+              { value: "private", label: t("visibilityPrivate") },
+              { value: "public", label: t("visibilityPublic") },
+            ]}
+          />
+        </FormField>
+        <p className="text-xs text-(--color-fg-muted)">
+          {t("publicWarning")}
+        </p>
 
-      <FormField name="blocks" label={t("contentLabel")}>
-        <LazyAstEditor
-          defaultValue={[]}
-          entityContext="document"
-          onChange={setBlocks}
-        />
-      </FormField>
+        <FormField name="blocks" label={t("contentLabel")}>
+          <LazyAstEditor
+            defaultValue={[]}
+            entityContext="document"
+            onChange={setBlocks}
+          />
+        </FormField>
 
-      <FormFeedback result={state} forbiddenAction={t("createAction")} />
+        <FormFeedback result={state} forbiddenAction={t("createAction")} />
 
-      <div>
-        <SubmitButton>{t("createButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("createButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Button, Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton } from "@/components/ui";
+import { Button, Form, FormFeedback, FormField, IdempotencyField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -41,33 +41,35 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
   const options = childTypes.map((type) => ({ value: type, label: t(`type.${type}`) }));
 
   return (
-    <Form action={action} errors={fieldErrors} className="mt-2 flex flex-col gap-2 border-l border-(--color-border) pl-3">
-      <input type="hidden" name="lecture_id" value={lectureId} />
-      <input type="hidden" name="parent_id" value={parentId} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="mt-2 border-l border-(--color-border) pl-3">
+        <input type="hidden" name="lecture_id" value={lectureId} />
+        <input type="hidden" name="parent_id" value={parentId} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
 
-      <FormField name="type" label={t("replyTypeLabel")} required>
-        <Select name="type" options={options} defaultValue={childTypes[0] ?? ""} aria-label={t("replyTypeAriaLabel")} />
-      </FormField>
+        <FormField name="type" label={t("replyTypeLabel")} required>
+          <Select name="type" options={options} defaultValue={childTypes[0] ?? ""} aria-label={t("replyTypeAriaLabel")} />
+        </FormField>
 
-      <FormField name="blocks" label={t("replyBodyLabel")}>
-        <LazyAstEditor
-          entityContext="comment"
-          defaultLectureId={lectureId}
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel={t("replyBodyAriaLabel")}
-        />
-      </FormField>
+        <FormField name="blocks" label={t("replyBodyLabel")}>
+          <LazyAstEditor
+            entityContext="comment"
+            defaultLectureId={lectureId}
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+            ariaLabel={t("replyBodyAriaLabel")}
+          />
+        </FormField>
 
-      <FormFeedback result={state} forbiddenAction={t("replyForbiddenAction")} />
+        <FormFeedback result={state} forbiddenAction={t("replyForbiddenAction")} />
 
-      <div className="flex gap-2">
-        <SubmitButton>{t("replySubmit")}</SubmitButton>
-        <Button type="button" tone="quiet" onClick={() => { setOpen(false); }}>
-          {t("replyCancel")}
-        </Button>
-      </div>
+        <div className="flex gap-2">
+          <SubmitButton>{t("replySubmit")}</SubmitButton>
+          <Button type="button" tone="quiet" onClick={() => { setOpen(false); }}>
+            {t("replyCancel")}
+          </Button>
+        </div>
+      </Stack>
     </Form>
   );
 }

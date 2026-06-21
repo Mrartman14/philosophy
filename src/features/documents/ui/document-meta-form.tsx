@@ -2,7 +2,7 @@
 // src/features/documents/ui/document-meta-form.tsx
 import { useActionState } from "react";
 
-import { Form, FormField, SubmitButton, TextInput } from "@/components/ui";
+import { Form, FormField, Stack, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -23,30 +23,32 @@ export function DocumentMetaForm({ document }: Props) {
     !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
-      <input type="hidden" name="id" value={document.id ?? ""} />
-      <FormField name="title" label={t("titleLabel")} required>
-        <TextInput
-          name="title"
-          defaultValue={document.filename ?? ""}
-          required
-          maxLength={500}
-        />
-      </FormField>
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
-      )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
-      <div>
-        <SubmitButton>{t("saveTitleButton")}</SubmitButton>
-      </div>
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="id" value={document.id ?? ""} />
+        <FormField name="title" label={t("titleLabel")} required>
+          <TextInput
+            name="title"
+            defaultValue={document.filename ?? ""}
+            required
+            maxLength={500}
+          />
+        </FormField>
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
+        )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
+        <div>
+          <SubmitButton>{t("saveTitleButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

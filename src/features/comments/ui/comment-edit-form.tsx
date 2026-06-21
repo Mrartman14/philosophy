@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Button, Form, FormFeedback, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { Button, Form, FormFeedback, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -39,30 +39,32 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
   }
 
   return (
-    <Form action={action} errors={fieldErrors} className="mt-2 flex flex-col gap-2">
-      <input type="hidden" name="id" value={commentId} />
-      <input type="hidden" name="version" value={version ?? ""} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
-      <FormField name="blocks" label={t("editBodyLabel")}>
-        <LazyAstEditor
-          defaultValue={initialBlocks}
-          entityContext="comment"
-          defaultLectureId={lectureId}
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel={t("editBodyAriaLabel")}
-        />
-      </FormField>
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
-      )}
-      <FormFeedback result={state} forbiddenAction={t("editForbiddenAction")} />
-      <div className="flex gap-2">
-        <SubmitButton>{t("editSubmit")}</SubmitButton>
-        <Button type="button" tone="quiet" onClick={() => { setOpen(false); }}>
-          {t("editCancel")}
-        </Button>
-      </div>
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="mt-2">
+        <input type="hidden" name="id" value={commentId} />
+        <input type="hidden" name="version" value={version ?? ""} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
+        <FormField name="blocks" label={t("editBodyLabel")}>
+          <LazyAstEditor
+            defaultValue={initialBlocks}
+            entityContext="comment"
+            defaultLectureId={lectureId}
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+            ariaLabel={t("editBodyAriaLabel")}
+          />
+        </FormField>
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
+        )}
+        <FormFeedback result={state} forbiddenAction={t("editForbiddenAction")} />
+        <div className="flex gap-2">
+          <SubmitButton>{t("editSubmit")}</SubmitButton>
+          <Button type="button" tone="quiet" onClick={() => { setOpen(false); }}>
+            {t("editCancel")}
+          </Button>
+        </div>
+      </Stack>
     </Form>
   );
 }

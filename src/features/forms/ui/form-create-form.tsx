@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormFeedback, IdempotencyField, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -26,11 +26,13 @@ export function FormCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <IdempotencyField result={state} />
-      <FormBuilder mode="create" />
-      <FormFeedback result={state} forbiddenAction={t("createFormForbiddenAction")} />
-      <div><SubmitButton>{t("createSubmit")}</SubmitButton></div>
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <IdempotencyField result={state} />
+        <FormBuilder mode="create" />
+        <FormFeedback result={state} forbiddenAction={t("createFormForbiddenAction")} />
+        <div><SubmitButton>{t("createSubmit")}</SubmitButton></div>
+      </Stack>
     </Form>
   );
 }

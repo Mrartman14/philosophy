@@ -5,7 +5,7 @@ import { useActionState, useState } from "react";
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { AstMergeView, type MergeViewLabels } from "@/components/ast-merge";
-import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { Form, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -104,45 +104,47 @@ export function DocumentEditForm({ document }: Props) {
 
   return (
     <>
-      <Form action={action} className="flex flex-col gap-4">
-        {gone && (
-          <p role="alert" className="text-sm font-medium text-red-600">
-            {t("merge.goneMessage")}
-          </p>
-        )}
-        <input type="hidden" name="id" value={document.id ?? ""} />
-        <input type="hidden" name="version" value={baseVersion ?? ""} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-        <IdempotencyField result={state} />
-
-        <FormField name="blocks" label={t("contentLabel")}>
-          <LazyAstEditor
-            key={editorKey}
-            defaultValue={editorSeed}
-            entityContext="document"
-            onChange={(next: AstBlock[]) => {
-              setBlocks(next);
-            }}
-          />
-        </FormField>
-
-        {state.success &&
-          state.data.kind === "saved" &&
-          state.data.document && (
-            <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
+      <Form action={action}>
+        <Stack>
+          {gone && (
+            <p role="alert" className="text-sm font-medium text-red-600">
+              {t("merge.goneMessage")}
+            </p>
           )}
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
+          <input type="hidden" name="id" value={document.id ?? ""} />
+          <input type="hidden" name="version" value={baseVersion ?? ""} />
+          <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+          <IdempotencyField result={state} />
 
-        <div>
-          <SubmitButton>{t("saveContentButton")}</SubmitButton>
-        </div>
+          <FormField name="blocks" label={t("contentLabel")}>
+            <LazyAstEditor
+              key={editorKey}
+              defaultValue={editorSeed}
+              entityContext="document"
+              onChange={(next: AstBlock[]) => {
+                setBlocks(next);
+              }}
+            />
+          </FormField>
+
+          {state.success &&
+            state.data.kind === "saved" &&
+            state.data.document && (
+              <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
+            )}
+          {!state.success && state.code === "forbidden" && (
+            <p className="text-sm text-red-600">
+              {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
+            </p>
+          )}
+          {!state.success && !state.code && (
+            <p className="text-sm text-red-600">{state.error}</p>
+          )}
+
+          <div>
+            <SubmitButton>{t("saveContentButton")}</SubmitButton>
+          </div>
+        </Stack>
       </Form>
 
       {conflict && (

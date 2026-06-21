@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormFeedback, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -53,11 +53,13 @@ export function FormEditForm({ form }: Props) {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <input type="hidden" name="id" value={form.id ?? ""} />
-      <FormBuilder mode="edit" initial={toBuilderInitial(form)} />
-      <FormFeedback result={state} forbiddenAction={t("editFormForbiddenAction")} />
-      <div><SubmitButton>{t("editSubmit")}</SubmitButton></div>
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="id" value={form.id ?? ""} />
+        <FormBuilder mode="edit" initial={toBuilderInitial(form)} />
+        <FormFeedback result={state} forbiddenAction={t("editFormForbiddenAction")} />
+        <div><SubmitButton>{t("editSubmit")}</SubmitButton></div>
+      </Stack>
     </Form>
   );
 }

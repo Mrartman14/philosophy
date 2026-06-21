@@ -50,57 +50,59 @@ export function AuditFilterForm() {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <FormField name="actor" label={t("filterActorLabel")}>
-        <TextInput
-          name="actor"
-          defaultValue={searchParams.get("actor") ?? ""}
-          placeholder="550e8400-e29b-…"
-        />
-      </FormField>
-      <FormField name="target_type" label={t("filterTargetTypeLabel")}>
-        <Select
-          name="target_type"
-          defaultValue={searchParams.get("target_type") ?? ALL_TYPES}
-          options={TARGET_TYPE_OPTIONS}
-          aria-label={t("filterTargetTypeLabel")}
-        />
-      </FormField>
-      <FormField name="target_id" label={t("filterTargetIdLabel")}>
-        <TextInput
-          name="target_id"
-          defaultValue={searchParams.get("target_id") ?? ""}
-          placeholder={t("filterTargetIdPlaceholder")}
-        />
-      </FormField>
-      <FormField name="action" label={t("filterActionLabel")}>
-        <TextInput
-          name="action"
-          defaultValue={searchParams.get("action") ?? ""}
-          placeholder={t("filterActionPlaceholder")}
-        />
-      </FormField>
-      <FormField name="from" label={t("filterFromLabel")}>
-        <TextInput
-          type="datetime-local"
-          name="from"
-          defaultValue={searchParams.get("from") ?? ""}
-        />
-      </FormField>
-      <FormField name="to" label={t("filterToLabel")}>
-        <TextInput
-          type="datetime-local"
-          name="to"
-          defaultValue={searchParams.get("to") ?? ""}
-        />
-      </FormField>
-      <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
-        <Button type="submit" disabled={pending}>
-          {pending ? "…" : t("filterSubmit")}
-        </Button>
-        <Button type="button" tone="quiet" onClick={onReset} disabled={pending}>
-          {t("filterReset")}
-        </Button>
+    <Form onSubmit={onSubmit}>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <FormField name="actor" label={t("filterActorLabel")}>
+          <TextInput
+            name="actor"
+            defaultValue={searchParams.get("actor") ?? ""}
+            placeholder="550e8400-e29b-…"
+          />
+        </FormField>
+        <FormField name="target_type" label={t("filterTargetTypeLabel")}>
+          <Select
+            name="target_type"
+            defaultValue={searchParams.get("target_type") ?? ALL_TYPES}
+            options={TARGET_TYPE_OPTIONS}
+            aria-label={t("filterTargetTypeLabel")}
+          />
+        </FormField>
+        <FormField name="target_id" label={t("filterTargetIdLabel")}>
+          <TextInput
+            name="target_id"
+            defaultValue={searchParams.get("target_id") ?? ""}
+            placeholder={t("filterTargetIdPlaceholder")}
+          />
+        </FormField>
+        <FormField name="action" label={t("filterActionLabel")}>
+          <TextInput
+            name="action"
+            defaultValue={searchParams.get("action") ?? ""}
+            placeholder={t("filterActionPlaceholder")}
+          />
+        </FormField>
+        <FormField name="from" label={t("filterFromLabel")}>
+          <TextInput
+            type="datetime-local"
+            name="from"
+            defaultValue={searchParams.get("from") ?? ""}
+          />
+        </FormField>
+        <FormField name="to" label={t("filterToLabel")}>
+          <TextInput
+            type="datetime-local"
+            name="to"
+            defaultValue={searchParams.get("to") ?? ""}
+          />
+        </FormField>
+        <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
+          <Button type="submit" disabled={pending}>
+            {pending ? "…" : t("filterSubmit")}
+          </Button>
+          <Button type="button" tone="quiet" onClick={onReset} disabled={pending}>
+            {t("filterReset")}
+          </Button>
+        </div>
       </div>
     </Form>
   );
