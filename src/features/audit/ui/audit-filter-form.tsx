@@ -1,9 +1,9 @@
 "use client";
 // src/features/audit/ui/audit-filter-form.tsx
 import { useSearchParams } from "next/navigation";
-import { type FormEvent, type ReactNode } from "react";
+import { type FormEvent } from "react";
 
-import { Button, Form, Label, Select, TextInput } from "@/components/ui";
+import { Button, Form, FormField, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -20,15 +20,6 @@ const FILTER_FIELDS = [
   "from",
   "to",
 ] as const;
-
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <Label className="flex flex-col gap-1">
-      <span className="text-xs text-(--color-fg-muted)">{label}</span>
-      {children}
-    </Label>
-  );
-}
 
 export function AuditFilterForm() {
   const t = useT("audit");
@@ -60,49 +51,49 @@ export function AuditFilterForm() {
 
   return (
     <Form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <Field label={t("filterActorLabel")}>
+      <FormField name="actor" label={t("filterActorLabel")}>
         <TextInput
           name="actor"
           defaultValue={searchParams.get("actor") ?? ""}
           placeholder="550e8400-e29b-…"
         />
-      </Field>
-      <Field label={t("filterTargetTypeLabel")}>
+      </FormField>
+      <FormField name="target_type" label={t("filterTargetTypeLabel")}>
         <Select
           name="target_type"
           defaultValue={searchParams.get("target_type") ?? ALL_TYPES}
           options={TARGET_TYPE_OPTIONS}
           aria-label={t("filterTargetTypeLabel")}
         />
-      </Field>
-      <Field label={t("filterTargetIdLabel")}>
+      </FormField>
+      <FormField name="target_id" label={t("filterTargetIdLabel")}>
         <TextInput
           name="target_id"
           defaultValue={searchParams.get("target_id") ?? ""}
           placeholder={t("filterTargetIdPlaceholder")}
         />
-      </Field>
-      <Field label={t("filterActionLabel")}>
+      </FormField>
+      <FormField name="action" label={t("filterActionLabel")}>
         <TextInput
           name="action"
           defaultValue={searchParams.get("action") ?? ""}
           placeholder={t("filterActionPlaceholder")}
         />
-      </Field>
-      <Field label={t("filterFromLabel")}>
+      </FormField>
+      <FormField name="from" label={t("filterFromLabel")}>
         <TextInput
           type="datetime-local"
           name="from"
           defaultValue={searchParams.get("from") ?? ""}
         />
-      </Field>
-      <Field label={t("filterToLabel")}>
+      </FormField>
+      <FormField name="to" label={t("filterToLabel")}>
         <TextInput
           type="datetime-local"
           name="to"
           defaultValue={searchParams.get("to") ?? ""}
         />
-      </Field>
+      </FormField>
       <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
         <Button type="submit" disabled={pending}>
           {pending ? "…" : t("filterSubmit")}

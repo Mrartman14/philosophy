@@ -2,7 +2,7 @@
 import { useState, useTransition } from "react";
 
 import { uploadImage } from "@/components/ast-editor/upload/upload-image";
-import { Button, Label } from "@/components/ui";
+import { Button, FormField, Label } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { setLectureCover, clearLectureCover } from "../actions";
@@ -88,8 +88,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
         <p className="text-sm text-(--color-fg-muted)">{tL("coverEmpty")}</p>
       )}
 
-      <Label className="flex flex-col gap-1 text-sm">
-        {tL("coverAltLabel")}
+      <FormField name="cover_alt" label={tL("coverAltLabel")}>
         <input
           type="text"
           value={alt}
@@ -97,7 +96,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
           onChange={(e) => { setAlt(e.target.value); }}
           className="rounded border border-(--color-border) px-2 py-1"
         />
-      </Label>
+      </FormField>
 
       <div className="flex items-center gap-2">
         <Label className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 text-sm hover:bg-(--color-surface-subtle)">

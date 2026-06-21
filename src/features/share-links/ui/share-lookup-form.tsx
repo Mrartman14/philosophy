@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, Form, Label, Select, TextInput } from "@/components/ui";
+import { Button, Form, FormField, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -49,24 +49,22 @@ export function ShareLookupForm({ admin = false }: Props) {
 
   return (
     <Form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
-      <div className="flex flex-col gap-1">
-        <span className="text-xs text-(--color-fg-muted)">{t("resourceTypeLabel")}</span>
+      <FormField name="resource_type" label={t("resourceTypeLabel")}>
         <Select
           name="resource_type"
           defaultValue={searchParams.get("resource_type") ?? types[0]}
           options={options}
           aria-label={t("resourceTypeLabel")}
         />
-      </div>
-      <Label htmlFor="resource_id" className="flex flex-1 flex-col gap-1">
-        <span className="text-xs text-(--color-fg-muted)">{t("resourceIdLabel")}</span>
+      </FormField>
+      <FormField name="resource_id" label={t("resourceIdLabel")} className="flex-1">
         <TextInput
           id="resource_id"
           name="resource_id"
           defaultValue={searchParams.get("resource_id") ?? ""}
           placeholder={t("resourceIdPlaceholder")}
         />
-      </Label>
+      </FormField>
       <Button type="submit" disabled={pending}>
         {pending ? "…" : t("showLinksButton")}
       </Button>

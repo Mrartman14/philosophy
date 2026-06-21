@@ -8,7 +8,6 @@ import {
   Form,
   FormField,
   IdempotencyField,
-  Label,
   Select,
   TextInput,
   useToast,
@@ -99,10 +98,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
                 placeholder={t("labelPlaceholder")}
               />
             </FormField>
-            <Label className="flex flex-col gap-1">
-              <span className="text-xs text-(--color-fg-muted)">
-                {t("expiresField")}
-              </span>
+            <FormField name="expires_in_days" label={t("expiresField")}>
               <Select
                 name="expires_in_days"
                 defaultValue=""
@@ -110,7 +106,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
                 aria-label={t("expiresField")}
                 className="w-40"
               />
-            </Label>
+            </FormField>
             <Button type="submit" disabled={pending}>
               {pending ? "…" : t("createButton")}
             </Button>

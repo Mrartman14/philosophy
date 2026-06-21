@@ -1,9 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
 import { useTransition } from "react";
 
-import { Label, Select } from "@/components/ui";
+import { FormField, Select } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { LOCALE_COOKIE, type Locale } from "@/i18n/locales";
 import { persistLocale } from "@/i18n/persist-locale";
@@ -30,7 +29,7 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
   }
 
   return (
-    <Row label={t("localeLabelRow")}>
+    <FormField name="locale" label={t("localeLabelRow")}>
       <Select
         aria-label={t("localeAriaLabel")}
         options={OPTIONS}
@@ -38,15 +37,6 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
         onValueChange={onChange}
         disabled={pending}
       />
-    </Row>
-  );
-}
-
-function Row({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <Label className="flex flex-col gap-1">
-      <span className="text-sm font-medium">{label}</span>
-      {children}
-    </Label>
+    </FormField>
   );
 }
