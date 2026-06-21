@@ -106,6 +106,8 @@ const errors = {
   // isErrorKey не распознавал его как каталожный ключ для всех слайсов.
   // Слайс lectures маппит NOT_FOUND → LECTURE_NOT_FOUND в своей ERRORS-карте.
   LECTURE_NOT_FOUND: "Лекция не найдена.",
+  LECTURE_REFERENCED:
+    "На эту лекцию ссылаются другие материалы. Сначала удалите ссылки.",
 
   // --- events slice: доменные коды ---
   INVALID_DATE:
