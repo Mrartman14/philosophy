@@ -20,6 +20,7 @@ export { IdempotencyField } from "./idempotency-field";
 export { Dialog, DialogClose } from "./dialog";
 export { Toolbar } from "./toolbar";
 export { Popover } from "./popover";
+export { NavigationMenu } from "./navigation-menu";
 export { ConfirmDialog } from "./confirm-dialog";
 export { Table, Thead, Tbody, Tr, Th, Td } from "./table";
 export { ToastProvider, useToast } from "./toast";
