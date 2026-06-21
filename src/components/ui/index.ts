@@ -25,4 +25,5 @@ export { Pagination, type PaginationLabels } from "./pagination";
 export { Skeleton, type SkeletonProps } from "./skeleton";
 export { RouterLink, type RouterLinkProps } from "./router-link";
 export { chipClass } from "./chip";
+export { Stack, STACK_CLASS, type StackProps } from "./stack";
 export { FormFeedback } from "./form-feedback";
