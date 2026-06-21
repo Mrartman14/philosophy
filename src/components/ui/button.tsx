@@ -4,7 +4,6 @@ import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn, FOCUS_RING_CONTROL } from "./cn";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
-export type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
@@ -15,15 +14,14 @@ const variantClasses: Record<ButtonVariant, string> = {
   danger: "bg-(--color-danger-solid) text-(--color-danger-on-solid) hover:opacity-90 disabled:opacity-50",
 };
 
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-(--size-control-h-sm) px-(--space-control-pad-x) text-sm",
-  md: "h-(--size-control-h-md) px-4 text-sm",
-  lg: "h-(--size-control-h-lg) px-6 text-base",
-};
-
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
-  size?: ButtonSize;
+  /**
+   * Структурно-компактный размер контрола (ось, ортогональная глобальной
+   * плотности): `false` → высота `--size-control-h-md`, `true` →
+   * `--size-control-h-sm`. Оба токена density-aware.
+   */
+  compact?: boolean;
   /**
    * Escape-режим для кликабельных строк/карточек, которые НЕ являются
    * контролом фиксированной геометрии. Рендерит нативный `<button>` только
@@ -36,7 +34,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = "primary", size = "md", unstyled = false, className, type = "button", ...rest },
+  { variant = "primary", compact = false, unstyled = false, className, type = "button", ...rest },
   ref,
 ) {
   if (unstyled) {
@@ -48,10 +46,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded font-medium transition",
+        "inline-flex items-center justify-center gap-2 rounded px-4 text-sm font-medium transition",
+        compact ? "h-(--size-control-h-sm)" : "h-(--size-control-h-md)",
         FOCUS_RING_CONTROL,
         variantClasses[variant],
-        sizeClasses[size],
         className,
       )}
       {...rest}

@@ -55,7 +55,7 @@ export function UserRoleControl({ userId, username, current }: Props) {
         className="w-44"
       />
       {dirty && (
-        <Button size="sm" disabled={isPending} onClick={() => void apply()}>
+        <Button compact disabled={isPending} onClick={() => void apply()}>
           {t("applyButton")}
         </Button>
       )}

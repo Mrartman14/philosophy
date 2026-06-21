@@ -135,7 +135,7 @@ export function AstMergeView({
           <div className="text-sm">
             <Button
               variant="ghost"
-              size="sm"
+              compact
               className="text-(--color-fg-muted) underline"
               aria-expanded={showUnchanged}
               onClick={() => {

@@ -93,7 +93,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
+                  compact
                   disabled={index === 0}
                   aria-label={t("itemsMoveUp")}
                   onClick={() => { move(index, -1); }}
@@ -103,7 +103,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
+                  compact
                   disabled={index === items.length - 1}
                   aria-label={t("itemsMoveDown")}
                   onClick={() => { move(index, 1); }}
@@ -113,7 +113,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                 <Button
                   type="button"
                   variant="danger"
-                  size="sm"
+                  compact
                   aria-label={t("itemsRemove")}
                   onClick={() => { removeAt(index); }}
                 >
@@ -128,12 +128,12 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
       {picking ? (
         <div className="rounded border border-(--color-border) p-2">
           <DocumentPicker onSelect={addDocument} />
-          <Button type="button" variant="ghost" size="sm" onClick={() => { setPicking(false); }}>
+          <Button type="button" variant="ghost" compact onClick={() => { setPicking(false); }}>
             {t("itemsPickerCancel")}
           </Button>
         </div>
       ) : (
-        <Button type="button" variant="secondary" size="sm" onClick={() => { setPicking(true); }}>
+        <Button type="button" variant="secondary" compact onClick={() => { setPicking(true); }}>
           {t("itemsAddDocument")}
         </Button>
       )}

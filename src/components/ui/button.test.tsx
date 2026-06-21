@@ -15,6 +15,16 @@ describe("Button", () => {
     expect(btn).toHaveClass("inline-flex");
   });
 
+  it("default size binds to the comfortable control-height token", () => {
+    render(<Button>x</Button>);
+    expect(screen.getByRole("button", { name: "x" })).toHaveClass("h-(--size-control-h-md)");
+  });
+
+  it("compact binds to the small control-height token", () => {
+    render(<Button compact>x</Button>);
+    expect(screen.getByRole("button", { name: "x" })).toHaveClass("h-(--size-control-h-sm)");
+  });
+
   it("unstyled drops geometry/layout base, keeps caller className", () => {
     render(
       <Button unstyled className="custom-x">

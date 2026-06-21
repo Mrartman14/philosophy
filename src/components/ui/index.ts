@@ -1,11 +1,6 @@
 // src/components/ui/index.ts
 export { cn } from "./cn";
-export {
-  Button,
-  type ButtonProps,
-  type ButtonVariant,
-  type ButtonSize,
-} from "./button";
+export { Button, type ButtonProps, type ButtonVariant } from "./button";
 export { IconButton, type IconButtonProps } from "./icon-button";
 export { TextInput, type TextInputProps } from "./text-input";
 export { Textarea, type TextareaProps } from "./textarea";

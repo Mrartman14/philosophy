@@ -213,7 +213,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
           key={c.id}
           id={`${listboxId}-opt-${String(i)}`}
           variant="ghost"
-          size="sm"
+          compact
           role="option"
           aria-selected={safeActive === i}
           className="w-full justify-start"
@@ -228,7 +228,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
       ))}
       <Button
         variant="ghost"
-        size="sm"
+        compact
         className="w-full justify-start"
         onClick={() => { closeSlashMenu(editor.view); }}
       >

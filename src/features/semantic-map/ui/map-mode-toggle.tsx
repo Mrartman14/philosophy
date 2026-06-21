@@ -22,7 +22,7 @@ export function MapModeToggle({
       {(["2d", "3d"] as const).map((m) => (
         <Button
           key={m}
-          size="sm"
+          compact
           variant={mode === m ? "primary" : "ghost"}
           aria-pressed={mode === m}
           onClick={() => { onChange(m); }}

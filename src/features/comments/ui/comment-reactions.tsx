@@ -130,7 +130,7 @@ export function CommentReactions({
                   <Button
                     key={v}
                     variant="ghost"
-                    size="sm"
+                    compact
                     disabled={!canReact}
                     onClick={() => { toggle(axis, v); }}
                     aria-pressed={active}

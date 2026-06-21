@@ -56,7 +56,7 @@ export function AttachmentsPanel({
         {showAttach && (
           <Button
             variant="secondary"
-            size="sm"
+            compact
             onClick={() => { setPickerOpen((v) => !v); }}
             disabled={pending}
           >
@@ -132,7 +132,7 @@ export function AttachmentsPanel({
                   {onDetach && (
                     <Button
                       variant="secondary"
-                      size="sm"
+                      compact
                       disabled={pending}
                       onClick={() => { run(() => onDetach(item)); }}
                     >

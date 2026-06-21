@@ -39,6 +39,14 @@ export default async function UiKitSmokePage() {
           <Button variant="danger">Danger</Button>
           <IconButton aria-label="Close">×</IconButton>
         </div>
+        <p className="text-sm text-(--color-fg-muted)">
+          Размер контрола — бинарная ось `compact` (высота из density-aware
+          токена), ортогональная глобальной плотности.
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button>Обычный (--size-control-h-md)</Button>
+          <Button compact>Компактный (--size-control-h-sm)</Button>
+        </div>
       </section>
 
       <section className="flex flex-col gap-2 max-w-md">

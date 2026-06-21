@@ -58,7 +58,7 @@ export function UserStatusControl({ userId, username, current }: Props) {
       {dirty && value === "banned" ? (
         <ConfirmDialog
           trigger={
-            <Button size="sm" variant="danger" disabled={isPending}>
+            <Button compact variant="danger" disabled={isPending}>
               {t("applyButton")}
             </Button>
           }
@@ -69,7 +69,7 @@ export function UserStatusControl({ userId, username, current }: Props) {
           onConfirm={apply}
         />
       ) : dirty ? (
-        <Button size="sm" disabled={isPending} onClick={() => void apply()}>
+        <Button compact disabled={isPending} onClick={() => void apply()}>
           {t("applyButton")}
         </Button>
       ) : null}

@@ -26,7 +26,7 @@ export function LogoutForm() {
   return (
     <ConfirmDialog
       trigger={
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" compact>
           {t("logout.trigger")}
         </Button>
       }

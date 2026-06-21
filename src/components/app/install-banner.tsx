@@ -16,7 +16,7 @@ export const InstallBanner: React.FC = () => {
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-(--color-border) bg-(--color-surface-subtle)">
         <span className="text-sm">{t("installBanner.installApp")}</span>
         <Button
-          size="sm"
+          compact
           onClick={() => { void promptInstall(); }}
           className="shrink-0"
         >

@@ -125,12 +125,12 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
         {s.error && (
           <div role="presentation">
             {errorCopy}
-            <Button variant="ghost" size="sm" onClick={() => void load(debouncedQ, 0)}>{t("comboboxRetry")}</Button>
+            <Button variant="ghost" compact onClick={() => void load(debouncedQ, 0)}>{t("comboboxRetry")}</Button>
           </div>
         )}
         {canLoadMore && (
           <div role="presentation">
-            <Button variant="ghost" size="sm" onClick={() => void load(debouncedQ, s.items.length)}>
+            <Button variant="ghost" compact onClick={() => void load(debouncedQ, s.items.length)}>
               {t("comboboxLoadMore")}
             </Button>
           </div>

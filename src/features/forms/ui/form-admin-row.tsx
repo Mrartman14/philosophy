@@ -31,7 +31,7 @@ export function FormAdminRow({ form, canDelete }: Props) {
         <span className="text-xs text-(--color-fg-muted)">{form.visibility}</span>
         {canDelete && form.id && (
           <ConfirmDialog
-            trigger={<Button variant="danger" size="sm">{t("deleteConfirm")}</Button>}
+            trigger={<Button variant="danger" compact>{t("deleteConfirm")}</Button>}
             title={t("deleteFormTitle")}
             description={t("deleteFormDescriptionAdmin")}
             destructive
