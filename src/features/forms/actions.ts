@@ -8,6 +8,7 @@ import { getT } from "@/i18n";
 import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
 import {
+  ApiMessageError,
   createAction,
   createFormAction,
   parseFormData,
@@ -79,10 +80,10 @@ export const createForm = createFormAction(async (formData, ctx) => {
   // submission_mode/visibility гарантированы superRefine FormCreateSchema
   // (иначе parseFormData бросит 422 до сюда). Явная проверка инварианта вместо
   // фиктивного дефолта: ломаемся громко, если гарантия когда-нибудь ослабнет.
+  // ApiMessageError даёт клиенту локализованное «Ошибка сервера» и при этом
+  // ловится createFormAction (observability capture сохраняется).
   if (!input.submission_mode || !input.visibility) {
-    throw new Error(
-      "forms invariant: superRefine guarantees submission_mode & visibility",
-    );
+    throw new ApiMessageError("serverError");
   }
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/forms", {
