@@ -3,6 +3,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 
+import { API_URL } from "@/api/base-url";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { getT } from "@/i18n";
@@ -38,8 +39,6 @@ import {
   makeDocumentIdSchema,
 } from "./schemas";
 import type { Document, DocumentBlocksSaveResult } from "./types";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 /** Доменные коды бека → ключи каталога errors (Case 2 i18n).
  * role-403/SUSPENDED/BANNED и дефолтный REF_NOT_FOUND обрабатывает

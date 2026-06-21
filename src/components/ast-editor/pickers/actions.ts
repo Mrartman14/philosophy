@@ -2,7 +2,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import type { components } from "@/api/schema";
-import { getT } from "@/i18n";
+import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 
 export type Lecture = components["schemas"]["lecture.Lecture"];
 export type GlossaryTerm = components["schemas"]["glossary.Term"];
@@ -13,26 +13,29 @@ export type CommentSummary = components["schemas"]["comment.CommentSummary"];
 
 export interface PickerPage<T> { data: T[]; total: number | null }
 
-interface ApiError { error?: string }
+/** Пикеры редактора — read-only GET-поиск без доменных кодов: пустая карта,
+ * `rethrowApiError` сам делает фоллбек на текст бека / локализуемый serverError
+ * (role-403/SUSPENDED/BANNED/422 ловит централизованно). */
+const ERRORS: ApiErrorMessageKeys = {};
 
 export async function searchLectures(q: string, offset: number, limit: number): Promise<PickerPage<Lecture>> {
-  const [api, t] = await Promise.all([createApiClient(), getT("editor")]);
+  const api = await createApiClient();
   const { data, error } = await api.GET("/api/lectures", { params: { query: { q, offset, limit } } });
-  if (error) throw new Error((error as ApiError).error ?? t("lecturesLoadError"));
+  if (error) rethrowApiError(error, ERRORS);
   return { data: data.data ?? [], total: data.pagination?.total ?? null };
 }
 
 export async function searchGlossary(q: string, offset: number, limit: number): Promise<PickerPage<GlossaryTerm>> {
-  const [api, t] = await Promise.all([createApiClient(), getT("editor")]);
+  const api = await createApiClient();
   const { data, error } = await api.GET("/api/glossary", { params: { query: { q, offset, limit } } });
-  if (error) throw new Error((error as ApiError).error ?? t("glossaryLoadError"));
+  if (error) rethrowApiError(error, ERRORS);
   return { data: data.data ?? [], total: data.pagination?.total ?? null };
 }
 
 export async function searchDocuments(q: string, offset: number, limit: number): Promise<PickerPage<DocumentSummary>> {
-  const [api, t] = await Promise.all([createApiClient(), getT("editor")]);
+  const api = await createApiClient();
   const { data, error } = await api.GET("/api/documents", { params: { query: { q, offset, limit } } });
-  if (error) throw new Error((error as ApiError).error ?? t("documentsLoadError"));
+  if (error) rethrowApiError(error, ERRORS);
   return { data: data.data ?? [], total: data.pagination?.total ?? null };
 }
 
@@ -42,18 +45,18 @@ export async function searchMedia(
   limit: number,
   type?: "video" | "audio",
 ): Promise<PickerPage<MediaSummary>> {
-  const [api, t] = await Promise.all([createApiClient(), getT("editor")]);
+  const api = await createApiClient();
   const query: { q: string; offset: number; limit: number; type?: "video" | "audio" } = { q, offset, limit };
   if (type) query.type = type;
   const { data, error } = await api.GET("/api/media", { params: { query } });
-  if (error) throw new Error((error as ApiError).error ?? t("mediaLoadError"));
+  if (error) rethrowApiError(error, ERRORS);
   return { data: data.data ?? [], total: data.pagination?.total ?? null };
 }
 
 export async function searchCanvases(q: string, offset: number, limit: number): Promise<PickerPage<CanvasSummary>> {
-  const [api, t] = await Promise.all([createApiClient(), getT("editor")]);
+  const api = await createApiClient();
   const { data, error } = await api.GET("/api/canvases", { params: { query: { q, offset, limit } } });
-  if (error) throw new Error((error as ApiError).error ?? t("canvasLoadError"));
+  if (error) rethrowApiError(error, ERRORS);
   return { data: data.data ?? [], total: data.pagination?.total ?? null };
 }
 
@@ -63,10 +66,10 @@ export async function searchCommentsByLecture(
   offset: number,
   limit: number,
 ): Promise<PickerPage<CommentSummary>> {
-  const [api, t] = await Promise.all([createApiClient(), getT("editor")]);
+  const api = await createApiClient();
   const { data, error } = await api.GET("/api/lectures/{id}/comments/search", {
     params: { path: { id: lectureId }, query: { q, offset, limit } },
   });
-  if (error) throw new Error((error as ApiError).error ?? t("commentsLoadError"));
+  if (error) rethrowApiError(error, ERRORS);
   return { data: data.data ?? [], total: data.pagination?.total ?? null };
 }

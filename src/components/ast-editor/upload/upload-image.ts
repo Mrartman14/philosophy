@@ -2,10 +2,9 @@
 import "server-only";
 import { cookies } from "next/headers";
 
+import { API_URL } from "@/api/base-url";
 import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 export type UploadImageResult =
   | { success: true; data: { storage_key: string; upload_id: string } }

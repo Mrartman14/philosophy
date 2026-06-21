@@ -17,9 +17,9 @@ const RESOURCE_PATH_SEGMENT: Record<ResourceType, string> = {
 
 /**
  * Абсолютный URL detail-страницы ресурса с ?token=. База — из
- * NEXT_PUBLIC_BASE_URL (он уже содержит base-path в prod, напр.
- * https://mrartman14.github.io/philosophy — поэтому NEXT_PUBLIC_BASE_PATH
- * повторно НЕ добавляем). Завершающий слеш базы нормализуется.
+ * NEXT_PUBLIC_BASE_URL (он уже содержит base-path в prod — поэтому
+ * NEXT_PUBLIC_BASE_PATH повторно НЕ добавляем). Завершающий слеш базы
+ * нормализуется.
  */
 export function buildShareUrl(
   resourceType: ResourceType,
@@ -27,7 +27,7 @@ export function buildShareUrl(
   token: string,
 ): string {
   const segment = RESOURCE_PATH_SEGMENT[resourceType];
-  const rawBase = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+  const rawBase = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3001";
   const base = rawBase.replace(/\/+$/, "");
   const path = `/${segment}/${encodeURIComponent(resourceId)}`;
   const query = `?token=${encodeURIComponent(token)}`;

@@ -3,6 +3,7 @@
 import "server-only";
 import { redirect } from "next/navigation";
 
+import { API_URL } from "@/api/base-url";
 import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import { createFormAction, parseFormData } from "@/utils/create-action";
@@ -10,8 +11,6 @@ import { createFormAction, parseFormData } from "@/utils/create-action";
 import { setAuthCookies, clearAuthCookies, getAuthToken, getRefreshToken } from "./cookie";
 import { safeNextPath } from "./safe-next";
 import { makeLoginSchema, makeRegisterSchema } from "./schemas";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 /**
  * Семантическая ошибка auth-flow. `message` — enum-ключ, UI мапит его в

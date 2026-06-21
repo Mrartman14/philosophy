@@ -72,8 +72,6 @@ const lectures = {
     loadItemFailed: "Failed to load lecture",
     loadDocumentsFailed: "Failed to load lecture documents",
     loadMediaFailed: "Failed to load lecture media",
-    searchDocumentsFailed: "Error searching documents",
-    searchMediaFailed: "Error searching media",
   },
 };
 

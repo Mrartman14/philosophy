@@ -19,7 +19,10 @@ export function canCreateAnnotation(me: MaybeMe): boolean {
  * Редактировать может ТОЛЬКО автор (бек: PUT /api/annotations/{id} — owner-only,
  * без admin-override). Status-гейт через isMutationAllowed.
  */
-export function canEditAnnotation(me: MaybeMe, annotation: Annotation): boolean {
+export function canEditAnnotation(
+  me: MaybeMe,
+  annotation: Pick<Annotation, "owner_id">,
+): boolean {
   return isMutationAllowed(me) && annotation.owner_id === me.id;
 }
 
@@ -29,7 +32,7 @@ export function canEditAnnotation(me: MaybeMe, annotation: Annotation): boolean 
  */
 export function canDeleteAnnotation(
   me: MaybeMe,
-  annotation: Annotation,
+  annotation: Pick<Annotation, "owner_id">,
 ): boolean {
   return isMutationAllowed(me) && annotation.owner_id === me.id;
 }

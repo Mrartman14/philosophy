@@ -3,6 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 
+import { API_URL } from "@/api/base-url";
 import { createApiClient } from "@/api/client";
 import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
@@ -18,8 +19,6 @@ import {
   type BackendParentEntityType,
   type ParentEntityType,
 } from "./types";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 function toResult(
   resp: AnnotationListResponse | null,

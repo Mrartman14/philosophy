@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { API_URL } from "@/api/base-url";
 import {
   ACCESS_COOKIE,
   REFRESH_COOKIE,
@@ -8,8 +9,6 @@ import {
   authCookieOptions,
 } from "@/features/auth/client";
 import { buildSecurityHeaders, type SecurityHeaders } from "@/security/csp";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 /**
  * Прозрачный refresh-on-demand + admin-гейт.

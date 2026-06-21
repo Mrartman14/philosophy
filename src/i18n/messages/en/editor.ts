@@ -92,14 +92,6 @@ const editor = {
   canvasPlaceholder: "Search canvas…",
   commentPlaceholder: "Search comments in the selected lecture…",
 
-  // --- Picker: error messages from server actions ---
-  lecturesLoadError: "Failed to load lectures",
-  glossaryLoadError: "Failed to load glossary",
-  documentsLoadError: "Failed to load documents",
-  mediaLoadError: "Failed to load media",
-  canvasLoadError: "Failed to load canvas",
-  commentsLoadError: "Failed to load comments",
-
   // --- Media picker (media-picker) ---
   mediaTypeLabel: "Type",
   mediaTypeAll: "all",

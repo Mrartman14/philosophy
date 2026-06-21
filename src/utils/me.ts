@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import { API_URL } from "@/api/base-url";
 import type { components } from "@/api/schema";
 import { errors, metrics, M } from "@/services/observability";
 import { setServerActor } from "@/services/observability/server";
@@ -28,8 +29,6 @@ export interface Me {
 }
 
 export type MaybeMe = Me | null;
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 interface AuthState {
   me: Me | null;

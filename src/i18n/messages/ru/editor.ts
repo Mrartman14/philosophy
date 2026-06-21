@@ -92,14 +92,6 @@ const editor = {
   canvasPlaceholder: "Поиск canvas…",
   commentPlaceholder: "Поиск комментария в выбранной лекции…",
 
-  // --- Picker: error messages from server actions ---
-  lecturesLoadError: "Ошибка загрузки лекций",
-  glossaryLoadError: "Ошибка загрузки глоссария",
-  documentsLoadError: "Ошибка загрузки документов",
-  mediaLoadError: "Ошибка загрузки медиа",
-  canvasLoadError: "Ошибка загрузки canvas",
-  commentsLoadError: "Ошибка загрузки комментариев",
-
   // --- Media picker (media-picker) ---
   mediaTypeLabel: "Тип",
   mediaTypeAll: "все",

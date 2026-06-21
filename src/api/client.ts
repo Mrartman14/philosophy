@@ -3,9 +3,12 @@ import createClient, { type Middleware } from "openapi-fetch";
 import { errors, log, metrics, M } from "@/services/observability";
 import { getContext } from "@/services/observability/core/registry";
 
+import { API_URL } from "./base-url";
 import type { paths } from "./schema";
 
-export const API_URL = process.env.API_URL ?? "http://localhost:8080";
+// Реэкспорт публичного дефолта: существующие `import { API_URL } from "@/api/client"`
+// продолжают работать; единый источник — ./base-url (edge-safe).
+export { API_URL };
 
 // Длительность запроса меряется по id middleware-вызова: openapi-fetch гарантирует
 // парность onRequest/onResponse/onError с одним и тем же params.id.

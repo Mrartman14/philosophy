@@ -76,8 +76,6 @@ const lectures = {
     loadItemFailed: "Не удалось загрузить лекцию",
     loadDocumentsFailed: "Не удалось загрузить документы лекции",
     loadMediaFailed: "Не удалось загрузить медиа лекции",
-    searchDocumentsFailed: "Ошибка поиска документов",
-    searchMediaFailed: "Ошибка поиска медиа",
   },
 };
 

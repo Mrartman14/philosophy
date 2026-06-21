@@ -3,6 +3,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 
+import { API_URL } from "@/api/base-url";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { getT } from "@/i18n";
@@ -37,8 +38,6 @@ import {
   makeAnnotationIdSchema,
 } from "./schemas";
 import { PER_ENTITY_PATH, type Annotation } from "./types";
-
-const API_URL = process.env.API_URL ?? "http://localhost:8080";
 
 /** Маппинг UPPER_SNAKE-кодов бекенда на ключи каталога errors (локализуемый канал). */
 const ERRORS: ApiErrorMessageKeys = {

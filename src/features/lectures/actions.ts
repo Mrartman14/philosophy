@@ -281,7 +281,6 @@ export const suggestGlossaryTerms = createAction(
  */
 export const searchDocumentsForAttach = createAction(
   async (raw: { q: string; offset: number; limit: number }) => {
-    const t = await getT("lectures");
     const api = await createApiClient();
     const { data, error } = await api.GET("/api/documents", {
       params: {
@@ -292,7 +291,7 @@ export const searchDocumentsForAttach = createAction(
         },
       },
     });
-    if (error) throw new Error(error.error ?? t("api.searchDocumentsFailed"));
+    if (error) rethrowApiError(error, ERRORS);
     const items = (data.data ?? []) as { id?: string; filename?: string }[];
     return {
       data: items
@@ -307,7 +306,6 @@ export const searchDocumentsForAttach = createAction(
 /** Поиск медиа для attach-пикера (GET /api/media — picker, requiredAuth). */
 export const searchMediaForAttach = createAction(
   async (raw: { q: string; offset: number; limit: number }) => {
-    const t = await getT("lectures");
     const api = await createApiClient();
     const { data, error } = await api.GET("/api/media", {
       params: {
@@ -318,7 +316,7 @@ export const searchMediaForAttach = createAction(
         },
       },
     });
-    if (error) throw new Error(error.error ?? t("api.searchMediaFailed"));
+    if (error) rethrowApiError(error, ERRORS);
     const items = (data.data ?? []) as { id?: string; filename?: string }[];
     return {
       data: items
