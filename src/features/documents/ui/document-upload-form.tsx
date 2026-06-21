@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormFeedback, FormField, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, Select, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -36,14 +36,14 @@ export function DocumentUploadForm() {
       </FormField>
 
       <FormField name="visibility" label={t("visibilityLabel")}>
-        <select
+        <Select
           name="visibility"
           defaultValue="private"
-          className="rounded border border-(--color-border) px-2 py-1 text-sm"
-        >
-          <option value="private">{t("visibilityPrivate")}</option>
-          <option value="public">{t("visibilityPublic")}</option>
-        </select>
+          options={[
+            { value: "private", label: t("visibilityPrivate") },
+            { value: "public", label: t("visibilityPublic") },
+          ]}
+        />
       </FormField>
 
       <FormFeedback result={state} forbiddenAction={t("uploadAction")} />

@@ -1,6 +1,7 @@
 "use client";
-import { useActionState, type ChangeEvent } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
+import { Form, Label, Select } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -22,26 +23,34 @@ export function LectureVisibilityToggle({
   // server-component получит свежие данные.
   const [state, action] = useActionState(setLectureVisibility, initial);
 
-  function autoSubmit(e: ChangeEvent<HTMLSelectElement>) {
-    e.currentTarget.form?.requestSubmit();
-  }
+  // Контролируемый Select + авто-сабмит формы. kit-Select даёт onValueChange(value)
+  // БЕЗ DOM-события, поэтому форму сабмитим из useEffect ПОСЛЕ коммита значения
+  // (скрытый input Select уже обновлён) — это исключает гонку.
+  const [visibility, setVisibility] = useState(lecture.visibility);
+  const formRef = useRef<HTMLFormElement>(null);
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return; // пропустить initial mount
+    }
+    formRef.current?.requestSubmit();
+  }, [visibility]);
 
   return (
-    <form action={action} className="flex flex-col gap-1">
-      <label className="text-sm font-medium" htmlFor="lecture-visibility">
-        {tL("visibilityLabel")}
-      </label>
+    <Form ref={formRef} action={action} className="flex flex-col gap-1">
+      <Label htmlFor="lecture-visibility">{tL("visibilityLabel")}</Label>
       <input type="hidden" name="id" value={lecture.id} />
-      <select
-        id="lecture-visibility"
+      <Select
         name="visibility"
-        defaultValue={lecture.visibility}
-        onChange={autoSubmit}
-        className="h-10 rounded border border-(--color-border) bg-(--color-surface) px-3 text-sm"
-      >
-        <option value="private">{tL("visibilityPrivate")}</option>
-        <option value="public">{tL("visibilityPublic")}</option>
-      </select>
+        aria-label={tL("visibilityLabel")}
+        value={visibility}
+        onValueChange={(v) => { setVisibility(v as Lecture["visibility"]); }}
+        options={[
+          { value: "private", label: tL("visibilityPrivate") },
+          { value: "public", label: tL("visibilityPublic") },
+        ]}
+      />
       {!state.success && state.code === "forbidden" && (
         <p className="text-xs text-red-600">
           {tErrors("forbiddenAction", { action: tL("visibilityForbiddenAction") })}
@@ -50,6 +59,6 @@ export function LectureVisibilityToggle({
       {!state.success && !state.code && (
         <p className="text-xs text-red-600">{state.error}</p>
       )}
-    </form>
+    </Form>
   );
 }

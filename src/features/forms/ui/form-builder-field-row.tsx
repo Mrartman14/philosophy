@@ -1,6 +1,6 @@
 "use client";
 // src/features/forms/ui/form-builder-field-row.tsx
-import { Button, TextInput, Textarea, Checkbox } from "@/components/ui";
+import { Button, Label, Select, TextInput, Textarea, Checkbox } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { FIELD_TYPES, fieldTypeHasOptions } from "../field-kinds";
@@ -51,25 +51,22 @@ export function FormBuilderFieldRow({
         </div>
       </div>
 
-      <label className="flex flex-col gap-1 text-sm">
-        {t("fieldRow.typeLabel")}
-        <select
-          className="rounded border border-(--color-border) px-2 py-1 text-sm"
+      <div className="flex flex-col gap-1 text-sm">
+        <Label>{t("fieldRow.typeLabel")}</Label>
+        <Select
+          aria-label={t("fieldRow.typeLabel")}
           value={field.type}
           disabled={disabled}
-          onChange={(e) => {
-            const type = e.target.value as FieldType;
+          onValueChange={(v) => {
+            const type = v as FieldType;
             const next: BuilderField = { ...field, type };
             if (!fieldTypeHasOptions(type)) next.options = [];
             else if (next.options.length === 0) next.options = [""];
             onChange(next);
           }}
-        >
-          {FIELD_TYPES.map((type) => (
-            <option key={type} value={type}>{t(`fieldType.${type}`)}</option>
-          ))}
-        </select>
-      </label>
+          options={FIELD_TYPES.map((type) => ({ value: type, label: t(`fieldType.${type}`) }))}
+        />
+      </div>
 
       <label htmlFor={`field-${String(index)}-prompt`} className="flex flex-col gap-1 text-sm">
         {t("fieldRow.promptLabel")}

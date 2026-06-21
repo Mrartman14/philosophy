@@ -2,6 +2,7 @@
 // src/features/annotations/ui/annotation-admin-filter-form.tsx
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { Label, Select } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { PARENT_ENTITY_TYPES as PARENT_TYPES } from "../types";
@@ -27,20 +28,18 @@ export function AnnotationAdminFilterForm() {
   }
 
   return (
-    <label className="flex items-center gap-2 text-sm">
-      {t("filterEntityTypeLabel")}
-      <select
+    <div className="flex items-center gap-2 text-sm">
+      <Label>{t("filterEntityTypeLabel")}</Label>
+      <Select
+        aria-label={t("filterEntityTypeLabel")}
         value={current}
-        onChange={(e) => { onChange(e.target.value); }}
-        className="rounded border border-(--color-border) px-2 py-1"
-      >
-        <option value="">{t("filterEntityTypeAll")}</option>
-        {PARENT_TYPES.map((tp) => (
-          <option key={tp} value={tp}>
-            {tp}
-          </option>
-        ))}
-      </select>
-    </label>
+        onValueChange={onChange}
+        className="w-auto"
+        options={[
+          { value: "", label: t("filterEntityTypeAll") },
+          ...PARENT_TYPES.map((tp) => ({ value: tp, label: tp })),
+        ]}
+      />
+    </div>
   );
 }

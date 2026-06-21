@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
-import { Button, useToast } from "@/components/ui";
+import { Button, Label, Select, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { uploadMedia } from "../upload-media";
@@ -60,18 +60,16 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
   return (
     <form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <label htmlFor="media-type" className="text-sm font-medium">
-          {t("uploadTypeLabel")}
-        </label>
-        <select
-          id="media-type"
+        <Label>{t("uploadTypeLabel")}</Label>
+        <Select
+          aria-label={t("uploadTypeLabel")}
           value={type}
-          onChange={(e) => { setType(e.target.value as "video" | "audio"); }}
-          className="rounded border border-(--color-border) bg-transparent px-3 py-2"
-        >
-          <option value="video">{t("uploadVideoOption")}</option>
-          <option value="audio">{t("uploadAudioOption")}</option>
-        </select>
+          onValueChange={(v) => { setType(v as "video" | "audio"); }}
+          options={[
+            { value: "video", label: t("uploadVideoOption") },
+            { value: "audio", label: t("uploadAudioOption") },
+          ]}
+        />
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="media-file" className="text-sm font-medium">

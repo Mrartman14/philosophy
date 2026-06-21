@@ -5,7 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -39,14 +39,14 @@ export function DocumentCreateForm() {
       </FormField>
 
       <FormField name="visibility" label={t("visibilityLabel")}>
-        <select
+        <Select
           name="visibility"
           defaultValue="private"
-          className="rounded border border-(--color-border) px-2 py-1 text-sm"
-        >
-          <option value="private">{t("visibilityPrivate")}</option>
-          <option value="public">{t("visibilityPublic")}</option>
-        </select>
+          options={[
+            { value: "private", label: t("visibilityPrivate") },
+            { value: "public", label: t("visibilityPublic") },
+          ]}
+        />
       </FormField>
       <p className="text-xs text-(--color-fg-muted)">
         {t("publicWarning")}

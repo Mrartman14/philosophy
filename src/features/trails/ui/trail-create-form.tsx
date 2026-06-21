@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -38,14 +38,14 @@ export function TrailCreateForm() {
       </FormField>
 
       <FormField name="visibility" label={t("createVisibilityLabel")}>
-        <select
+        <Select
           name="visibility"
           defaultValue="private"
-          className="rounded border border-(--color-border) px-2 py-1 text-sm"
-        >
-          <option value="private">{t("createVisibilityPrivate")}</option>
-          <option value="public">{t("createVisibilityPublic")}</option>
-        </select>
+          options={[
+            { value: "private", label: t("createVisibilityPrivate") },
+            { value: "public", label: t("createVisibilityPublic") },
+          ]}
+        />
       </FormField>
       <p className="text-xs text-(--color-fg-muted)">
         {t("createVisibilityNote")}

@@ -2,7 +2,7 @@
 // src/features/forms/ui/form-builder.tsx
 import { useState } from "react";
 
-import { Button, TextInput, Textarea } from "@/components/ui";
+import { Button, Label, Select, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { FieldType, SubmissionMode, Visibility } from "../types";
@@ -113,30 +113,32 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
 
       {mode === "create" && (
         <div className="flex flex-col gap-2">
-          <label className="flex flex-col gap-1 text-sm">
-            {t("builder.visibilityLabel")}
-            <select
-              className="rounded border border-(--color-border) px-2 py-1 text-sm"
+          <div className="flex flex-col gap-1 text-sm">
+            <Label>{t("builder.visibilityLabel")}</Label>
+            <Select
+              aria-label={t("builder.visibilityLabel")}
               value={visibility}
               disabled={disabled}
-              onChange={(e) => { setVisibility(e.target.value as Visibility); }}
-            >
-              <option value="private">{t("builder.visibilityPrivate")}</option>
-              <option value="public">{t("builder.visibilityPublic")}</option>
-            </select>
-          </label>
-          <label className="flex flex-col gap-1 text-sm">
-            {t("builder.submissionModeLabel")}
-            <select
-              className="rounded border border-(--color-border) px-2 py-1 text-sm"
+              onValueChange={(v) => { setVisibility(v as Visibility); }}
+              options={[
+                { value: "private", label: t("builder.visibilityPrivate") },
+                { value: "public", label: t("builder.visibilityPublic") },
+              ]}
+            />
+          </div>
+          <div className="flex flex-col gap-1 text-sm">
+            <Label>{t("builder.submissionModeLabel")}</Label>
+            <Select
+              aria-label={t("builder.submissionModeLabel")}
               value={submissionMode}
               disabled={disabled}
-              onChange={(e) => { setSubmissionMode(e.target.value as SubmissionMode); }}
-            >
-              <option value="editable">{t("builder.submissionModeEditable")}</option>
-              <option value="immutable">{t("builder.submissionModeImmutable")}</option>
-            </select>
-          </label>
+              onValueChange={(v) => { setSubmissionMode(v as SubmissionMode); }}
+              options={[
+                { value: "editable", label: t("builder.submissionModeEditable") },
+                { value: "immutable", label: t("builder.submissionModeImmutable") },
+              ]}
+            />
+          </div>
           <p className="text-xs text-(--color-fg-muted)">
             {t("builder.submissionModeHint")}
           </p>
