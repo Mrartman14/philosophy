@@ -7,9 +7,13 @@ export const CONTRASTS = ["auto", "normal", "high"] as const;
 export const DENSITIES = ["comfortable", "compact"] as const;
 export const FONTS = ["sans", "legible", "serif"] as const;
 export const TEXT_SIZES = ["sm", "md", "lg", "xl"] as const;
+// "system" (default) следует OS prefers-reduced-motion; "reduced" форсит
+// уменьшение движения; "full" форсит анимации даже при OS reduce.
+export const MOTIONS = ["system", "reduced", "full"] as const;
 
 export type Theme = (typeof THEMES)[number];
 export type Contrast = (typeof CONTRASTS)[number];
 export type Density = (typeof DENSITIES)[number];
 export type FontChoice = (typeof FONTS)[number];
 export type TextSize = (typeof TEXT_SIZES)[number];
+export type Motion = (typeof MOTIONS)[number];

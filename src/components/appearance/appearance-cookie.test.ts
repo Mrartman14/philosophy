@@ -8,7 +8,7 @@ describe("appearance-cookie", () => {
     expect(parseAppearance("not-json")).toEqual(DEFAULT_APPEARANCE);
   });
   it("round-trips valid appearance", () => {
-    const a = { theme: "dark", contrast: "high", density: "compact", font: "serif", textSize: "lg" } as const;
+    const a = { theme: "dark", contrast: "high", density: "compact", font: "serif", textSize: "lg", motion: "reduced" } as const;
     expect(parseAppearance(serializeAppearance(a))).toEqual(a);
   });
   it("coerces unknown per field", () => {
@@ -27,5 +27,14 @@ describe("appearance-cookie", () => {
     expect(htmlAttrs({ ...DEFAULT_APPEARANCE, contrast: "auto" })["data-contrast"]).toBeUndefined();
     expect(htmlAttrs({ ...DEFAULT_APPEARANCE, contrast: "normal" })["data-contrast"]).toBe("normal");
     expect(htmlAttrs({ ...DEFAULT_APPEARANCE, contrast: "high" })["data-contrast"]).toBe("high");
+  });
+  it("htmlAttrs: system motion omits data-motion; reduced/full emit it", () => {
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, motion: "system" })["data-motion"]).toBeUndefined();
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, motion: "reduced" })["data-motion"]).toBe("reduced");
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, motion: "full" })["data-motion"]).toBe("full");
+  });
+  it("parseAppearance coerces unknown motion → system and defaults to system", () => {
+    expect(parseAppearance(JSON.stringify({ motion: "warp" })).motion).toBe("system");
+    expect(DEFAULT_APPEARANCE.motion).toBe("system");
   });
 });

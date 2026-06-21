@@ -1,12 +1,12 @@
-import { THEMES, CONTRASTS, DENSITIES, FONTS, TEXT_SIZES,
-  type Theme, type Contrast, type Density, type FontChoice, type TextSize } from "@/styles/tokens/enums";
+import { THEMES, CONTRASTS, DENSITIES, FONTS, TEXT_SIZES, MOTIONS,
+  type Theme, type Contrast, type Density, type FontChoice, type TextSize, type Motion } from "@/styles/tokens/enums";
 import { TEXT_SCALE } from "@/styles/tokens/scales";
 
-export interface Appearance { theme: Theme; contrast: Contrast; density: Density; font: FontChoice; textSize: TextSize }
+export interface Appearance { theme: Theme; contrast: Contrast; density: Density; font: FontChoice; textSize: TextSize; motion: Motion }
 export const APPEARANCE_COOKIE = "appearance";
-export const DEFAULT_APPEARANCE: Appearance = { theme: "system", contrast: "auto", density: "comfortable", font: "sans", textSize: "md" };
+export const DEFAULT_APPEARANCE: Appearance = { theme: "system", contrast: "auto", density: "comfortable", font: "sans", textSize: "md", motion: "system" };
 
-const ENUMS = { theme: THEMES, contrast: CONTRASTS, density: DENSITIES, font: FONTS, textSize: TEXT_SIZES } as const;
+const ENUMS = { theme: THEMES, contrast: CONTRASTS, density: DENSITIES, font: FONTS, textSize: TEXT_SIZES, motion: MOTIONS } as const;
 function pick<K extends keyof Appearance>(key: K, value: unknown): Appearance[K] {
   return (ENUMS[key] as readonly string[]).includes(value as string) ? (value as Appearance[K]) : DEFAULT_APPEARANCE[key];
 }
@@ -14,7 +14,7 @@ export function parseAppearance(raw: string | undefined): Appearance {
   if (!raw) return DEFAULT_APPEARANCE;
   let o: Record<string, unknown>;
   try { o = JSON.parse(raw) as Record<string, unknown>; } catch { return DEFAULT_APPEARANCE; }
-  return { theme: pick("theme", o.theme), contrast: pick("contrast", o.contrast), density: pick("density", o.density), font: pick("font", o.font), textSize: pick("textSize", o.textSize) };
+  return { theme: pick("theme", o.theme), contrast: pick("contrast", o.contrast), density: pick("density", o.density), font: pick("font", o.font), textSize: pick("textSize", o.textSize), motion: pick("motion", o.motion) };
 }
 export function serializeAppearance(a: Appearance): string { return JSON.stringify(a); }
 export function htmlAttrs(a: Appearance) {
@@ -25,6 +25,9 @@ export function htmlAttrs(a: Appearance) {
     ...(a.contrast !== "auto" ? { "data-contrast": a.contrast } : {}),
     ...(a.density !== "comfortable" ? { "data-density": a.density } : {}),
     ...(a.font !== "sans" ? { "data-font": a.font } : {}),
+    // "system" → нет атрибута (правит OS prefers-reduced-motion через CSS-gate);
+    // "reduced"/"full" → эмитим (full перебивает OS-запрос в CSS).
+    ...(a.motion !== "system" ? { "data-motion": a.motion } : {}),
     style: { "--text-scale": String(TEXT_SCALE[a.textSize]) } as Record<string, string>,
     colorScheme: a.theme === "system" ? "light dark" : a.theme,
   };

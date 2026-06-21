@@ -24,6 +24,9 @@ function fromBackend(a: Preferences["appearance"]): Appearance {
     density: a?.density ?? DEFAULT_APPEARANCE.density,
     font: a?.font ?? DEFAULT_APPEARANCE.font,
     textSize: a?.text_size ?? DEFAULT_APPEARANCE.textSize,
+    // backend appearance does not carry `motion` yet (new axis) → default to
+    // "system" (follow OS) until BE sync lands in a later task.
+    motion: DEFAULT_APPEARANCE.motion,
   };
 }
 
