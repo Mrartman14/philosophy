@@ -103,7 +103,6 @@ export function AttachmentsPanel({
                     <IconButton
                       aria-label={t("attachments.moveUp")}
                       compact
-                      className="text-sm"
                       disabled={pending}
                       onClick={() => {
                         const prev = sorted[i - 1];
@@ -111,14 +110,13 @@ export function AttachmentsPanel({
                         run(() => onReorder(item, prev.sortOrder));
                       }}
                     >
-                      ↑
+                      <span className="text-sm">↑</span>
                     </IconButton>
                   )}
                   {onReorder && i < sorted.length - 1 && (
                     <IconButton
                       aria-label={t("attachments.moveDown")}
                       compact
-                      className="text-sm"
                       disabled={pending}
                       onClick={() => {
                         const next = sorted[i + 1];
@@ -126,7 +124,7 @@ export function AttachmentsPanel({
                         run(() => onReorder(item, next.sortOrder));
                       }}
                     >
-                      ↓
+                      <span className="text-sm">↓</span>
                     </IconButton>
                   )}
                   {onDetach && (

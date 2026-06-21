@@ -5,7 +5,10 @@ import { cn, FOCUS_RING_CONTROL } from "./cn";
 
 export type IconButtonTone = "neutral" | "primary" | "danger";
 
-export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export type IconButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "className"
+> & {
   /**
    * Визуальная иерархия иконочной кнопки: `neutral` (hover-only, по умолчанию),
    * `primary` (filled), `danger` (текстовый danger).
@@ -19,7 +22,7 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   compact?: boolean;
   /** Обязательный label для скринридеров. */
   "aria-label": string;
-}
+};
 
 /**
  * Иконочная кнопка по природе тихая: `neutral` = hover-only (то, что у Button
@@ -36,7 +39,7 @@ const toneClasses: Record<IconButtonTone, string> = {
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   function IconButton(
-    { tone = "neutral", compact = false, className, type = "button", ...rest },
+    { tone = "neutral", compact = false, type = "button", ...rest },
     ref,
   ) {
     return (
@@ -50,7 +53,6 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
             : "h-(--size-control-h-md) w-(--size-control-h-md)",
           FOCUS_RING_CONTROL,
           toneClasses[tone],
-          className,
         )}
         {...rest}
       />

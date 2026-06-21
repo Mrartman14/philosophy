@@ -131,12 +131,8 @@ function HeaderInput() {
             aria-label={t("inputAriaLabel")}
             className="h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm outline-0 focus:border-(--color-accent) sm:w-[200px]"
           />
-          <IconButton
-            type="submit"
-            aria-label={t("headerSubmitAriaLabel")}
-            className="text-xl text-(--color-fg-muted) hover:bg-transparent hover:text-(--color-accent)"
-          >
-            <SearchIcon />
+          <IconButton type="submit" aria-label={t("headerSubmitAriaLabel")}>
+            <SearchIcon className="text-xl" />
           </IconButton>
         </Inline>
       </Form>
@@ -144,12 +140,8 @@ function HeaderInput() {
   }
 
   return (
-    <IconButton
-      onClick={() => { setOpen(true); }}
-      aria-label={t("headerOpenAriaLabel")}
-      className="text-xl text-(--color-fg-muted) hover:bg-transparent hover:text-(--color-accent)"
-    >
-      <SearchIcon />
+    <IconButton onClick={() => { setOpen(true); }} aria-label={t("headerOpenAriaLabel")}>
+      <SearchIcon className="text-xl" />
     </IconButton>
   );
 }
@@ -174,12 +166,8 @@ export function SearchInput({ variant = "page" }: Props) {
 function HeaderFallback() {
   const t = useT("search");
   return (
-    <IconButton
-      aria-label={t("headerOpenAriaLabel")}
-      disabled
-      className="text-xl text-(--color-fg-muted)"
-    >
-      <SearchIcon />
+    <IconButton aria-label={t("headerOpenAriaLabel")} disabled>
+      <SearchIcon className="text-xl" />
     </IconButton>
   );
 }

@@ -48,4 +48,16 @@ describe("IconButton", () => {
     // textual, not filled.
     expect(btn).not.toHaveClass("bg-(--color-fg)");
   });
+
+  it("rejects className (sealed control — no consumer escape hatch)", () => {
+    render(
+      // @ts-expect-error className is omitted from IconButtonProps
+      <IconButton aria-label="x" className="text-sm">
+        i
+      </IconButton>,
+    );
+    // Type-only contract: the @ts-expect-error above fails compilation if
+    // className were ever re-added to the prop surface.
+    expect(screen.getByRole("button", { name: "x" })).toBeInTheDocument();
+  });
 });
