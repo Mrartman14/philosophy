@@ -4,6 +4,8 @@
 import { NextIntlClientProvider, useLocale as useIntlLocale, useTranslations } from "next-intl";
 import type { ComponentProps } from "react";
 
+import { useTz } from "@/components/timezone";
+
 import { getFmt, type Formatters } from "./format";
 import type { ResolvedLocale } from "./locales";
 
@@ -29,7 +31,7 @@ export function useLocale(): ResolvedLocale {
   return useIntlLocale();
 }
 
-/** Форматтеры для текущей клиентской локали. */
+/** Форматтеры для текущей клиентской локали + таймзоны пользователя. */
 export function useFmt(): Formatters {
-  return getFmt(useLocale());
+  return getFmt(useLocale(), useTz());
 }

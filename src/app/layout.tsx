@@ -10,6 +10,7 @@ import { UpdatePrompt } from "@/components/app/update-prompt";
 import { AppearanceProvider } from "@/components/appearance";
 import { htmlAttrs } from "@/components/appearance/appearance-cookie";
 import { StatusBanner } from "@/components/permission/status-banner";
+import { TimezoneProvider } from "@/components/timezone";
 import { ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
@@ -21,6 +22,7 @@ import { WebVitalsReporter } from "@/services/observability/web-vitals-reporter"
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
 import { getAppearance } from "@/utils/appearance";
 import { getBanSignal, getMe, type MaybeMe } from "@/utils/me";
+import { getStoredTzPref, getServerTz } from "@/utils/timezone-server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -93,6 +95,7 @@ export default async function RootLayout({
   const appearance = await getAppearance();
   const locale = await getLocale();
   const messages = await getClientMessages();
+  const [tzPref, tzResolved] = await Promise.all([getStoredTzPref(), getServerTz()]);
   const { style, colorScheme, ...dataAttrs } = htmlAttrs(appearance);
 
   return (
@@ -118,6 +121,7 @@ export default async function RootLayout({
         style={{ fontFamily: "var(--font-ui)" }}
       >
         <I18nProvider locale={locale} messages={messages}>
+          <TimezoneProvider initial={{ pref: tzPref, resolved: tzResolved }}>
           <AppearanceProvider initial={appearance}>
             <ToastProvider>
               <OfflineIdentityGuard userId={me?.id ?? null} />
@@ -136,6 +140,7 @@ export default async function RootLayout({
               <Toaster />
             </ToastProvider>
           </AppearanceProvider>
+          </TimezoneProvider>
         </I18nProvider>
       </body>
     </html>
