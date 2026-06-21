@@ -11,6 +11,7 @@ export { TextInput, type TextInputProps } from "./text-input";
 export { Textarea, type TextareaProps } from "./textarea";
 export { Select, type SelectProps } from "./select";
 export { Checkbox, type CheckboxProps } from "./checkbox";
+export { Label, type LabelProps } from "./label";
 export { Form } from "./form";
 export { FormField, type FormFieldProps } from "./form-field";
 export { Fieldset, type FieldsetProps } from "./fieldset";
