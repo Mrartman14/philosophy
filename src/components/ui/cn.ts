@@ -1,18 +1,18 @@
 // src/components/ui/cn.ts
-import { twMerge } from "tailwind-merge";
 
 /** Значение класса: строка либо falsy (отбрасывается). */
 type ClassValue = string | false | null | undefined;
 
 /**
- * Склеивание классов с разрешением Tailwind-конфликтов (последний-в-группе
- * побеждает детерминированно, а не по emit-order). Нужно для ОТКРЫТЫХ
- * structural-поверхностей (Stack/Inline/Toolbar/…), где className потребителя
- * легитимно мёржится с базой; leaf-контролы className не принимают, но `cn`
- * у них всё равно безопасен.
+ * Наивное склеивание классов: join через пробел, отбрасывая falsy.
+ * Tailwind-конфликты НЕ разрешает (без tailwind-merge) — в строгом kit они
+ * исключены по построению: leaf-контролы className не принимают, а structural-
+ * примитивы и их потребители не задают пересекающихся утилит. Если базу
+ * примитива нужно переопределить — это делается типизированным пропом
+ * (напр. `Inline gap`, `Textarea mono`), а не className-override.
  */
 export function cn(...inputs: ClassValue[]): string {
-  return twMerge(inputs.filter(Boolean).join(" "));
+  return inputs.filter(Boolean).join(" ");
 }
 
 /**

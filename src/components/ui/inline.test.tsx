@@ -7,11 +7,10 @@ import { Inline, INLINE_CLASS } from "./inline";
 afterEach(cleanup);
 
 describe("Inline", () => {
-  it("INLINE_CLASS is a wrapping horizontal row with the density-aware gap", () => {
+  it("INLINE_CLASS is a wrapping horizontal row (gap применяется пропом gap)", () => {
     expect(INLINE_CLASS).toContain("flex");
     expect(INLINE_CLASS).toContain("flex-row");
     expect(INLINE_CLASS).toContain("flex-wrap");
-    expect(INLINE_CLASS).toContain("gap-(--space-stack)");
   });
   it("renders its children", () => {
     render(<Inline><button type="button">a</button><button type="button">b</button></Inline>);

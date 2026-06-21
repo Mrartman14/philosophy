@@ -3,12 +3,17 @@ import type { ReactNode } from "react";
 
 import { cn } from "./cn";
 
-export const INLINE_CLASS = "flex flex-row flex-wrap gap-(--space-stack)";
+export const INLINE_CLASS = "flex flex-row flex-wrap";
 
 const alignClass = {
   center: "items-center",
   end: "items-end",
   start: "items-start",
+} as const;
+
+const gapClass = {
+  default: "gap-(--space-stack)",
+  tight: "gap-2",
 } as const;
 
 export interface InlineProps {
@@ -19,7 +24,7 @@ export interface InlineProps {
    * фильтров/кнопок). `tight` — `gap-2` для тесной пары «контрол + его подпись»
    * (чекбокс/радио + Label), где широкий gap визуально отрывает подпись.
    */
-  gap?: "default" | "tight";
+  gap?: keyof typeof gapClass;
   className?: string;
   children: ReactNode;
 }
@@ -30,9 +35,8 @@ export interface InlineProps {
  * фильтров/кнопок, выравнивание одиночной кнопки в форме.
  */
 export function Inline({ align = "center", gap = "default", className, children }: InlineProps) {
-  // gap="tight" → twMerge перебивает базовый gap-(--space-stack) на gap-2.
   return (
-    <div className={cn(INLINE_CLASS, gap === "tight" && "gap-2", alignClass[align], className)}>
+    <div className={cn(INLINE_CLASS, gapClass[gap], alignClass[align], className)}>
       {children}
     </div>
   );

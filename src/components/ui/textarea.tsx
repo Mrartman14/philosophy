@@ -24,12 +24,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         rows={rows}
         className={cn(
           SHELL_BASE,
-          "block w-full px-(--space-control-pad-x) py-(--space-control-pad-y) text-sm",
+          "block w-full px-(--space-control-pad-x) py-(--space-control-pad-y)",
+          // text-sm и mono взаимоисключающи → нет конфликта font-size при naive cn.
+          mono ? "font-mono text-xs" : "text-sm",
           "placeholder:text-(--color-fg-muted)",
           FOCUS_RING_INPUT,
           "disabled:opacity-50 data-[invalid]:border-(--color-danger)",
           grow && "min-h-0 flex-1",
-          mono && "font-mono text-xs",
         )}
         {...rest}
       />
