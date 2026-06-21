@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Atkinson_Hyperlegible, Source_Serif_4 } from "next/font/google";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import "./globals.css";
@@ -18,6 +19,8 @@ import { getClientMessages, getLocale, getT } from "@/i18n";
 import { I18nProvider } from "@/i18n/client";
 import { ogLocale } from "@/seo/page-metadata";
 import { metadataBaseUrl } from "@/seo/site-url";
+import { ClientContextReporter } from "@/services/observability/client-context-reporter";
+import { getActorContext, setServerRoute } from "@/services/observability/server";
 import { WebVitalsReporter } from "@/services/observability/web-vitals-reporter";
 import { OfflineIdentityGuard } from "@/services/offline/offline-identity-guard";
 import { getAppearance } from "@/utils/appearance";
@@ -81,6 +84,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // server-route для телеметрии: путь приходит из x-pathname (ставит middleware).
+  // Ставим до getMe(), чтобы метрика auth.resolve уже несла маршрут.
+  const obsRoute = (await headers()).get("x-pathname");
+  if (obsRoute) setServerRoute(obsRoute);
+
   let me: MaybeMe = null;
   let banned = false;
   try {
@@ -91,6 +99,10 @@ export default async function RootLayout({
   }
   // Бан ловим вне try: redirect() бросает NEXT_REDIRECT, его нельзя глотать.
   if (banned) redirect("/auth/forced-logout");
+
+  // getMe() уже посчитал хеш актора в серверном контексте (setServerActor) —
+  // переиспользуем его для клиента, чтобы сырой id не уходил в браузер.
+  const obsActor = getActorContext();
 
   const appearance = await getAppearance();
   const locale = await getLocale();
@@ -133,6 +145,10 @@ export default async function RootLayout({
                   {children}
                 </main>
                 <WebVitalsReporter />
+                <ClientContextReporter
+                  actorHash={obsActor?.hash ?? null}
+                  actorRole={obsActor?.role ?? null}
+                />
                 <UpdatePrompt />
                 <Suspense>
                   <YandexMetrika />

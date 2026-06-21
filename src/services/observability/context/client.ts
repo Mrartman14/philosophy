@@ -27,17 +27,15 @@ export function getClientContext(): ContextSnapshot {
   return ctx;
 }
 
-// TODO(obs/routing): wire setClientActor from a session-resolved provider (e.g. a
-// client component that receives the hashed actor from the server) so that actor
-// context is populated for all client-side telemetry. See SW-deferral pattern.
+// Вызывается из ClientContextReporter (монтируется в root-layout): хеш актора
+// приходит уже посчитанным с сервера — сырой id на клиент не уходит.
 export function setClientActor(hash: string, role: string): void {
   ctx.actorHash = hash;
   ctx.actorRole = role;
 }
 
-// TODO(obs/routing): wire setClientRoute via usePathname + useEffect in a root
-// client component so that route changes are reflected in telemetry records.
-// See SW-deferral pattern.
+// Вызывается из ClientContextReporter через usePathname + useEffect, чтобы смена
+// маршрута на клиенте отражалась в телеметрии.
 export function setClientRoute(route: string): void {
   ctx.route = route;
 }

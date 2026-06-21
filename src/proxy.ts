@@ -38,6 +38,10 @@ const API_URL = process.env.API_URL ?? "http://localhost:8080";
 function pageResponse(request: NextRequest, sec: SecurityHeaders): NextResponse {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", sec.nonce);
+  // Путь текущего запроса — источник server-route для телеметрии: root-layout
+  // читает его через headers() и зовёт setServerRoute. Next не отдаёт matched
+  // route серверным компонентам, поэтому прокидываем явно через заголовок.
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
   // Request-заголовок Content-Security-Policy — ТОЛЬКО для render-слоя: Next
   // извлекает из него nonce и стампит на свои скрипты. В браузер он НЕ уходит
   // (браузер видит лишь res.headers ниже). Поэтому имя тут всегда enforce-имя

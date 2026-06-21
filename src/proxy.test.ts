@@ -93,6 +93,16 @@ describe("middleware — admin-гейт", () => {
   });
 });
 
+describe("middleware — obs route header", () => {
+  it("прокидывает путь в request-заголовок x-pathname (источник server-route для телеметрии)", async () => {
+    const res = await proxy(req({}, "/lectures/abc"));
+    // NextResponse.next({request:{headers}}) сериализует переопределённые
+    // request-заголовки как x-middleware-request-* + список в override-headers.
+    expect(res.headers.get("x-middleware-override-headers")).toContain("x-pathname");
+    expect(res.headers.get("x-middleware-request-x-pathname")).toBe("/lectures/abc");
+  });
+});
+
 describe("middleware — security headers (CSP)", () => {
   it("гость получает Report-Only CSP с nonce на странице", async () => {
     const res = await proxy(req({}));

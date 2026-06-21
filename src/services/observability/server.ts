@@ -9,7 +9,7 @@ import { readServerConfig } from "./config";
 import { serverContextProvider } from "./context/server";
 import { setContextProvider, setSink } from "./core/registry";
 
-export { setServerActor, setServerRoute } from "./context/server";
+export { setServerActor, setServerRoute, getActorContext } from "./context/server";
 
 // Идемпотентная инициализация: провайдер контекста + sink по конфигу.
 export function initServerObservability(): void {

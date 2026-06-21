@@ -34,6 +34,14 @@ export function getServerContext(): ContextSnapshot {
   return holder();
 }
 
+// Хешированный актор для прокидывания на клиент (raw id на клиент НЕ уходит).
+// null для гостя — setServerActor ещё не вызывался в этом запросе.
+export function getActorContext(): { hash: string; role: string } | null {
+  const ctx = holder();
+  if (!ctx.actorHash) return null;
+  return { hash: ctx.actorHash, role: ctx.actorRole ?? "" };
+}
+
 export async function setServerActor(id: string, role: string): Promise<void> {
   const cfg = readServerConfig();
   const ctx = holder();
@@ -41,8 +49,9 @@ export async function setServerActor(id: string, role: string): Promise<void> {
   ctx.actorRole = role;
 }
 
-// TODO(obs/routing): wire setServerRoute from middleware or root layout to propagate
-// the matched route into every server-side telemetry record. See SW-deferral pattern.
+// Вызывается из root-layout: путь приходит из request-заголовка x-pathname,
+// который ставит middleware (src/proxy.ts), и попадает в каждую серверную
+// телеметрию этого запроса.
 export function setServerRoute(route: string): void {
   holder().route = route;
 }

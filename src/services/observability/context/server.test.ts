@@ -17,6 +17,7 @@ vi.mock("react", async (orig) => {
 });
 
 import {
+  getActorContext,
   getServerContext,
   hashActor,
   serverContextProvider,
@@ -54,6 +55,8 @@ describe("getServerContext + mutators", () => {
     expect(typeof ctx.requestId).toBe("string");
     expect((ctx.requestId ?? "").length).toBeGreaterThan(0);
     expect(ctx.route).toBeNull();
+    // до setServerActor актор ещё не разрешён → null (гость)
+    expect(getActorContext()).toBeNull();
   });
 
   it("setServerActor мутирует actorHash/actorRole в держателе контекста", async () => {
@@ -62,6 +65,15 @@ describe("getServerContext + mutators", () => {
     const ctx = getServerContext();
     expect(ctx.actorRole).toBe("admin");
     expect(ctx.actorHash).toBe(await hashActor("user-1", "pepper"));
+  });
+
+  it("getActorContext возвращает хешированного актора для прокидывания на клиент", async () => {
+    vi.stubEnv("OBSERVABILITY_ACTOR_SALT", "pepper");
+    await setServerActor("user-1", "admin");
+    expect(getActorContext()).toEqual({
+      hash: await hashActor("user-1", "pepper"),
+      role: "admin",
+    });
   });
 
   it("setServerRoute мутирует route", () => {
