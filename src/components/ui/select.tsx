@@ -21,7 +21,12 @@ export interface SelectProps {
   /** По умолчанию локализованное «Выберите…» (common.select.placeholder). */
   placeholder?: ReactNode;
   disabled?: boolean;
-  className?: string;
+  /**
+   * Растягивать ли trigger по ширине родителя (default `true` → `w-full`).
+   * `false` → intrinsic-ширина (`w-auto`). Фиксированную ширину задаёт
+   * structural-родитель (обёртка/`Inline`/`Stack`), а не сам Select.
+   */
+  fill?: boolean;
   "aria-label"?: string;
 }
 
@@ -37,7 +42,7 @@ export function Select({
   options,
   placeholder,
   disabled,
-  className,
+  fill = true,
   "aria-label": ariaLabel,
 }: SelectProps) {
   const t = useT("common");
@@ -56,10 +61,10 @@ export function Select({
         aria-label={ariaLabel}
         className={cn(
           SHELL_BASE,
-          "inline-flex h-(--size-control-h-md) w-full items-center justify-between gap-2 px-(--space-control-pad-x) text-sm",
+          "inline-flex h-(--size-control-h-md) items-center justify-between gap-2 px-(--space-control-pad-x) text-sm",
+          fill ? "w-full" : "w-auto",
           FOCUS_RING_INPUT,
           "data-[disabled]:opacity-50",
-          className,
         )}
       >
         <BaseSelect.Value>

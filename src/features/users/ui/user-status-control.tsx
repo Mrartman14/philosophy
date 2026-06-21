@@ -47,14 +47,15 @@ export function UserStatusControl({ userId, username, current }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      <Select
-        aria-label={t("statusAriaLabel", { username })}
-        options={STATUS_OPTIONS}
-        value={value}
-        onValueChange={setValue}
-        disabled={isPending}
-        className="w-44"
-      />
+      <div className="w-44">
+        <Select
+          aria-label={t("statusAriaLabel", { username })}
+          options={STATUS_OPTIONS}
+          value={value}
+          onValueChange={setValue}
+          disabled={isPending}
+        />
+      </div>
       {dirty && value === "banned" ? (
         <ConfirmDialog
           trigger={

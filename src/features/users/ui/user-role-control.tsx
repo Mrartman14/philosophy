@@ -46,14 +46,15 @@ export function UserRoleControl({ userId, username, current }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      <Select
-        aria-label={t("roleAriaLabel", { username })}
-        options={ROLE_OPTIONS}
-        value={value}
-        onValueChange={setValue}
-        disabled={isPending}
-        className="w-44"
-      />
+      <div className="w-44">
+        <Select
+          aria-label={t("roleAriaLabel", { username })}
+          options={ROLE_OPTIONS}
+          value={value}
+          onValueChange={setValue}
+          disabled={isPending}
+        />
+      </div>
       {dirty && (
         <Button compact disabled={isPending} onClick={() => void apply()}>
           {t("applyButton")}

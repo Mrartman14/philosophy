@@ -50,16 +50,17 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
           className="min-w-60 flex-1"
         />
         {hasTagFilter && (
-          <Select
-            name="tag"
-            defaultValue={initialTag}
-            aria-label={tL("tagFilterAriaLabel")}
-            className="w-48"
-            options={[
-              { value: "", label: tL("allTags") },
-              ...tagOptions.map((name) => ({ value: name, label: name })),
-            ]}
-          />
+          <div className="w-48">
+            <Select
+              name="tag"
+              defaultValue={initialTag}
+              aria-label={tL("tagFilterAriaLabel")}
+              options={[
+                { value: "", label: tL("allTags") },
+                ...tagOptions.map((name) => ({ value: name, label: name })),
+              ]}
+            />
+          </div>
         )}
         <Button type="submit" disabled={pending}>
           {pending ? tL("searchPending") : tL("searchButton")}

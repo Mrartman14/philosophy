@@ -34,7 +34,7 @@ export function AnnotationAdminFilterForm() {
         aria-label={t("filterEntityTypeLabel")}
         value={current}
         onValueChange={onChange}
-        className="w-auto"
+        fill={false}
         options={[
           { value: "", label: t("filterEntityTypeAll") },
           ...PARENT_TYPES.map((tp) => ({ value: tp, label: tp })),

@@ -98,13 +98,14 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
                 />
               </FormField>
               <FormField name="expires_in_days" label={t("expiresField")}>
-                <Select
-                  name="expires_in_days"
-                  defaultValue=""
-                  options={expiryOptions}
-                  aria-label={t("expiresField")}
-                  className="w-40"
-                />
+                <div className="w-40">
+                  <Select
+                    name="expires_in_days"
+                    defaultValue=""
+                    options={expiryOptions}
+                    aria-label={t("expiresField")}
+                  />
+                </div>
               </FormField>
               <Button type="submit" disabled={pending}>
                 {pending ? "…" : t("createButton")}
