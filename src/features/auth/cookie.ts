@@ -10,7 +10,7 @@ import {
 } from "./cookie-config";
 
 /** Кладёт пару токенов в httpOnly-cookie. Access живёт ≈ expires_in (15 мин),
- * refresh — 30 дней. Обе ротируются на каждом refresh (см. middleware). */
+ * refresh — 30 дней. Обе ротируются на каждом refresh (см. src/proxy.ts). */
 export async function setAuthCookies(t: {
   access: string;
   refresh: string;

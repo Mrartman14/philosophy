@@ -1,5 +1,9 @@
 # Stateful entity-agnostic save-offline button — Implementation Plan
 
+> **СТАТУС (2026-06-21): РЕАЛИЗОВАНО на `main`.** Generic freshness-orchestration (`probe-bundle-action`, `revalidateSavedBundle`, `captureFreshnessToken`) и stateful-кнопка отгружены. Документ — дизайн-история; чекбоксы `- [ ]` ниже НЕ являются открытыми задачами.
+
+<!-- -->
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Кнопка офлайн-сохранения на странице лекции отражает реальное состояние копии (нет / сохранено / доступно обновление) и даёт обновить и удалить копию — оставаясь полностью entity-agnostic.

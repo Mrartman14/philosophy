@@ -1,5 +1,9 @@
 # Контракт-миграция — Plan A (Foundation) Implementation Plan
 
+> **СТАТУС (2026-06-21): Plan A (Wave 0) РЕАЛИЗОВАН на `main`.** Refresh-on-demand живёт в `src/proxy.ts` (НЕ в `src/middleware.ts`, как по тексту ниже), мост 422→field-errors и унификация `Visibility` отгружены. Вынесено в Plan B (коммит c3d8d2fd): миграция trails→документы, раскатка optimistic-lock, подписка на лекции, logout-all UI. Чекбоксы `- [ ]` ниже — история.
+
+<!-- -->
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Привести общую инфраструктуру фронта к новому контракту бэка: refresh-токены с прозрачным обновлением сессии, мост серверных 422-ошибок к пофайловым ошибкам форм, унификация `Visibility`.

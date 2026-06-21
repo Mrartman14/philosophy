@@ -1,5 +1,9 @@
 # AST Conflict Merge — Implementation Plan
 
+> **СТАТУС (2026-06-21): Первая волна (документы) РЕАЛИЗОВАНА на `main`.** Поблочный merge при 412 для документов (`src/components/ast-merge/*`, `AstMergeView` в форме документа) отгружен. ОТЛОЖЕНО (вторая волна, см. «Out of scope» ниже): скаляры + full-payload (`event`, `banner`), раскатка на `glossary`/`comment`/`annotation`, recreate из `gone`, structure-aware word-diff. Чекбоксы `- [ ]` ниже — история первой волны.
+
+<!-- -->
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** При конфликте версий (412 VERSION_MISMATCH) дать пользователю поблочно объединить свои правки со свежей серверной версией документа, ничего не теряя.

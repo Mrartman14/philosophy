@@ -1,5 +1,9 @@
 # Styling Foundation Implementation Plan
 
+> **СТАТУС (2026-06-21): РЕАЛИЗОВАНО на `main`.** Весь план (APCA-токены + 4-осевая темизация + миграция ~158 файлов) отгружен. Документ оставлен как дизайн-история — чекбоксы `- [ ]` ниже НЕ являются открытыми задачами.
+
+<!-- -->
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
 > **Revised 2026-06-19** after a 7-axis multi-agent review (40 findings). All blockers folded in: valid high-contrast CSS, font cyrillic handling, real drift guard, full 158-file legacy-token migration, used appearance schema, @theme mapping, extra APCA pairs.
