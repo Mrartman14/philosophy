@@ -12,13 +12,12 @@ export interface CheckboxProps {
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
   required?: boolean;
-  className?: string;
   id?: string;
   "aria-label"?: string;
 }
 
 export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox(
-  { className, ...props },
+  props,
   ref,
 ) {
   return (
@@ -30,7 +29,6 @@ export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox
         FOCUS_RING_CONTROL,
         "data-[checked]:bg-(--color-fg) data-[checked]:text-(--color-surface)",
         "data-[disabled]:opacity-50",
-        className,
       )}
       {...props}
     >
