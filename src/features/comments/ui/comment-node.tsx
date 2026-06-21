@@ -1,6 +1,7 @@
 // src/features/comments/ui/comment-node.tsx
 import { getLocale, getT } from "@/i18n";
 import { getMe } from "@/utils/me";
+import { getServerTz } from "@/utils/timezone-server";
 
 import {
   canDeleteComment,
@@ -24,10 +25,11 @@ interface Props {
 }
 
 export async function CommentNode({ comment, lectureId, schema }: Props) {
-  const [me, t, locale] = await Promise.all([
+  const [me, t, locale, tz] = await Promise.all([
     getMe(),
     getT("comments"),
     getLocale(),
+    getServerTz(),
   ]);
 
   if (comment.is_deleted) {
@@ -47,6 +49,7 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
       editedLabel={t("edited")}
       typeLabel={t(`type.${type}`)}
       locale={locale}
+      tz={tz}
       anchorSlot={
         comment.anchor ? <CommentAnchorContext anchor={comment.anchor} /> : undefined
       }

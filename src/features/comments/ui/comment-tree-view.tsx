@@ -18,15 +18,17 @@ function BranchView({
   node,
   childrenMap,
   locale,
+  tz,
 }: {
   node: Comment;
   childrenMap: Map<string | null, Comment[]>;
   locale?: ResolvedLocale | undefined;
+  tz?: string | undefined;
 }) {
   const kids = childrenMap.get(node.id) ?? [];
   return (
     <li className="flex flex-col gap-2">
-      <CommentNodeView comment={node} locale={locale} />
+      <CommentNodeView comment={node} locale={locale} tz={tz} />
       {kids.length > 0 && (
         <ul className="ml-4 flex flex-col gap-2 border-l border-(--color-border) pl-3">
           {kids.map((kid) => (
@@ -35,6 +37,7 @@ function BranchView({
               node={kid}
               childrenMap={childrenMap}
               locale={locale}
+              tz={tz}
             />
           ))}
         </ul>
@@ -56,12 +59,19 @@ interface Props {
    * en-юзер видел даты комментариев в своём формате даже из офлайн-снимка.
    */
   locale?: ResolvedLocale | undefined;
+  /**
+   * Таймзона форматирования дат во всех узлах. Дефолт (undefined) → UTC-fallback.
+   * SavedLectureView (client) резолвит её через useTz() и прокидывает, чтобы даты
+   * комментариев показывались в зоне пользователя даже из офлайн-снимка.
+   */
+  tz?: string | undefined;
 }
 
 export function CommentTreeView({
   subtrees,
   emptyLabel = "Комментариев пока нет.",
   locale,
+  tz,
 }: Props) {
   if (subtrees.length === 0) {
     return (
@@ -80,6 +90,7 @@ export function CommentTreeView({
             node={root}
             childrenMap={childrenMap}
             locale={locale}
+            tz={tz}
           />,
         ];
       })}

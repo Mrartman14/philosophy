@@ -21,3 +21,18 @@ describe("formatCommentDate", () => {
     );
   });
 });
+
+describe("formatCommentDate tz", () => {
+  const iso = "2026-06-21T22:30:00Z";
+  it("разные зоны дают разный результат", () => {
+    expect(formatCommentDate(iso, "ru", "Europe/Moscow")).not.toBe(
+      formatCommentDate(iso, "ru", "Asia/Tokyo"),
+    );
+  });
+  it("без tz — обратная совместимость (UTC)", () => {
+    expect(formatCommentDate(iso, "ru")).toBe(formatCommentDate(iso, "ru", "UTC"));
+  });
+  it("пустая строка → пусто", () => {
+    expect(formatCommentDate(undefined, "ru", "Europe/Moscow")).toBe("");
+  });
+});

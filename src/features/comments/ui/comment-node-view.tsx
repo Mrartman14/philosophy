@@ -53,6 +53,13 @@ interface Props {
    * getLocale()/useLocale() и прокидывают, чтобы дата была в формате локали.
    */
   locale?: ResolvedLocale | undefined;
+  /**
+   * Таймзона форматирования даты. Дефолт (undefined) → UTC-fallback внутри
+   * formatCommentDate. Онлайн-контейнеры (CommentNode — server, SavedLectureView →
+   * CommentTreeView — client) резолвят её через getServerTz()/useTz() и прокидывают,
+   * чтобы дата комментария отображалась в зоне предпочтения пользователя.
+   */
+  tz?: string | undefined;
 }
 
 export function CommentNodeView({
@@ -64,6 +71,7 @@ export function CommentNodeView({
   editedLabel = "(изменён)",
   typeLabel,
   locale,
+  tz,
 }: Props): ReactNode {
   if (comment.is_deleted) {
     return (
@@ -78,7 +86,7 @@ export function CommentNodeView({
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <CommentTypeBadge type={comment.type} label={typeLabel} />
         <span>{comment.author?.username ?? "—"}</span>
-        <span>{formatCommentDate(comment.created_at, locale)}</span>
+        <span>{formatCommentDate(comment.created_at, locale, tz)}</span>
         {comment.is_edited && <span>{editedLabel}</span>}
       </div>
 

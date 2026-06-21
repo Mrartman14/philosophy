@@ -7,6 +7,7 @@ import type { LectureSnapshot } from "@/app/_offline/descriptors/lecture-descrip
 import { revalidateSavedBundle } from "@/app/_offline/revalidate-saved-bundle";
 import { saveOffline } from "@/app/_offline/save-offline";
 import { AstRender } from "@/components/ast-render";
+import { useTz } from "@/components/timezone";
 import { Button, chipClass, Skeleton } from "@/components/ui";
 import { CommentTreeView } from "@/features/comments/client";
 import { useT, useFmt, useLocale } from "@/i18n/client";
@@ -73,6 +74,7 @@ export function SavedLectureView({ id }: { id: string }) {
   const t = useT("pages");
   const fmt = useFmt();
   const locale = useLocale();
+  const tz = useTz();
 
   useEffect(() => {
     let cancelled = false;
@@ -245,7 +247,7 @@ export function SavedLectureView({ id }: { id: string }) {
 
       <section className="flex flex-col gap-3" aria-label={t("savedLectureComments")}>
         <h2 className="text-xl font-semibold">{t("savedLectureComments")}</h2>
-        <CommentTreeView subtrees={comments} locale={locale} />
+        <CommentTreeView subtrees={comments} locale={locale} tz={tz} />
       </section>
     </article>
   );

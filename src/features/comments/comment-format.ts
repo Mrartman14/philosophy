@@ -4,15 +4,18 @@
 import { getFmt } from "@/i18n/format";
 import { DEFAULT_LOCALE, type ResolvedLocale } from "@/i18n/locales";
 
-/** ISO → "дд.мм.гггг, чч:мм" (UTC). Пустая → ""; неразбираемая → как есть. */
+/**
+ * ISO → "дд.мм.гггг, чч:мм" в зоне `tz` (дефолт "UTC" — обратная совместимость
+ * для несмигрированных вызывающих). Пустая → ""; неразбираемая → как есть.
+ */
 export function formatCommentDate(
   iso?: string,
   locale: ResolvedLocale = DEFAULT_LOCALE,
+  tz = "UTC",
 ): string {
   if (!iso) return "";
-  return getFmt(locale).dateTime(iso, {
+  return getFmt(locale, tz).dateTime(iso, {
     dateStyle: "short",
     timeStyle: "short",
-    timeZone: "UTC",
   });
 }
