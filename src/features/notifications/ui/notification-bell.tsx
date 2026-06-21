@@ -2,6 +2,7 @@
 // src/features/notifications/ui/notification-bell.tsx
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { IconButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { fetchNotificationCounts } from "../actions";
@@ -91,13 +92,12 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
 
   return (
     <div ref={rootRef} className="relative flex items-center">
-      <button
-        type="button"
+      <IconButton
         aria-label={t("bellAriaLabel")}
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => { setOpen((v) => !v); }}
-        className="relative flex size-8 items-center justify-center text-(--color-fg-muted) hover:text-(--color-accent)"
+        className="relative size-8 text-(--color-fg-muted) hover:bg-transparent hover:text-(--color-accent)"
       >
         <BellIcon className="size-5" />
         {badge && (
@@ -105,7 +105,7 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
             {badge}
           </span>
         )}
-      </button>
+      </IconButton>
       {open && (
         <NotificationPopover onClose={() => { setOpen(false); }} onSeen={handleSeen} />
       )}

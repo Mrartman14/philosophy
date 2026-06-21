@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { cn } from "@/components/ui";
+import { Button, cn } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 export const GoBack: React.FC<
@@ -12,11 +12,12 @@ export const GoBack: React.FC<
   const t = useT("common");
 
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={() => { router.back(); }}
       className={cn("underline text-2xl cursor-pointer", className)}
     >
       {children ?? t("back")}
-    </button>
+    </Button>
   );
 };

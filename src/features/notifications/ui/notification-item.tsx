@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { markRead } from "../actions";
@@ -43,10 +44,10 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
       onClick={handleClick}
-      className={`flex w-full items-start gap-2 rounded px-3 py-2 text-left text-sm hover:bg-(--color-surface-subtle) ${
+      className={`w-full items-start justify-start px-3 py-2 text-left text-sm ${
         read ? "text-(--color-fg-muted)" : "font-medium"
       }`}
     >
@@ -57,6 +58,6 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
         />
       )}
       <span>{text}</span>
-    </button>
+    </Button>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import { useT } from "@/i18n/client";
 
@@ -14,12 +15,13 @@ export const InstallBanner: React.FC = () => {
     return (
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-(--color-border) bg-(--color-surface-subtle)">
         <span className="text-sm">{t("installBanner.installApp")}</span>
-        <button
+        <Button
+          size="sm"
           onClick={() => { void promptInstall(); }}
-          className="text-sm font-medium px-3 py-1 rounded bg-(--color-fg) text-(--color-surface) hover:opacity-80 shrink-0"
+          className="shrink-0"
         >
           {t("installBanner.install")}
-        </button>
+        </Button>
       </div>
     );
   }

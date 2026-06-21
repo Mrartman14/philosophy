@@ -133,8 +133,9 @@ export function AstMergeView({
 
         {unchangedN > 0 && (
           <div className="text-sm">
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
               className="text-(--color-fg-muted) underline"
               aria-expanded={showUnchanged}
               onClick={() => {
@@ -145,7 +146,7 @@ export function AstMergeView({
                 " (" +
                 String(unchangedN) +
                 ")"}
-            </button>
+            </Button>
             {showUnchanged && (
               <ul className="mt-2 flex flex-col gap-2">
                 {unchanged.map((e) => {

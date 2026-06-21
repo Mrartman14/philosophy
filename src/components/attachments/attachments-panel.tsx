@@ -2,6 +2,7 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 
+import { Button, IconButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { AttachmentsPanelProps } from "./types";
@@ -53,14 +54,14 @@ export function AttachmentsPanel({
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{resolvedTitle}</h2>
         {showAttach && (
-          <button
-            type="button"
-            className="rounded border border-(--color-border) px-2 py-1 text-sm hover:bg-(--color-surface-subtle)"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => { setPickerOpen((v) => !v); }}
             disabled={pending}
           >
             {t("attachments.attach")}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -99,10 +100,9 @@ export function AttachmentsPanel({
               {canManage && (
                 <span className="flex items-center gap-1">
                   {onReorder && i > 0 && (
-                    <button
-                      type="button"
+                    <IconButton
                       aria-label={t("attachments.moveUp")}
-                      className="rounded px-1 text-sm hover:bg-(--color-surface-subtle)"
+                      className="size-7 text-sm"
                       disabled={pending}
                       onClick={() => {
                         const prev = sorted[i - 1];
@@ -111,13 +111,12 @@ export function AttachmentsPanel({
                       }}
                     >
                       ↑
-                    </button>
+                    </IconButton>
                   )}
                   {onReorder && i < sorted.length - 1 && (
-                    <button
-                      type="button"
+                    <IconButton
                       aria-label={t("attachments.moveDown")}
-                      className="rounded px-1 text-sm hover:bg-(--color-surface-subtle)"
+                      className="size-7 text-sm"
                       disabled={pending}
                       onClick={() => {
                         const next = sorted[i + 1];
@@ -126,17 +125,17 @@ export function AttachmentsPanel({
                       }}
                     >
                       ↓
-                    </button>
+                    </IconButton>
                   )}
                   {onDetach && (
-                    <button
-                      type="button"
-                      className="rounded border border-(--color-border) px-2 py-0.5 text-sm hover:bg-(--color-surface-subtle)"
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       disabled={pending}
                       onClick={() => { run(() => onDetach(item)); }}
                     >
                       {t("attachments.detach")}
-                    </button>
+                    </Button>
                   )}
                 </span>
               )}

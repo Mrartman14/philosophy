@@ -2,6 +2,7 @@
 // src/features/comments/ui/comment-reactions.tsx
 import { useState, useOptimistic, startTransition } from "react";
 
+import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { setReaction, removeReaction } from "../actions";
@@ -126,21 +127,22 @@ export function CommentReactions({
               {values.map((v) => {
                 const active = current === v;
                 return (
-                  <button
+                  <Button
                     key={v}
-                    type="button"
+                    variant="ghost"
+                    size="sm"
                     disabled={!canReact}
                     onClick={() => { toggle(axis, v); }}
                     aria-pressed={active}
                     aria-label={`${axisLabel(axis)}: ${axisValueAriaLabel(axis, v)}`}
                     className={
                       active
-                        ? "rounded border border-(--color-border) bg-(--color-surface-subtle) px-1.5"
-                        : "rounded border border-(--color-border) px-1.5 hover:bg-(--color-surface-subtle) disabled:opacity-40"
+                        ? "h-auto border border-(--color-border) bg-(--color-surface-subtle) px-1.5 disabled:opacity-40"
+                        : "h-auto border border-(--color-border) px-1.5 disabled:opacity-40"
                     }
                   >
                     <span aria-hidden="true">{axis === "insight" ? "★" : v === 1 ? "+" : "−"}</span>
-                  </button>
+                  </Button>
                 );
               })}
               <span className="text-(--color-fg-muted)">{axisCount(reactions, axis)}</span>
