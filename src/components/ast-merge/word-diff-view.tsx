@@ -7,7 +7,10 @@ export function WordDiffView({ tokens }: { tokens: DiffToken[] }) {
       {tokens.map((tok, i) => {
         if (tok.type === "add") {
           return (
-            <span key={i} className="rounded-sm bg-green-100 text-green-800">
+            <span
+              key={i}
+              className="rounded-sm bg-(--color-success-bg) text-(--color-success-fg)"
+            >
               {tok.text}
             </span>
           );
@@ -16,7 +19,7 @@ export function WordDiffView({ tokens }: { tokens: DiffToken[] }) {
           return (
             <span
               key={i}
-              className="rounded-sm bg-red-100 text-red-800 line-through"
+              className="rounded-sm bg-(--color-danger-bg) text-(--color-danger-fg) line-through"
             >
               {tok.text}
             </span>

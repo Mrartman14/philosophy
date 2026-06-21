@@ -74,10 +74,22 @@ export function DocumentEditForm({ document }: Props) {
     conflictHeading: t("merge.conflictHeading"),
     optionServer: t("merge.optionServer"),
     optionMine: t("merge.optionMine"),
+    acceptDeletion: t("merge.acceptDeletion"),
+    contentChanged: t("merge.contentChanged"),
     unchangedLabel: t("merge.unchangedLabel"),
+    showUnchanged: t("merge.showUnchanged"),
+    hideUnchanged: t("merge.hideUnchanged"),
     applyButton: t("merge.applyButton"),
     cancelButton: t("merge.cancelButton"),
+    takeServerButton: t("merge.takeServerButton"),
   };
+
+  // «Отбросить мои правки, взять серверную»: серверная версия конфликта
+  // становится и содержимым редактора, и новой base — далее обычное сохранение.
+  function takeServer() {
+    if (!conflict) return;
+    applyMerge(conflict.blocks);
+  }
 
   function applyMerge(merged: AstBlock[]) {
     setEditorSeed(merged);
@@ -142,6 +154,7 @@ export function DocumentEditForm({ document }: Props) {
           onCancel={() => {
             setConflict(null);
           }}
+          onTakeServer={takeServer}
         />
       )}
     </>
