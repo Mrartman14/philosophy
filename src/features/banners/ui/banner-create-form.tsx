@@ -5,6 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import {
   Checkbox,
+  ColorInput,
   Form,
   FormFeedback,
   FormField,
@@ -54,11 +55,9 @@ export function BannerCreateForm() {
       <IdempotencyField result={state} />
 
       <FormField name="background_color" label={t("fieldColor")} required>
-        <TextInput
+        <ColorInput
           name="background_color"
-          type="color"
           defaultValue="#336699"
-          className="h-10 w-20 p-1"
           required
         />
       </FormField>

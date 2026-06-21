@@ -6,6 +6,7 @@ import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   Checkbox,
+  ColorInput,
   Form,
   FormField,
   IdempotencyField,
@@ -61,11 +62,9 @@ export function BannerEditForm({ banner }: Props) {
       <IdempotencyField result={state} />
 
       <FormField name="background_color" label={t("fieldColor")} required>
-        <TextInput
+        <ColorInput
           name="background_color"
-          type="color"
           defaultValue={toColorInputValue(banner.background_color)}
-          className="h-10 w-20 p-1"
           required
         />
       </FormField>
