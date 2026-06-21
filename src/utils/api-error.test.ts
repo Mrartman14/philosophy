@@ -174,6 +174,7 @@ describe("rethrowApiError — 413 (несут ключ каталога)", () =>
         { REQUEST_BODY_TOO_LARGE: "CANVAS_PAYLOAD_TOO_LARGE" },
       ),
     );
+    expect(err).toBeInstanceOf(ApiMessageError);
     expect((err as ApiMessageError).messageKey).toBe("CANVAS_PAYLOAD_TOO_LARGE");
   });
 });

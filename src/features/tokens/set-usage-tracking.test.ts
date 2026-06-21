@@ -30,7 +30,8 @@ describe("setUsageTracking", () => {
   });
 
   it("шлёт PUT с { enabled: false } при выключении (purge)", async () => {
-    await setUsageTracking(false);
+    const result = await setUsageTracking(false);
+    expect(result.success).toBe(true);
     expect(put).toHaveBeenCalledWith("/api/me/tokens/usage-tracking", {
       body: { enabled: false },
     });
