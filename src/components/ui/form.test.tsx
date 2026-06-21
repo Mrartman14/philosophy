@@ -11,6 +11,7 @@
  */
 import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen } from "@testing-library/react";
+import { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ActionResult } from "@/utils/create-action";
@@ -28,6 +29,46 @@ import { FormField } from "./form-field";
 import { TextInput } from "./text-input";
 
 afterEach(cleanup);
+
+// ---------------------------------------------------------------------------
+// Behavioural contract: Form is layout-agnostic (no flex/gap default)
+// ---------------------------------------------------------------------------
+describe("Form — поведение only (без layout-дефолта и className)", () => {
+  it("does NOT carry a `flex flex-col gap-4` layout default", () => {
+    render(
+      <Form aria-label="bare">
+        <span>дитя</span>
+      </Form>,
+    );
+
+    const form = screen.getByRole("form", { name: "bare" });
+    expect(form.className).not.toContain("flex");
+    expect(form.className).not.toContain("gap-4");
+    expect(form.className).not.toContain("flex-col");
+  });
+
+  it("renders its children", () => {
+    render(
+      <Form aria-label="kids">
+        <span>видимый ребёнок</span>
+      </Form>,
+    );
+
+    expect(screen.getByText("видимый ребёнок")).toBeInTheDocument();
+  });
+
+  it("forwards ref to the native <form> element", () => {
+    const ref = createRef<HTMLFormElement>();
+    render(
+      <Form ref={ref} aria-label="ref">
+        <span>дитя</span>
+      </Form>,
+    );
+
+    expect(ref.current).toBeInstanceOf(HTMLFormElement);
+    expect(ref.current).toBe(screen.getByRole("form", { name: "ref" }));
+  });
+});
 
 // ---------------------------------------------------------------------------
 // Smoke test: Form errors → FormField Field.Error distribution
