@@ -28,6 +28,7 @@ export class ThreeMapRenderer implements MapRenderer {
   private baseColors: Float32Array | null = null;
   private colorAttr: THREE.BufferAttribute | null = null;
   private marker: THREE.Sprite | null = null;
+  private reducedMotion = false;
 
   constructor() {
     this.ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, -1000, 1000);
@@ -81,12 +82,20 @@ export class ThreeMapRenderer implements MapRenderer {
     this.applyMode();
   }
 
+  setReducedMotion(reduce: boolean): void {
+    this.reducedMotion = reduce;
+    if (this.controls) {
+      this.controls.enableDamping = !reduce;
+      this.dirty = true;
+    }
+  }
+
   private applyMode(): void {
     if (this.controls) this.controls.dispose();
     const cam = this.activeCamera();
     if (this.renderer) {
       this.controls = new OrbitControls(cam, this.renderer.domElement);
-      this.controls.enableDamping = true;
+      this.controls.enableDamping = !this.reducedMotion;
       this.controls.enableRotate = this.mode === "3d";
       if (this.mode === "2d") {
         this.controls.mouseButtons = {

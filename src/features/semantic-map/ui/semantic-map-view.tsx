@@ -2,6 +2,7 @@
 // src/features/semantic-map/ui/semantic-map-view.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useReducedMotion } from "@/components/appearance";
 import { useT } from "@/i18n/client";
 
 import { weightedCentroid } from "../overlay/weighted-centroid";
@@ -59,6 +60,14 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
 
   const t = useT("semanticMap");
 
+  const reduce = useReducedMotion();
+  // reduceRef: актуальный reduce для lifecycle-эффекта [model] БЕЗ добавления его в
+  // deps. Иначе cleanup эффекта (r.destroy()) пересоздавал бы WebGL-рендерер и сбрасывал
+  // камеру на каждый тогл движения. Тот же escape-hatch, что matchedRef/modeRef.
+  const reduceRef = useRef(reduce);
+  // eslint-disable-next-line react-hooks/refs -- intentional: sync escape-hatch ref for lifecycle-effect
+  reduceRef.current = reduce;
+
   // Жизненный цикл рендерера.
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -87,6 +96,7 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
     r.onChange(updateLabels); // ДО setModel — чтобы первый отрисованный кадр обновил подписи
     r.setModel(model);
     r.setMode(modeRef.current); // применить текущий/восстановленный режим (переживает смену data)
+    r.setReducedMotion(reduceRef.current); // применить к свежему рендереру (переживает смену data)
     const m0 = matchedRef.current;
     if (m0) r.setOverlay({ highlightIds: m0.highlightIds, marker: m0.marker });
 
@@ -109,6 +119,11 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
     rendererRef.current?.setMode(mode);
     window.localStorage.setItem(MODE_KEY, mode);
   }, [mode]);
+
+  // Рантайм-смена настройки движения → применить к существующему рендереру.
+  useEffect(() => {
+    rendererRef.current?.setReducedMotion(reduce);
+  }, [reduce]);
 
   // Применять overlay при смене matched (и переживает пере-маунт через тот же эффект [model] ниже).
   useEffect(() => {

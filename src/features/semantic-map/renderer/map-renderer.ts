@@ -30,6 +30,8 @@ export interface MapRenderer {
   onPick?(cb: (id: string | null) => void): void;
   /** Overlay поиска: подсветить точки (по id) + маркер. null — снять overlay. */
   setOverlay(overlay: MapOverlayState | null): void;
+  /** Уменьшить движение: выключает инерцию камеры (OrbitControls damping). Навигация drag/zoom не затрагивается. */
+  setReducedMotion(reduce: boolean): void;
   /** Освободить GPU-ресурсы и остановить loop. */
   destroy(): void;
 }
