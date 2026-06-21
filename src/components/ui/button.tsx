@@ -24,12 +24,25 @@ const sizeClasses: Record<ButtonSize, string> = {
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  /**
+   * Escape-режим для кликабельных строк/карточек, которые НЕ являются
+   * контролом фиксированной геометрии. Рендерит нативный `<button>` только
+   * с focus-ring + className вызывающего: без геометрии (`h-…`/`px-…`),
+   * без заливки варианта, без `inline-flex items-center justify-center`.
+   * Геометрию и раскладку полностью задаёт вызывающий; `variant`/`size`
+   * при этом игнорируются.
+   */
+  unstyled?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = "primary", size = "md", className, type = "button", ...rest },
+  { variant = "primary", size = "md", unstyled = false, className, type = "button", ...rest },
   ref,
 ) {
+  if (unstyled) {
+    // Только focus-ring + класс вызывающего — никакой геометрии/заливки.
+    return <button ref={ref} type={type} className={cn(FOCUS_RING_CONTROL, className)} {...rest} />;
+  }
   return (
     <button
       ref={ref}

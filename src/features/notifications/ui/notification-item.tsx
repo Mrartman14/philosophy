@@ -45,9 +45,9 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
 
   return (
     <Button
-      variant="ghost"
+      unstyled
       onClick={handleClick}
-      className={`w-full items-start justify-start px-3 py-2 text-left text-sm ${
+      className={`flex w-full items-start gap-2 rounded px-3 py-2 text-left text-sm hover:bg-(--color-surface-subtle) ${
         read ? "text-(--color-fg-muted)" : "font-medium"
       }`}
     >
