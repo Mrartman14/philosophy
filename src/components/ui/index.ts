@@ -18,6 +18,7 @@ export { Fieldset, type FieldsetProps } from "./fieldset";
 export { SubmitButton } from "./submit-button";
 export { IdempotencyField } from "./idempotency-field";
 export { Dialog, DialogClose } from "./dialog";
+export { Popover } from "./popover";
 export { ConfirmDialog } from "./confirm-dialog";
 export { Table, Thead, Tbody, Tr, Th, Td } from "./table";
 export { ToastProvider, useToast } from "./toast";
