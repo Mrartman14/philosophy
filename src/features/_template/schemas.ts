@@ -6,9 +6,11 @@ import { z } from "zod";
  * Zod-схемы для валидации FormData в server actions. Используются через
  * `parseFormData(Schema, formData)`.
  *
- * Хранятся отдельно от actions.ts, чтобы при необходимости их можно было
- * импортировать в client-форму для preview-валидации (через "use client"
- * границу).
+ * Файл server-only (`import "server-only"` выше) — напрямую в "use client"-форму
+ * НЕ импортируется (это уронит build: «server-only cannot be imported from a
+ * Client Component»). Если схема нужна для client-side preview-валидации — вынеси
+ * её в отдельный client-safe модуль и реэкспортни через client.ts
+ * (docs/frontend-conventions.md §2.1), а не импортируй этот файл.
  */
 
 // export const EntityCreateSchema = z.object({
