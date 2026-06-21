@@ -134,8 +134,7 @@ export function AstMergeView({
         {unchangedN > 0 && (
           <div className="text-sm">
             <Button
-              tone="quiet"
-              compact
+              unstyled
               className="text-(--color-fg-muted) underline"
               aria-expanded={showUnchanged}
               onClick={() => {
@@ -194,11 +193,13 @@ export function AstMergeView({
         <Button type="button" tone="quiet" onClick={onCancel}>
           {labels.cancelButton}
         </Button>
-        {/* Tertiary / destructive escape hatch — визуально отделён (ml-auto). */}
+        {/* Tertiary / destructive escape hatch — визуально отделён (ml-auto).
+            unstyled: тихая destructive-ссылка (danger-text, не filled), своя
+            геометрия + позиция; tone-заливка здесь была бы слишком тяжёлой. */}
         <Button
           type="button"
-          tone="quiet"
-          className="ml-auto text-(--color-danger-fg)"
+          unstyled
+          className="ml-auto inline-flex h-(--size-control-h-md) items-center justify-center gap-2 rounded px-4 text-sm font-medium text-(--color-danger-fg) transition hover:bg-(--color-surface-subtle) disabled:opacity-50"
           onClick={onTakeServer}
         >
           {labels.takeServerButton}

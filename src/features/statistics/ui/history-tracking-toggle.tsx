@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { Button, ConfirmDialog, Inline, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
@@ -48,22 +48,20 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
     return (
       <div className="flex flex-col gap-2">
         <p className="text-sm">{t("trackingEnabledStatus")}</p>
-        <ConfirmDialog
-          trigger={
-            <Button
-              tone="neutral"
-              className="self-start"
-              disabled={pending || !canManage}
-            >
-              {t("disableButton")}
-            </Button>
-          }
-          title={t("disableDialogTitle")}
-          description={t("disableDialogDescription")}
-          destructive
-          confirmLabel={t("disableConfirmLabel")}
-          onConfirm={() => apply(false)}
-        />
+        <Inline>
+          <ConfirmDialog
+            trigger={
+              <Button tone="neutral" disabled={pending || !canManage}>
+                {t("disableButton")}
+              </Button>
+            }
+            title={t("disableDialogTitle")}
+            description={t("disableDialogDescription")}
+            destructive
+            confirmLabel={t("disableConfirmLabel")}
+            onConfirm={() => apply(false)}
+          />
+        </Inline>
       </div>
     );
   }
@@ -71,15 +69,16 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm">{t("trackingDisabledStatus")}</p>
-      <Button
-        className="self-start"
-        disabled={pending || !canManage}
-        onClick={() => {
-          void apply(true);
-        }}
-      >
-        {t("enableButton")}
-      </Button>
+      <Inline>
+        <Button
+          disabled={pending || !canManage}
+          onClick={() => {
+            void apply(true);
+          }}
+        >
+          {t("enableButton")}
+        </Button>
+      </Inline>
       {!canManage && (
         <p className="text-sm text-(--color-fg-muted)">
           {tErrors("forbiddenAction", { action: t("manageSettingsAction") })}

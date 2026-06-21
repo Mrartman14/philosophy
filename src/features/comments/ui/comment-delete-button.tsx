@@ -25,7 +25,7 @@ export function CommentDeleteButton({ commentId, admin = false }: Props) {
   return (
     <ConfirmDialog
       trigger={
-        <Button type="button" tone="danger" className="text-xs">
+        <Button type="button" tone="danger" compact>
           {t("deleteButton")}
         </Button>
       }

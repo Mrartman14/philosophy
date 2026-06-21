@@ -2,7 +2,7 @@
 // src/features/preferences/ui/push-subscription-toggle.tsx
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui";
+import { Button, Inline } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { log } from "@/services/observability/client";
 
@@ -159,22 +159,24 @@ export function PushSubscriptionToggle({
           : t("pushNotSubscribed")}
       </p>
       {state.subscribed ? (
-        <Button
-          tone="neutral"
-          className="self-start"
-          disabled={pending}
-          onClick={() => { void handleUnsubscribe(); }}
-        >
-          {t("pushUnsubscribeButton")}
-        </Button>
+        <Inline>
+          <Button
+            tone="neutral"
+            disabled={pending}
+            onClick={() => { void handleUnsubscribe(); }}
+          >
+            {t("pushUnsubscribeButton")}
+          </Button>
+        </Inline>
       ) : (
-        <Button
-          className="self-start"
-          disabled={pending || !canSubscribe}
-          onClick={() => { void handleSubscribe(); }}
-        >
-          {t("pushSubscribeButton")}
-        </Button>
+        <Inline>
+          <Button
+            disabled={pending || !canSubscribe}
+            onClick={() => { void handleSubscribe(); }}
+          >
+            {t("pushSubscribeButton")}
+          </Button>
+        </Inline>
       )}
       {!canSubscribe && !state.subscribed && (
         <p className="text-sm text-(--color-fg-muted)">

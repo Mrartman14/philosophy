@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { Button, ConfirmDialog, Inline, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
@@ -50,35 +50,34 @@ export function UsageTrackingToggle({ initialEnabled }: Props) {
       {enabled ? (
         <>
           <p className="text-sm">{t("usageTrackingEnabledStatus")}</p>
-          <ConfirmDialog
-            destructive
-            trigger={
-              <Button
-                tone="neutral"
-                className="self-start"
-                disabled={pending}
-              >
-                {t("usageTrackingDisableButton")}
-              </Button>
-            }
-            title={t("usageTrackingDisableDialogTitle")}
-            description={t("usageTrackingDisableDialogDescription")}
-            confirmLabel={t("usageTrackingDisableConfirmLabel")}
-            onConfirm={() => apply(false)}
-          />
+          <Inline>
+            <ConfirmDialog
+              destructive
+              trigger={
+                <Button tone="neutral" disabled={pending}>
+                  {t("usageTrackingDisableButton")}
+                </Button>
+              }
+              title={t("usageTrackingDisableDialogTitle")}
+              description={t("usageTrackingDisableDialogDescription")}
+              confirmLabel={t("usageTrackingDisableConfirmLabel")}
+              onConfirm={() => apply(false)}
+            />
+          </Inline>
         </>
       ) : (
         <>
           <p className="text-sm">{t("usageTrackingDisabledStatus")}</p>
-          <Button
-            className="self-start"
-            disabled={pending}
-            onClick={() => {
-              void apply(true);
-            }}
-          >
-            {t("usageTrackingEnableButton")}
-          </Button>
+          <Inline>
+            <Button
+              disabled={pending}
+              onClick={() => {
+                void apply(true);
+              }}
+            >
+              {t("usageTrackingEnableButton")}
+            </Button>
+          </Inline>
         </>
       )}
     </section>

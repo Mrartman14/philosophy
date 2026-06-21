@@ -212,11 +212,10 @@ export function SlashMenu({ editor, schema, context }: Props) {
         <Button
           key={c.id}
           id={`${listboxId}-opt-${String(i)}`}
-          tone="quiet"
-          compact
+          unstyled
           role="option"
           aria-selected={safeActive === i}
-          className="w-full justify-start"
+          className="flex h-(--size-control-h-sm) w-full items-center justify-start gap-2 rounded px-4 text-sm font-medium transition hover:bg-(--color-surface-subtle) disabled:opacity-50"
           onMouseDown={(e) => {
             e.preventDefault();
             apply(c);
@@ -227,9 +226,8 @@ export function SlashMenu({ editor, schema, context }: Props) {
         </Button>
       ))}
       <Button
-        tone="quiet"
-        compact
-        className="w-full justify-start"
+        unstyled
+        className="flex h-(--size-control-h-sm) w-full items-center justify-start gap-2 rounded px-4 text-sm font-medium transition hover:bg-(--color-surface-subtle) disabled:opacity-50"
         onClick={() => { closeSlashMenu(editor.view); }}
       >
         {t("slashMenuClose")}

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
-import { Button, Form, Label, Select, Stack, useToast } from "@/components/ui";
+import { Button, Form, Inline, Label, Select, Stack, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { uploadMedia } from "../upload-media";
@@ -84,9 +84,11 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
             className="text-sm"
           />
         </div>
-        <Button type="submit" className="self-start" disabled={busy || pending}>
-          {busy ? t("uploadBusy") : t("uploadSubmit")}
-        </Button>
+        <Inline>
+          <Button type="submit" disabled={busy || pending}>
+            {busy ? t("uploadBusy") : t("uploadSubmit")}
+          </Button>
+        </Inline>
         <p className="text-xs text-(--color-fg-muted)">
           {t("uploadHint")}
         </p>

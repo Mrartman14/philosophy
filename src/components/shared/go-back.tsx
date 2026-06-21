@@ -13,7 +13,7 @@ export const GoBack: React.FC<
 
   return (
     <Button
-      tone="quiet"
+      unstyled
       onClick={() => { router.back(); }}
       className={cn("underline text-2xl cursor-pointer", className)}
     >
