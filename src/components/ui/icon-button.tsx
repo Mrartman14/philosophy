@@ -3,16 +3,14 @@ import { forwardRef, type ButtonHTMLAttributes } from "react";
 
 import { cn, FOCUS_RING_CONTROL } from "./cn";
 
-/**
- * ВРЕМЕННЫЙ локальный тип (Task 7 заменит на собственный `IconButtonTone`).
- * До Phase-4-миграции IconButton сохраняет старую ось `variant`, поэтому после
- * удаления `ButtonVariant` из `button.tsx` он дублируется здесь — это держит
- * сборку зелёной между задачами.
- */
-type IconButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type IconButtonTone = "neutral" | "primary" | "danger";
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: IconButtonVariant;
+  /**
+   * Визуальная иерархия иконочной кнопки: `neutral` (hover-only, по умолчанию),
+   * `primary` (filled), `danger` (текстовый danger).
+   */
+  tone?: IconButtonTone;
   /**
    * Структурно-компактная геометрия (ось, ортогональная глобальной плотности):
    * квадрат высотой контрола. `false` (по умолчанию) → `--size-control-h-md`,
@@ -24,22 +22,21 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 /**
- * Намеренно отличается от `Button.variantClasses`: иконочная кнопка не должна
- * визуально конкурировать с основной (filled) кнопкой формы. `secondary` —
- * без resting-фона; `danger` — текстом, без заливки.
+ * Иконочная кнопка по природе тихая: `neutral` = hover-only (то, что у Button
+ * называется `quiet`). Отдельный набор тонов — сознательное расхождение с Button
+ * (у IconButton НЕТ `quiet`, его `neutral` уже тихий), чтобы иконочный контрол
+ * не конкурировал с filled-кнопкой формы.
  */
-const variantClasses: Record<IconButtonVariant, string> = {
+const toneClasses: Record<IconButtonTone, string> = {
+  neutral: "hover:bg-(--color-surface-subtle) disabled:opacity-50",
   primary:
     "bg-(--color-fg) text-(--color-surface) hover:opacity-90 disabled:opacity-50",
-  secondary:
-    "border border-(--color-border) hover:bg-(--color-surface-subtle) disabled:opacity-50",
-  ghost: "hover:bg-(--color-surface-subtle) disabled:opacity-50",
   danger: "text-(--color-danger) hover:bg-(--color-danger-bg) disabled:opacity-50",
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   function IconButton(
-    { variant = "ghost", compact = false, className, type = "button", ...rest },
+    { tone = "neutral", compact = false, className, type = "button", ...rest },
     ref,
   ) {
     return (
@@ -52,7 +49,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
             ? "h-(--size-control-h-sm) w-(--size-control-h-sm)"
             : "h-(--size-control-h-md) w-(--size-control-h-md)",
           FOCUS_RING_CONTROL,
-          variantClasses[variant],
+          toneClasses[tone],
           className,
         )}
         {...rest}
