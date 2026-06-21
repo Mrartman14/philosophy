@@ -32,6 +32,11 @@ export function AppearanceSettings() {
     { value: "lg", label: t("appearance.textSize.lg") },
     { value: "xl", label: t("appearance.textSize.xl") },
   ];
+  const MOTION = [
+    { value: "system", label: t("appearance.motion.system") },
+    { value: "reduced", label: t("appearance.motion.reduced") },
+    { value: "full", label: t("appearance.motion.full") },
+  ];
 
   return (
     <section className="flex max-w-xl flex-col gap-4">
@@ -41,6 +46,7 @@ export function AppearanceSettings() {
       <Row label={t("appearance.densityLabel")}><Select aria-label={t("appearance.densityAriaLabel")} options={DENSITY} value={appearance.density} onValueChange={(v) => { setAxis("density", v as typeof appearance.density); }} /></Row>
       <Row label={t("appearance.fontLabel")}><Select aria-label={t("appearance.fontAriaLabel")} options={FONT} value={appearance.font} onValueChange={(v) => { setAxis("font", v as typeof appearance.font); }} /></Row>
       <Row label={t("appearance.textSizeLabel")}><Select aria-label={t("appearance.textSizeAriaLabel")} options={TEXT_SIZE} value={appearance.textSize} onValueChange={(v) => { setAxis("textSize", v as typeof appearance.textSize); }} /></Row>
+      <Row label={t("appearance.motionLabel")}><Select aria-label={t("appearance.motionAriaLabel")} options={MOTION} value={appearance.motion} onValueChange={(v) => { setAxis("motion", v as typeof appearance.motion); }} /></Row>
     </section>
   );
 }
