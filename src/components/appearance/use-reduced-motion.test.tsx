@@ -10,7 +10,7 @@ vi.mock("./persist-appearance", () => ({ persistAppearance: vi.fn() }));
 // Управляемый matchMedia: mutable matches + реестр change-листенеров,
 // чтобы тестировать и статическое значение, и live OS-переключение.
 let mqMatches = false;
-let mqListeners: Array<() => void> = [];
+let mqListeners: (() => void)[] = [];
 function stubMatchMedia(matches: boolean) {
   mqMatches = matches;
   mqListeners = [];
@@ -19,8 +19,6 @@ function stubMatchMedia(matches: boolean) {
     media: query,
     addEventListener: (_: string, cb: () => void) => { mqListeners.push(cb); },
     removeEventListener: (_: string, cb: () => void) => { mqListeners = mqListeners.filter((l) => l !== cb); },
-    addListener: () => {},
-    removeListener: () => {},
     dispatchEvent: () => false,
     onchange: null,
   }));

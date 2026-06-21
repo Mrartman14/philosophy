@@ -6,13 +6,11 @@ import { useAppearance } from "./appearance-provider";
 const QUERY = "(prefers-reduced-motion: reduce)";
 
 function subscribe(cb: () => void): () => void {
-  if (typeof window === "undefined" || !window.matchMedia) return () => {};
   const mq = window.matchMedia(QUERY);
   mq.addEventListener("change", cb);
   return () => { mq.removeEventListener("change", cb); };
 }
 function getOSReduce(): boolean {
-  if (typeof window === "undefined" || !window.matchMedia) return false;
   return window.matchMedia(QUERY).matches;
 }
 
