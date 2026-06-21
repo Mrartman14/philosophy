@@ -68,9 +68,10 @@ async function loadLectureForGate(id: string): Promise<Lecture> {
 
 export const createLecture = createFormAction(async (formData, ctx) => {
   const me = await getMe();
+  // capability-only гейт — ставим ДО парсинга (отказ дешевле без траты на парсинг, §3.3).
+  requireCapability(me, canCreateLecture);
   const t = await getT("validation");
   const input = parseFormData(makeLectureCreateSchema(t), formData);
-  requireCapability(me, canCreateLecture);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/lectures", {
     body: {
@@ -127,9 +128,10 @@ export const setLectureVisibility = createFormAction(async (formData, ctx) => {
 
 export const deleteLecture = createAction(async (rawId: string) => {
   const me = await getMe();
+  // capability-only гейт — ставим ДО парсинга (отказ дешевле без траты на парсинг, §3.3).
+  requireCapability(me, canDeleteLecture);
   const t = await getT("validation");
   const { id } = makeLectureIdSchema(t).parse({ id: rawId });
-  requireCapability(me, canDeleteLecture);
   const api = await createApiClient();
   const { error } = await api.DELETE("/api/admin/lectures/{id}", {
     params: { path: { id } },

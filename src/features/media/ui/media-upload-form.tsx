@@ -1,11 +1,13 @@
 "use client";
 // src/features/media/ui/media-upload-form.tsx
 import { useRouter } from "next/navigation";
-import { useRef, useState, useTransition } from "react";
+import { useActionState, useEffect } from "react";
 
-import { Button, Form, Inline, Label, Select, Stack, useToast } from "@/components/ui";
+import { Form, FormFeedback, FormField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
+import type { ActionResult } from "@/utils/create-action";
 
+import type { Media } from "../types";
 import { uploadMedia } from "../upload-media";
 
 interface MediaUploadFormProps {
@@ -15,83 +17,72 @@ interface MediaUploadFormProps {
 
 const ACCEPT = ".mp4,.webm,.mp3,.m4a,.ogg,video/*,audio/*";
 
+const initial: ActionResult<Media | null> = { success: true, data: null };
+
 /**
- * Форма загрузки медиа. type выбирается явно (бек требует точный video|audio).
- * Новое медиа создаётся приватным (бек: free-floating + private), поэтому
- * выбора видимости здесь нет — публикация делается на /media/[id].
+ * Форма загрузки медиа. type выбирается явно (бек требует точный video|audio) и
+ * уходит в FormData скрытым input'ом Base UI Select. Новое медиа создаётся
+ * приватным (бек: free-floating + private), поэтому выбора видимости здесь нет —
+ * публикация делается на /media/[id].
+ *
+ * Канон: useActionState + <Form action> + FormFeedback (как documents/
+ * DocumentUploadForm). На успех остаёмся на странице и обновляем список через
+ * router.refresh() — успешный текст показывает FormFeedback.
  */
 export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
   const router = useRouter();
-  const toast = useToast();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [type, setType] = useState<"video" | "audio">("video");
-  const [pending, startTransition] = useTransition();
-  const [busy, setBusy] = useState(false);
   const t = useT("media");
+  const [state, action] = useActionState(uploadMedia, initial);
+
+  useEffect(() => {
+    if (state.success && state.data?.id) {
+      router.refresh();
+    }
+  }, [state, router]);
 
   if (!canUpload) return null;
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const file = inputRef.current?.files?.[0];
-    if (!file) {
-      toast.add({ title: t("uploadToastNoFile") });
-      return;
-    }
-    const fd = new FormData();
-    fd.set("file", file);
-    fd.set("type", type);
-    setBusy(true);
-    const result = await uploadMedia(fd);
-    setBusy(false);
-    if (!result.success) {
-      const description =
-        result.code === "forbidden"
-          ? t("uploadAction")
-          : result.error;
-      toast.add({ title: t("uploadErrorTitle"), description });
-      return;
-    }
-    toast.add({ title: t("uploadSuccessTitle"), description: result.data.filename });
-    if (inputRef.current) inputRef.current.value = "";
-    startTransition(() => { router.refresh(); });
-  }
+  // exactOptionalPropertyTypes: не передаём undefined в опциональный successText —
+  // подставляем текст только при успешной загрузке (иначе свойство опускаем).
+  const successText =
+    state.success && state.data ? { successText: t("uploadSuccessTitle") } : {};
 
   return (
-    <Form onSubmit={(e) => { void handleSubmit(e); }}>
+    <Form action={action}>
       <Stack>
-        <div className="flex flex-col gap-1">
-          <Label>{t("uploadTypeLabel")}</Label>
+        <FormField name="type" label={t("uploadTypeLabel")}>
           <Select
+            name="type"
+            defaultValue="video"
             aria-label={t("uploadTypeLabel")}
-            value={type}
-            onValueChange={(v) => { setType(v as "video" | "audio"); }}
             options={[
               { value: "video", label: t("uploadVideoOption") },
               { value: "audio", label: t("uploadAudioOption") },
             ]}
           />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="media-file">
-            {t("uploadFileLabel")}
-          </Label>
+        </FormField>
+
+        <FormField name="file" label={t("uploadFileLabel")} required>
           <input
-            id="media-file"
-            ref={inputRef}
             type="file"
+            name="file"
             accept={ACCEPT}
+            required
             className="text-sm"
           />
+        </FormField>
+
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("uploadAction")}
+          {...successText}
+        />
+
+        <div>
+          <SubmitButton>{t("uploadSubmit")}</SubmitButton>
         </div>
-        <Inline>
-          <Button type="submit" disabled={busy || pending}>
-            {busy ? t("uploadBusy") : t("uploadSubmit")}
-          </Button>
-        </Inline>
-        <p className="text-xs text-(--color-fg-muted)">
-          {t("uploadHint")}
-        </p>
+
+        <p className="text-xs text-(--color-fg-muted)">{t("uploadHint")}</p>
       </Stack>
     </Form>
   );

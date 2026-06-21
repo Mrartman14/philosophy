@@ -2,6 +2,7 @@
 import { EmptyState, Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui";
 import { getT } from "@/i18n";
 
+import { entityLabels } from "../entity-labels";
 import type { Inventory } from "../types";
 
 /** number → строка; undefined (нет видимости, напр. comment) → «—».
@@ -14,17 +15,7 @@ export async function ProductionStatsTable({ inventory }: { inventory: Inventory
   const t = await getT("statistics");
   const rows = inventory.by_type ?? [];
   const totals = inventory.totals;
-
-  const entityLabels: Record<string, string> = {
-    lecture: t("entityType.lecture"),
-    document: t("entityType.document"),
-    trail: t("entityType.trail"),
-    canvas: t("entityType.canvas"),
-    form: t("entityType.form"),
-    media: t("entityType.media"),
-    annotation: t("entityType.annotation"),
-    comment: t("entityType.comment"),
-  };
+  const labels = entityLabels(t);
 
   if ((totals?.total ?? 0) === 0) {
     return (
@@ -48,7 +39,7 @@ export async function ProductionStatsTable({ inventory }: { inventory: Inventory
       <Tbody>
         {rows.map((row, i) => (
           <Tr key={row.entity_type ?? `row-${i}`}>
-            <Td>{entityLabels[row.entity_type ?? ""] ?? row.entity_type}</Td>
+            <Td>{labels[row.entity_type ?? ""] ?? row.entity_type}</Td>
             <Td className="text-right">{fmt(row.total)}</Td>
             <Td className="text-right">{fmt(row.public)}</Td>
             <Td className="text-right">{fmt(row.private)}</Td>

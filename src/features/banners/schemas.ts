@@ -9,8 +9,6 @@ import { toRfc3339 } from "@/utils/datetime-form";
 
 /** Регекс бекенда (internal/banner/service.go hexColorRe) — повторяем 1:1. */
 const HEX_COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type ValidationT = NamespaceT<"validation">;
 
@@ -92,7 +90,7 @@ function makeValidateFields(t: ValidationT) {
         message: t("banners.endAtBeforeStart"),
       });
     }
-    if (v.event_id && !UUID_RE.test(v.event_id)) {
+    if (v.event_id && !z.uuid().safeParse(v.event_id).success) {
       ctx.addIssue({
         code: "custom",
         path: ["event_id"],

@@ -15,7 +15,7 @@ import {
 } from "@/utils/create-action";
 import { idempotencyHeaders } from "@/utils/idempotency";
 import { getMe } from "@/utils/me";
-import { ForbiddenError, requireActive } from "@/utils/permissions";
+import { requireActive, requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
 
 import { canCreateForm } from "./permissions";
@@ -75,7 +75,7 @@ function buildFieldsBody(
 /** POST /api/forms. Гейт — form.create. */
 export const createForm = createFormAction(async (formData, ctx) => {
   const me = await getMe();
-  if (!canCreateForm(me)) throw new ForbiddenError(me ? (me.status !== "active" ? "status" : "role") : "guest");
+  requireCapability(me, canCreateForm);
   const input = parseFormData(makeFormCreateSchema(await getT("validation")), formData);
   // submission_mode/visibility гарантированы superRefine FormCreateSchema
   // (иначе parseFormData бросит 422 до сюда). Явная проверка инварианта вместо

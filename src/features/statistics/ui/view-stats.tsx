@@ -2,6 +2,7 @@
 import { EmptyState, RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
+import { entityLabels } from "../entity-labels";
 import type { ViewStatItem, ViewStatsData } from "../types";
 
 const BASE_PATH: Record<string, string> = {
@@ -27,17 +28,7 @@ export async function ViewStats({
   trackingEnabled: boolean;
 }) {
   const t = await getT("statistics");
-
-  const entityLabels: Record<string, string> = {
-    lecture: t("entityType.lecture"),
-    document: t("entityType.document"),
-    trail: t("entityType.trail"),
-    canvas: t("entityType.canvas"),
-    form: t("entityType.form"),
-    media: t("entityType.media"),
-    annotation: t("entityType.annotation"),
-    comment: t("entityType.comment"),
-  };
+  const labels = entityLabels(t);
 
   if (!trackingEnabled) {
     return (
@@ -71,7 +62,7 @@ export async function ViewStats({
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-(--color-fg-muted)">
           {Object.entries(byType).map(([type, count]) => (
             <li key={type}>
-              {entityLabels[type] ?? type}: {count}
+              {labels[type] ?? type}: {count}
             </li>
           ))}
         </ul>

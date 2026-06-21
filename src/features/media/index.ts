@@ -8,7 +8,6 @@ export type { MyMediaFilter, MyMediaResult } from "./api";
 
 export { deleteMedia, setMediaVisibility } from "./actions";
 export { uploadMedia } from "./upload-media";
-export type { UploadMediaResult } from "./upload-media";
 
 export {
   canCreateMedia,

@@ -54,8 +54,8 @@ function makeDocumentIdsJsonSchema(t: ValidationT) {
           ctx.addIssue({ code: "custom", message: t("trails.documentItemNotString") });
           return z.NEVER;
         }
-        // UUID v4 формат (как в остальных схемах слайса).
-        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item)) {
+        // UUID-формат (как в остальных схемах слайса — z.uuid()).
+        if (!z.uuid().safeParse(item).success) {
           ctx.addIssue({ code: "custom", message: t("trails.documentItemInvalidId") });
           return z.NEVER;
         }
