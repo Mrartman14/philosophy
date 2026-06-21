@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { Form, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { Form, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -45,36 +45,38 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
   }, [state, onSuccess]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
-      <input type="hidden" name="id" value={annotation.id ?? ""} />
-      <input type="hidden" name="version" value={annotation.version ?? ""} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="id" value={annotation.id ?? ""} />
+        <input type="hidden" name="version" value={annotation.version ?? ""} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
 
-      <FormField name="blocks" label={t("editBodyLabel")}>
-        <LazyAstEditor
-          defaultValue={(annotation.blocks ?? [])}
-          entityContext="annotation"
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel={t("editBodyAriaLabel")}
-        />
-      </FormField>
+        <FormField name="blocks" label={t("editBodyLabel")}>
+          <LazyAstEditor
+            defaultValue={(annotation.blocks ?? [])}
+            entityContext="annotation"
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+            ariaLabel={t("editBodyAriaLabel")}
+          />
+        </FormField>
 
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
-      )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
+        )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
 
-      <div>
-        <SubmitButton>{t("editSubmit")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("editSubmit")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

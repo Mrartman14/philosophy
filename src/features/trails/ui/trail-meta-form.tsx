@@ -2,7 +2,7 @@
 // src/features/trails/ui/trail-meta-form.tsx
 import { useActionState } from "react";
 
-import { Form, FormField, IdempotencyField, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { Form, FormField, IdempotencyField, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -23,34 +23,36 @@ export function TrailMetaForm({ trail }: Props) {
     !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <input type="hidden" name="id" value={trail.id} />
-      <input type="hidden" name="version" value={String(trail.version ?? "")} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="id" value={trail.id} />
+        <input type="hidden" name="version" value={String(trail.version ?? "")} />
+        <IdempotencyField result={state} />
 
-      <FormField name="title" label={t("metaTitleLabel")} required>
-        <TextInput name="title" required maxLength={200} defaultValue={trail.title} />
-      </FormField>
+        <FormField name="title" label={t("metaTitleLabel")} required>
+          <TextInput name="title" required maxLength={200} defaultValue={trail.title} />
+        </FormField>
 
-      <FormField name="description" label={t("metaDescriptionLabel")}>
-        <Textarea name="description" maxLength={2000} rows={3} defaultValue={trail.description ?? ""} />
-      </FormField>
+        <FormField name="description" label={t("metaDescriptionLabel")}>
+          <Textarea name="description" maxLength={2000} rows={3} defaultValue={trail.description ?? ""} />
+        </FormField>
 
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenGeneric")}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
-      {state.success && state.data && (
-        <p className="text-sm text-green-600">{t("metaSaved")}</p>
-      )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenGeneric")}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
+        {state.success && state.data && (
+          <p className="text-sm text-green-600">{t("metaSaved")}</p>
+        )}
 
-      <div>
-        <SubmitButton>{t("metaSubmit")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("metaSubmit")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

@@ -5,7 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { Form, FormFeedback, FormField, IdempotencyField, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -47,28 +47,30 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
-      <input type="hidden" name="parent_entity_type" value={parentEntityType} />
-      <input type="hidden" name="parent_entity_id" value={parentId} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="parent_entity_type" value={parentEntityType} />
+        <input type="hidden" name="parent_entity_id" value={parentId} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
 
-      <FormField name="blocks" label={t("createBodyLabel")}>
-        <LazyAstEditor
-          defaultValue={[]}
-          entityContext="annotation"
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-          ariaLabel={t("createBodyAriaLabel")}
-        />
-      </FormField>
+        <FormField name="blocks" label={t("createBodyLabel")}>
+          <LazyAstEditor
+            defaultValue={[]}
+            entityContext="annotation"
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+            ariaLabel={t("createBodyAriaLabel")}
+          />
+        </FormField>
 
-      <AnnotationVisibilityField />
+        <AnnotationVisibilityField />
 
-      <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
+        <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
 
-      <div>
-        <SubmitButton>{t("createSubmit")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("createSubmit")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

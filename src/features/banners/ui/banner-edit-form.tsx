@@ -13,6 +13,7 @@ import {
   Inline,
   Label,
   Select,
+  Stack,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -51,100 +52,102 @@ export function BannerEditForm({ banner }: Props) {
       : {};
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <input type="hidden" name="id" value={banner.id ?? ""} />
-      <input type="hidden" name="version" value={banner.version ?? ""} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <input
-        type="hidden"
-        name="dismissible"
-        value={dismissible ? "true" : "false"}
-      />
-      <IdempotencyField result={state} />
-
-      <FormField name="background_color" label={t("fieldColor")} required>
-        <ColorInput
-          name="background_color"
-          defaultValue={toColorInputValue(banner.background_color)}
-          required
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="id" value={banner.id ?? ""} />
+        <input type="hidden" name="version" value={banner.version ?? ""} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input
+          type="hidden"
+          name="dismissible"
+          value={dismissible ? "true" : "false"}
         />
-      </FormField>
+        <IdempotencyField result={state} />
 
-      <FormField name="target_audience" label={t("fieldAudience")} required>
-        <Select
-          name="target_audience"
-          defaultValue={banner.target_audience ?? "all"}
-          options={audienceOptions(t)}
-          aria-label={t("fieldAudienceAriaLabel")}
-        />
-      </FormField>
+        <FormField name="background_color" label={t("fieldColor")} required>
+          <ColorInput
+            name="background_color"
+            defaultValue={toColorInputValue(banner.background_color)}
+            required
+          />
+        </FormField>
 
-      <Inline align="center" className="text-sm">
-        <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
-        <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
-      </Inline>
+        <FormField name="target_audience" label={t("fieldAudience")} required>
+          <Select
+            name="target_audience"
+            defaultValue={banner.target_audience ?? "all"}
+            options={audienceOptions(t)}
+            aria-label={t("fieldAudienceAriaLabel")}
+          />
+        </FormField>
 
-      <FormField name="start_at" label={t("fieldStartAt")} required>
-        <TextInput
-          name="start_at"
-          type="datetime-local"
-          defaultValue={toDatetimeLocal(banner.start_at)}
-          required
-        />
-      </FormField>
+        <Inline align="center" className="text-sm">
+          <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
+          <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
+        </Inline>
 
-      <FormField name="end_at" label={t("fieldEndAt")}>
-        <TextInput
-          name="end_at"
-          type="datetime-local"
-          defaultValue={toDatetimeLocal(banner.end_at)}
-        />
-      </FormField>
-      <p className="text-xs text-(--color-fg-muted)">
-        {t("hintEndAt")}
-      </p>
+        <FormField name="start_at" label={t("fieldStartAt")} required>
+          <TextInput
+            name="start_at"
+            type="datetime-local"
+            defaultValue={toDatetimeLocal(banner.start_at)}
+            required
+          />
+        </FormField>
 
-      <FormField name="event_id" label={t("fieldEventId")}>
-        <TextInput
-          name="event_id"
-          defaultValue={banner.event_id ?? ""}
-          placeholder={t("eventIdPlaceholder")}
-        />
-      </FormField>
-      <p className="text-xs text-(--color-fg-muted)">
-        {t("hintEventId")}
-      </p>
-
-      <FormField name="blocks" label={t("fieldBlocks")}>
-        <LazyAstEditor
-          defaultValue={banner.blocks ?? []}
-          entityContext="banner"
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-        />
-      </FormField>
-
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">{t("saved")}</p>
-      )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: t("editAction") })}
+        <FormField name="end_at" label={t("fieldEndAt")}>
+          <TextInput
+            name="end_at"
+            type="datetime-local"
+            defaultValue={toDatetimeLocal(banner.end_at)}
+          />
+        </FormField>
+        <p className="text-xs text-(--color-fg-muted)">
+          {t("hintEndAt")}
         </p>
-      )}
-      {!state.success &&
-        state.code === "validation" &&
-        fieldErrors._form && (
-          <p role="alert" className="text-sm text-red-600">
-            {fieldErrors._form}
+
+        <FormField name="event_id" label={t("fieldEventId")}>
+          <TextInput
+            name="event_id"
+            defaultValue={banner.event_id ?? ""}
+            placeholder={t("eventIdPlaceholder")}
+          />
+        </FormField>
+        <p className="text-xs text-(--color-fg-muted)">
+          {t("hintEventId")}
+        </p>
+
+        <FormField name="blocks" label={t("fieldBlocks")}>
+          <LazyAstEditor
+            defaultValue={banner.blocks ?? []}
+            entityContext="banner"
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+          />
+        </FormField>
+
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">{t("saved")}</p>
+        )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: t("editAction") })}
           </p>
         )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+        {!state.success &&
+          state.code === "validation" &&
+          fieldErrors._form && (
+            <p role="alert" className="text-sm text-red-600">
+              {fieldErrors._form}
+            </p>
+          )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
 
-      <div>
-        <SubmitButton>{t("saveButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("saveButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

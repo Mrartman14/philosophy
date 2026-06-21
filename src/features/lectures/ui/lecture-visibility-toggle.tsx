@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-import { Form, Label, Select } from "@/components/ui";
+import { Form, Label, Select, Stack } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -38,27 +38,29 @@ export function LectureVisibilityToggle({
   }, [visibility]);
 
   return (
-    <Form ref={formRef} action={action} className="flex flex-col gap-1">
-      <Label htmlFor="lecture-visibility">{tL("visibilityLabel")}</Label>
-      <input type="hidden" name="id" value={lecture.id} />
-      <Select
-        name="visibility"
-        aria-label={tL("visibilityLabel")}
-        value={visibility}
-        onValueChange={(v) => { setVisibility(v as Lecture["visibility"]); }}
-        options={[
-          { value: "private", label: tL("visibilityPrivate") },
-          { value: "public", label: tL("visibilityPublic") },
-        ]}
-      />
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-xs text-red-600">
-          {tErrors("forbiddenAction", { action: tL("visibilityForbiddenAction") })}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-xs text-red-600">{state.error}</p>
-      )}
+    <Form ref={formRef} action={action}>
+      <Stack>
+        <Label htmlFor="lecture-visibility">{tL("visibilityLabel")}</Label>
+        <input type="hidden" name="id" value={lecture.id} />
+        <Select
+          name="visibility"
+          aria-label={tL("visibilityLabel")}
+          value={visibility}
+          onValueChange={(v) => { setVisibility(v as Lecture["visibility"]); }}
+          options={[
+            { value: "private", label: tL("visibilityPrivate") },
+            { value: "public", label: tL("visibilityPublic") },
+          ]}
+        />
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-xs text-red-600">
+            {tErrors("forbiddenAction", { action: tL("visibilityForbiddenAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-xs text-red-600">{state.error}</p>
+        )}
+      </Stack>
     </Form>
   );
 }

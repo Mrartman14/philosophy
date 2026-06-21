@@ -13,6 +13,7 @@ import {
   Inline,
   Label,
   Select,
+  Stack,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -46,54 +47,56 @@ export function BannerCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
-      {/* Hidden input: omitted-чекбокс в FormData неотличим от «не менять». */}
-      <input
-        type="hidden"
-        name="dismissible"
-        value={dismissible ? "true" : "false"}
-      />
-      <IdempotencyField result={state} />
-
-      <FormField name="background_color" label={t("fieldColor")} required>
-        <ColorInput
-          name="background_color"
-          defaultValue="#336699"
-          required
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-xl">
+        {/* Hidden input: omitted-чекбокс в FormData неотличим от «не менять». */}
+        <input
+          type="hidden"
+          name="dismissible"
+          value={dismissible ? "true" : "false"}
         />
-      </FormField>
+        <IdempotencyField result={state} />
 
-      <FormField name="target_audience" label={t("fieldAudience")} required>
-        <Select
-          name="target_audience"
-          defaultValue="all"
-          options={audienceOptions(t)}
-          aria-label={t("fieldAudienceAriaLabel")}
-        />
-      </FormField>
+        <FormField name="background_color" label={t("fieldColor")} required>
+          <ColorInput
+            name="background_color"
+            defaultValue="#336699"
+            required
+          />
+        </FormField>
 
-      <Inline align="center" className="text-sm">
-        <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
-        <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
-      </Inline>
+        <FormField name="target_audience" label={t("fieldAudience")} required>
+          <Select
+            name="target_audience"
+            defaultValue="all"
+            options={audienceOptions(t)}
+            aria-label={t("fieldAudienceAriaLabel")}
+          />
+        </FormField>
 
-      <FormField name="start_at" label={t("fieldStartAt")} required>
-        <TextInput name="start_at" type="datetime-local" required />
-      </FormField>
+        <Inline align="center" className="text-sm">
+          <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
+          <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
+        </Inline>
 
-      <FormField name="end_at" label={t("fieldEndAt")}>
-        <TextInput name="end_at" type="datetime-local" />
-      </FormField>
+        <FormField name="start_at" label={t("fieldStartAt")} required>
+          <TextInput name="start_at" type="datetime-local" required />
+        </FormField>
 
-      <FormField name="event_id" label={t("fieldEventId")}>
-        <TextInput name="event_id" placeholder={t("eventIdPlaceholder")} />
-      </FormField>
+        <FormField name="end_at" label={t("fieldEndAt")}>
+          <TextInput name="end_at" type="datetime-local" />
+        </FormField>
 
-      <FormFeedback result={state} forbiddenAction={t("createAction")} />
+        <FormField name="event_id" label={t("fieldEventId")}>
+          <TextInput name="event_id" placeholder={t("eventIdPlaceholder")} />
+        </FormField>
 
-      <div>
-        <SubmitButton>{t("createButton")}</SubmitButton>
-      </div>
+        <FormFeedback result={state} forbiddenAction={t("createAction")} />
+
+        <div>
+          <SubmitButton>{t("createButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

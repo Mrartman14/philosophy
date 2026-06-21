@@ -2,7 +2,7 @@
 "use client";
 import { useActionState, useState } from "react";
 
-import { Checkbox, Form, Label, SubmitButton } from "@/components/ui";
+import { Checkbox, Form, Label, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -53,47 +53,49 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
   }
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-3">
-      <input type="hidden" name="lecture_id" value={lectureId} />
-      <input type="hidden" name="tag_ids" value={JSON.stringify(selected)} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="lecture_id" value={lectureId} />
+        <input type="hidden" name="tag_ids" value={JSON.stringify(selected)} />
 
-      <ul className="flex flex-wrap gap-x-4 gap-y-2">
-        {options.map((tag) => (
-          <li key={tag.id} className="flex items-center gap-2">
-            <Checkbox
-              id={`lecture-tag-${tag.id}`}
-              checked={selected.includes(tag.id)}
-              onCheckedChange={(checked) => { toggle(tag.id, checked); }}
-              aria-label={tag.name}
-            />
-            <Label htmlFor={`lecture-tag-${tag.id}`} className="cursor-pointer text-sm">
-              {tag.name}
-            </Label>
-          </li>
-        ))}
-      </ul>
+        <ul className="flex flex-wrap gap-x-4 gap-y-2">
+          {options.map((tag) => (
+            <li key={tag.id} className="flex items-center gap-2">
+              <Checkbox
+                id={`lecture-tag-${tag.id}`}
+                checked={selected.includes(tag.id)}
+                onCheckedChange={(checked) => { toggle(tag.id, checked); }}
+                aria-label={tag.name}
+              />
+              <Label htmlFor={`lecture-tag-${tag.id}`} className="cursor-pointer text-sm">
+                {tag.name}
+              </Label>
+            </li>
+          ))}
+        </ul>
 
-      {state.success && state.data && (
-        <p className="text-sm text-green-600">{tTags("tagsSaved")}</p>
-      )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: tTags("assignTagsAction") })}
-        </p>
-      )}
-      {!state.success && state.code === "validation" &&
-        (fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form) && (
-          <p role="alert" className="text-sm text-red-600">
-            {fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form}
+        {state.success && state.data && (
+          <p className="text-sm text-green-600">{tTags("tagsSaved")}</p>
+        )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: tTags("assignTagsAction") })}
           </p>
         )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+        {!state.success && state.code === "validation" &&
+          (fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form) && (
+            <p role="alert" className="text-sm text-red-600">
+              {fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form}
+            </p>
+          )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
 
-      <div>
-        <SubmitButton>{tTags("saveTags")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{tTags("saveTags")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

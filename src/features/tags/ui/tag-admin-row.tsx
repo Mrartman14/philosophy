@@ -2,7 +2,7 @@
 "use client";
 import { useActionState, useState } from "react";
 
-import { Button, Form, FormField, SubmitButton, TextInput } from "@/components/ui";
+import { Button, Form, FormField, Inline, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -57,12 +57,14 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
       </div>
 
       {editing && hasId && (
-        <Form action={action} errors={fieldErrors} className="flex items-end gap-2">
-          <input type="hidden" name="id" value={tag.id} />
-          <FormField name="name" label={tTags("newNameLabel")} className="flex-1" required>
-            <TextInput name="name" required maxLength={100} defaultValue={tag.name} />
-          </FormField>
-          <SubmitButton>{tTags("saveButton")}</SubmitButton>
+        <Form action={action} errors={fieldErrors}>
+          <Inline align="end">
+            <input type="hidden" name="id" value={tag.id} />
+            <FormField name="name" label={tTags("newNameLabel")} className="flex-1" required>
+              <TextInput name="name" required maxLength={100} defaultValue={tag.name} />
+            </FormField>
+            <SubmitButton>{tTags("saveButton")}</SubmitButton>
+          </Inline>
         </Form>
       )}
       {editing && !state.success && state.code === "forbidden" && (

@@ -8,6 +8,7 @@ import {
   FormField,
   IdempotencyField,
   Select,
+  Stack,
   SubmitButton,
   TextInput,
   Textarea,
@@ -34,36 +35,38 @@ export function LectureCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
-      <IdempotencyField result={state} />
-      <FormField name="title" label={tL("titleLabel")} required>
-        <TextInput name="title" required maxLength={200} />
-      </FormField>
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-xl">
+        <IdempotencyField result={state} />
+        <FormField name="title" label={tL("titleLabel")} required>
+          <TextInput name="title" required maxLength={200} />
+        </FormField>
 
-      <FormField name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
-        <TextInput name="date" required placeholder="2026-04-27" />
-      </FormField>
+        <FormField name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
+          <TextInput name="date" required placeholder="2026-04-27" />
+        </FormField>
 
-      <FormField name="description" label={tL("descriptionLabel")}>
-        <Textarea name="description" rows={6} maxLength={5000} />
-      </FormField>
+        <FormField name="description" label={tL("descriptionLabel")}>
+          <Textarea name="description" rows={6} maxLength={5000} />
+        </FormField>
 
-      <FormField name="visibility" label={tL("visibilityLabel")}>
-        <Select
-          name="visibility"
-          defaultValue="private"
-          options={[
-            { value: "private", label: tL("visibilityPrivate") },
-            { value: "public", label: tL("visibilityPublic") },
-          ]}
-        />
-      </FormField>
+        <FormField name="visibility" label={tL("visibilityLabel")}>
+          <Select
+            name="visibility"
+            defaultValue="private"
+            options={[
+              { value: "private", label: tL("visibilityPrivate") },
+              { value: "public", label: tL("visibilityPublic") },
+            ]}
+          />
+        </FormField>
 
-      <FormFeedback result={state} forbiddenAction={tL("createAction")} />
+        <FormFeedback result={state} forbiddenAction={tL("createAction")} />
 
-      <div>
-        <SubmitButton>{tL("createButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{tL("createButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

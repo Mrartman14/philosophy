@@ -11,6 +11,7 @@ import {
   IdempotencyField,
   Inline,
   Label,
+  Stack,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -43,54 +44,56 @@ export function EventCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
-      <IdempotencyField result={state} />
-      <FormField name="title" label={t("fieldTitle")} required>
-        <TextInput
-          name="title"
-          required
-          maxLength={500}
-          placeholder={t("titlePlaceholder")}
-        />
-      </FormField>
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-xl">
+        <IdempotencyField result={state} />
+        <FormField name="title" label={t("fieldTitle")} required>
+          <TextInput
+            name="title"
+            required
+            maxLength={500}
+            placeholder={t("titlePlaceholder")}
+          />
+        </FormField>
 
-      <Inline align="center" className="text-sm">
-        <Checkbox id="all_day" name="all_day" checked={allDay} onCheckedChange={setAllDay} />
-        <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
-      </Inline>
+        <Inline align="center" className="text-sm">
+          <Checkbox id="all_day" name="all_day" checked={allDay} onCheckedChange={setAllDay} />
+          <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
+        </Inline>
 
-      <FormField
-        name="start_date"
-        label={allDay ? t("fieldStartDate") : t("fieldStartDateTime")}
-        required
-      >
-        <TextInput
+        <FormField
           name="start_date"
-          type={allDay ? "date" : "datetime-local"}
+          label={allDay ? t("fieldStartDate") : t("fieldStartDateTime")}
           required
-        />
-      </FormField>
+        >
+          <TextInput
+            name="start_date"
+            type={allDay ? "date" : "datetime-local"}
+            required
+          />
+        </FormField>
 
-      <FormField
-        name="end_date"
-        label={
-          allDay
-            ? t("fieldEndDate")
-            : t("fieldEndDateTime")
-        }
-      >
-        <TextInput name="end_date" type={allDay ? "date" : "datetime-local"} />
-      </FormField>
+        <FormField
+          name="end_date"
+          label={
+            allDay
+              ? t("fieldEndDate")
+              : t("fieldEndDateTime")
+          }
+        >
+          <TextInput name="end_date" type={allDay ? "date" : "datetime-local"} />
+        </FormField>
 
-      <FormField name="rrule" label={t("fieldRrule")}>
-        <TextInput name="rrule" placeholder="FREQ=WEEKLY;BYDAY=MO" />
-      </FormField>
+        <FormField name="rrule" label={t("fieldRrule")}>
+          <TextInput name="rrule" placeholder="FREQ=WEEKLY;BYDAY=MO" />
+        </FormField>
 
-      <FormFeedback result={state} forbiddenAction={t("createAction")} />
+        <FormFeedback result={state} forbiddenAction={t("createAction")} />
 
-      <div>
-        <SubmitButton>{t("createButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("createButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

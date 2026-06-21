@@ -7,6 +7,7 @@ import {
   Form,
   FormField,
   IdempotencyField,
+  Stack,
   SubmitButton,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
@@ -33,35 +34,37 @@ export function GlossaryEditForm({ term }: Props) {
       : {};
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <input type="hidden" name="id" value={term.id ?? ""} />
-      <input type="hidden" name="version" value={term.version ?? ""} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="id" value={term.id ?? ""} />
+        <input type="hidden" name="version" value={term.version ?? ""} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
 
-      <FormField name="blocks" label={t("blocksLabel")}>
-        <LazyAstEditor
-          defaultValue={term.blocks ?? []}
-          entityContext="glossary"
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-        />
-      </FormField>
+        <FormField name="blocks" label={t("blocksLabel")}>
+          <LazyAstEditor
+            defaultValue={term.blocks ?? []}
+            entityContext="glossary"
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+          />
+        </FormField>
 
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
-      )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: t("updateTermAction") })}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
+        )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: t("updateTermAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
 
-      <div>
-        <SubmitButton>{t("saveButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("saveButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

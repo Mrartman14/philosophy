@@ -11,6 +11,7 @@ import {
   IdempotencyField,
   Inline,
   Label,
+  Stack,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -68,95 +69,97 @@ export function EventEditForm({ event }: Props) {
   };
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <input type="hidden" name="id" value={event.id ?? ""} />
-      <input type="hidden" name="version" value={event.version ?? ""} />
-      <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
-      <IdempotencyField result={state} />
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <input type="hidden" name="id" value={event.id ?? ""} />
+        <input type="hidden" name="version" value={event.version ?? ""} />
+        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <IdempotencyField result={state} />
 
-      <FormField name="title" label={t("fieldTitle")} required>
-        <TextInput
-          name="title"
-          defaultValue={event.title ?? ""}
-          required
-          maxLength={500}
-        />
-      </FormField>
+        <FormField name="title" label={t("fieldTitle")} required>
+          <TextInput
+            name="title"
+            defaultValue={event.title ?? ""}
+            required
+            maxLength={500}
+          />
+        </FormField>
 
-      <Inline align="center" className="text-sm">
-        <Checkbox
-          id="all_day"
-          name="all_day"
-          checked={allDay}
-          onCheckedChange={handleAllDayChange}
-        />
-        <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
-      </Inline>
+        <Inline align="center" className="text-sm">
+          <Checkbox
+            id="all_day"
+            name="all_day"
+            checked={allDay}
+            onCheckedChange={handleAllDayChange}
+          />
+          <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
+        </Inline>
 
-      <FormField
-        name="start_date"
-        label={allDay ? t("fieldStartDate") : t("fieldStartDateTime")}
-        required
-      >
-        <TextInput
+        <FormField
           name="start_date"
-          type={allDay ? "date" : "datetime-local"}
-          value={startDate}
-          onChange={(e) => { setStartDate(e.target.value); }}
+          label={allDay ? t("fieldStartDate") : t("fieldStartDateTime")}
           required
-        />
-      </FormField>
+        >
+          <TextInput
+            name="start_date"
+            type={allDay ? "date" : "datetime-local"}
+            value={startDate}
+            onChange={(e) => { setStartDate(e.target.value); }}
+            required
+          />
+        </FormField>
 
-      <FormField
-        name="end_date"
-        label={
-          allDay
-            ? t("fieldEndDate")
-            : t("fieldEndDateTime")
-        }
-      >
-        <TextInput
+        <FormField
           name="end_date"
-          type={allDay ? "date" : "datetime-local"}
-          value={endDate}
-          onChange={(e) => { setEndDate(e.target.value); }}
-        />
-      </FormField>
+          label={
+            allDay
+              ? t("fieldEndDate")
+              : t("fieldEndDateTime")
+          }
+        >
+          <TextInput
+            name="end_date"
+            type={allDay ? "date" : "datetime-local"}
+            value={endDate}
+            onChange={(e) => { setEndDate(e.target.value); }}
+          />
+        </FormField>
 
-      <FormField name="rrule" label={t("fieldRrule")}>
-        <TextInput
-          name="rrule"
-          defaultValue={event.rrule ?? ""}
-          placeholder="FREQ=WEEKLY;BYDAY=MO"
-        />
-      </FormField>
-      <p className="text-xs text-(--color-fg-muted)">
-        {t("clearLimitation")}
-      </p>
-
-      <FormField name="blocks" label={t("fieldBlocks")}>
-        <LazyAstEditor
-          defaultValue={event.blocks ?? []}
-          entityContext="event"
-          onChange={(next: AstBlock[]) => { setBlocks(next); }}
-        />
-      </FormField>
-
-      {state.success && state.data && (
-        <p className="text-sm text-(--color-fg-muted)">{t("savedSuccess")}</p>
-      )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: t("editAction") })}
+        <FormField name="rrule" label={t("fieldRrule")}>
+          <TextInput
+            name="rrule"
+            defaultValue={event.rrule ?? ""}
+            placeholder="FREQ=WEEKLY;BYDAY=MO"
+          />
+        </FormField>
+        <p className="text-xs text-(--color-fg-muted)">
+          {t("clearLimitation")}
         </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
 
-      <div>
-        <SubmitButton>{t("saveButton")}</SubmitButton>
-      </div>
+        <FormField name="blocks" label={t("fieldBlocks")}>
+          <LazyAstEditor
+            defaultValue={event.blocks ?? []}
+            entityContext="event"
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+          />
+        </FormField>
+
+        {state.success && state.data && (
+          <p className="text-sm text-(--color-fg-muted)">{t("savedSuccess")}</p>
+        )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: t("editAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
+
+        <div>
+          <SubmitButton>{t("saveButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

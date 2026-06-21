@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormFeedback, FormField, IdempotencyField, Select, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Select, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -27,35 +27,37 @@ export function TrailCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4">
-      <IdempotencyField result={state} />
-      <FormField name="title" label={t("createTitleLabel")} required>
-        <TextInput name="title" required maxLength={200} placeholder={t("createTitlePlaceholder")} />
-      </FormField>
+    <Form action={action} errors={fieldErrors}>
+      <Stack>
+        <IdempotencyField result={state} />
+        <FormField name="title" label={t("createTitleLabel")} required>
+          <TextInput name="title" required maxLength={200} placeholder={t("createTitlePlaceholder")} />
+        </FormField>
 
-      <FormField name="description" label={t("createDescriptionLabel")}>
-        <Textarea name="description" maxLength={2000} rows={3} placeholder={t("createDescriptionPlaceholder")} />
-      </FormField>
+        <FormField name="description" label={t("createDescriptionLabel")}>
+          <Textarea name="description" maxLength={2000} rows={3} placeholder={t("createDescriptionPlaceholder")} />
+        </FormField>
 
-      <FormField name="visibility" label={t("createVisibilityLabel")}>
-        <Select
-          name="visibility"
-          defaultValue="private"
-          options={[
-            { value: "private", label: t("createVisibilityPrivate") },
-            { value: "public", label: t("createVisibilityPublic") },
-          ]}
-        />
-      </FormField>
-      <p className="text-xs text-(--color-fg-muted)">
-        {t("createVisibilityNote")}
-      </p>
+        <FormField name="visibility" label={t("createVisibilityLabel")}>
+          <Select
+            name="visibility"
+            defaultValue="private"
+            options={[
+              { value: "private", label: t("createVisibilityPrivate") },
+              { value: "public", label: t("createVisibilityPublic") },
+            ]}
+          />
+        </FormField>
+        <p className="text-xs text-(--color-fg-muted)">
+          {t("createVisibilityNote")}
+        </p>
 
-      <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
+        <FormFeedback result={state} forbiddenAction={t("createForbiddenAction")} />
 
-      <div>
-        <SubmitButton>{t("createSubmit")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("createSubmit")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

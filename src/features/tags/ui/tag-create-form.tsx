@@ -2,7 +2,7 @@
 "use client";
 import { useActionState } from "react";
 
-import { Form, FormField, IdempotencyField, SubmitButton, TextInput } from "@/components/ui";
+import { Form, FormField, IdempotencyField, Stack, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -21,27 +21,29 @@ export function TagCreateForm() {
       : {};
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex max-w-xl flex-col gap-3">
-      <IdempotencyField result={state} />
-      <FormField name="name" label={tTags("newTagLabel")} required>
-        <TextInput name="name" required maxLength={100} placeholder={tTags("namePlaceholder")} />
-      </FormField>
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-xl">
+        <IdempotencyField result={state} />
+        <FormField name="name" label={tTags("newTagLabel")} required>
+          <TextInput name="name" required maxLength={100} placeholder={tTags("namePlaceholder")} />
+        </FormField>
 
-      {state.success && state.data && (
-        <p className="text-sm text-green-600">{tTags("tagCreated", { name: state.data.name })}</p>
-      )}
-      {!state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: tTags("createTagAction") })}
-        </p>
-      )}
-      {!state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
-      )}
+        {state.success && state.data && (
+          <p className="text-sm text-green-600">{tTags("tagCreated", { name: state.data.name })}</p>
+        )}
+        {!state.success && state.code === "forbidden" && (
+          <p className="text-sm text-red-600">
+            {tErrors("forbiddenAction", { action: tTags("createTagAction") })}
+          </p>
+        )}
+        {!state.success && !state.code && (
+          <p className="text-sm text-red-600">{state.error}</p>
+        )}
 
-      <div>
-        <SubmitButton>{tTags("createButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{tTags("createButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

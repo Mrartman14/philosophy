@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker";
-import { Button, IdempotencyField, SubmitButton, Form, useToast } from "@/components/ui";
+import { Button, IdempotencyField, Inline, SubmitButton, Form, useToast } from "@/components/ui";
 // DocumentPicker — client-компонент из @/components (НЕ cross-feature). В index.ts
 // ast-editor он не реэкспортнут, поэтому импортируем напрямую.
 import { useT } from "@/i18n/client";
@@ -138,20 +138,22 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
         </Button>
       )}
 
-      <Form action={action} className="flex items-center gap-2">
-        <input type="hidden" name="id" value={trailId} />
-        <input type="hidden" name="version" value={String(trailVersion ?? "")} />
-        <input type="hidden" name="document_ids" value={JSON.stringify(orderedIds)} />
-        <IdempotencyField result={state} />
-        <SubmitButton>{t("itemsSaveSubmit")}</SubmitButton>
-        {!state.success && state.code === "forbidden" && (
-          <span className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("itemsForbiddenAction") })}
-          </span>
-        )}
-        {!state.success && state.code === "validation" && (
-          <span className="text-sm text-red-600">{t("itemsValidationError")}</span>
-        )}
+      <Form action={action}>
+        <Inline align="center">
+          <input type="hidden" name="id" value={trailId} />
+          <input type="hidden" name="version" value={String(trailVersion ?? "")} />
+          <input type="hidden" name="document_ids" value={JSON.stringify(orderedIds)} />
+          <IdempotencyField result={state} />
+          <SubmitButton>{t("itemsSaveSubmit")}</SubmitButton>
+          {!state.success && state.code === "forbidden" && (
+            <span className="text-sm text-red-600">
+              {tErrors("forbiddenAction", { action: t("itemsForbiddenAction") })}
+            </span>
+          )}
+          {!state.success && state.code === "validation" && (
+            <span className="text-sm text-red-600">{t("itemsValidationError")}</span>
+          )}
+        </Inline>
       </Form>
     </section>
   );

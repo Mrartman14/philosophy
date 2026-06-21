@@ -7,6 +7,7 @@ import {
   FormField,
   FormFeedback,
   IdempotencyField,
+  Stack,
   SubmitButton,
   TextInput,
 } from "@/components/ui";
@@ -34,17 +35,19 @@ export function GlossaryCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors} className="flex flex-col gap-4 max-w-xl">
-      <IdempotencyField result={state} />
-      <FormField name="title" label={t("titleLabel")} required>
-        <TextInput name="title" required maxLength={300} placeholder={t("titlePlaceholder")} />
-      </FormField>
+    <Form action={action} errors={fieldErrors}>
+      <Stack className="max-w-xl">
+        <IdempotencyField result={state} />
+        <FormField name="title" label={t("titleLabel")} required>
+          <TextInput name="title" required maxLength={300} placeholder={t("titlePlaceholder")} />
+        </FormField>
 
-      <FormFeedback result={state} forbiddenAction={t("createTermAction")} />
+        <FormFeedback result={state} forbiddenAction={t("createTermAction")} />
 
-      <div>
-        <SubmitButton>{t("createButton")}</SubmitButton>
-      </div>
+        <div>
+          <SubmitButton>{t("createButton")}</SubmitButton>
+        </div>
+      </Stack>
     </Form>
   );
 }

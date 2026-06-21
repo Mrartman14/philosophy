@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, Form, Select, TextInput } from "@/components/ui";
+import { Button, Form, Inline, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -40,29 +40,31 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="flex flex-wrap gap-2">
-      <TextInput
-        name="q"
-        defaultValue={initialQ}
-        placeholder={tL("searchPlaceholder")}
-        aria-label={tL("searchAriaLabel")}
-        className="min-w-60 flex-1"
-      />
-      {hasTagFilter && (
-        <Select
-          name="tag"
-          defaultValue={initialTag}
-          aria-label={tL("tagFilterAriaLabel")}
-          className="w-48"
-          options={[
-            { value: "", label: tL("allTags") },
-            ...tagOptions.map((name) => ({ value: name, label: name })),
-          ]}
+    <Form onSubmit={onSubmit}>
+      <Inline>
+        <TextInput
+          name="q"
+          defaultValue={initialQ}
+          placeholder={tL("searchPlaceholder")}
+          aria-label={tL("searchAriaLabel")}
+          className="min-w-60 flex-1"
         />
-      )}
-      <Button type="submit" disabled={pending}>
-        {pending ? tL("searchPending") : tL("searchButton")}
-      </Button>
+        {hasTagFilter && (
+          <Select
+            name="tag"
+            defaultValue={initialTag}
+            aria-label={tL("tagFilterAriaLabel")}
+            className="w-48"
+            options={[
+              { value: "", label: tL("allTags") },
+              ...tagOptions.map((name) => ({ value: name, label: name })),
+            ]}
+          />
+        )}
+        <Button type="submit" disabled={pending}>
+          {pending ? tL("searchPending") : tL("searchButton")}
+        </Button>
+      </Inline>
     </Form>
   );
 }
