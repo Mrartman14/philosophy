@@ -8,30 +8,33 @@ afterEach(cleanup);
 
 describe("Fieldset", () => {
   it("renders a real <legend> element (not <div>) with the caption when legend provided", () => {
-    const { container } = render(
+    render(
       <Fieldset legend="Видимость">
         <span>child</span>
       </Fieldset>,
     );
-    const legend = container.querySelector("legend");
-    expect(legend).not.toBeNull(); // ловит регресс: base-ui по умолчанию даёт <div>
-    expect(legend).toHaveTextContent("Видимость");
-    expect(legend?.closest("fieldset")).not.toBeNull(); // legend — подпись fieldset
+    const legend = screen.getByText("Видимость");
+    expect(legend.tagName).toBe("LEGEND"); // ловит регресс: base-ui по умолчанию даёт <div>
+    expect(screen.getByRole("group")).toContainElement(legend); // legend — подпись fieldset
     expect(screen.getByText("child")).toBeInTheDocument();
   });
 
-  it("renders no legend element when legend omitted", () => {
-    const { container } = render(
+  it("renders no legend caption when legend omitted", () => {
+    render(
       <Fieldset>
         <span>child</span>
       </Fieldset>,
     );
-    expect(container.querySelector("legend")).toBeNull();
+    expect(screen.getByRole("group")).not.toHaveAccessibleName();
     expect(screen.getByText("child")).toBeInTheDocument();
   });
 
   it("forwards className to the fieldset element", () => {
-    const { container } = render(<Fieldset className="custom-x"><span>c</span></Fieldset>);
-    expect(container.querySelector("fieldset")).toHaveClass("custom-x");
+    render(
+      <Fieldset className="custom-x">
+        <span>c</span>
+      </Fieldset>,
+    );
+    expect(screen.getByRole("group")).toHaveClass("custom-x");
   });
 });
