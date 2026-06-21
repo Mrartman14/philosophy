@@ -3,7 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 
-import { getPreferences } from "@/features/preferences";
+import { createApiClient } from "@/api/client";
 import { getMe } from "@/utils/me";
 
 import {
@@ -16,6 +16,21 @@ import {
   type TzPref,
 } from "./timezone";
 
+/**
+ * Таймзона из бекенд-настроек. Запрос делается локально (а не через
+ * `@/features/preferences`), чтобы НЕ создавать цикл импорта
+ * `@/i18n` → timezone-server → preferences/api → `@/i18n`: правило
+ * `import/no-cycle` в этом проекте следует и за динамическим `import()`
+ * (флаг `allowUnsafeDynamicCyclicDependency` не включён), поэтому единственный
+ * способ разорвать цикл — убрать статическое ребро на слайс целиком.
+ * Семантика сохранена: только поле `timezone`, грейсфул на любой ошибке.
+ */
+const getBackendTzPref = cache(async (): Promise<string | undefined> => {
+  const api = await createApiClient();
+  const { data } = await api.GET("/api/me/preferences");
+  return data?.data?.timezone;
+});
+
 /** Хранимое предпочтение (system|IANA): cookie-first, backend-seed для залогиненных. */
 export const getStoredTzPref = cache(async (): Promise<TzPref> => {
   const store = await cookies();
@@ -23,8 +38,7 @@ export const getStoredTzPref = cache(async (): Promise<TzPref> => {
   if (raw) return parseTzCookie(raw).pref;
   try {
     if (await getMe()) {
-      const prefs = await getPreferences();
-      return normalizeTzPref(prefs.timezone);
+      return normalizeTzPref(await getBackendTzPref());
     }
   } catch {
     /* graceful: дефолт */

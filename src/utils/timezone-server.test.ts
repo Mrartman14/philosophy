@@ -6,8 +6,18 @@ vi.mock("next/headers", () => ({
 }));
 const getMe = vi.fn();
 vi.mock("@/utils/me", () => ({ getMe: () => getMe() as unknown }));
-const getPreferences = vi.fn();
-vi.mock("@/features/preferences", () => ({ getPreferences: () => getPreferences() as unknown }));
+
+// timezone-server берёт бэкенд-настройки напрямую через openapi-клиент
+// (а НЕ через @/features/preferences) — иначе возникает цикл импорта
+// @/i18n → timezone-server → preferences/api → @/i18n. Поэтому мок —
+// на createApiClient().GET("/api/me/preferences").
+const apiGet = vi.fn();
+vi.mock("@/api/client", () => ({
+  createApiClient: () => Promise.resolve({ GET: () => apiGet() as unknown }),
+}));
+
+/** Хелпер: эмулировать ответ бэка на /api/me/preferences (или его падение). */
+const mockPrefs = (timezone: string) => apiGet.mockResolvedValue({ data: { data: { timezone } } });
 
 import { getStoredTzPref, getServerTz } from "./timezone-server";
 
@@ -34,13 +44,13 @@ describe("getServerTz", () => {
 
   it("нет cookie, авторизован, бэк отдал зону → она", async () => {
     getMe.mockResolvedValue({ id: "u1" });
-    getPreferences.mockResolvedValue({ timezone: "Europe/Berlin" });
+    mockPrefs("Europe/Berlin");
     expect(await getServerTz()).toBe("Europe/Berlin");
   });
 
   it("нет cookie, авторизован, бэк отдал system → фолбэк", async () => {
     getMe.mockResolvedValue({ id: "u1" });
-    getPreferences.mockResolvedValue({ timezone: "system" });
+    mockPrefs("system");
     expect(await getServerTz()).toBe("Europe/Moscow");
   });
 });
@@ -48,13 +58,13 @@ describe("getServerTz", () => {
 describe("getStoredTzPref", () => {
   it("нет cookie, бэк отдал зону → зона", async () => {
     getMe.mockResolvedValue({ id: "u1" });
-    getPreferences.mockResolvedValue({ timezone: "Europe/Berlin" });
+    mockPrefs("Europe/Berlin");
     expect(await getStoredTzPref()).toBe("Europe/Berlin");
   });
 
   it("бэк упал → DEFAULT_TZ_PREF (system)", async () => {
     getMe.mockResolvedValue({ id: "u1" });
-    getPreferences.mockRejectedValue(new Error("boom"));
+    apiGet.mockRejectedValue(new Error("boom"));
     expect(await getStoredTzPref()).toBe("system");
   });
 });
