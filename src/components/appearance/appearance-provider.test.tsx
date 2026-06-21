@@ -14,13 +14,15 @@ function Probe() {
     <button onClick={() => { setAxis("theme", "dark"); }}>dark</button>
     <button onClick={() => { setAxis("theme", "system"); }}>system</button>
     <button onClick={() => { setAxis("density", "compact"); }}>compact</button>
+    <button onClick={() => { setAxis("motion", "reduced"); }}>reduce</button>
+    <button onClick={() => { setAxis("motion", "system"); }}>motion-system</button>
   </>);
 }
 
 afterEach(cleanup);
 
 describe("AppearanceProvider", () => {
-  beforeEach(() => { vi.mocked(persistAppearance).mockClear(); document.documentElement.removeAttribute("data-theme"); document.documentElement.removeAttribute("data-density"); document.documentElement.removeAttribute("data-contrast"); document.documentElement.removeAttribute("data-font"); document.documentElement.style.colorScheme = ""; document.documentElement.style.removeProperty("--text-scale"); document.cookie = "appearance=; path=/; max-age=0"; });
+  beforeEach(() => { vi.mocked(persistAppearance).mockClear(); document.documentElement.removeAttribute("data-theme"); document.documentElement.removeAttribute("data-density"); document.documentElement.removeAttribute("data-contrast"); document.documentElement.removeAttribute("data-font"); document.documentElement.removeAttribute("data-motion"); document.documentElement.style.colorScheme = ""; document.documentElement.style.removeProperty("--text-scale"); document.cookie = "appearance=; path=/; max-age=0"; });
   it("exposes initial", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); expect(screen.getByTestId("theme").textContent).toBe("system"); });
   it("setAxis mutates <html> + state", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("dark")); expect(document.documentElement.getAttribute("data-theme")).toBe("dark"); expect(screen.getByTestId("theme").textContent).toBe("dark"); });
   it("explicit→system removes data-theme + sets color-scheme", () => { render(<AppearanceProvider initial={{ ...DEFAULT_APPEARANCE, theme: "dark" }}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("system")); expect(document.documentElement.hasAttribute("data-theme")).toBe(false); expect(document.documentElement.style.colorScheme).toBe("light dark"); });
@@ -49,5 +51,12 @@ describe("AppearanceProvider", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+  it("setAxis motion: reduced sets data-motion, system removes it", () => {
+    render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>);
+    fireEvent.click(screen.getByText("reduce"));
+    expect(document.documentElement.getAttribute("data-motion")).toBe("reduced");
+    fireEvent.click(screen.getByText("motion-system"));
+    expect(document.documentElement.hasAttribute("data-motion")).toBe(false);
   });
 });

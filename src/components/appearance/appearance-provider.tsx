@@ -8,7 +8,7 @@ import { persistAppearance } from "./persist-appearance";
 interface Ctx { appearance: Appearance; setAxis: <K extends keyof Appearance>(k: K, v: Appearance[K]) => void }
 const AppearanceContext = createContext<Ctx | null>(null);
 
-const DATA_KEYS = ["data-theme", "data-contrast", "data-density", "data-font"] as const;
+const DATA_KEYS = ["data-theme", "data-contrast", "data-density", "data-font", "data-motion"] as const;
 function applyToHtml(a: Appearance) {
   const el = document.documentElement;
   const { style, colorScheme, ...rest } = htmlAttrs(a);
