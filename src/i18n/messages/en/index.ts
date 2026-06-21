@@ -11,6 +11,7 @@ import banners from "./banners";
 import canvas from "./canvas";
 import comments from "./comments";
 import common from "./common";
+import design from "./design";
 import documents from "./documents";
 import editor from "./editor";
 import errors from "./errors";
@@ -43,6 +44,7 @@ const en = {
   canvas,
   common,
   comments,
+  design,
   documents,
   editor,
   errors,
