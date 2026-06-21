@@ -1,9 +1,6 @@
-import { NavigationMenu } from "@base-ui/react/navigation-menu";
-
-
 import { DropdownArrowIcon } from "@/assets/icons/dropdown-arrow-icon";
 import { LogoIcon } from "@/assets/icons/logo-icon";
-import { RouterLink } from "@/components/ui";
+import { NavigationMenu, RouterLink } from "@/components/ui";
 import { NotificationBell, getNotificationCounts } from "@/features/notifications";
 import { SearchInput } from "@/features/search";
 import { getT } from "@/i18n";
