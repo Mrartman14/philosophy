@@ -9,6 +9,7 @@ import {
   Form,
   FormField,
   IdempotencyField,
+  Inline,
   Label,
   SubmitButton,
   TextInput,
@@ -82,15 +83,15 @@ export function EventEditForm({ event }: Props) {
         />
       </FormField>
 
-      <Label htmlFor="all_day" className="flex items-center gap-2 text-sm">
+      <Inline align="center" className="text-sm">
         <Checkbox
           id="all_day"
           name="all_day"
           checked={allDay}
           onCheckedChange={handleAllDayChange}
         />
-        {t("fieldAllDay")}
-      </Label>
+        <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
+      </Inline>
 
       <FormField
         name="start_date"
