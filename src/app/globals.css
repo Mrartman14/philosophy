@@ -84,11 +84,59 @@ body:has(dialog[open]) {
   border-radius: 4px;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION (ось appearance `motion`)
+   JS-ЗЕРКАЛО этой формулы — src/components/appearance/use-reduced-motion.ts
+   (правишь одно — синхронно правь второе).
+
+   Активно, если пользователь выбрал "reduced" ([data-motion="reduced"]),
+   ЛИБО OS просит reduce и пользователь НЕ форснул "full"
+   (:root:not([data-motion="full"])).
+   Нюансная политика: глушим looping/keyframe-анимации и движение
+   (transform/позиция); одноразовый opacity-fade и hover-цвет — оставляем.
+   `* { animation: none }` глушит skeleton `animate-pulse` и router-link wave
+   (!important перебивает Tailwind utility-слой). Будущие СМЫСЛОВЫЕ анимации
+   (прогресс/статус) должны иметь opacity/цвет-fallback или опрашивать
+   useReducedMotion, а не полагаться на keyframes.
+   `--app-motion-duration` читает только навменю (app-header) → обнуление
+   делает открытие/позиционирование мгновенным; `.app-nav-popup { scale: 1 }`
+   убирает scale-«схлопывание» на закрытии (opacity-fade закрытия остаётся).
+   ═══════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  .router-link:has([data-link-pending]) {
-    animation: none;
-    background-image: none; /* остаётся статичный currentColor-тинт как feedback */
+  :root:not([data-motion="full"]) { --app-motion-duration: 0.001ms; }
+  :root:not([data-motion="full"]) *,
+  :root:not([data-motion="full"]) *::before,
+  :root:not([data-motion="full"]) *::after {
+    animation: none !important;
+    scroll-behavior: auto !important; /* no-op сейчас (smooth-scroll нет) — защита на будущее */
   }
+  :root:not([data-motion="full"]) .router-link:has([data-link-pending]) {
+    background-image: none;
+  }
+  :root:not([data-motion="full"]) .app-nav-popup { scale: 1 !important; }
+  :root:not([data-motion="full"]) .fancy-link::after,
+  :root:not([data-motion="full"]) .fancy-link:hover::after,
+  :root:not([data-motion="full"]) .fancy-link:focus::after {
+    transition: none !important;
+    left: calc(100% + 5px);
+  }
+}
+[data-motion="reduced"] { --app-motion-duration: 0.001ms; }
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+[data-motion="reduced"] .router-link:has([data-link-pending]) {
+  background-image: none;
+}
+[data-motion="reduced"] .app-nav-popup { scale: 1 !important; }
+[data-motion="reduced"] .fancy-link::after,
+[data-motion="reduced"] .fancy-link:hover::after,
+[data-motion="reduced"] .fancy-link:focus::after {
+  transition: none !important;
+  left: calc(100% + 5px);
 }
 
 @media (prefers-color-scheme: dark) {
