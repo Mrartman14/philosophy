@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent, type ReactNode } from "react";
 
-import { Button, Select, TextInput } from "@/components/ui";
+import { Button, Form, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -59,7 +59,7 @@ export function AuditFilterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <Form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <Field label={t("filterActorLabel")}>
         <TextInput
           name="actor"
@@ -111,6 +111,6 @@ export function AuditFilterForm() {
           {t("filterReset")}
         </Button>
       </div>
-    </form>
+    </Form>
   );
 }

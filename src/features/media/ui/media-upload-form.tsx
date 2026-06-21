@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
-import { Button, Label, Select, useToast } from "@/components/ui";
+import { Button, Form, Label, Select, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { uploadMedia } from "../upload-media";
@@ -58,7 +58,7 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
   }
 
   return (
-    <form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-3">
+    <Form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <Label>{t("uploadTypeLabel")}</Label>
         <Select
@@ -89,6 +89,6 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
       <p className="text-xs text-(--color-fg-muted)">
         {t("uploadHint")}
       </p>
-    </form>
+    </Form>
   );
 }

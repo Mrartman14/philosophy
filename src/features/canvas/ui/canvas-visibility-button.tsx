@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Button, useToast } from "@/components/ui";
+import { Button, Form, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -40,10 +40,10 @@ export function CanvasVisibilityButton({ id }: Props) {
   }, [state]);
 
   return (
-    <form action={action}>
+    <Form action={action}>
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="visibility" value="public" />
       <Button type="submit" variant="secondary">{t("visibilityButton.makePublic")}</Button>
-    </form>
+    </Form>
   );
 }

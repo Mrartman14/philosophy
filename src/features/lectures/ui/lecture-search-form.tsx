@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, Select, TextInput } from "@/components/ui";
+import { Button, Form, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -40,7 +40,7 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-wrap gap-2">
+    <Form onSubmit={onSubmit} className="flex flex-wrap gap-2">
       <TextInput
         name="q"
         defaultValue={initialQ}
@@ -63,6 +63,6 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
       <Button type="submit" disabled={pending}>
         {pending ? tL("searchPending") : tL("searchButton")}
       </Button>
-    </form>
+    </Form>
   );
 }

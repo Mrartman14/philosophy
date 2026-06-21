@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, Select, TextInput } from "@/components/ui";
+import { Button, Form, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -48,7 +48,7 @@ export function ShareLookupForm({ admin = false }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
+    <Form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
       <div className="flex flex-col gap-1">
         <span className="text-xs text-(--color-fg-muted)">{t("resourceTypeLabel")}</span>
         <Select
@@ -70,6 +70,6 @@ export function ShareLookupForm({ admin = false }: Props) {
       <Button type="submit" disabled={pending}>
         {pending ? "…" : t("showLinksButton")}
       </Button>
-    </form>
+    </Form>
   );
 }

@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, TextInput } from "@/components/ui";
+import { Button, Form, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -29,7 +29,7 @@ export function GlossarySearchForm({ defaultQ }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2">
+    <Form onSubmit={onSubmit} className="flex gap-2">
       <TextInput
         type="search"
         name="q"
@@ -40,6 +40,6 @@ export function GlossarySearchForm({ defaultQ }: Props) {
       <Button type="submit" disabled={pending}>
         {pending ? t("searchPending") : t("searchButton")}
       </Button>
-    </form>
+    </Form>
   );
 }

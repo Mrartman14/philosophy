@@ -5,6 +5,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import {
   Button,
+  Form,
   IdempotencyField,
   Select,
   TextInput,
@@ -82,7 +83,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
   return (
     <div className="flex flex-col gap-6">
       {canManage && (
-        <form
+        <Form
           action={formAction}
           className="flex flex-col gap-3 rounded-lg border border-(--color-border) bg-(--color-surface) p-4"
         >
@@ -117,7 +118,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
           </div>
           <p className="text-xs text-(--color-fg-muted)">{t("createHint")}</p>
           <p className="text-xs text-(--color-fg-muted)">{t("limitsHint")}</p>
-        </form>
+        </Form>
       )}
 
       {revealed !== null && (

@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 
-import { Button, TextInput } from "@/components/ui";
+import { Button, Form, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -35,7 +35,7 @@ export function CommentSearch({ defaultQuery = "" }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex items-end gap-2">
+    <Form onSubmit={onSubmit} className="flex items-end gap-2">
       <TextInput
         name="cq"
         defaultValue={defaultQuery}
@@ -46,6 +46,6 @@ export function CommentSearch({ defaultQuery = "" }: Props) {
       <Button type="submit" disabled={pending}>
         {pending ? t("searchPending") : t("searchButton")}
       </Button>
-    </form>
+    </Form>
   );
 }

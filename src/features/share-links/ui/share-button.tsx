@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { Button, Dialog, IdempotencyField, TextInput, useToast } from "@/components/ui";
+import { Button, Dialog, Form, IdempotencyField, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
@@ -78,7 +78,7 @@ export function ShareButton({
       description={t("shareDialogDesc")}
     >
       <div className="flex flex-col gap-4">
-        <form action={formAction} className="flex items-end gap-2">
+        <Form action={formAction} className="flex items-end gap-2">
           <input type="hidden" name="resource_type" value={resourceType} />
           <input type="hidden" name="resource_id" value={resourceId} />
           <IdempotencyField result={state} />
@@ -91,7 +91,7 @@ export function ShareButton({
           <Button type="submit" disabled={pending}>
             {pending ? "…" : t("createLinkButton")}
           </Button>
-        </form>
+        </Form>
 
         <ShareLinkList
           links={initialLinks}

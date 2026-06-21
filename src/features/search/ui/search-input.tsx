@@ -11,7 +11,7 @@ import {
   type SVGProps,
 } from "react";
 
-import { Button, TextInput } from "@/components/ui";
+import { Button, Form, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -57,7 +57,7 @@ function PageForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
+    <Form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
       <TextInput
         name="q"
         defaultValue={initialQ}
@@ -69,7 +69,7 @@ function PageForm() {
       <Button type="submit" disabled={pending}>
         {pending ? "…" : t("submitButton")}
       </Button>
-    </form>
+    </Form>
   );
 }
 
@@ -112,7 +112,7 @@ function HeaderInput() {
 
   if (open) {
     return (
-      <form onSubmit={onSubmit} className="flex items-center gap-2">
+      <Form onSubmit={onSubmit} className="flex items-center gap-2">
         <input
           ref={inputRef}
           type="search"
@@ -134,7 +134,7 @@ function HeaderInput() {
         >
           <SearchIcon />
         </button>
-      </form>
+      </Form>
     );
   }
 
