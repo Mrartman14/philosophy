@@ -320,6 +320,13 @@ const eslintConfig = [
           message:
             "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
         },
+        // SubmitButton — обёртка над styled-Button; голый ButtonProps-union
+        // пропускал className/variant/size мимо TS в JSX. Закрываем линтом.
+        {
+          selector: "JSXOpeningElement[name.name='SubmitButton']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
         // G8.3 — устаревшие variant=/size= на kit-кнопках. Привязка к имени
         // компонента (НЕ голый JSXAttribute[name.name='size']), чтобы не задеть
         // чужие size (нативный <input size>, сторонние компоненты).
@@ -337,6 +344,14 @@ const eslintConfig = [
         },
         {
           selector: "JSXOpeningElement[name.name='IconButton']:has(JSXAttribute[name.name='size'])",
+          message: "kit использует tone/compact, не variant/size.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='SubmitButton']:has(JSXAttribute[name.name='variant'])",
+          message: "kit использует tone/compact, не variant/size.",
+        },
+        {
+          selector: "JSXOpeningElement[name.name='SubmitButton']:has(JSXAttribute[name.name='size'])",
           message: "kit использует tone/compact, не variant/size.",
         },
       ],

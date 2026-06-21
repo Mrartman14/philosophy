@@ -18,6 +18,14 @@ interface Cmd {
 
 type EditorT = ReturnType<typeof useT<"editor">>;
 
+/**
+ * Геометрия строки slash-меню: компактная, тихая, full-width left-aligned —
+ * `justify-start w-full` выходит за canonical-Button (justify-center), поэтому
+ * это легитимный `unstyled`-escape. Вынесено в константу против дублирования.
+ */
+const SLASH_MENU_ITEM_CLASS =
+  "flex h-(--size-control-h-sm) w-full items-center justify-start gap-2 rounded px-4 text-sm font-medium transition hover:bg-(--color-surface-subtle) disabled:opacity-50";
+
 function buildCommands(schema: SchemaSnapshot, context: EntityContext, t: EditorT): Cmd[] {
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
@@ -215,7 +223,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
           unstyled
           role="option"
           aria-selected={safeActive === i}
-          className="flex h-(--size-control-h-sm) w-full items-center justify-start gap-2 rounded px-4 text-sm font-medium transition hover:bg-(--color-surface-subtle) disabled:opacity-50"
+          className={SLASH_MENU_ITEM_CLASS}
           onMouseDown={(e) => {
             e.preventDefault();
             apply(c);
@@ -227,7 +235,7 @@ export function SlashMenu({ editor, schema, context }: Props) {
       ))}
       <Button
         unstyled
-        className="flex h-(--size-control-h-sm) w-full items-center justify-start gap-2 rounded px-4 text-sm font-medium transition hover:bg-(--color-surface-subtle) disabled:opacity-50"
+        className={SLASH_MENU_ITEM_CLASS}
         onClick={() => { closeSlashMenu(editor.view); }}
       >
         {t("slashMenuClose")}

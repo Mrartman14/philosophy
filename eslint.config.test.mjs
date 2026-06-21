@@ -81,6 +81,19 @@ const cases = [
     expectCount: 1,
     expectMessage: VARIANT_SIZE_MSG,
   },
+  // SubmitButton — обёртка над Button, голый union пропускал className мимо TS.
+  {
+    name: "<SubmitButton className/> → 1 G8 className",
+    code: `const X = () => <SubmitButton className="x" />;`,
+    expectCount: 1,
+    expectMessage: CLASSNAME_MSG,
+  },
+  {
+    name: "<SubmitButton variant='x'/> → 1 G8 variant/size",
+    code: `const X = () => <SubmitButton variant="x" />;`,
+    expectCount: 1,
+    expectMessage: VARIANT_SIZE_MSG,
+  },
 ];
 
 let failures = 0;

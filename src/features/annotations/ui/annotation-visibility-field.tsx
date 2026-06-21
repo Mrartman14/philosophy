@@ -16,7 +16,7 @@ export function AnnotationVisibilityField() {
   return (
     <Fieldset legend={t("visibilityLegend")} className="text-sm">
       <input type="hidden" name="visibility" value={visibility} />
-      <Inline align="center">
+      <Inline align="center" gap="tight">
         <input
           id="visibility-private"
           type="radio"
@@ -26,7 +26,7 @@ export function AnnotationVisibilityField() {
         />
         <Label htmlFor="visibility-private">{t("visibilityPrivateLabel")}</Label>
       </Inline>
-      <Inline align="center">
+      <Inline align="center" gap="tight">
         <input
           id="visibility-public"
           type="radio"

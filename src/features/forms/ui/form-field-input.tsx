@@ -63,7 +63,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
       {type === "single_choice" && (
         <div className="flex flex-col gap-1">
           {options.map((o) => (
-            <Inline key={o.id} align="center" className="text-sm">
+            <Inline key={o.id} align="center" gap="tight" className="text-sm">
               <input
                 id={`field-${field.id}-opt-${o.id}`}
                 type="radio"
@@ -83,7 +83,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
             const ids = "optionIds" in value ? value.optionIds : [];
             const checked = ids.includes(o.id ?? "");
             return (
-              <Inline key={o.id} align="center" className="text-sm">
+              <Inline key={o.id} align="center" gap="tight" className="text-sm">
                 <input
                   id={`field-${field.id}-opt-${o.id}`}
                   type="checkbox"

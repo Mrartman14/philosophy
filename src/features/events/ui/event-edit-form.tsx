@@ -85,7 +85,7 @@ export function EventEditForm({ event }: Props) {
           />
         </FormField>
 
-        <Inline align="center" className="text-sm">
+        <Inline align="center" gap="tight" className="text-sm">
           <Checkbox
             id="all_day"
             name="all_day"

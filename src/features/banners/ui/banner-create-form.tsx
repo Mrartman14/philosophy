@@ -62,6 +62,7 @@ export function BannerCreateForm() {
             name="background_color"
             defaultValue="#336699"
             required
+            aria-label={t("fieldColor")}
           />
         </FormField>
 
@@ -74,7 +75,7 @@ export function BannerCreateForm() {
           />
         </FormField>
 
-        <Inline align="center" className="text-sm">
+        <Inline align="center" gap="tight" className="text-sm">
           <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
           <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
         </Inline>

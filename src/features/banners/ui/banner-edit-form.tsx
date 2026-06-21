@@ -69,6 +69,7 @@ export function BannerEditForm({ banner }: Props) {
             name="background_color"
             defaultValue={toColorInputValue(banner.background_color)}
             required
+            aria-label={t("fieldColor")}
           />
         </FormField>
 
@@ -81,7 +82,7 @@ export function BannerEditForm({ banner }: Props) {
           />
         </FormField>
 
-        <Inline align="center" className="text-sm">
+        <Inline align="center" gap="tight" className="text-sm">
           <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
           <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
         </Inline>

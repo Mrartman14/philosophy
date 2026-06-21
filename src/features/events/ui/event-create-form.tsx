@@ -56,7 +56,7 @@ export function EventCreateForm() {
           />
         </FormField>
 
-        <Inline align="center" className="text-sm">
+        <Inline align="center" gap="tight" className="text-sm">
           <Checkbox id="all_day" name="all_day" checked={allDay} onCheckedChange={setAllDay} />
           <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
         </Inline>

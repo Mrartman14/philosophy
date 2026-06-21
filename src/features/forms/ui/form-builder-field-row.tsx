@@ -88,7 +88,7 @@ export function FormBuilderFieldRow({
         />
       </FormField>
 
-      <Inline align="center" className="text-sm">
+      <Inline align="center" gap="tight" className="text-sm">
         <Checkbox
           id={`field-${String(index)}-required`}
           checked={field.required}

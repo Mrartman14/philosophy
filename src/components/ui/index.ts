@@ -1,7 +1,7 @@
 // src/components/ui/index.ts
 export { cn } from "./cn";
 export { Button, type ButtonProps, type ButtonTone } from "./button";
-export { IconButton, type IconButtonProps } from "./icon-button";
+export { IconButton, type IconButtonProps, type IconButtonTone } from "./icon-button";
 export { TextInput, type TextInputProps } from "./text-input";
 export { ColorInput, type ColorInputProps } from "./color-input";
 export { Textarea, type TextareaProps } from "./textarea";
