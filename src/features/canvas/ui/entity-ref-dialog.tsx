@@ -89,8 +89,8 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="entity_id" className="flex flex-col gap-1 text-sm">
-              {t("entityRefDialog.idLabel")}
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="entity_id">{t("entityRefDialog.idLabel")}</Label>
               <TextInput
                 id="entity_id"
                 name="entity_id"
@@ -98,7 +98,7 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
                 onChange={(e) => { setManualId(e.target.value); }}
                 placeholder="00000000-0000-0000-0000-000000000000"
               />
-            </Label>
+            </div>
             <Button
               type="button"
               disabled={manualId.trim() === ""}

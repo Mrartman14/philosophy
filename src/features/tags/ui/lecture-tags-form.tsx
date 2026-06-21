@@ -67,8 +67,8 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
                 onCheckedChange={(checked) => { toggle(tag.id, checked); }}
                 aria-label={tag.name}
               />
-              <Label htmlFor={`lecture-tag-${tag.id}`} className="cursor-pointer text-sm">
-                {tag.name}
+              <Label htmlFor={`lecture-tag-${tag.id}`}>
+                <span className="cursor-pointer">{tag.name}</span>
               </Label>
             </li>
           ))}

@@ -14,8 +14,12 @@ describe("Label", () => {
     expect(label).toHaveAttribute("for", "email");
   });
 
-  it("merges custom className over the base", () => {
-    render(<Label className="custom-x">L</Label>);
-    expect(screen.getByText("L")).toHaveClass("custom-x");
+  it("applies the fixed base class and rejects className", () => {
+    render(
+      // @ts-expect-error -- className закрыт (Omit): раскладка/стиль вокруг метки — на родителе
+      <Label className="custom-x">L</Label>,
+    );
+    const label = screen.getByText("L");
+    expect(label).toHaveClass("text-sm", "font-medium");
   });
 });

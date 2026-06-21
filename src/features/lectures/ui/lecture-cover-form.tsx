@@ -99,8 +99,10 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
       </FormField>
 
       <div className="flex items-center gap-2">
-        <Label className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 text-sm hover:bg-(--color-surface-subtle)">
-          {currentKey ? tL("replaceCover") : tL("uploadCover")}
+        <Label>
+          <span className="cursor-pointer rounded border border-(--color-border) px-3 py-1.5 hover:bg-(--color-surface-subtle)">
+            {currentKey ? tL("replaceCover") : tL("uploadCover")}
+          </span>
           <input
             type="file"
             accept="image/*"

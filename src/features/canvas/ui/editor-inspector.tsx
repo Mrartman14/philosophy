@@ -69,24 +69,24 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
           </div>
         )}
         <div className="flex gap-2">
-          <Label htmlFor="inspector-node-width" className="flex flex-1 flex-col gap-1 text-sm">
-            {t("inspector.widthLabel")}
+          <div className="flex flex-1 flex-col gap-1">
+            <Label htmlFor="inspector-node-width">{t("inspector.widthLabel")}</Label>
             <TextInput
               id="inspector-node-width"
               type="number"
               value={String(node.width ?? 0)}
               onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: Number(e.target.value), height: node.height ?? 0 }); }}
             />
-          </Label>
-          <Label htmlFor="inspector-node-height" className="flex flex-1 flex-col gap-1 text-sm">
-            {t("inspector.heightLabel")}
+          </div>
+          <div className="flex flex-1 flex-col gap-1">
+            <Label htmlFor="inspector-node-height">{t("inspector.heightLabel")}</Label>
             <TextInput
               id="inspector-node-height"
               type="number"
               value={String(node.height ?? 0)}
               onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: node.width ?? 0, height: Number(e.target.value) }); }}
             />
-          </Label>
+          </div>
         </div>
         {node.type === "entity_ref" && (
           <p className="text-xs text-(--color-fg-muted)">
@@ -109,15 +109,15 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
   return (
     <div className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold">{t("inspector.edgeHeading")}</h3>
-      <Label htmlFor="inspector-edge-label" className="flex flex-col gap-1 text-sm">
-        {t("inspector.edgeCaptionLabel")}
+      <div className="flex flex-col gap-1">
+        <Label htmlFor="inspector-edge-label">{t("inspector.edgeCaptionLabel")}</Label>
         <TextInput
           id="inspector-edge-label"
           value={edge.label ?? ""}
           maxLength={200}
           onChange={(e) => { dispatch({ type: "setEdgeLabel", edgeId, label: e.target.value }); }}
         />
-      </Label>
+      </div>
       <div className="flex flex-col gap-1 text-sm">
         {t("inspector.edgeStyleLabel")}
         <Select
