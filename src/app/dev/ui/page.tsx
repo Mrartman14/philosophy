@@ -1,5 +1,4 @@
 // src/app/dev/ui/page.tsx
-import { Field } from "@base-ui/react/field";
 import { notFound } from "next/navigation";
 
 import {
@@ -46,14 +45,14 @@ export default async function UiKitSmokePage() {
         <h2 className="text-lg font-bold">Form</h2>
         <Form>
           <FormField name="title" label="Заголовок" required>
-            <Field.Control render={<TextInput />} />
+            <TextInput name="title" />
           </FormField>
           <FormField
             name="description"
             label="Описание"
             description="Не более 500 символов"
           >
-            <Field.Control render={<Textarea />} />
+            <Textarea name="description" />
           </FormField>
           <SubmitButton>Сохранить</SubmitButton>
         </Form>
@@ -92,7 +91,7 @@ export default async function UiKitSmokePage() {
         <h2 className="text-lg font-bold">Form (invalid state)</h2>
         <Form errors={{ email: "Неверный формат email" }}>
           <FormField name="email" label="Email" required>
-            <Field.Control render={<TextInput />} />
+            <TextInput name="email" />
           </FormField>
           <SubmitButton>Отправить</SubmitButton>
         </Form>
