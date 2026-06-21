@@ -97,7 +97,8 @@ export function NotificationBell({ initialCounts }: NotificationBellProps) {
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => { setOpen((v) => !v); }}
-        className="relative size-8 text-(--color-fg-muted) hover:bg-transparent hover:text-(--color-accent)"
+        size="sm"
+        className="relative text-(--color-fg-muted) hover:bg-transparent hover:text-(--color-accent)"
       >
         <BellIcon className="size-5" />
         {badge && (
