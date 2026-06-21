@@ -75,7 +75,7 @@ export function TokenList({ tokens, canManage }: Props) {
     expired: t("statusExpired"),
   };
 
-  function fmtCreated(sec?: number): string {
+  function fmtDate(sec?: number): string {
     const d = unixSecToDate(sec);
     return d ? fmt.dateTime(d, DATE_FMT) : "—";
   }
@@ -83,11 +83,6 @@ export function TokenList({ tokens, canManage }: Props) {
   function fmtExpires(sec?: number): string {
     const d = unixSecToDate(sec);
     return d ? fmt.dateTime(d, DATE_FMT) : t("neverExpires");
-  }
-
-  function fmtLastUsed(sec?: number): string {
-    const d = unixSecToDate(sec);
-    return d ? fmt.dateTime(d, DATE_FMT) : "—";
   }
 
   function onRevoke(id: string) {
@@ -136,12 +131,12 @@ export function TokenList({ tokens, canManage }: Props) {
               <Td>
                 <code className="text-xs">{hint && hint !== "" ? hint : "—"}</code>
               </Td>
-              <Td className="whitespace-nowrap">{fmtCreated(token.created_at)}</Td>
+              <Td className="whitespace-nowrap">{fmtDate(token.created_at)}</Td>
               <Td className="whitespace-nowrap">
                 {fmtExpires(token.expires_at)}
                 {status === "active" && expiryNote(token.expires_at, fmt)}
               </Td>
-              <Td className="whitespace-nowrap">{fmtLastUsed(token.last_used_at)}</Td>
+              <Td className="whitespace-nowrap">{fmtDate(token.last_used_at)}</Td>
               <Td className="tabular-nums">{token.request_count ?? "—"}</Td>
               {canManage && (
                 <Td>

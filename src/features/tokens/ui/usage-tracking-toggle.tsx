@@ -10,11 +10,9 @@ import { setUsageTracking } from "../actions";
 
 interface Props {
   initialEnabled: boolean;
-  /** canManageTokens(me) со страницы (server component). */
-  canManage: boolean;
 }
 
-export function UsageTrackingToggle({ initialEnabled, canManage }: Props) {
+export function UsageTrackingToggle({ initialEnabled }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("tokens");
@@ -46,8 +44,8 @@ export function UsageTrackingToggle({ initialEnabled, canManage }: Props) {
   }
 
   return (
-    <section className="flex flex-col gap-2 rounded-lg border border-(--color-border) bg-(--color-surface) p-4">
-      <h2 className="text-sm font-semibold">{t("usageTrackingHeading")}</h2>
+    <section aria-labelledby="usage-tracking-heading" className="flex flex-col gap-2 rounded-lg border border-(--color-border) bg-(--color-surface) p-4">
+      <h2 id="usage-tracking-heading" className="text-sm font-semibold">{t("usageTrackingHeading")}</h2>
       <p className="text-xs text-(--color-fg-muted)">{t("usageTrackingIntro")}</p>
       {enabled ? (
         <>
@@ -58,7 +56,7 @@ export function UsageTrackingToggle({ initialEnabled, canManage }: Props) {
               <Button
                 variant="secondary"
                 className="self-start"
-                disabled={pending || !canManage}
+                disabled={pending}
               >
                 {t("usageTrackingDisableButton")}
               </Button>
@@ -74,7 +72,7 @@ export function UsageTrackingToggle({ initialEnabled, canManage }: Props) {
           <p className="text-sm">{t("usageTrackingDisabledStatus")}</p>
           <Button
             className="self-start"
-            disabled={pending || !canManage}
+            disabled={pending}
             onClick={() => {
               void apply(true);
             }}

@@ -149,7 +149,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
       <ConnectInstructions mcpUrl={mcpUrl} token={revealed} />
 
       {canManage && (
-        <UsageTrackingToggle initialEnabled={trackingEnabled} canManage={canManage} />
+        <UsageTrackingToggle initialEnabled={trackingEnabled} />
       )}
 
       <TokenList tokens={initialTokens} canManage={canManage} />
