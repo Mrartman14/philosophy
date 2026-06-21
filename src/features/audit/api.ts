@@ -45,17 +45,14 @@ export const getAuditLog = cache(
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 50;
     // Тип query — из самого эндпоинта (а не из общего audit.TargetType): это
-    // источник истины «по чему фильтрует листинг». audit.TargetType шире
-    // (содержит "map", т.к. записи МОГУТ указывать на карту), но фильтр на
-    // беке "map" пока не принимает — контракт-дрейф, бэк-аск выдан.
+    // источник истины «по чему фильтрует листинг». Бэк выровнял enum: фильтр
+    // target_type теперь принимает "map", поэтому пробрасываем напрямую.
     type AuditListQuery = NonNullable<
       paths["/api/admin/audit"]["get"]["parameters"]["query"]
     >;
     const query: AuditListQuery = { offset, limit };
     if (filter.actor) query.actor = filter.actor;
-    if (filter.target_type && filter.target_type !== "map") {
-      query.target_type = filter.target_type;
-    }
+    if (filter.target_type) query.target_type = filter.target_type;
     if (filter.target_id) query.target_id = filter.target_id;
     if (filter.action) query.action = filter.action;
     if (filter.from) query.from = filter.from;
