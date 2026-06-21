@@ -22,7 +22,7 @@ export function MotionShowcase() {
       </Row>
 
       <Row label={t("motionFancy")}>
-        <span className="fancy-link w-fit">{t("motionFancyText")}</span>
+        <a href="/map" className="fancy-link w-fit">{t("motionFancyText")}</a>
       </Row>
 
       <Row label={t("motionDialog")}>
