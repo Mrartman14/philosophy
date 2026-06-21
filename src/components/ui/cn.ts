@@ -1,11 +1,18 @@
 // src/components/ui/cn.ts
+import { twMerge } from "tailwind-merge";
 
 /** Значение класса: строка либо falsy (отбрасывается). */
 type ClassValue = string | false | null | undefined;
 
-/** Условное склеивание классов: склеивает строки через пробел, отбрасывая falsy. */
+/**
+ * Склеивание классов с разрешением Tailwind-конфликтов (последний-в-группе
+ * побеждает детерминированно, а не по emit-order). Нужно для ОТКРЫТЫХ
+ * structural-поверхностей (Stack/Inline/Toolbar/…), где className потребителя
+ * легитимно мёржится с базой; leaf-контролы className не принимают, но `cn`
+ * у них всё равно безопасен.
+ */
 export function cn(...inputs: ClassValue[]): string {
-  return inputs.filter(Boolean).join(" ");
+  return twMerge(inputs.filter(Boolean).join(" "));
 }
 
 /**
