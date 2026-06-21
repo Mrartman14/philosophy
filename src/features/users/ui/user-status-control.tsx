@@ -58,7 +58,7 @@ export function UserStatusControl({ userId, username, current }: Props) {
       {dirty && value === "banned" ? (
         <ConfirmDialog
           trigger={
-            <Button compact variant="danger" disabled={isPending}>
+            <Button compact tone="danger" disabled={isPending}>
               {t("applyButton")}
             </Button>
           }

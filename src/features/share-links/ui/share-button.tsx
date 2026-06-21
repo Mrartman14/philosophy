@@ -70,7 +70,7 @@ export function ShareButton({
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button type="button" variant="ghost">
+        <Button type="button" tone="quiet">
           {t("shareButtonLabel")}
         </Button>
       }

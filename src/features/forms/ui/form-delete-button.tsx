@@ -24,7 +24,7 @@ export function FormDeleteButton({ id, redirectTo = "/me/forms", label }: Props)
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{label ?? t("deleteFormLabel")}</Button>}
+      trigger={<Button tone="danger">{label ?? t("deleteFormLabel")}</Button>}
       title={t("deleteFormTitle")}
       description={t("deleteFormDescription")}
       destructive

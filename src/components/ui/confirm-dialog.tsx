@@ -90,9 +90,9 @@ export function ConfirmDialog({
       {...(description !== undefined ? { description } : {})}
     >
       <div className="flex justify-end gap-2">
-        <DialogClose render={<Button variant="ghost">{cancelText}</Button>} />
+        <DialogClose render={<Button tone="quiet">{cancelText}</Button>} />
         <Button
-          variant={destructive ? "danger" : "primary"}
+          tone={destructive ? "danger" : "primary"}
           disabled={pending}
           onClick={() => { void handleConfirm(); }}
         >

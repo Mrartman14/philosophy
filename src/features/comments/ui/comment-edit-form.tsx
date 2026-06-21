@@ -32,7 +32,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
 
   if (!open) {
     return (
-      <Button type="button" variant="ghost" onClick={() => { setOpen(true); }}>
+      <Button type="button" tone="quiet" onClick={() => { setOpen(true); }}>
         {t("editButton")}
       </Button>
     );
@@ -59,7 +59,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
       <FormFeedback result={state} forbiddenAction={t("editForbiddenAction")} />
       <div className="flex gap-2">
         <SubmitButton>{t("editSubmit")}</SubmitButton>
-        <Button type="button" variant="ghost" onClick={() => { setOpen(false); }}>
+        <Button type="button" tone="quiet" onClick={() => { setOpen(false); }}>
           {t("editCancel")}
         </Button>
       </div>

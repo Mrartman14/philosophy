@@ -24,7 +24,7 @@ export function GlossaryDeleteButton({ id }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{t("deleteButton")}</Button>}
+      trigger={<Button tone="danger">{t("deleteButton")}</Button>}
       title={t("deleteConfirmTitle")}
       description={t("deleteConfirmDescription")}
       destructive

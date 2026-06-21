@@ -23,7 +23,7 @@ export function TagDeleteButton({ id, name }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{tTags("deleteButton")}</Button>}
+      trigger={<Button tone="danger">{tTags("deleteButton")}</Button>}
       title={tTags("deleteTitle", { name })}
       description={tTags("deleteDescription")}
       destructive

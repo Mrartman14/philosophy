@@ -46,7 +46,7 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
         <span className="flex-1 truncate">{tag.name}</span>
         <div className="flex items-center gap-2">
           {canEdit && hasId && (
-            <Button variant="ghost" onClick={() => { setEditing((v) => !v); }}>
+            <Button tone="quiet" onClick={() => { setEditing((v) => !v); }}>
               {editing ? tTags("cancel") : tTags("rename")}
             </Button>
           )}

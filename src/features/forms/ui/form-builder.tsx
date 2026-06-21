@@ -162,7 +162,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
         ))}
       </div>
 
-      <Button type="button" variant="secondary" disabled={disabled} onClick={() => { setFields((p) => [...p, emptyField()]); }}>
+      <Button type="button" tone="neutral" disabled={disabled} onClick={() => { setFields((p) => [...p, emptyField()]); }}>
         {t("builder.addField")}
       </Button>
     </div>

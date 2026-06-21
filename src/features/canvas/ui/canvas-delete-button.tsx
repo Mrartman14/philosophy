@@ -20,7 +20,7 @@ export function CanvasDeleteButton({ id }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{t("deleteButton.trigger")}</Button>}
+      trigger={<Button tone="danger">{t("deleteButton.trigger")}</Button>}
       title={t("deleteButton.title")}
       description={t("deleteButton.description")}
       destructive

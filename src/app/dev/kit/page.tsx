@@ -33,10 +33,10 @@ export default async function UiKitSmokePage() {
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-bold">Buttons</h2>
         <div className="flex flex-wrap gap-2">
-          <Button variant="primary">Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="danger">Danger</Button>
+          <Button tone="primary">Primary</Button>
+          <Button tone="neutral">Neutral</Button>
+          <Button tone="quiet">Quiet</Button>
+          <Button tone="danger">Danger</Button>
           <IconButton aria-label="Close">×</IconButton>
         </div>
         <p className="text-sm text-(--color-fg-muted)">

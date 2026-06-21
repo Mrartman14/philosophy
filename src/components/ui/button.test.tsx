@@ -15,6 +15,31 @@ describe("Button", () => {
     expect(btn).toHaveClass("inline-flex");
   });
 
+  it("defaults to the primary tone (filled)", () => {
+    render(<Button>x</Button>);
+    expect(screen.getByRole("button", { name: "x" })).toHaveClass("bg-(--color-fg)");
+  });
+
+  it("tone=neutral renders a bordered control", () => {
+    render(<Button tone="neutral">x</Button>);
+    expect(screen.getByRole("button", { name: "x" })).toHaveClass("border");
+  });
+
+  it("tone=quiet is hover-only with no resting fill", () => {
+    render(<Button tone="quiet">x</Button>);
+    const btn = screen.getByRole("button", { name: "x" });
+    expect(btn).toHaveClass("hover:bg-(--color-surface-subtle)");
+    // Никакой resting-заливки/бордера в quiet.
+    expect(btn).not.toHaveClass("bg-(--color-surface-subtle)");
+    expect(btn).not.toHaveClass("bg-(--color-fg)");
+    expect(btn).not.toHaveClass("border");
+  });
+
+  it("tone=danger renders the danger-solid fill", () => {
+    render(<Button tone="danger">x</Button>);
+    expect(screen.getByRole("button", { name: "x" })).toHaveClass("bg-(--color-danger-solid)");
+  });
+
   it("default size binds to the comfortable control-height token", () => {
     render(<Button>x</Button>);
     expect(screen.getByRole("button", { name: "x" })).toHaveClass("h-(--size-control-h-md)");

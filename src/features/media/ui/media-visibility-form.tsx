@@ -31,7 +31,7 @@ export function MediaVisibilityForm({ id, canChange }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="secondary">{t("publishButton")}</Button>}
+      trigger={<Button tone="neutral">{t("publishButton")}</Button>}
       title={t("publishTitle")}
       description={t("publishDescription")}
       confirmLabel={t("publishButton")}

@@ -35,7 +35,7 @@ export function NotificationListActions() {
   return (
     <div className="flex gap-2">
       <Button
-        variant="secondary"
+        tone="neutral"
         disabled={pending}
         onClick={() => {
           void run(markAllRead, t("markAllReadSuccess"));
@@ -44,7 +44,7 @@ export function NotificationListActions() {
         {t("markAllReadButton")}
       </Button>
       <Button
-        variant="ghost"
+        tone="quiet"
         disabled={pending}
         onClick={() => {
           void run(markAllSeen, t("markAllSeenSuccess"));

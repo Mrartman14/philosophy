@@ -47,7 +47,7 @@ export function SubscribeButton({
 
   return (
     <Button
-      {...(subscribed ? { variant: "secondary" as const } : {})}
+      tone={subscribed ? "neutral" : "primary"}
       disabled={pending}
       onClick={() => {
         void toggle();

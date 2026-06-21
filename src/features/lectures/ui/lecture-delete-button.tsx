@@ -22,7 +22,7 @@ export function LectureDeleteButton({ lectureId, redirectTo }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{tL("deleteButton")}</Button>}
+      trigger={<Button tone="danger">{tL("deleteButton")}</Button>}
       title={tL("deleteDialogTitle")}
       description={tL("deleteDialogDescription")}
       destructive

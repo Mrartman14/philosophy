@@ -22,7 +22,7 @@ export function FormPublishButton({ formId }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="primary">{t("publishButton")}</Button>}
+      trigger={<Button tone="primary">{t("publishButton")}</Button>}
       title={t("publishTitle")}
       description={t("publishDescription")}
       confirmLabel={t("publishConfirm")}

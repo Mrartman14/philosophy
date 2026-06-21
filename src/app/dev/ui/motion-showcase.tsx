@@ -26,7 +26,7 @@ export function MotionShowcase() {
       </Row>
 
       <Row label={t("motionDialog")}>
-        <Dialog title={t("motionDialogTitle")} trigger={<Button variant="secondary">{t("motionDialogTrigger")}</Button>}>
+        <Dialog title={t("motionDialogTitle")} trigger={<Button tone="neutral">{t("motionDialogTrigger")}</Button>}>
           <p className="text-sm">{t("motionDialogBody")}</p>
         </Dialog>
       </Row>

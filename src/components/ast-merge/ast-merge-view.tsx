@@ -134,7 +134,7 @@ export function AstMergeView({
         {unchangedN > 0 && (
           <div className="text-sm">
             <Button
-              variant="ghost"
+              tone="quiet"
               compact
               className="text-(--color-fg-muted) underline"
               aria-expanded={showUnchanged}
@@ -191,13 +191,13 @@ export function AstMergeView({
         >
           {labels.applyButton}
         </Button>
-        <Button type="button" variant="ghost" onClick={onCancel}>
+        <Button type="button" tone="quiet" onClick={onCancel}>
           {labels.cancelButton}
         </Button>
         {/* Tertiary / destructive escape hatch — визуально отделён (ml-auto). */}
         <Button
           type="button"
-          variant="ghost"
+          tone="quiet"
           className="ml-auto text-(--color-danger-fg)"
           onClick={onTakeServer}
         >

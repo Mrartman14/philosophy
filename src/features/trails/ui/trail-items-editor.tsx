@@ -92,7 +92,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
               <span className="flex items-center gap-1">
                 <Button
                   type="button"
-                  variant="ghost"
+                  tone="quiet"
                   compact
                   disabled={index === 0}
                   aria-label={t("itemsMoveUp")}
@@ -102,7 +102,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                 </Button>
                 <Button
                   type="button"
-                  variant="ghost"
+                  tone="quiet"
                   compact
                   disabled={index === items.length - 1}
                   aria-label={t("itemsMoveDown")}
@@ -112,7 +112,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
                 </Button>
                 <Button
                   type="button"
-                  variant="danger"
+                  tone="danger"
                   compact
                   aria-label={t("itemsRemove")}
                   onClick={() => { removeAt(index); }}
@@ -128,12 +128,12 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
       {picking ? (
         <div className="rounded border border-(--color-border) p-2">
           <DocumentPicker onSelect={addDocument} />
-          <Button type="button" variant="ghost" compact onClick={() => { setPicking(false); }}>
+          <Button type="button" tone="quiet" compact onClick={() => { setPicking(false); }}>
             {t("itemsPickerCancel")}
           </Button>
         </div>
       ) : (
-        <Button type="button" variant="secondary" compact onClick={() => { setPicking(true); }}>
+        <Button type="button" tone="neutral" compact onClick={() => { setPicking(true); }}>
           {t("itemsAddDocument")}
         </Button>
       )}

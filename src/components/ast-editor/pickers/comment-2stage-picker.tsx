@@ -26,7 +26,7 @@ export function Comment2StagePicker({ defaultLectureId, onSelect }: Comment2Stag
   }
   return (
     <div>
-      <Button variant="ghost" compact onClick={() => { setLectureId(undefined); }}>{t("commentPickerChangeLecture")}</Button>
+      <Button tone="quiet" compact onClick={() => { setLectureId(undefined); }}>{t("commentPickerChangeLecture")}</Button>
       <p>{t("commentPickerStep2")}</p>
       <CommentPicker lectureId={lectureId} onSelect={onSelect} />
     </div>

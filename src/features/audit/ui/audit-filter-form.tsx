@@ -107,7 +107,7 @@ export function AuditFilterForm() {
         <Button type="submit" disabled={pending}>
           {pending ? "…" : t("filterSubmit")}
         </Button>
-        <Button type="button" variant="ghost" onClick={onReset} disabled={pending}>
+        <Button type="button" tone="quiet" onClick={onReset} disabled={pending}>
           {t("filterReset")}
         </Button>
       </div>

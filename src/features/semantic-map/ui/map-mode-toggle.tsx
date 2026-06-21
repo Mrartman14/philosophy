@@ -23,7 +23,7 @@ export function MapModeToggle({
         <Button
           key={m}
           compact
-          variant={mode === m ? "primary" : "ghost"}
+          tone={mode === m ? "primary" : "quiet"}
           aria-pressed={mode === m}
           onClick={() => { onChange(m); }}
         >

@@ -144,7 +144,7 @@ export function TokenList({ tokens, canManage }: Props) {
                     <ConfirmDialog
                       destructive
                       trigger={
-                        <Button type="button" variant="danger" disabled={pending}>
+                        <Button type="button" tone="danger" disabled={pending}>
                           {t("revokeButton")}
                         </Button>
                       }

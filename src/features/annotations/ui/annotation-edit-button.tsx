@@ -35,7 +35,7 @@ export function AnnotationEditButton({ annotation, initial }: Props) {
     <Dialog
       open={open}
       onOpenChange={setOpen}
-      trigger={<Button variant="secondary">{t("editButton")}</Button>}
+      trigger={<Button tone="neutral">{t("editButton")}</Button>}
       title={t("editDialogTitle")}
     >
       <SchemaContextProvider

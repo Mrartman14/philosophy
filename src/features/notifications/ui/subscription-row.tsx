@@ -55,7 +55,7 @@ export function SubscriptionRow({ subscription }: SubscriptionRowProps) {
         </span>
       )}
       <Button
-        variant="secondary"
+        tone="neutral"
         disabled={pending}
         onClick={() => {
           void unsubscribe();

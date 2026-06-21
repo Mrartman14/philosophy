@@ -43,7 +43,7 @@ export function CanvasVisibilityButton({ id }: Props) {
     <Form action={action}>
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="visibility" value="public" />
-      <Button type="submit" variant="secondary">{t("visibilityButton.makePublic")}</Button>
+      <Button type="submit" tone="neutral">{t("visibilityButton.makePublic")}</Button>
     </Form>
   );
 }

@@ -27,7 +27,7 @@ export function SubmissionActions({ submissionId, kind, redirectTo = "/me/submis
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{isDelete ? t("deleteSubmissionButton") : t("retractSubmissionButton")}</Button>}
+      trigger={<Button tone="danger">{isDelete ? t("deleteSubmissionButton") : t("retractSubmissionButton")}</Button>}
       title={isDelete ? t("deleteSubmissionTitle") : t("retractSubmissionTitle")}
       description={
         isDelete

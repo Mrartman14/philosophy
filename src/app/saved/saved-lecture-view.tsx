@@ -188,7 +188,7 @@ export function SavedLectureView({ id }: { id: string }) {
         {remoteStatus !== "gone" && (
           <Button
             type="button"
-            variant="secondary"
+            tone="neutral"
             disabled={refreshing}
             onClick={onRefresh}
           >

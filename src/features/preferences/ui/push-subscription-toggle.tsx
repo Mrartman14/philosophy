@@ -160,7 +160,7 @@ export function PushSubscriptionToggle({
       </p>
       {state.subscribed ? (
         <Button
-          variant="secondary"
+          tone="neutral"
           className="self-start"
           disabled={pending}
           onClick={() => { void handleUnsubscribe(); }}

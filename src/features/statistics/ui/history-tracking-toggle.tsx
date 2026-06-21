@@ -51,7 +51,7 @@ export function HistoryTrackingToggle({ initialEnabled, canManage }: Props) {
         <ConfirmDialog
           trigger={
             <Button
-              variant="secondary"
+              tone="neutral"
               className="self-start"
               disabled={pending || !canManage}
             >

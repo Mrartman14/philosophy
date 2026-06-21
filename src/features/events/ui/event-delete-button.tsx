@@ -25,7 +25,7 @@ export function EventDeleteButton({ id }: Props) {
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{t("deleteButton")}</Button>}
+      trigger={<Button tone="danger">{t("deleteButton")}</Button>}
       title={t("deleteDialogTitle")}
       description={t("deleteDialogDescription")}
       destructive

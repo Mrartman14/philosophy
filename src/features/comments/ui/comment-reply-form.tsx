@@ -32,7 +32,7 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
   if (childTypes.length === 0) return null;
   if (!open) {
     return (
-      <Button type="button" variant="ghost" onClick={() => { setOpen(true); }}>
+      <Button type="button" tone="quiet" onClick={() => { setOpen(true); }}>
         {t("replyButton")}
       </Button>
     );
@@ -64,7 +64,7 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
 
       <div className="flex gap-2">
         <SubmitButton>{t("replySubmit")}</SubmitButton>
-        <Button type="button" variant="ghost" onClick={() => { setOpen(false); }}>
+        <Button type="button" tone="quiet" onClick={() => { setOpen(false); }}>
           {t("replyCancel")}
         </Button>
       </div>

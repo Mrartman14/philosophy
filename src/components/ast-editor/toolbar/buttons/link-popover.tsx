@@ -114,7 +114,7 @@ export function LinkPopover({ editor, schema }: Props) {
               ) : null}
               <div className="flex items-center gap-2 justify-end">
                 {isActive && (
-                  <Button variant="ghost" compact onClick={handleRemove}>
+                  <Button tone="quiet" compact onClick={handleRemove}>
                     {t("linkRemove")}
                   </Button>
                 )}

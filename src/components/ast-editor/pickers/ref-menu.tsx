@@ -84,7 +84,7 @@ export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: Ref
             type="button"
             aria-pressed={cat === c}
             onClick={() => { setCat(c); }}
-            variant={cat === c ? "primary" : "secondary"}
+            tone={cat === c ? "primary" : "neutral"}
           >
             {labels[c]}
           </Button>

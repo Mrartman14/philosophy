@@ -35,7 +35,7 @@ export function DocumentDeleteButton({
 
   return (
     <ConfirmDialog
-      trigger={<Button variant="danger">{label ?? t("deleteButton")}</Button>}
+      trigger={<Button tone="danger">{label ?? t("deleteButton")}</Button>}
       title={t("deleteDialogTitle")}
       description={t("deleteDialogDescription")}
       destructive

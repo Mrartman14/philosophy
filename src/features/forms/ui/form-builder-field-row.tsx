@@ -45,9 +45,9 @@ export function FormBuilderFieldRow({
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium">{t("fieldRow.heading", { index: index + 1 })}</span>
         <div className="flex gap-1">
-          <Button type="button" variant="ghost" compact disabled={disabled || !canMoveUp} onClick={onMoveUp} aria-label={t("fieldRow.ariaUp")}>↑</Button>
-          <Button type="button" variant="ghost" compact disabled={disabled || !canMoveDown} onClick={onMoveDown} aria-label={t("fieldRow.ariaDown")}>↓</Button>
-          <Button type="button" variant="danger" compact disabled={disabled} onClick={onRemove} aria-label={t("fieldRow.ariaRemove")}>✕</Button>
+          <Button type="button" tone="quiet" compact disabled={disabled || !canMoveUp} onClick={onMoveUp} aria-label={t("fieldRow.ariaUp")}>↑</Button>
+          <Button type="button" tone="quiet" compact disabled={disabled || !canMoveDown} onClick={onMoveDown} aria-label={t("fieldRow.ariaDown")}>↓</Button>
+          <Button type="button" tone="danger" compact disabled={disabled} onClick={onRemove} aria-label={t("fieldRow.ariaRemove")}>✕</Button>
         </div>
       </div>
 
@@ -117,7 +117,7 @@ export function FormBuilderFieldRow({
               />
               <Button
                 type="button"
-                variant="ghost"
+                tone="quiet"
                 compact
                 disabled={disabled || field.options.length <= 1}
                 onClick={() => { onChange({ ...field, options: field.options.filter((_, i) => i !== oi) }); }}
@@ -127,7 +127,7 @@ export function FormBuilderFieldRow({
           ))}
           <Button
             type="button"
-            variant="secondary"
+            tone="neutral"
             compact
             disabled={disabled}
             onClick={() => { onChange({ ...field, options: [...field.options, ""] }); }}

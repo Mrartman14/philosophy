@@ -55,7 +55,7 @@ export function AttachmentsPanel({
         <h2 className="text-lg font-semibold">{resolvedTitle}</h2>
         {showAttach && (
           <Button
-            variant="secondary"
+            tone="neutral"
             compact
             onClick={() => { setPickerOpen((v) => !v); }}
             disabled={pending}
@@ -131,7 +131,7 @@ export function AttachmentsPanel({
                   )}
                   {onDetach && (
                     <Button
-                      variant="secondary"
+                      tone="neutral"
                       compact
                       disabled={pending}
                       onClick={() => { run(() => onDetach(item)); }}

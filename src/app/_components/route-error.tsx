@@ -19,7 +19,7 @@ export default function RouteError({
       <p className="text-(--color-fg-muted)">
         {t("errorBody")}
       </p>
-      <Button variant="secondary" onClick={reset}>
+      <Button tone="neutral" onClick={reset}>
         {t("errorRetry")}
       </Button>
     </div>

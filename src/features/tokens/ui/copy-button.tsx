@@ -33,7 +33,7 @@ export function CopyButton({ value, label }: Props) {
   }
 
   return (
-    <Button type="button" variant="ghost" onClick={() => { void onCopy(); }}>
+    <Button type="button" tone="quiet" onClick={() => { void onCopy(); }}>
       {copied ? t("copiedLabel") : (label ?? t("copyLabel"))}
     </Button>
   );

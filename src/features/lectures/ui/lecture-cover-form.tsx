@@ -111,7 +111,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
           />
         </Label>
         {currentKey && (
-          <Button variant="danger" disabled={pending} onClick={onClear}>
+          <Button tone="danger" disabled={pending} onClick={onClear}>
             {tL("deleteCover")}
           </Button>
         )}

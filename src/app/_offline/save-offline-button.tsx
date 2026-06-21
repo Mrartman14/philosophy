@@ -119,7 +119,7 @@ export function SaveOfflineButton({
   const removeButton = (
     <ConfirmDialog
       trigger={
-        <Button type="button" variant="ghost">
+        <Button type="button" tone="quiet">
           {t("saveOfflineRemove")}
         </Button>
       }
@@ -133,35 +133,35 @@ export function SaveOfflineButton({
 
   if (state.kind === "unknown") {
     return (
-      <Button type="button" variant="secondary" disabled>
+      <Button type="button" tone="neutral" disabled>
         {t("saveOfflineButton")}
       </Button>
     );
   }
   if (state.kind === "not-saved") {
     return (
-      <Button type="button" variant="secondary" onClick={() => { doSave("saving"); }}>
+      <Button type="button" tone="neutral" onClick={() => { doSave("saving"); }}>
         {t("saveOfflineButton")}
       </Button>
     );
   }
   if (state.kind === "saving") {
     return (
-      <Button type="button" variant="secondary" disabled>
+      <Button type="button" tone="neutral" disabled>
         {t("saveOfflineSaving")}
       </Button>
     );
   }
   if (state.kind === "updating") {
     return (
-      <Button type="button" variant="secondary" disabled>
+      <Button type="button" tone="neutral" disabled>
         {t("saveOfflineUpdating")}
       </Button>
     );
   }
   if (state.kind === "removing") {
     return (
-      <Button type="button" variant="ghost" disabled>
+      <Button type="button" tone="quiet" disabled>
         {t("saveOfflineRemoving")}
       </Button>
     );
@@ -176,7 +176,7 @@ export function SaveOfflineButton({
           </span>
           <Button
             type="button"
-            variant="secondary"
+            tone="neutral"
             onClick={() => { doSave("updating"); }}
           >
             {t("saveOfflineUpdate")}

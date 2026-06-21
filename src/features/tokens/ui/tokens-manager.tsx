@@ -137,7 +137,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
             <CopyButton value={revealed} />
             <Button
               type="button"
-              variant="ghost"
+              tone="quiet"
               onClick={() => { setRevealed(null); }}
             >
               {t("revealDismiss")}

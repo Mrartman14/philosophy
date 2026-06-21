@@ -54,7 +54,7 @@ export function UsageTrackingToggle({ initialEnabled }: Props) {
             destructive
             trigger={
               <Button
-                variant="secondary"
+                tone="neutral"
                 className="self-start"
                 disabled={pending}
               >
