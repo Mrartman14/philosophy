@@ -8,6 +8,7 @@ import {
   Textarea,
   Form,
   FormField,
+  Stack,
   SubmitButton,
   Table,
   Thead,
@@ -52,17 +53,19 @@ export default async function UiKitSmokePage() {
       <section className="flex flex-col gap-2 max-w-md">
         <h2 className="text-lg font-bold">Form</h2>
         <Form>
-          <FormField name="title" label="Заголовок" required>
-            <TextInput name="title" />
-          </FormField>
-          <FormField
-            name="description"
-            label="Описание"
-            description="Не более 500 символов"
-          >
-            <Textarea name="description" />
-          </FormField>
-          <SubmitButton>Сохранить</SubmitButton>
+          <Stack>
+            <FormField name="title" label="Заголовок" required>
+              <TextInput name="title" />
+            </FormField>
+            <FormField
+              name="description"
+              label="Описание"
+              description="Не более 500 символов"
+            >
+              <Textarea name="description" />
+            </FormField>
+            <SubmitButton>Сохранить</SubmitButton>
+          </Stack>
         </Form>
       </section>
 
@@ -98,10 +101,12 @@ export default async function UiKitSmokePage() {
       <section className="flex flex-col gap-2 max-w-md">
         <h2 className="text-lg font-bold">Form (invalid state)</h2>
         <Form errors={{ email: "Неверный формат email" }}>
-          <FormField name="email" label="Email" required>
-            <TextInput name="email" />
-          </FormField>
-          <SubmitButton>Отправить</SubmitButton>
+          <Stack>
+            <FormField name="email" label="Email" required>
+              <TextInput name="email" />
+            </FormField>
+            <SubmitButton>Отправить</SubmitButton>
+          </Stack>
         </Form>
       </section>
 
