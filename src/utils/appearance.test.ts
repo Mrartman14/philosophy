@@ -48,4 +48,11 @@ describe("getAppearance", () => {
     getPreferences.mockRejectedValue(new Error("503"));
     expect(await getAppearance()).toEqual(DEFAULT_APPEARANCE);
   });
+
+  it("reads motion from the backend appearance when present", async () => {
+    cookieStore.get.mockReturnValue(undefined);
+    getMe.mockResolvedValue({ id: "u1", status: "active", capabilities: [] });
+    getPreferences.mockResolvedValue({ appearance: { motion: "reduced" } });
+    expect((await getAppearance()).motion).toBe("reduced");
+  });
 });

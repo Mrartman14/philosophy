@@ -21,6 +21,7 @@ function toAppearancePayload(a: Appearance): AppearancePayload {
     density: a.density,
     font: a.font,
     text_size: a.textSize,
+    motion: a.motion,
     ...(a.contrast !== "auto" ? { contrast: a.contrast } : {}),
   };
 }

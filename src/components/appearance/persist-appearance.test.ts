@@ -63,4 +63,12 @@ describe("persistAppearance", () => {
     await expect(persistAppearance(DEFAULT_APPEARANCE)).resolves.toBeUndefined();
     expect(patch).not.toHaveBeenCalled();
   });
+
+  it("passes motion through (sent as-is, like theme)", async () => {
+    getMe.mockResolvedValue({ id: "u1", status: "active", capabilities: [] });
+    patch.mockResolvedValue({ data: {}, error: null });
+    await persistAppearance({ ...DEFAULT_APPEARANCE, motion: "reduced" });
+    const body = patch.mock.calls[0]?.[1] as { body: { appearance: Record<string, unknown> } };
+    expect(body.body.appearance.motion).toBe("reduced");
+  });
 });
