@@ -19,9 +19,11 @@ import {
 } from "@/features/statistics";
 import { getStoredLocale, getT } from "@/i18n";
 import { requireUserOrRedirect } from "@/utils/me";
+import { getStoredTzPref } from "@/utils/timezone-server";
 
 import { AppearanceSettings } from "./appearance/appearance-settings";
 import { LocaleSettings } from "./locale-settings";
+import { TimezoneSettings } from "./timezone-settings";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT("metadata");
@@ -32,12 +34,13 @@ export default async function SettingsPage() {
   const me = await requireUserOrRedirect("/me/settings");
   const t = await getT("settings");
 
-  const [prefs, vapidPublicKey, historySettings, storedLocale] =
+  const [prefs, vapidPublicKey, historySettings, storedLocale, storedTimezone] =
     await Promise.all([
       getPreferences(),
       getVapidKey(),
       getHistorySettings(),
       getStoredLocale(),
+      getStoredTzPref(),
     ]);
   // reading_mode в schema.ts — string|undefined; сужаем с фоллбеком на
   // дефолт бекенда (internal/preference/model.go: DefaultPreferences).
@@ -53,6 +56,7 @@ export default async function SettingsPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">{t("sectionLanguage")}</h2>
         <LocaleSettings initial={storedLocale} />
+        <TimezoneSettings initial={storedTimezone} />
       </section>
 
       <section className="flex flex-col gap-3">

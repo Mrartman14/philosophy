@@ -15,6 +15,10 @@ const settings = {
   localeSystem: "System",
   localeRu: "Russian",
   localeEn: "English",
+  // timezone-settings.tsx
+  timezoneLabelRow: "Time zone",
+  timezoneAriaLabel: "Time zone selection",
+  timezoneSystem: "Auto (from browser)",
   // appearance-settings.tsx
   appearance: {
     heading: "Appearance",
@@ -23,11 +27,13 @@ const settings = {
     densityLabel: "Interface Density",
     fontLabel: "Font",
     textSizeLabel: "Text Size",
+    motionLabel: "Motion",
     themeAriaLabel: "Theme",
     contrastAriaLabel: "Contrast",
     densityAriaLabel: "Density",
     fontAriaLabel: "Font",
     textSizeAriaLabel: "Text size",
+    motionAriaLabel: "Motion",
     theme: {
       system: "System",
       light: "Light",
@@ -52,6 +58,11 @@ const settings = {
       md: "Normal",
       lg: "Larger",
       xl: "Maximum",
+    },
+    motion: {
+      system: "System",
+      reduced: "Reduced",
+      full: "Full",
     },
   },
 };
