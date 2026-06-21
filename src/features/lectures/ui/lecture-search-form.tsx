@@ -42,13 +42,14 @@ export function LectureSearchForm({ basePath, tagOptions }: Props) {
   return (
     <Form onSubmit={onSubmit}>
       <Inline>
-        <TextInput
-          name="q"
-          defaultValue={initialQ}
-          placeholder={tL("searchPlaceholder")}
-          aria-label={tL("searchAriaLabel")}
-          className="min-w-60 flex-1"
-        />
+        <div className="min-w-60 flex-1">
+          <TextInput
+            name="q"
+            defaultValue={initialQ}
+            placeholder={tL("searchPlaceholder")}
+            aria-label={tL("searchAriaLabel")}
+          />
+        </div>
         {hasTagFilter && (
           <div className="w-48">
             <Select

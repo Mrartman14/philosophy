@@ -59,14 +59,15 @@ function PageForm() {
   return (
     <Form onSubmit={onSubmit}>
       <Inline align="end">
-        <TextInput
-          name="q"
-          defaultValue={initialQ}
-          placeholder={t("inputPlaceholder")}
-          aria-label={t("inputAriaLabel")}
-          maxLength={200}
-          className="min-w-60 flex-1"
-        />
+        <div className="min-w-60 flex-1">
+          <TextInput
+            name="q"
+            defaultValue={initialQ}
+            placeholder={t("inputPlaceholder")}
+            aria-label={t("inputAriaLabel")}
+            maxLength={200}
+          />
+        </div>
         <Button type="submit" disabled={pending}>
           {pending ? "…" : t("submitButton")}
         </Button>

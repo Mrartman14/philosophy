@@ -32,11 +32,11 @@ export function GlossarySearchForm({ defaultQ }: Props) {
     <Form onSubmit={onSubmit}>
       <Inline>
         <TextInput
+          grow
           type="search"
           name="q"
           defaultValue={defaultQ}
           placeholder={t("searchPlaceholder")}
-          className="flex-1"
         />
         <Button type="submit" disabled={pending}>
           {pending ? t("searchPending") : t("searchButton")}
