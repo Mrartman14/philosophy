@@ -102,7 +102,7 @@ export function AttachmentsPanel({
                   {onReorder && i > 0 && (
                     <IconButton
                       aria-label={t("attachments.moveUp")}
-                      size="sm"
+                      compact
                       className="text-sm"
                       disabled={pending}
                       onClick={() => {
@@ -117,7 +117,7 @@ export function AttachmentsPanel({
                   {onReorder && i < sorted.length - 1 && (
                     <IconButton
                       aria-label={t("attachments.moveDown")}
-                      size="sm"
+                      compact
                       className="text-sm"
                       disabled={pending}
                       onClick={() => {

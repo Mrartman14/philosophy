@@ -7,20 +7,20 @@ import { IconButton } from "./icon-button";
 afterEach(cleanup);
 
 describe("IconButton", () => {
-  it("defaults to md geometry (36px)", () => {
-    render(<IconButton aria-label="y" />);
-    const btn = screen.getByRole("button", { name: "y" });
+  it("renders a square control-height button (token-based, no size prop)", () => {
+    render(<IconButton aria-label="x">i</IconButton>);
+    const btn = screen.getByRole("button", { name: "x" });
     expect(btn).toHaveAttribute("type", "button");
-    expect(btn).toHaveClass("h-9");
-    expect(btn).toHaveClass("w-9");
+    expect(btn).toHaveClass("h-(--size-control-h-md)");
+    expect(btn).toHaveClass("w-(--size-control-h-md)");
   });
 
-  it("size=sm applies compact geometry (28px), not md", () => {
-    render(<IconButton size="sm" aria-label="x" />);
+  it("compact binds to the small control-height token", () => {
+    render(<IconButton compact aria-label="x">i</IconButton>);
     const btn = screen.getByRole("button", { name: "x" });
-    expect(btn).toHaveClass("h-7");
-    expect(btn).toHaveClass("w-7");
-    expect(btn).not.toHaveClass("h-9");
-    expect(btn).not.toHaveClass("w-9");
+    expect(btn).toHaveClass("h-(--size-control-h-sm)");
+    expect(btn).toHaveClass("w-(--size-control-h-sm)");
+    expect(btn).not.toHaveClass("h-(--size-control-h-md)");
+    expect(btn).not.toHaveClass("w-(--size-control-h-md)");
   });
 });
