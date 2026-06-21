@@ -25,3 +25,23 @@ describe("getFmt.number", () => {
     expect(getFmt("ru").number(12345)).toContain("345");
   });
 });
+
+describe("getFmt timeZone injection", () => {
+  const iso = "2026-06-21T22:30:00Z";
+
+  it("инъецирует timeZone в дефолтные опции", () => {
+    const moscow = getFmt("ru", "Europe/Moscow").dateTime(iso, { timeStyle: "short", dateStyle: "short" });
+    const tokyo = getFmt("ru", "Asia/Tokyo").dateTime(iso, { timeStyle: "short", dateStyle: "short" });
+    expect(moscow).not.toBe(tokyo); // 01:30 МСК vs 07:30 JST
+  });
+
+  it("opts.timeZone переопределяет инъекцию (date-only остаётся UTC)", () => {
+    const a = getFmt("ru", "Asia/Tokyo").dateTime(iso, { dateStyle: "short", timeZone: "UTC" });
+    const b = getFmt("ru", "Europe/Moscow").dateTime(iso, { dateStyle: "short", timeZone: "UTC" });
+    expect(a).toBe(b); // обе форсят UTC → одинаково
+  });
+
+  it("без timeZone-аргумента поведение прежнее (ambient)", () => {
+    expect(typeof getFmt("ru").dateTime(iso, { dateStyle: "short" })).toBe("string");
+  });
+});

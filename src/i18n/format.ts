@@ -32,13 +32,18 @@ function toDate(value: string | number | Date): Date {
   return value instanceof Date ? value : new Date(value);
 }
 
-export function getFmt(locale: ResolvedLocale = DEFAULT_LOCALE): Formatters {
+export function getFmt(
+  locale: ResolvedLocale = DEFAULT_LOCALE,
+  timeZone?: string,
+): Formatters {
   const tag = BCP47[locale];
   return {
     dateTime(value, opts) {
       const d = toDate(value);
       if (Number.isNaN(d.getTime())) return typeof value === "string" ? value : "";
-      return keyed(dtfCache, tag, opts, () => new Intl.DateTimeFormat(tag, opts)).format(d);
+      // timeZone-дефолт подмешивается, но opts.timeZone (если задан) приоритетен.
+      const merged = timeZone ? { timeZone, ...opts } : opts;
+      return keyed(dtfCache, tag, merged, () => new Intl.DateTimeFormat(tag, merged)).format(d);
     },
     number(value, opts) {
       return keyed(nfCache, tag, opts, () => new Intl.NumberFormat(tag, opts)).format(value);

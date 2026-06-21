@@ -5,6 +5,8 @@ import "server-only";
 import { createTranslator } from "next-intl";
 import { getMessages as getIntlMessages, getTranslations } from "next-intl/server";
 
+import { getServerTz } from "@/utils/timezone-server";
+
 import { getFmt, type Formatters } from "./format";
 import { getLocale, getStoredLocale } from "./locale.server";
 import { DEFAULT_LOCALE } from "./locales";
@@ -76,7 +78,8 @@ export async function getClientMessages() {
   return toClientMessages(all);
 }
 
-/** Форматтеры для текущей серверной локали. */
+/** Форматтеры для текущей серверной локали + таймзоны пользователя. */
 export async function getServerFmt(): Promise<Formatters> {
-  return getFmt(await getLocale());
+  const [locale, tz] = await Promise.all([getLocale(), getServerTz()]);
+  return getFmt(locale, tz);
 }
