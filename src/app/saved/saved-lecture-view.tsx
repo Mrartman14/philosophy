@@ -181,7 +181,6 @@ export function SavedLectureView({ id }: { id: string }) {
           {t("savedLectureSavedAt")}{" "}
           {fmt.dateTime(new Date(state.savedAt), {
             dateStyle: "short",
-            timeZone: "UTC",
           })}
         </span>
         {remoteStatus !== "gone" && (
