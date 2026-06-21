@@ -6,6 +6,7 @@ import { useActionState, useEffect, useState } from "react";
 import {
   Button,
   Form,
+  FormField,
   IdempotencyField,
   Label,
   Select,
@@ -90,17 +91,14 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
         >
           <IdempotencyField result={state} />
           <div className="flex flex-wrap items-end gap-3">
-            <Label className="flex flex-1 flex-col gap-1">
-              <span className="text-xs text-(--color-fg-muted)">
-                {t("labelField")}
-              </span>
+            <FormField name="label" label={t("labelField")} required className="flex-1">
               <TextInput
                 name="label"
                 required
                 maxLength={100}
                 placeholder={t("labelPlaceholder")}
               />
-            </Label>
+            </FormField>
             <Label className="flex flex-col gap-1">
               <span className="text-xs text-(--color-fg-muted)">
                 {t("expiresField")}

@@ -59,7 +59,7 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
       {editing && hasId && (
         <Form action={action} errors={fieldErrors} className="flex items-end gap-2">
           <input type="hidden" name="id" value={tag.id} />
-          <FormField name="name" label={tTags("newNameLabel")} className="flex-1">
+          <FormField name="name" label={tTags("newNameLabel")} className="flex-1" required>
             <TextInput name="name" required maxLength={100} defaultValue={tag.name} />
           </FormField>
           <SubmitButton>{tTags("saveButton")}</SubmitButton>
