@@ -13,6 +13,7 @@ export { Select, type SelectProps } from "./select";
 export { Checkbox, type CheckboxProps } from "./checkbox";
 export { Form } from "./form";
 export { FormField, type FormFieldProps } from "./form-field";
+export { Fieldset, type FieldsetProps } from "./fieldset";
 export { SubmitButton } from "./submit-button";
 export { IdempotencyField } from "./idempotency-field";
 export { Dialog, DialogClose } from "./dialog";
