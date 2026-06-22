@@ -54,9 +54,10 @@ const NO_NEXT_INTL_PATTERN = {
 // (напр. "left-aligned" — после left- идёт буква, а не цифра/скобка).
 const RTL_BOUNDARY = "(^|[\\s\"'`:])";
 const RTL_DIRECTION_SELECTORS = [
-  // margin/padding по физической оси: ml/mr/pl/pr-<число> (и отрицательные -ml/-mr…).
+  // margin/padding по физической оси: ml/mr/pl/pr-<число|[arbitrary]> (и отрицательные -ml/-mr…).
+  // Скобка [ в классе значений ловит произвольные значения вроде ml-[4px] (зеркалит inset-селектор).
   {
-    selector: `Literal[value=/${RTL_BOUNDARY}-?(ml|mr|pl|pr)-[0-9]/]`,
+    selector: `Literal[value=/${RTL_BOUNDARY}-?(ml|mr|pl|pr)-([0-9[])/]`,
     message: "RTL: физический отступ ml/mr/pl/pr запрещён — используй логические ms/me/ps/pe.",
   },
   // inset: left-/right- (и -left-/-right-) перед цифрой или скобкой [ (произвольное значение).

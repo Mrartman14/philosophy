@@ -24,10 +24,17 @@ const linter = new Linter({ configType: "flat" });
 // отклоняет синтетический путь («was not found by the project service»).
 // Содержимое файла подменяется сниппетом, важен лишь путь для скоупинга.
 const APP_FILE = "src/app/page.tsx";
+// ui-scope путь: реальный .tsx из src/components/ui/** — G7/8 его ИГНОРЯТ, но
+// Guardrail 10 (RTL) живёт в последнем-матчнувшем блоке без ignores для ui/**,
+// поэтому физический токен ТАМ обязан флагаться (доказательство ui-покрытия G10).
+const UI_FILE = "src/components/ui/table.tsx";
 
-/** Прогоняет код через flat-config и возвращает только G8/G7-сообщения. */
-function lintSnippet(code) {
-  const messages = linter.verify(code, eslintConfig, { filename: APP_FILE });
+/**
+ * Прогоняет код через flat-config и возвращает только G8/G7/G10-сообщения.
+ * Опциональный filename — для скоупинга под конкретный блок (по умолчанию APP_FILE).
+ */
+function lintSnippet(code, filename = APP_FILE) {
+  const messages = linter.verify(code, eslintConfig, { filename });
   return messages.filter((m) => m.ruleId === "no-restricted-syntax");
 }
 
@@ -142,6 +149,22 @@ const cases = [
   {
     name: "RTL className='-ml-2' (отрицательный) → 1 margin",
     code: `const X = () => <div className="-ml-2" />;`,
+    expectCount: 1,
+    expectMessage: RTL_MARGIN_MSG,
+  },
+  // Произвольное значение ml-[4px] — скобка [ в классе значений ловит arbitrary (Finding #8).
+  {
+    name: "RTL className='ml-[4px]' (произвольное значение) → 1 margin",
+    code: `const X = () => <div className="ml-[4px]" />;`,
+    expectCount: 1,
+    expectMessage: RTL_MARGIN_MSG,
+  },
+  // ── Guardrail 10 ПОД src/components/ui/** (G7/8 этот scope игнорят, G10 — нет) ──
+  // Доказательство: физический токен флагается ДАЖЕ в ui-kit (Finding #7).
+  {
+    name: "RTL (ui-scope) className='ml-2' под src/components/ui → 1 margin",
+    code: `const X = () => <div className="ml-2" />;`,
+    filename: UI_FILE,
     expectCount: 1,
     expectMessage: RTL_MARGIN_MSG,
   },
@@ -324,7 +347,7 @@ const cases = [
 
 let failures = 0;
 for (const c of cases) {
-  const msgs = lintSnippet(c.code);
+  const msgs = lintSnippet(c.code, c.filename);
   try {
     assert.equal(
       msgs.length,

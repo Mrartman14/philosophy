@@ -148,6 +148,11 @@ body:has(dialog[open]) {
 /* Горизонтальный флип направленных иконок (стрелки nav) в RTL. Потребитель — Task 9. */
 [dir="rtl"] .rtl-flip { transform: scaleX(-1); }
 
+/* .fancy-link::after — глиф-стрелка "→" (right-pointing). Позиция уже логическая
+   (inset-inline-start), но сам глиф направлен вправо → в RTL зеркалим scaleX(-1),
+   чтобы стрелка указывала в сторону чтения (inline-end). */
+[dir="rtl"] .fancy-link::after { transform: scaleX(-1); }
+
 @media (prefers-color-scheme: dark) {
   .sensitive-image {
     filter: brightness(75%);

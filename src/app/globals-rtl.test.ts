@@ -16,4 +16,7 @@ describe("globals.css — RTL-готовность", () => {
   it("есть .rtl-flip с зеркалированием в [dir=rtl]", () => {
     expect(css).toMatch(/\[dir=["']?rtl["']?\][^{]*\.rtl-flip[^{]*\{[^}]*scaleX\(-1\)/s);
   });
+  it("стрелка .fancy-link::after зеркалится в [dir=rtl]", () => {
+    expect(css).toMatch(/\[dir=["']?rtl["']?\][^{]*\.fancy-link::after[^{]*\{[^}]*scaleX\(-1\)/s);
+  });
 });
