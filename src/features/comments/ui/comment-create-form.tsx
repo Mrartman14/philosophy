@@ -3,16 +3,19 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Form, FormFeedback, FormField, IdempotencyField, Select, Stack, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, IdempotencyField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
+import type { CommentCreateFormInput } from "../schemas";
 import type { Comment, CommentType } from "../types";
 
 import { LazyAstEditor } from "./lazy-ast-editor";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<CommentCreateFormInput>();
 
 interface Props {
   lectureId: string;
@@ -24,30 +27,31 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
   const t = useT("comments");
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   const options = rootTypes.map((type) => ({ value: type, label: t(`type.${type}`) }));
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
+        {/* lecture_id — path-параметр (action читает его из FormData и шлёт в
+            POST /api/lectures/{id}/comments), это НЕ body-поле схемы. Raw-строка
+            name здесь КОРРЕКТНА — не «чинить» добавлением в CommentCreateSchema. */}
         <input type="hidden" name="lecture_id" value={lectureId} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 
-        <FormField name="type" label={t("createTypeLabel")} required>
-          <Select name="type" options={options} defaultValue={rootTypes[0] ?? ""} aria-label={t("createTypeAriaLabel")} />
-        </FormField>
+        <Field name="type" label={t("createTypeLabel")} required>
+          <Select name={f("type")} options={options} defaultValue={rootTypes[0] ?? ""} aria-label={t("createTypeAriaLabel")} />
+        </Field>
 
-        <FormField name="blocks" label={t("createBodyLabel")}>
+        <Field name="blocks" label={t("createBodyLabel")} required>
           <LazyAstEditor
             entityContext="comment"
             defaultLectureId={lectureId}
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
             ariaLabel={t("createBodyAriaLabel")}
           />
-        </FormField>
+        </Field>
 
         {state.success && state.data && (
           <p className="text-sm text-(--color-fg-muted)">{t("createSuccess")}</p>

@@ -81,6 +81,8 @@ export const CommentIdSchema = z.object({
 });
 
 export type CommentCreateInput = z.infer<ReturnType<typeof makeCommentCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type CommentCreateFormInput = z.input<ReturnType<typeof makeCommentCreateSchema>>;
 export type CommentBlocksUpdateInput = z.infer<ReturnType<typeof makeCommentBlocksUpdateSchema>>;
 export type ReactionInput = z.infer<typeof ReactionSchema>;
 export type RemoveReactionInput = z.infer<typeof RemoveReactionSchema>;
