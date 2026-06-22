@@ -4,7 +4,7 @@ import { forbidden } from "next/navigation";
 
 import { Pagination } from "@/components/ui";
 import { getPaginationLabels } from "@/components/ui/pagination.server";
-import { getAdminMedia, canModerateMedia, MediaAdminRow } from "@/features/media";
+import { getAdminMedia, canModerateMedia, MediaAdminRow, MediaAdminFilterForm } from "@/features/media";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 import { parseNonNegativeInt } from "@/utils/paging";
@@ -42,6 +42,7 @@ export default async function AdminMediaPage({ searchParams }: Props) {
     <section className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">{t("mediaTitle")}</h1>
       <p className="text-sm text-(--color-fg-muted)">{t("mediaDescription")}</p>
+      <MediaAdminFilterForm />
       <p className="text-sm text-(--color-fg-muted)">{t("mediaTotal", { total })}</p>
       {items.length === 0 ? (
         <p className="text-sm text-(--color-fg-muted)">{t("mediaEmpty")}</p>
