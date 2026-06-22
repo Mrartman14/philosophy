@@ -376,6 +376,33 @@ const eslintConfig = [
       ],
     },
   },
+  // Guardrail 9: leaf-foundation (src/components/scene-3d, src/components/ui) НЕ
+  // импортирует из фич. Зависимость односторонняя: feature → foundation, никогда
+  // наоборот — иначе вынос общего 3D/UI-кода обратно сцепляется с конкретным слайсом
+  // (вся суть выноса scene-3d из semantic-map теряется). App-shell (src/components/app/**)
+  // — слой КОМПОЗИЦИИ, легитимно собирает фичи (app-header → notifications/search) и под
+  // этот гард НЕ попадает. Идёт ПОСЛЕ Guardrail 1 и перезаписывает его no-restricted-imports
+  // для этих путей (flat-config не мержит опции правила) → НЕСЁТ NO_NEXT_INTL_PATTERN целиком
+  // и расширяет DEEP_IMPORT_PATTERN до полного запрета @/features/* (включая bare-index, без
+  // client-исключения — foundation не вправе тянуть ни один вход фичи).
+  {
+    files: ["src/components/scene-3d/**/*.{ts,tsx}", "src/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/features/*", "@/features/*/**"],
+              message:
+                "Foundation (scene-3d/ui) не импортирует из фич: зависимость односторонняя feature → foundation. Общий код — в @/components, @/utils, @/hooks.",
+            },
+            NO_NEXT_INTL_PATTERN,
+          ],
+        },
+      ],
+    },
+  },
   // Guardrail 5 exemption: src/i18n — ЕДИНСТВЕННАЯ точка прямого импорта next-intl.
   // Должен идти ПОСЛЕ Guardrail 1 (перезаписывает его no-restricted-imports для src/i18n),
   // сохраняя при этом запрет deep-import.

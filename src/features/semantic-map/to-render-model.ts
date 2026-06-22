@@ -1,8 +1,9 @@
 // src/features/semantic-map/to-render-model.ts
 // Чистая нормализация MapData → RenderModel (типизированные массивы для one-draw-call).
 // Здесь живёт вся «контрактная устойчивость»: additive-игнор, нет цвета/bounds/centroid.
-import { clusterColor, computeBounds, hexToRgb01 } from "@/components/scene-3d";
+import { computeBounds, hexToRgb01 } from "@/components/scene-3d";
 
+import { clusterColor } from "./cluster-color";
 import type { MapData, RenderCluster, RenderModel } from "./types";
 
 export function toRenderModel(data: MapData): RenderModel {
