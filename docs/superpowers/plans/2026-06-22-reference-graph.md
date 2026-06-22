@@ -45,6 +45,7 @@
 - `three-scene-renderer.ts` — базовый Three-класс.
 - `three-scene-renderer.test.ts` — тест каркаса базы (мок three, как у карты).
 - `ui/scene-state-panel.tsx` — обобщённая панель «строится/ошибка» (label-props).
+- `ui/scene-state-panel.test.tsx` — тест панели (building/error-ветки).
 - `ui/scene-mode-toggle.tsx` — обобщённый тоггл 2D/3D + `storageKey`-проп.
 - `ui/scene-mode-toggle.test.tsx` — тест тоггла.
 - `ui/scene-region-labels.tsx` — обобщённые проецируемые подписи.
@@ -362,6 +363,23 @@ describe("ThreeSceneRenderer base scaffolding", () => {
     expect(hook).toHaveBeenCalledOnce();
     r.destroy();
   });
+
+  it("onModelApplied вызывается ДО fitToBounds в setModel (marker читает bounds-scale из готовой модели)", () => {
+    const order: string[] = [];
+    class OrderProbe extends ThreeSceneRenderer {
+      protected override onModelApplied(): void { order.push("onModelApplied"); }
+      override fitToBounds(): void {
+        order.push("fitToBounds");
+        super.fitToBounds();
+      }
+    }
+    const r = new OrderProbe();
+    r.mount(pickCanvas());
+    r.setModel(model1());
+    // В setModel хук пересборки слоёв обязан отработать раньше подгонки камеры.
+    expect(order.indexOf("onModelApplied")).toBeLessThan(order.indexOf("fitToBounds"));
+    r.destroy();
+  });
 });
 ```
 
@@ -485,6 +503,11 @@ export class ThreeSceneRenderer implements SceneRenderer {
     canvas.addEventListener("pointerup", this.onPointerUp);
   }
 
+  /**
+   * Строит облако точек из модели, затем зовёт хук onModelApplied() и fitToBounds().
+   * Подкласс, переопределяющий setModel, ОБЯЗАН вызвать super.setModel(model) (в TS нет `final`) —
+   * здесь живёт сборка point-cloud, без super слой точек не построится.
+   */
   setModel(model: SceneRenderModel): void {
     this.model = model;
     if (this.points) {
@@ -601,6 +624,7 @@ export class ThreeSceneRenderer implements SceneRenderer {
   }
 
   resize(width: number, height: number, dpr: number): void {
+    // Ресайз меняет ТОЛЬКО aspect, НЕ перекадрирует (иначе сбивал бы pan/zoom/орбиту).
     this.width = Math.max(1, width);
     this.height = Math.max(1, height);
     this.dpr = Math.min(dpr, 2);
@@ -686,6 +710,11 @@ export class ThreeSceneRenderer implements SceneRenderer {
     this.changeCb?.();
   };
 
+  /**
+   * Останавливает loop и освобождает GPU-ресурсы (через disposeLayers() — хук подкласса — и teardown
+   * point-cloud/renderer). Подкласс, переопределяющий destroy, ОБЯЗАН вызвать super.destroy()
+   * (в TS нет `final`) — иначе утечёт WebGL-контекст и слой точек.
+   */
   destroy(): void {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
@@ -728,7 +757,7 @@ export { ThreeSceneRenderer } from "./three-scene-renderer";
 - [ ] **Step 6: Запустить тест базы — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/components/scene-3d/three-scene-renderer.test.ts`
-Expected: PASS (4 теста: setReducedMotion, pick-hit, drag-suppress, onModelApplied).
+Expected: PASS (5 тестов: setReducedMotion, pick-hit, drag-suppress, onModelApplied, onModelApplied-перед-fitToBounds).
 
 - [ ] **Step 7: Commit**
 
@@ -756,7 +785,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 **Interfaces:**
 - Produces:
   - `map-renderer.ts`: `RenderMode = SceneRenderMode`; `MapRenderer extends SceneRenderer` + `setOverlay(overlay: MapOverlayState | null): void`; `MapOverlayState { highlightIds: Set<string>; marker: [number,number,number] | null }`.
-  - `three-map-renderer.ts`: `ThreeMapRenderer extends ThreeSceneRenderer implements MapRenderer` — добавляет `setOverlay` (recolor через protected `colorAttr`/`baseColors`), `marker`, `updateMarker`, `makeRingTexture`; `override onModelApplied()` прячет устаревший marker; `override disposeLayers()` освобождает marker.
+  - `three-map-renderer.ts`: `ThreeMapRenderer extends ThreeSceneRenderer implements MapRenderer` — добавляет `setOverlay` (recolor через protected `colorAttr`/`baseColors`), `marker`, `updateMarker`, `makeRingTexture`; `override setModel(model: RenderModel)` (сужает публичный тип обратно до `RenderModel` — база типизирует шире `SceneRenderModel`; просто зовёт `super.setModel`); `override onModelApplied()` прячет устаревший marker; `override disposeLayers()` освобождает marker.
   - `types.ts`: `RenderModel = SceneRenderModel & { docs: string[]; clusters: RenderCluster[] }`.
 - Consumes: `ThreeSceneRenderer`, `SceneRenderer`, `SceneRenderMode`, `SceneRenderModel` из `@/components/scene-3d`.
 
@@ -764,7 +793,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 - [ ] **Step 1: Переопределить `RenderModel` через `SceneRenderModel`**
 
-`src/features/semantic-map/types.ts` — НЕ трогаем существующие type-алиасы (`MapBounds`/`MapPoint`/`MapTreeNode`/`MapData`/`MapPointDetail` из `semmap.*`) и `MapOverlay`; добавляем импорт `SceneRenderModel` и переписываем ТОЛЬКО `interface RenderModel` → `type RenderModel`. Итоговый вид нового импорта + блока `RenderCluster`/`RenderModel`:
+`src/features/semantic-map/types.ts` — НЕ трогаем существующие type-алиасы (`MapBounds`/`MapPoint`/`MapTreeNode`/`MapData`/`MapPointDetail` из `semmap.*`) и `MapOverlay`; добавляем импорт `SceneRenderModel` и **заменяем блок `RenderCluster`+`RenderModel` целиком** (`RenderCluster` содержимое НЕ меняется и остаётся ровно одним объявлением — НЕ добавлять второе, иначе TS `duplicate identifier`; `RenderModel` `interface` → `type`-пересечение). Итоговый вид нового импорта + заменённого блока `RenderCluster`/`RenderModel`:
 
 ```ts
 import type { SceneRenderModel } from "@/components/scene-3d";
@@ -828,6 +857,12 @@ import type { MapOverlayState, MapRenderer } from "./map-renderer";
 /** Карто-рендерер: общий каркас из ThreeSceneRenderer + дельта (overlay поиска + ring-marker). */
 export class ThreeMapRenderer extends ThreeSceneRenderer implements MapRenderer {
   private marker: THREE.Sprite | null = null;
+
+  // Сужаем публичный тип обратно до RenderModel: карта без docs/clusters невалидна
+  // (matchOverlay/подписи их читают). База типизирует setModel шире (SceneRenderModel).
+  override setModel(model: RenderModel): void {
+    super.setModel(model);
+  }
 
   setOverlay(overlay: MapOverlayState | null): void {
     const model = this.model as RenderModel | null;
@@ -904,21 +939,103 @@ function makeRingTexture(): THREE.CanvasTexture {
 
 > `scene`, `model`, `colorAttr`, `baseColors`, `requestRender()` — protected из базы. `onModelApplied`/`disposeLayers` — override-хуки. Весь каркас (mount/resize/fit/getViewProjection/onPick/loop/setModel/setMode/setReducedMotion) приходит из базы; здесь его НЕТ.
 
-- [ ] **Step 4: Прогнать регресс-сеть карты — байт-в-байт поведение**
+- [ ] **Step 4: Дописать 2 регресс-теста на швы миграции (не трогая существующие ассерты)**
+
+Существующая сеть `three-map-renderer.test.ts` покрывает `setReducedMotion`/onPick, но НЕ проверяет два шва, переехавших в базу/дельту: recolor оверлея через `colorAttr` и aspect-only `resize`. ДОПИСАТЬ (append) два новых `describe` в КОНЕЦ `src/features/semantic-map/renderer/three-map-renderer.test.ts` — существующие тесты не менять. Харнесс уже мокает ТОЛЬКО `three.WebGLRenderer` + `OrbitControls`; реальные `THREE.Scene`/`Points`/`BufferAttribute` живые, поэтому цвет точек читается прямо из сцены.
+
+```ts
+// === append: регресс-тесты швов миграции (Task 3) ===
+
+import * as THREE from "three";
+
+const DIM = 0.18; // должен совпадать с константой в ThreeMapRenderer.setOverlay
+
+// Двухточечная модель с известными цветами/ids (point 0 — красный, point 1 — зелёный).
+function model2() {
+  return {
+    count: 2,
+    positions: new Float32Array([0, 0, 0, 1, 0, 0]),
+    colors: new Float32Array([1, 0, 0, 0, 1, 0]),
+    ids: ["id0", "id1"],
+    docs: ["doc-0", "doc-1"],
+    bounds: { min: [-1, -1, -1] as [number, number, number], max: [1, 1, 1] as [number, number, number] },
+    clusters: [],
+  };
+}
+
+// Достать атрибут color облака точек из приватной сцены рендерера.
+function pointColors(r: ThreeMapRenderer): Float32Array {
+  const scene = (r as unknown as { scene: THREE.Scene }).scene;
+  const pts = scene.children.find((c): c is THREE.Points => c instanceof THREE.Points);
+  if (!pts) throw new Error("Points not found in scene");
+  return (pts.geometry.getAttribute("color") as THREE.BufferAttribute).array as Float32Array;
+}
+
+describe("ThreeMapRenderer.setOverlay recolor (шов colorAttr/baseColors)", () => {
+  beforeEach(() => {
+    vi.stubGlobal("requestAnimationFrame", () => 0);
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  });
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it("подсвеченная точка сохраняет базовый цвет, остальные затемнены на DIM; снятие overlay восстанавливает", () => {
+    const r = new ThreeMapRenderer();
+    r.mount(fakeCanvas());
+    r.setModel(model2());
+
+    r.setOverlay({ highlightIds: new Set(["id0"]), marker: null });
+    const dimmed = pointColors(r);
+    // point0 (highlight) держит базу: R-канал ≈ 1.
+    expect(dimmed[0]).toBeCloseTo(1, 5);
+    // point1 (не в highlight) затемнён: G-канал ≈ base(1)*DIM.
+    expect(dimmed[4]).toBeCloseTo(1 * DIM, 5);
+
+    r.setOverlay(null);
+    const restored = pointColors(r);
+    expect(restored[0]).toBeCloseTo(1, 5); // R point0
+    expect(restored[4]).toBeCloseTo(1, 5); // G point1 — снова полный
+    r.destroy();
+  });
+});
+
+describe("ThreeMapRenderer.resize (aspect-only, не перекадрирует)", () => {
+  beforeEach(() => {
+    vi.stubGlobal("requestAnimationFrame", () => 0);
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  });
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it("resize правит только aspect и НЕ зовёт fitToBounds (pan/zoom/орбита не сбиваются)", () => {
+    const r = new ThreeMapRenderer();
+    r.mount(fakeCanvas());
+    r.setModel(model2());
+    const fitSpy = vi.spyOn(r, "fitToBounds");
+    r.resize(640, 200, 1); // другая ширина
+    expect(fitSpy).not.toHaveBeenCalled();
+    r.destroy();
+  });
+});
+```
+
+Run: `pnpm exec vitest run src/features/semantic-map/renderer/three-map-renderer.test.ts`
+Expected: RED→GREEN — новые тесты сперва падают, если миграция не сохранила recolor/aspect-only resize; на корректной миграции (база + дельта) — PASS вместе со старыми ассертами.
+
+- [ ] **Step 5: Прогнать регресс-сеть карты — байт-в-байт поведение**
 
 Run: `pnpm exec vitest run src/features/semantic-map/renderer/three-map-renderer.test.ts src/features/semantic-map/to-render-model.test.ts src/features/semantic-map/overlay/match-overlay.test.ts src/features/semantic-map/ui/semantic-map-view.test.tsx`
-Expected: PASS — те же ассерты (`setReducedMotion`, onPick-hit/null/drag, overlay-wiring, view-wiring), теперь через наследование. Ассерты НЕ менять; красное → починить миграцию, не тест.
+Expected: PASS — те же ассерты (`setReducedMotion`, onPick-hit/null/drag, overlay-wiring, view-wiring) + 2 новых шов-теста, теперь через наследование. Старые ассерты НЕ менять; красное → починить миграцию, не тест.
 
-- [ ] **Step 5: Прогнать весь слайс карты целиком**
+- [ ] **Step 6: Прогнать весь слайс карты целиком**
 
 Run: `pnpm exec vitest run src/features/semantic-map`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src/features/semantic-map/renderer/map-renderer.ts \
   src/features/semantic-map/renderer/three-map-renderer.ts \
+  src/features/semantic-map/renderer/three-map-renderer.test.ts \
   src/features/semantic-map/types.ts
 git commit -m "refactor(semantic-map): ThreeMapRenderer наследует ThreeSceneRenderer
 
@@ -934,6 +1051,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 **Files:**
 - Create: `src/components/scene-3d/ui/scene-state-panel.tsx`
+- Create: `src/components/scene-3d/ui/scene-state-panel.test.tsx`
 - Create: `src/components/scene-3d/ui/scene-mode-toggle.tsx`
 - Create: `src/components/scene-3d/ui/scene-mode-toggle.test.tsx`
 - Create: `src/components/scene-3d/ui/scene-region-labels.tsx`
@@ -951,6 +1069,8 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Consumes: `SceneRenderMode`, `@/components/ui` `Button`.
 
 > **Решение по churn (спека §65, «pick the lower-churn path and state it»): адаптерный путь.** Карта сохраняет имена `MapStatePanel`/`MapModeToggle`/`MapRegionLabels` как тонкие адаптеры, читающие namespace `semanticMap` и прокидывающие label-props в `scene-3d`-шеллы. Так публичный API карты (`index.ts` экспортит `MapStatePanel`) и call-sites view не переписываются массово, а i18n-строки остаются в namespace карты. Шеллы `scene-3d` остаются namespace-agnostic.
+>
+> **Решение по `readSavedMode` (выбран путь — единый общий хелпер, без дублирования):** `readSavedMode(storageKey)` экспортируется из `scene-3d` и зовётся ОБОИМИ view по своему `storageKey` (карта — `"semantic-map:mode"`, граф — `"reference-graph:mode"`). Карто-view (`semantic-map-view.tsx`) при следующем касании переводится на общий `readSavedMode` вместо локального чтения `localStorage`; до тех пор локальная логика карты остаётся (поведение идентично — тот же ключ), новой дубль-копии хелпера НЕ заводим.
 
 - [ ] **Step 1: Написать падающий тест тоггла (label-props + storageKey)**
 
@@ -997,10 +1117,37 @@ describe("SceneModeToggle", () => {
 });
 ```
 
+Также написать падающий тест панели состояния (user-visible 503/error-ветка). Шелл i18n-agnostic — лейблы приходят пропами, мокать нечего:
+
+```tsx
+// src/components/scene-3d/ui/scene-state-panel.test.tsx
+import "@testing-library/jest-dom/vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, it, expect } from "vitest";
+
+afterEach(cleanup);
+
+import { SceneStatePanel } from "./scene-state-panel";
+
+describe("SceneStatePanel", () => {
+  it("reason='building' → показывает buildingText", () => {
+    render(<SceneStatePanel reason="building" buildingText="Строится" errorText="Ошибка" />);
+    expect(screen.getByText("Строится")).toBeInTheDocument();
+    expect(screen.queryByText("Ошибка")).not.toBeInTheDocument();
+  });
+
+  it("reason='error' → показывает errorText", () => {
+    render(<SceneStatePanel reason="error" buildingText="Строится" errorText="Ошибка" />);
+    expect(screen.getByText("Ошибка")).toBeInTheDocument();
+    expect(screen.queryByText("Строится")).not.toBeInTheDocument();
+  });
+});
+```
+
 - [ ] **Step 2: Запустить — убедиться, что падает**
 
-Run: `pnpm exec vitest run src/components/scene-3d/ui/scene-mode-toggle.test.tsx`
-Expected: FAIL — `Cannot find module "./scene-mode-toggle"`.
+Run: `pnpm exec vitest run src/components/scene-3d/ui/scene-mode-toggle.test.tsx src/components/scene-3d/ui/scene-state-panel.test.tsx`
+Expected: FAIL — `Cannot find module "./scene-mode-toggle"` / `"./scene-state-panel"`.
 
 - [ ] **Step 3: Реализовать шеллы `scene-3d`**
 
@@ -1170,10 +1317,10 @@ export { SceneRegionLabels as MapRegionLabels, type ProjectedLabel } from "@/com
 
 > `semantic-map-view.tsx` импортит `MapRegionLabels, type ProjectedLabel` из `./map-region-labels` — реэкспорт сохраняет оба. `MapModeToggle`/`map-point-panel` импорты не меняются. Внутренний `MODE_KEY = "semantic-map:mode"` во view уже совпадает с переданным `storageKey` — поведение персиста идентично.
 
-- [ ] **Step 5: Запустить тест тоггла + регресс карты**
+- [ ] **Step 5: Запустить тесты шеллов (тоггл + панель) + регресс карты**
 
-Run: `pnpm exec vitest run src/components/scene-3d/ui/scene-mode-toggle.test.tsx`
-Expected: PASS (2 теста).
+Run: `pnpm exec vitest run src/components/scene-3d/ui/scene-mode-toggle.test.tsx src/components/scene-3d/ui/scene-state-panel.test.tsx`
+Expected: PASS (2 теста тоггла + 2 теста панели). `SceneStatePanel` уже реализован в Step 3 — падавший тест становится зелёным без доп. кода.
 
 Run: `pnpm exec vitest run src/features/semantic-map`
 Expected: PASS — view рендерит те же подписи/тоггл/панель через адаптеры; `semantic-map-view.test.tsx` не меняли.
@@ -1189,7 +1336,7 @@ Expected: успешная сборка (нет битых импортов по
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/components/scene-3d/ui/scene-state-panel.tsx \
+git add src/components/scene-3d/ui/scene-state-panel.tsx src/components/scene-3d/ui/scene-state-panel.test.tsx \
   src/components/scene-3d/ui/scene-mode-toggle.tsx src/components/scene-3d/ui/scene-mode-toggle.test.tsx \
   src/components/scene-3d/ui/scene-region-labels.tsx \
   src/components/scene-3d/index.ts \
@@ -1792,6 +1939,22 @@ describe("ThreeGraphRenderer edges layer", () => {
     r.destroy();
   });
 
+  it("пустые рёбра (edges.length===0) → НЕ добавляет LineSegments; прежний меш убран/освобождён", () => {
+    const r = new ThreeGraphRenderer();
+    r.mount(fakeCanvas());
+    // Сначала модель с ребром — меш есть.
+    r.setModel(model());
+    const prev = lineSegments(r);
+    expect(prev).toBeDefined();
+    const disposeSpy = vi.spyOn(prev!.geometry, "dispose");
+    // Затем модель без рёбер — слой обязан исчезнуть, прежний меш — освобождён.
+    const empty: GraphRenderModel = { ...model(), edges: new Float32Array(), edgeAlphas: new Float32Array() };
+    r.setModel(empty);
+    expect(lineSegments(r)).toBeUndefined();
+    expect(disposeSpy).toHaveBeenCalled();
+    r.destroy();
+  });
+
   it("клик по узлу → onPick(node.id) через базовый picking", () => {
     const r = new ThreeGraphRenderer();
     const canvas = fakeCanvas();
@@ -1846,9 +2009,10 @@ export class ThreeGraphRenderer extends ThreeSceneRenderer {
     if (!m || m.edges.length === 0) return;
     const geom = new THREE.BufferGeometry();
     geom.setAttribute("position", new THREE.BufferAttribute(m.edges, 3));
-    // Альфа на вершину → один LineSegments-меш с per-vertex прозрачностью.
-    const alpha = new Float32Array(m.edgeAlphas); // count_edges*2
-    geom.setAttribute("alpha", new THREE.BufferAttribute(alpha, 1));
+    // Альфа на ВЕРШИНУ (1 значение/вершина, count_edges*2) → один LineSegments-меш с per-vertex
+    // прозрачностью. Имя атрибута — aAlpha (varying — vAlpha).
+    const aAlpha = new Float32Array(m.edgeAlphas); // count_edges*2
+    geom.setAttribute("aAlpha", new THREE.BufferAttribute(aAlpha, 1));
     const mat = new THREE.LineBasicMaterial({
       color: 0x8899aa,
       transparent: true,
@@ -1856,15 +2020,18 @@ export class ThreeGraphRenderer extends ThreeSceneRenderer {
       depthWrite: false,
     });
     // weight→прозрачность: подмешиваем vertex-alpha в фрагментный цвет линии.
+    // ВАЖНО: токен `vec4( outgoingLight, diffuseColor.a )` НЕ инлайнится в LineBasicMaterial
+    // (он внутри chunk `#include <opaque_fragment>`), поэтому .replace по нему молча no-op'ит и
+    // per-edge alpha теряется. Версия-устойчивый приём — допереумножить alpha ПОСЛЕ chunk'а.
     mat.onBeforeCompile = (shader) => {
       shader.vertexShader =
-        "attribute float alpha;\nvarying float vAlpha;\n" +
-        shader.vertexShader.replace("void main() {", "void main() {\n  vAlpha = alpha;");
+        "attribute float aAlpha;\nvarying float vAlpha;\n" +
+        shader.vertexShader.replace("void main() {", "void main() {\n  vAlpha = aAlpha;");
       shader.fragmentShader = shader.fragmentShader
         .replace("varying", "varying float vAlpha;\nvarying")
         .replace(
-          "vec4( outgoingLight, diffuseColor.a )",
-          "vec4( outgoingLight, diffuseColor.a * vAlpha )",
+          "#include <opaque_fragment>",
+          "#include <opaque_fragment>\n  gl_FragColor.a *= vAlpha;",
         );
     };
     this.edges = new THREE.LineSegments(geom, mat);
@@ -1889,12 +2056,14 @@ export class ThreeGraphRenderer extends ThreeSceneRenderer {
 }
 ```
 
+> Per-edge alpha живёт в шейдере (GPU) — юнит-тест проверяет ТОЛЬКО структуру слоя (наличие/число LineSegments, отсутствие дубля при re-model); фактический рендер weight→прозрачность проверяется ручным WebGL-QA (Task 12).
+>
 > Примечание по шейдер-хуку: если в QA per-vertex alpha не возьмётся (версия three/материала), фолбэк-стопгап — равномерная `opacity` без `onBeforeCompile`; weight-варьирование тогда переносим в Future. Юнит проверяет лишь СТРУКТУРУ слоя (наличие/пересборка/picking), не GPU-вывод.
 
 - [ ] **Step 4: Запустить — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/features/reference-graph/ui/three-graph-renderer.test.ts`
-Expected: PASS (3 теста: построение рёбер, пересборка без дубля, picking узла).
+Expected: PASS (4 теста: построение рёбер, пересборка без дубля, пустые рёбра → без LineSegments, picking узла).
 
 - [ ] **Step 5: Commit**
 
@@ -2179,6 +2348,8 @@ export default function GraphView({ data }: { data: GraphData }) {
 }
 ```
 
+> Подписи: top-N узлов берутся сортировкой по `degree` с `degree ?? 0` — узлы без `degree` схлопываются в 0 и попадают в хвост с произвольным взаимным порядком (стабильность сортировки не гарантируется для равных ключей). Для v1 это приемлемо: подписи — лишь ориентир, а узлы без degree почти всегда вне top-N.
+
 - [ ] **Step 4: Запустить — убедиться, что проходит**
 
 Run: `pnpm exec vitest run src/features/reference-graph/ui/graph-view.test.tsx`
@@ -2395,7 +2566,7 @@ Expected: всё зелёное. Линт ловит cross-feature/deep-импо
 
 - [ ] **Step 4: Ручной WebGL-QA (вне юнитов — спека §115)**
 
-Открыть `/graph`: узлы + рёбра видны, 2D и 3D переключаются и персистят отдельно от карты; клик по узлу-документу → `/documents/{id}`, по термину → `/glossary/{id}`; drag (пан/орбита) НЕ навигирует; подписи top-N по degree. **Повторно** прогнать ручной QA карты `/map` (узлы/режимы/overlay-поиск/marker/point-panel) — рендерер мигрировал на базу, поведение должно остаться прежним.
+Открыть `/graph`: узлы + рёбра видны, 2D и 3D переключаются и персистят отдельно от карты; клик по узлу-документу → `/documents/{id}`, по термину → `/glossary/{id}`; drag (пан/орбита) НЕ навигирует; подписи top-N по degree; рёбра: при высоком `weight` линия заметно непрозрачнее, при низком — бледнее (per-edge alpha работает). **Повторно** прогнать ручной QA карты `/map` (узлы/режимы/overlay-поиск/marker/point-panel) — рендерер мигрировал на базу, поведение должно остаться прежним.
 
 - [ ] **Step 5: Commit**
 
@@ -2429,11 +2600,12 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - `SceneRenderer` / `SceneRenderMode` (`"2d"|"3d"`) — Task 2 определяет, Tasks 3, 9 потребляют. ✔
 - `SceneRenderModel` `{ count; positions; colors; ids; bounds }` — Task 2; `RenderModel = SceneRenderModel & { docs; clusters }` (Task 3); `GraphRenderModel = SceneRenderModel & { edges; edgeAlphas; types }` (Tasks 5, 7, 8, 9). ✔
 - `onModelApplied()` / `disposeLayers()` / `requestRender()` / protected `scene`/`model`/`colorAttr`/`baseColors` — Task 2 объявляет, Tasks 3, 8 override'ят теми же именами. ✔
+- `override setModel(model)` сужает публичный тип: карта → `RenderModel` (Task 3), граф → `GraphRenderModel` (Task 8); оба зовут `super.setModel`. База типизирует `setModel(model: SceneRenderModel)` шире. ✔
 - `nodeHref(type, id)` — Task 6 определяет, Task 9 зовёт. ✔
 - `toGraphRenderModel` / `edgeAlpha` — Task 7; `getGraph`/`GraphResult`/`GraphData` — Task 5, реэкспорт Task 10, потребление Task 12. ✔
 - `SceneStatePanel`(label-props) / `SceneModeToggle`(+storageKey) / `SceneRegionLabels`/`ProjectedLabel` / `readSavedMode(storageKey)` — Task 4 определяет, Tasks 9, 12 (и адаптеры карты) потребляют. ✔
 
-**4. Phase-1 держит карту зелёной:** Task 1 Step 5, Task 3 Steps 4–5, Task 4 Steps 5–6 — каждая прогоняет регресс-сеть карты (`renderer/three-map-renderer.test.ts`, `to-render-model.test.ts`, `overlay/match-overlay.test.ts`, `ui/semantic-map-view.test.tsx`) и требует PASS без правки ассертов (только пути импортов). ✔
+**4. Phase-1 держит карту зелёной:** Task 1 Step 5, Task 3 Steps 4–6 (Step 4 дописывает 2 регресс-теста швов миграции — recolor оверлея + aspect-only resize — НЕ трогая старые ассерты; Steps 5–6 прогоняют сеть), Task 4 Steps 5–6 — каждая прогоняет регресс-сеть карты (`renderer/three-map-renderer.test.ts`, `to-render-model.test.ts`, `overlay/match-overlay.test.ts`, `ui/semantic-map-view.test.tsx`) и требует PASS без правки СТАРЫХ ассертов (только пути импортов + новые швы-тесты). ✔
 
 **5. Guardrails:** граф-слайс берёт общее ТОЛЬКО из `@/components/scene-3d` (Task 12 Step 3 явно проверяет отсутствие импортов из `@/features/semantic-map`); коммиты — `git add <named>` по именам; каждый коммит несёт Co-Authored-By. ✔
 
