@@ -48,9 +48,18 @@ describe("getMapPointDetails", () => {
     expect(res.success).toBe(false);
   });
 
-  it("422 с fields → success:false (validation)", async () => {
-    post.mockResolvedValue({ data: undefined, error: { fields: { ids: "too many" } } });
+  it("422 с code+fields → success:false, validation-канал с fieldErrors", async () => {
+    // code обязателен: ветка fields→ZodValidationError в rethrowApiError живёт
+    // внутри `if (code)`; без code упали бы в serverError-фолбэк (не validation).
+    post.mockResolvedValue({
+      data: undefined,
+      error: { code: "VALIDATION_ERROR", fields: { ids: "too many" } },
+    });
     const res = await getMapPointDetails(["pt-A"]);
-    expect(res.success).toBe(false);
+    expect(res).toMatchObject({
+      success: false,
+      code: "validation",
+      fieldErrors: { ids: "too many" },
+    });
   });
 });
