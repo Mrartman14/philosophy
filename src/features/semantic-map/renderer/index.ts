@@ -2,3 +2,4 @@
 export type { MapRenderer, RenderMode } from "./map-renderer";
 export { ThreeMapRenderer } from "./three-map-renderer";
 export { projectToScreen } from "./project";
+export { pickNearestPoint } from "./pick";
