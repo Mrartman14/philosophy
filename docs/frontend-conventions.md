@@ -182,22 +182,23 @@ export const createComment = createFormAction(async (formData) => {
 ### 3.4. Форма с `useActionState`
 
 ```tsx
+// Иллюстрация паттерна; <entity>/EntityCreateFormInput — плейсхолдеры слайса.
 "use client";
 import { useActionState } from "react";
-import { createTypedForm, Form, SubmitButton } from "@/components/ui";
-import { createComment } from "@/features/comments";
-import type { CommentCreateFormInput } from "@/features/comments/schemas";
+import { createTypedForm, Form, SubmitButton, TextInput } from "@/components/ui";
+import { createEntity } from "@/features/<entity>";
+import type { EntityCreateFormInput } from "@/features/<entity>/schemas";
 
-const { Field, f, errors } = createTypedForm<CommentCreateFormInput>();
+const { Field, f, errors } = createTypedForm<EntityCreateFormInput>();
 
-export function CreateCommentForm() {
-  const [state, action] = useActionState(createComment, { success: true, data: undefined });
+export function CreateEntityForm() {
+  const [state, action] = useActionState(createEntity, { success: true, data: undefined });
   return (
     <Form action={action} errors={errors(state)}>
-      <Field name="text" label="Комментарий" required>
-        <TextInput name={f("text")} />
+      <Field name="title" label="Заголовок" required>
+        <TextInput name={f("title")} />
       </Field>
-      <SubmitButton>Отправить</SubmitButton>
+      <SubmitButton>Создать</SubmitButton>
     </Form>
   );
 }
@@ -208,9 +209,10 @@ export function CreateCommentForm() {
 server-only `schemas.ts` (`import type { XFormInput } from "../schemas"`) — стирается
 компилятором, рантайм-схема в клиент не попадает. Биндить к `z.input` (НЕ `z.infer`):
 имена и required-ность берутся со входа схемы. `Field` форсит `required` для
-required-ключей. Поля вне схемы (контекстный `lecture_id`, инфра-инпуты) — raw-строкой
-`name="…"`. Динамические формы (`forms/**` builder/fill) — рантайм-острова, слой не
-применяется к их внутренним полям.
+required-ключей. Required-enforcement действует только на `<Field>` — hidden-инпуты
+через `f()` (контекстные/инфра-поля) ему не подчиняются, by design. Поля вне схемы
+(контекстный `lecture_id`, инфра-инпуты) — raw-строкой `name="…"`. Динамические формы
+(`forms/**` builder/fill) — рантайм-острова, слой не применяется к их внутренним полям.
 
 `Form` из `@/components/ui` оборачивает Base UI `Form` и принимает
 `errors: Record<string, string>` (Base UI допускает `string | string[]`,
