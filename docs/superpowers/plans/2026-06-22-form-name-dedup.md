@@ -16,7 +16,7 @@
 - **Серверная валидация — инвариант:** `Field.Root.validate` НЕ задавать (клиентская валидация Base UI остаётся инертной, сабмит не блокируется). Активируется только `clearErrors`-on-change + показ `data-invalid`/aria от серверных ошибок (через `<Form errors>` по `name`).
 - **НЕ ломать:** `FormField`/`createTypedForm`/required-enforcement итерации 1 (`<Field name=… required>` остаётся). `eslint.config.mjs` не трогать. Публичные типы контролов (закрытый `className`, G8) не менять.
 - **Базовый импорт:** `import { Field } from "@base-ui/react/field"` (G7 разрешает прямой `@base-ui` внутри `src/components/ui/**`).
-- **Контингенсии (если tsc/рантайм укажет):** (а) ref-вариантность — `Field.Control` типизирует ref как `HTMLElement`; если tsc ругается на `Ref<HTMLInputElement>`/`Ref<HTMLTextAreaElement>`, привести `ref={ref as React.Ref<HTMLElement>}` (реальный DOM — `<input>`/`<textarea>`, сужение безопасно). (б) точный атрибут invalid — ассертить тот, что реально появляется на инпуте при `<Form errors>` (`data-invalid` ИЛИ `aria-invalid`); проверить в отрендеренном выводе.
+- **Контингенсии (проверены эмпирически на 1.4.1, оставлены как страховка):** (а) ref-вариантность — `Field.Control` типизирует ref как `HTMLElement`; **по факту `ref={ref}` компилируется БЕЗ каста** для всех трёх контролов. Если на твоей версии tsc всё же ругается — `ref={ref as React.Ref<HTMLElement>}` (реальный DOM `<input>`/`<textarea>`, сужение безопасно). (б) invalid-атрибут — **подтверждено: на инпуте появляются И `data-invalid=""`, И `aria-invalid="true"`** → ассерт `toHaveAttribute("data-invalid")` корректен. (в) textarea-атрибуты НЕ на `FieldControlProps` (input-типа) — кладутся на render-элемент (вшито в код Task 1 Step 6, не требует действий).
 - **Зелёные перед PR:** `pnpm lint && pnpm typecheck && pnpm test && pnpm build` + **ручная браузер-приёмка** error-состояний (subagent кликать не может).
 - **Субагенты** (если запускаются) — на модели **opus**.
 - **Вне охвата:** клиентская Zod-валидация, `Field.Validity`/`match`, богатый `field()`-спред, `multiple` Select.
@@ -152,7 +152,7 @@ export const ColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
 ```tsx
 // src/components/ui/textarea.tsx
 import { Field } from "@base-ui/react/field";
-import { forwardRef, type TextareaHTMLAttributes } from "react";
+import { forwardRef, type ComponentProps, type TextareaHTMLAttributes } from "react";
 
 import { cn, FOCUS_RING_INPUT, SHELL_BASE } from "./cn";
 
@@ -173,9 +173,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   function Textarea({ grow, mono, rows = 4, ...rest }, ref) {
     return (
       <Field.Control
-        render={<textarea />}
         ref={ref}
-        rows={rows}
         className={cn(
           SHELL_BASE,
           "block w-full px-(--space-control-pad-x) py-(--space-control-pad-y)",
@@ -185,12 +183,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           "disabled:opacity-50 data-[invalid]:border-(--color-danger)",
           grow && "min-h-0 flex-1",
         )}
-        {...rest}
+        // textarea-атрибуты (rows/rest) кладём на render-ЭЛЕМЕНТ, а НЕ на
+        // Field.Control: его props-тип input-формы (`BaseUIComponentProps<'input'>`),
+        // и `rows` на нём → TS2322. mergeProps склеит инжекции Control'а (name/id/
+        // aria/value/onChange-clearErrors) поверх textarea, event-handler'ы — чейнятся
+        // (важно для controlled). Проверено эмпирически (tsc clean, onChange chains).
+        render={<textarea {...({ rows, ...rest } as ComponentProps<"textarea">)} />}
       />
     );
   },
 );
 ```
+
+> **Почему render-элемент, а не Field.Control.** `FieldControlProps extends BaseUIComponentProps<'input', …>` — статически input-формы; `rows`/`cols` и textarea-специфика на нём дают `TS2322`. `render={<textarea …/>}` меняет и рантайм-тег, и несёт свои props; Base UI мёржит инжектируемые field-props ПОВЕРХ (event-handler'ы чейнятся через `mergeProps` → `clearErrors` + пользовательский `onChange` оба срабатывают, что критично для controlled-textarea в `forms`-слайсе). `ref={ref}` (`Ref<HTMLTextAreaElement>`) на Field.Control компилируется **без каста** (проверено на 1.4.1).
 
 - [ ] **Step 7: Добавить тесты наследования для Textarea и ColorInput**
 
@@ -241,10 +246,40 @@ it("получает invalid-маркер, когда <Form errors> содерж
 });
 ```
 
-- [ ] **Step 9: Запустить весь kit-набор тестов**
+- [ ] **Step 8b: Тест controlled-чейнинга и aria-label override** (`src/components/ui/text-input.test.tsx`)
 
-Run: `pnpm vitest run src/components/ui`
-Expected: PASS. Если какой-то существующий тест покраснел из-за новых атрибутов (aria-describedby/aria-invalid/data-*) — обновить ассерт под новое (корректное) поведение, НЕ откатывать активацию.
+Самый широкий радиус-риск — controlled-контролы внутри `Field` (`forms`-слайс: `form-builder`). Зафиксировать, что пользовательский `onChange` ВСЁ ЕЩЁ вызывается (Base UI `clearErrors` его не вытесняет — `mergeProps` чейнит handler'ы), и что значение управляемо. Плюс зафиксировать a11y-смену: внутри `<Field label>` `aria-label` на контроле перебивается `aria-labelledby` (Field.Label именует). Импорты: `import { fireEvent } from "@testing-library/react";`.
+
+```tsx
+it("controlled внутри FormField: пользовательский onChange вызывается (чейнится с Base UI)", () => {
+  const onChange = vi.fn();
+  render(
+    <FormField name="title" label="Заголовок">
+      <TextInput value="x" onChange={onChange} />
+    </FormField>,
+  );
+  fireEvent.change(screen.getByLabelText("Заголовок"), { target: { value: "y" } });
+  expect(onChange).toHaveBeenCalledTimes(1);
+});
+
+it("внутри FormField aria-label на контроле перебивается Field.Label (accessible name = label)", () => {
+  render(
+    <FormField name="title" label="Видимый лейбл">
+      <TextInput aria-label="другое имя" />
+    </FormField>,
+  );
+  // accessible name резолвится через aria-labelledby (Field.Label), не aria-label.
+  expect(screen.getByLabelText("Видимый лейбл")).toBeInTheDocument();
+  expect(screen.queryByLabelText("другое имя")).toBeNull();
+});
+```
+
+(Импорт `vi` уже доступен в vitest-окружении; если файл его не импортит — `import { vi } from "vitest";`.)
+
+- [ ] **Step 9: Запустить весь kit-набор тестов + потребителей с controlled-контролами**
+
+Run: `pnpm vitest run src/components/ui src/features/forms`
+Expected: PASS. `src/features/forms` — самый рискованный потребитель (controlled `<TextInput value onChange>`/`<Textarea>` внутри `<FormField>`: form-builder, form-builder-field-row); регрессии нет (onChange чейнится, value управляем — проверено по исходникам Base UI), тест это подтверждает. Если какой-то существующий тест покраснел из-за новых атрибутов (aria-describedby/aria-invalid/data-*/aria-labelledby) — обновить ассерт под новое (корректное) поведение, НЕ откатывать активацию.
 
 - [ ] **Step 10: Lint + typecheck свои файлы**
 
@@ -344,17 +379,19 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 </Field>
 ```
 
-И в абзаце после примера заменить фразу про вторую точку name на:
+**ВНИМАНИЕ (ревью):** в реальном `docs/frontend-conventions.md` (после итерации 1) НЕТ фразы «про вторую точку name» — абзац после примера говорит про `createTypedForm`/`z.input`/required-enforcement. НЕ искать что заменять. **ДОБАВИТЬ новый абзац** сразу после существующего (его оставить как есть):
 
 ```markdown
 `name` пишется ОДИН раз — на `<Field>` (= Base UI `Field.Root`); контролы
 (`TextInput`/`Textarea`/`ColorInput`/`Select`/`Checkbox`) наследуют его из контекста
 (Base UI `fieldName ?? nameProp`). `f("…")` нужен только для hidden-инпутов
 (`idempotency`, JSON-острова), кастом-виджетов (AST-редактор) и standalone-контролов
-вне `<Field>`. Перевод текстовых контролов на `Field.Control` попутно включает
-native-проводку: `data-invalid` рамка, `aria-invalid`/`aria-describedby`, focus-on-error,
-`clearErrors` при вводе (серверная валидация при этом не трогается — `Field.Root.validate`
-не задаём).
+вне `<Field>`. `aria-label` на контроле внутри `<Field>` избыточен — `Field.Label`
+именует его через `aria-labelledby` (перебивает `aria-label`); не дублируй.
+Перевод текстовых контролов на `Field.Control` попутно включает native-проводку:
+`data-invalid` рамка, `aria-invalid`/`aria-describedby`, focus-on-error, `clearErrors`
+при вводе (серверная валидация при этом не трогается — `Field.Root.validate` не задаём;
+кастом-виджеты вроде AST-редактора в фокус-цикл не входят — нет зарегистрированного контрола).
 ```
 
 - [ ] **Step 2: Финальный полный гейт**
@@ -372,11 +409,12 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 - [ ] **Step 4: MANUAL BROWSER QA (не автоматизируется — subagent кликать не может)**
 
-Зафиксировать как PENDING для человека. Прогнать в браузере (`pnpm dev`, :3001) на форме banners create:
-- Отправить невалидную форму → серверная ошибка → у текстового поля появляется **красная рамка** (`data-[invalid]:border`) — раньше была мёртвой.
-- Поле связано с сообщением об ошибке (`aria-describedby`) и помечено `aria-invalid` (проверить в DevTools/скринридере).
-- При вводе в поле с ошибкой — ошибка гаснет (`clearErrors`).
-- Standalone-поля (поиск/фильтры, напр. `lecture-search`) работают как раньше.
+Зафиксировать как PENDING для человека. Глобальная активация validity-проводки касается ВСЕХ форм сразу — приёмку гнать НЕ только на banners. Прогнать в браузере (`pnpm dev`, :3001):
+- **banners create:** невалидный сабмит → серверная ошибка → у текстового поля **красная рамка** (`data-[invalid]:border`, раньше мёртвая); поле помечено `aria-invalid`, связано с сообщением (`aria-describedby`); при вводе ошибка гаснет (`clearErrors`).
+- **многополевая форма (banners/events):** сабмит с ошибкой → курсор **прыгает в первое ошибочное текстовое поле** (focus-on-error, раньше не прыгал). Кастом-виджет (AST `blocks`) в фокус-цикл НЕ входит — это ожидаемо.
+- **controlled-форма `forms`-слайса (form-builder):** ввод в title/поля работает как раньше (значение управляемо, не «прыгает»), ошибки гаснут при правке — подтвердить отсутствие регрессии контролируемости.
+- **a11y-озвучка:** на поле с `aria-label`, отличным от видимого лейбла, скринридер теперь озвучивает **видимый лейбл** (`aria-labelledby` перебивает `aria-label`). Убедиться, что это корректно (видимый лейбл — валидное имя); при необходимости снять дублирующий `aria-label`.
+- **standalone-поля** (поиск/фильтры, напр. `lecture-search`, `editor-inspector`) работают как раньше.
 
 ---
 
