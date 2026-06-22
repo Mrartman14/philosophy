@@ -57,7 +57,6 @@ export function BannerCreateForm() {
 
         <Field name="background_color" label={t("fieldColor")} required>
           <ColorInput
-            name={f("background_color")}
             defaultValue="#336699"
             required
             aria-label={t("fieldColor")}
@@ -66,7 +65,6 @@ export function BannerCreateForm() {
 
         <Field name="target_audience" label={t("fieldAudience")} required>
           <Select
-            name={f("target_audience")}
             defaultValue="all"
             options={audienceOptions(t)}
             aria-label={t("fieldAudienceAriaLabel")}
@@ -79,15 +77,15 @@ export function BannerCreateForm() {
         </Inline>
 
         <Field name="start_at" label={t("fieldStartAt")} required>
-          <TextInput name={f("start_at")} type="datetime-local" required />
+          <TextInput type="datetime-local" required />
         </Field>
 
         <Field name="end_at" label={t("fieldEndAt")}>
-          <TextInput name={f("end_at")} type="datetime-local" />
+          <TextInput type="datetime-local" />
         </Field>
 
         <Field name="event_id" label={t("fieldEventId")}>
-          <TextInput name={f("event_id")} placeholder={t("eventIdPlaceholder")} />
+          <TextInput placeholder={t("eventIdPlaceholder")} />
         </Field>
 
         <FormFeedback result={state} forbiddenAction={t("createAction")} />

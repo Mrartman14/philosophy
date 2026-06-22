@@ -41,7 +41,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
         <IdempotencyField result={state} />
 
         <Field name="type" label={t("createTypeLabel")} required>
-          <Select name={f("type")} options={options} defaultValue={rootTypes[0] ?? ""} aria-label={t("createTypeAriaLabel")} />
+          <Select options={options} defaultValue={rootTypes[0] ?? ""} aria-label={t("createTypeAriaLabel")} />
         </Field>
 
         <Field name="blocks" label={t("createBodyLabel")} required>
