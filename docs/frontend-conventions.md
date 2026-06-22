@@ -320,6 +320,49 @@ const result = await submitForm(prev, fd);
 if (result.success) rotate();  // ротировать только после успеха
 ```
 
+### 3.4.2. Общие хелперы форм и политика фидбэка
+
+Чтобы не плодить копипасту, в формах используем общие примитивы (НЕ переписывай
+их разметку руками):
+
+- **`initialActionState<T>(data)`** (`@/utils/action-state`) — начальный
+  `{ success: true, data }` для `useActionState`. Тип-аргумент явно:
+  `const initial = initialActionState<Entity | null>(null)`.
+- **`<FormFeedback result={state} forbiddenAction={t("xForbiddenAction")} {...successText} />`**
+  (`@/components/ui`) — единая отрисовка фидбэка под формой: success (зелёный
+  `role="status"`), forbidden (branded через `errors.forbiddenAction`), validation
+  `_form` и generic (`role="alert"`, токен `--color-danger`). НЕ рисуй ручные
+  `<p className="text-red-600">`.
+  - `forbiddenAction` — локализованное действие в родительном падеже из неймспейса
+    фичи (напр. `createForbiddenAction: "создание маршрута"`).
+  - `successText` гейтить по данным (exactOptionalPropertyTypes — нельзя передать
+    `undefined`): `const successText = state.success && state.data ? { successText: t("saved") } : {}`,
+    в JSX `{...successText}`. Иначе плашка успеха покажется на маунте (начальный
+    `state.success === true`).
+  - Полевые ошибки рисует `FormField` (Base UI `Field.Error`) из карты
+    `<Form errors={errors(state)}>` — это отдельно от `FormFeedback`.
+  - Исключения (фидбэк рисуют сами): формы с доменным маппингом серверных кодов
+    (auth `ERROR_TEXT`) и императивные `useState`-флоу (uploads, optimistic-реакции).
+- **`useActionRedirect(state, data => url)`** (`@/hooks/use-action-redirect`) —
+  редирект после успешного create вместо ручного `useEffect`+`router.push`. Для
+  `router.refresh()`-сценариев (in-place edit) хук не подходит — оставляй `useEffect`.
+- **`<VersionField version={entity.version} />`** (`@/components/ui`) — скрытое поле
+  optimistic-concurrency (412). Заменяет `<input type="hidden" name="version" …>`.
+
+**toast vs inline.** Поверхность фидбэка выбираем по типу действия:
+
+- **inline `FormFeedback`** — для форм-страниц и панелей редактирования, где
+  результат логически принадлежит форме (create / edit / meta / visibility-формы).
+  Ошибка/успех остаются рядом с полями.
+- **toast** (`useToast` + `toastActionError` из `@/utils/action-toast`) — для
+  действий-кнопок в списках/строках и over-the-content операций, где формы как
+  поверхности нет либо она закрывается (canvas-операции, `ConfirmDialog.onConfirm`,
+  `share-button`, `tokens-manager` create/revoke). Результат транзиентный → тост.
+
+По этому правилу `share-button` и `tokens-manager` остаются на toast (действия в
+управляющих списках, не формы-страницы) — ранее открытый вопрос «toast vs inline»
+закрыт в пользу toast.
+
 ### 3.5. Filter / search через `searchParams`
 
 Для списков используем server-side фильтрацию через URL. Page получает
