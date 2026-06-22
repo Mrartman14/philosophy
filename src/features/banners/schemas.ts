@@ -146,4 +146,6 @@ export type BannerCreateInput = z.infer<ReturnType<typeof makeBannerCreateSchema
 /** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
 export type BannerCreateFormInput = z.input<ReturnType<typeof makeBannerCreateSchema>>;
 export type BannerUpdateInput = z.infer<ReturnType<typeof makeBannerUpdateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type BannerUpdateFormInput = z.input<ReturnType<typeof makeBannerUpdateSchema>>;
 export type BannerIdInput = z.infer<typeof BannerIdSchema>;

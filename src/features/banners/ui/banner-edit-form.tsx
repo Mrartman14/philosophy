@@ -7,8 +7,8 @@ import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   Checkbox,
   ColorInput,
+  createTypedForm,
   Form,
-  FormField,
   IdempotencyField,
   Inline,
   Label,
@@ -23,12 +23,15 @@ import { instantToWallClock } from "@/utils/datetime-form";
 
 import { updateBanner } from "../actions";
 import { audienceOptions, toColorInputValue } from "../display";
+import type { BannerUpdateFormInput } from "../schemas";
 import type { Banner } from "../types";
 
 const initial: ActionResult<Banner | null> = {
   success: true,
   data: null,
 };
+
+const { Field, f, errors } = createTypedForm<BannerUpdateFormInput>();
 
 interface Props {
   banner: Banner;
@@ -42,80 +45,80 @@ export function BannerEditForm({ banner, tz }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>(banner.blocks ?? []);
   const [state, action] = useActionState(updateBanner, initial);
 
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
-
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
-        <input type="hidden" name="id" value={banner.id ?? ""} />
+        <input type="hidden" name={f("id")} value={banner.id ?? ""} />
+        {/* version (If-Match) — НЕ ключ схемы → raw name. */}
         <input type="hidden" name="version" value={banner.version ?? ""} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
         <input
           type="hidden"
-          name="dismissible"
+          name={f("blocks")}
+          value={JSON.stringify(blocks)}
+        />
+        <input
+          type="hidden"
+          name={f("dismissible")}
           value={dismissible ? "true" : "false"}
         />
         <IdempotencyField result={state} />
 
-        <FormField name="background_color" label={t("fieldColor")} required>
+        <Field name="background_color" label={t("fieldColor")} required>
           <ColorInput
             defaultValue={toColorInputValue(banner.background_color)}
             required
             aria-label={t("fieldColor")}
           />
-        </FormField>
+        </Field>
 
-        <FormField name="target_audience" label={t("fieldAudience")} required>
+        <Field name="target_audience" label={t("fieldAudience")} required>
           <Select
             defaultValue={banner.target_audience ?? "all"}
             options={audienceOptions(t)}
             aria-label={t("fieldAudienceAriaLabel")}
           />
-        </FormField>
+        </Field>
 
         <Inline align="center" gap="tight" className="text-sm">
           <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
           <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
         </Inline>
 
-        <FormField name="start_at" label={t("fieldStartAt")} required>
+        <Field name="start_at" label={t("fieldStartAt")} required>
           <TextInput
             type="datetime-local"
             defaultValue={instantToWallClock(banner.start_at, tz)}
             required
           />
-        </FormField>
+        </Field>
 
-        <FormField name="end_at" label={t("fieldEndAt")}>
+        <Field name="end_at" label={t("fieldEndAt")}>
           <TextInput
             type="datetime-local"
             defaultValue={instantToWallClock(banner.end_at, tz)}
           />
-        </FormField>
+        </Field>
         <p className="text-xs text-(--color-fg-muted)">
           {t("hintEndAt")}
         </p>
 
-        <FormField name="event_id" label={t("fieldEventId")}>
+        <Field name="event_id" label={t("fieldEventId")}>
           <TextInput
             defaultValue={banner.event_id ?? ""}
             placeholder={t("eventIdPlaceholder")}
           />
-        </FormField>
+        </Field>
         <p className="text-xs text-(--color-fg-muted)">
           {t("hintEventId")}
         </p>
 
-        <FormField name="blocks" label={t("fieldBlocks")}>
+        <Field name="blocks" label={t("fieldBlocks")} required>
           <LazyAstEditor
             defaultValue={banner.blocks ?? []}
             entityContext="banner"
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
           />
-        </FormField>
+        </Field>
 
         {state.success && state.data && (
           <p className="text-sm text-(--color-fg-muted)">{t("saved")}</p>
@@ -127,9 +130,9 @@ export function BannerEditForm({ banner, tz }: Props) {
         )}
         {!state.success &&
           state.code === "validation" &&
-          fieldErrors._form && (
+          errors(state)._form && (
             <p role="alert" className="text-sm text-red-600">
-              {fieldErrors._form}
+              {errors(state)._form}
             </p>
           )}
         {!state.success && !state.code && (

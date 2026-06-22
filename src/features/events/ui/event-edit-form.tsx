@@ -6,8 +6,8 @@ import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   Checkbox,
+  createTypedForm,
   Form,
-  FormField,
   IdempotencyField,
   Inline,
   Label,
@@ -20,12 +20,15 @@ import type { ActionResult } from "@/utils/create-action";
 import { instantToWallClock } from "@/utils/datetime-form";
 
 import { updateEvent } from "../actions";
+import type { EventUpdateFormInput } from "../schemas";
 import type { CalendarEvent } from "../types";
 
 const initial: ActionResult<CalendarEvent | null> = {
   success: true,
   data: null,
 };
+
+const { Field, f, errors } = createTypedForm<EventUpdateFormInput>();
 
 interface Props {
   event: CalendarEvent;
@@ -50,11 +53,6 @@ export function EventEditForm({ event, tz }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>(event.blocks ?? []);
   const [state, action] = useActionState(updateEvent, initial);
 
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
-
   // При переключении формата приводим значения, чтобы input
   // type="date"/"datetime-local" не потерял значение.
   const handleAllDayChange = (next: boolean) => {
@@ -69,20 +67,20 @@ export function EventEditForm({ event, tz }: Props) {
   };
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
-        <input type="hidden" name="id" value={event.id ?? ""} />
+        <input type="hidden" name={f("id")} value={event.id ?? ""} />
         <input type="hidden" name="version" value={event.version ?? ""} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 
-        <FormField name="title" label={t("fieldTitle")} required>
+        <Field name="title" label={t("fieldTitle")} required>
           <TextInput
             defaultValue={event.title ?? ""}
             required
             maxLength={500}
           />
-        </FormField>
+        </Field>
 
         <Inline align="center" gap="tight" className="text-sm">
           <Checkbox
@@ -94,7 +92,7 @@ export function EventEditForm({ event, tz }: Props) {
           <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
         </Inline>
 
-        <FormField
+        <Field
           name="start_date"
           label={allDay ? t("fieldStartDate") : t("fieldStartDateTime")}
           required
@@ -105,9 +103,9 @@ export function EventEditForm({ event, tz }: Props) {
             onChange={(e) => { setStartDate(e.target.value); }}
             required
           />
-        </FormField>
+        </Field>
 
-        <FormField
+        <Field
           name="end_date"
           label={
             allDay
@@ -120,25 +118,25 @@ export function EventEditForm({ event, tz }: Props) {
             value={endDate}
             onChange={(e) => { setEndDate(e.target.value); }}
           />
-        </FormField>
+        </Field>
 
-        <FormField name="rrule" label={t("fieldRrule")}>
+        <Field name="rrule" label={t("fieldRrule")}>
           <TextInput
             defaultValue={event.rrule ?? ""}
             placeholder="FREQ=WEEKLY;BYDAY=MO"
           />
-        </FormField>
+        </Field>
         <p className="text-xs text-(--color-fg-muted)">
           {t("clearLimitation")}
         </p>
 
-        <FormField name="blocks" label={t("fieldBlocks")}>
+        <Field name="blocks" label={t("fieldBlocks")} required>
           <LazyAstEditor
             defaultValue={event.blocks ?? []}
             entityContext="event"
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
           />
-        </FormField>
+        </Field>
 
         {state.success && state.data && (
           <p className="text-sm text-(--color-fg-muted)">{t("savedSuccess")}</p>

@@ -5,9 +5,9 @@ import { useActionState, useEffect, useState } from "react";
 
 import {
   Checkbox,
+  createTypedForm,
   Form,
   FormFeedback,
-  FormField,
   IdempotencyField,
   Inline,
   Label,
@@ -19,6 +19,7 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createEvent } from "../actions";
+import type { EventCreateFormInput } from "../schemas";
 import type { CalendarEvent } from "../types";
 
 const initial: ActionResult<CalendarEvent | null> = {
@@ -26,16 +27,13 @@ const initial: ActionResult<CalendarEvent | null> = {
   data: null,
 };
 
+const { Field, errors } = createTypedForm<EventCreateFormInput>();
+
 export function EventCreateForm() {
   const t = useT("events");
   const router = useRouter();
   const [allDay, setAllDay] = useState(true);
   const [state, action] = useActionState(createEvent, initial);
-
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   useEffect(() => {
     if (state.success && state.data?.id) {
@@ -44,23 +42,23 @@ export function EventCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-xl">
         <IdempotencyField result={state} />
-        <FormField name="title" label={t("fieldTitle")} required>
+        <Field name="title" label={t("fieldTitle")} required>
           <TextInput
             required
             maxLength={500}
             placeholder={t("titlePlaceholder")}
           />
-        </FormField>
+        </Field>
 
         <Inline align="center" gap="tight" className="text-sm">
           <Checkbox id="all_day" name="all_day" checked={allDay} onCheckedChange={setAllDay} />
           <Label htmlFor="all_day">{t("fieldAllDay")}</Label>
         </Inline>
 
-        <FormField
+        <Field
           name="start_date"
           label={allDay ? t("fieldStartDate") : t("fieldStartDateTime")}
           required
@@ -69,9 +67,9 @@ export function EventCreateForm() {
             type={allDay ? "date" : "datetime-local"}
             required
           />
-        </FormField>
+        </Field>
 
-        <FormField
+        <Field
           name="end_date"
           label={
             allDay
@@ -80,11 +78,11 @@ export function EventCreateForm() {
           }
         >
           <TextInput type={allDay ? "date" : "datetime-local"} />
-        </FormField>
+        </Field>
 
-        <FormField name="rrule" label={t("fieldRrule")}>
+        <Field name="rrule" label={t("fieldRrule")}>
           <TextInput placeholder="FREQ=WEEKLY;BYDAY=MO" />
-        </FormField>
+        </Field>
 
         <FormFeedback result={state} forbiddenAction={t("createAction")} />
 

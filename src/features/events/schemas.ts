@@ -130,5 +130,9 @@ export function makeEventIdSchema(t: ValidationT) {
 }
 
 export type EventCreateInput = z.infer<ReturnType<typeof makeEventCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type EventCreateFormInput = z.input<ReturnType<typeof makeEventCreateSchema>>;
 export type EventUpdateInput = z.infer<ReturnType<typeof makeEventUpdateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type EventUpdateFormInput = z.input<ReturnType<typeof makeEventUpdateSchema>>;
 export type EventIdInput = z.infer<ReturnType<typeof makeEventIdSchema>>;
