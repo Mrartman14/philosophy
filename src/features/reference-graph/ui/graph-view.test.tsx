@@ -22,6 +22,9 @@ vi.mock("./three-graph-renderer", () => ({
 }));
 // Общие шеллы/хелперы scene-3d — тонкие заглушки.
 vi.mock("@/components/scene-3d", () => ({
+  SceneCanvasIsolation: ({ children }: { children: React.ReactNode }) => (
+    <div data-scene-canvas dir="ltr">{children}</div>
+  ),
   SceneModeToggle: () => <div data-testid="mode-toggle" />,
   SceneRegionLabels: () => <div data-testid="region-labels" />,
   readSavedMode: () => "2d",

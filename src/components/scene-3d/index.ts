@@ -10,5 +10,6 @@ export type { SceneRenderer, SceneRenderMode } from "./scene-renderer";
 export type { SceneRenderModel } from "./scene-render-model";
 export { ThreeSceneRenderer } from "./three-scene-renderer";
 export { SceneStatePanel } from "./ui/scene-state-panel";
+export { SceneCanvasIsolation } from "./ui/scene-canvas-isolation";
 export { SceneModeToggle, readSavedMode } from "./ui/scene-mode-toggle";
 export { SceneRegionLabels, type ProjectedLabel } from "./ui/scene-region-labels";

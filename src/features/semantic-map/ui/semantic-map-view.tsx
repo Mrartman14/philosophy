@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useReducedMotion } from "@/components/appearance";
-import { readSavedMode } from "@/components/scene-3d";
+import { SceneCanvasIsolation, readSavedMode } from "@/components/scene-3d";
 import { useT } from "@/i18n/client";
 
 import { getMapPointDetails } from "../actions";
@@ -142,14 +142,10 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
 
   return (
     <div ref={wrapRef} className="relative h-full w-full overflow-hidden">
-      {/* dir=ltr изолирует 3D-сцену: WebGL-холст и region-labels (позиция через
-          inline left:x — canvas-координаты) НЕ зеркалятся в RTL. Оверлеи ниже —
-          снаружи, зеркалятся вместе со страницей. absolute inset-0 = бокс wrapRef,
-          поэтому размер холста (ResizeObserver на wrapRef) не меняется. */}
-      <div data-scene-canvas dir="ltr" className="absolute inset-0">
+      <SceneCanvasIsolation>
         <canvas ref={canvasRef} className="block h-full w-full" />
         <MapRegionLabels labels={labels} />
-      </div>
+      </SceneCanvasIsolation>
       <div className="absolute end-3 top-3">
         <MapModeToggle mode={mode} onChange={setMode} />
       </div>
