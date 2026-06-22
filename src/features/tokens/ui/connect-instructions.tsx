@@ -32,7 +32,7 @@ export function ConnectInstructions({ mcpUrl, token }: Props) {
       <div className="flex flex-col gap-1">
         <span className="text-xs text-(--color-fg-muted)">{t("connectUrlLabel")}</span>
         <div className="flex items-center gap-2">
-          <code className="flex-1 overflow-x-auto rounded border border-(--color-border) bg-(--color-surface-subtle) px-2 py-1 text-xs">
+          <code dir="ltr" className="flex-1 overflow-x-auto rounded border border-(--color-border) bg-(--color-surface-subtle) px-2 py-1 text-xs">
             {mcpUrl}
           </code>
           <CopyButton value={mcpUrl} />
@@ -42,7 +42,7 @@ export function ConnectInstructions({ mcpUrl, token }: Props) {
       <div className="flex flex-col gap-1">
         <span className="text-xs text-(--color-fg-muted)">{t("connectCliLabel")}</span>
         <div className="flex items-center gap-2">
-          <code className="flex-1 overflow-x-auto whitespace-pre rounded border border-(--color-border) bg-(--color-surface-subtle) px-2 py-1 text-xs">
+          <code dir="ltr" className="flex-1 overflow-x-auto whitespace-pre rounded border border-(--color-border) bg-(--color-surface-subtle) px-2 py-1 text-xs">
             {cliCmd}
           </code>
           <CopyButton value={cliCmd} />

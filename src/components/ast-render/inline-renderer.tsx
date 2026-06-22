@@ -50,7 +50,8 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
     case "italic":
       return <em>{children}</em>;
     case "code":
-      return <code>{children}</code>;
+      // dir=ltr: inline-код всегда LTR — bidi не должен переставлять токены в RTL.
+      return <code dir="ltr">{children}</code>;
     case "link": {
       const href = (mark.attrs as { href?: unknown } | undefined)?.href;
       return <LinkMark href={typeof href === "string" ? href : undefined}>{children}</LinkMark>;

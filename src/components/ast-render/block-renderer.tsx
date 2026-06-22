@@ -43,7 +43,8 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
         .map((n) => (n.type === "text" ? n.text ?? "" : ""))
         .join("");
       return (
-        <pre data-language={langStr}>
+        // dir=ltr: код всегда LTR — иначе bidi рвёт пунктуацию/скобки в RTL-контексте.
+        <pre dir="ltr" data-language={langStr}>
           <code>{text}</code>
         </pre>
       );

@@ -129,7 +129,8 @@ export function TokenList({ tokens, canManage }: Props) {
               <Td>{statusLabel[status]}</Td>
               <Td>{label && label !== "" ? label : "—"}</Td>
               <Td>
-                <code className="text-xs">{hint && hint !== "" ? hint : "—"}</code>
+                {/* dir=ltr: latin token_hint (phil_pat_…) — bidi не должен рвать префикс/символы в RTL. */}
+                <code dir="ltr" className="text-xs">{hint && hint !== "" ? hint : "—"}</code>
               </Td>
               <Td className="whitespace-nowrap">{fmtDate(token.created_at)}</Td>
               <Td className="whitespace-nowrap">
