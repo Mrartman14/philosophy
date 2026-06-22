@@ -1,6 +1,7 @@
 // src/app/me/settings/page.tsx
 import type { Metadata } from "next";
 
+import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import { RouterLink } from "@/components/ui";
 import { LogoutAllForm, LogoutForm } from "@/features/auth";
 import { SubscriptionsSection } from "@/features/notifications";
@@ -83,15 +84,17 @@ export default async function SettingsPage() {
           initialEnabled={historySettings.tracking_enabled ?? false}
           canManage={canManageOwnHistory(me)}
         />
-        <RouterLink href="/me/stats" className="text-sm">
+        <RouterLink href="/me/stats" className="inline-flex items-center gap-1 text-sm">
           {t("viewMyStats")}
+          <ChevronIcon className="rtl-flip" />
         </RouterLink>
       </section>
 
       <section className="flex flex-col items-start gap-3 border-t border-(--color-border) pt-8">
         <h2 className="text-lg font-semibold">{t("sectionAccount")}</h2>
-        <RouterLink href="/me/tokens" className="text-sm">
+        <RouterLink href="/me/tokens" className="inline-flex items-center gap-1 text-sm">
           {t("manageTokens")}
+          <ChevronIcon className="rtl-flip" />
         </RouterLink>
         <LogoutForm />
         <LogoutAllForm />

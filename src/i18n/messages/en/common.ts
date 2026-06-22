@@ -35,8 +35,8 @@ const common = {
   // caller side and passed through the labels prop)
   pagination: {
     ariaLabel: "Pagination",
-    prev: "← Back",
-    next: "Next →",
+    prev: "Back",
+    next: "Next",
     range: "{from}–{to} of {total}",
     rangeEmpty: "0 of 0",
   },

@@ -100,7 +100,7 @@ const editor = {
   // --- Comment 2-stage picker (comment-2stage-picker) ---
   commentPickerStep1: "Шаг 1: выберите лекцию",
   commentPickerStep2: "Шаг 2: выберите комментарий",
-  commentPickerChangeLecture: "← Сменить лекцию",
+  commentPickerChangeLecture: "Сменить лекцию",
 
   // --- Schema server (schema-server) ---
   schemaLoadError: "Не удалось загрузить схему AST-редактора",

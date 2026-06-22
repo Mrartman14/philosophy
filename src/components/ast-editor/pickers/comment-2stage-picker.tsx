@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 
+import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
@@ -26,7 +27,7 @@ export function Comment2StagePicker({ defaultLectureId, onSelect }: Comment2Stag
   }
   return (
     <div>
-      <Button tone="quiet" compact onClick={() => { setLectureId(undefined); }}>{t("commentPickerChangeLecture")}</Button>
+      <Button tone="quiet" compact onClick={() => { setLectureId(undefined); }}><ChevronIcon className="rtl-flip rotate-180" />{t("commentPickerChangeLecture")}</Button>
       <p>{t("commentPickerStep2")}</p>
       <CommentPicker lectureId={lectureId} onSelect={onSelect} />
     </div>

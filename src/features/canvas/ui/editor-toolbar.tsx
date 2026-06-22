@@ -1,5 +1,6 @@
 "use client";
 // src/features/canvas/ui/editor-toolbar.tsx
+import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
@@ -31,7 +32,7 @@ export function EditorToolbar({
 
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-(--color-border) p-2">
-      <Button type="button" compact tone="quiet" onClick={onBack}>{t("toolbar.back")}</Button>
+      <Button type="button" compact tone="quiet" onClick={onBack}><ChevronIcon className="rtl-flip rotate-180" />{t("toolbar.back")}</Button>
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
 
       <Button type="button" compact onClick={onAddText}>{t("toolbar.addText")}</Button>

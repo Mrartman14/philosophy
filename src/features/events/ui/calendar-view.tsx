@@ -1,4 +1,5 @@
 // src/features/events/ui/calendar-view.tsx
+import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import { AstRender } from "@/components/ast-render";
 import { RouterLink } from "@/components/ui";
 import { getT, getServerFmt, getLocale } from "@/i18n";
@@ -38,16 +39,18 @@ export async function CalendarView({ range, occurrences }: Props) {
       >
         <RouterLink
           href={`/calendar?month=${range.prevMonth}`}
-          className="text-sm hover:underline"
+          className="inline-flex items-center gap-1 text-sm hover:underline"
         >
+          <ChevronIcon className="rtl-flip rotate-180" />
           {t("prevMonth")}
         </RouterLink>
         <h2 className="text-xl font-semibold capitalize">{range.label}</h2>
         <RouterLink
           href={`/calendar?month=${range.nextMonth}`}
-          className="text-sm hover:underline"
+          className="inline-flex items-center gap-1 text-sm hover:underline"
         >
           {t("nextMonth")}
+          <ChevronIcon className="rtl-flip" />
         </RouterLink>
       </nav>
 

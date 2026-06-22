@@ -2,8 +2,8 @@
 // Mirror of ru/events.ts (English literals). Key parity enforced by satisfies Messages.
 const events = {
   // --- calendar navigation ---
-  prevMonth: "← Previous",
-  nextMonth: "Next →",
+  prevMonth: "Previous",
+  nextMonth: "Next",
   monthNavLabel: "Month navigation",
   noEvents: "No events this month.",
   recurringEvent: "Recurring event",

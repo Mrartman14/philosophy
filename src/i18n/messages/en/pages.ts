@@ -158,7 +158,7 @@ const pages = {
 
   // ─── /documents/[id]/edit ────────────────────────────────────────────
   documentEditHeading: "Edit",
-  documentEditBack: "← Back to document",
+  documentEditBack: "Back to document",
   documentEditMetaTitleFull: "Edit: {filename}",
   documentEditMetaTitleFallback: "Edit document",
 

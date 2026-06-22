@@ -158,7 +158,7 @@ const pages = {
 
   // ─── /documents/[id]/edit ────────────────────────────────────────────
   documentEditHeading: "Редактирование",
-  documentEditBack: "← К документу",
+  documentEditBack: "К документу",
   documentEditMetaTitleFull: "Редактирование: {filename}",
   documentEditMetaTitleFallback: "Редактирование документа",
 

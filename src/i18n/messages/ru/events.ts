@@ -2,8 +2,8 @@
 // UI-строки слайса events. Zod-сообщения — в validation.ts под ключом events.*.
 const events = {
   // --- calendar navigation ---
-  prevMonth: "← Предыдущий",
-  nextMonth: "Следующий →",
+  prevMonth: "Предыдущий",
+  nextMonth: "Следующий",
   monthNavLabel: "Навигация по месяцам",
   noEvents: "В этом месяце событий нет.",
   recurringEvent: "Повторяющееся событие",

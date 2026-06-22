@@ -35,8 +35,8 @@ const common = {
   // на стороне caller и пробрасывается пропом labels)
   pagination: {
     ariaLabel: "Пагинация",
-    prev: "← Назад",
-    next: "Вперёд →",
+    prev: "Назад",
+    next: "Вперёд",
     range: "{from}–{to} из {total}",
     rangeEmpty: "0 из 0",
   },

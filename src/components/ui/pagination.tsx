@@ -1,4 +1,6 @@
 // src/components/ui/pagination.tsx
+import { ChevronIcon } from "@/assets/icons/chevron-icon";
+
 import { cn } from "./cn";
 import { RouterLink } from "./router-link";
 
@@ -41,8 +43,8 @@ export interface PaginationLabels {
 
 const RU_DEFAULT_LABELS: PaginationLabels = {
   ariaLabel: "Пагинация",
-  prev: "← Назад",
-  next: "Вперёд →",
+  prev: "Назад",
+  next: "Вперёд",
   range: "{from}–{to} из {total}",
   rangeEmpty: "0 из 0",
 };
@@ -119,12 +121,14 @@ export function Pagination({
       {hasPrev ? (
         <RouterLink
           href={buildHref(basePath, offsetParam, prev, searchParams)}
-          className={linkCls}
+          className={cn(linkCls, "inline-flex items-center gap-1")}
         >
+          <ChevronIcon className="rtl-flip rotate-180" />
           {labels.prev}
         </RouterLink>
       ) : (
-        <span className={disabledCls}>
+        <span className={cn(disabledCls, "inline-flex items-center gap-1")}>
+          <ChevronIcon className="rtl-flip rotate-180" />
           {labels.prev}
         </span>
       )}
@@ -136,13 +140,15 @@ export function Pagination({
       {hasNext ? (
         <RouterLink
           href={buildHref(basePath, offsetParam, next, searchParams)}
-          className={linkCls}
+          className={cn(linkCls, "inline-flex items-center gap-1")}
         >
           {labels.next}
+          <ChevronIcon className="rtl-flip" />
         </RouterLink>
       ) : (
-        <span className={disabledCls}>
+        <span className={cn(disabledCls, "inline-flex items-center gap-1")}>
           {labels.next}
+          <ChevronIcon className="rtl-flip" />
         </span>
       )}
     </nav>

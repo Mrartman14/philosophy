@@ -100,7 +100,7 @@ const editor = {
   // --- Comment 2-stage picker (comment-2stage-picker) ---
   commentPickerStep1: "Step 1: select a lecture",
   commentPickerStep2: "Step 2: select a comment",
-  commentPickerChangeLecture: "← Change lecture",
+  commentPickerChangeLecture: "Change lecture",
 
   // --- Schema server (schema-server) ---
   schemaLoadError: "Failed to load AST editor schema",

@@ -52,7 +52,7 @@ const canvas = {
 
   // --- editor-toolbar ---
   toolbar: {
-    back: "← Назад",
+    back: "Назад",
     addText: "Текст",
     addRect: "Прямоуг.",
     addEllipse: "Эллипс",

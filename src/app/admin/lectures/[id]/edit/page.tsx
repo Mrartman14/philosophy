@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
+import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import {
   canDeleteLecture,
   canManageCover,
@@ -85,9 +86,10 @@ export default async function EditLecturePage({ params }: Props) {
           <h2 className="mb-2 text-lg font-semibold">{t("editLectureAttachmentsHeading")}</h2>
           <a
             href={`/admin/lectures/${lecture.id}/attachments`}
-            className="text-sm underline hover:no-underline"
+            className="inline-flex items-center gap-1 text-sm underline hover:no-underline"
           >
             {t("editLectureAttachmentsLink")}
+            <ChevronIcon className="rtl-flip" />
           </a>
         </section>
       )}

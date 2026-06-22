@@ -5,7 +5,7 @@
 const admin = {
   // --- shell (layout.tsx + admin-sidebar.tsx) ---
   shellTitle: "Admin panel",
-  shellBackToSite: "← To the site",
+  shellBackToSite: "To the site",
   shellNavAriaLabel: "Admin panel navigation",
 
   // --- nav items (admin-sidebar.tsx; key comes from NavItem.labelKey) ---
@@ -51,7 +51,7 @@ const admin = {
   // --- редактирование лекции ---
   editLectureTagsHeading: "Tags",
   editLectureAttachmentsHeading: "Attachments",
-  editLectureAttachmentsLink: "Manage lecture documents and media →",
+  editLectureAttachmentsLink: "Manage lecture documents and media",
 
   // --- прикрепления лекции ---
   attachmentsPageTitle: "{lectureTitle}: attachments",

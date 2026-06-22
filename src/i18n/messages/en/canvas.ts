@@ -53,7 +53,7 @@ const canvas: Messages["canvas"] = {
 
   // --- editor-toolbar ---
   toolbar: {
-    back: "← Back",
+    back: "Back",
     addText: "Text",
     addRect: "Rect.",
     addEllipse: "Ellipse",
