@@ -8,6 +8,7 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 
 :root { --header-height: var(--spacing-header); }
 /* NB: color-scheme НЕ задаём в :root — единственный источник = inline-style на <html> из htmlAttrs (Task 11). */
+:root { --vt-duration: 400ms; --vt-easing: ease-in-out; }
 
 @media (forced-colors: active) {
   :root {
@@ -110,6 +111,12 @@ body:has(dialog[open]) {
    ═══════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-motion="full"]) { --app-motion-duration: 0.001ms; }
+  :root:not([data-motion="full"]) { --vt-duration: 0.001ms; }
+  :root:not([data-motion="full"])::view-transition-group(*),
+  :root:not([data-motion="full"])::view-transition-old(*),
+  :root:not([data-motion="full"])::view-transition-new(*) {
+    animation: none !important;
+  }
   :root:not([data-motion="full"]) *,
   :root:not([data-motion="full"]) *::before,
   :root:not([data-motion="full"]) *::after {
@@ -128,6 +135,12 @@ body:has(dialog[open]) {
   }
 }
 [data-motion="reduced"] { --app-motion-duration: 0.001ms; }
+[data-motion="reduced"] { --vt-duration: 0.001ms; }
+[data-motion="reduced"]::view-transition-group(*),
+[data-motion="reduced"]::view-transition-old(*),
+[data-motion="reduced"]::view-transition-new(*) {
+  animation: none !important;
+}
 [data-motion="reduced"] *,
 [data-motion="reduced"] *::before,
 [data-motion="reduced"] *::after {
@@ -152,6 +165,20 @@ body:has(dialog[open]) {
    (inset-inline-start), но сам глиф направлен вправо → в RTL зеркалим scaleX(-1),
    чтобы стрелка указывала в сторону чтения (inline-end). */
 [dir="rtl"] .fancy-link::after { transform: scaleX(-1); }
+
+/* ═══════════════════════════════════════════════════════════════
+   VIEW TRANSITIONS
+   Отключаем UA-дефолтный кроссфейд корня — наш круговой clip-reveal
+   рисует withViewTransition (src/utils/view-transition.ts) через WAAPI.
+   Reduced-глушение встроено в motion-политику ниже: для смены темы это
+   belt-and-suspenders (JS-guard и так не вызовет VT), но это forward-
+   protection для будущих переходов, которые триггерит фреймворк.
+   ═══════════════════════════════════════════════════════════════ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
 
 @media (prefers-color-scheme: dark) {
   .sensitive-image {
