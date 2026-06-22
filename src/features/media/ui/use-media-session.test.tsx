@@ -133,6 +133,25 @@ describe("useMediaSession", () => {
     expect(el.fastSeek).toHaveBeenCalledWith(60);
   });
 
+  it("seekto без поддержки fastSeek — присваивает currentTime напрямую", () => {
+    const el = new FakeMediaElement();
+    // Элемент без метода fastSeek: гард `"fastSeek" in el` ложен,
+    // даже при fastSeek:true должен сработать прямой путь.
+    Reflect.deleteProperty(el, "fastSeek");
+    renderHook(() => { useMediaSession(refFor(el), META); });
+    ms.invoke("seekto", { seekTime: 42, fastSeek: true });
+    expect(el.currentTime).toBe(42);
+  });
+
+  it("seekforward на стриме (duration=Infinity) — растёт без верхнего клампа", () => {
+    const el = new FakeMediaElement();
+    el.duration = Infinity;
+    el.currentTime = 100;
+    renderHook(() => { useMediaSession(refFor(el), META); });
+    ms.invoke("seekforward", { seekOffset: 10 });
+    expect(el.currentTime).toBe(110);
+  });
+
   it("playbackState следует за событиями элемента", () => {
     const el = new FakeMediaElement();
     renderHook(() => { useMediaSession(refFor(el), META); });
