@@ -25,6 +25,7 @@ export type Direction = "ltr" | "rtl";
 
 /** Направление по локали/BCP-47 тегу. Неизвестное → "ltr". */
 export function dirForLocale(locale: string): Direction {
-  const primary = locale.toLowerCase().split("-")[0] ?? locale.toLowerCase();
+  // split всегда возвращает ≥1 элемент; `?? ""` — лишь для noUncheckedIndexedAccess.
+  const primary = locale.toLowerCase().split("-")[0] ?? "";
   return (RTL_LOCALES as readonly string[]).includes(primary) ? "rtl" : "ltr";
 }

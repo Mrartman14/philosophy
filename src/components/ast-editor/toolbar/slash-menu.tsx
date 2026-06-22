@@ -19,8 +19,9 @@ interface Cmd {
 type EditorT = ReturnType<typeof useT<"editor">>;
 
 /**
- * Геометрия строки slash-меню: компактная, тихая, full-width left-aligned —
- * `justify-start w-full` выходит за canonical-Button (justify-center), поэтому
+ * Геометрия строки slash-меню: компактная, тихая, full-width с выравниванием к
+ * началу строки (logical inline-start) — `justify-start w-full` выходит за
+ * canonical-Button (justify-center), поэтому
  * это легитимный `unstyled`-escape. Вынесено в константу против дублирования.
  */
 const SLASH_MENU_ITEM_CLASS =
