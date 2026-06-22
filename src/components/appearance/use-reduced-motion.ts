@@ -2,6 +2,7 @@
 import { useSyncExternalStore } from "react";
 
 import { useAppearance } from "./appearance-provider";
+import { isReducedMotion } from "./is-reduced-motion";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 
@@ -15,12 +16,15 @@ function getOSReduce(): boolean {
 }
 
 /**
- * Резолвит, нужно ли уменьшать движение (JS-сторона).
- *   reduced → true | full → false | system → следует OS prefers-reduced-motion.
- * Реактивен к смене настройки (через useAppearance) и к смене OS-настройки (matchMedia).
+ * Резолвит, нужно ли уменьшать движение (JS-сторона) — реактивная обёртка над
+ * чистым предикатом `isReducedMotion`. Сама формула живёт в `is-reduced-motion.ts`
+ * (общий источник истины для этого хука и `withViewTransition`); хук лишь
+ * добавляет реактивность к смене настройки (через useAppearance) и к смене
+ * OS-настройки (matchMedia).
  *
- * ВАЖНО: это JS-ЗЕРКАЛО CSS-формулы из globals.css (reduced-motion gate).
- * При правке логики здесь — синхронно правь CSS-gate, и наоборот.
+ * ВАЖНО: `isReducedMotion` — это JS-ЗЕРКАЛО CSS-формулы из globals.css
+ * (reduced-motion gate). При правке логики там — синхронно правь CSS-gate,
+ * и наоборот.
  *
  * ОБЛАСТЬ ПРИМЕНЕНИЯ: только клиент — `dynamic(ssr:false)`-поддеревья и
  * рантайм-поведение/эффекты (напр. Three OrbitControls damping). НЕ использовать
@@ -35,7 +39,5 @@ function getOSReduce(): boolean {
 export function useReducedMotion(): boolean {
   const { appearance } = useAppearance();
   const osReduce = useSyncExternalStore(subscribe, getOSReduce, () => false);
-  if (appearance.motion === "reduced") return true;
-  if (appearance.motion === "full") return false;
-  return osReduce;
+  return isReducedMotion({ motion: appearance.motion, osReduce });
 }
