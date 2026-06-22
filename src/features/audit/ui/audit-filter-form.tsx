@@ -54,14 +54,12 @@ export function AuditFilterForm() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <FormField name="actor" label={t("filterActorLabel")}>
           <TextInput
-            name="actor"
             defaultValue={searchParams.get("actor") ?? ""}
             placeholder="550e8400-e29b-…"
           />
         </FormField>
         <FormField name="target_type" label={t("filterTargetTypeLabel")}>
           <Select
-            name="target_type"
             defaultValue={searchParams.get("target_type") ?? ALL_TYPES}
             options={TARGET_TYPE_OPTIONS}
             aria-label={t("filterTargetTypeLabel")}
@@ -69,14 +67,12 @@ export function AuditFilterForm() {
         </FormField>
         <FormField name="target_id" label={t("filterTargetIdLabel")}>
           <TextInput
-            name="target_id"
             defaultValue={searchParams.get("target_id") ?? ""}
             placeholder={t("filterTargetIdPlaceholder")}
           />
         </FormField>
         <FormField name="action" label={t("filterActionLabel")}>
           <TextInput
-            name="action"
             defaultValue={searchParams.get("action") ?? ""}
             placeholder={t("filterActionPlaceholder")}
           />
@@ -84,14 +80,12 @@ export function AuditFilterForm() {
         <FormField name="from" label={t("filterFromLabel")}>
           <TextInput
             type="datetime-local"
-            name="from"
             defaultValue={searchParams.get("from") ?? ""}
           />
         </FormField>
         <FormField name="to" label={t("filterToLabel")}>
           <TextInput
             type="datetime-local"
-            name="to"
             defaultValue={searchParams.get("to") ?? ""}
           />
         </FormField>

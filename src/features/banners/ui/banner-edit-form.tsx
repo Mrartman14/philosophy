@@ -19,6 +19,7 @@ import {
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
+import { instantToWallClock } from "@/utils/datetime-form";
 
 import { updateBanner } from "../actions";
 import { audienceOptions, toColorInputValue } from "../display";
@@ -29,17 +30,12 @@ const initial: ActionResult<Banner | null> = {
   data: null,
 };
 
-/** RFC3339 ("2026-07-01T19:00:00Z") → значение <input type="datetime-local">. */
-function toDatetimeLocal(value?: string): string {
-  if (!value) return "";
-  return value.replace(/Z$/, "").slice(0, 16);
-}
-
 interface Props {
   banner: Banner;
+  tz: string;
 }
 
-export function BannerEditForm({ banner }: Props) {
+export function BannerEditForm({ banner, tz }: Props) {
   const t = useT("banners");
   const tErrors = useT("errors");
   const [dismissible, setDismissible] = useState(banner.dismissible !== false);
@@ -66,7 +62,6 @@ export function BannerEditForm({ banner }: Props) {
 
         <FormField name="background_color" label={t("fieldColor")} required>
           <ColorInput
-            name="background_color"
             defaultValue={toColorInputValue(banner.background_color)}
             required
             aria-label={t("fieldColor")}
@@ -75,7 +70,6 @@ export function BannerEditForm({ banner }: Props) {
 
         <FormField name="target_audience" label={t("fieldAudience")} required>
           <Select
-            name="target_audience"
             defaultValue={banner.target_audience ?? "all"}
             options={audienceOptions(t)}
             aria-label={t("fieldAudienceAriaLabel")}
@@ -89,18 +83,16 @@ export function BannerEditForm({ banner }: Props) {
 
         <FormField name="start_at" label={t("fieldStartAt")} required>
           <TextInput
-            name="start_at"
             type="datetime-local"
-            defaultValue={toDatetimeLocal(banner.start_at)}
+            defaultValue={instantToWallClock(banner.start_at, tz)}
             required
           />
         </FormField>
 
         <FormField name="end_at" label={t("fieldEndAt")}>
           <TextInput
-            name="end_at"
             type="datetime-local"
-            defaultValue={toDatetimeLocal(banner.end_at)}
+            defaultValue={instantToWallClock(banner.end_at, tz)}
           />
         </FormField>
         <p className="text-xs text-(--color-fg-muted)">
@@ -109,7 +101,6 @@ export function BannerEditForm({ banner }: Props) {
 
         <FormField name="event_id" label={t("fieldEventId")}>
           <TextInput
-            name="event_id"
             defaultValue={banner.event_id ?? ""}
             placeholder={t("eventIdPlaceholder")}
           />

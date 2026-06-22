@@ -38,7 +38,6 @@ export function DocumentUploadForm() {
 
         <FormField name="visibility" label={t("visibilityLabel")}>
           <Select
-            name="visibility"
             defaultValue="private"
             options={[
               { value: "private", label: t("visibilityPrivate") },

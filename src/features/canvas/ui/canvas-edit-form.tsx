@@ -60,10 +60,10 @@ export function CanvasEditForm({ canvas, etag }: Props) {
         <input type="hidden" name="id" value={canvas.id ?? ""} />
         <input type="hidden" name="etag" value={etag ?? ""} />
         <FormField name="title" label={t("editForm.titleLabel")} required>
-          <TextInput name="title" defaultValue={canvas.title ?? ""} required />
+          <TextInput defaultValue={canvas.title ?? ""} required />
         </FormField>
         <FormField name="data" label={t("editForm.dataLabel")}>
-          <Textarea name="data" rows={14} defaultValue={dataJson} mono />
+          <Textarea rows={14} defaultValue={dataJson} mono />
         </FormField>
         <SubmitButton>{t("editForm.submitSave")}</SubmitButton>
       </Stack>

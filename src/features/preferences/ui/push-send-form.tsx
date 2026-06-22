@@ -36,7 +36,6 @@ export function PushSendForm() {
         <IdempotencyField result={state} />
         <FormField name="title" label={tPrefs("pushTitleLabel")} required>
           <TextInput
-            name="title"
             required
             maxLength={200}
             placeholder={tPrefs("pushTitlePlaceholder")}
@@ -44,7 +43,7 @@ export function PushSendForm() {
         </FormField>
 
         <FormField name="body" label={tPrefs("pushBodyLabel")}>
-          <Textarea name="body" maxLength={1000} rows={4} />
+          <Textarea maxLength={1000} rows={4} />
         </FormField>
 
         <FormField
@@ -52,7 +51,7 @@ export function PushSendForm() {
           label={tPrefs("pushUrlLabel")}
           description={tPrefs("pushUrlDescription")}
         >
-          <TextInput name="url" placeholder="/lectures/…" />
+          <TextInput placeholder="/lectures/…" />
         </FormField>
 
         {!state.success && state.code === "forbidden" && (

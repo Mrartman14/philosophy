@@ -38,7 +38,6 @@ export function PreferencesForm({
           description={t("readingModeDescription")}
         >
           <Select
-            name="reading_mode"
             defaultValue={initialReadingMode}
             options={READING_MODE_OPTIONS}
             aria-label={t("readingModeAriaLabel")}

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
+import { instantToWallClock } from "@/utils/datetime-form";
 
 import { updateEvent } from "../actions";
 import type { CalendarEvent } from "../types";
@@ -26,26 +27,25 @@ const initial: ActionResult<CalendarEvent | null> = {
   data: null,
 };
 
-/** RFC3339 ("2026-07-01T19:00:00Z") → значение <input type="datetime-local">. */
-function toDatetimeLocal(value?: string): string {
-  if (!value) return "";
-  return value.replace(/Z$/, "").slice(0, 16);
-}
-
 interface Props {
   event: CalendarEvent;
+  tz: string;
 }
 
-export function EventEditForm({ event }: Props) {
+export function EventEditForm({ event, tz }: Props) {
   const t = useT("events");
   const tErrors = useT("errors");
   const initialAllDay = event.all_day ?? true;
   const [allDay, setAllDay] = useState(initialAllDay);
   const [startDate, setStartDate] = useState(
-    initialAllDay ? (event.start_date ?? "") : toDatetimeLocal(event.start_date),
+    initialAllDay
+      ? (event.start_date ?? "")
+      : instantToWallClock(event.start_date, tz),
   );
   const [endDate, setEndDate] = useState(
-    initialAllDay ? (event.end_date ?? "") : toDatetimeLocal(event.end_date),
+    initialAllDay
+      ? (event.end_date ?? "")
+      : instantToWallClock(event.end_date, tz),
   );
   const [blocks, setBlocks] = useState<AstBlock[]>(event.blocks ?? []);
   const [state, action] = useActionState(updateEvent, initial);
@@ -78,7 +78,6 @@ export function EventEditForm({ event }: Props) {
 
         <FormField name="title" label={t("fieldTitle")} required>
           <TextInput
-            name="title"
             defaultValue={event.title ?? ""}
             required
             maxLength={500}
@@ -101,7 +100,6 @@ export function EventEditForm({ event }: Props) {
           required
         >
           <TextInput
-            name="start_date"
             type={allDay ? "date" : "datetime-local"}
             value={startDate}
             onChange={(e) => { setStartDate(e.target.value); }}
@@ -118,7 +116,6 @@ export function EventEditForm({ event }: Props) {
           }
         >
           <TextInput
-            name="end_date"
             type={allDay ? "date" : "datetime-local"}
             value={endDate}
             onChange={(e) => { setEndDate(e.target.value); }}
@@ -127,7 +124,6 @@ export function EventEditForm({ event }: Props) {
 
         <FormField name="rrule" label={t("fieldRrule")}>
           <TextInput
-            name="rrule"
             defaultValue={event.rrule ?? ""}
             placeholder="FREQ=WEEKLY;BYDAY=MO"
           />

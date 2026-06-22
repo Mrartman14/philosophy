@@ -39,7 +39,7 @@ export function GlossaryCreateForm() {
       <Stack className="max-w-xl">
         <IdempotencyField result={state} />
         <FormField name="title" label={t("titleLabel")} required>
-          <TextInput name="title" required maxLength={300} placeholder={t("titlePlaceholder")} />
+          <TextInput required maxLength={300} placeholder={t("titlePlaceholder")} />
         </FormField>
 
         <FormFeedback result={state} forbiddenAction={t("createTermAction")} />

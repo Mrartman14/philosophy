@@ -30,11 +30,11 @@ export function TrailMetaForm({ trail }: Props) {
         <IdempotencyField result={state} />
 
         <FormField name="title" label={t("metaTitleLabel")} required>
-          <TextInput name="title" required maxLength={200} defaultValue={trail.title} />
+          <TextInput required maxLength={200} defaultValue={trail.title} />
         </FormField>
 
         <FormField name="description" label={t("metaDescriptionLabel")}>
-          <Textarea name="description" maxLength={2000} rows={3} defaultValue={trail.description ?? ""} />
+          <Textarea maxLength={2000} rows={3} defaultValue={trail.description ?? ""} />
         </FormField>
 
         {!state.success && state.code === "forbidden" && (

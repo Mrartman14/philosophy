@@ -44,11 +44,10 @@ export function CanvasCreateForm() {
     <Form action={action} errors={fieldErrors}>
       <Stack>
         <FormField name="title" label={t("createForm.titleLabel")} required>
-          <TextInput name="title" required />
+          <TextInput required />
         </FormField>
         <FormField name="visibility" label={t("createForm.visibilityLabel")}>
           <Select
-            name="visibility"
             defaultValue="private"
             options={[
               { value: "private", label: t("createForm.visibilityPrivate") },
@@ -61,7 +60,7 @@ export function CanvasCreateForm() {
           label={t("createForm.dataLabel")}
           description={t("createForm.dataDescription")}
         >
-          <Textarea name="data" rows={6} placeholder='{"nodes":[],"edges":[]}' />
+          <Textarea rows={6} placeholder='{"nodes":[],"edges":[]}' />
         </FormField>
         <SubmitButton>{t("createForm.submitCreate")}</SubmitButton>
       </Stack>

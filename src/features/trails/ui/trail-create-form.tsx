@@ -31,16 +31,15 @@ export function TrailCreateForm() {
       <Stack>
         <IdempotencyField result={state} />
         <FormField name="title" label={t("createTitleLabel")} required>
-          <TextInput name="title" required maxLength={200} placeholder={t("createTitlePlaceholder")} />
+          <TextInput required maxLength={200} placeholder={t("createTitlePlaceholder")} />
         </FormField>
 
         <FormField name="description" label={t("createDescriptionLabel")}>
-          <Textarea name="description" maxLength={2000} rows={3} placeholder={t("createDescriptionPlaceholder")} />
+          <Textarea maxLength={2000} rows={3} placeholder={t("createDescriptionPlaceholder")} />
         </FormField>
 
         <FormField name="visibility" label={t("createVisibilityLabel")}>
           <Select
-            name="visibility"
             defaultValue="private"
             options={[
               { value: "private", label: t("createVisibilityPrivate") },

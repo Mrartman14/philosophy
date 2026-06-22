@@ -52,7 +52,6 @@ export function MediaUploadForm({ canUpload }: MediaUploadFormProps) {
       <Stack>
         <FormField name="type" label={t("uploadTypeLabel")}>
           <Select
-            name="type"
             defaultValue="video"
             aria-label={t("uploadTypeLabel")}
             options={[

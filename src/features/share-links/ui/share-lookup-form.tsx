@@ -52,7 +52,6 @@ export function ShareLookupForm({ admin = false }: Props) {
       <Inline align="end">
         <FormField name="resource_type" label={t("resourceTypeLabel")}>
           <Select
-            name="resource_type"
             defaultValue={searchParams.get("resource_type") ?? types[0]}
             options={options}
             aria-label={t("resourceTypeLabel")}
@@ -61,7 +60,6 @@ export function ShareLookupForm({ admin = false }: Props) {
         <FormField name="resource_id" label={t("resourceIdLabel")} className="flex-1">
           <TextInput
             id="resource_id"
-            name="resource_id"
             defaultValue={searchParams.get("resource_id") ?? ""}
             placeholder={t("resourceIdPlaceholder")}
           />

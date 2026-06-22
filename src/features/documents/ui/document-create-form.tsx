@@ -36,12 +36,11 @@ export function DocumentCreateForm() {
         <IdempotencyField result={state} />
 
         <FormField name="title" label={t("titleLabel")} required>
-          <TextInput name="title" required maxLength={500} placeholder={t("titlePlaceholder")} />
+          <TextInput required maxLength={500} placeholder={t("titlePlaceholder")} />
         </FormField>
 
         <FormField name="visibility" label={t("visibilityLabel")}>
           <Select
-            name="visibility"
             defaultValue="private"
             options={[
               { value: "private", label: t("visibilityPrivate") },

@@ -28,7 +28,6 @@ export function DocumentMetaForm({ document }: Props) {
         <input type="hidden" name="id" value={document.id ?? ""} />
         <FormField name="title" label={t("titleLabel")} required>
           <TextInput
-            name="title"
             defaultValue={document.filename ?? ""}
             required
             maxLength={500}

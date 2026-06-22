@@ -49,7 +49,6 @@ export function EventCreateForm() {
         <IdempotencyField result={state} />
         <FormField name="title" label={t("fieldTitle")} required>
           <TextInput
-            name="title"
             required
             maxLength={500}
             placeholder={t("titlePlaceholder")}
@@ -67,7 +66,6 @@ export function EventCreateForm() {
           required
         >
           <TextInput
-            name="start_date"
             type={allDay ? "date" : "datetime-local"}
             required
           />
@@ -81,11 +79,11 @@ export function EventCreateForm() {
               : t("fieldEndDateTime")
           }
         >
-          <TextInput name="end_date" type={allDay ? "date" : "datetime-local"} />
+          <TextInput type={allDay ? "date" : "datetime-local"} />
         </FormField>
 
         <FormField name="rrule" label={t("fieldRrule")}>
-          <TextInput name="rrule" placeholder="FREQ=WEEKLY;BYDAY=MO" />
+          <TextInput placeholder="FREQ=WEEKLY;BYDAY=MO" />
         </FormField>
 
         <FormFeedback result={state} forbiddenAction={t("createAction")} />

@@ -49,7 +49,7 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
         <IdempotencyField result={state} />
 
         <FormField name="type" label={t("replyTypeLabel")} required>
-          <Select name="type" options={options} defaultValue={childTypes[0] ?? ""} aria-label={t("replyTypeAriaLabel")} />
+          <Select options={options} defaultValue={childTypes[0] ?? ""} aria-label={t("replyTypeAriaLabel")} />
         </FormField>
 
         <FormField name="blocks" label={t("replyBodyLabel")}>
