@@ -50,7 +50,6 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
   // Актуальный matched в ref — чтобы lifecycle-эффект ([model]) применял overlay к
   // пере-созданному рендереру, не добавляя matched в свои deps.
   const matchedRef = useRef<OverlayMatch | null>(null);
-  // eslint-disable-next-line react-hooks/refs -- intentional: sync escape-hatch ref for lifecycle-effect
   matchedRef.current = matched;
 
   const t = useT("semanticMap");
@@ -60,7 +59,6 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
   // deps. Иначе cleanup эффекта (r.destroy()) пересоздавал бы WebGL-рендерер и сбрасывал
   // камеру на каждый тогл движения. Тот же escape-hatch, что matchedRef/modeRef.
   const reduceRef = useRef(reduce);
-  // eslint-disable-next-line react-hooks/refs -- intentional: sync escape-hatch ref for lifecycle-effect
   reduceRef.current = reduce;
 
   // Жизненный цикл рендерера.
