@@ -16,3 +16,15 @@ export function isLocale(v: unknown): v is Locale {
 export function isResolvedLocale(v: unknown): v is ResolvedLocale {
   return typeof v === "string" && (RESOLVED_LOCALES as readonly string[]).includes(v);
 }
+
+/** Языки с письмом справа налево (как данные — не обязаны быть в RESOLVED_LOCALES). */
+export const RTL_LOCALES = ["ar", "fa", "he", "ur"] as const;
+
+/** Направление письма для <html dir> и Base UI DirectionProvider. */
+export type Direction = "ltr" | "rtl";
+
+/** Направление по локали/BCP-47 тегу. Неизвестное → "ltr". */
+export function dirForLocale(locale: string): Direction {
+  const primary = locale.toLowerCase().split("-")[0];
+  return (RTL_LOCALES as readonly string[]).includes(primary) ? "rtl" : "ltr";
+}
