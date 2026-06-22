@@ -11,7 +11,7 @@ import {
   type SVGProps,
 } from "react";
 
-import { Button, Form, IconButton, Inline, TextInput } from "@/components/ui";
+import { Button, cn, FOCUS_RING_INPUT, Form, IconButton, Inline, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
@@ -129,7 +129,10 @@ function HeaderInput() {
             maxLength={200}
             placeholder={t("headerInputPlaceholder")}
             aria-label={t("inputAriaLabel")}
-            className="h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm outline-0 focus:border-(--color-accent) sm:w-[200px]"
+            className={cn(
+              "h-8 w-[140px] border-b border-(--color-border) bg-transparent px-1 text-sm sm:w-[200px]",
+              FOCUS_RING_INPUT,
+            )}
           />
           <IconButton type="submit" aria-label={t("headerSubmitAriaLabel")}>
             <SearchIcon className="text-xl" />

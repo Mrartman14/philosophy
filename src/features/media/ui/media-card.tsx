@@ -1,5 +1,5 @@
 // src/features/media/ui/media-card.tsx
-import { RouterLink } from "@/components/ui";
+import { cn, FOCUS_RING_CONTROL, RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
 import type { Media } from "../types";
@@ -20,7 +20,10 @@ export async function MediaCard({ media }: MediaCardProps) {
   return (
     <RouterLink
       href={`/media/${media.id}`}
-      className="flex flex-col gap-2 rounded border border-(--color-border) p-4 hover:bg-(--color-surface-subtle) focus:outline-0"
+      className={cn(
+        "flex flex-col gap-2 rounded border border-(--color-border) p-4 hover:bg-(--color-surface-subtle)",
+        FOCUS_RING_CONTROL,
+      )}
     >
       <span className="truncate font-semibold" title={media.filename}>
         {media.filename}

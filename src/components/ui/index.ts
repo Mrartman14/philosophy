@@ -1,5 +1,5 @@
 // src/components/ui/index.ts
-export { cn } from "./cn";
+export { cn, FOCUS_RING_CONTROL, FOCUS_RING_INPUT } from "./cn";
 export { Button, type ButtonProps, type ButtonTone } from "./button";
 export { IconButton, type IconButtonProps, type IconButtonTone } from "./icon-button";
 export { TextInput, type TextInputProps } from "./text-input";
