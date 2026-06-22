@@ -24,6 +24,7 @@ import metadata from "./metadata";
 import notifications from "./notifications";
 import pages from "./pages";
 import preferences from "./preferences";
+import referenceGraph from "./referenceGraph";
 import search from "./search";
 import semanticMap from "./semanticMap";
 import settings from "./settings";
@@ -57,6 +58,7 @@ const en = {
   notifications,
   pages,
   preferences,
+  referenceGraph,
   search,
   semanticMap,
   settings,
