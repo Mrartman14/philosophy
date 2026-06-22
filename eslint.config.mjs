@@ -25,6 +25,97 @@ const NO_NEXT_INTL_PATTERN = {
     "next-intl — только через фасад @/i18n (server) / @/i18n/client (Guardrail 5). Прямой импорт запрещён.",
 };
 
+// Guardrail 10 (RTL): запрет физических direction-токенов в строковых литералах
+// (className, аргументы cn(), вынесенные const-строки классов — всё это просто
+// Literal-узлы) и в style-объектах. RTL-вёрстка обязана опираться на ЛОГИЧЕСКИЕ
+// оси (ms/me/ps/pe, text-start/end, border-s/e, rounded-s/e, *Inline*-свойства,
+// inset-inline), которые сами разворачиваются при dir="rtl" (DirectionProvider).
+//
+// Этот набор — ОБЩИЙ источник истины: no-restricted-syntax не мержится между
+// блоками flat-config (последний матчнувший блок перезатирает rules одного
+// правила), поэтому RTL-селекторы вшиты в ДВА уже существующих
+// no-restricted-syntax-блока, которые являются «последними» для своих скоупов:
+//   • Guardrail 6 (src/**, без ignores) — последний для src/components/ui/** и тестов;
+//   • Guardrail 7+8 (src/**, ignores ui/**+tests) — последний для прикладного кода.
+// Так RTL-гард покрывает ВЕСЬ src/** (включая ui/**, который трогал свип), не
+// сбивая ни G6, ни G7/8. Отдельный блок на src/** ЗАТЁР бы их (проверено
+// Linter.verify: при двух src/**-блоках с no-restricted-syntax срабатывает
+// только последний).
+//
+// КРИТИЧНО про regex в esquery: литеральный «/» в теле regex-селектора рушит
+// грамматику esquery (см. base-ui-селектор Guardrail 7). Слешей в паттернах ниже
+// НЕТ — границы заданы символьными классами (НЕ \b). Значение left-1/2 со слешем
+// в МАТЧИМОЙ строке матчится нормально — запрет только на слеш в самом паттерне.
+//
+// Границы токена: B_START = начало строки ИЛИ разделитель класса (пробел, кавычка,
+// бэктик, двоеточие модификатора вроде hover:/data-[…]:). Правые границы у
+// inset-/text-/float-/border-/rounded- сужают матч так, чтобы НЕ задеть логические
+// (ms/me, border-s/x, text-start/end, rounded-lg/md) и не-классовые подстроки
+// (напр. "left-aligned" — после left- идёт буква, а не цифра/скобка).
+const RTL_BOUNDARY = "(^|[\\s\"'`:])";
+const RTL_DIRECTION_SELECTORS = [
+  // margin/padding по физической оси: ml/mr/pl/pr-<число> (и отрицательные -ml/-mr…).
+  {
+    selector: `Literal[value=/${RTL_BOUNDARY}-?(ml|mr|pl|pr)-[0-9]/]`,
+    message: "RTL: физический отступ ml/mr/pl/pr запрещён — используй логические ms/me/ps/pe.",
+  },
+  // inset: left-/right- (и -left-/-right-) перед цифрой или скобкой [ (произвольное значение).
+  {
+    selector: `Literal[value=/${RTL_BOUNDARY}-?(left|right)-([0-9[])/]`,
+    message: "RTL: физический inset left/right запрещён — используй логические start/end (inset-inline).",
+  },
+  // text-align по физике.
+  {
+    selector: `Literal[value=/${RTL_BOUNDARY}text-(left|right)([^a-z]|$)/]`,
+    message: "RTL: text-left/text-right запрещён — используй text-start/text-end.",
+  },
+  // float по физике.
+  {
+    selector: `Literal[value=/${RTL_BOUNDARY}float-(left|right)([^a-z]|$)/]`,
+    message: "RTL: float-left/float-right запрещён — используй float-start/float-end.",
+  },
+  // border по физической стороне: border-l/border-r (одиночный, и -2 и т.п.),
+  // НЕ border-s/border-x/border-lg(такого нет). Правая граница: не-буква, дефис+цифра
+  // или конец строки ($) — чтобы голый "border-l" в конце строки тоже флагался.
+  {
+    selector: `Literal[value=/${RTL_BOUNDARY}border-[lr]([^a-z]|-[0-9]|$)/]`,
+    message: "RTL: border-l/border-r запрещён — используй логические border-s/border-e.",
+  },
+  // rounded по физической стороне: rounded-l/rounded-r (одиночный), rounded-l-lg.
+  // НЕ rounded-lg/rounded-md (после rounded-l идёт буква g/…→ не матч). Правая граница
+  // включает $, чтобы голый "rounded-l" в конце строки тоже флагался.
+  {
+    selector: `Literal[value=/${RTL_BOUNDARY}rounded-[lr]([^a-z]|-|$)/]`,
+    message: "RTL: rounded-l/rounded-r запрещён — используй логические rounded-s/rounded-e.",
+  },
+  // Физические CSS-свойства с CSS-СПЕЦИФИЧНЫМИ именами (margin*/padding*/border* по
+  // оси) — ловим в любом объектном литерале: эти имена не пересекаются с
+  // координатными/геометрическими API.
+  {
+    selector:
+      "Property[key.name=/^(marginLeft|marginRight|paddingLeft|paddingRight|borderLeft|borderRight)$/]",
+    message:
+      "RTL: физическое свойство (marginLeft/paddingRight/borderLeft…) запрещено — используй *Inline*/inset-inline.",
+  },
+  // Голые left/right как CSS-inset — ТОЛЬКО внутри JSX style={{…}} (CSS-контекст).
+  // Без этого сужения селектор ложно бьёт по координатным/геометрическим API, где
+  // left/right — это пиксельные координаты, не layout: ProseMirror posAtCoords({left}),
+  // DOM getBoundingClientRect()-моки в тестах ({left, top, width…}). Те — НЕ RTL.
+  // В style={{}} left/right действительно физический inset → флагаем (exempt-инлайны
+  // canvas закрыты построчным disable).
+  {
+    selector:
+      "JSXAttribute[name.name='style'] Property[key.name=/^(left|right)$/]",
+    message:
+      "RTL: физический inset left/right в style запрещён — используй inset-inline-start/end.",
+  },
+  // textAlign: "left" | "right" в инлайн-стиле.
+  {
+    selector: "Property[key.name='textAlign'][value.value=/^(left|right)$/]",
+    message: "RTL: textAlign left/right запрещён — используй textAlign start/end.",
+  },
+];
+
 const eslintConfig = [
   // Сгенерированные файлы не линтим: `pnpm generate:api` (openapi-typescript)
   // перезатрёт любые авто-фиксы, поэтому strict-правила тут только создают шум при регене.
@@ -203,6 +294,10 @@ const eslintConfig = [
           message:
             "t.markup(...) запрещён: каталог сообщений держит простое подмножество ICU ради дешёвого свопа i18n-библиотеки за фасадом @/i18n (см. docs/frontend-i18n.md). Используй plain t(key, params).",
         },
+        // Guardrail 10 (RTL): этот блок — ПОСЛЕДНИЙ матчнувший для src/components/ui/**
+        // и тестов (G7/8 их игнорит), поэтому RTL-селекторы должны жить и здесь, иначе
+        // они не применятся к ui/** (его трогал свип). См. RTL_DIRECTION_SELECTORS.
+        ...RTL_DIRECTION_SELECTORS,
       ],
     },
   },
@@ -361,6 +456,10 @@ const eslintConfig = [
           selector: "JSXOpeningElement[name.name='SubmitButton']:has(JSXAttribute[name.name='size'])",
           message: "kit использует tone/compact, не variant/size.",
         },
+        // Guardrail 10 (RTL): этот блок — ПОСЛЕДНИЙ матчнувший для прикладного кода
+        // (features/app/components кроме ui/** и тестов), поэтому RTL-селекторы должны
+        // жить и здесь. См. RTL_DIRECTION_SELECTORS.
+        ...RTL_DIRECTION_SELECTORS,
       ],
     },
   },

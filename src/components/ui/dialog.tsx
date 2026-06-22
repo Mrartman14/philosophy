@@ -54,6 +54,7 @@ export function Dialog({
         <BaseDialog.Backdrop className="fixed inset-0 bg-black/40 transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
         <BaseDialog.Popup
           className={cn(
+            // eslint-disable-next-line no-restricted-syntax -- RTL: left-1/2 — геометрическое центрирование (пара к -translate-x-1/2), направление-нейтрально
             "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
             "w-full max-w-lg rounded-lg border border-(--color-border) bg-(--color-surface) p-6 shadow-xl",
             "transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",

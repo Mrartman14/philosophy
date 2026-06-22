@@ -52,6 +52,7 @@ export function EditorTextOverlay({ node, viewport, onCommit, onCancel }: Props)
       }}
       style={{
         position: "absolute",
+        // eslint-disable-next-line no-restricted-syntax -- RTL: inline-координаты canvas (экранная проекция курсора), не layout
         left: screen.x,
         top: screen.y,
         width: w,

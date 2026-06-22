@@ -17,6 +17,7 @@ export function SceneRegionLabels({ labels }: { labels: ProjectedLabel[] }) {
           key={l.id}
           className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-medium"
           style={{
+            // eslint-disable-next-line no-restricted-syntax -- RTL: inline-координаты canvas (проекция точки сцены), не layout
             left: l.x,
             top: l.y,
             color: l.color,
