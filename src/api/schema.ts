@@ -15865,9 +15865,21 @@ export interface components {
         "event.Occurrence": {
             all_day?: boolean;
             blocks?: components["schemas"]["ast.Block"][];
+            /**
+             * @description Date is the nominal calendar day of the occurrence (YYYY-MM-DD), rendered
+             *     in the event's own timezone offset. Always present.
+             */
             date?: string;
+            end_at?: string;
             event_id?: string;
             is_recurring?: boolean;
+            /**
+             * @description StartAt and EndAt are the absolute start/end instants in RFC3339 with
+             *     offset (e.g. "2026-05-15T19:00:00+03:00"). Absent for all_day events,
+             *     which carry no time. EndAt is also absent when the event has no end_date.
+             *     The instant is absolute: clients localise it under each viewer's timezone.
+             */
+            start_at?: string;
             title?: string;
         };
         "event.UpdateRequest": {
@@ -16374,15 +16386,20 @@ export interface components {
             max?: number[];
             min?: number[];
         };
+        /** @enum {string} */
+        "refgraph.Direction": "out" | "in";
         "refgraph.Edge": {
-            kind?: string;
+            kind?: components["schemas"]["refgraph.EdgeKind"];
             source?: components["schemas"]["refgraph.NodeRef"];
             target?: components["schemas"]["refgraph.NodeRef"];
             weight?: number;
         };
+        /** @enum {string} */
+        "refgraph.EdgeKind": "document_ref" | "glossary_ref";
         "refgraph.EgoGraph": {
             neighbors?: components["schemas"]["refgraph.Neighbor"][];
             node?: components["schemas"]["refgraph.Node"];
+            truncated?: boolean;
         };
         "refgraph.Graph": {
             bounds?: components["schemas"]["refgraph.Bounds"];
@@ -16397,9 +16414,8 @@ export interface components {
             nodes?: components["schemas"]["refgraph.Node"][];
         };
         "refgraph.Neighbor": {
-            /** @description "out" (center→neighbor) | "in" (neighbor→center) */
-            direction?: string;
-            kind?: string;
+            direction?: components["schemas"]["refgraph.Direction"];
+            kind?: components["schemas"]["refgraph.EdgeKind"];
             node?: components["schemas"]["refgraph.Node"];
             weight?: number;
         };
@@ -16408,12 +16424,14 @@ export interface components {
             degree?: number;
             id?: string;
             title?: string;
-            type?: string;
+            type?: components["schemas"]["refgraph.NodeType"];
         };
         "refgraph.NodeRef": {
             id?: string;
-            type?: string;
+            type?: components["schemas"]["refgraph.NodeType"];
         };
+        /** @enum {string} */
+        "refgraph.NodeType": "document" | "glossary";
         "revision.Revision": {
             blocks?: components["schemas"]["ast.Block"][];
             created_at?: string;

@@ -17,7 +17,7 @@ import { useT } from "@/i18n/client";
 
 import { nodeHref } from "../node-route";
 import { toGraphRenderModel } from "../to-graph-render-model";
-import type { GraphData } from "../types";
+import type { GraphData, NodeType } from "../types";
 
 import { ThreeGraphRenderer } from "./three-graph-renderer";
 
@@ -37,14 +37,14 @@ export default function GraphView({ data }: { data: GraphData }) {
   const t = useT("referenceGraph");
   const router = useRouter();
 
-  // id→type (для nodeHref по клику). Стабилен на модель.
+  // id→type (для nodeHref по клику). Берётся прямо из data.nodes (NodeType), кладём лишь когда есть id+type.
   const typeById = useMemo(() => {
-    const m = new Map<string, string>();
-    model.ids.forEach((id, i) => {
-      if (id) m.set(id, model.types[i] ?? "");
-    });
+    const m = new Map<string, NodeType>();
+    for (const n of data.nodes ?? []) {
+      if (n.id && n.type) m.set(n.id, n.type);
+    }
     return m;
-  }, [model]);
+  }, [data]);
 
   // top-N узлов по degree — кандидаты на постоянную подпись (degree приходит из data.nodes).
   const labelNodes = useMemo(() => {
@@ -99,8 +99,7 @@ export default function GraphView({ data }: { data: GraphData }) {
     r.resize(wrap.clientWidth || 1, wrap.clientHeight || 1, window.devicePixelRatio || 1);
     r.onChange(updateLabels); // ДО setModel — первый кадр обновит подписи
 
-    // Клик по узлу → навигация на сущность. nodeHref=null (неизвестный type / нет id / клик в пустоту)
-    // → no-op (FE-стопгап, см. spec §107).
+    // Клик по узлу → навигация на сущность. nodeHref=null (нет type / нет id / клик в пустоту) → no-op.
     r.onPick?.((id) => {
       if (!id) return;
       const href = nodeHref(typeById.get(id), id);

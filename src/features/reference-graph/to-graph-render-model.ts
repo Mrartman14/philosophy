@@ -1,18 +1,17 @@
 // src/features/reference-graph/to-graph-render-model.ts
 // Чистая нормализация GraphData → GraphRenderModel (типизированные массивы, один draw-call на слой).
 // Здесь живёт устойчивость к контракту: все поля refgraph.* optional, рёбра с неразрешимыми
-// концами пропускаются. Цвет узла — по type (FE-стопгап: document/glossary известны, см. spec §107).
+// концами пропускаются. Цвет узла — по type (enum document|glossary).
 import { hexToRgb01 } from "@/components/scene-3d";
 
-import type { GraphBounds, GraphData, GraphRenderModel } from "./types";
+import type { GraphBounds, GraphData, GraphRenderModel, NodeType } from "./types";
 
-// Два тона + нейтральный для неизвестного type. TODO(бэк-аск spec §103): сузить Node.type до
-// enum — тогда «нейтральный» станет недостижим.
+// Два тона на enum-type + нейтральный для ОТСУТСТВУЮЩЕГО type (Node.type optional в контракте).
 const COLOR_DOCUMENT = "#5B8FF9";
 const COLOR_GLOSSARY = "#F6BD16";
 const COLOR_UNKNOWN = "#65789B";
 
-function nodeColor(type: string | undefined): string {
+function nodeColor(type: NodeType | undefined): string {
   if (type === "document") return COLOR_DOCUMENT;
   if (type === "glossary") return COLOR_GLOSSARY;
   return COLOR_UNKNOWN;
@@ -35,7 +34,6 @@ export function toGraphRenderModel(data: GraphData): GraphRenderModel {
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const ids: string[] = [];
-  const types: string[] = [];
   const indexById = new Map<string, number>();
 
   nodes.forEach((n, i) => {
@@ -54,7 +52,6 @@ export function toGraphRenderModel(data: GraphData): GraphRenderModel {
 
     const id = n.id ?? "";
     ids[i] = id;
-    types[i] = n.type ?? "";
     if (id) indexById.set(id, i);
   });
 
@@ -82,7 +79,6 @@ export function toGraphRenderModel(data: GraphData): GraphRenderModel {
     positions,
     colors,
     ids,
-    types,
     edges: new Float32Array(edgeCoords),
     edgeAlphas: new Float32Array(alphas),
     bounds: computeBounds(data.bounds, positions, count),

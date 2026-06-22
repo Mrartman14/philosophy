@@ -7,7 +7,7 @@ import { toGraphRenderModel, edgeAlpha } from "./to-graph-render-model";
 import type { GraphData } from "./types";
 
 describe("toGraphRenderModel — узлы", () => {
-  it("маппит coords→positions, id→ids, type→types", () => {
+  it("маппит coords→positions, id→ids", () => {
     const data: GraphData = {
       dims: 3,
       nodes: [
@@ -20,15 +20,14 @@ describe("toGraphRenderModel — узлы", () => {
     expect(m.count).toBe(2);
     expect(Array.from(m.positions)).toEqual([1, 2, 3, 4, 5, 6]);
     expect(m.ids).toEqual(["d1", "g1"]);
-    expect(m.types).toEqual(["document", "glossary"]);
   });
 
-  it("document и glossary окрашены разными тонами; неизвестный type — нейтральный", () => {
+  it("document и glossary окрашены разными тонами; узел без type — нейтральный", () => {
     const data: GraphData = {
       nodes: [
         { id: "d", type: "document", coords: [0, 0, 0] },
         { id: "g", type: "glossary", coords: [0, 0, 0] },
-        { id: "u", type: "weird", coords: [0, 0, 0] },
+        { id: "u", coords: [0, 0, 0] }, // type отсутствует → нейтральный цвет (оставшийся fallback)
       ],
       edges: [],
     };

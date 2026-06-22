@@ -9,8 +9,7 @@ describe("nodeHref", () => {
   it("glossary → /glossary/{id}", () => {
     expect(nodeHref("glossary", "xyz")).toBe("/glossary/xyz");
   });
-  it("неизвестный type → null (узел не навигируем — FE-стопгап)", () => {
-    expect(nodeHref("lecture", "id")).toBeNull();
+  it("отсутствующий type (undefined) → null (узел не навигируем)", () => {
     expect(nodeHref(undefined, "id")).toBeNull();
   });
   it("пустой/отсутствующий id → null", () => {

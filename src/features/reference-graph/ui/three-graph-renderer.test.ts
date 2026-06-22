@@ -44,7 +44,6 @@ function model(): GraphRenderModel {
     positions: new Float32Array([0, 0, 0, 10, 0, 0]),
     colors: new Float32Array([1, 0, 0, 0, 1, 0]),
     ids: ["a", "b"],
-    types: ["document", "glossary"],
     edges: new Float32Array([0, 0, 0, 10, 0, 0]),
     edgeAlphas: new Float32Array([1, 1]),
     bounds: { min: [0, 0, 0], max: [10, 0, 0] },

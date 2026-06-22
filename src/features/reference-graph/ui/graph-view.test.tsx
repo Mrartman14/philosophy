@@ -27,14 +27,13 @@ vi.mock("@/components/scene-3d", () => ({
   readSavedMode: () => "2d",
   projectToScreen: () => ({ visible: false, x: 0, y: 0 }),
 }));
-// Модель: два узла, у "a" известный type=document → href навигируем.
+// Модель: два узла (тип во view берётся из data.nodes, а не из модели).
 vi.mock("../to-graph-render-model", () => ({
   toGraphRenderModel: vi.fn(() => ({
     count: 2,
     positions: new Float32Array([0, 0, 0, 1, 1, 1]),
     colors: new Float32Array(6),
     ids: ["a", "b"],
-    types: ["document", "weird"],
     edges: new Float32Array(),
     edgeAlphas: new Float32Array(),
     bounds: { min: [0, 0, 0], max: [1, 1, 1] },
@@ -47,7 +46,14 @@ vi.mock("@/components/appearance", () => ({ useReducedMotion: () => false }));
 
 import GraphView from "./graph-view";
 
-const DATA = {} as Parameters<typeof GraphView>[0]["data"];
+// data.nodes — источник type для typeById: "a"=document (навигируем), "b" без type (undefined → no-op).
+const DATA: Parameters<typeof GraphView>[0]["data"] = {
+  nodes: [
+    { id: "a", type: "document", coords: [0, 0, 0] },
+    { id: "b", coords: [1, 1, 1] },
+  ],
+  edges: [],
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -85,7 +91,7 @@ describe("GraphView navigation wiring", () => {
     expect(push).toHaveBeenCalledWith("/documents/a");
   });
 
-  it("клик по узлу с неизвестным type → навигации нет (href=null)", () => {
+  it("клик по узлу без type → навигации нет (href=null)", () => {
     render(<GraphView data={DATA} />);
     getPickCb()("b");
     expect(push).not.toHaveBeenCalled();
