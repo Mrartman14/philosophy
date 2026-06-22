@@ -8,6 +8,7 @@ import {
   canDeleteAnyMedia,
   canDeleteMedia,
   canChangeMediaVisibility,
+  canModerateMedia,
 } from "./permissions";
 import type { Media } from "./types";
 
@@ -99,4 +100,14 @@ describe("canChangeMediaVisibility (только owner, private→public)", () =
     { expect(canChangeMediaVisibility(admin, foreignPrivate)).toBe(false); });
   it("suspended owner → false", () =>
     { expect(canChangeMediaVisibility(suspendedOwner, ownedPrivate)).toBe(false); });
+});
+
+describe("canModerateMedia (доступ к admin-списку медиа = media.delete_any)", () => {
+  it("гость → false", () => { expect(canModerateMedia(guest)).toBe(false); });
+  it("обычный user без delete_any → false", () =>
+    { expect(canModerateMedia(owner)).toBe(false); });
+  it("admin с media.delete_any → true", () =>
+    { expect(canModerateMedia(admin)).toBe(true); });
+  it("suspended admin → false", () =>
+    { expect(canModerateMedia(suspendedAdmin)).toBe(false); });
 });

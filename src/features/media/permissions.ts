@@ -22,6 +22,16 @@ export function canDeleteAnyMedia(me: MaybeMe): boolean {
 }
 
 /**
+ * Доступ к admin-списку неприватных медиа (GET /api/admin/media). Гейт
+ * media.delete_any. Зеркало canModerateAnnotations: используется Layer-3-гейтом
+ * страницы /admin/media и nav-итемом. Семантически совпадает с canDeleteAnyMedia,
+ * но имя выражает намерение «модерация/доступ к списку», а не «может удалить любое».
+ */
+export function canModerateMedia(me: MaybeMe): boolean {
+  return can(me, "media.delete_any");
+}
+
+/**
  * DELETE /api/media/{id}. Бек: owner ИЛИ media.delete_any. Для media
  * delete_any действует НЕЗАВИСИМО от видимости (§6.2 спеки;
  * philosophy-api internal/media/service.go:Delete).
