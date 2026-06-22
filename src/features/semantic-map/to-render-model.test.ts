@@ -25,6 +25,18 @@ describe("toRenderModel", () => {
     expect(result.ids).toEqual(["x"]);
   });
 
+  it("прокидывает point.doc в docs (ключ матча оверлея), отсутствующий doc → пустая строка", () => {
+    const result = toRenderModel(
+      baseData({
+        points: [
+          { id: "p0", coords: [0, 0, 0], node: 0, doc: "docA" },
+          { id: "p1", coords: [1, 1, 1], node: 0 },
+        ],
+      }),
+    );
+    expect(result.docs).toEqual(["docA", ""]);
+  });
+
   it("отсутствие tree-node.color → цвет из палитры (валидный RGB)", () => {
     const result = toRenderModel(baseData({ tree: [{ id: 0, label: "A" }] }));
     expect(result.colors).toHaveLength(3);

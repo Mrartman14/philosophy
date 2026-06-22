@@ -28,6 +28,7 @@ vi.mock("../renderer", () => ({
 vi.mock("../to-render-model", () => ({
   toRenderModel: vi.fn(() => ({
     ids: [],
+    docs: [],
     positions: new Float32Array(),
     clusters: [],
     count: 0,

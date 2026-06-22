@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useReducedMotion } from "@/components/appearance";
 import { useT } from "@/i18n/client";
 
-import { weightedCentroid } from "../overlay/weighted-centroid";
+import { matchOverlay, type OverlayMatch } from "../overlay/match-overlay";
 import { ThreeMapRenderer, projectToScreen } from "../renderer";
 import type { MapRenderer, RenderMode } from "../renderer";
 import { toRenderModel } from "../to-render-model";
@@ -36,25 +36,15 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
   const model = useMemo(() => toRenderModel(data), [data]);
 
-  // Матч хитов с точками карты по id; маркер = score-взвешенный центроид совпавших.
-  interface Matched { highlightIds: Set<string>; marker: [number, number, number] | null; count: number }
-  const matched = useMemo<Matched | null>(() => {
-    if (!overlay) return null;
-    const score = new Map(overlay.hits.map((h) => [h.id, h.score]));
-    const highlightIds = new Set<string>();
-    const items: { pos: [number, number, number]; weight: number }[] = [];
-    for (let i = 0; i < model.ids.length; i++) {
-      const id = model.ids[i] ?? "";
-      const w = score.get(id);
-      if (w === undefined) continue;
-      highlightIds.add(id);
-      items.push({ pos: [model.positions[i * 3] ?? 0, model.positions[i * 3 + 1] ?? 0, model.positions[i * 3 + 2] ?? 0], weight: w });
-    }
-    return { highlightIds, marker: weightedCentroid(items), count: items.length };
-  }, [overlay, model]);
+  // Матч хитов поиска с точками карты по doc (chunk-shift: хиты несут id документов,
+  // точки — чанки); маркер = score-взвешенный центроид совпавших. Логика — в matchOverlay.
+  const matched = useMemo<OverlayMatch | null>(
+    () => (overlay ? matchOverlay(model, overlay) : null),
+    [overlay, model],
+  );
   // Актуальный matched в ref — чтобы lifecycle-эффект ([model]) применял overlay к
   // пере-созданному рендереру, не добавляя matched в свои deps.
-  const matchedRef = useRef<Matched | null>(null);
+  const matchedRef = useRef<OverlayMatch | null>(null);
   // eslint-disable-next-line react-hooks/refs -- intentional: sync escape-hatch ref for lifecycle-effect
   matchedRef.current = matched;
 

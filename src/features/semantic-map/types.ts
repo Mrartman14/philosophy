@@ -23,7 +23,13 @@ export interface RenderModel {
   positions: Float32Array;
   /** count*3, RGB 0..1. */
   colors: Float32Array;
+  /** point.id (embeddings row id) — ключ, по которому рендерер подсвечивает точку. */
   ids: string[];
+  /**
+   * point.doc (id родительского документа) — ключ матча оверлея поиска.
+   * Хиты поиска несут id документов/глоссария, точки карты — чанки; матчим по doc, не по id.
+   */
+  docs: string[];
   bounds: { min: [number, number, number]; max: [number, number, number] };
   clusters: RenderCluster[];
 }

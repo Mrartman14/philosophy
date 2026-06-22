@@ -16,6 +16,7 @@ export function toRenderModel(data: MapData): RenderModel {
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const ids: string[] = [];
+  const docs: string[] = [];
 
   // Цвет узла по его id (TreeNode.id = индекс кластера на текущей глубине).
   const colorByNode = new Map<number, string>();
@@ -45,6 +46,8 @@ export function toRenderModel(data: MapData): RenderModel {
     colors[i * 3 + 2] = b;
 
     ids[i] = p.id ?? "";
+    // point.doc — id родительского документа; ключ матча оверлея поиска (см. RenderModel.docs).
+    docs[i] = p.doc ?? "";
 
     const a = agg.get(node) ?? { x: 0, y: 0, z: 0, n: 0 };
     a.x += x;
@@ -74,7 +77,7 @@ export function toRenderModel(data: MapData): RenderModel {
     };
   });
 
-  return { count, positions, colors, ids, bounds: computeBounds(data.bounds, positions, count), clusters };
+  return { count, positions, colors, ids, docs, bounds: computeBounds(data.bounds, positions, count), clusters };
 }
 
 // MapBounds теперь all-optional из semmap.Bounds — b?.min/b?.max тоже optional.
