@@ -7,6 +7,9 @@ const media = {
   statusPublic: "Published",
   statusPrivate: "Private",
 
+  // --- player ---
+  playerArtist: "Философия ликбез",
+
   // --- empty states / informational ---
   emptyTitle: "No media yet",
   emptyDescription: "Upload a video or audio file — it will appear here.",

@@ -47,7 +47,12 @@ export async function MediaDetail({
       </header>
 
       {media.url ? (
-        <MediaPlayer url={media.url} type={media.type} filename={media.filename} />
+        <MediaPlayer
+          url={media.url}
+          type={media.type}
+          filename={media.filename}
+          mediaId={media.id}
+        />
       ) : (
         <p className="text-sm text-(--color-fg-muted)">
           {t("unavailable")}
