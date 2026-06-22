@@ -2,6 +2,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { FormField } from "./form-field";
 import { Textarea } from "./textarea";
 
 afterEach(cleanup);
@@ -35,5 +36,14 @@ describe("Textarea", () => {
     expect(ta).toHaveAttribute("rows", "4");
     expect(ta).toHaveAttribute("name", "data");
     expect(ta.value).toBe("привет");
+  });
+
+  it("внутри FormField наследует name из Field.Root без явного пропа", () => {
+    render(
+      <FormField name="bio" label="Био">
+        <Textarea />
+      </FormField>,
+    );
+    expect(screen.getByLabelText("Био")).toHaveAttribute("name", "bio");
   });
 });

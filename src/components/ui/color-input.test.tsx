@@ -3,6 +3,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { ColorInput } from "./color-input";
+import { FormField } from "./form-field";
 
 afterEach(cleanup);
 
@@ -26,5 +27,14 @@ describe("ColorInput", () => {
     const input = screen.getByLabelText<HTMLInputElement>("Цвет");
     expect(input).toHaveAttribute("name", "background_color");
     expect(input.value).toBe("#336699");
+  });
+
+  it("внутри FormField наследует name из Field.Root без явного пропа", () => {
+    render(
+      <FormField name="background_color" label="Цвет">
+        <ColorInput />
+      </FormField>,
+    );
+    expect(screen.getByLabelText("Цвет")).toHaveAttribute("name", "background_color");
   });
 });

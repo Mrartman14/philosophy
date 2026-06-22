@@ -1,13 +1,14 @@
 // src/components/ui/textarea.tsx
-import { forwardRef, type TextareaHTMLAttributes } from "react";
+import { Field } from "@base-ui/react/field";
+import { forwardRef, type ComponentProps, type TextareaHTMLAttributes } from "react";
 
 import { cn, FOCUS_RING_INPUT, SHELL_BASE } from "./cn";
 
 /**
  * Leaf-контрол: className НЕ принимается (вид textarea фиксирован kit'ом).
- * Растяжение по высоте в flex-колонке — типизированным `grow`, а не «протёкшим»
- * позиционным className. Моноширинный режим для JSON/код-редакторов — `mono`.
- * Любой позиционный/размерный класс задаёт structural-родитель.
+ * Рендерит `Field.Control render={<textarea/>}` → внутри `Field.Root` наследует
+ * `name`/aria/validity; standalone — обычная `<textarea>`. Растяжение по высоте —
+ * `grow`; моноширинный режим для JSON/кода — `mono`.
  */
 export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "className"> & {
   /** `true` → `min-h-0 flex-1`: тянуть textarea по высоте flex-колонки. */
@@ -19,20 +20,23 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   function Textarea({ grow, mono, rows = 4, ...rest }, ref) {
     return (
-      <textarea
+      <Field.Control
         ref={ref}
-        rows={rows}
         className={cn(
           SHELL_BASE,
           "block w-full px-(--space-control-pad-x) py-(--space-control-pad-y)",
-          // text-sm и mono взаимоисключающи → нет конфликта font-size при naive cn.
           mono ? "font-mono text-xs" : "text-sm",
           "placeholder:text-(--color-fg-muted)",
           FOCUS_RING_INPUT,
           "disabled:opacity-50 data-[invalid]:border-(--color-danger)",
           grow && "min-h-0 flex-1",
         )}
-        {...rest}
+        // textarea-атрибуты (rows/rest) кладём на render-ЭЛЕМЕНТ, а НЕ на
+        // Field.Control: его props-тип input-формы (`BaseUIComponentProps<'input'>`),
+        // и `rows` на нём → TS2322. mergeProps склеит инжекции Control'а (name/id/
+        // aria/value/onChange-clearErrors) поверх textarea, event-handler'ы — чейнятся
+        // (важно для controlled). Проверено эмпирически (tsc clean, onChange chains).
+        render={<textarea {...({ rows, ...rest } as ComponentProps<"textarea">)} />}
       />
     );
   },

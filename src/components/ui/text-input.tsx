@@ -1,13 +1,15 @@
 // src/components/ui/text-input.tsx
+import { Field } from "@base-ui/react/field";
 import { forwardRef, type InputHTMLAttributes } from "react";
 
 import { cn, FOCUS_RING_INPUT, SHELL_BASE } from "./cn";
 
 /**
  * Leaf-контрол: className НЕ принимается (вид инпута фиксирован kit'ом).
- * Растяжение в горизонтальном ряду (`Inline`) — типизированным `grow`, а не
- * «протёкшим» позиционным className. Любой позиционный/размерный класс задаёт
- * structural-родитель (`Inline`/`Stack`/обёртка).
+ * Рендерит Base UI `Field.Control` → внутри `Field.Root` наследует `name`/`id`/
+ * aria/validity-проводку из контекста; standalone (вне Field.Root) — обычный
+ * `<input>` с явным `name` (optional-контекст не кидает). Растяжение в ряду —
+ * типизированным `grow`. Любой позиционный/размерный класс задаёт structural-родитель.
  */
 export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"> & {
   /** `true` → `flex-1 min-w-0`: тянуть инпут по свободной ширине flex-ряда. */
@@ -17,7 +19,7 @@ export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "classN
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   function TextInput({ grow, type = "text", ...rest }, ref) {
     return (
-      <input
+      <Field.Control
         ref={ref}
         type={type}
         className={cn(
