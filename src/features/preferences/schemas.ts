@@ -85,6 +85,10 @@ export function makePushSendSchema(t: ValidationT) {
 // would be redundant (and its contrast enum would drift from the backend's normal|high).
 
 export type PreferencesUpdateInput = z.infer<typeof PreferencesUpdateSchema>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type PreferencesFormInput = z.input<typeof PreferencesUpdateSchema>;
 export type PushSubscribeInput = z.infer<ReturnType<typeof makePushSubscribeSchema>>;
 export type PushUnsubscribeInput = z.infer<ReturnType<typeof makePushUnsubscribeSchema>>;
 export type PushSendInput = z.infer<ReturnType<typeof makePushSendSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type PushSendFormInput = z.input<ReturnType<typeof makePushSendSchema>>;

@@ -109,7 +109,11 @@ export const TrailIdSchema = z.object({
 });
 
 export type TrailCreateInput = z.infer<ReturnType<typeof makeTrailCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type TrailCreateFormInput = z.input<ReturnType<typeof makeTrailCreateSchema>>;
 export type TrailMetaInput = z.infer<ReturnType<typeof makeTrailMetaSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type TrailMetaFormInput = z.input<ReturnType<typeof makeTrailMetaSchema>>;
 export type TrailVisibilityInput = z.infer<typeof TrailVisibilitySchema>;
 export type TrailItemsInput = z.infer<ReturnType<typeof makeTrailItemsSchema>>;
 export type TrailIdInput = z.infer<typeof TrailIdSchema>;

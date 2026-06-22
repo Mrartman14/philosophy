@@ -118,7 +118,11 @@ export const AdminAnnotationFilterSchema = z.object({
 });
 
 export type AnnotationCreateInput = z.infer<ReturnType<typeof makeAnnotationCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type AnnotationCreateFormInput = z.input<ReturnType<typeof makeAnnotationCreateSchema>>;
 export type AnnotationUpdateInput = z.infer<ReturnType<typeof makeAnnotationUpdateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type AnnotationUpdateFormInput = z.input<ReturnType<typeof makeAnnotationUpdateSchema>>;
 export type AnnotationIdInput = z.infer<ReturnType<typeof makeAnnotationIdSchema>>;
 export type AdminAnnotationFilterInput = z.infer<
   typeof AdminAnnotationFilterSchema

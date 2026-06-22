@@ -37,5 +37,9 @@ export function makeTermIdSchema(t: ValidationT) {
 }
 
 export type TermCreateInput = z.infer<ReturnType<typeof makeTermCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type TermCreateFormInput = z.input<ReturnType<typeof makeTermCreateSchema>>;
 export type TermBlocksUpdateInput = z.infer<ReturnType<typeof makeTermBlocksUpdateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type TermBlocksUpdateFormInput = z.input<ReturnType<typeof makeTermBlocksUpdateSchema>>;
 export type TermIdInput = z.infer<ReturnType<typeof makeTermIdSchema>>;

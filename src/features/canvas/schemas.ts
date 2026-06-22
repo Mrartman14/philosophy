@@ -201,3 +201,11 @@ export type CanvasCreateInput = z.infer<ReturnType<typeof makeCanvasCreateSchema
 export type CanvasUpdateInput = z.infer<ReturnType<typeof makeCanvasUpdateSchema>>;
 export type CanvasVisibilityInput = z.infer<ReturnType<typeof makeCanvasVisibilitySchema>>;
 export type CanvasIdInput = z.infer<ReturnType<typeof makeCanvasIdSchema>>;
+
+/**
+ * Вход форм (pre-transform): имена полей и их required-ность для createTypedForm.
+ * `z.input`, НЕ `z.infer` — поле `data` использует `.transform()`, поэтому вход
+ * (сырая JSON-строка из textarea) ≠ выход (распарсенный CanvasData).
+ */
+export type CanvasCreateFormInput = z.input<ReturnType<typeof makeCanvasCreateSchema>>;
+export type CanvasUpdateFormInput = z.input<ReturnType<typeof makeCanvasUpdateSchema>>;

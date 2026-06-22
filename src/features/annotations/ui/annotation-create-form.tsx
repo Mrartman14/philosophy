@@ -5,16 +5,19 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { Form, FormFeedback, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createAnnotation } from "../actions";
+import type { AnnotationCreateFormInput } from "../schemas";
 import type { Annotation, ParentEntityType } from "../types";
 
 import { AnnotationVisibilityField } from "./annotation-visibility-field";
 
 const initial: ActionResult<Annotation | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<AnnotationCreateFormInput>();
 
 interface Props {
   parentEntityType: ParentEntityType;
@@ -34,11 +37,6 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createAnnotation, initial);
 
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
-
   useEffect(() => {
     if (state.success && state.data?.id) {
       // Перерисовать страницу со свежим списком.
@@ -47,21 +45,21 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
-        <input type="hidden" name="parent_entity_type" value={parentEntityType} />
-        <input type="hidden" name="parent_entity_id" value={parentId} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input type="hidden" name={f("parent_entity_type")} value={parentEntityType} />
+        <input type="hidden" name={f("parent_entity_id")} value={parentId} />
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 
-        <FormField name="blocks" label={t("createBodyLabel")}>
+        <Field name="blocks" label={t("createBodyLabel")} required>
           <LazyAstEditor
             defaultValue={[]}
             entityContext="annotation"
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
             ariaLabel={t("createBodyAriaLabel")}
           />
-        </FormField>
+        </Field>
 
         <AnnotationVisibilityField />
 

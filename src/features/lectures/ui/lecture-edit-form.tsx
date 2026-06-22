@@ -2,8 +2,8 @@
 import { useActionState } from "react";
 
 import {
+  createTypedForm,
   Form,
-  FormField,
   Stack,
   SubmitButton,
   TextInput,
@@ -13,12 +13,15 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateLecture } from "../actions";
+import type { LectureUpdateFormInput } from "../schemas";
 import type { Lecture } from "../types";
 
 import { LectureDeleteButton } from "./lecture-delete-button";
 import { LectureVisibilityToggle } from "./lecture-visibility-toggle";
 
 const initial: ActionResult<Lecture | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<LectureUpdateFormInput>();
 
 interface Props {
   lecture: Lecture;
@@ -30,32 +33,30 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
   const tL = useT("lectures");
   const tErrors = useT("errors");
   const [state, action] = useActionState(updateLecture, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   return (
     <div className="flex flex-col gap-6">
-      <Form action={action} errors={fieldErrors}>
+      <Form action={action} errors={errors(state)}>
         <Stack className="max-w-xl">
-          <input type="hidden" name="id" value={lecture.id} />
+          <input type="hidden" name={f("id")} value={lecture.id} />
           <input type="hidden" name="version" value={String(lecture.version ?? "")} />
 
-          <FormField name="title" label={tL("titleLabel")} required>
+          <Field name="title" label={tL("titleLabel")} required>
             <TextInput name="title" required maxLength={200} defaultValue={lecture.title} />
-          </FormField>
+          </Field>
 
-          <FormField name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
+          <Field name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
             <TextInput name="date" required defaultValue={lecture.date} />
-          </FormField>
+          </Field>
 
-          <FormField name="description" label={tL("descriptionLabel")}>
+          <Field name="description" label={tL("descriptionLabel")}>
             <Textarea
               name="description"
               rows={6}
               maxLength={5000}
               defaultValue={lecture.description}
             />
-          </FormField>
+          </Field>
 
           {!state.success && state.code === "forbidden" && (
             <p className="text-sm text-red-600">

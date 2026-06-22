@@ -3,22 +3,22 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormFeedback, FormField, IdempotencyField, Select, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, IdempotencyField, Select, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTrail } from "../actions";
+import type { TrailCreateFormInput } from "../schemas";
 import type { Trail } from "../types";
 
 const initial: ActionResult<Trail | null> = { success: true, data: null };
+
+const { Field, errors } = createTypedForm<TrailCreateFormInput>();
 
 export function TrailCreateForm() {
   const router = useRouter();
   const t = useT("trails");
   const [state, action] = useActionState(createTrail, initial);
-
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   useEffect(() => {
     if (state.success && state.data?.id) {
@@ -27,18 +27,18 @@ export function TrailCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
         <IdempotencyField result={state} />
-        <FormField name="title" label={t("createTitleLabel")} required>
+        <Field name="title" label={t("createTitleLabel")} required>
           <TextInput required maxLength={200} placeholder={t("createTitlePlaceholder")} />
-        </FormField>
+        </Field>
 
-        <FormField name="description" label={t("createDescriptionLabel")}>
+        <Field name="description" label={t("createDescriptionLabel")}>
           <Textarea maxLength={2000} rows={3} placeholder={t("createDescriptionPlaceholder")} />
-        </FormField>
+        </Field>
 
-        <FormField name="visibility" label={t("createVisibilityLabel")}>
+        <Field name="visibility" label={t("createVisibilityLabel")}>
           <Select
             defaultValue="private"
             options={[
@@ -46,7 +46,7 @@ export function TrailCreateForm() {
               { value: "public", label: t("createVisibilityPublic") },
             ]}
           />
-        </FormField>
+        </Field>
         <p className="text-xs text-(--color-fg-muted)">
           {t("createVisibilityNote")}
         </p>

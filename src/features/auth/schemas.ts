@@ -25,6 +25,8 @@ export function makeLoginSchema(t: ValidationT) {
 }
 
 export type LoginInput = z.infer<ReturnType<typeof makeLoginSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type LoginFormInput = z.input<ReturnType<typeof makeLoginSchema>>;
 
 /**
  * POST /api/auth/register — форма регистрации.
@@ -57,3 +59,5 @@ export function makeRegisterSchema(t: ValidationT) {
 }
 
 export type RegisterInput = z.infer<ReturnType<typeof makeRegisterSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type RegisterFormInput = z.input<ReturnType<typeof makeRegisterSchema>>;

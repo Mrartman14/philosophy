@@ -3,8 +3,8 @@
 import { useActionState } from "react";
 
 import {
+  createTypedForm,
   Form,
-  FormField,
   IdempotencyField,
   Stack,
   SubmitButton,
@@ -15,9 +15,12 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { sendPushBroadcast } from "../actions";
+import type { PushSendFormInput } from "../schemas";
 
 // data: false — начальное состояние; true — рассылка принята (202).
 const initial: ActionResult<boolean> = { success: true, data: false };
+
+const { Field, errors } = createTypedForm<PushSendFormInput>();
 
 export function PushSendForm() {
   // Case 3 (branded forbidden): общий шаблон errors.forbiddenAction + per-feature
@@ -25,34 +28,30 @@ export function PushSendForm() {
   const tErrors = useT("errors");
   const tPrefs = useT("preferences");
   const [state, action] = useActionState(sendPushBroadcast, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-xl">
         <IdempotencyField result={state} />
-        <FormField name="title" label={tPrefs("pushTitleLabel")} required>
+        <Field name="title" label={tPrefs("pushTitleLabel")} required>
           <TextInput
             required
             maxLength={200}
             placeholder={tPrefs("pushTitlePlaceholder")}
           />
-        </FormField>
+        </Field>
 
-        <FormField name="body" label={tPrefs("pushBodyLabel")}>
+        <Field name="body" label={tPrefs("pushBodyLabel")}>
           <Textarea maxLength={1000} rows={4} />
-        </FormField>
+        </Field>
 
-        <FormField
+        <Field
           name="url"
           label={tPrefs("pushUrlLabel")}
           description={tPrefs("pushUrlDescription")}
         >
           <TextInput placeholder="/lectures/…" />
-        </FormField>
+        </Field>
 
         {!state.success && state.code === "forbidden" && (
           <p className="text-sm text-red-600">

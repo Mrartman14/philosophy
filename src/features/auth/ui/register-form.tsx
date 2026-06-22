@@ -3,8 +3,8 @@
 import { useActionState } from "react";
 
 import {
+  createTypedForm,
   Form,
-  FormField,
   Stack,
   SubmitButton,
   TextInput,
@@ -13,8 +13,11 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { registerAction } from "../actions";
+import type { RegisterFormInput } from "../schemas";
 
 const initial: ActionResult<undefined> = { success: true, data: undefined };
+
+const { Field, f, errors } = createTypedForm<RegisterFormInput>();
 
 interface RegisterFormProps {
   next: string;
@@ -23,10 +26,6 @@ interface RegisterFormProps {
 export function RegisterForm({ next }: RegisterFormProps) {
   const t = useT("auth");
   const [state, action] = useActionState(registerAction, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   const ERROR_TEXT: Record<string, string> = {
     username_taken: t("register.errors.username_taken"),
@@ -41,26 +40,26 @@ export function RegisterForm({ next }: RegisterFormProps) {
       : null;
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-sm">
-        <input type="hidden" name="next" value={next} />
-        <FormField name="username" label={t("register.usernameLabel")} required>
+        <input type="hidden" name={f("next")} value={next} />
+        <Field name="username" label={t("register.usernameLabel")} required>
           <TextInput required autoComplete="username" />
-        </FormField>
-        <FormField name="password" label={t("register.passwordLabel")} required>
+        </Field>
+        <Field name="password" label={t("register.passwordLabel")} required>
           <TextInput
             type="password"
             required
             autoComplete="new-password"
           />
-        </FormField>
-        <FormField name="password_confirm" label={t("register.passwordConfirmLabel")} required>
+        </Field>
+        <Field name="password_confirm" label={t("register.passwordConfirmLabel")} required>
           <TextInput
             type="password"
             required
             autoComplete="new-password"
           />
-        </FormField>
+        </Field>
 
         {genericError && <p className="text-sm text-red-600">{genericError}</p>}
 

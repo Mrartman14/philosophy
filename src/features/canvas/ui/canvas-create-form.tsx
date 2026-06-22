@@ -3,14 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormField, TextInput, Textarea, Select, Stack, SubmitButton, useToast } from "@/components/ui";
+import { Form, createTypedForm, TextInput, Textarea, Select, Stack, SubmitButton, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createCanvas } from "../actions";
+import type { CanvasCreateFormInput } from "../schemas";
 import type { Canvas } from "../types";
 
 const initial: ActionResult<Canvas | null> = { success: true, data: null };
+
+const { Field, errors } = createTypedForm<CanvasCreateFormInput>();
 
 /**
  * Создание канваса: title + visibility + опц. data-JSON (по умолчанию пустой
@@ -38,15 +41,13 @@ export function CanvasCreateForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  const fieldErrors = !state.success && state.code === "validation" ? state.fieldErrors : {};
-
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
-        <FormField name="title" label={t("createForm.titleLabel")} required>
+        <Field name="title" label={t("createForm.titleLabel")} required>
           <TextInput required />
-        </FormField>
-        <FormField name="visibility" label={t("createForm.visibilityLabel")}>
+        </Field>
+        <Field name="visibility" label={t("createForm.visibilityLabel")}>
           <Select
             defaultValue="private"
             options={[
@@ -54,14 +55,14 @@ export function CanvasCreateForm() {
               { value: "public", label: t("createForm.visibilityPublic") },
             ]}
           />
-        </FormField>
-        <FormField
+        </Field>
+        <Field
           name="data"
           label={t("createForm.dataLabel")}
           description={t("createForm.dataDescription")}
         >
           <Textarea rows={6} placeholder='{"nodes":[],"edges":[]}' />
-        </FormField>
+        </Field>
         <SubmitButton>{t("createForm.submitCreate")}</SubmitButton>
       </Stack>
     </Form>

@@ -2,14 +2,17 @@
 // src/features/preferences/ui/preferences-form.tsx
 import { useActionState } from "react";
 
-import { Form, FormField, Select, Stack, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updatePreferences } from "../actions";
+import type { PreferencesFormInput } from "../schemas";
 import type { Preferences, ReadingMode } from "../types";
 
 const initial: ActionResult<Preferences | null> = { success: true, data: null };
+
+const { Field, errors } = createTypedForm<PreferencesFormInput>();
 
 export function PreferencesForm({
   initialReadingMode,
@@ -19,10 +22,6 @@ export function PreferencesForm({
   const t = useT("preferences");
   const tErrors = useT("errors");
   const [state, action] = useActionState(updatePreferences, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   const READING_MODE_OPTIONS: { value: ReadingMode; label: string }[] = [
     { value: "full", label: t("readingModeFull") },
@@ -30,19 +29,20 @@ export function PreferencesForm({
   ];
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-xl">
-        <FormField
+        <Field
           name="reading_mode"
           label={t("readingModeLabel")}
           description={t("readingModeDescription")}
+          required
         >
           <Select
             defaultValue={initialReadingMode}
             options={READING_MODE_OPTIONS}
             aria-label={t("readingModeAriaLabel")}
           />
-        </FormField>
+        </Field>
 
         {!state.success && state.code === "forbidden" && (
           <p className="text-sm text-red-600">

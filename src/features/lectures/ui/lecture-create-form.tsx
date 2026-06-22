@@ -3,9 +3,9 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import {
+  createTypedForm,
   Form,
   FormFeedback,
-  FormField,
   IdempotencyField,
   Select,
   Stack,
@@ -17,16 +17,17 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createLecture } from "../actions";
+import type { LectureCreateFormInput } from "../schemas";
 import type { Lecture } from "../types";
 
 const initial: ActionResult<Lecture | null> = { success: true, data: null };
+
+const { Field, errors } = createTypedForm<LectureCreateFormInput>();
 
 export function LectureCreateForm() {
   const tL = useT("lectures");
   const router = useRouter();
   const [state, action] = useActionState(createLecture, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   useEffect(() => {
     if (state.success && state.data) {
@@ -35,22 +36,22 @@ export function LectureCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-xl">
         <IdempotencyField result={state} />
-        <FormField name="title" label={tL("titleLabel")} required>
+        <Field name="title" label={tL("titleLabel")} required>
           <TextInput name="title" required maxLength={200} />
-        </FormField>
+        </Field>
 
-        <FormField name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
+        <Field name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
           <TextInput name="date" required placeholder="2026-04-27" />
-        </FormField>
+        </Field>
 
-        <FormField name="description" label={tL("descriptionLabel")}>
+        <Field name="description" label={tL("descriptionLabel")}>
           <Textarea name="description" rows={6} maxLength={5000} />
-        </FormField>
+        </Field>
 
-        <FormField name="visibility" label={tL("visibilityLabel")}>
+        <Field name="visibility" label={tL("visibilityLabel")}>
           <Select
             name="visibility"
             defaultValue="private"
@@ -59,7 +60,7 @@ export function LectureCreateForm() {
               { value: "public", label: tL("visibilityPublic") },
             ]}
           />
-        </FormField>
+        </Field>
 
         <FormFeedback result={state} forbiddenAction={tL("createAction")} />
 

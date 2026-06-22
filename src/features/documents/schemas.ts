@@ -78,3 +78,7 @@ export type DocumentBlocksInput = z.infer<ReturnType<typeof makeDocumentBlocksSc
 export type DocumentMetaInput = z.infer<ReturnType<typeof makeDocumentMetaSchema>>;
 export type DocumentVisibilityInput = z.infer<ReturnType<typeof makeDocumentVisibilitySchema>>;
 export type DocumentIdInput = z.infer<ReturnType<typeof makeDocumentIdSchema>>;
+
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type DocumentCreateFormInput = z.input<ReturnType<typeof makeDocumentCreateSchema>>;
+export type DocumentMetaFormInput = z.input<ReturnType<typeof makeDocumentMetaSchema>>;

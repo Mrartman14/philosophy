@@ -125,7 +125,11 @@ export function makeLectureSuggestSchema(t: ValidationT) {
 }
 
 export type LectureCreateInput = z.infer<ReturnType<typeof makeLectureCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type LectureCreateFormInput = z.input<ReturnType<typeof makeLectureCreateSchema>>;
 export type LectureUpdateInput = z.infer<ReturnType<typeof makeLectureUpdateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type LectureUpdateFormInput = z.input<ReturnType<typeof makeLectureUpdateSchema>>;
 export type LectureVisibilityInput = z.infer<ReturnType<typeof makeLectureVisibilitySchema>>;
 export type LectureIdInput = z.infer<ReturnType<typeof makeLectureIdSchema>>;
 export type LectureCoverInput = z.infer<ReturnType<typeof makeLectureCoverSchema>>;

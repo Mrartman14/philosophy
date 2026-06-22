@@ -3,16 +3,19 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Button, Form, FormFeedback, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { Button, createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCommentBlocks } from "../actions";
+import type { CommentBlocksUpdateFormInput } from "../schemas";
 import type { Comment } from "../types";
 
 import { LazyAstEditor } from "./lazy-ast-editor";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<CommentBlocksUpdateFormInput>();
 
 interface Props {
   commentId: string;
@@ -27,8 +30,6 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
   const [open, setOpen] = useState(false);
   const [blocks, setBlocks] = useState<AstBlock[]>(initialBlocks);
   const [state, action] = useActionState(updateCommentBlocks, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   if (!open) {
     return (
@@ -39,13 +40,15 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
   }
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="mt-2">
-        <input type="hidden" name="id" value={commentId} />
+        <input type="hidden" name={f("id")} value={commentId} />
+        {/* version — optimistic-lock (`comment.version`) → action читает из FormData
+            и шлёт как If-Match, это НЕ body-поле схемы. Raw-строка name КОРРЕКТНА. */}
         <input type="hidden" name="version" value={version ?? ""} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
-        <FormField name="blocks" label={t("editBodyLabel")}>
+        <Field name="blocks" label={t("editBodyLabel")} required>
           <LazyAstEditor
             defaultValue={initialBlocks}
             entityContext="comment"
@@ -53,7 +56,7 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
             ariaLabel={t("editBodyAriaLabel")}
           />
-        </FormField>
+        </Field>
         {state.success && state.data && (
           <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
         )}

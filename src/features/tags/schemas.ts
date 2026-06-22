@@ -75,6 +75,8 @@ export function makeSetLectureTagsSchema(t: ValidationT) {
 }
 
 export type TagCreateInput = z.infer<ReturnType<typeof makeTagCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type TagCreateFormInput = z.input<ReturnType<typeof makeTagCreateSchema>>;
 export type TagUpdateInput = z.infer<ReturnType<typeof makeTagUpdateSchema>>;
 export type TagIdInput = z.infer<typeof TagIdSchema>;
 export type SetLectureTagsInput = z.infer<ReturnType<typeof makeSetLectureTagsSchema>>;

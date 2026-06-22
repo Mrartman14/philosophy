@@ -4,8 +4,8 @@ import { useActionState, useState } from "react";
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
+  createTypedForm,
   Form,
-  FormField,
   IdempotencyField,
   Stack,
   SubmitButton,
@@ -14,9 +14,12 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateTermBlocks } from "../actions";
+import type { TermBlocksUpdateFormInput } from "../schemas";
 import type { Term } from "../types";
 
 const initial: ActionResult<Term | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<TermBlocksUpdateFormInput>();
 
 interface Props {
   term: Term;
@@ -28,26 +31,22 @@ export function GlossaryEditForm({ term }: Props) {
   const t = useT("glossary");
   const tErrors = useT("errors");
 
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
-
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
-        <input type="hidden" name="id" value={term.id ?? ""} />
+        <input type="hidden" name={f("id")} value={term.id ?? ""} />
+        {/* version — If-Match path-параметр (action читает из FormData), НЕ ключ схемы. */}
         <input type="hidden" name="version" value={term.version ?? ""} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 
-        <FormField name="blocks" label={t("blocksLabel")}>
+        <Field name="blocks" label={t("blocksLabel")} required>
           <LazyAstEditor
             defaultValue={term.blocks ?? []}
             entityContext="glossary"
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
           />
-        </FormField>
+        </Field>
 
         {state.success && state.data && (
           <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>

@@ -3,8 +3,8 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 import {
+  createTypedForm,
   Form,
-  FormField,
   FormFeedback,
   IdempotencyField,
   Stack,
@@ -15,18 +15,17 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createTerm } from "../actions";
+import type { TermCreateFormInput } from "../schemas";
 import type { Term } from "../types";
 
 const initial: ActionResult<Term | null> = { success: true, data: null };
+
+const { Field, errors } = createTypedForm<TermCreateFormInput>();
 
 export function GlossaryCreateForm() {
   const router = useRouter();
   const t = useT("glossary");
   const [state, action] = useActionState(createTerm, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   useEffect(() => {
     if (state.success && state.data?.id) {
@@ -35,12 +34,12 @@ export function GlossaryCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-xl">
         <IdempotencyField result={state} />
-        <FormField name="title" label={t("titleLabel")} required>
+        <Field name="title" label={t("titleLabel")} required>
           <TextInput required maxLength={300} placeholder={t("titlePlaceholder")} />
-        </FormField>
+        </Field>
 
         <FormFeedback result={state} forbiddenAction={t("createTermAction")} />
 

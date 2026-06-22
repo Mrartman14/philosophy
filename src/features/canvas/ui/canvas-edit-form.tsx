@@ -3,14 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
-import { Form, FormField, TextInput, Textarea, Stack, SubmitButton, useToast } from "@/components/ui";
+import { Form, createTypedForm, TextInput, Textarea, Stack, SubmitButton, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateCanvas } from "../actions";
+import type { CanvasUpdateFormInput } from "../schemas";
 import type { Canvas } from "../types";
 
 const initial: ActionResult<Canvas | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<CanvasUpdateFormInput>();
 
 interface Props {
   canvas: Canvas;
@@ -51,20 +54,20 @@ export function CanvasEditForm({ canvas, etag }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  const fieldErrors = !state.success && state.code === "validation" ? state.fieldErrors : {};
   const dataJson = JSON.stringify(canvas.data ?? { nodes: [], edges: [] }, null, 2);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
-        <input type="hidden" name="id" value={canvas.id ?? ""} />
+        <input type="hidden" name={f("id")} value={canvas.id ?? ""} />
+        {/* etag — не ключ схемы (читается через formData.get как If-Match), оставляем raw */}
         <input type="hidden" name="etag" value={etag ?? ""} />
-        <FormField name="title" label={t("editForm.titleLabel")} required>
+        <Field name="title" label={t("editForm.titleLabel")} required>
           <TextInput defaultValue={canvas.title ?? ""} required />
-        </FormField>
-        <FormField name="data" label={t("editForm.dataLabel")}>
+        </Field>
+        <Field name="data" label={t("editForm.dataLabel")}>
           <Textarea rows={14} defaultValue={dataJson} mono />
-        </FormField>
+        </Field>
         <SubmitButton>{t("editForm.submitSave")}</SubmitButton>
       </Stack>
     </Form>

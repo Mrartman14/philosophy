@@ -3,8 +3,8 @@
 import { useActionState } from "react";
 
 import {
+  createTypedForm,
   Form,
-  FormField,
   Stack,
   SubmitButton,
   TextInput,
@@ -13,8 +13,11 @@ import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { loginAction } from "../actions";
+import type { LoginFormInput } from "../schemas";
 
 const initial: ActionResult<undefined> = { success: true, data: undefined };
+
+const { Field, f, errors } = createTypedForm<LoginFormInput>();
 
 interface LoginFormProps {
   next: string;
@@ -23,10 +26,6 @@ interface LoginFormProps {
 export function LoginForm({ next }: LoginFormProps) {
   const t = useT("auth");
   const [state, action] = useActionState(loginAction, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   const ERROR_TEXT: Record<string, string> = {
     invalid_credentials: t("login.errors.invalid_credentials"),
@@ -40,19 +39,19 @@ export function LoginForm({ next }: LoginFormProps) {
       : null;
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-sm">
-        <input type="hidden" name="next" value={next} />
-        <FormField name="username" label={t("login.usernameLabel")} required>
+        <input type="hidden" name={f("next")} value={next} />
+        <Field name="username" label={t("login.usernameLabel")} required>
           <TextInput required autoComplete="username" />
-        </FormField>
-        <FormField name="password" label={t("login.passwordLabel")} required>
+        </Field>
+        <Field name="password" label={t("login.passwordLabel")} required>
           <TextInput
             type="password"
             required
             autoComplete="current-password"
           />
-        </FormField>
+        </Field>
 
         {genericError && <p className="text-sm text-red-600">{genericError}</p>}
 

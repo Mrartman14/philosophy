@@ -3,16 +3,19 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Button, Form, FormFeedback, FormField, IdempotencyField, Select, Stack, SubmitButton } from "@/components/ui";
+import { Button, createTypedForm, Form, FormFeedback, IdempotencyField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createComment } from "../actions";
+import type { CommentCreateFormInput } from "../schemas";
 import type { Comment, CommentType } from "../types";
 
 import { LazyAstEditor } from "./lazy-ast-editor";
 
 const initial: ActionResult<Comment | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<CommentCreateFormInput>();
 
 interface Props {
   lectureId: string;
@@ -26,8 +29,6 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
   const [open, setOpen] = useState(false);
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation" ? state.fieldErrors : {};
 
   if (childTypes.length === 0) return null;
   if (!open) {
@@ -41,25 +42,28 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
   const options = childTypes.map((type) => ({ value: type, label: t(`type.${type}`) }));
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="mt-2 border-l border-(--color-border) pl-3">
+        {/* lecture_id — path-параметр (action читает из FormData → POST
+            /api/lectures/{id}/comments), это НЕ body-поле схемы. Raw-строка
+            name здесь КОРРЕКТНА — не «чинить» добавлением в CommentCreateSchema. */}
         <input type="hidden" name="lecture_id" value={lectureId} />
-        <input type="hidden" name="parent_id" value={parentId} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input type="hidden" name={f("parent_id")} value={parentId} />
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 
-        <FormField name="type" label={t("replyTypeLabel")} required>
+        <Field name="type" label={t("replyTypeLabel")} required>
           <Select options={options} defaultValue={childTypes[0] ?? ""} aria-label={t("replyTypeAriaLabel")} />
-        </FormField>
+        </Field>
 
-        <FormField name="blocks" label={t("replyBodyLabel")}>
+        <Field name="blocks" label={t("replyBodyLabel")} required>
           <LazyAstEditor
             entityContext="comment"
             defaultLectureId={lectureId}
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
             ariaLabel={t("replyBodyAriaLabel")}
           />
-        </FormField>
+        </Field>
 
         <FormFeedback result={state} forbiddenAction={t("replyForbiddenAction")} />
 

@@ -4,14 +4,17 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { Form, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateAnnotation } from "../actions";
+import type { AnnotationUpdateFormInput } from "../schemas";
 import type { Annotation } from "../types";
 
 const initial: ActionResult<Annotation | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<AnnotationUpdateFormInput>();
 
 interface Props {
   annotation: Annotation;
@@ -34,32 +37,29 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
   );
   const [state, action] = useActionState(updateAnnotation, initial);
 
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
-
   useEffect(() => {
     // initial.data === null → срабатывает только после реального сохранения.
     if (state.success && state.data) onSuccess?.();
   }, [state, onSuccess]);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack>
-        <input type="hidden" name="id" value={annotation.id ?? ""} />
+        <input type="hidden" name={f("id")} value={annotation.id ?? ""} />
+        {/* version — If-Match (optimistic concurrency), читается action'ом из
+            FormData в заголовок. НЕ body-ключ схемы → raw name, не f(). */}
         <input type="hidden" name="version" value={annotation.version ?? ""} />
-        <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 
-        <FormField name="blocks" label={t("editBodyLabel")}>
+        <Field name="blocks" label={t("editBodyLabel")} required>
           <LazyAstEditor
             defaultValue={(annotation.blocks ?? [])}
             entityContext="annotation"
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
             ariaLabel={t("editBodyAriaLabel")}
           />
-        </FormField>
+        </Field>
 
         {state.success && state.data && (
           <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
