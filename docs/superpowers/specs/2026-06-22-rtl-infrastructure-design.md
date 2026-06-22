@@ -53,6 +53,8 @@
 
 `dir` НЕ добавляется в `htmlAttrs(appearance)` — там живут только оси оформления. SSR, без FOUC (как `lang`).
 
+Дополнительно тем же значением кормится **Base UI `DirectionProvider`** (`@base-ui/react/direction-provider`, проект на `@base-ui/react@^1.4.1`): оборачиваем поддерево с `I18nProvider` в `<DirectionProvider direction={dirForLocale(locale)}>`. Это включает RTL-поведение во всех Base UI компонентах (диалоги, меню, поповеры, NavigationMenu, тосты, селекты) — они зеркалятся сами. Следствие: companions, привязанные к `data-[side=left/right]` Base UI, ОСТАЮТСЯ физическими (Base UI вычисляет сторону уже с учётом направления; конверсия их рассинхронит).
+
 ### 3. Полный свип физических → логических свойств
 
 **Tailwind-классы (36 tsx-файлов, по ~1 совпадению на файл):**
