@@ -10,6 +10,7 @@ export { Checkbox, type CheckboxProps } from "./checkbox";
 export { Label, type LabelProps } from "./label";
 export { Form } from "./form";
 export { FormField, type FormFieldProps } from "./form-field";
+export { createTypedForm, type TypedForm, type TypedFieldComponent, type FieldErrors } from "./typed-form";
 export { Fieldset, type FieldsetProps } from "./fieldset";
 export { SubmitButton } from "./submit-button";
 export { IdempotencyField } from "./idempotency-field";
