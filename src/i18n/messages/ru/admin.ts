@@ -20,6 +20,7 @@ const admin = {
     shareLinks: "Ссылки",
     comments: "Комментарии",
     annotations: "Аннотации",
+    media: "Медиа",
     users: "Пользователи",
     push: "Push-уведомления",
     audit: "Аудит",

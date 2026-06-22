@@ -21,6 +21,7 @@ const admin = {
     shareLinks: "Links",
     comments: "Comments",
     annotations: "Annotations",
+    media: "Media",
     users: "Users",
     push: "Push notifications",
     audit: "Audit",

@@ -54,6 +54,9 @@ export function buildNavItems(me: MaybeMe): NavItem[] {
   if (can(me, "annotation.delete_any")) {
     items.push({ href: "/admin/annotations", labelKey: "nav.annotations" });
   }
+  if (can(me, "media.delete_any")) {
+    items.push({ href: "/admin/media", labelKey: "nav.media" });
+  }
   if (can(me, "user.list")) {
     items.push({ href: "/admin/users", labelKey: "nav.users" });
   }

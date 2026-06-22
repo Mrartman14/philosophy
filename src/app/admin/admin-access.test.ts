@@ -70,6 +70,7 @@ describe("buildNavItems", () => {
       "/admin/share-links",
       "/admin/comments",
       "/admin/annotations",
+      "/admin/media",
       "/admin/users",
       "/admin/push",
       "/admin/audit",
