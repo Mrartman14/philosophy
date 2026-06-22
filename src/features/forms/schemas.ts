@@ -73,6 +73,14 @@ function makeFormPayloadShape(t: ValidationT) {
 
 type FormPayload = z.infer<ReturnType<typeof makeFormPayloadShape>>;
 
+/**
+ * Вход payload-схемы (pre-parse): форма объекта, который конструктор сериализует
+ * в `<input name="payload">`. Связывает литерал FormBuilder со схемой, которой
+ * его потом парсит action — дрейф (новое/переименованное поле в makeFieldSchema/
+ * makeFormPayloadShape) ловится компиляцией, а не рантайм-422.
+ */
+export type FormPayloadInput = z.input<ReturnType<typeof makeFormPayloadShape>>;
+
 /** Парсит JSON-строку payload в объект и прогоняет через FormPayloadShape. */
 function makePayloadField(t: ValidationT) {
   return z.string().min(1, t("forms.emptyPayload")).transform((s, ctx): FormPayload => {

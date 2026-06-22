@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button, FormField, Label, Select, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
+import type { FormPayloadInput } from "../schemas";
 import type { FieldType, SubmissionMode, Visibility } from "../types";
 
 import { FormBuilderFieldRow, type BuilderField } from "./form-builder-field-row";
@@ -57,7 +58,9 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
     init.fields.length > 0 ? init.fields : [emptyField()],
   );
 
-  const payload = JSON.stringify({
+  // Литерал типизирован против входа Zod-схемы payload → дрейф билдера и схемы
+  // (которой action парсит этот JSON) ловится компиляцией, а не рантайм-422.
+  const payloadObj: FormPayloadInput = {
     title,
     description,
     after_submit: afterSubmit,
@@ -70,7 +73,8 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
       sort_order: i,
       ...(f.options.length > 0 ? { options: f.options } : {}),
     })),
-  });
+  };
+  const payload = JSON.stringify(payloadObj);
 
   function patchField(i: number, next: BuilderField) {
     setFields((prev) => prev.map((f, idx) => (idx === i ? next : f)));
