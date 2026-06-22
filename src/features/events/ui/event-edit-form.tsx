@@ -8,6 +8,7 @@ import {
   Checkbox,
   createTypedForm,
   Form,
+  FormFeedback,
   IdempotencyField,
   Inline,
   Label,
@@ -37,7 +38,6 @@ interface Props {
 
 export function EventEditForm({ event, tz }: Props) {
   const t = useT("events");
-  const tErrors = useT("errors");
   const initialAllDay = event.all_day ?? true;
   const [allDay, setAllDay] = useState(initialAllDay);
   const [startDate, setStartDate] = useState(
@@ -65,6 +65,11 @@ export function EventEditForm({ event, tz }: Props) {
       setEndDate((v) => (v ? `${v.slice(0, 10)}T00:00` : v));
     }
   };
+
+  // exactOptionalPropertyTypes: успешный текст подставляем только при реальном
+  // сохранении (data != null), иначе свойство опускаем — не шлём undefined.
+  const successText =
+    state.success && state.data ? { successText: t("savedSuccess") } : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -138,17 +143,11 @@ export function EventEditForm({ event, tz }: Props) {
           />
         </Field>
 
-        {state.success && state.data && (
-          <p className="text-sm text-(--color-fg-muted)">{t("savedSuccess")}</p>
-        )}
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("editAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("editAction")}
+          {...successText}
+        />
 
         <div>
           <SubmitButton>{t("saveButton")}</SubmitButton>

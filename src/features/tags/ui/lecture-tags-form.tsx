@@ -2,7 +2,7 @@
 "use client";
 import { useActionState, useState } from "react";
 
-import { Checkbox, Form, Label, Stack, SubmitButton } from "@/components/ui";
+import { Checkbox, Form, FormFeedback, Label, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -28,11 +28,14 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
   const [selected, setSelected] = useState<number[]>(assignedTagIds);
   const [state, action] = useActionState(setLectureTags, initial);
   const tTags = useT("tags");
-  const tErrors = useT("errors");
   const fieldErrors: Record<string, string> =
     !state.success && state.code === "validation"
       ? state.fieldErrors
       : {};
+
+  // exactOptionalPropertyTypes: successText подставляем только при успехе с данными.
+  const successText =
+    state.success && state.data ? { successText: tTags("tagsSaved") } : {};
 
   const options = allTags.filter(
     (t): t is Tag & { id: number } => typeof t.id === "number",
@@ -74,22 +77,18 @@ export function LectureTagsForm({ lectureId, allTags, assignedTagIds }: Props) {
           ))}
         </ul>
 
-        {state.success && state.data && (
-          <p className="text-sm text-green-600">{tTags("tagsSaved")}</p>
-        )}
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: tTags("assignTagsAction") })}
+        {!state.success && state.code === "validation" ? (
+          // Чекбоксы вне <Field>, поэтому ошибки tag_ids/lecture_id рисуем вручную —
+          // FormFeedback на validation покажет только _form и потеряет их.
+          <p role="alert" className="text-sm text-(--color-danger)">
+            {fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form}
           </p>
-        )}
-        {!state.success && state.code === "validation" &&
-          (fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form) && (
-            <p role="alert" className="text-sm text-red-600">
-              {fieldErrors.tag_ids ?? fieldErrors.lecture_id ?? fieldErrors._form}
-            </p>
-          )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
+        ) : (
+          <FormFeedback
+            result={state}
+            forbiddenAction={tTags("assignTagsAction")}
+            {...successText}
+          />
         )}
 
         <div>

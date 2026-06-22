@@ -18,6 +18,7 @@ const trails = {
   metaDescriptionLabel: "Описание",
   metaSubmit: "Сохранить",
   metaSaved: "Сохранено.",
+  metaForbiddenAction: "изменение маршрута",
 
   // --- trail-delete-button ---
   deleteButton: "Удалить",

@@ -38,6 +38,7 @@ vi.mock("@/components/ui", () => ({
   ),
   Stack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   FormField: ({ children }: { children: ReactNode }) => <>{children}</>,
+  FormFeedback: () => null,
   IdempotencyField: () => null,
   SubmitButton: ({ children }: { children: ReactNode }) => (
     <button type="submit">{children}</button>

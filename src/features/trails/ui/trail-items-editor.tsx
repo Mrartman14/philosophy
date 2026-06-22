@@ -146,12 +146,12 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
           <IdempotencyField result={state} />
           <SubmitButton>{t("itemsSaveSubmit")}</SubmitButton>
           {!state.success && state.code === "forbidden" && (
-            <span className="text-sm text-red-600">
+            <span className="text-sm text-(--color-danger)">
               {tErrors("forbiddenAction", { action: t("itemsForbiddenAction") })}
             </span>
           )}
           {!state.success && state.code === "validation" && (
-            <span className="text-sm text-red-600">{t("itemsValidationError")}</span>
+            <span className="text-sm text-(--color-danger)">{t("itemsValidationError")}</span>
           )}
         </Inline>
       </Form>

@@ -2,7 +2,7 @@
 "use client";
 import { useActionState, useState } from "react";
 
-import { Button, createTypedForm, Form, Inline, SubmitButton, TextInput } from "@/components/ui";
+import { Button, createTypedForm, Form, FormFeedback, Inline, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -26,7 +26,6 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState(updateTag, initial);
   const tTags = useT("tags");
-  const tErrors = useT("errors");
 
   // После успешного переименования сворачиваем inline-форму.
   // Паттерн «adjust state during render» (react.dev) вместо useEffect:
@@ -66,13 +65,8 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
           </Inline>
         </Form>
       )}
-      {editing && !state.success && state.code === "forbidden" && (
-        <p className="text-sm text-red-600">
-          {tErrors("forbiddenAction", { action: tTags("renameTagAction") })}
-        </p>
-      )}
-      {editing && !state.success && !state.code && (
-        <p className="text-sm text-red-600">{state.error}</p>
+      {editing && (
+        <FormFeedback result={state} forbiddenAction={tTags("renameTagAction")} />
       )}
     </li>
   );

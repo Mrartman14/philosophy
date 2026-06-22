@@ -21,7 +21,7 @@ export function FormFieldInput({ field, value, disabled = false, onChange }: Pro
     <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
       <div className="content" data-size="sm">
         <AstRender blocks={field.prompt ?? []} />
-        {field.required && <span className="text-red-600"> *</span>}
+        {field.required && <span className="text-(--color-danger)"> *</span>}
       </div>
       {(field.help_text?.length ?? 0) > 0 && (
         <div className="content text-(--color-fg-muted)" data-size="sm">

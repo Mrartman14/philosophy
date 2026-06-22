@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import {
   createTypedForm,
   Form,
+  FormFeedback,
   IdempotencyField,
   Stack,
   SubmitButton,
@@ -25,9 +26,15 @@ const { Field, errors } = createTypedForm<PushSendFormInput>();
 export function PushSendForm() {
   // Case 3 (branded forbidden): общий шаблон errors.forbiddenAction + per-feature
   // действие в родительном падеже из namespace preferences.
-  const tErrors = useT("errors");
   const tPrefs = useT("preferences");
   const [state, action] = useActionState(sendPushBroadcast, initial);
+
+  // exactOptionalPropertyTypes: successText только при реальном «принято» (202,
+  // data === true); начальный state — success+data:false.
+  const successText =
+    state.success && state.data
+      ? { successText: tPrefs("pushSendAccepted") }
+      : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -53,19 +60,11 @@ export function PushSendForm() {
           <TextInput placeholder="/lectures/…" />
         </Field>
 
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: tPrefs("pushSendAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
-        {state.success && state.data && (
-          <p className="text-sm text-(--color-fg-muted)">
-            {tPrefs("pushSendAccepted")}
-          </p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={tPrefs("pushSendAction")}
+          {...successText}
+        />
 
         <div>
           <SubmitButton>{tPrefs("pushSendButton")}</SubmitButton>

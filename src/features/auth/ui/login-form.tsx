@@ -53,7 +53,7 @@ export function LoginForm({ next }: LoginFormProps) {
           />
         </Field>
 
-        {genericError && <p className="text-sm text-red-600">{genericError}</p>}
+        {genericError && <p role="alert" className="text-sm text-(--color-danger)">{genericError}</p>}
 
         <div>
           <SubmitButton>{t("login.submit")}</SubmitButton>

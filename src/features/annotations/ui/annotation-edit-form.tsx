@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { createTypedForm, Form, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -31,7 +31,6 @@ interface Props {
  */
 export function AnnotationEditForm({ annotation, onSuccess }: Props) {
   const t = useT("annotations");
-  const tErrors = useT("errors");
   const [blocks, setBlocks] = useState<AstBlock[]>(
     (annotation.blocks ?? []),
   );
@@ -41,6 +40,11 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
     // initial.data === null → срабатывает только после реального сохранения.
     if (state.success && state.data) onSuccess?.();
   }, [state, onSuccess]);
+
+  // exactOptionalPropertyTypes: текст успеха только при реальном сохранении —
+  // иначе опускаем свойство (нельзя передавать undefined).
+  const successText =
+    state.success && state.data ? { successText: t("editSuccess") } : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -61,17 +65,11 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
           />
         </Field>
 
-        {state.success && state.data && (
-          <p className="text-sm text-(--color-fg-muted)">{t("editSuccess")}</p>
-        )}
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("editForbiddenAction")}
+          {...successText}
+        />
 
         <div>
           <SubmitButton>{t("editSubmit")}</SubmitButton>

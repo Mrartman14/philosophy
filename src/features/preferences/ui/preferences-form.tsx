@@ -2,7 +2,7 @@
 // src/features/preferences/ui/preferences-form.tsx
 import { useActionState } from "react";
 
-import { createTypedForm, Form, Select, Stack, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -20,13 +20,17 @@ export function PreferencesForm({
   initialReadingMode: ReadingMode;
 }) {
   const t = useT("preferences");
-  const tErrors = useT("errors");
   const [state, action] = useActionState(updatePreferences, initial);
 
   const READING_MODE_OPTIONS: { value: ReadingMode; label: string }[] = [
     { value: "full", label: t("readingModeFull") },
     { value: "focused", label: t("readingModeFocused") },
   ];
+
+  // exactOptionalPropertyTypes: successText подставляем только при реальном успехе
+  // (начальный state — success+data:null), иначе свойство опускаем.
+  const successText =
+    state.success && state.data ? { successText: t("settingsSaved") } : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -44,17 +48,11 @@ export function PreferencesForm({
           />
         </Field>
 
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("updateSettingsAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
-        {state.success && state.data !== null && (
-          <p className="text-sm text-(--color-fg-muted)">{t("settingsSaved")}</p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("updateSettingsAction")}
+          {...successText}
+        />
 
         <div>
           <SubmitButton>{t("saveButton")}</SubmitButton>

@@ -2,7 +2,7 @@
 // src/features/trails/ui/trail-meta-form.tsx
 import { useActionState } from "react";
 
-import { createTypedForm, Form, IdempotencyField, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -18,9 +18,12 @@ const { Field, f, errors } = createTypedForm<TrailMetaFormInput>();
 
 export function TrailMetaForm({ trail }: Props) {
   const t = useT("trails");
-  const tErrors = useT("errors");
   const initial: ActionResult<Trail | null> = { success: true, data: null };
   const [state, action] = useActionState(updateTrailMeta, initial);
+
+  // exactOptionalPropertyTypes: successText подставляем только при успешном сохранении
+  // (иначе свойство опускаем — нельзя передавать undefined).
+  const successText = state.success && state.data ? { successText: t("metaSaved") } : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -39,17 +42,11 @@ export function TrailMetaForm({ trail }: Props) {
           <Textarea maxLength={2000} rows={3} defaultValue={trail.description ?? ""} />
         </Field>
 
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenGeneric")}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
-        {state.success && state.data && (
-          <p className="text-sm text-green-600">{t("metaSaved")}</p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("metaForbiddenAction")}
+          {...successText}
+        />
 
         <div>
           <SubmitButton>{t("metaSubmit")}</SubmitButton>

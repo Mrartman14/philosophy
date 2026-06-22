@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-import { Form, Label, Select, Stack } from "@/components/ui";
+import { Form, FormFeedback, Label, Select, Stack } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -16,7 +16,6 @@ export function LectureVisibilityToggle({
   lecture: Pick<Lecture, "id" | "visibility">;
 }) {
   const tL = useT("lectures");
-  const tErrors = useT("errors");
 
   // Браузер сохраняет выбранный пользователем option в DOM до перезагрузки.
   // Сервер revalidate'ит lectures-кеш в action — на следующей навигации
@@ -52,14 +51,7 @@ export function LectureVisibilityToggle({
             { value: "public", label: tL("visibilityPublic") },
           ]}
         />
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-xs text-red-600">
-            {tErrors("forbiddenAction", { action: tL("visibilityForbiddenAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-xs text-red-600">{state.error}</p>
-        )}
+        <FormFeedback result={state} forbiddenAction={tL("visibilityForbiddenAction")} />
       </Stack>
     </Form>
   );

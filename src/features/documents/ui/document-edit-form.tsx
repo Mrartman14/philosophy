@@ -5,7 +5,7 @@ import { useActionState, useState } from "react";
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { AstMergeView, type MergeViewLabels } from "@/components/ast-merge";
-import { Form, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -23,7 +23,6 @@ interface Props {
 
 export function DocumentEditForm({ document }: Props) {
   const t = useT("documents");
-  const tErrors = useT("errors");
 
   // base — версия, от которой произведены текущие правки (обновляется после merge)
   const [baseBlocks, setBaseBlocks] = useState<AstBlock[]>(document.blocks ?? []);
@@ -102,12 +101,19 @@ export function DocumentEditForm({ document }: Props) {
     setConflict(null);
   }
 
+  // exactOptionalPropertyTypes: не передаём undefined в опциональный successText.
+  // Успех показываем только для kind === "saved" с данными (conflict/gone — свои ветки).
+  const successText =
+    state.success && state.data.kind === "saved" && state.data.document
+      ? { successText: t("savedMessage") }
+      : {};
+
   return (
     <>
       <Form action={action}>
         <Stack>
           {gone && (
-            <p role="alert" className="text-sm font-medium text-red-600">
+            <p role="alert" className="text-sm font-medium text-(--color-danger)">
               {t("merge.goneMessage")}
             </p>
           )}
@@ -127,19 +133,7 @@ export function DocumentEditForm({ document }: Props) {
             />
           </FormField>
 
-          {state.success &&
-            state.data.kind === "saved" &&
-            state.data.document && (
-              <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
-            )}
-          {!state.success && state.code === "forbidden" && (
-            <p className="text-sm text-red-600">
-              {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
-            </p>
-          )}
-          {!state.success && !state.code && (
-            <p className="text-sm text-red-600">{state.error}</p>
-          )}
+          <FormFeedback result={state} forbiddenAction={t("editForbiddenAction")} {...successText} />
 
           <div>
             <SubmitButton>{t("saveContentButton")}</SubmitButton>

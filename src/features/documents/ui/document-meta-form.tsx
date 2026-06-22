@@ -2,7 +2,7 @@
 // src/features/documents/ui/document-meta-form.tsx
 import { useActionState } from "react";
 
-import { createTypedForm, Form, Stack, SubmitButton, TextInput } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, Stack, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -20,8 +20,12 @@ interface Props {
 
 export function DocumentMetaForm({ document }: Props) {
   const t = useT("documents");
-  const tErrors = useT("errors");
   const [state, action] = useActionState(updateDocumentMeta, initial);
+
+  // exactOptionalPropertyTypes: successText передаём только при успешном сохранении
+  // (начальный state тоже success, но без data) — иначе свойство опускаем.
+  const successText =
+    state.success && state.data ? { successText: t("savedMessage") } : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -34,17 +38,11 @@ export function DocumentMetaForm({ document }: Props) {
             maxLength={500}
           />
         </Field>
-        {state.success && state.data && (
-          <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
-        )}
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("editForbiddenAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("editForbiddenAction")}
+          {...successText}
+        />
         <div>
           <SubmitButton>{t("saveTitleButton")}</SubmitButton>
         </div>

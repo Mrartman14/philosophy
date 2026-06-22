@@ -119,7 +119,7 @@ export function LectureCoverForm({ lectureId, coverImageKey, coverImageAlt }: Pr
       </div>
 
       {error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-(--color-danger)">
           {error}
         </p>
       )}

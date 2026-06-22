@@ -23,7 +23,7 @@ export async function AdminCommentRow({ comment }: { comment: Comment }) {
           <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
           <span>{comment.author?.username ?? "—"}</span>
           <span>{formatCommentDate(comment.created_at, locale, tz)}</span>
-          {deleted && <span className="text-red-600">{t("adminDeleted")}</span>}
+          {deleted && <span className="text-(--color-danger)">{t("adminDeleted")}</span>}
         </div>
         {!deleted && (
           <div className="content" data-size="sm">

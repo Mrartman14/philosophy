@@ -2,7 +2,7 @@
 // src/features/trails/ui/trail-visibility-button.tsx
 import { useActionState } from "react";
 
-import { Form, Inline, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, Inline, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -21,7 +21,6 @@ interface Props {
  */
 export function TrailVisibilityButton({ id }: Props) {
   const t = useT("trails");
-  const tErrors = useT("errors");
   const [state, action] = useActionState(setTrailVisibility, initial);
   return (
     <Form action={action}>
@@ -29,14 +28,7 @@ export function TrailVisibilityButton({ id }: Props) {
         <input type="hidden" name="id" value={id} />
         <input type="hidden" name="visibility" value="public" />
         <SubmitButton>{t("visibilityMakePublic")}</SubmitButton>
-        {!state.success && state.code === "forbidden" && (
-          <span className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("visibilityForbiddenAction") })}
-          </span>
-        )}
-        {!state.success && !state.code && (
-          <span className="text-sm text-red-600">{state.error}</span>
-        )}
+        <FormFeedback result={state} forbiddenAction={t("visibilityForbiddenAction")} />
       </Inline>
     </Form>
   );

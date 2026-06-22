@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import {
   createTypedForm,
   Form,
+  FormFeedback,
   Stack,
   SubmitButton,
   TextInput,
@@ -31,8 +32,12 @@ interface Props {
 
 export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props) {
   const tL = useT("lectures");
-  const tErrors = useT("errors");
   const [state, action] = useActionState(updateLecture, initial);
+
+  // exactOptionalPropertyTypes: successText передаём только при успешном сохранении,
+  // иначе свойство опускаем (нельзя передать undefined).
+  const successText =
+    state.success && state.data ? { successText: tL("savedMessage") } : {};
 
   return (
     <div className="flex flex-col gap-6">
@@ -58,17 +63,11 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
             />
           </Field>
 
-          {!state.success && state.code === "forbidden" && (
-            <p className="text-sm text-red-600">
-              {tErrors("forbiddenAction", { action: tL("editForbiddenAction") })}
-            </p>
-          )}
-          {!state.success && !state.code && (
-            <p className="text-sm text-red-600">{state.error}</p>
-          )}
-          {state.success && state.data && (
-            <p className="text-sm text-green-600">{tL("savedMessage")}</p>
-          )}
+          <FormFeedback
+            result={state}
+            forbiddenAction={tL("editForbiddenAction")}
+            {...successText}
+          />
 
           <div>
             <SubmitButton>{tL("saveButton")}</SubmitButton>

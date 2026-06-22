@@ -18,6 +18,7 @@ const trails = {
   metaDescriptionLabel: "Description",
   metaSubmit: "Save",
   metaSaved: "Saved.",
+  metaForbiddenAction: "editing the route",
 
   // --- trail-delete-button ---
   deleteButton: "Delete",

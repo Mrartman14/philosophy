@@ -9,6 +9,7 @@ import {
   ColorInput,
   createTypedForm,
   Form,
+  FormFeedback,
   IdempotencyField,
   Inline,
   Label,
@@ -40,10 +41,14 @@ interface Props {
 
 export function BannerEditForm({ banner, tz }: Props) {
   const t = useT("banners");
-  const tErrors = useT("errors");
   const [dismissible, setDismissible] = useState(banner.dismissible !== false);
   const [blocks, setBlocks] = useState<AstBlock[]>(banner.blocks ?? []);
   const [state, action] = useActionState(updateBanner, initial);
+
+  // exactOptionalPropertyTypes: успешный текст подставляем только при реальном
+  // сохранении (data != null), иначе свойство опускаем — не шлём undefined.
+  const successText =
+    state.success && state.data ? { successText: t("saved") } : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -120,24 +125,11 @@ export function BannerEditForm({ banner, tz }: Props) {
           />
         </Field>
 
-        {state.success && state.data && (
-          <p className="text-sm text-(--color-fg-muted)">{t("saved")}</p>
-        )}
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("editAction") })}
-          </p>
-        )}
-        {!state.success &&
-          state.code === "validation" &&
-          errors(state)._form && (
-            <p role="alert" className="text-sm text-red-600">
-              {errors(state)._form}
-            </p>
-          )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("editAction")}
+          {...successText}
+        />
 
         <div>
           <SubmitButton>{t("saveButton")}</SubmitButton>

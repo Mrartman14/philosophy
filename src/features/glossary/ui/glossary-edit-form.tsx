@@ -6,6 +6,7 @@ import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   createTypedForm,
   Form,
+  FormFeedback,
   IdempotencyField,
   Stack,
   SubmitButton,
@@ -29,7 +30,11 @@ export function GlossaryEditForm({ term }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>(term.blocks ?? []);
   const [state, action] = useActionState(updateTermBlocks, initial);
   const t = useT("glossary");
-  const tErrors = useT("errors");
+
+  // exactOptionalPropertyTypes: текст успеха только при реальном сохранении —
+  // иначе опускаем свойство (нельзя передавать undefined).
+  const successText =
+    state.success && state.data ? { successText: t("savedMessage") } : {};
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -48,17 +53,11 @@ export function GlossaryEditForm({ term }: Props) {
           />
         </Field>
 
-        {state.success && state.data && (
-          <p className="text-sm text-(--color-fg-muted)">{t("savedMessage")}</p>
-        )}
-        {!state.success && state.code === "forbidden" && (
-          <p className="text-sm text-red-600">
-            {tErrors("forbiddenAction", { action: t("updateTermAction") })}
-          </p>
-        )}
-        {!state.success && !state.code && (
-          <p className="text-sm text-red-600">{state.error}</p>
-        )}
+        <FormFeedback
+          result={state}
+          forbiddenAction={t("updateTermAction")}
+          {...successText}
+        />
 
         <div>
           <SubmitButton>{t("saveButton")}</SubmitButton>
