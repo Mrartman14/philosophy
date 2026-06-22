@@ -5,6 +5,9 @@ const referenceGraph = {
   dimensionAriaLabel: "Graph dimensionality",
   // graph-view.tsx — empty graph
   empty: "The graph is empty",
+  // app/graph/page.tsx — load states (via SceneStatePanel)
+  building: "The graph is still being built. Check back a little later.",
+  loadError: "Failed to load the graph.",
 };
 
 export default referenceGraph;

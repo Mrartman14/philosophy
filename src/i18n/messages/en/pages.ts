@@ -115,6 +115,9 @@ const pages = {
   mapTitle: "Semantic map",
   mapLink: "View on map",
 
+  // ─── /graph ──────────────────────────────────────────────────────────
+  graphTitle: "Reference graph",
+
   // ─── /me/tokens ──────────────────────────────────────────────────────
   tokensTitle: "Personal tokens",
   tokensHeading: "Personal access tokens",
