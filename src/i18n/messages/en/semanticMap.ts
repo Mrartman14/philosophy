@@ -9,6 +9,11 @@ const semanticMap = {
   // map-state-panel.tsx — map loading states
   building: "The map is still being built. Check back shortly.",
   loadError: "Failed to load the map.",
+  // map-point-panel.tsx — point detail card
+  pointPanelClose: "Close",
+  pointPanelOpenDocument: "Open document",
+  pointPanelChunk: "Chunk #{ord}",
+  pointPanelUntitled: "Document",
 };
 
 export default semanticMap;

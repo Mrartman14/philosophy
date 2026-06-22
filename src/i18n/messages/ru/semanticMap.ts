@@ -9,6 +9,11 @@ const semanticMap = {
   // map-state-panel.tsx — состояния загрузки карты
   building: "Карта ещё строится. Загляните чуть позже.",
   loadError: "Не удалось загрузить карту.",
+  // map-point-panel.tsx — карточка деталей точки
+  pointPanelClose: "Закрыть",
+  pointPanelOpenDocument: "Открыть документ",
+  pointPanelChunk: "Фрагмент №{ord}",
+  pointPanelUntitled: "Документ",
 };
 
 export default semanticMap;
