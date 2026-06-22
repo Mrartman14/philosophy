@@ -1,10 +1,13 @@
 // src/features/events/calendar.test.ts
 import { describe, it, expect } from "vitest";
 
+import { getFmt } from "@/i18n/format";
+
 import {
   resolveMonthRange,
   groupOccurrencesByDate,
   formatEventDate,
+  formatOccurrenceTime,
 } from "./calendar";
 import type { EventOccurrence } from "./types";
 
@@ -95,5 +98,37 @@ describe("formatEventDate", () => {
 
   it("непарсибельное значение возвращается как есть", () => {
     expect(formatEventDate("garbage", false)).toBe("garbage");
+  });
+});
+
+describe("formatOccurrenceTime", () => {
+  const msk = getFmt("ru", "Europe/Moscow");
+  const utc = getFmt("ru", "UTC");
+
+  it("локализует start_at под зону зрителя", () => {
+    // Один и тот же инстант — разное настенное время в разных зонах.
+    expect(formatOccurrenceTime({ start_at: "2026-05-15T19:00:00+03:00" }, msk)).toBe("19:00");
+    expect(formatOccurrenceTime({ start_at: "2026-05-15T19:00:00+03:00" }, utc)).toBe("16:00");
+  });
+
+  it("диапазон, когда есть end_at", () => {
+    expect(
+      formatOccurrenceTime(
+        { start_at: "2026-05-15T19:00:00+03:00", end_at: "2026-05-15T21:00:00+03:00" },
+        msk,
+      ),
+    ).toBe("19:00 – 21:00");
+  });
+
+  it("all_day → пустая строка (времени нет)", () => {
+    expect(formatOccurrenceTime({ all_day: true }, msk)).toBe("");
+  });
+
+  it("нет start_at → пустая строка", () => {
+    expect(formatOccurrenceTime({}, msk)).toBe("");
+  });
+
+  it("непарсибельный start_at → пустая строка", () => {
+    expect(formatOccurrenceTime({ start_at: "garbage" }, msk)).toBe("");
   });
 });

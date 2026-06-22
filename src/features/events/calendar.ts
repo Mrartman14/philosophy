@@ -1,7 +1,7 @@
 // src/features/events/calendar.ts
 // Чистые date-хелперы домена events. Без "server-only": нужны тестам и
 // server-safe UI-компонентам; никаких side effects и зависимостей.
-import { getFmt } from "@/i18n/format";
+import { getFmt, type Formatters } from "@/i18n/format";
 import { DEFAULT_LOCALE, type ResolvedLocale } from "@/i18n/locales";
 
 import type { EventOccurrence } from "./types";
@@ -122,4 +122,29 @@ export function formatEventDate(
         timeZone: "UTC",
       };
   return fmt.dateTime(date, opts);
+}
+
+const TIME_OPTS: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit" };
+
+/**
+ * Время occurrence в зоне ЗРИТЕЛЯ: «19:00» или «19:00 – 21:00».
+ * `start_at`/`end_at` — абсолютные инстанты (RFC3339 с офсетом), бек локализует
+ * их под каждого зрителя. `fmt` уже привязан к зоне юзера (getServerFmt), поэтому
+ * timeZone в опции НЕ передаём. all_day / нет start_at → пустая строка.
+ */
+export function formatOccurrenceTime(
+  occ: Pick<EventOccurrence, "all_day" | "start_at" | "end_at">,
+  fmt: Formatters,
+): string {
+  if (occ.all_day || !occ.start_at) return "";
+  const start = new Date(occ.start_at);
+  if (Number.isNaN(start.getTime())) return "";
+  const startText = fmt.dateTime(start, TIME_OPTS);
+  if (occ.end_at) {
+    const end = new Date(occ.end_at);
+    if (!Number.isNaN(end.getTime())) {
+      return `${startText} – ${fmt.dateTime(end, TIME_OPTS)}`;
+    }
+  }
+  return startText;
 }

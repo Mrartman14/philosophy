@@ -3,7 +3,11 @@ import { AstRender } from "@/components/ast-render";
 import { RouterLink } from "@/components/ui";
 import { getT, getServerFmt, getLocale } from "@/i18n";
 
-import { groupOccurrencesByDate, type MonthRange } from "../calendar";
+import {
+  formatOccurrenceTime,
+  groupOccurrencesByDate,
+  type MonthRange,
+} from "../calendar";
 import type { EventOccurrence } from "../types";
 
 interface Props {
@@ -59,12 +63,17 @@ export async function CalendarView({ range, occurrences }: Props) {
                 {formatDay(group.date)}
               </h3>
               <ul className="flex flex-col gap-3">
-                {group.items.map((occ, i) => (
+                {group.items.map((occ, i) => {
+                  const time = formatOccurrenceTime(occ, fmt);
+                  return (
                   <li
                     key={`${occ.event_id ?? "occ"}-${i}`}
                     className="rounded border border-(--color-border) p-3"
                   >
                     <p className="font-medium">{occ.title}</p>
+                    {time && (
+                      <p className="text-sm text-(--color-fg-muted)">{time}</p>
+                    )}
                     {occ.is_recurring && (
                       <p className="text-xs text-(--color-fg-muted)">
                         {t("recurringEvent")}
@@ -76,7 +85,8 @@ export async function CalendarView({ range, occurrences }: Props) {
                       </div>
                     )}
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </li>
           ))}
