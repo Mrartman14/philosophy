@@ -49,6 +49,7 @@ const media = {
     loadMyFailed: "Failed to load media",
     loadItemFailed: "Failed to load media",
     loadContainersFailed: "Failed to load containers",
+    loadAdminFailed: "Failed to load media list",
   },
 };
 

@@ -49,6 +49,35 @@ export const getMyMedia = cache(
 );
 
 /**
+ * GET /api/admin/media — admin-список неприватных медиа всех владельцев
+ * (модерация, гейт media.delete_any). Приватные бек не листит. Возвращает тот
+ * же MyMediaResult, что и getMyMedia. Per-actor → только React.cache, без
+ * unstable_cache (как getMyMedia).
+ */
+export const getAdminMedia = cache(
+  async (
+    filter: { owner_id?: string; offset?: number; limit?: number } = {},
+  ): Promise<MyMediaResult> => {
+    const api = await createApiClient();
+    const offset = filter.offset ?? 0;
+    const limit = filter.limit ?? 20;
+    const { data, error } = await api.GET("/api/admin/media", {
+      params: {
+        query: {
+          offset,
+          limit,
+          ...(filter.owner_id ? { owner_id: filter.owner_id } : {}),
+        },
+      },
+    });
+    if (error) {
+      throw new Error(error.error ?? (await getT("media"))("api.loadAdminFailed"));
+    }
+    return unwrapList(data, { offset, limit });
+  },
+);
+
+/**
  * GET /api/media/{media_id} — одно медиа с подписанным url. 404 →
  * возвращаем null (secure-by-obscurity: «не видно» ≡ «не существует»).
  *

@@ -1,7 +1,7 @@
 // src/features/media/api.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { getMediaById, getMediaContainers, getMyMedia } from "./api";
+import { getAdminMedia, getMediaById, getMediaContainers, getMyMedia } from "./api";
 
 // createApiClient — единственная внешняя зависимость. Стабим её.
 const getMock = vi.fn();
@@ -138,5 +138,64 @@ describe("getMyMedia — pagination defaults (через unwrapList)", () => {
     );
 
     await expect(getMyMedia()).rejects.toThrow("unauthorized");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getAdminMedia — admin-список (GET /api/admin/media)
+// ---------------------------------------------------------------------------
+describe("getAdminMedia — admin-список", () => {
+  it("пробрасывает offset/limit и owner_id в query, когда owner_id задан", async () => {
+    getMock.mockResolvedValue(
+      apiResult({ data: { data: [], pagination: { total: 0, offset: 0, limit: 20 } } }),
+    );
+
+    await getAdminMedia({ offset: 0, limit: 20, owner_id: "u-7" });
+
+    expect(getMock).toHaveBeenCalledWith("/api/admin/media", {
+      params: { query: { offset: 0, limit: 20, owner_id: "u-7" } },
+    });
+  });
+
+  it("НЕ пробрасывает owner_id, когда он пустой/не задан", async () => {
+    getMock.mockResolvedValue(
+      apiResult({ data: { data: [], pagination: { total: 0, offset: 0, limit: 20 } } }),
+    );
+
+    await getAdminMedia({ offset: 0, limit: 20 });
+
+    expect(getMock).toHaveBeenCalledWith("/api/admin/media", {
+      params: { query: { offset: 0, limit: 20 } },
+    });
+  });
+
+  it("использует дефолты offset=0, limit=20 без filter", async () => {
+    getMock.mockResolvedValue(apiResult({ data: { data: [], pagination: null } }));
+
+    const result = await getAdminMedia();
+
+    expect(result.offset).toBe(0);
+    expect(result.limit).toBe(20);
+    expect(result.items).toEqual([]);
+  });
+
+  it("разворачивает items/total через unwrapList", async () => {
+    const media = { id: "m-1", filename: "a.mp4", type: "video", owner_id: "u-1", visibility: "public", created_at: "2026-06-01T00:00:00Z" };
+    getMock.mockResolvedValue(
+      apiResult({ data: { data: [media], pagination: { total: 5, offset: 0, limit: 20 } } }),
+    );
+
+    const result = await getAdminMedia({ offset: 0, limit: 20 });
+
+    expect(result.items).toEqual([media]);
+    expect(result.total).toBe(5);
+  });
+
+  it("бросает при error-ответе (403/401 не деградируем)", async () => {
+    getMock.mockResolvedValue(
+      apiResult({ error: { error: "forbidden" }, status: 403 }),
+    );
+
+    await expect(getAdminMedia()).rejects.toThrow("forbidden");
   });
 });

@@ -49,6 +49,7 @@ const media = {
     loadMyFailed: "Не удалось загрузить медиа",
     loadItemFailed: "Не удалось загрузить медиа",
     loadContainersFailed: "Не удалось загрузить контейнеры",
+    loadAdminFailed: "Не удалось загрузить список медиа",
   },
 };
 
