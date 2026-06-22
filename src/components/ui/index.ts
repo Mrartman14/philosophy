@@ -6,6 +6,7 @@ export { TextInput, type TextInputProps } from "./text-input";
 export { ColorInput, type ColorInputProps } from "./color-input";
 export { Textarea, type TextareaProps } from "./textarea";
 export { Select, type SelectProps } from "./select";
+export { RadioGroup, type RadioGroupProps } from "./radio-group";
 export { Checkbox, type CheckboxProps } from "./checkbox";
 export { Label, type LabelProps } from "./label";
 export { Form } from "./form";
