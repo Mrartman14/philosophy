@@ -16,6 +16,7 @@ export { SubmitButton } from "./submit-button";
 export { IdempotencyField } from "./idempotency-field";
 export { VersionField } from "./version-field";
 export { Dialog, DialogClose } from "./dialog";
+export { DirectionProvider } from "./direction-provider";
 export { Toolbar } from "./toolbar";
 export { Popover } from "./popover";
 export { NavigationMenu } from "./navigation-menu";

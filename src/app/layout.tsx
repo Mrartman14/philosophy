@@ -12,11 +12,12 @@ import { AppearanceProvider } from "@/components/appearance";
 import { htmlAttrs } from "@/components/appearance/appearance-cookie";
 import { StatusBanner } from "@/components/permission/status-banner";
 import { TimezoneProvider } from "@/components/timezone";
-import { ToastProvider, Toaster } from "@/components/ui";
+import { DirectionProvider, ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
 import { getClientMessages, getLocale, getT } from "@/i18n";
 import { I18nProvider } from "@/i18n/client";
+import { dirForLocale } from "@/i18n/locales";
 import { ogLocale } from "@/seo/page-metadata";
 import { metadataBaseUrl } from "@/seo/site-url";
 import { ClientContextReporter } from "@/services/observability/client-context-reporter";
@@ -111,7 +112,7 @@ export default async function RootLayout({
   const { style, colorScheme, ...dataAttrs } = htmlAttrs(appearance);
 
   return (
-    <html lang={locale} {...dataAttrs} style={{ ...style, colorScheme }}>
+    <html lang={locale} dir={dirForLocale(locale)} {...dataAttrs} style={{ ...style, colorScheme }}>
       <head>
         <meta
           name="theme-color"
@@ -132,32 +133,34 @@ export default async function RootLayout({
           `}
         style={{ fontFamily: "var(--font-ui)" }}
       >
-        <I18nProvider locale={locale} messages={messages}>
-          <TimezoneProvider initial={{ pref: tzPref, resolved: tzResolved }}>
-            <AppearanceProvider initial={appearance}>
-              <ToastProvider>
-                <OfflineIdentityGuard userId={me?.id ?? null} />
-                <AppHeader />
-                <StatusBanner me={me} />
-                <ActiveBanners />
-                <InstallBanner />
-                <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-l md:border-r md:border-(--color-border)">
-                  {children}
-                </main>
-                <WebVitalsReporter />
-                <ClientContextReporter
-                  actorHash={obsActor?.hash ?? null}
-                  actorRole={obsActor?.role ?? null}
-                />
-                <UpdatePrompt />
-                <Suspense>
-                  <YandexMetrika />
-                </Suspense>
-                <Toaster />
-              </ToastProvider>
-            </AppearanceProvider>
-          </TimezoneProvider>
-        </I18nProvider>
+        <DirectionProvider direction={dirForLocale(locale)}>
+          <I18nProvider locale={locale} messages={messages}>
+            <TimezoneProvider initial={{ pref: tzPref, resolved: tzResolved }}>
+              <AppearanceProvider initial={appearance}>
+                <ToastProvider>
+                  <OfflineIdentityGuard userId={me?.id ?? null} />
+                  <AppHeader />
+                  <StatusBanner me={me} />
+                  <ActiveBanners />
+                  <InstallBanner />
+                  <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-x md:border-(--color-border)">
+                    {children}
+                  </main>
+                  <WebVitalsReporter />
+                  <ClientContextReporter
+                    actorHash={obsActor?.hash ?? null}
+                    actorRole={obsActor?.role ?? null}
+                  />
+                  <UpdatePrompt />
+                  <Suspense>
+                    <YandexMetrika />
+                  </Suspense>
+                  <Toaster />
+                </ToastProvider>
+              </AppearanceProvider>
+            </TimezoneProvider>
+          </I18nProvider>
+        </DirectionProvider>
       </body>
     </html>
   );
