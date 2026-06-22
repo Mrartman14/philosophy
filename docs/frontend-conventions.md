@@ -215,8 +215,10 @@ required-ключей. Required-enforcement действует только на
 (`forms/**` builder/fill) — рантайм-острова, слой не применяется к их внутренним полям.
 
 `name` пишется ОДИН раз — на `<Field>` (= Base UI `Field.Root`); контролы
-(`TextInput`/`Textarea`/`ColorInput`/`Select`/`Checkbox`) наследуют его из контекста
-(Base UI `fieldName ?? nameProp`). `f("…")` нужен только для hidden-инпутов
+наследуют его из контекста (Base UI `fieldName ?? nameProp`): текстовые
+(`TextInput`/`Textarea`/`ColorInput`) — после перевода на `Field.Control` (эта
+итерация), композитные (`Select`/`Checkbox`) — нативно (Base UI-контролы, и до
+неё). `f("…")` нужен только для hidden-инпутов
 (`idempotency`, JSON-острова), кастом-виджетов (AST-редактор) и standalone-контролов
 вне `<Field>`. `aria-label` на контроле внутри `<Field>` избыточен — `Field.Label`
 именует его через `aria-labelledby` (перебивает `aria-label`); не дублируй.
