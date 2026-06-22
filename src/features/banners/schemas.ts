@@ -143,5 +143,7 @@ export const BannerCreateSchema = makeBannerCreateSchema(_identityT);
 export const BannerUpdateSchema = makeBannerUpdateSchema(_identityT);
 
 export type BannerCreateInput = z.infer<ReturnType<typeof makeBannerCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type BannerCreateFormInput = z.input<ReturnType<typeof makeBannerCreateSchema>>;
 export type BannerUpdateInput = z.infer<ReturnType<typeof makeBannerUpdateSchema>>;
 export type BannerIdInput = z.infer<typeof BannerIdSchema>;

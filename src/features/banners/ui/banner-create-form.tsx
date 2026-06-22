@@ -6,9 +6,9 @@ import { useActionState, useEffect, useState } from "react";
 import {
   Checkbox,
   ColorInput,
+  createTypedForm,
   Form,
   FormFeedback,
-  FormField,
   IdempotencyField,
   Inline,
   Label,
@@ -22,6 +22,7 @@ import type { ActionResult } from "@/utils/create-action";
 
 import { createBanner } from "../actions";
 import { audienceOptions } from "../display";
+import type { BannerCreateFormInput } from "../schemas";
 import type { Banner } from "../types";
 
 const initial: ActionResult<Banner | null> = {
@@ -29,16 +30,13 @@ const initial: ActionResult<Banner | null> = {
   data: null,
 };
 
+const { Field, f, errors } = createTypedForm<BannerCreateFormInput>();
+
 export function BannerCreateForm() {
   const t = useT("banners");
   const router = useRouter();
   const [dismissible, setDismissible] = useState(true);
   const [state, action] = useActionState(createBanner, initial);
-
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   useEffect(() => {
     if (state.success && state.data?.id) {
@@ -47,50 +45,50 @@ export function BannerCreateForm() {
   }, [state, router]);
 
   return (
-    <Form action={action} errors={fieldErrors}>
+    <Form action={action} errors={errors(state)}>
       <Stack className="max-w-xl">
         {/* Hidden input: omitted-чекбокс в FormData неотличим от «не менять». */}
         <input
           type="hidden"
-          name="dismissible"
+          name={f("dismissible")}
           value={dismissible ? "true" : "false"}
         />
         <IdempotencyField result={state} />
 
-        <FormField name="background_color" label={t("fieldColor")} required>
+        <Field name="background_color" label={t("fieldColor")} required>
           <ColorInput
-            name="background_color"
+            name={f("background_color")}
             defaultValue="#336699"
             required
             aria-label={t("fieldColor")}
           />
-        </FormField>
+        </Field>
 
-        <FormField name="target_audience" label={t("fieldAudience")} required>
+        <Field name="target_audience" label={t("fieldAudience")} required>
           <Select
-            name="target_audience"
+            name={f("target_audience")}
             defaultValue="all"
             options={audienceOptions(t)}
             aria-label={t("fieldAudienceAriaLabel")}
           />
-        </FormField>
+        </Field>
 
         <Inline align="center" gap="tight" className="text-sm">
           <Checkbox id="dismissible" checked={dismissible} onCheckedChange={setDismissible} />
           <Label htmlFor="dismissible">{t("fieldDismissible")}</Label>
         </Inline>
 
-        <FormField name="start_at" label={t("fieldStartAt")} required>
-          <TextInput name="start_at" type="datetime-local" required />
-        </FormField>
+        <Field name="start_at" label={t("fieldStartAt")} required>
+          <TextInput name={f("start_at")} type="datetime-local" required />
+        </Field>
 
-        <FormField name="end_at" label={t("fieldEndAt")}>
-          <TextInput name="end_at" type="datetime-local" />
-        </FormField>
+        <Field name="end_at" label={t("fieldEndAt")}>
+          <TextInput name={f("end_at")} type="datetime-local" />
+        </Field>
 
-        <FormField name="event_id" label={t("fieldEventId")}>
-          <TextInput name="event_id" placeholder={t("eventIdPlaceholder")} />
-        </FormField>
+        <Field name="event_id" label={t("fieldEventId")}>
+          <TextInput name={f("event_id")} placeholder={t("eventIdPlaceholder")} />
+        </Field>
 
         <FormFeedback result={state} forbiddenAction={t("createAction")} />
 
