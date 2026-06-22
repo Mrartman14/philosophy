@@ -43,6 +43,8 @@ export function makeShareLinkCreateSchema(t: ValidationT) {
 }
 
 export type ShareLinkCreateInput = z.infer<ReturnType<typeof makeShareLinkCreateSchema>>;
+/** Вход формы (pre-transform): имена полей и их required-ность для createTypedForm. */
+export type ShareLinkCreateFormInput = z.input<ReturnType<typeof makeShareLinkCreateSchema>>;
 
 /**
  * Поиск ссылок по ресурсу (страницы /share-links и /admin/share-links).

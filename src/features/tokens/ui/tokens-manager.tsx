@@ -5,8 +5,8 @@ import { useActionState, useEffect, useState } from "react";
 
 import {
   Button,
+  createTypedForm,
   Form,
-  FormField,
   IdempotencyField,
   Select,
   Stack,
@@ -18,6 +18,7 @@ import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createToken } from "../actions";
+import type { CreateTokenFormInput } from "../schemas";
 import type { CreatedToken, PatToken } from "../types";
 
 import { ConnectInstructions } from "./connect-instructions";
@@ -29,6 +30,8 @@ const initialState: ActionResult<CreatedToken | null> = {
   success: true,
   data: null,
 };
+
+const { Field, errors } = createTypedForm<CreateTokenFormInput>();
 
 interface Props {
   initialTokens: PatToken[];
@@ -72,7 +75,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
         });
       }
       router.refresh();
-    } else if (!state.success) {
+    } else if (!state.success && state.code !== "validation") {
       toastActionError(toast, tErrors, state, {
         action: t("createAction"),
         forbiddenTitle: tErrors("failureTitle"),
@@ -85,19 +88,19 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
   return (
     <div className="flex flex-col gap-6">
       {canManage && (
-        <Form action={formAction}>
+        <Form action={formAction} errors={errors(state)}>
           <Stack className="rounded-lg border border-(--color-border) bg-(--color-surface) p-4">
             <IdempotencyField result={state} />
             <div className="flex flex-wrap items-end gap-3">
-              <FormField name="label" label={t("labelField")} required className="flex-1">
+              <Field name="label" label={t("labelField")} required className="flex-1">
                 <TextInput
                   name="label"
                   required
                   maxLength={100}
                   placeholder={t("labelPlaceholder")}
                 />
-              </FormField>
-              <FormField name="expires_in_days" label={t("expiresField")}>
+              </Field>
+              <Field name="expires_in_days" label={t("expiresField")}>
                 <div className="w-40">
                   <Select
                     name="expires_in_days"
@@ -106,7 +109,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
                     aria-label={t("expiresField")}
                   />
                 </div>
-              </FormField>
+              </Field>
               <Button type="submit" disabled={pending}>
                 {pending ? "…" : t("createButton")}
               </Button>

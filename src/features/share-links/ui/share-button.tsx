@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-import { Button, Dialog, Form, FormField, IdempotencyField, Inline, TextInput, useToast } from "@/components/ui";
+import { Button, createTypedForm, Dialog, Form, IdempotencyField, Inline, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 import type { ActionResult } from "@/utils/create-action";
 
 import { createShareLink } from "../actions";
+import type { ShareLinkCreateFormInput } from "../schemas";
 import type { ShareLink, ResourceType } from "../types";
 
 import { ShareLinkList } from "./share-link-list";
@@ -26,6 +27,8 @@ const initialState: ActionResult<ShareLink | null> = {
   success: true,
   data: null,
 };
+
+const { Field, f, errors } = createTypedForm<ShareLinkCreateFormInput>();
 
 /**
  * Кнопка «Поделиться» для detail-страниц. Открывает Dialog со списком
@@ -53,7 +56,9 @@ export function ShareButton({
     if (state.success && state.data) {
       toast.add({ title: t("linkCreatedToast") });
       router.refresh();
-    } else if (!state.success) {
+    } else if (!state.success && state.code !== "validation") {
+      // Валидационные ошибки теперь рендерятся inline под <Field> (errors=);
+      // тост оставляем только для forbidden/generic/серверных ошибок.
       toastActionError(toast, tErrors, state, {
         action: t("createLinkAction"),
         forbiddenTitle: tErrors("failureTitle"),
@@ -78,14 +83,14 @@ export function ShareButton({
       description={t("shareDialogDesc")}
     >
       <div className="flex flex-col gap-4">
-        <Form action={formAction}>
+        <Form action={formAction} errors={errors(state)}>
           <Inline align="end">
-            <input type="hidden" name="resource_type" value={resourceType} />
-            <input type="hidden" name="resource_id" value={resourceId} />
+            <input type="hidden" name={f("resource_type")} value={resourceType} />
+            <input type="hidden" name={f("resource_id")} value={resourceId} />
             <IdempotencyField result={state} />
-            <FormField name="expires_at" label={t("expiresAtLabel")} className="flex-1">
+            <Field name="expires_at" label={t("expiresAtLabel")} className="flex-1">
               <TextInput id="expires_at" type="datetime-local" name="expires_at" />
-            </FormField>
+            </Field>
             <Button type="submit" disabled={pending}>
               {pending ? "…" : t("createLinkButton")}
             </Button>

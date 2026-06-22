@@ -2,16 +2,19 @@
 "use client";
 import { useActionState, useState } from "react";
 
-import { Button, Form, FormField, Inline, SubmitButton, TextInput } from "@/components/ui";
+import { Button, createTypedForm, Form, Inline, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
 import { updateTag } from "../actions";
+import type { TagUpdateFormInput } from "../schemas";
 import type { Tag } from "../types";
 
 import { TagDeleteButton } from "./tag-delete-button";
 
 const initial: ActionResult<Tag | null> = { success: true, data: null };
+
+const { Field, f, errors } = createTypedForm<TagUpdateFormInput>();
 
 interface Props {
   tag: Tag;
@@ -24,10 +27,6 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
   const [state, action] = useActionState(updateTag, initial);
   const tTags = useT("tags");
   const tErrors = useT("errors");
-  const fieldErrors: Record<string, string> =
-    !state.success && state.code === "validation"
-      ? state.fieldErrors
-      : {};
 
   // После успешного переименования сворачиваем inline-форму.
   // Паттерн «adjust state during render» (react.dev) вместо useEffect:
@@ -57,12 +56,12 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
       </div>
 
       {editing && hasId && (
-        <Form action={action} errors={fieldErrors}>
+        <Form action={action} errors={errors(state)}>
           <Inline align="end">
-            <input type="hidden" name="id" value={tag.id} />
-            <FormField name="name" label={tTags("newNameLabel")} className="flex-1" required>
+            <input type="hidden" name={f("id")} value={tag.id} />
+            <Field name="name" label={tTags("newNameLabel")} className="flex-1" required>
               <TextInput name="name" required maxLength={100} defaultValue={tag.name} />
-            </FormField>
+            </Field>
             <SubmitButton>{tTags("saveButton")}</SubmitButton>
           </Inline>
         </Form>
