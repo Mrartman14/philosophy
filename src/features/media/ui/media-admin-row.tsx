@@ -1,12 +1,12 @@
 // src/features/media/ui/media-admin-row.tsx
 import { getServerFmt, getT } from "@/i18n";
 
-import type { Media } from "../types";
+import type { AdminMediaItem } from "../types";
 
 import { MediaDeleteButton } from "./media-delete-button";
 
 interface Props {
-  media: Media;
+  media: AdminMediaItem;
 }
 
 /**
@@ -30,33 +30,29 @@ export async function MediaAdminRow({ media }: Props) {
         <span className="truncate font-semibold text-(--color-fg)" title={media.filename}>
           {media.filename}
         </span>
-        {media.created_at && <span>{fmt.dateTime(media.created_at, { dateStyle: "short", timeStyle: "short" })}</span>}
+        <span>{fmt.dateTime(media.created_at, { dateStyle: "short", timeStyle: "short" })}</span>
       </header>
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <span className="rounded bg-(--color-surface-subtle) px-2 py-0.5">
           {typeLabel[media.type] ?? media.type}
         </span>
-        {media.visibility && (
-          <span
-            className={
-              isPublic
-                ? "rounded px-2 py-0.5 text-(--color-success)"
-                : "rounded px-2 py-0.5 text-(--color-fg-muted)"
-            }
-          >
-            {isPublic ? t("statusPublic") : t("statusPrivate")}
-          </span>
-        )}
+        <span
+          className={
+            isPublic
+              ? "rounded px-2 py-0.5 text-(--color-success)"
+              : "rounded px-2 py-0.5 text-(--color-fg-muted)"
+          }
+        >
+          {isPublic ? t("statusPublic") : t("statusPrivate")}
+        </span>
         <span title={media.owner_id}>
-          {/* owner_id — сырой UUID: backend-ask на человекочитаемое имя автора (см. спеку Ask 1). */}
-          {media.owner_id ?? "—"}
+          {/* username с фолбэком на owner_id (UUID), если бэк не прислал имя. */}
+          {media.owner_username ?? media.owner_id}
         </span>
       </div>
-      {media.id && (
-        <div>
-          <MediaDeleteButton id={media.id} isAdminDelete />
-        </div>
-      )}
+      <div>
+        <MediaDeleteButton id={media.id} isAdminDelete />
+      </div>
     </article>
   );
 }

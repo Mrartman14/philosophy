@@ -31,6 +31,7 @@ const media: Media = {
   created_at: "2026-06-22T00:00:00Z",
   filename: "lecture-1.mp4",
   id: "m1",
+  owner_id: "owner-1",
   type: "video",
   visibility: "public",
 };

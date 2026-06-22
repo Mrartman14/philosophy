@@ -6,7 +6,7 @@ import { createApiClient } from "@/api/client";
 import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
-import type { Media, MediaAttachment } from "./types";
+import type { AdminMediaItem, Media, MediaAttachment } from "./types";
 
 export interface MyMediaFilter {
   offset?: number;
@@ -18,6 +18,15 @@ export interface MyMediaFilter {
 
 export interface MyMediaResult {
   items: Media[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+/** Результат GET /api/admin/media — элементы admin-листинга (с owner_username),
+ *  НЕ Media[]. Не переиспользует MyMediaResult (тот для getMyMedia). */
+export interface AdminMediaResult {
+  items: AdminMediaItem[];
   total: number;
   offset: number;
   limit: number;
@@ -50,14 +59,15 @@ export const getMyMedia = cache(
 
 /**
  * GET /api/admin/media — admin-список неприватных медиа всех владельцев
- * (модерация, гейт media.delete_any). Приватные бек не листит. Возвращает тот
- * же MyMediaResult, что и getMyMedia. Per-actor → только React.cache, без
- * unstable_cache (как getMyMedia).
+ * (модерация, гейт media.delete_any). Приватные бек не листит. Отдаёт
+ * AdminMediaItem[] (несёт owner_username) → результат AdminMediaResult, НЕ
+ * MyMediaResult. Per-actor → только React.cache, без unstable_cache (как
+ * getMyMedia).
  */
 export const getAdminMedia = cache(
   async (
     filter: { owner_id?: string; offset?: number; limit?: number } = {},
-  ): Promise<MyMediaResult> => {
+  ): Promise<AdminMediaResult> => {
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;

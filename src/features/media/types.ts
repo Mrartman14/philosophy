@@ -4,6 +4,10 @@ import type { components } from "@/api/schema";
 /** Полная media-запись (GET /api/me/media, GET /api/media/{id}). */
 export type Media = components["schemas"]["media.Media"];
 
+/** Элемент admin-листинга (GET /api/admin/media). Несёт owner_username для
+ *  человекочитаемой модерации (фолбэк на owner_id, если не пришёл). */
+export type AdminMediaItem = components["schemas"]["media.AdminMediaItem"];
+
 /** Лёгкое DTO для picker GET /api/media (в этой фиче не используется, но
  *  экспортируется для симметрии типов). */
 export type MediaSummary = components["schemas"]["media.MediaSummary"];

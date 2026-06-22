@@ -2845,6 +2845,7 @@ export interface paths {
          * @description Non-private media across all owners for the admin moderation
          *     UI. Private media is never listed (admins have no window into
          *     other users' private drafts). Gated by media.delete_any.
+         *     Each row includes owner_username for human-readable moderation.
          */
         get: {
             parameters: {
@@ -2869,7 +2870,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["media.Media"][];
+                            data?: components["schemas"]["media.AdminMediaItem"][];
                         };
                     };
                 };
@@ -9057,7 +9058,7 @@ export interface paths {
         };
         /**
          * Граф связности корпуса
-         * @description Узлы (документы + термины глоссария) и направленные взвешенные рёбра явных ссылок (document_ref/glossary_ref). Координаты узлов считаются по связности (PCA над матрицей смежности) и отдаются в контракте карты (dims=3, bounds, coords) — фронт рисует 2D/3D и дорисовывает рёбра. Граф анонимно-публичный (perimeter-aware срез: документ виден анонимно), один для всех.
+         * @description Узлы (документы + термины глоссария) и направленные взвешенные рёбра явных ссылок (document_ref/glossary_ref). Координаты узлов считаются по связности (PCA над матрицей смежности) и отдаются в контракте карты (dims=3, bounds, coords) — фронт рисует 2D/3D и дорисовывает рёбра. Граф анонимно-публичный (perimeter-aware срез: документ виден анонимно), один для всех. До первой фоновой сборки — 503 GRAPH_NOT_READY.
          */
         get: {
             parameters: {
@@ -9093,6 +9094,15 @@ export interface paths {
                 };
                 /** @description invalid Bearer token (optional-auth) */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description GRAPH_NOT_READY (cache not built yet) */
+                503: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -15412,7 +15422,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY" | "GRAPH_NOT_READY";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -15426,7 +15436,6 @@ export interface components {
         "ast.ExportedAttr": {
             depends_on?: string;
             enum?: string[];
-            hex_only?: boolean;
             max?: number;
             max_len?: number;
             min?: number;
@@ -16160,16 +16169,26 @@ export interface components {
             limit?: number;
             query: string;
         };
+        "media.AdminMediaItem": {
+            created_at: string;
+            filename: string;
+            id: string;
+            owner_id: string;
+            owner_username?: string;
+            type: components["schemas"]["media.FileType"];
+            url?: string;
+            visibility: components["schemas"]["access.Visibility"];
+        };
         /** @enum {string} */
         "media.FileType": "video" | "audio";
         "media.Media": {
             created_at: string;
             filename: string;
             id: string;
-            owner_id?: string;
+            owner_id: string;
             type: components["schemas"]["media.FileType"];
             url?: string;
-            visibility?: components["schemas"]["access.Visibility"];
+            visibility: components["schemas"]["access.Visibility"];
         };
         "media.MediaSummary": {
             created_at?: string;

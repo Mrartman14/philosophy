@@ -5,7 +5,7 @@ export {
   getMediaContainers,
   getAdminMedia,
 } from "./api";
-export type { MyMediaFilter, MyMediaResult } from "./api";
+export type { MyMediaFilter, MyMediaResult, AdminMediaResult } from "./api";
 
 export { deleteMedia, setMediaVisibility } from "./actions";
 export { uploadMedia } from "./upload-media";
@@ -26,4 +26,4 @@ export { MediaPlayer } from "./ui/media-player";
 export { MediaAdminRow } from "./ui/media-admin-row";
 export { MediaAdminFilterForm } from "./ui/media-admin-filter-form";
 
-export type { Media, MediaSummary, FileType, Visibility, MediaAttachment } from "./types";
+export type { Media, AdminMediaItem, MediaSummary, FileType, Visibility, MediaAttachment } from "./types";
