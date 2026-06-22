@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("three/addons/controls/OrbitControls.js", () => ({
@@ -154,6 +155,76 @@ describe("ThreeMapRenderer.onPick", () => {
     down(canvas, 100, 50);
     up(canvas, 140, 80); // ушёл далеко → это пан/орбита, не клик
     expect(cb).not.toHaveBeenCalled();
+    r.destroy();
+  });
+});
+
+// === append: регресс-тесты швов миграции (Task 3) ===
+
+const DIM = 0.18; // должен совпадать с константой в ThreeMapRenderer.setOverlay
+
+// Двухточечная модель с известными цветами/ids (point 0 — красный, point 1 — зелёный).
+function model2() {
+  return {
+    count: 2,
+    positions: new Float32Array([0, 0, 0, 1, 0, 0]),
+    colors: new Float32Array([1, 0, 0, 0, 1, 0]),
+    ids: ["id0", "id1"],
+    docs: ["doc-0", "doc-1"],
+    bounds: { min: [-1, -1, -1] as [number, number, number], max: [1, 1, 1] as [number, number, number] },
+    clusters: [],
+  };
+}
+
+// Достать атрибут color облака точек из приватной сцены рендерера.
+function pointColors(r: ThreeMapRenderer): Float32Array {
+  const scene = (r as unknown as { scene: THREE.Scene }).scene;
+  const pts = scene.children.find((c): c is THREE.Points => c instanceof THREE.Points);
+  if (!pts) throw new Error("Points not found in scene");
+  return (pts.geometry.getAttribute("color") as THREE.BufferAttribute).array as Float32Array;
+}
+
+describe("ThreeMapRenderer.setOverlay recolor (шов colorAttr/baseColors)", () => {
+  beforeEach(() => {
+    vi.stubGlobal("requestAnimationFrame", () => 0);
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  });
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it("подсвеченная точка сохраняет базовый цвет, остальные затемнены на DIM; снятие overlay восстанавливает", () => {
+    const r = new ThreeMapRenderer();
+    r.mount(fakeCanvas());
+    r.setModel(model2());
+
+    r.setOverlay({ highlightIds: new Set(["id0"]), marker: null });
+    const dimmed = pointColors(r);
+    // point0 (highlight) держит базу: R-канал ≈ 1.
+    expect(dimmed[0]).toBeCloseTo(1, 5);
+    // point1 (не в highlight) затемнён: G-канал ≈ base(1)*DIM.
+    expect(dimmed[4]).toBeCloseTo(1 * DIM, 5);
+
+    r.setOverlay(null);
+    const restored = pointColors(r);
+    expect(restored[0]).toBeCloseTo(1, 5); // R point0
+    expect(restored[4]).toBeCloseTo(1, 5); // G point1 — снова полный
+    r.destroy();
+  });
+});
+
+describe("ThreeMapRenderer.resize (aspect-only, не перекадрирует)", () => {
+  beforeEach(() => {
+    vi.stubGlobal("requestAnimationFrame", () => 0);
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  });
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it("resize правит только aspect и НЕ зовёт fitToBounds (pan/zoom/орбита не сбиваются)", () => {
+    const r = new ThreeMapRenderer();
+    r.mount(fakeCanvas());
+    r.setModel(model2());
+    const fitSpy = vi.spyOn(r, "fitToBounds");
+    r.resize(640, 200, 1); // другая ширина
+    expect(fitSpy).not.toHaveBeenCalled();
     r.destroy();
   });
 });

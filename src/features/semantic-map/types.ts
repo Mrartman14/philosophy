@@ -1,6 +1,7 @@
 // Контракт /api/map — сужено из сгенерированной схемы бэкенда (semmap.*).
 // Все поля optional (реальность ручки); устойчивость — в to-render-model.ts.
 import type { components } from "@/api/schema";
+import type { SceneRenderModel } from "@/components/scene-3d";
 
 export type MapBounds = components["schemas"]["semmap.Bounds"];
 export type MapPoint = components["schemas"]["semmap.Point"];
@@ -18,22 +19,12 @@ export interface RenderCluster {
   centroid: [number, number, number];
 }
 
-export interface RenderModel {
-  count: number;
-  /** count*3, всегда 3 координаты (z=0 при dims<3). */
-  positions: Float32Array;
-  /** count*3, RGB 0..1. */
-  colors: Float32Array;
-  /** point.id (embeddings row id) — ключ, по которому рендерер подсвечивает точку. */
-  ids: string[];
-  /**
-   * point.doc (id родительского документа) — ключ матча оверлея поиска.
-   * Хиты поиска несут id документов/глоссария, точки карты — чанки; матчим по doc, не по id.
-   */
+/** Модель карты = общая форма облака + карто-специфика (docs для матча оверлея, clusters для подписей). */
+export type RenderModel = SceneRenderModel & {
+  /** point.doc — ключ матча оверлея поиска (хиты несут id документов, точки — чанки). */
   docs: string[];
-  bounds: { min: [number, number, number]; max: [number, number, number] };
   clusters: RenderCluster[];
-}
+};
 
 /** Overlay поиска: запрос + хиты (из llmretrieval.Hit, спроецированные на форму карты). */
 export interface MapOverlay {
