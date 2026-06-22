@@ -1,7 +1,8 @@
 "use client";
 import { useAppearance } from "@/components/appearance";
-import { FormField, Select } from "@/components/ui";
+import { FormField, RadioGroup, Select } from "@/components/ui";
 import { useT } from "@/i18n/client";
+import { withViewTransition } from "@/utils/view-transition";
 
 export function AppearanceSettings() {
   const { appearance, setAxis } = useAppearance();
@@ -41,12 +42,12 @@ export function AppearanceSettings() {
   return (
     <section className="flex max-w-xl flex-col gap-4">
       <h2 className="text-lg font-semibold">{t("appearance.heading")}</h2>
-      <Row name="theme" label={t("appearance.themeLabel")}><Select aria-label={t("appearance.themeAriaLabel")} options={THEME} value={appearance.theme} onValueChange={(v) => { setAxis("theme", v as typeof appearance.theme); }} /></Row>
-      <Row name="contrast" label={t("appearance.contrastLabel")}><Select aria-label={t("appearance.contrastAriaLabel")} options={CONTRAST} value={appearance.contrast} onValueChange={(v) => { setAxis("contrast", v as typeof appearance.contrast); }} /></Row>
-      <Row name="density" label={t("appearance.densityLabel")}><Select aria-label={t("appearance.densityAriaLabel")} options={DENSITY} value={appearance.density} onValueChange={(v) => { setAxis("density", v as typeof appearance.density); }} /></Row>
-      <Row name="font" label={t("appearance.fontLabel")}><Select aria-label={t("appearance.fontAriaLabel")} options={FONT} value={appearance.font} onValueChange={(v) => { setAxis("font", v as typeof appearance.font); }} /></Row>
+      <Row name="theme" label={t("appearance.themeLabel")}><RadioGroup aria-label={t("appearance.themeAriaLabel")} options={THEME} value={appearance.theme} onValueChange={(v) => { withViewTransition(() => { setAxis("theme", v as typeof appearance.theme); }); }} /></Row>
+      <Row name="contrast" label={t("appearance.contrastLabel")}><RadioGroup aria-label={t("appearance.contrastAriaLabel")} options={CONTRAST} value={appearance.contrast} onValueChange={(v) => { setAxis("contrast", v as typeof appearance.contrast); }} /></Row>
+      <Row name="density" label={t("appearance.densityLabel")}><RadioGroup aria-label={t("appearance.densityAriaLabel")} options={DENSITY} value={appearance.density} onValueChange={(v) => { setAxis("density", v as typeof appearance.density); }} /></Row>
+      <Row name="font" label={t("appearance.fontLabel")}><RadioGroup aria-label={t("appearance.fontAriaLabel")} options={FONT} value={appearance.font} onValueChange={(v) => { setAxis("font", v as typeof appearance.font); }} /></Row>
       <Row name="textSize" label={t("appearance.textSizeLabel")}><Select aria-label={t("appearance.textSizeAriaLabel")} options={TEXT_SIZE} value={appearance.textSize} onValueChange={(v) => { setAxis("textSize", v as typeof appearance.textSize); }} /></Row>
-      <Row name="motion" label={t("appearance.motionLabel")}><Select aria-label={t("appearance.motionAriaLabel")} options={MOTION} value={appearance.motion} onValueChange={(v) => { setAxis("motion", v as typeof appearance.motion); }} /></Row>
+      <Row name="motion" label={t("appearance.motionLabel")}><RadioGroup aria-label={t("appearance.motionAriaLabel")} options={MOTION} value={appearance.motion} onValueChange={(v) => { setAxis("motion", v as typeof appearance.motion); }} /></Row>
     </section>
   );
 }
