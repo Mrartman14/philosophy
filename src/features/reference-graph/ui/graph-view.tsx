@@ -136,8 +136,14 @@ export default function GraphView({ data }: { data: GraphData }) {
 
   return (
     <div ref={wrapRef} className="relative h-full w-full overflow-hidden">
-      <canvas ref={canvasRef} className="block h-full w-full" />
-      <SceneRegionLabels labels={labels} />
+      {/* dir=ltr изолирует 3D-сцену: WebGL-холст и region-labels (позиция через
+          inline left:x — canvas-координаты) НЕ зеркалятся в RTL. Оверлеи ниже —
+          снаружи, зеркалятся вместе со страницей. absolute inset-0 = бокс wrapRef,
+          поэтому размер холста (ResizeObserver на wrapRef) не меняется. */}
+      <div data-scene-canvas dir="ltr" className="absolute inset-0">
+        <canvas ref={canvasRef} className="block h-full w-full" />
+        <SceneRegionLabels labels={labels} />
+      </div>
       <div className="absolute end-3 top-3">
         <SceneModeToggle
           mode={mode}
