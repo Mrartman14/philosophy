@@ -6,6 +6,7 @@ export type MapBounds = components["schemas"]["semmap.Bounds"];
 export type MapPoint = components["schemas"]["semmap.Point"];
 export type MapTreeNode = components["schemas"]["semmap.TreeNode"];
 export type MapData = components["schemas"]["semmap.Layout"];
+export type MapPointDetail = components["schemas"]["semmap.PointDetail"];
 
 // --- Внутренняя форма для рендерера (типизированные массивы, один draw-call) ---
 
