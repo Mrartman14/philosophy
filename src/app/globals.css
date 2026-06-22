@@ -45,13 +45,13 @@ body:has(dialog[open]) {
   &::after {
     content: "→";
     position: absolute;
-    left: calc(100% + 5px);
-    transition: left 200ms ease-in-out;
+    inset-inline-start: calc(100% + 5px);
+    transition: inset-inline-start 200ms ease-in-out;
   }
 
   &:hover::after,
   &:focus::after {
-    left: calc(100% + 15px);
+    inset-inline-start: calc(100% + 15px);
   }
 }
 
@@ -124,7 +124,7 @@ body:has(dialog[open]) {
   :root:not([data-motion="full"]) .fancy-link:hover::after,
   :root:not([data-motion="full"]) .fancy-link:focus::after {
     transition: none !important;
-    left: calc(100% + 5px);
+    inset-inline-start: calc(100% + 5px);
   }
 }
 [data-motion="reduced"] { --app-motion-duration: 0.001ms; }
@@ -142,8 +142,11 @@ body:has(dialog[open]) {
 [data-motion="reduced"] .fancy-link:hover::after,
 [data-motion="reduced"] .fancy-link:focus::after {
   transition: none !important;
-  left: calc(100% + 5px);
+  inset-inline-start: calc(100% + 5px);
 }
+
+/* Горизонтальный флип направленных иконок (стрелки nav) в RTL. Потребитель — Task 9. */
+[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
 
 @media (prefers-color-scheme: dark) {
   .sensitive-image {
