@@ -59,7 +59,7 @@ export async function UsersTable({ users, canModerate, meId }: Props) {
               <Td>
                 {u.username}
                 {isSelf && (
-                  <span className="ml-1 text-xs text-(--color-fg-muted)">
+                  <span className="ms-1 text-xs text-(--color-fg-muted)">
                     {t("selfBadge")}
                   </span>
                 )}

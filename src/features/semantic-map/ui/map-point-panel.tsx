@@ -28,7 +28,7 @@ export function MapPointPanel({
   const title = (doc !== undefined ? documents[doc] : undefined) ?? doc ?? t("pointPanelUntitled");
 
   return (
-    <div className="absolute bottom-3 left-3 max-w-sm rounded-md bg-(--color-surface) p-3 shadow-lg">
+    <div className="absolute bottom-3 start-3 max-w-sm rounded-md bg-(--color-surface) p-3 shadow-lg">
       <div className="flex items-start justify-between gap-2">
         <h2 className="text-sm font-semibold">{title}</h2>
         <IconButton aria-label={t("pointPanelClose")} compact onClick={onClose}>

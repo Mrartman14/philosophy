@@ -31,25 +31,25 @@ export async function ProductionStatsTable({ inventory }: { inventory: Inventory
       <Thead>
         <Tr>
           <Th>{t("colType")}</Th>
-          <Th className="text-right">{t("colTotal")}</Th>
-          <Th className="text-right">{t("colPublic")}</Th>
-          <Th className="text-right">{t("colPrivate")}</Th>
+          <Th className="text-end">{t("colTotal")}</Th>
+          <Th className="text-end">{t("colPublic")}</Th>
+          <Th className="text-end">{t("colPrivate")}</Th>
         </Tr>
       </Thead>
       <Tbody>
         {rows.map((row, i) => (
           <Tr key={row.entity_type ?? `row-${i}`}>
             <Td>{labels[row.entity_type ?? ""] ?? row.entity_type}</Td>
-            <Td className="text-right">{fmt(row.total)}</Td>
-            <Td className="text-right">{fmt(row.public)}</Td>
-            <Td className="text-right">{fmt(row.private)}</Td>
+            <Td className="text-end">{fmt(row.total)}</Td>
+            <Td className="text-end">{fmt(row.public)}</Td>
+            <Td className="text-end">{fmt(row.private)}</Td>
           </Tr>
         ))}
         <Tr className="font-semibold">
           <Td>{t("totalsRow")}</Td>
-          <Td className="text-right">{fmt(totals?.total)}</Td>
-          <Td className="text-right">{fmt(totals?.public)}</Td>
-          <Td className="text-right">{fmt(totals?.private)}</Td>
+          <Td className="text-end">{fmt(totals?.total)}</Td>
+          <Td className="text-end">{fmt(totals?.public)}</Td>
+          <Td className="text-end">{fmt(totals?.private)}</Td>
         </Tr>
       </Tbody>
     </Table>

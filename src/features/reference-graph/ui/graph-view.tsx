@@ -138,7 +138,7 @@ export default function GraphView({ data }: { data: GraphData }) {
     <div ref={wrapRef} className="relative h-full w-full overflow-hidden">
       <canvas ref={canvasRef} className="block h-full w-full" />
       <SceneRegionLabels labels={labels} />
-      <div className="absolute right-3 top-3">
+      <div className="absolute end-3 top-3">
         <SceneModeToggle
           mode={mode}
           onChange={setMode}
