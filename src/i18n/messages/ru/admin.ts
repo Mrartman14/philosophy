@@ -71,6 +71,16 @@ const admin = {
   annotationsDescription: "Видны только публичные аннотации. Удаление доступно для публичных (приватные модерации недоступны).",
   annotationsEmpty: "Ничего не найдено.",
 
+  // --- медиа (модерация) ---
+  mediaTitle: "Модерация медиа",
+  mediaDescription: "Неприватные медиа всех пользователей. Удаление необратимо.",
+  mediaEmpty: "Ничего не найдено.",
+  mediaTotal: "Всего: {total}",
+  mediaOwnerLabel: "Автор",
+  mediaFilterOwnerLabel: "ID автора",
+  mediaFilterApply: "Показать",
+  mediaFilterClear: "Сбросить",
+
   // --- пользователи ---
   usersTitle: "Пользователи",
   usersTotal: "Всего: {total}",
@@ -126,6 +136,7 @@ const admin = {
   bannerEditMetaTitle: "Баннеры — редактирование",
   tagsMetaTitle: "Теги — админ",
   annotationsMetaTitle: "Аннотации — модерация",
+  mediaMetaTitle: "Медиа — модерация",
   pushMetaTitle: "Push-уведомления — админ",
   auditMetaTitle: "Аудит — админ",
   usersMetaTitle: "Пользователи — админ",

@@ -72,6 +72,16 @@ const admin = {
   annotationsDescription: "Only public annotations are visible. Deletion is available for public annotations (private ones cannot be moderated).",
   annotationsEmpty: "Nothing found.",
 
+  // --- media (moderation) ---
+  mediaTitle: "Media moderation",
+  mediaDescription: "Non-private media from all users. Deletion is irreversible.",
+  mediaEmpty: "Nothing found.",
+  mediaTotal: "Total: {total}",
+  mediaOwnerLabel: "Author",
+  mediaFilterOwnerLabel: "Author ID",
+  mediaFilterApply: "Show",
+  mediaFilterClear: "Reset",
+
   // --- пользователи ---
   usersTitle: "Users",
   usersTotal: "Total: {total}",
@@ -127,6 +137,7 @@ const admin = {
   bannerEditMetaTitle: "Banners — edit",
   tagsMetaTitle: "Tags — admin",
   annotationsMetaTitle: "Annotations — moderation",
+  mediaMetaTitle: "Media — moderation",
   pushMetaTitle: "Push notifications — admin",
   auditMetaTitle: "Audit — admin",
   usersMetaTitle: "Users — admin",
