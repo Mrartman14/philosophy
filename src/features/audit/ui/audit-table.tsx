@@ -30,7 +30,7 @@ function AuditDetails({ record, toggleLabel }: DetailsProps) {
       )}
       {record.request_id && (
         <p className="mt-1 text-xs text-(--color-fg-muted)">
-          request_id: <code>{record.request_id}</code>
+          request_id: <code dir="ltr">{record.request_id}</code>
         </p>
       )}
     </details>
@@ -80,6 +80,7 @@ export async function AuditTable({ records }: Props) {
                 {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- бек возвращает "" для удалённого актора (LEFT JOIN), "" → "—" намеренно */}
                 <span>{rec.actor_username || "—"}</span>
                 <code
+                  dir="ltr"
                   className="text-xs text-(--color-fg-muted)"
                   title={rec.actor_user_id}
                 >
@@ -88,13 +89,14 @@ export async function AuditTable({ records }: Props) {
               </div>
             </Td>
             <Td>
-              <code className="text-xs">{rec.action ?? "—"}</code>
+              <code dir="ltr" className="text-xs">{rec.action ?? "—"}</code>
             </Td>
             <Td>
               {rec.target_type ? (
                 <div className="flex flex-col">
                   <span>{rec.target_type}</span>
                   <code
+                    dir="ltr"
                     className="text-xs text-(--color-fg-muted)"
                     title={rec.target_id}
                   >

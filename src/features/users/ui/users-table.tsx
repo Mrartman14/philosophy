@@ -88,7 +88,7 @@ export async function UsersTable({ users, canModerate, meId }: Props) {
               </Td>
               <Td>{formatDate(u.created_at)}</Td>
               <Td className="font-mono text-xs text-(--color-fg-muted)">
-                {u.id}
+                <span dir="ltr">{u.id}</span>
               </Td>
             </Tr>
           );
