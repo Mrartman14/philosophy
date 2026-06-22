@@ -2,11 +2,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+import { fit2D, fit3D, pickNearestPoint } from "@/components/scene-3d";
+
 import type { RenderModel } from "../types";
 
-import { fit2D, fit3D } from "./camera-fit";
 import type { MapOverlayState, MapRenderer, RenderMode } from "./map-renderer";
-import { pickNearestPoint } from "./pick";
 
 const PICK_THRESHOLD_PX = 10; // радиус попадания по точке
 const DRAG_SUPPRESS_PX = 5; // смещение, выше которого жест — драг, не клик
