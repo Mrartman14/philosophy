@@ -3,9 +3,9 @@
 import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
-import { Button, createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { Button, createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton, VersionField } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateCommentBlocks } from "../actions";
 import type { CommentBlocksUpdateFormInput } from "../schemas";
@@ -13,7 +13,7 @@ import type { Comment } from "../types";
 
 import { LazyAstEditor } from "./lazy-ast-editor";
 
-const initial: ActionResult<Comment | null> = { success: true, data: null };
+const initial = initialActionState<Comment | null>(null);
 
 const { Field, f, errors } = createTypedForm<CommentBlocksUpdateFormInput>();
 
@@ -44,8 +44,8 @@ export function CommentEditForm({ commentId, lectureId, initialBlocks, version }
       <Stack className="mt-2">
         <input type="hidden" name={f("id")} value={commentId} />
         {/* version — optimistic-lock (`comment.version`) → action читает из FormData
-            и шлёт как If-Match, это НЕ body-поле схемы. Raw-строка name КОРРЕКТНА. */}
-        <input type="hidden" name="version" value={version ?? ""} />
+            и шлёт как If-Match, это НЕ body-поле схемы. */}
+        <VersionField version={version} />
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
         <Field name="blocks" label={t("editBodyLabel")} required>

@@ -1,6 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 
 import {
   createTypedForm,
@@ -13,27 +12,23 @@ import {
   TextInput,
   Textarea,
 } from "@/components/ui";
+import { useActionRedirect } from "@/hooks/use-action-redirect";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createLecture } from "../actions";
 import type { LectureCreateFormInput } from "../schemas";
 import type { Lecture } from "../types";
 
-const initial: ActionResult<Lecture | null> = { success: true, data: null };
+const initial = initialActionState<Lecture | null>(null);
 
 const { Field, errors } = createTypedForm<LectureCreateFormInput>();
 
 export function LectureCreateForm() {
   const tL = useT("lectures");
-  const router = useRouter();
   const [state, action] = useActionState(createLecture, initial);
 
-  useEffect(() => {
-    if (state.success && state.data) {
-      router.push(`/admin/lectures/${state.data.id}/edit`);
-    }
-  }, [state, router]);
+  useActionRedirect(state, (data) => `/admin/lectures/${data.id}/edit`);
 
   return (
     <Form action={action} errors={errors(state)}>

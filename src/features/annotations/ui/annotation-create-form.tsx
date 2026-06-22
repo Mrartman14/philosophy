@@ -7,7 +7,7 @@ import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createAnnotation } from "../actions";
 import type { AnnotationCreateFormInput } from "../schemas";
@@ -15,7 +15,7 @@ import type { Annotation, ParentEntityType } from "../types";
 
 import { AnnotationVisibilityField } from "./annotation-visibility-field";
 
-const initial: ActionResult<Annotation | null> = { success: true, data: null };
+const initial = initialActionState<Annotation | null>(null);
 
 const { Field, f, errors } = createTypedForm<AnnotationCreateFormInput>();
 

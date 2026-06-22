@@ -2,9 +2,9 @@
 // src/features/trails/ui/trail-meta-form.tsx
 import { useActionState } from "react";
 
-import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton, TextInput, Textarea, VersionField } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateTrailMeta } from "../actions";
 import type { TrailMetaFormInput } from "../schemas";
@@ -18,7 +18,7 @@ const { Field, f, errors } = createTypedForm<TrailMetaFormInput>();
 
 export function TrailMetaForm({ trail }: Props) {
   const t = useT("trails");
-  const initial: ActionResult<Trail | null> = { success: true, data: null };
+  const initial = initialActionState<Trail | null>(null);
   const [state, action] = useActionState(updateTrailMeta, initial);
 
   // exactOptionalPropertyTypes: successText подставляем только при успешном сохранении
@@ -29,7 +29,7 @@ export function TrailMetaForm({ trail }: Props) {
     <Form action={action} errors={errors(state)}>
       <Stack>
         <input type="hidden" name={f("id")} value={trail.id} />
-        <input type="hidden" name="version" value={String(trail.version ?? "")} />
+        <VersionField version={trail.version} />
         <IdempotencyField result={state} />
 
         <Field name="title" label={t("metaTitleLabel")} required>

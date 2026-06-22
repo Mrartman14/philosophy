@@ -1,7 +1,6 @@
 "use client";
 // src/features/banners/ui/banner-create-form.tsx
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 
 import {
   Checkbox,
@@ -17,32 +16,25 @@ import {
   SubmitButton,
   TextInput,
 } from "@/components/ui";
+import { useActionRedirect } from "@/hooks/use-action-redirect";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createBanner } from "../actions";
 import { audienceOptions } from "../display";
 import type { BannerCreateFormInput } from "../schemas";
 import type { Banner } from "../types";
 
-const initial: ActionResult<Banner | null> = {
-  success: true,
-  data: null,
-};
+const initial = initialActionState<Banner | null>(null);
 
 const { Field, f, errors } = createTypedForm<BannerCreateFormInput>();
 
 export function BannerCreateForm() {
   const t = useT("banners");
-  const router = useRouter();
   const [dismissible, setDismissible] = useState(true);
   const [state, action] = useActionState(createBanner, initial);
 
-  useEffect(() => {
-    if (state.success && state.data?.id) {
-      router.push(`/admin/banners/${state.data.id}/edit`);
-    }
-  }, [state, router]);
+  useActionRedirect(state, (data) => `/admin/banners/${data.id}/edit`);
 
   return (
     <Form action={action} errors={errors(state)}>

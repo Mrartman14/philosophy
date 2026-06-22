@@ -5,7 +5,7 @@ import { useActionState, useState } from "react";
 import type { AstBlock } from "@/components/ast-editor";
 import { Button, createTypedForm, Form, FormFeedback, IdempotencyField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createComment } from "../actions";
 import type { CommentCreateFormInput } from "../schemas";
@@ -13,7 +13,7 @@ import type { Comment, CommentType } from "../types";
 
 import { LazyAstEditor } from "./lazy-ast-editor";
 
-const initial: ActionResult<Comment | null> = { success: true, data: null };
+const initial = initialActionState<Comment | null>(null);
 
 const { Field, f, errors } = createTypedForm<CommentCreateFormInput>();
 

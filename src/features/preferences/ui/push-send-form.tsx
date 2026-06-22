@@ -13,13 +13,13 @@ import {
   Textarea,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { sendPushBroadcast } from "../actions";
 import type { PushSendFormInput } from "../schemas";
 
 // data: false — начальное состояние; true — рассылка принята (202).
-const initial: ActionResult<boolean> = { success: true, data: false };
+const initial = initialActionState<boolean>(false);
 
 const { Field, errors } = createTypedForm<PushSendFormInput>();
 

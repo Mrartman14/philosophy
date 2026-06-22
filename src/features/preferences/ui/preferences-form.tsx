@@ -4,13 +4,13 @@ import { useActionState } from "react";
 
 import { createTypedForm, Form, FormFeedback, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updatePreferences } from "../actions";
 import type { PreferencesFormInput } from "../schemas";
 import type { Preferences, ReadingMode } from "../types";
 
-const initial: ActionResult<Preferences | null> = { success: true, data: null };
+const initial = initialActionState<Preferences | null>(null);
 
 const { Field, errors } = createTypedForm<PreferencesFormInput>();
 

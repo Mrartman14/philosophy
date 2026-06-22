@@ -5,7 +5,7 @@ import { useActionState, useEffect } from "react";
 
 import { Form, FormFeedback, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateForm } from "../actions";
 import type { Form as FormEntity } from "../types";
@@ -39,7 +39,7 @@ function toBuilderInitial(form: FormEntity): BuilderInitial {
   };
 }
 
-const initial: ActionResult<FormEntity | null> = { success: true, data: null };
+const initial = initialActionState<FormEntity | null>(null);
 
 export function FormEditForm({ form }: Props) {
   const router = useRouter();

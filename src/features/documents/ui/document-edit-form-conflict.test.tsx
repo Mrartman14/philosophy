@@ -40,6 +40,9 @@ vi.mock("@/components/ui", () => ({
   FormField: ({ children }: { children: ReactNode }) => <>{children}</>,
   FormFeedback: () => null,
   IdempotencyField: () => null,
+  VersionField: ({ version }: { version: number | undefined }) => (
+    <input type="hidden" name="version" value={version ?? ""} readOnly />
+  ),
   SubmitButton: ({ children }: { children: ReactNode }) => (
     <button type="submit">{children}</button>
   ),

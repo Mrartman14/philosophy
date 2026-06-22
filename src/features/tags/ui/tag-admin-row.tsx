@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 
 import { Button, createTypedForm, Form, FormFeedback, Inline, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateTag } from "../actions";
 import type { TagUpdateFormInput } from "../schemas";
@@ -12,7 +12,7 @@ import type { Tag } from "../types";
 
 import { TagDeleteButton } from "./tag-delete-button";
 
-const initial: ActionResult<Tag | null> = { success: true, data: null };
+const initial = initialActionState<Tag | null>(null);
 
 const { Field, f, errors } = createTypedForm<TagUpdateFormInput>();
 

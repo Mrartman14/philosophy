@@ -5,7 +5,7 @@ import { useActionState, useEffect } from "react";
 
 import { Form, FormFeedback, FormField, Select, Stack, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import type { Media } from "../types";
 import { uploadMedia } from "../upload-media";
@@ -17,7 +17,7 @@ interface MediaUploadFormProps {
 
 const ACCEPT = ".mp4,.webm,.mp3,.m4a,.ogg,video/*,audio/*";
 
-const initial: ActionResult<Media | null> = { success: true, data: null };
+const initial = initialActionState<Media | null>(null);
 
 /**
  * Форма загрузки медиа. type выбирается явно (бек требует точный video|audio) и

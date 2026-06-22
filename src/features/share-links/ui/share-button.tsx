@@ -5,8 +5,8 @@ import { useActionState, useEffect, useState } from "react";
 
 import { Button, createTypedForm, Dialog, Form, IdempotencyField, Inline, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
+import { initialActionState } from "@/utils/action-state";
 import { toastActionError } from "@/utils/action-toast";
-import type { ActionResult } from "@/utils/create-action";
 
 import { createShareLink } from "../actions";
 import type { ShareLinkCreateFormInput } from "../schemas";
@@ -23,10 +23,7 @@ interface Props {
   initialLinks: ShareLink[];
 }
 
-const initialState: ActionResult<ShareLink | null> = {
-  success: true,
-  data: null,
-};
+const initialState = initialActionState<ShareLink | null>(null);
 
 const { Field, f, errors } = createTypedForm<ShareLinkCreateFormInput>();
 

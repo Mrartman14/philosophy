@@ -10,12 +10,12 @@ import {
   TextInput,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { registerAction } from "../actions";
 import type { RegisterFormInput } from "../schemas";
 
-const initial: ActionResult<undefined> = { success: true, data: undefined };
+const initial = initialActionState<undefined>(undefined);
 
 const { Field, f, errors } = createTypedForm<RegisterFormInput>();
 

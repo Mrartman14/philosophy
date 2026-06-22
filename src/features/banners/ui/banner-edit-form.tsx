@@ -17,9 +17,10 @@ import {
   Stack,
   SubmitButton,
   TextInput,
+  VersionField,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 import { instantToWallClock } from "@/utils/datetime-form";
 
 import { updateBanner } from "../actions";
@@ -27,10 +28,7 @@ import { audienceOptions, toColorInputValue } from "../display";
 import type { BannerUpdateFormInput } from "../schemas";
 import type { Banner } from "../types";
 
-const initial: ActionResult<Banner | null> = {
-  success: true,
-  data: null,
-};
+const initial = initialActionState<Banner | null>(null);
 
 const { Field, f, errors } = createTypedForm<BannerUpdateFormInput>();
 
@@ -55,7 +53,7 @@ export function BannerEditForm({ banner, tz }: Props) {
       <Stack>
         <input type="hidden" name={f("id")} value={banner.id ?? ""} />
         {/* version (If-Match) — НЕ ключ схемы → raw name. */}
-        <input type="hidden" name="version" value={banner.version ?? ""} />
+        <VersionField version={banner.version} />
         <input
           type="hidden"
           name={f("blocks")}

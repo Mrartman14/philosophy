@@ -15,19 +15,17 @@ import {
   Stack,
   SubmitButton,
   TextInput,
+  VersionField,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 import { instantToWallClock } from "@/utils/datetime-form";
 
 import { updateEvent } from "../actions";
 import type { EventUpdateFormInput } from "../schemas";
 import type { CalendarEvent } from "../types";
 
-const initial: ActionResult<CalendarEvent | null> = {
-  success: true,
-  data: null,
-};
+const initial = initialActionState<CalendarEvent | null>(null);
 
 const { Field, f, errors } = createTypedForm<EventUpdateFormInput>();
 
@@ -75,7 +73,7 @@ export function EventEditForm({ event, tz }: Props) {
     <Form action={action} errors={errors(state)}>
       <Stack>
         <input type="hidden" name={f("id")} value={event.id ?? ""} />
-        <input type="hidden" name="version" value={event.version ?? ""} />
+        <VersionField version={event.version} />
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 

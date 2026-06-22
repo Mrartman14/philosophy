@@ -1,33 +1,28 @@
 "use client";
 // src/features/documents/ui/document-create-form.tsx
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { createTypedForm, Form, FormFeedback, IdempotencyField, Select, Stack, SubmitButton, TextInput } from "@/components/ui";
+import { useActionRedirect } from "@/hooks/use-action-redirect";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createDocument } from "../actions";
 import type { DocumentCreateFormInput } from "../schemas";
 import type { Document } from "../types";
 
-const initial: ActionResult<Document | null> = { success: true, data: null };
+const initial = initialActionState<Document | null>(null);
 
 const { Field, f, errors } = createTypedForm<DocumentCreateFormInput>();
 
 export function DocumentCreateForm() {
   const t = useT("documents");
-  const router = useRouter();
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createDocument, initial);
 
-  useEffect(() => {
-    if (state.success && state.data?.id) {
-      router.push(`/documents/${state.data.id}`);
-    }
-  }, [state, router]);
+  useActionRedirect(state, (data) => `/documents/${data.id}`);
 
   return (
     <Form action={action} errors={errors(state)}>

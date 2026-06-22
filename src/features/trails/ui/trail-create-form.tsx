@@ -1,30 +1,25 @@
 "use client";
 // src/features/trails/ui/trail-create-form.tsx
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 
 import { createTypedForm, Form, FormFeedback, IdempotencyField, Select, Stack, SubmitButton, TextInput, Textarea } from "@/components/ui";
+import { useActionRedirect } from "@/hooks/use-action-redirect";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createTrail } from "../actions";
 import type { TrailCreateFormInput } from "../schemas";
 import type { Trail } from "../types";
 
-const initial: ActionResult<Trail | null> = { success: true, data: null };
+const initial = initialActionState<Trail | null>(null);
 
 const { Field, errors } = createTypedForm<TrailCreateFormInput>();
 
 export function TrailCreateForm() {
-  const router = useRouter();
   const t = useT("trails");
   const [state, action] = useActionState(createTrail, initial);
 
-  useEffect(() => {
-    if (state.success && state.data?.id) {
-      router.push(`/trails/${state.data.id}`);
-    }
-  }, [state, router]);
+  useActionRedirect(state, (data) => `/trails/${data.id}`);
 
   return (
     <Form action={action} errors={errors(state)}>

@@ -10,12 +10,12 @@ import {
   TextInput,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { loginAction } from "../actions";
 import type { LoginFormInput } from "../schemas";
 
-const initial: ActionResult<undefined> = { success: true, data: undefined };
+const initial = initialActionState<undefined>(undefined);
 
 const { Field, f, errors } = createTypedForm<LoginFormInput>();
 

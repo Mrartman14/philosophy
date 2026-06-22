@@ -14,6 +14,7 @@ export { createTypedForm, type TypedForm, type TypedFieldComponent, type FieldEr
 export { Fieldset, type FieldsetProps } from "./fieldset";
 export { SubmitButton } from "./submit-button";
 export { IdempotencyField } from "./idempotency-field";
+export { VersionField } from "./version-field";
 export { Dialog, DialogClose } from "./dialog";
 export { Toolbar } from "./toolbar";
 export { Popover } from "./popover";

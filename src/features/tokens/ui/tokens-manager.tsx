@@ -14,8 +14,8 @@ import {
   useToast,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
+import { initialActionState } from "@/utils/action-state";
 import { toastActionError } from "@/utils/action-toast";
-import type { ActionResult } from "@/utils/create-action";
 
 import { createToken } from "../actions";
 import type { CreateTokenFormInput } from "../schemas";
@@ -26,10 +26,7 @@ import { CopyButton } from "./copy-button";
 import { TokenList } from "./token-list";
 import { UsageTrackingToggle } from "./usage-tracking-toggle";
 
-const initialState: ActionResult<CreatedToken | null> = {
-  success: true,
-  data: null,
-};
+const initialState = initialActionState<CreatedToken | null>(null);
 
 const { Field, errors } = createTypedForm<CreateTokenFormInput>();
 

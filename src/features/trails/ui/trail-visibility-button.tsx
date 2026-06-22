@@ -4,12 +4,12 @@ import { useActionState } from "react";
 
 import { Form, FormFeedback, Inline, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { setTrailVisibility } from "../actions";
 import type { Trail } from "../types";
 
-const initial: ActionResult<Trail | null> = { success: true, data: null };
+const initial = initialActionState<Trail | null>(null);
 
 interface Props {
   id: string;

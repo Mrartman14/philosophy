@@ -10,15 +10,16 @@ import {
   IdempotencyField,
   Stack,
   SubmitButton,
+  VersionField,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateTermBlocks } from "../actions";
 import type { TermBlocksUpdateFormInput } from "../schemas";
 import type { Term } from "../types";
 
-const initial: ActionResult<Term | null> = { success: true, data: null };
+const initial = initialActionState<Term | null>(null);
 
 const { Field, f, errors } = createTypedForm<TermBlocksUpdateFormInput>();
 
@@ -41,7 +42,7 @@ export function GlossaryEditForm({ term }: Props) {
       <Stack>
         <input type="hidden" name={f("id")} value={term.id ?? ""} />
         {/* version — If-Match path-параметр (action читает из FormData), НЕ ключ схемы. */}
-        <input type="hidden" name="version" value={term.version ?? ""} />
+        <VersionField version={term.version} />
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 

@@ -4,15 +4,15 @@ import { useActionState, useEffect, useState } from "react";
 
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
-import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton, VersionField } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateAnnotation } from "../actions";
 import type { AnnotationUpdateFormInput } from "../schemas";
 import type { Annotation } from "../types";
 
-const initial: ActionResult<Annotation | null> = { success: true, data: null };
+const initial = initialActionState<Annotation | null>(null);
 
 const { Field, f, errors } = createTypedForm<AnnotationUpdateFormInput>();
 
@@ -52,7 +52,7 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
         <input type="hidden" name={f("id")} value={annotation.id ?? ""} />
         {/* version — If-Match (optimistic concurrency), читается action'ом из
             FormData в заголовок. НЕ body-ключ схемы → raw name, не f(). */}
-        <input type="hidden" name="version" value={annotation.version ?? ""} />
+        <VersionField version={annotation.version} />
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 

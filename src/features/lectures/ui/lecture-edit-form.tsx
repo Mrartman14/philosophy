@@ -9,9 +9,10 @@ import {
   SubmitButton,
   TextInput,
   Textarea,
+  VersionField,
 } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateLecture } from "../actions";
 import type { LectureUpdateFormInput } from "../schemas";
@@ -20,7 +21,7 @@ import type { Lecture } from "../types";
 import { LectureDeleteButton } from "./lecture-delete-button";
 import { LectureVisibilityToggle } from "./lecture-visibility-toggle";
 
-const initial: ActionResult<Lecture | null> = { success: true, data: null };
+const initial = initialActionState<Lecture | null>(null);
 
 const { Field, f, errors } = createTypedForm<LectureUpdateFormInput>();
 
@@ -44,7 +45,7 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
       <Form action={action} errors={errors(state)}>
         <Stack className="max-w-xl">
           <input type="hidden" name={f("id")} value={lecture.id} />
-          <input type="hidden" name="version" value={String(lecture.version ?? "")} />
+          <VersionField version={lecture.version} />
 
           <Field name="title" label={tL("titleLabel")} required>
             <TextInput name="title" required maxLength={200} defaultValue={lecture.title} />

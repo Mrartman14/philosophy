@@ -4,12 +4,12 @@ import { useActionState } from "react";
 
 import { Form, FormFeedback, Inline, SubmitButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { setDocumentVisibility } from "../actions";
 import type { Document } from "../types";
 
-const initial: ActionResult<Document | null> = { success: true, data: null };
+const initial = initialActionState<Document | null>(null);
 
 interface Props {
   id: string;

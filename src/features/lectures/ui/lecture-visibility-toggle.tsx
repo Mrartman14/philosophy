@@ -3,12 +3,12 @@ import { useActionState, useEffect, useRef, useState } from "react";
 
 import { Form, FormFeedback, Label, Select, Stack } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { setLectureVisibility } from "../actions";
 import type { Lecture } from "../types";
 
-const initial: ActionResult<Lecture | null> = { success: true, data: null };
+const initial = initialActionState<Lecture | null>(null);
 
 export function LectureVisibilityToggle({
   lecture,

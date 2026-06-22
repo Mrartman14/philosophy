@@ -5,17 +5,17 @@ import { useActionState, useState } from "react";
 import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import { AstMergeView, type MergeViewLabels } from "@/components/ast-merge";
-import { Form, FormFeedback, FormField, IdempotencyField, Stack, SubmitButton } from "@/components/ui";
+import { Form, FormFeedback, FormField, IdempotencyField, Stack, SubmitButton, VersionField } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { updateDocumentBlocks } from "../actions";
 import type { Document, DocumentBlocksSaveResult } from "../types";
 
-const initial: ActionResult<DocumentBlocksSaveResult> = {
-  success: true,
-  data: { kind: "saved", document: null },
-};
+const initial = initialActionState<DocumentBlocksSaveResult>({
+  kind: "saved",
+  document: null,
+});
 
 interface Props {
   document: Document;
@@ -118,7 +118,7 @@ export function DocumentEditForm({ document }: Props) {
             </p>
           )}
           <input type="hidden" name="id" value={document.id ?? ""} />
-          <input type="hidden" name="version" value={baseVersion ?? ""} />
+          <VersionField version={baseVersion} />
           <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
           <IdempotencyField result={state} />
 

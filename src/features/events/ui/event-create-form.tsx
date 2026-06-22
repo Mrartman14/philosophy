@@ -1,7 +1,6 @@
 "use client";
 // src/features/events/ui/event-create-form.tsx
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 
 import {
   Checkbox,
@@ -15,31 +14,24 @@ import {
   SubmitButton,
   TextInput,
 } from "@/components/ui";
+import { useActionRedirect } from "@/hooks/use-action-redirect";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createEvent } from "../actions";
 import type { EventCreateFormInput } from "../schemas";
 import type { CalendarEvent } from "../types";
 
-const initial: ActionResult<CalendarEvent | null> = {
-  success: true,
-  data: null,
-};
+const initial = initialActionState<CalendarEvent | null>(null);
 
 const { Field, errors } = createTypedForm<EventCreateFormInput>();
 
 export function EventCreateForm() {
   const t = useT("events");
-  const router = useRouter();
   const [allDay, setAllDay] = useState(true);
   const [state, action] = useActionState(createEvent, initial);
 
-  useEffect(() => {
-    if (state.success && state.data?.id) {
-      router.push(`/admin/events/${state.data.id}/edit`);
-    }
-  }, [state, router]);
+  useActionRedirect(state, (data) => `/admin/events/${data.id}/edit`);
 
   return (
     <Form action={action} errors={errors(state)}>

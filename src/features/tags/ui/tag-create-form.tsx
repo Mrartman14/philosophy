@@ -4,13 +4,13 @@ import { useActionState } from "react";
 
 import { createTypedForm, Form, FormFeedback, IdempotencyField, Stack, SubmitButton, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { createTag } from "../actions";
 import type { TagCreateFormInput } from "../schemas";
 import type { Tag } from "../types";
 
-const initial: ActionResult<Tag | null> = { success: true, data: null };
+const initial = initialActionState<Tag | null>(null);
 
 const { Field, errors } = createTypedForm<TagCreateFormInput>();
 

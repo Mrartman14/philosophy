@@ -1,27 +1,22 @@
 "use client";
 // src/features/documents/ui/document-upload-form.tsx
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 
 import { Form, FormFeedback, FormField, Select, Stack, SubmitButton } from "@/components/ui";
+import { useActionRedirect } from "@/hooks/use-action-redirect";
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { uploadDocument } from "../actions";
 import type { Document } from "../types";
 
-const initial: ActionResult<Document | null> = { success: true, data: null };
+const initial = initialActionState<Document | null>(null);
 
 export function DocumentUploadForm() {
   const t = useT("documents");
-  const router = useRouter();
   const [state, action] = useActionState(uploadDocument, initial);
 
-  useEffect(() => {
-    if (state.success && state.data?.id) {
-      router.push(`/documents/${state.data.id}`);
-    }
-  }, [state, router]);
+  useActionRedirect(state, (data) => `/documents/${data.id}`);
 
   return (
     <Form action={action}>

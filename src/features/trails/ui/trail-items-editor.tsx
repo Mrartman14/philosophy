@@ -4,16 +4,16 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
 import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker";
-import { Button, IdempotencyField, Inline, SubmitButton, Form, useToast } from "@/components/ui";
+import { Button, IdempotencyField, Inline, SubmitButton, Form, useToast, VersionField } from "@/components/ui";
 // DocumentPicker — client-компонент из @/components (НЕ cross-feature). В index.ts
 // ast-editor он не реэкспортнут, поэтому импортируем напрямую.
 import { useT } from "@/i18n/client";
-import type { ActionResult } from "@/utils/create-action";
+import { initialActionState } from "@/utils/action-state";
 
 import { setTrailItems } from "../actions";
 import type { TrailWithItems, TrailDocumentSummary } from "../types";
 
-const initial: ActionResult<TrailWithItems | null> = { success: true, data: null };
+const initial = initialActionState<TrailWithItems | null>(null);
 
 interface Props {
   trailId: string;
@@ -141,7 +141,7 @@ export function TrailItemsEditor({ trailId, trailVersion, initialItems }: Props)
       <Form action={action}>
         <Inline align="center">
           <input type="hidden" name="id" value={trailId} />
-          <input type="hidden" name="version" value={String(trailVersion ?? "")} />
+          <VersionField version={trailVersion} />
           <input type="hidden" name="document_ids" value={JSON.stringify(orderedIds)} />
           <IdempotencyField result={state} />
           <SubmitButton>{t("itemsSaveSubmit")}</SubmitButton>
