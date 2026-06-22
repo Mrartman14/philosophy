@@ -161,7 +161,15 @@ export interface TypedFieldComponent<T> {
   <K extends FieldName<T>>(props: TypedFieldProps<T, K>): ReactElement;
 }
 
-/** Карта ошибок: ключи ⊂ keyof T плюс cross-field `_form`. */
+/**
+ * Карта ошибок: ключи ⊂ keyof T плюс cross-field `_form`. Assignable к
+ * `Record<string, string>` (= тип пропа `<Form errors>`) — проверено tsc под
+ * strict+exactOptionalPropertyTypes. Чтение неизвестного ключа (`e.nope`) —
+ * ошибка компиляции (нет index-signature) → typo-защита ключей сохраняется.
+ * Это типизированный VIEW поверх рантайм-`Record<string,string>` (cast):
+ * корректен для top-level ключей; нестандартные пути Zod (`path:["x","0"]`)
+ * в тип не попадут — для плоских схем образцов неактуально.
+ */
 export type FieldErrors<T> = Partial<Record<FieldName<T>, string>> & {
   _form?: string;
 };
@@ -389,6 +397,8 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 ---
 
+> **Параллелизация:** Task 2 и Task 3 независимы (оба зависят только от Task 1, разные файлы) — можно исполнять параллельными агентами.
+
 ## Task 3: Образец миграции №2 — `comments` (escape-хетчи)
 
 Демонстрирует: out-of-schema `lecture_id` (raw-строка, escape) + JSON-остров `blocks` (через `f`). Required-enforcement ловит реальный дрейф: `blocks` required в схеме (`blocksJsonField` = `z.string().min(1)…`), но в текущей форме у поля НЕТ `required` → миграция добавляет (звёздочка появляется — это корректно, тело обязательно).
@@ -453,8 +463,9 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
   return (
     <Form action={action} errors={errors(state)}>
       <Stack>
-        {/* lecture_id НЕ ключ схемы (action читает его из FormData отдельно) —
-            escape-хетч: raw-строка name, не f(). */}
+        {/* lecture_id — path-параметр (action читает его из FormData и шлёт в
+            POST /api/lectures/{id}/comments), это НЕ body-поле схемы. Raw-строка
+            name здесь КОРРЕКТНА — не «чинить» добавлением в CommentCreateSchema. */}
         <input type="hidden" name="lecture_id" value={lectureId} />
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
@@ -593,8 +604,8 @@ required-ключей. Поля вне схемы (контекстный `lectu
 
 - [ ] **Step 4: Финальный gate**
 
-Run: `pnpm lint && pnpm test && pnpm build`
-Expected: всё зелёное. Если красное — фикси, не отключай правила.
+Run: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`
+Expected: всё зелёное. (`pnpm typecheck` явно — type-level утверждения Task 1 и биндинги форм; `build` его дублирует, но typecheck быстрее фейлит.) Если красное — фикси, не отключай правила.
 
 - [ ] **Step 5: Commit**
 
@@ -622,3 +633,20 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 **Placeholder scan:** нет TBD/«handle edge cases»/«similar to». Полный код в каждом шаге. ✅
 
 **Type consistency:** `createTypedForm`/`Field`/`f`/`errors`/`FieldErrors`/`TypedFieldComponent`/`EnforcedKeys` — имена согласованы между Task 1 (определение) и Task 2–4 (потребление). `BannerCreateFormInput`/`CommentCreateFormInput` = `z.input<ReturnType<typeof makeXSchema>>` — согласованы между schemas.ts и формой. ✅
+
+---
+
+## Review verification (2026-06-22, эмпирически через изолированный `tsc`)
+
+Несущие допущения проверены прогоном `tsc --strict --exactOptionalPropertyTypes` на спайках (удалены после проверки), а не «по памяти»:
+
+- ✅ **Типовая машинерия** (`RequiredKeys`/`EnforcedKeys`/`TypedFieldProps`) компилируется под TS 6 strict+exactOptional.
+- ✅ **Required-enforcement работает**: отсутствие `required` на required-ключе → ошибка компиляции; на optional-ключе — нет.
+- ✅ **boolean-исключение работает**: required `z.boolean()`-ключ НЕ требует `required`.
+- ✅ **`z.input` через `.transform()`/`.default()`**: даёт pre-transform форму; `.default()`-ключ optional во входе (required не форсится).
+- ✅ **Name-биндинг**: не-ключ в `name` / `f()` → ошибка компиляции.
+- ✅ **JSX generic-компонент из const** (`Field`): инференс `K` из `name` + enforcement работают в JSX.
+- ✅ **`FieldErrors<T>` assignable к `Record<string,string>`** (тип `<Form errors>`), при этом `e.nope` остаётся ошибкой → typo-защита ключей ошибок сохранена. (Снято подозрение на assignability-баг под exactOptional.)
+- ✅ **lint/CI-совместимость**: `@ts-expect-error` уже используется в kit-тестах (button/checkbox/label) и НЕ забанен; идиома `void x` прецедентна; `next.config.ts` без `ignoreBuildErrors` → `build` типчекает тест-файлы (tsconfig include `**/*.tsx`).
+
+**Вывод ревью:** план технически верен и исполним; самые рискованные claim'ы доказаны. Правки по итогам: уточнён комментарий к `lecture_id` (path-параметр, raw корректен — не «чинить»), задокументирована природа cast'а `FieldErrors`, добавлен `pnpm typecheck` в финальный gate, отмечена параллелизуемость Task 2/3.
