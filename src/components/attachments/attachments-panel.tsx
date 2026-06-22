@@ -92,7 +92,7 @@ export function AttachmentsPanel({
                   item.label
                 )}
                 {item.entityType === "canvas" && (
-                  <span className="ml-2 text-xs text-(--color-fg-muted)">
+                  <span className="ms-2 text-xs text-(--color-fg-muted)">
                     {t("attachments.canvasNoPreview")}
                   </span>
                 )}

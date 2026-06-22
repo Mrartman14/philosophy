@@ -43,7 +43,7 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
 
   return (
     <Form action={action} errors={errors(state)}>
-      <Stack className="mt-2 border-l border-(--color-border) pl-3">
+      <Stack className="mt-2 border-s border-(--color-border) ps-3">
         {/* lecture_id — path-параметр (action читает из FormData → POST
             /api/lectures/{id}/comments), это НЕ body-поле схемы. Raw-строка
             name здесь КОРРЕКТНА — не «чинить» добавлением в CommentCreateSchema. */}

@@ -30,7 +30,7 @@ function BranchView({
     <li className="flex flex-col gap-2">
       <CommentNodeView comment={node} locale={locale} tz={tz} />
       {kids.length > 0 && (
-        <ul className="ml-4 flex flex-col gap-2 border-l border-(--color-border) pl-3">
+        <ul className="ms-4 flex flex-col gap-2 border-s border-(--color-border) ps-3">
           {kids.map((kid) => (
             <BranchView
               key={kid.id}

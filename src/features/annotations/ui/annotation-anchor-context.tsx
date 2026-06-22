@@ -32,7 +32,7 @@ export function AnnotationAnchorContext({ anchor }: Props) {
   // Text-якорь — цитата.
   if (anchor.exact) {
     return (
-      <blockquote className="border-l-2 border-(--color-border) pl-2 text-xs text-(--color-fg-muted)">
+      <blockquote className="border-s-2 border-(--color-border) ps-2 text-xs text-(--color-fg-muted)">
         «{anchor.prefix ?? ""}
         <mark>{anchor.exact}</mark>
         {anchor.suffix ?? ""}»

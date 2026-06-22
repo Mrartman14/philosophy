@@ -199,7 +199,7 @@ export function AstMergeView({
         <Button
           type="button"
           unstyled
-          className="ml-auto inline-flex h-(--size-control-h-md) items-center justify-center gap-2 rounded px-4 text-sm font-medium text-(--color-danger-fg) transition hover:bg-(--color-surface-subtle) disabled:opacity-50"
+          className="ms-auto inline-flex h-(--size-control-h-md) items-center justify-center gap-2 rounded px-4 text-sm font-medium text-(--color-danger-fg) transition hover:bg-(--color-surface-subtle) disabled:opacity-50"
           onClick={onTakeServer}
         >
           {labels.takeServerButton}

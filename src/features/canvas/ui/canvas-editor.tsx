@@ -414,7 +414,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
         </div>
 
         {/* инспектор */}
-        <aside className="w-64 shrink-0 border-l border-(--color-border) p-3">
+        <aside className="w-64 shrink-0 border-s border-(--color-border) p-3">
           <EditorInspector
             data={state.data}
             selectedNodeIds={state.selection.nodeIds}

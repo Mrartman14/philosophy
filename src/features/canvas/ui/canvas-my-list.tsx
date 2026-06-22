@@ -24,7 +24,7 @@ export async function CanvasMyList({ canvases }: Props) {
                 <RouterLink href={`/canvases/${c.id}`} className="font-medium hover:text-(--color-accent)">
                   {c.title ?? t("myList.untitled")}
                 </RouterLink>
-                <span className="ml-2 text-xs text-(--color-fg-muted)">
+                <span className="ms-2 text-xs text-(--color-fg-muted)">
                   {c.visibility === "public" ? t("myList.visibilityPublic") : t("myList.visibilityPrivate")}
                 </span>
               </li>,

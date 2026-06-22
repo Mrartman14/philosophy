@@ -57,7 +57,7 @@ export function EditorToolbar({
         {showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")}
       </Button>
 
-      <span className="ml-auto flex items-center gap-2">
+      <span className="ms-auto flex items-center gap-2">
         {dirty && <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>}
         <Button type="button" compact tone="primary" disabled={saving || !dirty} onClick={onSave}>
           {saving ? t("toolbar.saving") : t("toolbar.save")}

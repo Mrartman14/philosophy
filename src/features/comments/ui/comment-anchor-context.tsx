@@ -31,7 +31,7 @@ export async function CommentAnchorContext({ anchor }: { anchor: Anchor }) {
     <div className="rounded bg-(--color-surface-subtle) p-2 text-xs">
       <p className="text-(--color-fg-muted)">{t("anchor.boundTo", { entity: entityLabel })}</p>
       {anchor.exact && (
-        <blockquote className="mt-1 border-l-2 border-(--color-border) pl-2 italic">
+        <blockquote className="mt-1 border-s-2 border-(--color-border) ps-2 italic">
           {anchor.exact}
         </blockquote>
       )}

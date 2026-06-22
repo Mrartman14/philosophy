@@ -92,7 +92,7 @@ export function CommentNodeView({
 
       {anchorSlot ??
         (comment.anchor?.exact ? (
-          <p className="border-l-2 border-(--color-border) pl-2 text-xs italic text-(--color-fg-muted)">
+          <p className="border-s-2 border-(--color-border) ps-2 text-xs italic text-(--color-fg-muted)">
             {comment.anchor.exact}
           </p>
         ) : null)}
