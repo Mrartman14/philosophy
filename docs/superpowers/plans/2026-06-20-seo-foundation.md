@@ -400,7 +400,6 @@ export default function robots(): MetadataRoute.Robots {
         "/share-links",
         "/submissions",
         "/media",
-        "/calendar",
         "/auth",
         "/login",
         "/register",

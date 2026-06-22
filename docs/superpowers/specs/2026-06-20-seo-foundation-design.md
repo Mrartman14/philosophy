@@ -122,5 +122,7 @@ github.io/`/philosophy` — мёртвая легаси). Нормализуем
   cross-origin (осознать).
 - **Внешняя зависимость (бэкенд):** бэкендный `/sitemap.xml` обязан перечислять публичные
   lecture/trail/glossary URL (с `lastmod`) — иначе обнаружение страниц не работает. Вынесено в бэкенд-аски.
+- **`/calendar` УБРАН из robots disallow** (финальное ревью): страница публичная (без auth-гейта,
+  `createPublicApiClient`) — блокировать её от индексации противоречит политике «allow public».
 - **Отложено (Minor):** `og:locale`; description глоссария из `term.blocks`; JSON-LD; `article:published_time`;
   query-param canonical-дубли; prod build-guard на `NEXT_PUBLIC_BASE_URL`.
