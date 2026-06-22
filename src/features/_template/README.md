@@ -11,6 +11,7 @@
 - [ ] Каждая `canXxx` в `permissions.ts` покрыта тестом
 - [ ] Каждая Zod-схема имеет минимум 1 success + 1 failure тест
 - [ ] Использует `createFormAction` + `parseFormData` + `requireCapability` + `revalidateEntity`
+- [ ] Формы биндятся к схеме: `const { Field, f, errors } = createTypedForm<XCreateFormInput>()` (тип — `z.input`, не `z.infer`; `import type` из `schemas.ts`). `name` — через `Field`/`f`, ошибки — через `errors(state)`. Поля вне схемы (напр. контекстный `lecture_id`) — raw-строкой `name="…"`.
 - [ ] Не импортит другие `@/features/*` (запрещено ESLint'ом)
 - [ ] Удалён `ui/.gitkeep`, добавлены реальные UI-файлы
 - [ ] Удалён scaffolded `client.ts`, если в слайсе нет `"use client"`-кода или офлайн-потребителей (пустой re-export только засоряет дерево)

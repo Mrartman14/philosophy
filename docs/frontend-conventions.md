@@ -184,26 +184,33 @@ export const createComment = createFormAction(async (formData) => {
 ```tsx
 "use client";
 import { useActionState } from "react";
-import { Form, FormField, SubmitButton } from "@/components/ui";
+import { createTypedForm, Form, SubmitButton } from "@/components/ui";
 import { createComment } from "@/features/comments";
+import type { CommentCreateFormInput } from "@/features/comments/schemas";
+
+const { Field, f, errors } = createTypedForm<CommentCreateFormInput>();
 
 export function CreateCommentForm() {
   const [state, action] = useActionState(createComment, { success: true, data: undefined });
-  const fieldErrors = state.success === false && state.code === "validation"
-    ? state.fieldErrors
-    : undefined;
-
   return (
-    <Form action={action} errors={fieldErrors}>
-      <FormField name="text" label="Комментарий" />
+    <Form action={action} errors={errors(state)}>
+      <Field name="text" label="Комментарий" required>
+        <TextInput name={f("text")} />
+      </Field>
       <SubmitButton>Отправить</SubmitButton>
-      {state.success === false && state.code === "forbidden" && (
-        <p>У вас нет прав на это действие.</p>
-      )}
     </Form>
   );
 }
 ```
+
+`createTypedForm<z.input<schema>>()` (из `@/components/ui`) связывает `name`-пропы и
+`errors` с ключами Zod-схемы на уровне типов. Тип импортируется **type-only** из
+server-only `schemas.ts` (`import type { XFormInput } from "../schemas"`) — стирается
+компилятором, рантайм-схема в клиент не попадает. Биндить к `z.input` (НЕ `z.infer`):
+имена и required-ность берутся со входа схемы. `Field` форсит `required` для
+required-ключей. Поля вне схемы (контекстный `lecture_id`, инфра-инпуты) — raw-строкой
+`name="…"`. Динамические формы (`forms/**` builder/fill) — рантайм-острова, слой не
+применяется к их внутренним полям.
 
 `Form` из `@/components/ui` оборачивает Base UI `Form` и принимает
 `errors: Record<string, string>` (Base UI допускает `string | string[]`,
