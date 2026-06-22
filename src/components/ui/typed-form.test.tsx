@@ -8,6 +8,7 @@ interface Sample {
   title: string;
   note?: string;
   count: number;
+  agree: boolean;
 }
 
 // Идиома проекта (ср. button.test.tsx): type-уровневые @ts-expect-error живут
@@ -53,6 +54,7 @@ describe("createTypedForm", () => {
     // @ts-expect-error — required обязателен для required-ключа title
     void (<Field name="title" label="x">{null}</Field>);
     void (<Field name="note" label="x">{null}</Field>); // optional — required не нужен
+    void (<Field name="agree" label="x">{null}</Field>); // required boolean — исключён, required НЕ форсится
     // @ts-expect-error — ключ не из схемы
     void (<Field name="nope" label="x">{null}</Field>);
   });
