@@ -33,7 +33,7 @@ export function FormField({
     <Field.Root name={name} className={cn("flex flex-col gap-1", className)}>
       <Field.Label className="text-sm font-medium">
         {label}
-        {required && <span className="ml-0.5 text-(--color-danger)">*</span>}
+        {required && <span className="ms-0.5 text-(--color-danger)">*</span>}
       </Field.Label>
       {children}
       {description && (

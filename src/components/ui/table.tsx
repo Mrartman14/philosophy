@@ -29,7 +29,7 @@ export const Thead = forwardRef<
   return (
     <thead
       ref={ref}
-      className={cn("border-b border-(--color-border) text-left", className)}
+      className={cn("border-b border-(--color-border) text-start", className)}
       {...rest}
     />
   );

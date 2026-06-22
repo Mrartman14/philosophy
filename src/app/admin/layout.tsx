@@ -26,7 +26,7 @@ export default async function AdminLayout({
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] w-full">
-      <aside className="w-56 shrink-0 border-r border-(--color-border) bg-(--color-surface-subtle) p-4 flex flex-col gap-4">
+      <aside className="w-56 shrink-0 border-e border-(--color-border) bg-(--color-surface-subtle) p-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <RouterLink
             href="/"
