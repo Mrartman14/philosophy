@@ -1,6 +1,7 @@
 "use client";
 // src/features/semantic-map/ui/map-mode-toggle.tsx
-import { Button } from "@/components/ui";
+// Адаптер: namespace semanticMap + storageKey карты → общий SceneModeToggle.
+import { SceneModeToggle } from "@/components/scene-3d";
 import { useT } from "@/i18n/client";
 
 import type { RenderMode } from "../renderer";
@@ -14,22 +15,11 @@ export function MapModeToggle({
 }) {
   const t = useT("semanticMap");
   return (
-    <div
-      role="group"
-      aria-label={t("dimensionAriaLabel")}
-      className="inline-flex gap-1 rounded-md bg-(--color-surface) p-1 shadow"
-    >
-      {(["2d", "3d"] as const).map((m) => (
-        <Button
-          key={m}
-          compact
-          tone={mode === m ? "primary" : "quiet"}
-          aria-pressed={mode === m}
-          onClick={() => { onChange(m); }}
-        >
-          {m.toUpperCase()}
-        </Button>
-      ))}
-    </div>
+    <SceneModeToggle
+      mode={mode}
+      onChange={onChange}
+      ariaLabel={t("dimensionAriaLabel")}
+      storageKey="semantic-map:mode"
+    />
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useReducedMotion } from "@/components/appearance";
+import { readSavedMode } from "@/components/scene-3d";
 import { useT } from "@/i18n/client";
 
 import { getMapPointDetails } from "../actions";
@@ -18,23 +19,16 @@ import { MapRegionLabels, type ProjectedLabel } from "./map-region-labels";
 
 const MODE_KEY = "semantic-map:mode";
 
-// Восстановить сохранённый режим (только клиент — ssr:false гарантирует window).
-function readSavedMode(): RenderMode {
-  const saved =
-    typeof window !== "undefined" ? window.localStorage.getItem(MODE_KEY) : null;
-  return saved === "2d" || saved === "3d" ? saved : "2d";
-}
-
 export default function SemanticMapView({ data, overlay }: { data: MapData; overlay?: MapOverlay }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // Тип рефа — ПОРТ MapRenderer (не конкретный ThreeMapRenderer): своп рисовалки
   // меняет только `new ThreeMapRenderer()`, не UI.
   const rendererRef = useRef<MapRenderer | null>(null);
-  const [mode, setMode] = useState<RenderMode>(readSavedMode);
+  const [mode, setMode] = useState<RenderMode>(() => readSavedMode(MODE_KEY));
   // modeRef синхронизирован с mode (тот же восстановленный старт) — lifecycle-эффект
   // ([model]) применяет актуальный режим после пере-создания рендерера при смене data.
-  const modeRef = useRef<RenderMode>(readSavedMode());
+  const modeRef = useRef<RenderMode>(readSavedMode(MODE_KEY));
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
   const [selected, setSelected] = useState<MapPointDetail | null>(null);
   // documents (id→title) с контракта layout; фолбэк {} — поле optional.

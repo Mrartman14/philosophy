@@ -1,12 +1,9 @@
 // src/features/semantic-map/ui/map-state-panel.tsx
-// Server-компонент: состояние карты «строится»/«ошибка» (когда getMap вернул !ok).
+// Адаптер: тянет namespace semanticMap и прокидывает label-props в общий SceneStatePanel.
+import { SceneStatePanel } from "@/components/scene-3d";
 import { getT } from "@/i18n";
 
 export async function MapStatePanel({ reason }: { reason: "building" | "error" }) {
   const t = await getT("semanticMap");
-  return (
-    <div className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-(--color-fg-muted)">
-      {t(reason === "building" ? "building" : "loadError")}
-    </div>
-  );
+  return <SceneStatePanel reason={reason} buildingText={t("building")} errorText={t("loadError")} />;
 }
