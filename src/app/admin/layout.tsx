@@ -1,6 +1,7 @@
 // src/app/admin/layout.tsx
 import { forbidden } from "next/navigation";
 
+import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
@@ -30,8 +31,9 @@ export default async function AdminLayout({
         <div className="flex flex-col gap-1">
           <RouterLink
             href="/"
-            className="text-xs text-(--color-fg-muted) hover:underline"
+            className="inline-flex items-center gap-1 text-xs text-(--color-fg-muted) hover:underline"
           >
+            <ChevronIcon className="rtl-flip rotate-180" />
             {t("shellBackToSite")}
           </RouterLink>
           <h2 className="text-lg font-bold">{t("shellTitle")}</h2>
