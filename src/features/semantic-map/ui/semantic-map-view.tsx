@@ -5,13 +5,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useReducedMotion } from "@/components/appearance";
 import { useT } from "@/i18n/client";
 
+import { getMapPointDetails } from "../actions";
 import { matchOverlay, type OverlayMatch } from "../overlay/match-overlay";
 import { ThreeMapRenderer, projectToScreen } from "../renderer";
 import type { MapRenderer, RenderMode } from "../renderer";
 import { toRenderModel } from "../to-render-model";
-import type { MapData, MapOverlay } from "../types";
+import type { MapData, MapOverlay, MapPointDetail } from "../types";
 
 import { MapModeToggle } from "./map-mode-toggle";
+import { MapPointPanel } from "./map-point-panel";
 import { MapRegionLabels, type ProjectedLabel } from "./map-region-labels";
 
 const MODE_KEY = "semantic-map:mode";
@@ -34,6 +36,9 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
   // ([model]) применяет актуальный режим после пере-создания рендерера при смене data.
   const modeRef = useRef<RenderMode>(readSavedMode());
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
+  const [selected, setSelected] = useState<MapPointDetail | null>(null);
+  // documents (id→title) с контракта layout; фолбэк {} — поле optional.
+  const documents = data.documents ?? {};
   const model = useMemo(() => toRenderModel(data), [data]);
 
   // Матч хитов поиска с точками карты по doc (chunk-shift: хиты несут id документов,
@@ -64,6 +69,8 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
     const canvas = canvasRef.current;
     if (!wrap || !canvas) return;
 
+    setSelected(null); // смена модели сбрасывает выбор (точки прежней раскладки исчезли)
+
     const r: MapRenderer = new ThreeMapRenderer();
     rendererRef.current = r;
 
@@ -84,6 +91,25 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
     r.mount(canvas);
     r.resize(wrap.clientWidth || 1, wrap.clientHeight || 1, window.devicePixelRatio || 1);
     r.onChange(updateLabels); // ДО setModel — чтобы первый отрисованный кадр обновил подписи
+
+    // Picking: клик по точке → fetch одной детали → панель. Гонку (быстрые клики)
+    // гасим request-id'ом. pickSeq локален эффекту — на пере-маунте сбрасывается.
+    let pickSeq = 0;
+    // onPick — опциональная способность порта MapRenderer (рисовалка может не
+    // поддерживать picking); `?.` уважает контракт. ThreeMapRenderer его реализует.
+    r.onPick?.((id) => {
+      const seq = ++pickSeq;
+      if (!id) {
+        setSelected(null);
+        return;
+      }
+      void getMapPointDetails([id]).then((res) => {
+        if (seq !== pickSeq) return; // устаревший ответ — игнор
+        // id отсутствует в карте (приватный/неизвестный чанк) → деталь не показываем.
+        setSelected(res.success ? res.data[id] ?? null : null);
+      });
+    });
+
     r.setModel(model);
     r.setMode(modeRef.current); // применить текущий/восстановленный режим (переживает смену data)
     r.setReducedMotion(reduceRef.current); // применить к свежему рендереру (переживает смену data)
@@ -138,6 +164,15 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
         <div className="absolute inset-x-0 top-3 mx-auto w-fit rounded bg-(--color-surface) px-3 py-1 text-xs text-(--color-fg-muted) shadow">
           {t("overlayNoMatches")}
         </div>
+      )}
+      {selected && (
+        <MapPointPanel
+          detail={selected}
+          documents={documents}
+          onClose={() => {
+            setSelected(null);
+          }}
+        />
       )}
     </div>
   );
