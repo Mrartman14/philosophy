@@ -54,8 +54,6 @@ const ERRORS: ApiErrorMessageKeys = {
   // catalog stays free of this generic code (otherwise isErrorKey would treat it
   // as a catalog key for every future slice that receives NOT_FOUND).
   NOT_FOUND: "LECTURE_NOT_FOUND",
-  // 409 при удалении лекции, на которую ссылаются другие материалы (regen 2026-06-21).
-  LECTURE_REFERENCED: "LECTURE_REFERENCED",
   LECTURE_NOT_FOUND: "LECTURE_NOT_FOUND",
 };
 

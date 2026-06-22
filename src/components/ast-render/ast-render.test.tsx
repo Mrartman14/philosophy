@@ -21,7 +21,6 @@ import {
   IMAGE_BLOCK_INVALID_KEY,
   STORAGE_KEY_FIXTURE,
   PARAGRAPH_WITH_GLOSSARY_REF,
-  PARAGRAPH_WITH_LECTURE_REF,
   PARAGRAPH_WITH_EMPTY_REF,
   PARAGRAPH_WITH_PROTOCOL_RELATIVE_LINK,
   PARAGRAPH_WITH_MEDIA_REF,
@@ -153,11 +152,6 @@ describe("AstRender — ref-marks", () => {
     const a = container.querySelector("a");
     expect(a?.getAttribute("href")).toBe("/glossary/term-uuid-123");
     expect(a?.textContent).toBe("термин");
-  });
-
-  it("default: lecture_ref → <a href='/lectures/{id}'>", () => {
-    const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_LECTURE_REF]} />);
-    expect(container.querySelector("a")?.getAttribute("href")).toBe("/lectures/lec-uuid-456");
   });
 
   it("ctx.renderGlossaryRef переопределяет рендер", () => {

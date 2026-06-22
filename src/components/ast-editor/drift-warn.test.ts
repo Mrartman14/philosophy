@@ -36,7 +36,7 @@ describe("useDriftWarn", () => {
   it("warns when runtime schema has a node missing from hardcode", () => {
     const schema = baseSnapshot(
       ["paragraph", "heading", "blockquote", "code_block", "list", "list_item", "image", "table", "table_row", "table_cell", "thematic_break", "hard_break", "text", "future_block"],
-      ["bold", "italic", "code", "link", "lecture_ref", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
+      ["bold", "italic", "code", "link", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
     );
     renderHook(() => { useDriftWarn(schema); });
     expect(logWarn).toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe("useDriftWarn", () => {
   it("no warn when sets match", () => {
     const schema = baseSnapshot(
       ["paragraph", "heading", "blockquote", "code_block", "list", "list_item", "image", "table", "table_row", "table_cell", "thematic_break", "hard_break", "text"],
-      ["bold", "italic", "code", "link", "lecture_ref", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
+      ["bold", "italic", "code", "link", "glossary_ref", "document_ref", "media_ref", "canvas_ref", "comment_ref"],
     );
     renderHook(() => { useDriftWarn(schema); });
     expect(logWarn).not.toHaveBeenCalled();

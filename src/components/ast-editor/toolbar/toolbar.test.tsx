@@ -95,7 +95,7 @@ describe("EditorToolbar gating", () => {
       marks: new Map([
         ["bold", { attrs: {} }],
         ["link", { attrs: {} }],
-        ["lecture_ref", { attrs: {} }],
+        ["glossary_ref", { attrs: {} }],
       ]),
     };
     const editor = makeEditor("document");
@@ -132,7 +132,7 @@ describe("EditorToolbar defaultLectureId", () => {
     mockedActions.searchCommentsByLecture.mockResolvedValue({ data: [], total: 0 });
     const navSchema: SchemaSnapshot = {
       ...fullSchema,
-      marks: new Map([["lecture_ref", { attrs: {} }]]),
+      marks: new Map([["glossary_ref", { attrs: {} }]]),
     };
     const editor = makeEditor("document");
     render(

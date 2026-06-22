@@ -1,7 +1,6 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 
 const NAV_MARK_TYPES = [
-  "lecture_ref",
   "glossary_ref",
   "document_ref",
   "comment_ref",

@@ -60,7 +60,7 @@ export function EditorToolbar({ editor, schema, context, defaultLectureId }: Edi
       node: <LinkPopover editor={editor} schema={schema} />,
     },
     {
-      visible: schema.marks.has("lecture_ref"),
+      visible: schema.marks.has("glossary_ref"),
       node: <RefPopover editor={editor} schema={schema} defaultLectureId={defaultLectureId} />,
     },
   ].filter((g) => g.visible);

@@ -8,16 +8,14 @@ import { useT } from "@/i18n/client";
 import { Comment2StagePicker } from "./comment-2stage-picker";
 import { DocumentPicker } from "./document-picker";
 import { GlossaryPicker } from "./glossary-picker";
-import { LecturePicker } from "./lecture-picker";
 import { MediaPicker } from "./media-picker";
 
 // canvas вне скоупа программы покрытия (спека 2026-06-12 §4): CanvasPicker
 // остаётся в репо dormant (pickers/canvas-picker.tsx), в меню не подключён,
 // canvas_ref в редакторе зарегистрирован только ради round-trip контента.
-type Category = "lecture" | "glossary" | "document" | "media" | "comment";
+type Category = "glossary" | "document" | "media" | "comment";
 
 const MARK_FOR: Record<Category, string> = {
-  lecture: "lecture_ref",
   glossary: "glossary_ref",
   document: "document_ref",
   media: "media_ref",
@@ -42,7 +40,6 @@ export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: Ref
   const [cat, setCat] = useState<Category | null>(null);
 
   const labels: Record<Category, string> = {
-    lecture: t("refCategoryLecture"),
     glossary: t("refCategoryGlossary"),
     document: t("refCategoryDocument"),
     media: t("refCategoryMedia"),
@@ -91,7 +88,6 @@ export function RefMenu({ editor, defaultLectureId, onClose, onWillInsert }: Ref
         ))}
       </div>
       <div>
-        {cat === "lecture" && <LecturePicker onSelect={onSelect} />}
         {cat === "glossary" && <GlossaryPicker onSelect={onSelect} />}
         {cat === "document" && <DocumentPicker onSelect={onSelect} />}
         {cat === "media" && <MediaPicker onSelect={onSelect} />}

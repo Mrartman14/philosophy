@@ -7,7 +7,6 @@ import { defaultCanvasRef } from "./marks/canvas-ref";
 import { defaultCommentRef } from "./marks/comment-ref";
 import { defaultDocumentRef } from "./marks/document-ref";
 import { defaultGlossaryRef } from "./marks/glossary-ref";
-import { defaultLectureRef } from "./marks/lecture-ref";
 import { LinkMark } from "./marks/link";
 import { defaultMediaRef } from "./marks/media-ref";
 import type {
@@ -58,8 +57,6 @@ function applyMark(mark: AstMark, children: ReactNode, ctx: AstRenderContext): R
     }
     case "glossary_ref":
       return renderRefMark(mark, children, ctx.renderGlossaryRef ?? defaultGlossaryRef);
-    case "lecture_ref":
-      return renderRefMark(mark, children, ctx.renderLectureRef ?? defaultLectureRef);
     case "document_ref":
       return renderRefMark(mark, children, ctx.renderDocumentRef ?? defaultDocumentRef);
     case "media_ref":

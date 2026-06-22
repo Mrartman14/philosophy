@@ -35,7 +35,7 @@ vi.mock("./actions", () => ({
   searchCommentsByLecture: vi.fn(),
 }));
 
-const mocked = actions as unknown as { searchLectures: ReturnType<typeof vi.fn> };
+const mocked = actions as unknown as { searchGlossary: ReturnType<typeof vi.fn> };
 
 afterEach(() => {
   cleanup();
@@ -63,25 +63,25 @@ function makeEditor() {
 }
 
 describe("RefMenu", () => {
-  it("inserts lecture_ref mark with selected id on lecture pick", async () => {
-    mocked.searchLectures.mockResolvedValue({
+  it("inserts glossary_ref mark with selected id on glossary pick", async () => {
+    mocked.searchGlossary.mockResolvedValue({
       data: [{ id: "l1", title: "L1" }],
       total: 1,
     });
     const editor = makeEditor();
     const onClose = vi.fn();
     render(<RefMenu editor={editor} onClose={onClose} />);
-    fireEvent.click(screen.getByRole("button", { name: /лекция/i }));
+    fireEvent.click(screen.getByRole("button", { name: /термин/i }));
     fireEvent.mouseDown(await screen.findByText("L1"));
     const json = JSON.stringify(editor.getJSON());
-    expect(json).toContain('"type":"lecture_ref"');
+    expect(json).toContain('"type":"glossary_ref"');
     expect(json).toContain('"id":"l1"');
     expect(onClose).toHaveBeenCalledOnce();
     editor.destroy();
   });
 
   it("inserts text+mark on collapsed selection (label rendered as visible text)", async () => {
-    mocked.searchLectures.mockResolvedValue({
+    mocked.searchGlossary.mockResolvedValue({
       data: [{ id: "l1", title: "L1" }],
       total: 1,
     });
@@ -93,13 +93,13 @@ describe("RefMenu", () => {
     editor.commands.setTextSelection(6);
 
     render(<RefMenu editor={editor} onClose={() => undefined} />);
-    fireEvent.click(screen.getByRole("button", { name: /лекция/i }));
+    fireEvent.click(screen.getByRole("button", { name: /термин/i }));
     fireEvent.mouseDown(await screen.findByText("L1"));
 
     // Visible text uses the human-readable title ("L1"), mark still carries id "l1".
     expect(editor.getText()).toContain("L1");
     const json = JSON.stringify(editor.getJSON());
-    expect(json).toContain('"type":"lecture_ref"');
+    expect(json).toContain('"type":"glossary_ref"');
     expect(json).toContain('"id":"l1"');
     editor.destroy();
   });
@@ -108,25 +108,25 @@ describe("RefMenu", () => {
     const editor = makeEditor();
     render(<RefMenu editor={editor} />);
     expect(screen.queryByRole("button", { name: /canvas/i })).toBeNull();
-    // Остальные пять категорий на месте.
-    for (const name of ["Лекция", "Термин", "Документ", "Медиа", "Комментарий"]) {
+    // Остальные четыре категории на месте.
+    for (const name of ["Термин", "Документ", "Медиа", "Комментарий"]) {
       expect(screen.getByRole("button", { name })).toBeInTheDocument();
     }
     editor.destroy();
   });
 
   it("onWillInsert вызывается до вставки mark", async () => {
-    mocked.searchLectures.mockResolvedValue({
+    mocked.searchGlossary.mockResolvedValue({
       data: [{ id: "l1", title: "L1" }],
       total: 1,
     });
     const editor = makeEditor();
     const onWillInsert = vi.fn();
     render(<RefMenu editor={editor} onWillInsert={onWillInsert} />);
-    fireEvent.click(screen.getByRole("button", { name: /лекция/i }));
+    fireEvent.click(screen.getByRole("button", { name: /термин/i }));
     fireEvent.mouseDown(await screen.findByText("L1"));
     expect(onWillInsert).toHaveBeenCalledOnce();
-    expect(JSON.stringify(editor.getJSON())).toContain('"type":"lecture_ref"');
+    expect(JSON.stringify(editor.getJSON())).toContain('"type":"glossary_ref"');
     editor.destroy();
   });
 });

@@ -161,18 +161,6 @@ export const PARAGRAPH_WITH_GLOSSARY_REF: AstBlock = {
   ],
 };
 
-export const PARAGRAPH_WITH_LECTURE_REF: AstBlock = {
-  id: "p-lref",
-  type: "paragraph",
-  content: [
-    {
-      type: "text",
-      text: "лекция",
-      marks: [{ type: "lecture_ref", attrs: { id: "lec-uuid-456" } }],
-    },
-  ],
-};
-
 export const IMAGE_BLOCK_INVALID_KEY: AstBlock = {
   id: "img-bad",
   type: "image",

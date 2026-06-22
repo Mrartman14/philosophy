@@ -4,7 +4,6 @@ import type { EntityRefView } from "@/components/canvas-render";
 /** Сегмент app-роутера для типов с публичной detail-страницей. */
 const SEGMENTS: Record<string, string> = {
   document: "documents",
-  lecture: "lectures",
   media: "media",
   comment: "comments",
   glossary: "glossary",
@@ -13,13 +12,12 @@ const SEGMENTS: Record<string, string> = {
 };
 
 /**
- * Человекочитаемые метки (ru) всех 10 типов entity_ref + fallback. ru-дефолт
+ * Человекочитаемые метки (ru) всех 9 типов entity_ref + fallback. ru-дефолт
  * для изоморфного/офлайн-вызова без переводчика; онлайн-вызыватели передают метки
  * из каталога canvas.entityType.* (см. makeEntityRefResolver / резолверы ниже).
  */
 const LABELS: Record<string, string> = {
   document: "Документ",
-  lecture: "Лекция",
   media: "Медиа",
   comment: "Комментарий",
   glossary: "Глоссарий",
@@ -64,7 +62,6 @@ export function resolveEntityRefView(
 
 const ENTITY_TYPES = [
   "document",
-  "lecture",
   "media",
   "comment",
   "glossary",

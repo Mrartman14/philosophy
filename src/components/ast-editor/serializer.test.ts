@@ -95,7 +95,7 @@ describe("serializer", () => {
               text: "ссылка",
               marks: [
                 {
-                  type: "lecture_ref",
+                  type: "glossary_ref",
                   attrs: { id: "uuid", start_block_id: null, start_char: null },
                 },
               ],
@@ -105,7 +105,7 @@ describe("serializer", () => {
       ],
     };
     expect(serialize(doc)[0]?.content?.[0]?.marks?.[0]).toEqual({
-      type: "lecture_ref",
+      type: "glossary_ref",
       attrs: { id: "uuid" },
     });
   });

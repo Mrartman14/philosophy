@@ -7,9 +7,6 @@ describe("resolveEntityRefView", () => {
   it("document → ссылка и метка", () => {
     expect(resolveEntityRefView("document", "d1")).toEqual({ href: "/documents/d1", typeLabel: "Документ" });
   });
-  it("lecture → /lectures/", () => {
-    expect(resolveEntityRefView("lecture", "l1").href).toBe("/lectures/l1");
-  });
   it("canvas → /canvases/", () => {
     expect(resolveEntityRefView("canvas", "c1").href).toBe("/canvases/c1");
   });

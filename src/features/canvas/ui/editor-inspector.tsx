@@ -51,7 +51,7 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
     if (!nodeId) return null;
     return (
       <div className="flex flex-col gap-3">
-        <h3 className="text-sm font-semibold">{t("inspector.nodeHeading", { type: node.type ?? "" })}</h3>
+        <h3 className="text-sm font-semibold">{t("inspector.nodeHeading", { type: node.type })}</h3>
         {node.type === "shape" && (
           <div className="flex flex-col gap-1 text-sm">
             {t("inspector.shapeLabel")}

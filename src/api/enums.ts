@@ -78,7 +78,6 @@ export const CANVAS_EDGE_STYLES = enumValues<S["canvas.EdgeStyle"]>()("solid", "
 export const CANVAS_EDGE_ENDS = enumValues<S["canvas.EdgeEnd"]>()("none", "arrow");
 export const CANVAS_REF_ENTITY_TYPES = enumValues<S["canvas.RefEntityType"]>()(
   "document",
-  "lecture",
   "annotation",
   "comment",
   "media",

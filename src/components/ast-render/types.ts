@@ -17,8 +17,6 @@ export interface AstRenderProps {
 export interface AstRenderContext {
   /** Override how `glossary_ref` mark is rendered. Default: <a href="/glossary/{id}">{label}</a>. */
   renderGlossaryRef?: RefLinkRenderer;
-  /** Override how `lecture_ref` mark is rendered. Default: <a href="/lectures/{id}">{label}</a>. */
-  renderLectureRef?: RefLinkRenderer;
   /** Override how `document_ref` mark is rendered. Default: <a href="/documents/{id}">{label}</a>. */
   renderDocumentRef?: RefLinkRenderer;
   /** Override how `media_ref` mark is rendered. Default: <a href="/media/{id}">{label}</a>. */

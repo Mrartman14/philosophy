@@ -109,7 +109,6 @@ const canvas = {
     idLabel: "ID сущности (UUID)",
     addButton: "Добавить",
     typeDocument: "Документ",
-    typeLecture: "Лекция",
     typeGlossary: "Глоссарий",
     typeMedia: "Медиа",
     typeCanvas: "Канвас",
@@ -121,10 +120,9 @@ const canvas = {
   },
 
   // --- entity-ref-метки (resolveEntityRefView; node-плашка ссылки на сущность) ---
-  // 10 типов entity_ref + fallback для неизвестного типа.
+  // 9 типов entity_ref + fallback для неизвестного типа.
   entityType: {
     document: "Документ",
-    lecture: "Лекция",
     media: "Медиа",
     comment: "Комментарий",
     glossary: "Глоссарий",
@@ -174,7 +172,6 @@ const canvas = {
     shapeNoKind: 'Фигура "{id}" без типа фигуры',
     entityRefNoType: 'Ссылка "{id}" без типа сущности',
     entityRefNoId: 'Ссылка "{id}" без id сущности',
-    nodeUnknownType: 'Узел "{id}": неизвестный тип',
     edgeNoId: "У ребра нет id",
     edgeFromNotFound: 'Ребро "{id}": from_node не найден',
     edgeToNotFound: 'Ребро "{id}": to_node не найден',

@@ -18,7 +18,7 @@ const HARDCODE_NODES = new Set([
 
 const HARDCODE_MARKS = new Set([
   "bold", "italic", "code", "link",
-  "lecture_ref", "glossary_ref", "document_ref",
+  "glossary_ref", "document_ref",
   "media_ref", "canvas_ref", "comment_ref",
 ]);
 

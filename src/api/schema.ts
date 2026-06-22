@@ -158,7 +158,7 @@ export interface paths {
                     /** @description ID актора */
                     actor?: string;
                     /** @description Тип цели */
-                    target_type?: "annotation" | "banner" | "canvas" | "comment" | "document" | "event" | "form" | "glossary_term" | "lecture" | "media" | "push" | "tag" | "trail" | "user";
+                    target_type?: "annotation" | "banner" | "canvas" | "comment" | "document" | "event" | "form" | "glossary_term" | "lecture" | "map" | "media" | "push" | "tag" | "trail" | "user";
                     /** @description ID цели */
                     target_id?: string;
                     /** @description Действие */
@@ -2611,6 +2611,15 @@ export interface paths {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description NOT_FOUND / LECTURE_NOT_FOUND */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
             };
         };
         options?: never;
@@ -2824,6 +2833,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список медиа (админ-модерация)
+         * @description Non-private media across all owners for the admin moderation
+         *     UI. Private media is never listed (admins have no window into
+         *     other users' private drafts). Gated by media.delete_any.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Лимит */
+                    limit?: number;
+                    /** @description Фильтр по автору */
+                    owner_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["media.Media"][];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/push/send": {
         parameters: {
             query?: never;
@@ -2910,6 +2987,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+                /** @description NOT_CONFIGURED */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -4722,6 +4808,15 @@ export interface paths {
                         };
                     };
                 };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
             };
         };
         put?: never;
@@ -5393,15 +5488,6 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description INVALID_ENTITY_TYPE */
-                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -6371,8 +6457,8 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Not Found */
-                404: {
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -6380,13 +6466,13 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Unprocessable Entity */
-                422: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -7458,15 +7544,6 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description INVALID_ENTITY_TYPE */
-                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8971,6 +9048,153 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/graph": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Граф связности корпуса
+         * @description Узлы (документы + термины глоссария) и направленные взвешенные рёбра явных ссылок (document_ref/glossary_ref). Координаты узлов считаются по связности (PCA над матрицей смежности) и отдаются в контракте карты (dims=3, bounds, coords) — фронт рисует 2D/3D и дорисовывает рёбра. Граф анонимно-публичный (perimeter-aware срез: документ виден анонимно), один для всех.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Предыдущий ETag; совпал → 304 */
+                    "If-None-Match"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Content token (shared) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["refgraph.Graph"];
+                        };
+                    };
+                };
+                /** @description Not Modified */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/graph/{type}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Соседи сущности в графе связности
+         * @description Прямые соседи одной сущности (документ или термин) по явным ссылкам, под текущего зрителя (видно публичное + своё приватное). Без координат — это список соседей с направлением (in/out) и весом.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Предыдущий ETag; совпал → 304 */
+                    "If-None-Match"?: string;
+                };
+                path: {
+                    /** @description Тип сущности */
+                    type: "document" | "glossary";
+                    /** @description UUID сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        /** @description Per-viewer content token */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["refgraph.EgoGraph"];
+                        };
+                    };
+                };
+                /** @description Not Modified */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description invalid type or id */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description node not found or not visible */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/lectures": {
         parameters: {
             query?: never;
@@ -9469,6 +9693,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
                 /** @description Unprocessable Entity */
                 422: {
                     headers: {
@@ -9528,6 +9761,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -10212,7 +10454,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["httputil.ListResponse"] & {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
                             data?: components["schemas"]["media.Media"][];
                         };
                     };
@@ -10223,7 +10465,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description invalid Bearer token (optional-auth) */
@@ -10232,7 +10474,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
                 /** @description Not Found */
@@ -10241,7 +10483,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -10827,7 +11069,7 @@ export interface paths {
         };
         /**
          * Семантическая карта корпуса
-         * @description Координаты документов и терминов глоссария в 3D-пространстве смысла (PCA), отфильтрованные по видимости актора, + кластеры. Бэкенд отдаёт 3 координаты; 2D/3D выбирает фронт. Overlay-маркер запроса фронт считает сам из этих координат и хитов поиска. До первой фоновой сборки — 503 MAP_NOT_READY.
+         * @description Координаты публичных документных чанков в 3D-пространстве смысла (PCA) + дерево кластеров. Глоссарий используется только как источник подписей кластеров, не как точки на карте. Карта едина для всех (публичный, perimeter-aware срез: документ виден анонимно). Бэкенд отдаёт 3 координаты; 2D/3D выбирает фронт. Overlay-маркер запроса фронт считает сам из этих координат и хитов поиска. До первой фоновой сборки — 503 MAP_NOT_READY.
          */
         get: {
             parameters: {
@@ -10844,7 +11086,7 @@ export interface paths {
                 /** @description OK */
                 200: {
                     headers: {
-                        /** @description Per-viewer content token */
+                        /** @description Content token (shared) */
                         ETag?: string;
                         [name: string]: unknown;
                     };
@@ -10883,6 +11125,90 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/map/points": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Детали точек карты по id (батч)
+         * @description Возвращает {doc, chunk_ord, snippet} для точек карты по списку id. Резолвит ТОЛЬКО id, присутствующие в текущей опубликованной (публичной) раскладке; неизвестные id молча пропускаются. Read-only; без audit и Idempotency-Key. Вьюпорт-отбор id делает фронт.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Список id точек (кэп 300) */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["semmap.BatchPointsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: {
+                                [key: string]: components["schemas"]["semmap.PointDetail"];
+                            };
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -12405,6 +12731,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
             };
         };
         put?: never;
@@ -12448,6 +12783,15 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -12644,6 +12988,15 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -12876,15 +13229,6 @@ export interface paths {
                 };
                 /** @description Not Found */
                 404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description INVALID_ENTITY_TYPE */
-                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -13210,6 +13554,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
+                /** @description NOT_CONFIGURED */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
             };
         };
         /** Отписаться от push-уведомлений */
@@ -13279,6 +13632,15 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
                     };
                 };
+                /** @description NOT_CONFIGURED */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
             };
         };
         options?: never;
@@ -13314,6 +13676,15 @@ export interface paths {
                                 publicKey?: string;
                             };
                         };
+                    };
+                };
+                /** @description NOT_CONFIGURED */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
             };
@@ -13461,6 +13832,15 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -15032,7 +15412,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "LECTURE_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -15078,7 +15458,7 @@ export interface components {
             type?: components["schemas"]["ast.MarkType"];
         };
         /** @enum {string} */
-        "ast.MarkType": "bold" | "italic" | "code" | "link" | "glossary_ref" | "lecture_ref" | "document_ref" | "comment_ref" | "media_ref" | "canvas_ref";
+        "ast.MarkType": "bold" | "italic" | "code" | "link" | "glossary_ref" | "document_ref" | "comment_ref" | "media_ref" | "canvas_ref";
         "ast.Node": {
             attrs?: {
                 [key: string]: unknown;
@@ -15263,7 +15643,7 @@ export interface components {
         /** @enum {string} */
         "canvas.NodeType": "text" | "shape" | "entity_ref";
         /** @enum {string} */
-        "canvas.RefEntityType": "document" | "lecture" | "annotation" | "comment" | "media" | "glossary" | "banner" | "event" | "form" | "canvas";
+        "canvas.RefEntityType": "document" | "annotation" | "comment" | "media" | "glossary" | "banner" | "event" | "form" | "canvas";
         "canvas.Revision": {
             canvas_id?: string;
             created_at?: string;
@@ -15863,6 +16243,7 @@ export interface components {
             contrast?: components["schemas"]["preference.Contrast"];
             density?: components["schemas"]["preference.Density"];
             font?: components["schemas"]["preference.Font"];
+            motion?: components["schemas"]["preference.Motion"];
             text_size?: components["schemas"]["preference.TextSize"];
             theme?: components["schemas"]["preference.Theme"];
         };
@@ -15873,6 +16254,8 @@ export interface components {
             density?: "comfortable" | "compact";
             /** @enum {unknown} */
             font?: "sans" | "legible" | "serif";
+            /** @enum {unknown} */
+            motion?: "system" | "reduced" | "full";
             /** @enum {unknown} */
             text_size?: "sm" | "md" | "lg" | "xl";
             /** @enum {unknown} */
@@ -15886,10 +16269,18 @@ export interface components {
         "preference.Font": "sans" | "legible" | "serif";
         /** @enum {string} */
         "preference.Locale": "system" | "ru" | "en";
+        /** @enum {string} */
+        "preference.Motion": "system" | "reduced" | "full";
         "preference.Preferences": {
             appearance?: components["schemas"]["preference.Appearance"];
             locale?: components["schemas"]["preference.Locale"];
             reading_mode?: components["schemas"]["preference.ReadingMode"];
+            /**
+             * @description Timezone is the user's IANA time zone (e.g. "Europe/Moscow"), or "system"
+             *     to let the client resolve it from the browser.
+             * @example Europe/Moscow
+             */
+            timezone?: string;
         };
         /** @enum {string} */
         "preference.ReadingMode": "full" | "focused";
@@ -15903,6 +16294,13 @@ export interface components {
             locale?: "system" | "ru" | "en";
             /** @enum {unknown} */
             reading_mode?: "full" | "focused";
+            /**
+             * @description Timezone — IANA zone name (e.g. "Europe/Moscow") or "system". The
+             *     "Etc/Unknown" sentinel is accepted and stored as "system"; other unknown
+             *     zones are rejected with 422.
+             * @example Europe/Moscow
+             */
+            timezone?: string;
         };
         "productionstats.EntityInventory": {
             entity_type?: components["schemas"]["productionstats.EntityType"];
@@ -15953,6 +16351,50 @@ export interface components {
         "rbac.Role": "user" | "admin";
         /** @enum {string} */
         "rbac.Status": "active" | "suspended" | "banned";
+        "refgraph.Bounds": {
+            max?: number[];
+            min?: number[];
+        };
+        "refgraph.Edge": {
+            kind?: string;
+            source?: components["schemas"]["refgraph.NodeRef"];
+            target?: components["schemas"]["refgraph.NodeRef"];
+            weight?: number;
+        };
+        "refgraph.EgoGraph": {
+            neighbors?: components["schemas"]["refgraph.Neighbor"][];
+            node?: components["schemas"]["refgraph.Node"];
+        };
+        "refgraph.Graph": {
+            bounds?: components["schemas"]["refgraph.Bounds"];
+            dims?: number;
+            edges?: components["schemas"]["refgraph.Edge"][];
+            /**
+             * @description Version is the opaque content-hash token; JSON name mirrors the semantic
+             *     map's `layout_version` so the frontend sees one version field across both
+             *     map-like endpoints. Same value as the ETag header.
+             */
+            layout_version?: string;
+            nodes?: components["schemas"]["refgraph.Node"][];
+        };
+        "refgraph.Neighbor": {
+            /** @description "out" (center→neighbor) | "in" (neighbor→center) */
+            direction?: string;
+            kind?: string;
+            node?: components["schemas"]["refgraph.Node"];
+            weight?: number;
+        };
+        "refgraph.Node": {
+            coords?: number[];
+            degree?: number;
+            id?: string;
+            title?: string;
+            type?: string;
+        };
+        "refgraph.NodeRef": {
+            id?: string;
+            type?: string;
+        };
         "revision.Revision": {
             blocks?: components["schemas"]["ast.Block"][];
             created_at?: string;
@@ -15965,22 +16407,22 @@ export interface components {
             editor_id?: string;
             id?: string;
         };
+        "semmap.BatchPointsRequest": {
+            ids: string[];
+        };
         "semmap.Bounds": {
             max?: number[];
             min?: number[];
         };
-        "semmap.Cluster": {
-            color?: string;
-            id?: number;
-            label?: string;
-            size?: number;
-        };
         "semmap.Layout": {
             bounds?: components["schemas"]["semmap.Bounds"];
-            clusters?: components["schemas"]["semmap.Cluster"][];
             dims?: number;
+            documents?: {
+                [key: string]: string;
+            };
             layout_version?: string;
             points?: components["schemas"]["semmap.Point"][];
+            tree?: components["schemas"]["semmap.TreeNode"][];
         };
         "semmap.MapStatus": {
             building?: boolean;
@@ -15992,11 +16434,36 @@ export interface components {
             ready?: boolean;
         };
         "semmap.Point": {
-            cluster?: number;
             coords?: number[];
+            /** @description parent document id (lens + overlay match key) */
+            doc?: string;
+            /** @description embeddings row id (stable within one layout generation) */
             id?: string;
-            /** @description "document" | "glossary" */
-            type?: string;
+            /** @description id of the leaf tree node this chunk belongs to */
+            node?: number;
+        };
+        "semmap.PointDetail": {
+            chunk_ord?: number;
+            doc?: string;
+            snippet?: string;
+        };
+        "semmap.TreeNode": {
+            /** @description 3D centroid for label PLACEMENT only (NOT the term-selection input — that is high-dim) */
+            centroid?: number[];
+            /** @description Phase B: always [] (depth-1) */
+            children?: components["schemas"]["semmap.TreeNode"][];
+            color?: string;
+            /**
+             * @description ID is the cluster index at the current (single) depth. Phase D (recursive
+             *     variable-depth tree) will require this to be GLOBALLY unique across all
+             *     depths — re-key it when nesting is introduced, do not assume it stays the
+             *     flat cluster index.
+             */
+            id?: number;
+            /** @description nearest glossary term by HIGH-DIM cosine (see labeler.go) */
+            label?: string;
+            /** @description chunk count in this node (subtree) */
+            size?: number;
         };
         "sharelink.CreateRequest": {
             expires_at?: string;

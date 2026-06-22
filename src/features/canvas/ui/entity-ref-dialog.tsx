@@ -5,7 +5,6 @@ import { useState } from "react";
 import { CanvasPicker } from "@/components/ast-editor/pickers/canvas-picker";
 import { DocumentPicker } from "@/components/ast-editor/pickers/document-picker";
 import { GlossaryPicker } from "@/components/ast-editor/pickers/glossary-picker";
-import { LecturePicker } from "@/components/ast-editor/pickers/lecture-picker";
 import { MediaPicker } from "@/components/ast-editor/pickers/media-picker";
 import { Dialog, Label, Select, TextInput, Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
@@ -13,7 +12,7 @@ import { useT } from "@/i18n/client";
 import type { CanvasRefEntityType } from "../types";
 
 /** Типы с готовым AsyncCombobox-пикером. Остальные — ручной ввод id. */
-const PICKER_TYPES = new Set(["document", "lecture", "glossary", "media", "canvas"]);
+const PICKER_TYPES = new Set(["document", "glossary", "media", "canvas"]);
 
 interface Props {
   open: boolean;
@@ -22,8 +21,8 @@ interface Props {
 }
 
 /**
- * Диалог создания entity_ref-узла. Для 5 типов с пикером (document/lecture/
- * glossary/media/canvas) показывает AsyncCombobox; для остальных — поле ручного
+ * Диалог создания entity_ref-узла. Для 4 типов с пикером (document/glossary/
+ * media/canvas) показывает AsyncCombobox; для остальных — поле ручного
  * ввода id. anchor не задаётся (вне MVP — entity_ref без anchor валиден для
  * всех типов). Бек проверит существование+видимость цели при сохранении.
  *
@@ -38,10 +37,9 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
 
   const usePicker = PICKER_TYPES.has(entityType);
 
-  /** Все 10 типов entity_ref (порядок UI). */
+  /** Все 9 типов entity_ref (порядок UI). */
   const entityTypes: { value: CanvasRefEntityType; label: string }[] = [
     { value: "document", label: t("entityRefDialog.typeDocument") },
-    { value: "lecture", label: t("entityRefDialog.typeLecture") },
     { value: "glossary", label: t("entityRefDialog.typeGlossary") },
     { value: "media", label: t("entityRefDialog.typeMedia") },
     { value: "canvas", label: t("entityRefDialog.typeCanvas") },
@@ -82,7 +80,6 @@ export function EntityRefDialog({ open, onClose, onConfirm }: Props) {
         {usePicker ? (
           <div className="entity-ref-picker">
             {entityType === "document" && <DocumentPicker onSelect={(id) => { pick(id); }} />}
-            {entityType === "lecture" && <LecturePicker onSelect={(id) => { pick(id); }} />}
             {entityType === "glossary" && <GlossaryPicker onSelect={(id) => { pick(id); }} />}
             {entityType === "media" && <MediaPicker onSelect={(id) => { pick(id); }} />}
             {entityType === "canvas" && <CanvasPicker onSelect={(id) => { pick(id); }} />}

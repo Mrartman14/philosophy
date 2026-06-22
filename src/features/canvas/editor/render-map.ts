@@ -12,7 +12,7 @@ import type { CanvasData } from "../types";
  */
 export function canvasDataToRenderData(data: CanvasData | undefined): RenderData {
   const nodes: RenderNode[] = (data?.nodes ?? []).flatMap((n) =>
-    n.id && n.type
+    n.id
       ? [
           {
             id: n.id,

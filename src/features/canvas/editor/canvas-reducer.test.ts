@@ -176,7 +176,6 @@ describe("edges", () => {
     s = canvasReducer(s, { type: "addEdge", fromNode: "n1", toNode: "n2" });
     const firstEdge = s.data.edges?.[0];
     if (firstEdge === undefined) throw new Error("edges пустой после addEdge");
-    if (firstEdge.id === undefined) throw new Error("id ребра не задан");
     const eid = firstEdge.id;
     s = canvasReducer(s, { type: "setEdgeLabel", edgeId: eid, label: "связь" });
     s = canvasReducer(s, { type: "setEdgeStyle", edgeId: eid, style: "dashed" });

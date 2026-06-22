@@ -165,12 +165,6 @@ export const fixtureNavMarks: AstBlock = {
   content: [
     {
       type: "text",
-      marks: [{ type: "lecture_ref", attrs: { id: "11111111-1111-1111-1111-111111111111" } }],
-      text: "лекция",
-    },
-    { type: "text", text: " " },
-    {
-      type: "text",
       marks: [{ type: "glossary_ref", attrs: { id: "22222222-2222-2222-2222-222222222222" } }],
       text: "термин",
     },
@@ -181,7 +175,7 @@ export const fixtureNavMarks: AstBlock = {
       text: "комментарий",
     },
   ],
-  text: "лекция термин комментарий",
+  text: "термин комментарий",
 };
 
 export const fixtureFullDocument: AstBlock[] = [

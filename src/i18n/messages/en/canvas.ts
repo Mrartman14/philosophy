@@ -110,7 +110,6 @@ const canvas: Messages["canvas"] = {
     idLabel: "Entity ID (UUID)",
     addButton: "Add",
     typeDocument: "Document",
-    typeLecture: "Lecture",
     typeGlossary: "Glossary",
     typeMedia: "Media",
     typeCanvas: "Canvas",
@@ -122,10 +121,9 @@ const canvas: Messages["canvas"] = {
   },
 
   // --- entity-ref labels (resolveEntityRefView; entity-reference node chip) ---
-  // 10 entity_ref types + fallback for an unknown type.
+  // 9 entity_ref types + fallback for an unknown type.
   entityType: {
     document: "Document",
-    lecture: "Lecture",
     media: "Media",
     comment: "Comment",
     glossary: "Glossary",
@@ -175,7 +173,6 @@ const canvas: Messages["canvas"] = {
     shapeNoKind: 'Shape "{id}" has no shape kind',
     entityRefNoType: 'Reference "{id}" has no entity type',
     entityRefNoId: 'Reference "{id}" has no entity id',
-    nodeUnknownType: 'Node "{id}": unknown type',
     edgeNoId: "Edge has no id",
     edgeFromNotFound: 'Edge "{id}": from_node not found',
     edgeToNotFound: 'Edge "{id}": to_node not found',

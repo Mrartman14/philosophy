@@ -71,7 +71,6 @@ const editor = {
 
   // --- Ref menu (ref-menu) ---
   insertRefDialogAriaLabel: "Вставить ссылку",
-  refCategoryLecture: "Лекция",
   refCategoryGlossary: "Термин",
   refCategoryDocument: "Документ",
   refCategoryMedia: "Медиа",

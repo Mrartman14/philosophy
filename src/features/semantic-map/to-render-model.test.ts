@@ -11,8 +11,8 @@ function baseData(overrides: Partial<MapData> = {}): MapData {
     layout_version: "v1",
     dims: 3,
     bounds: { min: [-1, -1, -1], max: [1, 1, 1] },
-    clusters: [{ id: 0, label: "A", color: "#ffffff", size: 1 }],
-    points: [{ type: "document", id: "x", coords: [0.5, -0.5, 0.25], cluster: 0 }],
+    tree: [{ id: 0, label: "A", color: "#ffffff", size: 1 }],
+    points: [{ id: "x", coords: [0.5, -0.5, 0.25], node: 0 }],
     ...overrides,
   };
 }
@@ -25,23 +25,8 @@ describe("toRenderModel", () => {
     expect(result.ids).toEqual(["x"]);
   });
 
-  it("неизвестный type сворачивается в слот other, не падает", () => {
-    const result = toRenderModel(
-      baseData({ points: [{ type: "podcast", id: "p", coords: [0, 0, 0], cluster: 0 }] }),
-    );
-    expect(result.typeTable).toContain("other");
-    // noUncheckedIndexedAccess: result.typeCodes[0] → number | undefined
-    const code = result.typeCodes[0];
-    expect(code).toBeDefined();
-    if (code !== undefined) {
-      expect(result.typeTable[code]).toBe("other");
-    }
-  });
-
-  it("отсутствие cluster.color → цвет из палитры (валидный RGB)", () => {
-    const result = toRenderModel(
-      baseData({ clusters: [{ id: 0, label: "A" }] }),
-    );
+  it("отсутствие tree-node.color → цвет из палитры (валидный RGB)", () => {
+    const result = toRenderModel(baseData({ tree: [{ id: 0, label: "A" }] }));
     expect(result.colors).toHaveLength(3);
     // noUncheckedIndexedAccess: result.colors[0] → number | undefined
     const r = result.colors[0];
@@ -55,11 +40,10 @@ describe("toRenderModel", () => {
 
   it("dims=2 → z обнуляется", () => {
     const result = toRenderModel(
-      baseData({ dims: 2, points: [{ type: "document", id: "y", coords: [0.1, 0.2], cluster: 0 }] }),
+      baseData({ dims: 2, points: [{ id: "y", coords: [0.1, 0.2], node: 0 }] }),
     );
     // positions — Float32Array: 0.1/0.2 НЕ точны в float32 → toBeCloseTo, не toEqual.
     const pos = Array.from(result.positions);
-    // noUncheckedIndexedAccess: pos[0] → number | undefined
     const x = pos[0];
     const y = pos[1];
     const z = pos[2];
@@ -75,10 +59,10 @@ describe("toRenderModel", () => {
     const m = toRenderModel({
       layout_version: "v1",
       dims: 3,
-      clusters: [{ id: 0, label: "A", size: 1 }],
+      tree: [{ id: 0, label: "A", size: 1 }],
       points: [
-        { type: "document", id: "a", coords: [-2, 0, 0], cluster: 0 },
-        { type: "document", id: "b", coords: [3, 1, -1], cluster: 0 },
+        { id: "a", coords: [-2, 0, 0], node: 0 },
+        { id: "b", coords: [3, 1, -1], node: 0 },
       ],
     });
     expect(m.bounds.min[0]).toBe(-2);
@@ -93,16 +77,27 @@ describe("toRenderModel", () => {
     expect(m.bounds.max).toEqual([1, 1, 1]);
   });
 
-  it("вычисляет центроид кластера", () => {
+  it("центроид: фоллбек на агрегат точек, если бэк не прислал TreeNode.centroid", () => {
     const result = toRenderModel(
       baseData({
+        tree: [{ id: 0, label: "A", size: 1 }],
         points: [
-          { type: "document", id: "a", coords: [0, 0, 0], cluster: 0 },
-          { type: "document", id: "b", coords: [2, 2, 2], cluster: 0 },
+          { id: "a", coords: [0, 0, 0], node: 0 },
+          { id: "b", coords: [2, 2, 2], node: 0 },
         ],
       }),
     );
     // noUncheckedIndexedAccess: result.clusters[0] → RenderCluster | undefined
     expect(result.clusters[0]?.centroid).toEqual([1, 1, 1]);
+  });
+
+  it("центроид берётся из TreeNode.centroid, когда передан (а не из агрегата точек)", () => {
+    const result = toRenderModel(
+      baseData({
+        tree: [{ id: 0, label: "A", centroid: [5, 5, 5] }],
+        points: [{ id: "a", coords: [0, 0, 0], node: 0 }],
+      }),
+    );
+    expect(result.clusters[0]?.centroid).toEqual([5, 5, 5]);
   });
 });

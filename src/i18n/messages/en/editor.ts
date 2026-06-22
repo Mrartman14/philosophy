@@ -71,7 +71,6 @@ const editor = {
 
   // --- Ref menu (ref-menu) ---
   insertRefDialogAriaLabel: "Insert reference",
-  refCategoryLecture: "Lecture",
   refCategoryGlossary: "Term",
   refCategoryDocument: "Document",
   refCategoryMedia: "Media",

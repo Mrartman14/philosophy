@@ -102,8 +102,6 @@ const errors = {
   // isErrorKey from treating it as a catalog key for all slices.
   // The lectures slice maps NOT_FOUND → LECTURE_NOT_FOUND in its ERRORS map.
   LECTURE_NOT_FOUND: "Lecture not found.",
-  LECTURE_REFERENCED:
-    "Other materials reference this lecture. Remove the references first.",
 
   // --- events slice: domain codes ---
   INVALID_DATE:

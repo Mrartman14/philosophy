@@ -35,7 +35,6 @@ export type GraphErrorKey =
   | "shapeNoKind"
   | "entityRefNoType"
   | "entityRefNoId"
-  | "nodeUnknownType"
   | "edgeNoId"
   | "edgeFromNotFound"
   | "edgeToNotFound"
@@ -86,11 +85,11 @@ export function validateGraph(data: CanvasData): GraphValidation {
     } else if (n.type === "shape") {
       if (!n.shape_kind) errors.push({ nodeId: n.id, messageKey: "shapeNoKind", params: { id: n.id } });
       if (n.text != null && n.text.length > MAX_NODE_TEXT) errors.push({ nodeId: n.id, messageKey: "nodeTextTooLong", params: { id: n.id } });
-    } else if (n.type === "entity_ref") {
+    } else {
+      // entity_ref — единственный оставшийся тип (canvas.Node.type — закрытый
+      // union text|shape|entity_ref после регена schema.ts).
       if (!n.entity_type) errors.push({ nodeId: n.id, messageKey: "entityRefNoType", params: { id: n.id } });
       if (!n.entity_id) errors.push({ nodeId: n.id, messageKey: "entityRefNoId", params: { id: n.id } });
-    } else {
-      errors.push({ nodeId: n.id, messageKey: "nodeUnknownType", params: { id: n.id } });
     }
   }
 

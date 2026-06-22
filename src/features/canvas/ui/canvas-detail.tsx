@@ -13,7 +13,7 @@ interface Props {
 /** Мапит CanvasData (schema-форма) в доменно-нейтральный RenderData. */
 function toRenderData(data: CanvasData | undefined): RenderData {
   const nodes: RenderNode[] = (data?.nodes ?? []).flatMap((n) =>
-    n.id && n.type
+    n.id
       ? [
           {
             id: n.id,

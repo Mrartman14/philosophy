@@ -37,7 +37,7 @@ vi.mock("./actions", () => ({
   searchCommentsByLecture: vi.fn(),
 }));
 
-const mocked = actions as unknown as { searchLectures: ReturnType<typeof vi.fn> };
+const mocked = actions as unknown as { searchGlossary: ReturnType<typeof vi.fn> };
 
 afterEach(() => {
   cleanup();
@@ -87,8 +87,8 @@ describe("AtMenu", () => {
     editor.destroy();
   });
 
-  it("открывается по '@', вставляет lecture_ref и удаляет маркер", async () => {
-    mocked.searchLectures.mockResolvedValue({
+  it("открывается по '@', вставляет glossary_ref и удаляет маркер", async () => {
+    mocked.searchGlossary.mockResolvedValue({
       data: [{ id: "l1", title: "L1" }],
       total: 1,
     });
@@ -102,13 +102,13 @@ describe("AtMenu", () => {
       await screen.findByRole("dialog", { name: /вставить ссылку/i }),
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Лекция" }));
+    fireEvent.click(screen.getByRole("button", { name: "Термин" }));
     fireEvent.mouseDown(await screen.findByText("L1"));
 
     // "@" удалён, вставлен label с mark.
     expect(editor.getText()).toBe("L1");
     const json = JSON.stringify(editor.getJSON());
-    expect(json).toContain('"type":"lecture_ref"');
+    expect(json).toContain('"type":"glossary_ref"');
     expect(json).toContain('"id":"l1"');
     // Состояние закрыто → меню скрыто (через transaction-listener, ждём React).
     await waitFor(() => { expect(screen.queryByRole("dialog")).toBeNull(); });

@@ -20,7 +20,7 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
   const [open, setOpen] = useState(false);
 
   // Show only if at least one nav-ref mark is registered.
-  if (!schema.marks.has("lecture_ref")) return null;
+  if (!schema.marks.has("glossary_ref")) return null;
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
