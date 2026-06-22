@@ -7,8 +7,9 @@ import type { MapPointDetail } from "../types";
 
 /**
  * Overlay-карточка деталей точки-чанка. Заголовок берём из MapData.documents
- * (ручка деталей заголовок не отдаёт), snippet рендерим как ТЕКСТ (React
- * экранирует — см. бэк-аск про markup; до подтверждения plaintext-only).
+ * (id документа → заголовок; ручка деталей заголовок не отдаёт). snippet —
+ * plaintext ≤1000 рун (подтверждено бэком 2026-06-22), рендерим как ТЕКСТ
+ * (React экранирует); визуальный line-clamp ниже, без FE-обрезки.
  */
 export function MapPointPanel({
   detail,
