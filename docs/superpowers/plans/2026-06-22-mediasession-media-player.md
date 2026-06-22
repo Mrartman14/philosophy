@@ -133,7 +133,7 @@ describe("useMediaSession", () => {
 
   it("ставит metadata из meta", () => {
     const el = new FakeMediaElement();
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     expect((ms.metadata as FakeMediaMetadata).title).toBe("Бытие и время");
     expect((ms.metadata as FakeMediaMetadata).artist).toBe("Философия ликбез");
     expect((ms.metadata as FakeMediaMetadata).artwork.length).toBeGreaterThan(0);
@@ -141,7 +141,7 @@ describe("useMediaSession", () => {
 
   it("регистрирует play/pause/seek*, но НЕ previoustrack/nexttrack", () => {
     const el = new FakeMediaElement();
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     for (const a of ["play", "pause", "seekbackward", "seekforward", "seekto"]) {
       expect(ms.handlers.has(a)).toBe(true);
     }
@@ -151,7 +151,7 @@ describe("useMediaSession", () => {
 
   it("play/pause действия проксируются на элемент", () => {
     const el = new FakeMediaElement();
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     ms.invoke("play");
     expect(el.play).toHaveBeenCalledTimes(1);
     ms.invoke("pause");
@@ -161,7 +161,7 @@ describe("useMediaSession", () => {
   it("seekbackward/seekforward сдвигают currentTime с клампом", () => {
     const el = new FakeMediaElement();
     el.currentTime = 30;
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     ms.invoke("seekbackward", { seekOffset: 10 });
     expect(el.currentTime).toBe(20);
     el.currentTime = 5;
@@ -174,7 +174,7 @@ describe("useMediaSession", () => {
 
   it("seekto: с fastSeek и без", () => {
     const el = new FakeMediaElement();
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     ms.invoke("seekto", { seekTime: 42 });
     expect(el.currentTime).toBe(42);
     ms.invoke("seekto", { seekTime: 60, fastSeek: true });
@@ -183,7 +183,7 @@ describe("useMediaSession", () => {
 
   it("playbackState следует за событиями элемента", () => {
     const el = new FakeMediaElement();
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     el.emit("play");
     expect(ms.playbackState).toBe("playing");
     el.emit("pause");
@@ -193,7 +193,7 @@ describe("useMediaSession", () => {
   it("setPositionState вызывается при конечной длительности", () => {
     const el = new FakeMediaElement();
     el.currentTime = 12;
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     el.emit("loadedmetadata");
     expect(ms.setPositionState).toHaveBeenCalledWith(
       expect.objectContaining({ duration: 100, position: 12 }),
@@ -203,14 +203,14 @@ describe("useMediaSession", () => {
   it("setPositionState пропускается при бесконечной длительности (стрим)", () => {
     const el = new FakeMediaElement();
     el.duration = Infinity;
-    renderHook(() => useMediaSession(refFor(el), META));
+    renderHook(() => { useMediaSession(refFor(el), META); });
     el.emit("timeupdate");
     expect(ms.setPositionState).not.toHaveBeenCalled();
   });
 
   it("unmount снимает хендлеры и сбрасывает metadata", () => {
     const el = new FakeMediaElement();
-    const { unmount } = renderHook(() => useMediaSession(refFor(el), META));
+    const { unmount } = renderHook(() => { useMediaSession(refFor(el), META); });
     unmount();
     for (const a of ["play", "pause", "seekbackward", "seekforward", "seekto"]) {
       expect(ms.handlers.get(a)).toBeNull();
@@ -223,7 +223,7 @@ describe("useMediaSession", () => {
     Reflect.deleteProperty(navigator as object, "mediaSession");
     const el = new FakeMediaElement();
     expect(() => {
-      renderHook(() => useMediaSession(refFor(el), META));
+      renderHook(() => { useMediaSession(refFor(el), META); });
     }).not.toThrow();
   });
 });
@@ -239,10 +239,9 @@ Expected: FAIL — `Failed to resolve import "./use-media-session"` (файла 
 Create `src/features/media/ui/use-media-session.ts`:
 
 ```ts
+"use client";
 // src/features/media/ui/use-media-session.ts
-import { useEffect } from "react";
-
-import type { RefObject } from "react";
+import { useEffect, type RefObject } from "react";
 
 export interface MediaSessionMeta {
   title: string;
@@ -272,7 +271,11 @@ export function useMediaSession(
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) {
+    if (
+      typeof navigator === "undefined" ||
+      !("mediaSession" in navigator) ||
+      typeof MediaMetadata === "undefined"
+    ) {
       return;
     }
     const ms = navigator.mediaSession;
@@ -309,8 +312,20 @@ export function useMediaSession(
     el.addEventListener("pause", onPause);
 
     const actions: [MediaSessionAction, MediaSessionActionHandler][] = [
-      ["play", () => void el.play()],
-      ["pause", () => el.pause()],
+      [
+        "play",
+        () => {
+          // play() из обработчика ОС может отклониться (autoplay-политика,
+          // прерванный load) — гасим, чтобы не было unhandled rejection.
+          el.play().catch(() => {});
+        },
+      ],
+      [
+        "pause",
+        () => {
+          el.pause();
+        },
+      ],
       [
         "seekbackward",
         (d) => {
@@ -457,7 +472,7 @@ describe("useResumePlayback", () => {
   it("возобновляет сохранённую позицию на loadedmetadata", () => {
     localStorage.setItem(KEY, "42");
     const el = new FakeMediaElement();
-    renderHook(() => useResumePlayback(refFor(el), "m1"));
+    renderHook(() => { useResumePlayback(refFor(el), "m1"); });
     el.emit("loadedmetadata");
     expect(el.currentTime).toBe(42);
   });
@@ -465,7 +480,7 @@ describe("useResumePlayback", () => {
   it("не возобновляет, если позиция < 5с (почти начало)", () => {
     localStorage.setItem(KEY, "3");
     const el = new FakeMediaElement();
-    renderHook(() => useResumePlayback(refFor(el), "m1"));
+    renderHook(() => { useResumePlayback(refFor(el), "m1"); });
     el.emit("loadedmetadata");
     expect(el.currentTime).toBe(0);
   });
@@ -473,7 +488,7 @@ describe("useResumePlayback", () => {
   it("не возобновляет у самого конца (> duration − 5с)", () => {
     localStorage.setItem(KEY, "98"); // duration=100
     const el = new FakeMediaElement();
-    renderHook(() => useResumePlayback(refFor(el), "m1"));
+    renderHook(() => { useResumePlayback(refFor(el), "m1"); });
     el.emit("loadedmetadata");
     expect(el.currentTime).toBe(0);
   });
@@ -481,7 +496,7 @@ describe("useResumePlayback", () => {
   it("пишет позицию на timeupdate с троттлингом", () => {
     vi.useFakeTimers();
     const el = new FakeMediaElement();
-    renderHook(() => useResumePlayback(refFor(el), "m1"));
+    renderHook(() => { useResumePlayback(refFor(el), "m1"); });
 
     el.currentTime = 10;
     el.emit("timeupdate");
@@ -500,21 +515,33 @@ describe("useResumePlayback", () => {
   it("очищает ключ на ended", () => {
     localStorage.setItem(KEY, "42");
     const el = new FakeMediaElement();
-    renderHook(() => useResumePlayback(refFor(el), "m1"));
+    renderHook(() => { useResumePlayback(refFor(el), "m1"); });
     el.emit("ended");
     expect(localStorage.getItem(KEY)).toBeNull();
   });
 
-  it("недоступный localStorage — тихий no-op без ошибок", () => {
+  it("недоступная ЗАПИСЬ localStorage — тихий no-op без ошибок", () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("quota");
     });
     const el = new FakeMediaElement();
     el.currentTime = 10;
     expect(() => {
-      renderHook(() => useResumePlayback(refFor(el), "m1"));
+      renderHook(() => { useResumePlayback(refFor(el), "m1"); });
       el.emit("timeupdate");
     }).not.toThrow();
+  });
+
+  it("недоступное ЧТЕНИЕ localStorage — без ошибок, позиция не двигается", () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("denied");
+    });
+    const el = new FakeMediaElement();
+    expect(() => {
+      renderHook(() => { useResumePlayback(refFor(el), "m1"); });
+      el.emit("loadedmetadata");
+    }).not.toThrow();
+    expect(el.currentTime).toBe(0);
   });
 });
 ```
@@ -529,10 +556,9 @@ Expected: FAIL — `Failed to resolve import "./use-resume-playback"`.
 Create `src/features/media/ui/use-resume-playback.ts`:
 
 ```ts
+"use client";
 // src/features/media/ui/use-resume-playback.ts
-import { useEffect } from "react";
-
-import type { RefObject } from "react";
+import { useEffect, type RefObject } from "react";
 
 const KEY_PREFIX = "media-resume:";
 /** Не возобновляем, если сохранённая позиция меньше — почти начало. */
@@ -644,7 +670,7 @@ EOF
 
 **Files:**
 - Modify: `src/features/media/ui/media-player.tsx`
-- Modify: `src/features/media/ui/media-detail.tsx:53` (вызов `<MediaPlayer>`)
+- Modify: `src/features/media/ui/media-detail.tsx` (вызов `<MediaPlayer>` — однострочный блок `{media.url ? ( … )}`; номер строки не указываю, хрупко при параллельных правках)
 - Modify: `src/i18n/messages/ru/media.ts`
 - Modify: `src/i18n/messages/en/media.ts`
 - Test: `src/features/media/ui/media-player.test.tsx`
@@ -704,8 +730,10 @@ class FakeMediaSession {
 }
 class FakeMediaMetadata {
   title: string;
-  constructor(init: { title?: string }) {
+  artist: string;
+  constructor(init: { title?: string; artist?: string }) {
     this.title = init.title ?? "";
+    this.artist = init.artist ?? "";
   }
 }
 
@@ -726,8 +754,8 @@ afterEach(() => {
 });
 
 describe("MediaPlayer + mediaSession", () => {
-  it("audio: рендерит <audio> и ставит metadata.title без расширения", () => {
-    const { container } = render(
+  it("audio: рендерит <audio>, ставит title без расширения и artist из i18n", () => {
+    render(
       <MediaPlayer
         url="https://x/a.mp3"
         type="audio"
@@ -735,12 +763,18 @@ describe("MediaPlayer + mediaSession", () => {
         mediaId="m1"
       />,
     );
-    expect(container.querySelector("audio")).not.toBeNull();
+    // RTL-query вместо container.querySelector (testing-library/no-container,
+    // no-node-access — error для media-тестов). aria-label у элемента = filename.
+    const el = screen.getByLabelText("Бытие и время.mp3");
+    expect(el).toBeInstanceOf(HTMLAudioElement);
     expect((ms.metadata as FakeMediaMetadata).title).toBe("Бытие и время");
+    // artist = t("playerArtist"); мок i18n возвращает ключ — доказывает, что
+    // MediaPlayer пробрасывает i18n-строку (привязка к Task 3 Step 1).
+    expect((ms.metadata as FakeMediaMetadata).artist).toBe("playerArtist");
   });
 
   it("video: рендерит <video>", () => {
-    const { container } = render(
+    render(
       <MediaPlayer
         url="https://x/v.mp4"
         type="video"
@@ -748,7 +782,8 @@ describe("MediaPlayer + mediaSession", () => {
         mediaId="m2"
       />,
     );
-    expect(container.querySelector("video")).not.toBeNull();
+    const el = screen.getByLabelText("lecture-1.mp4");
+    expect(el).toBeInstanceOf(HTMLVideoElement);
     expect((ms.metadata as FakeMediaMetadata).title).toBe("lecture-1");
   });
 
@@ -766,7 +801,7 @@ describe("MediaPlayer + mediaSession", () => {
 - [ ] **Step 3: Запустить тест — убедиться, что падает**
 
 Run: `pnpm exec vitest run src/features/media/ui/media-player.test.tsx`
-Expected: FAIL — `MediaPlayer` ещё не принимает `mediaId` и не выставляет `metadata` (title будет пустой / проп-ошибка типов в рантайме отсутствует, но assert на title упадёт).
+Expected: FAIL — текущий `MediaPlayer` (baseline) не трогает `navigator.mediaSession`, поэтому `ms.metadata === null`, и `(ms.metadata as FakeMediaMetadata).title` бросает `TypeError: Cannot read properties of null (reading 'title')` ещё до сравнения. Это и есть честный red-сигнал.
 
 - [ ] **Step 4: Переписать `MediaPlayer`**
 
@@ -826,6 +861,7 @@ export function MediaPlayer({ url, type, filename, mediaId }: MediaPlayerProps) 
         controls
         preload="metadata"
         className="w-full max-h-[70vh] rounded bg-black"
+        aria-label={filename}
       >
         <source src={url} />
         <track kind="captions" />
@@ -904,3 +940,8 @@ Expected: всё зелёное. Если `pnpm test` ругается на cove
   - Перемотать, уйти со страницы и вернуться, нажать play → воспроизведение возобновляется с сохранённой позиции (не у конца, не у самого начала).
   - Проверить видео аналогично.
   - Браузер без mediaSession (или приватный режим для localStorage) → плеер работает как раньше, без ошибок в консоли.
+
+- [ ] **Выдать пользователю бек-аски** (правило AGENTS.md «флаговать корень»). Три временных FE-стопгапа, которые снимутся, когда бек выровняет контракт (детали — в спеке, секция «Бек-аски»):
+  1. человекочитаемый `title` для медиа отдельно от `filename` (сейчас на локскрин идёт `filename` без расширения);
+  2. `poster`/`artwork` медиа (сейчас фолбэк — иконка приложения из манифеста);
+  3. серверная позиция воспроизведения (resume) — сейчас держим в `localStorage`; при появлении эндпоинта убрать `useResumePlayback`-стопгап и синхронизировать между устройствами.
