@@ -196,7 +196,7 @@ export function CreateEntityForm() {
   return (
     <Form action={action} errors={errors(state)}>
       <Field name="title" label="Заголовок" required>
-        <TextInput name={f("title")} />
+        <TextInput />
       </Field>
       <SubmitButton>Создать</SubmitButton>
     </Form>
@@ -213,6 +213,17 @@ required-ключей. Required-enforcement действует только на
 через `f()` (контекстные/инфра-поля) ему не подчиняются, by design. Поля вне схемы
 (контекстный `lecture_id`, инфра-инпуты) — raw-строкой `name="…"`. Динамические формы
 (`forms/**` builder/fill) — рантайм-острова, слой не применяется к их внутренним полям.
+
+`name` пишется ОДИН раз — на `<Field>` (= Base UI `Field.Root`); контролы
+(`TextInput`/`Textarea`/`ColorInput`/`Select`/`Checkbox`) наследуют его из контекста
+(Base UI `fieldName ?? nameProp`). `f("…")` нужен только для hidden-инпутов
+(`idempotency`, JSON-острова), кастом-виджетов (AST-редактор) и standalone-контролов
+вне `<Field>`. `aria-label` на контроле внутри `<Field>` избыточен — `Field.Label`
+именует его через `aria-labelledby` (перебивает `aria-label`); не дублируй.
+Перевод текстовых контролов на `Field.Control` попутно включает native-проводку:
+`data-invalid` рамка, `aria-invalid`/`aria-describedby`, focus-on-error, `clearErrors`
+при вводе (серверная валидация при этом не трогается — `Field.Root.validate` не задаём;
+кастом-виджеты вроде AST-редактора в фокус-цикл не входят — нет зарегистрированного контрола).
 
 `Form` из `@/components/ui` оборачивает Base UI `Form` и принимает
 `errors: Record<string, string>` (Base UI допускает `string | string[]`,
