@@ -1,6 +1,7 @@
 // src/features/banners/ui/banner-admin-row.tsx
 import { RouterLink } from "@/components/ui";
 import { getT, getLocale } from "@/i18n";
+import { getServerTz } from "@/utils/timezone-server";
 
 import {
   bannerPreviewText,
@@ -19,7 +20,11 @@ interface Props {
 }
 
 export async function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
-  const [t, locale] = await Promise.all([getT("banners"), getLocale()]);
+  const [t, locale, tz] = await Promise.all([
+    getT("banners"),
+    getLocale(),
+    getServerTz(),
+  ]);
   const preview = bannerPreviewText(banner.blocks);
   return (
     <li className="flex items-center justify-between gap-4 py-2">
@@ -34,7 +39,7 @@ export async function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
             {preview || t("noText")}
           </span>
           <span className="text-xs text-(--color-fg-muted)">
-            {formatBannerPeriod(banner.start_at, banner.end_at, locale, t)}
+            {formatBannerPeriod(banner.start_at, banner.end_at, locale, t, tz)}
             {` · ${audienceLabel(banner.target_audience, t)}`}
             {banner.dismissible === false ? t("notDismissible") : ""}
             {banner.event_id ? t("hasEvent") : ""}

@@ -16,6 +16,7 @@ import { getMe } from "@/utils/me";
 import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
+import { getServerTz } from "@/utils/timezone-server";
 
 import { canCreateEvent, canUpdateEvent, canDeleteEvent } from "./permissions";
 import {
@@ -39,7 +40,8 @@ export const createEvent = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateEvent);
   const t = await getT("validation");
-  const input = parseFormData(makeEventCreateSchema(t), formData);
+  const tz = await getServerTz();
+  const input = parseFormData(makeEventCreateSchema(t, tz), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/events", {
     body: {
@@ -66,7 +68,8 @@ export const updateEvent = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateEvent);
   const t = await getT("validation");
-  const input = parseFormData(makeEventUpdateSchema(t), formData);
+  const tz = await getServerTz();
+  const input = parseFormData(makeEventUpdateSchema(t, tz), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/events/{id}", {
     params: {

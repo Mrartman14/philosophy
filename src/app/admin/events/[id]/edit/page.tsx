@@ -16,6 +16,7 @@ import {
 } from "@/features/events";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
+import { getServerTz } from "@/utils/timezone-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT("admin");
@@ -42,6 +43,7 @@ export default async function AdminEventEditPage({
   if (!event) notFound();
 
   const astSchema = canUpdate ? await getAstSchema() : null;
+  const tz = await getServerTz();
 
   return (
     <section className="flex flex-col gap-8">
@@ -52,7 +54,7 @@ export default async function AdminEventEditPage({
 
       {canUpdate && (
         <SchemaContextProvider initial={astSchema ?? undefined}>
-          <EventEditForm event={event} />
+          <EventEditForm event={event} tz={tz} />
         </SchemaContextProvider>
       )}
 

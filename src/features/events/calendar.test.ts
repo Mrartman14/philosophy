@@ -92,6 +92,13 @@ describe("formatEventDate", () => {
     expect(formatEventDate("2026-07-01T19:00:00Z", false)).toMatch(/19:00/);
   });
 
+  it("timed: время локализуется под зону админа", () => {
+    // 19:00Z = 22:00 МСК (UTC+3).
+    expect(
+      formatEventDate("2026-07-01T19:00:00Z", false, "ru", "Europe/Moscow"),
+    ).toContain("22:00");
+  });
+
   it("пустое значение → пустая строка", () => {
     expect(formatEventDate(undefined, true)).toBe("");
   });

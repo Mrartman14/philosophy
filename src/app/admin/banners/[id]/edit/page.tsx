@@ -17,6 +17,7 @@ import {
 } from "@/features/banners";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
+import { getServerTz } from "@/utils/timezone-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT("admin");
@@ -43,6 +44,7 @@ export default async function AdminBannerEditPage({
   if (!banner) notFound();
 
   const astSchema = canUpdate ? await getAstSchema() : null;
+  const tz = await getServerTz();
 
   const t = await getT("admin");
 
@@ -57,7 +59,7 @@ export default async function AdminBannerEditPage({
 
       {canUpdate && (
         <SchemaContextProvider initial={astSchema ?? undefined}>
-          <BannerEditForm banner={banner} />
+          <BannerEditForm banner={banner} tz={tz} />
         </SchemaContextProvider>
       )}
 

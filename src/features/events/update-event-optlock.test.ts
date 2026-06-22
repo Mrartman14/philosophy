@@ -18,6 +18,12 @@ vi.mock("./permissions", () => ({
   canDeleteEvent: () => true,
 }));
 vi.mock("@/utils/revalidate", () => ({ revalidateEntity: vi.fn() }));
+// getServerTz зовёт cookies() (next/headers) — вне request scope падает; в action
+// нужна только зона для нормализации wall-clock. all_day-ветка её всё равно не
+// использует, поэтому фиксированный UTC-стаб достаточен.
+vi.mock("@/utils/timezone-server", () => ({
+  getServerTz: () => Promise.resolve("UTC"),
+}));
 // getT("validation") используется в action для сборки схемы; в тестах возвращаем
 // identity-stub (ключ → ключ), что достаточно для проверки поведения.
 // resolveErrorMessage подхватывает реальную реализацию (деградирует к DEFAULT_LOCALE).

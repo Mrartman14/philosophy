@@ -106,20 +106,22 @@ export function formatEventDate(
   value?: string,
   allDay?: boolean,
   locale: ResolvedLocale = "ru",
+  tz = "UTC",
 ): string {
   if (!value) return "";
   const date = new Date(allDay ? `${value}T00:00:00Z` : value);
   if (Number.isNaN(date.getTime())) return value;
   const fmt = getFmt(locale);
   const opts: Intl.DateTimeFormatOptions = allDay
-    ? { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }
+    ? // all_day — date-only: локализация под зону сдвинула бы день, держим UTC.
+      { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }
     : {
         day: "numeric",
         month: "long",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        timeZone: "UTC",
+        timeZone: tz,
       };
   return fmt.dateTime(date, opts);
 }

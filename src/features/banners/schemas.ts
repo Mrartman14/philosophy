@@ -5,7 +5,7 @@ import { z } from "zod";
 import { BANNER_TARGET_AUDIENCES } from "@/api/enums";
 import type { NamespaceT } from "@/i18n";
 import { blocksJsonField } from "@/utils/blocks-json";
-import { toRfc3339 } from "@/utils/datetime-form";
+import { wallClockToRfc3339 } from "@/utils/datetime-form";
 
 /** Регекс бекенда (internal/banner/service.go hexColorRe) — повторяем 1:1. */
 const HEX_COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
@@ -48,13 +48,13 @@ interface BannerInputCommon {
   event_id?: string | undefined;
 }
 
-function normalizeFields(raw: BannerFieldsRaw) {
+function normalizeFields(raw: BannerFieldsRaw, tz: string) {
   return {
     background_color: raw.background_color,
     target_audience: raw.target_audience,
     dismissible: raw.dismissible === "true",
-    start_at: toRfc3339(raw.start_at),
-    end_at: raw.end_at ? toRfc3339(raw.end_at) : undefined,
+    start_at: wallClockToRfc3339(raw.start_at, tz),
+    end_at: raw.end_at ? wallClockToRfc3339(raw.end_at, tz) : undefined,
     // Пустую строку сохраняем: в Update она означает «отвязать событие»
     // (repo.Update бекенда: "" → SQL NULL). Create отбрасывает её в transform.
     event_id: raw.event_id ?? "",
@@ -100,17 +100,17 @@ function makeValidateFields(t: ValidationT) {
   };
 }
 
-export function makeBannerCreateSchema(t: ValidationT) {
+export function makeBannerCreateSchema(t: ValidationT, tz = "UTC") {
   return makeBannerFieldsSchema(t)
     .transform((raw) => {
-      const v = normalizeFields(raw);
+      const v = normalizeFields(raw, tz);
       // В Create пустая привязка просто не отправляется.
       return { ...v, event_id: v.event_id || undefined };
     })
     .superRefine(makeValidateFields(t));
 }
 
-export function makeBannerUpdateSchema(t: ValidationT) {
+export function makeBannerUpdateSchema(t: ValidationT, tz = "UTC") {
   const BlocksJsonSchema = blocksJsonField({
     allowEmpty: true,
     messages: {
@@ -125,7 +125,7 @@ export function makeBannerUpdateSchema(t: ValidationT) {
       blocks: BlocksJsonSchema,
     })
     .transform((raw) => ({
-      ...normalizeFields(raw),
+      ...normalizeFields(raw, tz),
       id: raw.id,
       blocks: raw.blocks,
     }))

@@ -46,24 +46,24 @@ export function audienceOptions(t?: AudienceLabelT): { value: BannerTargetAudien
   return AUDIENCE_VALUES.map((value) => ({ value, label: audienceLabel(value, t) }));
 }
 
-const BANNER_DATE_OPTS: Intl.DateTimeFormatOptions = {
+const BANNER_DATE_OPTS: Omit<Intl.DateTimeFormatOptions, "timeZone"> = {
   day: "numeric",
   month: "long",
   year: "numeric",
   hour: "2-digit",
   minute: "2-digit",
-  timeZone: "UTC",
 };
 
-/** RFC3339 → «1 июля 2026 г., 19:00» (UTC — как и формы). */
+/** RFC3339 → «1 июля 2026 г., 19:00» в зоне `tz` (как и формы). */
 export function formatBannerDate(
   value?: string,
   locale: ResolvedLocale = DEFAULT_LOCALE,
+  tz = "UTC",
 ): string {
   if (!value) return "";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
-  return getFmt(locale).dateTime(d, BANNER_DATE_OPTS);
+  return getFmt(locale).dateTime(d, { ...BANNER_DATE_OPTS, timeZone: tz });
 }
 
 /**
@@ -82,10 +82,11 @@ export function formatBannerPeriod(
   endAt?: string,
   locale: ResolvedLocale = DEFAULT_LOCALE,
   t?: BannerPeriodT,
+  tz = "UTC",
 ): string {
-  const start = formatBannerDate(startAt, locale);
+  const start = formatBannerDate(startAt, locale, tz);
   if (!start) return "";
-  const end = formatBannerDate(endAt, locale);
+  const end = formatBannerDate(endAt, locale, tz);
   if (t) {
     return end ? t("periodFromTo", { start, end }) : t("periodFrom", { start });
   }

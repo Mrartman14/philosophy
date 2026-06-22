@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import type { NamespaceT } from "@/i18n";
 import { blocksJsonField } from "@/utils/blocks-json";
-import { toRfc3339, DATE_ONLY as DATE_ONLY_RE } from "@/utils/datetime-form";
+import { wallClockToRfc3339, DATE_ONLY as DATE_ONLY_RE } from "@/utils/datetime-form";
 
 type ValidationT = NamespaceT<"validation">;
 
@@ -25,17 +25,17 @@ function makeEventFieldsSchema(t: ValidationT) {
 
 type EventFieldsRaw = z.infer<ReturnType<typeof makeEventFieldsSchema>>;
 
-function normalizeFields(raw: EventFieldsRaw) {
+function normalizeFields(raw: EventFieldsRaw, tz: string) {
   const allDay = raw.all_day !== undefined;
   return {
     title: raw.title,
     all_day: allDay,
-    start_date: allDay ? raw.start_date : toRfc3339(raw.start_date),
+    start_date: allDay ? raw.start_date : wallClockToRfc3339(raw.start_date, tz),
     end_date: !raw.end_date
       ? undefined
       : allDay
         ? raw.end_date
-        : toRfc3339(raw.end_date),
+        : wallClockToRfc3339(raw.end_date, tz),
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- пустая строка "" трактуется как «не задано» (form trim + optional), ?? оставил бы "" как валидное значение
     rrule: raw.rrule ? raw.rrule : undefined,
   };
@@ -95,13 +95,13 @@ function makeValidateFields(t: ValidationT) {
   };
 }
 
-export function makeEventCreateSchema(t: ValidationT) {
+export function makeEventCreateSchema(t: ValidationT, tz = "UTC") {
   return makeEventFieldsSchema(t)
-    .transform(normalizeFields)
+    .transform((raw) => normalizeFields(raw, tz))
     .superRefine(makeValidateFields(t));
 }
 
-export function makeEventUpdateSchema(t: ValidationT) {
+export function makeEventUpdateSchema(t: ValidationT, tz = "UTC") {
   const BlocksJsonSchema = blocksJsonField({
     allowEmpty: true,
     messages: {
@@ -116,7 +116,7 @@ export function makeEventUpdateSchema(t: ValidationT) {
       blocks: BlocksJsonSchema,
     })
     .transform((raw) => ({
-      ...normalizeFields(raw),
+      ...normalizeFields(raw, tz),
       id: raw.id,
       blocks: raw.blocks,
     }))

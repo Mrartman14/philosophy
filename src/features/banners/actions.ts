@@ -20,6 +20,7 @@ import { getMe } from "@/utils/me";
 import { ifMatchHeader } from "@/utils/optimistic-lock";
 import { requireCapability } from "@/utils/permissions";
 import { revalidateEntity } from "@/utils/revalidate";
+import { getServerTz } from "@/utils/timezone-server";
 
 import {
   canCreateBanner,
@@ -50,7 +51,8 @@ export const createBanner = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canCreateBanner);
   const t = await getT("validation");
-  const input = parseFormData(makeBannerCreateSchema(t), formData);
+  const tz = await getServerTz();
+  const input = parseFormData(makeBannerCreateSchema(t, tz), formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/banners", {
     body: {
@@ -78,7 +80,8 @@ export const updateBanner = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   requireCapability(me, canUpdateBanner);
   const t = await getT("validation");
-  const input = parseFormData(makeBannerUpdateSchema(t), formData);
+  const tz = await getServerTz();
+  const input = parseFormData(makeBannerUpdateSchema(t, tz), formData);
   const api = await createApiClient();
   const { data, error } = await api.PUT("/api/admin/banners/{id}", {
     params: {
