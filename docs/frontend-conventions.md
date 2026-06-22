@@ -172,7 +172,7 @@ export const createComment = createFormAction(async (formData) => {
 → `ForbiddenError("role")`), account-код `SUSPENDED` → `ForbiddenError("status")`,
 422 field-ошибки → `ZodValidationError`, дефолтные ключи общих кодов
 (`REF_NOT_FOUND`, `BLOCKS_HAVE_ANCHORS`, optlock/idempotency/413 — в
-`DEFAULT_MESSAGES`), и фоллбек `err.error` → `ApiMessageError("serverError")`.
+`DEFAULT_MESSAGES`), и фоллбек: текст бэка `err.error` (если есть) → `Error(err.error)`, иначе `ApiMessageError("serverError")`.
 Новый общий код добавляется в `DEFAULT_MESSAGES` ОДНОЙ строкой, а не копипастой по
 слайсам. Тип ключа (код бека) — сгенерированный union `ApiErrorCode` (drift-guard:
 удалённый на беке код краснеет после regen). Если у слайса есть распознавание

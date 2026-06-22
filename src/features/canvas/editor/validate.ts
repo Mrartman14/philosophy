@@ -35,6 +35,7 @@ export type GraphErrorKey =
   | "shapeNoKind"
   | "entityRefNoType"
   | "entityRefNoId"
+  | "nodeUnknownType"
   | "edgeNoId"
   | "edgeFromNotFound"
   | "edgeToNotFound"
@@ -44,6 +45,10 @@ export interface GraphValidation {
   ok: boolean;
   errors: GraphError[];
 }
+
+/** Известные типы узлов. Закрытый union в TS — это КОНТРАКТ, НЕ рантайм-гарантия:
+ * валидатор-зеркало обязан ловить дрейф-тип с бэка, а не молча трактовать его. */
+const KNOWN_NODE_TYPES = new Set<string>(["text", "shape", "entity_ref"]);
 
 /**
  * Клиентская структурная валидация графа — зеркало philosophy-api
@@ -79,15 +84,18 @@ export function validateGraph(data: CanvasData): GraphValidation {
       errors.push({ nodeId: n.id, messageKey: "nodeSizePositive", params: { id: n.id } });
     }
 
-    if (n.type === "text") {
+    if (!KNOWN_NODE_TYPES.has(n.type)) {
+      // Неизвестный тип = дрейф контракта бэка (closed union в TS его
+      // рантайм-невозможным НЕ делает). Ловим явно, не маскируя под entity_ref.
+      errors.push({ nodeId: n.id, messageKey: "nodeUnknownType", params: { id: n.id } });
+    } else if (n.type === "text") {
       if (n.text == null) errors.push({ nodeId: n.id, messageKey: "textNodeNoText", params: { id: n.id } });
       else if (n.text.length > MAX_NODE_TEXT) errors.push({ nodeId: n.id, messageKey: "nodeTextTooLong", params: { id: n.id } });
     } else if (n.type === "shape") {
       if (!n.shape_kind) errors.push({ nodeId: n.id, messageKey: "shapeNoKind", params: { id: n.id } });
       if (n.text != null && n.text.length > MAX_NODE_TEXT) errors.push({ nodeId: n.id, messageKey: "nodeTextTooLong", params: { id: n.id } });
     } else {
-      // entity_ref — единственный оставшийся тип (canvas.Node.type — закрытый
-      // union text|shape|entity_ref после регена schema.ts).
+      // entity_ref
       if (!n.entity_type) errors.push({ nodeId: n.id, messageKey: "entityRefNoType", params: { id: n.id } });
       if (!n.entity_id) errors.push({ nodeId: n.id, messageKey: "entityRefNoId", params: { id: n.id } });
     }

@@ -173,6 +173,7 @@ const canvas: Messages["canvas"] = {
     shapeNoKind: 'Shape "{id}" has no shape kind',
     entityRefNoType: 'Reference "{id}" has no entity type',
     entityRefNoId: 'Reference "{id}" has no entity id',
+    nodeUnknownType: 'Node "{id}": unknown type',
     edgeNoId: "Edge has no id",
     edgeFromNotFound: 'Edge "{id}": from_node not found',
     edgeToNotFound: 'Edge "{id}": to_node not found',

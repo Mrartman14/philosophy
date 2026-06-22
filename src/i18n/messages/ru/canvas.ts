@@ -172,6 +172,7 @@ const canvas = {
     shapeNoKind: 'Фигура "{id}" без типа фигуры',
     entityRefNoType: 'Ссылка "{id}" без типа сущности',
     entityRefNoId: 'Ссылка "{id}" без id сущности',
+    nodeUnknownType: 'Узел "{id}": неизвестный тип',
     edgeNoId: "У ребра нет id",
     edgeFromNotFound: 'Ребро "{id}": from_node не найден',
     edgeToNotFound: 'Ребро "{id}": to_node не найден',

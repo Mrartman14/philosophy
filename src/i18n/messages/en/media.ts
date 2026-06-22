@@ -39,16 +39,10 @@ const media = {
   uploadVideoOption: "Video (mp4, webm)",
   uploadAudioOption: "Audio (mp3, m4a, ogg)",
   uploadFileLabel: "File",
-  uploadBusy: "Uploading…",
   uploadSubmit: "Upload",
   uploadHint: "New media is created as private. You can publish it on its page.",
-  uploadToastNoFile: "Choose a file",
-  uploadErrorTitle: "Upload error",
   uploadSuccessTitle: "Uploaded",
   uploadAction: "uploading media",
-  uploadFileTooLarge: "File is too large (max 100 MB).",
-  uploadInvalidFormat: "Unsupported format. Video: mp4/webm. Audio: mp3/m4a/ogg.",
-  uploadSelectType: "Choose a type: video or audio.",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

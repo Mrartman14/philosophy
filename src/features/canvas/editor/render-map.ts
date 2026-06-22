@@ -7,7 +7,7 @@ import type { CanvasData } from "../types";
  * Мапит CanvasData (snake_case, схема-форма) в доменно-нейтральный RenderData
  * (camelCase) для canvas-render примитивов. Зеркалит приватный toRenderData
  * из canvas-detail.tsx; вынесен в ядро, чтобы рендер-слои редактора
- * переиспользовали тот же маппинг. Узлы без id/type и рёбра без обоих концов
+ * переиспользовали тот же маппинг. Узлы без id и рёбра без обоих концов
  * отбрасываются (бек их не пропустит, рендер не должен падать).
  */
 export function canvasDataToRenderData(data: CanvasData | undefined): RenderData {

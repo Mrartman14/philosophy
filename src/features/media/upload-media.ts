@@ -3,7 +3,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 
-import { API_URL } from "@/api/client";
+import { API_URL } from "@/api/base-url";
 import { Tags } from "@/api/tags";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
 import {
@@ -20,13 +20,17 @@ import { canCreateMedia } from "./permissions";
 import type { Media } from "./types";
 
 /** Доменные коды media-upload → ключ каталога errors (Case 2 i18n).
- * role-403/SUSPENDED/BANNED и 413 (PAYLOAD_TOO_LARGE / REQUEST_BODY_TOO_LARGE
- * из DEFAULT_MESSAGES) обрабатывает централизованный `rethrowApiError`. Невалидный
- * формат/MIME/тип (UNSUPPORTED_MEDIA_TYPE / INVALID_FILE_TYPE) на беке несёт
- * локализованный `error`-текст — он и всплывёт через фоллбек rethrowApiError. */
+ * role-403/SUSPENDED/BANNED обрабатывает централизованный `rethrowApiError`.
+ * Невалидный формат/MIME (INVALID_FILE_TYPE/UNSUPPORTED_MEDIA_TYPE) и 413
+ * (REQUEST_BODY_TOO_LARGE/PAYLOAD_TOO_LARGE) маппим в branded media-ключи —
+ * иначе штатная «не тот формат» шла бы как unmapped_backend_code (телеметрия). */
 const ERRORS: ApiErrorMessageKeys = {
   PUBLIC_IMMUTABLE: "MEDIA_PUBLIC_IMMUTABLE",
   NOT_FOUND: "MEDIA_NOT_FOUND",
+  INVALID_FILE_TYPE: "MEDIA_INVALID_FORMAT",
+  UNSUPPORTED_MEDIA_TYPE: "MEDIA_INVALID_FORMAT",
+  REQUEST_BODY_TOO_LARGE: "MEDIA_FILE_TOO_LARGE",
+  PAYLOAD_TOO_LARGE: "MEDIA_FILE_TOO_LARGE",
 };
 
 /**
@@ -88,7 +92,7 @@ export const uploadMedia = createFormAction(async (formData) => {
       /* пустое/не-JSON тело — фоллбек на статус */
     }
     rethrowApiError(
-      body.code ? body : { error: `Ошибка загрузки: ${res.status}` },
+      body.code || body.error ? body : { error: `Ошибка загрузки: ${res.status}` },
       ERRORS,
     );
   }

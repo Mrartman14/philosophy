@@ -13,7 +13,7 @@ export type CanvasData = components["schemas"]["canvas.Data"];
 /** Узел графа (discriminated union по type). */
 export type CanvasNode = components["schemas"]["canvas.Node"];
 
-/** Тип цели entity_ref-узла (10 значений, бек: `canvas.RefEntityType` / AllowedRefEntityTypes). */
+/** Тип цели entity_ref-узла (9 значений, бек: `canvas.RefEntityType` / AllowedRefEntityTypes). */
 export type CanvasRefEntityType = components["schemas"]["canvas.RefEntityType"];
 
 /** Сторона узла для привязки ребра (бек: `canvas.EdgeSide`). */

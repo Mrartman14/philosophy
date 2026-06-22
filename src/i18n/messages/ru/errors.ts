@@ -124,6 +124,8 @@ const errors = {
   MEDIA_PUBLIC_IMMUTABLE:
     "Публичное медиа нельзя сделать приватным. Удалите и загрузите заново.",
   MEDIA_NOT_FOUND: "Медиа не найдено.",
+  MEDIA_INVALID_FORMAT: "Неподдерживаемый формат. Видео: mp4/webm. Аудио: mp3/m4a/ogg.",
+  MEDIA_FILE_TOO_LARGE: "Файл слишком большой (макс 100 MB).",
 
   // --- share-links slice: доменные коды ---
   SHARE_LINK_NOT_FOUND: "Ресурс не найден или вы не его владелец.",

@@ -120,6 +120,8 @@ const errors = {
   MEDIA_PUBLIC_IMMUTABLE:
     "Public media cannot be made private. Delete it and upload again.",
   MEDIA_NOT_FOUND: "Media not found.",
+  MEDIA_INVALID_FORMAT: "Unsupported format. Video: mp4/webm. Audio: mp3/m4a/ogg.",
+  MEDIA_FILE_TOO_LARGE: "File is too large (max 100 MB).",
 
   // --- share-links slice: domain codes ---
   SHARE_LINK_NOT_FOUND: "Resource not found or you are not its owner.",
