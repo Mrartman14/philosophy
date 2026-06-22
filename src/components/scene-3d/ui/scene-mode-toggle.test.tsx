@@ -21,7 +21,7 @@ import { SceneModeToggle } from "./scene-mode-toggle";
 describe("SceneModeToggle", () => {
   it("рендерит 2D/3D и помечает активный режим", () => {
     render(
-      <SceneModeToggle mode="2d" onChange={vi.fn()} ariaLabel="Размерность" storageKey="k" />,
+      <SceneModeToggle mode="2d" onChange={vi.fn()} ariaLabel="Размерность" />,
     );
     const group = screen.getByRole("group", { name: "Размерность" });
     expect(group).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe("SceneModeToggle", () => {
   it("клик по 3D зовёт onChange('3d')", () => {
     const onChange = vi.fn();
     render(
-      <SceneModeToggle mode="2d" onChange={onChange} ariaLabel="A" storageKey="k" />,
+      <SceneModeToggle mode="2d" onChange={onChange} ariaLabel="A" />,
     );
     fireEvent.click(screen.getByText("3D"));
     expect(onChange).toHaveBeenCalledWith("3d");

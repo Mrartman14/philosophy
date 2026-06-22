@@ -58,9 +58,10 @@ export default function GraphView({ data }: { data: GraphData }) {
 
   const reduce = useReducedMotion();
   // reduceRef: актуальный reduce для lifecycle-эффекта [model] БЕЗ добавления его в deps
-  // (иначе cleanup пересоздавал бы рендерер на каждый тогл движения). Escape-hatch как у карты.
-  // Sync — через effect (а не write-в-рендере), чтобы пройти react-hooks/refs; на ПЕРВОМ маунте
-  // useRef(reduce) уже несёт верное стартовое значение, эффект синхронит последующие изменения.
+  // (иначе cleanup пересоздавал бы рендерер на каждый тогл движения). Тот же escape-hatch, что у карты.
+  // Sync — через effect, а не write-в-рендере: здесь react-hooks/refs ругается на запись ref в
+  // рендере (в semantic-map-view она проходит, но воспроизвести «чистый» вариант тут не удалось).
+  // На ПЕРВОМ маунте useRef(reduce) уже несёт верный старт; эффект синхронит последующие изменения.
   const reduceRef = useRef(reduce);
   useEffect(() => {
     reduceRef.current = reduce;
@@ -142,7 +143,6 @@ export default function GraphView({ data }: { data: GraphData }) {
           mode={mode}
           onChange={setMode}
           ariaLabel={t("dimensionAriaLabel")}
-          storageKey={MODE_KEY}
         />
       </div>
       {model.count === 0 && (

@@ -1,6 +1,6 @@
 "use client";
 // src/features/semantic-map/ui/map-mode-toggle.tsx
-// Адаптер: namespace semanticMap + storageKey карты → общий SceneModeToggle.
+// Адаптер: namespace semanticMap → общий SceneModeToggle (персист режима живёт во view).
 import { SceneModeToggle } from "@/components/scene-3d";
 import { useT } from "@/i18n/client";
 
@@ -19,7 +19,6 @@ export function MapModeToggle({
       mode={mode}
       onChange={onChange}
       ariaLabel={t("dimensionAriaLabel")}
-      storageKey="semantic-map:mode"
     />
   );
 }

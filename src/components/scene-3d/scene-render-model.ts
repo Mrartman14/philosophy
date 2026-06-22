@@ -1,6 +1,6 @@
 // src/components/scene-3d/scene-render-model.ts
 // Общая форма облака точек для базового рендерера. Доменные модели расширяют её:
-// карта — { docs; clusters }, граф — { edges; edgeAlphas; types }.
+// карта — { docs; clusters }, граф — { edges; edgeAlphas }.
 export interface SceneRenderModel {
   count: number;
   /** count*3, всегда 3 координаты (z=0 при dims<3). */

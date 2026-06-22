@@ -4,11 +4,8 @@ import type { components } from "@/api/schema";
 import type { SceneRenderModel } from "@/components/scene-3d";
 
 export type GraphData = components["schemas"]["refgraph.Graph"];
-export type GraphNode = components["schemas"]["refgraph.Node"];
-export type GraphEdge = components["schemas"]["refgraph.Edge"];
 export type GraphBounds = components["schemas"]["refgraph.Bounds"];
 export type NodeType = components["schemas"]["refgraph.NodeType"];
-export type EdgeKind = components["schemas"]["refgraph.EdgeKind"];
 
 /**
  * Внутренняя форма графа для рендерера: общее облако точек + рёбра.
