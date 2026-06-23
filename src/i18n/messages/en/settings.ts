@@ -28,12 +28,6 @@ const settings = {
     fontLabel: "Font",
     textSizeLabel: "Text Size",
     motionLabel: "Motion",
-    themeAriaLabel: "Theme",
-    contrastAriaLabel: "Contrast",
-    densityAriaLabel: "Density",
-    fontAriaLabel: "Font",
-    textSizeAriaLabel: "Text size",
-    motionAriaLabel: "Motion",
     theme: {
       system: "System",
       light: "Light",

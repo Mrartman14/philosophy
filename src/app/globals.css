@@ -170,7 +170,7 @@ body:has(dialog[open]) {
    VIEW TRANSITIONS
    Отключаем UA-дефолтный кроссфейд корня — наш круговой clip-reveal
    рисует withViewTransition (src/utils/view-transition.ts) через WAAPI.
-   Reduced-глушение встроено в motion-политику ниже: для смены темы это
+   Reduced-глушение встроено в motion-политику выше: для смены темы это
    belt-and-suspenders (JS-guard и так не вызовет VT), но это forward-
    protection для будущих переходов, которые триггерит фреймворк.
    ═══════════════════════════════════════════════════════════════ */

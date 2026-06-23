@@ -414,6 +414,11 @@ const eslintConfig = [
             "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
         },
         {
+          selector: "JSXOpeningElement[name.name='RadioGroup']:has(JSXAttribute[name.name='className'])",
+          message:
+            "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",
+        },
+        {
           selector: "JSXOpeningElement[name.name='Label']:has(JSXAttribute[name.name='className'])",
           message:
             "className на styled kit-контроле запрещён — Inline/Stack (позиция) или unstyled (вид).",

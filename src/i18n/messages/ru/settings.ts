@@ -28,12 +28,6 @@ const settings = {
     fontLabel: "Шрифт",
     textSizeLabel: "Размер текста",
     motionLabel: "Анимация",
-    themeAriaLabel: "Тема",
-    contrastAriaLabel: "Контраст",
-    densityAriaLabel: "Плотность",
-    fontAriaLabel: "Шрифт",
-    textSizeAriaLabel: "Размер текста",
-    motionAriaLabel: "Анимация",
     theme: {
       system: "Системная",
       light: "Светлая",
