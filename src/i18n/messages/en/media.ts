@@ -9,6 +9,8 @@ const media = {
 
   // --- player ---
   playerArtist: "Философия ликбез",
+  pipEnter: "Picture-in-Picture",
+  pipExit: "Exit Picture-in-Picture",
 
   // --- empty states / informational ---
   emptyTitle: "No media yet",
