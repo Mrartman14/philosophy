@@ -82,3 +82,34 @@ describe("MediaPlayer + mediaSession", () => {
     expect(screen.getByLabelText("lecture")).toBeTruthy();
   });
 });
+
+describe("MediaPlayer + Picture-in-Picture", () => {
+  beforeEach(() => {
+    Object.defineProperty(document, "pictureInPictureEnabled", {
+      configurable: true,
+      value: true,
+    });
+    Object.defineProperty(document, "pictureInPictureElement", {
+      configurable: true,
+      value: null,
+    });
+  });
+  afterEach(() => {
+    Reflect.deleteProperty(document, "pictureInPictureEnabled");
+    Reflect.deleteProperty(document, "pictureInPictureElement");
+  });
+
+  it("video с поддержкой PiP → есть кнопка pipEnter", () => {
+    render(
+      <MediaPlayer url="https://x/v.mp4" type="video" filename="lecture-1.mp4" mediaId="m1" />,
+    );
+    expect(screen.getByRole("button", { name: "pipEnter" })).toBeTruthy();
+  });
+
+  it("audio → кнопки PiP нет (видео-only)", () => {
+    render(
+      <MediaPlayer url="https://x/a.mp3" type="audio" filename="lecture.mp3" mediaId="m2" />,
+    );
+    expect(screen.queryByRole("button", { name: "pipEnter" })).toBeNull();
+  });
+});

@@ -6,6 +6,7 @@ import { useT } from "@/i18n/client";
 
 import type { FileType } from "../types";
 
+import { PipButton } from "./pip-button";
 import { useMediaSession } from "./use-media-session";
 import { useResumePlayback } from "./use-resume-playback";
 
@@ -46,17 +47,20 @@ export function MediaPlayer({ url, type, filename, mediaId }: MediaPlayerProps) 
 
   if (type === "video") {
     return (
-      <video
-        ref={setRef}
-        controls
-        preload="metadata"
-        className="w-full max-h-[70vh] rounded bg-black"
-        aria-label={filename}
-      >
-        <source src={url} />
-        <track kind="captions" />
-        {t("videoBrowserFallback")}
-      </video>
+      <div className="flex flex-col gap-2">
+        <video
+          ref={setRef}
+          controls
+          preload="metadata"
+          className="w-full max-h-[70vh] rounded bg-black"
+          aria-label={filename}
+        >
+          <source src={url} />
+          <track kind="captions" />
+          {t("videoBrowserFallback")}
+        </video>
+        <PipButton videoRef={ref} />
+      </div>
     );
   }
   return (
