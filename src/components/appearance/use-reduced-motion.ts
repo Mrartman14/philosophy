@@ -1,8 +1,9 @@
 "use client";
 import { useSyncExternalStore } from "react";
 
+import { isReducedMotion } from "@/utils/is-reduced-motion";
+
 import { useAppearance } from "./appearance-provider";
-import { isReducedMotion } from "./is-reduced-motion";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 
