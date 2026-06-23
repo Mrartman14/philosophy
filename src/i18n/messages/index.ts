@@ -3,10 +3,11 @@ import type { AbstractIntlMessages } from "next-intl";
 
 import type { ResolvedLocale } from "../locales";
 
+import ar from "./ar";
 import en from "./en";
 import ru from "./ru";
 
-const CATALOG = { ru, en } as const;
+const CATALOG = { ru, en, ar } as const;
 
 export function loadMessages(locale: ResolvedLocale) {
   return CATALOG[locale];

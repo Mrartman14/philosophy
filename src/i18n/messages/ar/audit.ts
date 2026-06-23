@@ -1,0 +1,37 @@
+// src/i18n/messages/ar/audit.ts
+// English translations for the audit (admin log) slice.
+const audit = {
+  // --- audit-filter-form: field labels and buttons ---
+  filterAllTypes: "جميع الأنواع",
+  filterActorLabel: "معرّف الفاعل (UUID)",
+  filterTargetTypeLabel: "نوع الهدف",
+  filterTargetIdLabel: "معرّف الهدف",
+  filterTargetIdPlaceholder: "معرّف الكيان",
+  filterActionLabel: "الإجراء",
+  filterActionPlaceholder: "مثال: lecture.create",
+  filterFromLabel: "من",
+  filterToLabel: "إلى",
+  filterSubmit: "تصفية",
+  filterReset: "إعادة تعيين",
+
+  // --- admin audit page ---
+  pageTitle: "التدقيق",
+  pageDescription: "سجل إجراءات المشرف. إجمالي السجلات: {total}",
+
+  // --- audit-table: column headers and empty state ---
+  colTime: "الوقت",
+  colActor: "الفاعل",
+  colAction: "الإجراء",
+  colTarget: "الهدف",
+  colDetails: "التفاصيل",
+  detailsToggle: "عرض",
+  emptyTitle: "لم يتم العثور على سجلات",
+  emptyDescription: "حاول تخفيف عوامل التصفية أو توسيع النطاق الزمني.",
+
+  // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
+  api: {
+    loadLogFailed: "تعذّر تحميل سجل التدقيق",
+  },
+};
+
+export default audit;

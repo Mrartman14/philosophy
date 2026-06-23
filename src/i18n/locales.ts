@@ -1,6 +1,6 @@
 // Единый источник значений оси локали. Client-safe (без server-only / next).
-export const LOCALES = ["system", "ru", "en"] as const;
-export const RESOLVED_LOCALES = ["ru", "en"] as const;
+export const LOCALES = ["system", "ru", "en", "ar"] as const;
+export const RESOLVED_LOCALES = ["ru", "en", "ar"] as const;
 
 /** Хранимое значение предпочтения (в cookie / preferences). */
 export type Locale = (typeof LOCALES)[number];

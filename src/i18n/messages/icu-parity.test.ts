@@ -5,6 +5,7 @@
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
+import ar from "./ar";
 import en from "./en";
 import ru from "./ru";
 
@@ -113,6 +114,7 @@ function extractPluralCategories(pluralBody: string): Set<string> {
 
 const ruFlat = flatEntries(ru as unknown as Record<string, unknown>);
 const enFlat = flatEntries(en as unknown as Record<string, unknown>);
+const arFlat = flatEntries(ar as unknown as Record<string, unknown>);
 
 // Ключи с хотя бы одним ICU-аргументом в ru
 const keysWithArgs = [...ruFlat.keys()].filter((k) => {
@@ -129,6 +131,12 @@ const keysWithPluralRu = [...ruFlat.keys()].filter((k) => {
 // Ключи с plural-блоком в en
 const keysWithPluralEn = [...enFlat.keys()].filter((k) => {
   const v = enFlat.get(k);
+  return v !== undefined && extractPluralBody(v) !== null;
+});
+
+// Ключи с plural-блоком в ar
+const keysWithPluralAr = [...arFlat.keys()].filter((k) => {
+  const v = arFlat.get(k);
   return v !== undefined && extractPluralBody(v) !== null;
 });
 
@@ -166,6 +174,42 @@ describe("ICU arg-name parity ru/en", () => {
               : "") +
             `  ru: "${ruVal}"\n` +
             `  en: "${enVal}"`,
+        );
+      }
+    }
+
+    expect(
+      mismatches,
+      `Расхождение ICU-аргументов в ${mismatches.length.toString()} ключе(ах):\n\n${mismatches.join("\n\n")}`,
+    ).toHaveLength(0);
+  });
+});
+
+describe("ICU arg-name parity ru/ar", () => {
+  it("имена ICU-аргументов идентичны в ru и ar для каждого ключа", () => {
+    const mismatches: string[] = [];
+
+    for (const key of [...ruFlat.keys()]) {
+      const ruVal = ruFlat.get(key) ?? "";
+      const arVal = arFlat.get(key) ?? "";
+
+      const ruArgs = extractArgNames(ruVal);
+      const arArgs = extractArgNames(arVal);
+
+      const inRuNotAr = [...ruArgs].filter((a) => !arArgs.has(a));
+      const inArNotRu = [...arArgs].filter((a) => !ruArgs.has(a));
+
+      if (inRuNotAr.length > 0 || inArNotRu.length > 0) {
+        mismatches.push(
+          `${key}:\n` +
+            (inRuNotAr.length
+              ? `  в ru, но не в ar: {${inRuNotAr.join("}, {")}}\n`
+              : "") +
+            (inArNotRu.length
+              ? `  в ar, но не в ru: {${inArNotRu.join("}, {")}}\n`
+              : "") +
+            `  ru: "${ruVal}"\n` +
+            `  ar: "${arVal}"`,
         );
       }
     }
@@ -242,6 +286,38 @@ describe("ICU plural-category validity en", () => {
   });
 });
 
+describe("ICU plural-category validity ar", () => {
+  // CLDR Arabic: ВСЕ шесть категорий обязательны (zero/one/two/few/many/other).
+  const AR_REQUIRED = ["zero", "one", "two", "few", "many", "other"] as const;
+
+  it("должен найти plural-блоки в ar (тест не вакуумный)", () => {
+    expect(keysWithPluralAr.length).toBeGreaterThan(0);
+  });
+
+  it("ar plural-блоки содержат все шесть CLDR-категорий (zero/one/two/few/many/other)", () => {
+    const missing: string[] = [];
+
+    for (const key of keysWithPluralAr) {
+      const val = arFlat.get(key) ?? "";
+      const body = extractPluralBody(val);
+      if (body === null) continue;
+      const cats = extractPluralCategories(body);
+
+      const absent = AR_REQUIRED.filter((c) => !cats.has(c));
+      if (absent.length > 0) {
+        missing.push(
+          `${key}: отсутствуют категории [${absent.join(", ")}]\n  ar: "${val}"`,
+        );
+      }
+    }
+
+    expect(
+      missing,
+      `Неполные ar plural-категории в ${missing.length.toString()} ключе(ах):\n\n${missing.join("\n\n")}`,
+    ).toHaveLength(0);
+  });
+});
+
 describe("ICU compile validity — нет битых плейсхолдеров", () => {
   // next-intl парс-ошибки ICU приходят с кодом INVALID_MESSAGE; missing-value —
   // другой код, его НЕ ловим (плейсхолдеры резолвятся на вызове). Литеральные
@@ -253,6 +329,7 @@ describe("ICU compile validity — нет битых плейсхолдеров"
   it.each([
     ["ru", ru, ruFlat] as const,
     ["en", en, enFlat] as const,
+    ["ar", ar, arFlat] as const,
   ])("%s: каждое сообщение компилируется как валидный ICU", (locale, catalog, flat) => {
     let currentKey = "";
     const broken: string[] = [];

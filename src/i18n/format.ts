@@ -2,7 +2,7 @@
 // НЕ зависит от next-intl: остаётся стабильным при замене i18n-библиотеки.
 import { DEFAULT_LOCALE, type ResolvedLocale } from "./locales";
 
-const BCP47: Record<ResolvedLocale, string> = { ru: "ru-RU", en: "en-US" };
+const BCP47: Record<ResolvedLocale, string> = { ru: "ru-RU", en: "en-US", ar: "ar" };
 
 export interface Formatters {
   dateTime(value: string | number | Date, opts?: Intl.DateTimeFormatOptions): string;

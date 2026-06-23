@@ -2,6 +2,7 @@
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
+import ar from "./ar";
 import en from "./en";
 import ru from "./ru";
 
@@ -14,9 +15,12 @@ function flatKeys(obj: Record<string, unknown>, prefix = ""): string[] {
   });
 }
 
-describe("каталоги ru/en", () => {
-  it("совпадают по набору ключей", () => {
+describe("каталоги ru/en/ar", () => {
+  it("en совпадает с ru по набору ключей", () => {
     expect(new Set(flatKeys(en))).toEqual(new Set(flatKeys(ru)));
+  });
+  it("ar совпадает с ru по набору ключей", () => {
+    expect(new Set(flatKeys(ar))).toEqual(new Set(flatKeys(ru)));
   });
 });
 

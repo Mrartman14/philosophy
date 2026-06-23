@@ -16,6 +16,7 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
     { value: "system", label: `🌐 ${t("localeSystem")}` },
     { value: "ru", label: `🇷🇺 ${t("localeRu")}` },
     { value: "en", label: `🇬🇧 ${t("localeEn")}` },
+    { value: "ar", label: `🇸🇦 ${t("localeAr")}` },
   ];
 
   function onChange(v: string) {

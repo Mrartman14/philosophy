@@ -12,9 +12,14 @@ export async function persistLocale(locale: Locale): Promise<void> {
     const me = await getMe();
     if (!me) return; // аноним — только cookie
     const api = await createApiClient();
-    // PATCH body типизирован через preference.UpdatePreferencesRequest (regen
-    // 2026-06-20): locale = "system" | "ru" | "en". Cast снят.
-    await api.PATCH("/api/me/preferences", { body: { locale } });
+    // PATCH body типизирован через preference.UpdatePreferencesRequest. На момент
+    // добавления арабской локали схема ещё перечисляет locale = "system"|"ru"|"en"
+    // (без "ar"). СТОПГАП: каст до narrow-типа схемы — runtime реально шлёт "ar",
+    // tsc доволен. БЭК-АСК: добавить "ar" в preference.UpdatePreferencesRequest.locale
+    // (+ reconcile-on-load). КОГДА схема перегенерирована с "ar" — УБРАТЬ каст.
+    await api.PATCH("/api/me/preferences", {
+      body: { locale: locale as "system" | "ru" | "en" },
+    });
   } catch {
     /* graceful: бэк может не знать про locale */
   }
