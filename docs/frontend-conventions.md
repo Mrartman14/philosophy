@@ -236,8 +236,9 @@ UI-локали) и режет сабмит на клиенте, минуя се
 в `<Field.Error>`. Для доступности на required-контроле ставим `aria-required` (чистый
 ARIA, без constraint-validation). Обязательность визуально — звёздочка из `<Field required>`.
 Исключения: (1) `<input type="file">` загрузок (multipart) пока сохраняет нативный
-`required`; (2) native typed-инпуты (`type="datetime-local"|"date"|"number"`) по природе
-типа всё равно могут поднять `badInput`/`typeMismatch` — это покрывает kit `FormField`.
+`required`; (2) числа — kit `NumberField` (Base UI, парсит внутри), НЕ `type="number"`;
+(3) `type="datetime-local"|"date"` (у Base UI нет date-компонента) по природе типа
+поднимают `badInput`/`typeMismatch` — это покрывает локализация в kit `FormField`.
 
 `Form` из `@/components/ui` оборачивает Base UI `Form` и принимает
 `errors: Record<string, string>` (Base UI допускает `string | string[]`,
