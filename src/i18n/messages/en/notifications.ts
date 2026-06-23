@@ -1,11 +1,12 @@
 // src/i18n/messages/en/notifications.ts
 const notifications = {
   // --- Notification types (notification-item) ---
-  documentUpdated: "A document you follow was updated",
-  commentCreated: "{count, plural, one{# new comment} other{# new comments}}",
-  commentReply: "A reply to your comment",
-  annotationCreated: "New annotation",
-  mention: "You were mentioned",
+  documentUpdated:
+    "{count, plural, one{A document you follow was updated} other{A document you follow was updated # times}}",
+  lectureUpdated:
+    "{count, plural, one{A lecture you follow was updated} other{A lecture you follow was updated # times}}",
+  canvasUpdated:
+    "{count, plural, one{A canvas you follow was updated} other{A canvas you follow was updated # times}}",
   fallback: "New notification",
 
   // --- Notification popover (notification-popover) ---

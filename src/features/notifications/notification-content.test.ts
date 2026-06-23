@@ -6,39 +6,37 @@ import type { AppNotification } from "./types";
 
 function make(p: Partial<AppNotification>): AppNotification {
   return {
-    id: "n1", type: "", reason: "", actorId: null, targetId: null,
+    id: "n1", type: null, reason: null, actorId: null, targetId: null,
     targetType: null, targetVersion: null, groupCount: 1,
     readAt: null, seenAt: null, createdAt: null, ...p,
   };
 }
 
 describe("describeNotification", () => {
-  it("известный тип → kind + href", () => {
-    const d = describeNotification(make({ type: "document.updated", targetType: "document", targetId: "d1" }));
-    expect(d).toEqual({ kind: "documentUpdated", href: "/documents/d1" });
+  it("document.updated → documentUpdated + count + href", () => {
+    const d = describeNotification(make({ type: "document.updated", targetType: "document", targetId: "d1", groupCount: 3 }));
+    expect(d).toEqual({ kind: "documentUpdated", count: 3, href: "/documents/d1" });
   });
-  it("comment.created → kind commentCreated с count", () => {
-    const d = describeNotification(make({ type: "comment.created", groupCount: 3 }));
-    expect(d).toEqual({ kind: "commentCreated", count: 3, href: null });
+  it("lecture.updated → lectureUpdated + count + href", () => {
+    const d = describeNotification(make({ type: "lecture.updated", targetType: "lecture", targetId: "l1" }));
+    expect(d).toEqual({ kind: "lectureUpdated", count: 1, href: "/lectures/l1" });
   });
-  it("неизвестный тип → kind raw (reason + count)", () => {
-    const d = describeNotification(make({ type: "weird.new", reason: "Что-то произошло", groupCount: 2 }));
-    expect(d).toEqual({ kind: "raw", text: "Что-то произошло", count: 2, href: null });
+  it("canvas.updated → canvasUpdated + count + href", () => {
+    const d = describeNotification(make({ type: "canvas.updated", targetType: "canvas", targetId: "c1" }));
+    expect(d).toEqual({ kind: "canvasUpdated", count: 1, href: "/canvases/c1" });
   });
-  it("неизвестный тип без reason → raw c пустым text", () => {
-    const d = describeNotification(make({ type: "x" }));
-    expect(d).toEqual({ kind: "raw", text: "", count: 1, href: null });
+  it("неизвестный/off-contract тип → kind raw (count, без текста)", () => {
+    const d = describeNotification(make({ type: "weird.new" as never, groupCount: 2 }));
+    expect(d).toEqual({ kind: "raw", count: 2, href: null });
   });
-  it("href по target_type=lecture", () => {
-    expect(describeNotification(make({ type: "document.updated", targetType: "lecture", targetId: "l1" })).href).toBe("/lectures/l1");
-  });
-  it("target_type=annotation игнорирует targetId", () => {
-    expect(describeNotification(make({ type: "document.updated", targetType: "annotation", targetId: "a1" })).href).toBe("/me/annotations");
+  it("отсутствующий тип (null) → raw", () => {
+    const d = describeNotification(make({ type: null }));
+    expect(d).toEqual({ kind: "raw", count: 1, href: null });
   });
   it("нет targetId → href null", () => {
     expect(describeNotification(make({ type: "document.updated", targetType: "document" })).href).toBeNull();
   });
-  it("неизвестный target_type → href null", () => {
-    expect(describeNotification(make({ type: "document.updated", targetType: "comment", targetId: "c1" })).href).toBeNull();
+  it("off-contract target_type → href null", () => {
+    expect(describeNotification(make({ type: "document.updated", targetType: "comment" as never, targetId: "x1" })).href).toBeNull();
   });
 });

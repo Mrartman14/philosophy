@@ -8,6 +8,7 @@ import type { components } from "@/api/schema";
  * клиент-safe (без `server-only`). Новый домен на беке → regen `schema.ts`
  * → сборка краснеет, пока значение не добавят в `AUDIT_TARGET_TYPES`.
  */
-export { AUDIT_TARGET_TYPES } from "@/api/enums";
+export { AUDIT_TARGET_TYPES, AUDIT_ACTIONS } from "@/api/enums";
 
 export type AuditTargetType = components["schemas"]["audit.TargetType"];
+export type AuditAction = components["schemas"]["audit.Action"];

@@ -15458,7 +15458,7 @@ export interface components {
             content?: string[];
             leaf?: boolean;
             marks?: string[];
-            type?: string;
+            type?: components["schemas"]["ast.NodeType"];
         };
         "ast.Mark": {
             attrs?: {
@@ -15530,8 +15530,10 @@ export interface components {
         "attachment.UpdateAttachmentRequest": {
             sort_order?: number;
         };
+        /** @enum {string} */
+        "audit.Action": "annotation.admin_delete" | "annotation.create" | "annotation.delete" | "annotation.update" | "attachment.create" | "attachment.delete" | "attachment.reorder" | "banner.create" | "banner.delete" | "banner.update" | "canvas.create" | "canvas.delete" | "canvas.update" | "canvas.visibility_change" | "comment.admin_delete" | "comment.create" | "comment.delete" | "comment.update" | "document.create" | "document.delete" | "document.update" | "document.upload" | "document.visibility_change" | "event.create" | "event.delete" | "event.update" | "form.admin_delete" | "form.create" | "form.delete" | "form.publish" | "glossary.create" | "glossary.delete" | "glossary.update" | "lecture.cover.clear" | "lecture.cover.set" | "lecture.create" | "lecture.delete" | "lecture.update" | "lecture.visibility_change" | "map.rebuild" | "media.create" | "media.delete" | "media.upload" | "media.visibility_change" | "push.broadcast" | "share_link.admin_revoke" | "share_link.create" | "share_link.revoke" | "tag.create" | "tag.delete" | "tag.set_lecture_tags" | "tag.update" | "trail.create" | "trail.delete" | "trail.set_items" | "trail.update" | "trail.visibility_change" | "user.role_change" | "user.status_change";
         "audit.Record": {
-            action?: string;
+            action?: components["schemas"]["audit.Action"];
             actor_user_id?: string;
             actor_username?: string;
             created_at?: string;
@@ -15788,9 +15790,11 @@ export interface components {
         "comment.UpdateRequest": {
             blocks: components["schemas"]["ast.Block"][];
         };
+        /** @enum {string} */
+        "composition.Kind": "lecture" | "trail" | "document" | "media" | "canvas" | "comment" | "annotation" | "tag";
         "composition.NodeRef": {
             id?: string;
-            kind?: string;
+            kind?: components["schemas"]["composition.Kind"];
         };
         "document.CreateDocumentRequest": {
             blocks: components["schemas"]["ast.Block"][];
@@ -16224,21 +16228,27 @@ export interface components {
             group_count?: number;
             id?: string;
             read_at?: string;
-            reason?: string;
+            reason?: components["schemas"]["notification.Reason"];
             seen_at?: string;
             target_id?: string;
-            target_type?: string;
+            target_type?: components["schemas"]["notification.TargetType"];
             target_version?: number;
-            type?: string;
+            type?: components["schemas"]["notification.Type"];
             updated_at?: string;
         };
+        /** @enum {string} */
+        "notification.Reason": "subscribed";
         "notification.Subscription": {
             created_at?: string;
             id?: string;
             target_id?: string;
-            target_type?: string;
+            target_type?: components["schemas"]["notification.TargetType"];
             user_id?: string;
         };
+        /** @enum {string} */
+        "notification.TargetType": "document" | "lecture" | "canvas";
+        /** @enum {string} */
+        "notification.Type": "document.updated" | "lecture.updated" | "canvas.updated";
         "pat.MintResult": {
             created_at?: number;
             /** @description Unix sec, nil = no expiry */
@@ -16299,7 +16309,7 @@ export interface components {
         /** @enum {string} */
         "preference.Font": "sans" | "legible" | "serif";
         /** @enum {string} */
-        "preference.Locale": "system" | "ru" | "en";
+        "preference.Locale": "system" | "ru" | "en" | "ar" | "zh";
         /** @enum {string} */
         "preference.Motion": "system" | "reduced" | "full";
         "preference.Preferences": {
@@ -16322,7 +16332,7 @@ export interface components {
         "preference.UpdatePreferencesRequest": {
             appearance?: components["schemas"]["preference.AppearancePatch"];
             /** @enum {unknown} */
-            locale?: "system" | "ru" | "en";
+            locale?: "system" | "ru" | "en" | "ar" | "zh";
             /** @enum {unknown} */
             reading_mode?: "full" | "focused";
             /**

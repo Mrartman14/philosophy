@@ -1,12 +1,12 @@
 // src/i18n/messages/ar/notifications.ts
 const notifications = {
   // --- Notification types (notification-item) ---
-  documentUpdated: "تم تحديث مستند تتابعه",
-  commentCreated:
-    "{count, plural, zero{لا تعليقات جديدة} one{تعليق جديد واحد} two{تعليقان جديدان} few{# تعليقات جديدة} many{# تعليقًا جديدًا} other{# تعليق جديد}}",
-  commentReply: "رد على تعليقك",
-  annotationCreated: "تعليق توضيحي جديد",
-  mention: "تمت الإشارة إليك",
+  documentUpdated:
+    "{count, plural, zero{تم تحديث مستند تتابعه} one{تم تحديث مستند تتابعه} two{تم تحديث مستند تتابعه مرتين} few{تم تحديث مستند تتابعه # مرات} many{تم تحديث مستند تتابعه # مرة} other{تم تحديث مستند تتابعه # مرة}}",
+  lectureUpdated:
+    "{count, plural, zero{تم تحديث محاضرة تتابعها} one{تم تحديث محاضرة تتابعها} two{تم تحديث محاضرة تتابعها مرتين} few{تم تحديث محاضرة تتابعها # مرات} many{تم تحديث محاضرة تتابعها # مرة} other{تم تحديث محاضرة تتابعها # مرة}}",
+  canvasUpdated:
+    "{count, plural, zero{تم تحديث لوحة تتابعها} one{تم تحديث لوحة تتابعها} two{تم تحديث لوحة تتابعها مرتين} few{تم تحديث لوحة تتابعها # مرات} many{تم تحديث لوحة تتابعها # مرة} other{تم تحديث لوحة تتابعها # مرة}}",
   fallback: "إشعار جديد",
 
   // --- Notification popover (notification-popover) ---

@@ -1,11 +1,9 @@
 // src/i18n/messages/zh/notifications.ts
 const notifications = {
   // --- Notification types (notification-item) ---
-  documentUpdated: "您订阅的文档已更新",
-  commentCreated: "{count, plural, other{# 条新评论}}",
-  commentReply: "对您评论的回复",
-  annotationCreated: "新批注",
-  mention: "有人提到了您",
+  documentUpdated: "{count, plural, other{您订阅的文档已更新 # 次}}",
+  lectureUpdated: "{count, plural, other{您订阅的讲座已更新 # 次}}",
+  canvasUpdated: "{count, plural, other{您订阅的画布已更新 # 次}}",
   fallback: "新通知",
 
   // --- Notification popover (notification-popover) ---

@@ -8,7 +8,7 @@ const audit = {
   filterTargetIdLabel: "ID цели",
   filterTargetIdPlaceholder: "ID сущности",
   filterActionLabel: "Действие",
-  filterActionPlaceholder: "Например, lecture.create",
+  filterAllActions: "Все действия",
   filterFromLabel: "С",
   filterToLabel: "По",
   filterSubmit: "Фильтровать",

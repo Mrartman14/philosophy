@@ -25,13 +25,11 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
 
   let text: string;
   if (d.kind === "raw") {
-    const base = d.text || t("fallback");
+    const base = t("fallback");
     text = d.count > 1 ? `${base} (${d.count})` : base;
-  } else if (d.kind === "commentCreated") {
-    text = t("commentCreated", { count: d.count });
   } else {
-    // documentUpdated | commentReply | annotationCreated | mention
-    text = t(d.kind);
+    // documentUpdated | lectureUpdated | canvasUpdated — ICU-plural по count (group_count)
+    text = t(d.kind, { count: d.count });
   }
 
   function handleClick() {

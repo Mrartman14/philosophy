@@ -8,7 +8,7 @@ const audit = {
   filterTargetIdLabel: "Target ID",
   filterTargetIdPlaceholder: "Entity ID",
   filterActionLabel: "Action",
-  filterActionPlaceholder: "e.g. lecture.create",
+  filterAllActions: "All actions",
   filterFromLabel: "From",
   filterToLabel: "To",
   filterSubmit: "Filter",

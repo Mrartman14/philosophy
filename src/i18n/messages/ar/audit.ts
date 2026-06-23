@@ -8,7 +8,7 @@ const audit = {
   filterTargetIdLabel: "معرّف الهدف",
   filterTargetIdPlaceholder: "معرّف الكيان",
   filterActionLabel: "الإجراء",
-  filterActionPlaceholder: "مثال: lecture.create",
+  filterAllActions: "جميع الإجراءات",
   filterFromLabel: "من",
   filterToLabel: "إلى",
   filterSubmit: "تصفية",

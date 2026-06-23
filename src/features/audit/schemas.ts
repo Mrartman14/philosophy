@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import type { NamespaceT } from "@/i18n";
 
-import { AUDIT_TARGET_TYPES } from "./target-types";
+import { AUDIT_ACTIONS, AUDIT_TARGET_TYPES } from "./target-types";
 
 /**
  * Валидация фильтров audit-лога из URL searchParams.
@@ -23,12 +23,14 @@ export function makeAuditActorSchema(t: ValidationT) {
 
 export const AuditTargetTypeSchema = z.enum(AUDIT_TARGET_TYPES);
 
-/** Формат action на беке: domain.verb (изредка domain.noun.verb), snake_case. */
+/**
+ * action — сгенерированный enum `audit.Action` (бек навесил swaggo-enum).
+ * Источник значений — `AUDIT_ACTIONS` (@/api/enums, completeness-checked):
+ * новый action на беке → regen `schema.ts` краснит сборку, пока его не добавят.
+ * Невалидное значение из URL молча отбрасывается (.catch(undefined) ниже).
+ */
 export function makeAuditActionSchema(t: ValidationT) {
-  return z
-    .string()
-    .trim()
-    .regex(/^[a-z_]+(\.[a-z_]+){1,2}$/, t("audit.invalidActionFormat"));
+  return z.enum(AUDIT_ACTIONS, { message: t("audit.invalidActionFormat") });
 }
 
 /**

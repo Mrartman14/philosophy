@@ -7,9 +7,9 @@ import { Button, Form, FormField, Select, TextInput } from "@/components/ui";
 import { useQueryFormSubmit } from "@/hooks/use-query-form-submit";
 import { useT } from "@/i18n/client";
 
-import { AUDIT_TARGET_TYPES } from "../target-types";
+import { AUDIT_ACTIONS, AUDIT_TARGET_TYPES } from "../target-types";
 
-/** Sentinel «все типы» для Select — в URL не сериализуется. */
+/** Sentinel «все типы»/«все действия» для Select — в URL не сериализуется. */
 const ALL_TYPES = "all";
 
 const FILTER_FIELDS = [
@@ -29,6 +29,11 @@ export function AuditFilterForm() {
   const TARGET_TYPE_OPTIONS = [
     { value: ALL_TYPES, label: t("filterAllTypes") },
     ...AUDIT_TARGET_TYPES.map((type) => ({ value: type, label: type })),
+  ];
+
+  const ACTION_OPTIONS = [
+    { value: ALL_TYPES, label: t("filterAllActions") },
+    ...AUDIT_ACTIONS.map((action) => ({ value: action, label: action })),
   ];
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -72,9 +77,10 @@ export function AuditFilterForm() {
           />
         </FormField>
         <FormField name="action" label={t("filterActionLabel")}>
-          <TextInput
-            defaultValue={searchParams.get("action") ?? ""}
-            placeholder={t("filterActionPlaceholder")}
+          <Select
+            defaultValue={searchParams.get("action") ?? ALL_TYPES}
+            options={ACTION_OPTIONS}
+            aria-label={t("filterActionLabel")}
           />
         </FormField>
         <FormField name="from" label={t("filterFromLabel")}>

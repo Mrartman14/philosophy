@@ -46,8 +46,8 @@ describe("getNotifications — pagination defaults", () => {
   it("нормализует DTO: опциональные поля становятся not-null с дефолтами", async () => {
     const dto = {
       id: "n-1",
-      type: "comment",
-      reason: "mention",
+      type: "document.updated",
+      reason: "subscribed",
       // остальные поля намеренно отсутствуют — проверяем дефолты
     };
     getMock.mockResolvedValue(
@@ -64,8 +64,8 @@ describe("getNotifications — pagination defaults", () => {
     expect(items).toHaveLength(1);
     expect(items[0]).toMatchObject({
       id: "n-1",
-      type: "comment",
-      reason: "mention",
+      type: "document.updated",
+      reason: "subscribed",
       actorId: null,
       targetId: null,
       groupCount: 1,

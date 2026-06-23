@@ -5,14 +5,24 @@ import type { components } from "@/api/schema";
 export type NotificationDTO = components["schemas"]["notification.Notification"];
 export type SubscriptionDTO = components["schemas"]["notification.Subscription"];
 
+/**
+ * Сгенерированные enum'ы уведомлений (бек навесил swaggo-enum). Источник истины —
+ * `schema.ts`: новый вариант на беке → regen краснит сборку там, где switch не
+ * исчерпывающ. Нормализованная модель моделирует «бек опустил/прислал unknown»
+ * как `null` (без фейковых дефолтов) — дескриптор отдаёт graceful raw-fallback.
+ */
+export type NotificationType = components["schemas"]["notification.Type"];
+export type NotificationTargetType = components["schemas"]["notification.TargetType"];
+export type NotificationReason = components["schemas"]["notification.Reason"];
+
 /** Нормализованное уведомление: optional-поля DTO сведены к не-optional с дефолтами. */
 export interface AppNotification {
   id: string;
-  type: string;
-  reason: string;
+  type: NotificationType | null;
+  reason: NotificationReason | null;
   actorId: string | null;
   targetId: string | null;
-  targetType: string | null;
+  targetType: NotificationTargetType | null;
   targetVersion: number | null;
   groupCount: number;
   readAt: string | null;
@@ -28,7 +38,7 @@ export interface NotificationCounts {
 export interface DocumentSubscription {
   id: string;
   targetId: string;
-  targetType: string;
+  targetType: NotificationTargetType | null;
   createdAt: string | null;
 }
 

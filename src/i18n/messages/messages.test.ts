@@ -1,5 +1,4 @@
 // src/i18n/messages/messages.test.ts
-import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import ar from "./ar";
@@ -25,21 +24,5 @@ describe("каталоги ru/en/ar/zh", () => {
   });
   it("zh совпадает с ru по набору ключей", () => {
     expect(new Set(flatKeys(zh))).toEqual(new Set(flatKeys(ru)));
-  });
-});
-
-describe("ru ICU-плюрализация (commentCreated)", () => {
-  const t = createTranslator({ locale: "ru", messages: ru, namespace: "notifications" });
-  it("1 → форма one", () => {
-    expect(t("commentCreated", { count: 1 })).toBe("1 новый комментарий");
-  });
-  it("2 → форма few", () => {
-    expect(t("commentCreated", { count: 2 })).toBe("2 новых комментария");
-  });
-  it("5 → форма many", () => {
-    expect(t("commentCreated", { count: 5 })).toBe("5 новых комментариев");
-  });
-  it("21 → форма one (CLDR)", () => {
-    expect(t("commentCreated", { count: 21 })).toBe("21 новый комментарий");
   });
 });

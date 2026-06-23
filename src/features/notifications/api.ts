@@ -18,8 +18,8 @@ import type {
 function normalizeNotification(dto: NotificationDTO): AppNotification {
   return {
     id: dto.id ?? "",
-    type: dto.type ?? "",
-    reason: dto.reason ?? "",
+    type: dto.type ?? null,
+    reason: dto.reason ?? null,
     actorId: dto.actor_id ?? null,
     targetId: dto.target_id ?? null,
     targetType: dto.target_type ?? null,
@@ -35,7 +35,7 @@ function normalizeSubscription(dto: SubscriptionDTO): DocumentSubscription {
   return {
     id: dto.id ?? "",
     targetId: dto.target_id ?? "",
-    targetType: dto.target_type ?? "",
+    targetType: dto.target_type ?? null,
     createdAt: dto.created_at ?? null,
   };
 }

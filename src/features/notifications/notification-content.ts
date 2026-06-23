@@ -1,26 +1,31 @@
 // src/features/notifications/notification-content.ts
 // Чистый client-safe дескриптор уведомления. Текст рендерится в компоненте через @/i18n.
-import type { AppNotification } from "./types";
+import type { AppNotification, NotificationTargetType } from "./types";
 
-/** Дискриминированный дескриптор: какой ключ каталога рендерить + куда вести. */
+/**
+ * Дискриминированный дескриптор: какой ключ каталога рендерить + куда вести.
+ * `count` = group_count (сгруппированные уведомления: сущность обновлена N раз) —
+ * для ICU-плюрализации сообщения в notification-item.
+ */
 export type NotificationDescriptor =
-  | { kind: "documentUpdated"; href: string | null }
-  | { kind: "commentCreated"; count: number; href: string | null }
-  | { kind: "commentReply"; href: string | null }
-  | { kind: "annotationCreated"; href: string | null }
-  | { kind: "mention"; href: string | null }
-  | { kind: "raw"; text: string; count: number; href: string | null };
+  | { kind: "documentUpdated"; count: number; href: string | null }
+  | { kind: "lectureUpdated"; count: number; href: string | null }
+  | { kind: "canvasUpdated"; count: number; href: string | null }
+  | { kind: "raw"; count: number; href: string | null };
 
 /** Fallback-ссылка на сущность по target_type. */
-function entityHref(targetType: string | null, targetId: string | null): string | null {
+function entityHref(
+  targetType: NotificationTargetType | null,
+  targetId: string | null,
+): string | null {
   if (!targetId) return null;
   switch (targetType) {
     case "document":
       return `/documents/${targetId}`;
     case "lecture":
       return `/lectures/${targetId}`;
-    case "annotation":
-      return "/me/annotations"; // detail-страницы аннотации нет — ведём в список
+    case "canvas":
+      return `/canvases/${targetId}`;
     default:
       return null;
   }
@@ -28,22 +33,23 @@ function entityHref(targetType: string | null, targetId: string | null): string 
 
 /**
  * Маппинг type → дескриптор. Тексты НЕ здесь (они в каталоге @/i18n).
- * TODO(backend-ask): сверить значения `type` с philosophy-api.
+ *
+ * Бек контрактует ровно три типа уведомлений (`notification.Type`):
+ * подписка на сущность → её обновление (reason всегда `subscribed`). `default`
+ * оставлен как graceful raw-fallback на случай, если бек добавит новый тип
+ * раньше, чем FE перегенерирует схему (TS считает ветку недостижимой — это ок).
  */
 export function describeNotification(n: AppNotification): NotificationDescriptor {
   const href = entityHref(n.targetType, n.targetId);
+  const count = n.groupCount;
   switch (n.type) {
     case "document.updated":
-      return { kind: "documentUpdated", href };
-    case "comment.created":
-      return { kind: "commentCreated", count: n.groupCount, href };
-    case "comment.reply":
-      return { kind: "commentReply", href };
-    case "annotation.created":
-      return { kind: "annotationCreated", href };
-    case "mention":
-      return { kind: "mention", href };
+      return { kind: "documentUpdated", count, href };
+    case "lecture.updated":
+      return { kind: "lectureUpdated", count, href };
+    case "canvas.updated":
+      return { kind: "canvasUpdated", count, href };
     default:
-      return { kind: "raw", text: n.reason, count: n.groupCount, href };
+      return { kind: "raw", count, href };
   }
 }

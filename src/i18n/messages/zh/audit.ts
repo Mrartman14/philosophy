@@ -8,7 +8,7 @@ const audit = {
   filterTargetIdLabel: "目标 ID",
   filterTargetIdPlaceholder: "实体 ID",
   filterActionLabel: "操作",
-  filterActionPlaceholder: "例如 lecture.create",
+  filterAllActions: "所有操作",
   filterFromLabel: "起始",
   filterToLabel: "截止",
   filterSubmit: "筛选",
