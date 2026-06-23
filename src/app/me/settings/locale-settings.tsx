@@ -13,9 +13,9 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
   const [pending, startTransition] = useTransition();
 
   const OPTIONS = [
-    { value: "system", label: t("localeSystem") },
-    { value: "ru", label: t("localeRu") },
-    { value: "en", label: t("localeEn") },
+    { value: "system", label: `🌐 ${t("localeSystem")}` },
+    { value: "ru", label: `🇷🇺 ${t("localeRu")}` },
+    { value: "en", label: `🇬🇧 ${t("localeEn")}` },
   ];
 
   function onChange(v: string) {
