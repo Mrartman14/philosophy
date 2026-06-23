@@ -4,9 +4,10 @@ import type { ReactNode } from "react";
 import { NavRail } from "@/components/shared/nav-rail";
 import { getT } from "@/i18n";
 
-// Под-навигация личного кабинета: стики-сайдбар поверх каждой /me/* страницы.
-// На десктопе — вертикальная колонка слева (sticky под шапкой), контент справа;
-// на мобиле сворачивается в горизонтальную стики-полосу над контентом.
+// Под-навигация личного кабинета над каждой /me/* страницей.
+// На десктопе — вертикальная колонка слева, sticky под шапкой (контент справа);
+// на мобиле — обычная полоса над контентом, БЕЗ sticky и фона (просто скроллится
+// вместе со страницей). Без фона: на мобиле ничего под навигацией не скроллится.
 // Active-подсветка и разметка ссылок — в shared-компоненте NavRail.
 // Гейт авторизации — на самих страницах (requireUserOrRedirect).
 
@@ -30,7 +31,7 @@ export default async function MeLayout({ children }: { children: ReactNode }) {
   // хедер повисал бы над широким неоформленным контентом.
   return (
     <div className="flex flex-col lg:flex-row">
-      <aside className="sticky top-(--header-height) z-10 border-b border-(--color-border) bg-(--color-surface) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:border-b-0 lg:border-e">
+      <aside className="border-b border-(--color-border) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:sticky lg:top-(--header-height) lg:border-b-0 lg:border-e">
         <NavRail
           items={items}
           ariaLabel={t("meNavAriaLabel")}
