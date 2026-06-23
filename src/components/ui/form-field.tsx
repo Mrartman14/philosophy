@@ -23,13 +23,18 @@ export interface FormFieldProps {
  * Field.Error автоматически берёт сообщение из errors-карты `<Form>` по
  * совпадающему `name`.
  *
- * Локализация native-валидации: при пустом `required`-контроле Base UI берёт
+ * Локализация native-валидации: при невалидном контроле Base UI берёт
  * `element.validationMessage` — строку, локализованную по языку БРАУЗЕРА, а не
  * UI-локали (на ru-локали в EN-браузере вылезает «Please fill in this field»).
- * Поэтому для `valueMissing` показываем свой перевод `common.field.required`, а
- * штатный `<Field.Error>` (серверные fieldErrors + прочие native-состояния)
- * рендерим только когда причина — НЕ `valueMissing`. `Field.Validity` гарантирует
- * один видимый месседж: ветки взаимоисключающие, без дубля native+перевод.
+ * Поэтому `valueMissing` показываем своим переводом `common.field.required`, а
+ * остальные native-состояния (`badInput`/`typeMismatch`/`patternMismatch`/
+ * `stepMismatch`/`rangeOverflow|Underflow`/`tooLong|tooShort`), которые
+ * нативно-типизированные инпуты поднимают по самому ТИПУ (datetime/number/email/
+ * date), — единым переводом `common.field.invalid`. Штатный `<Field.Error>`
+ * (серверные fieldErrors) рендерим лишь когда причина — не native-состояние.
+ * `Field.Validity` гарантирует один видимый месседж: ветки взаимоисключающие,
+ * без дубля native+перевод. `customError` намеренно не покрываем — его источник
+ * `setCustomValidity` уже задаёт собственный локализованный текст.
  */
 export function FormField({
   name,
@@ -53,15 +58,28 @@ export function FormField({
         </Field.Description>
       )}
       <Field.Validity>
-        {(v) =>
-          v.validity.valueMissing ? (
-            <Field.Error match="valueMissing" className="text-xs text-(--color-danger)">
-              {t("field.required")}
-            </Field.Error>
-          ) : (
-            <Field.Error className="text-xs text-(--color-danger)" />
-          )
-        }
+        {(v) => {
+          const nv = v.validity;
+          if (nv.valueMissing) {
+            return (
+              <Field.Error match="valueMissing" className="text-xs text-(--color-danger)">
+                {t("field.required")}
+              </Field.Error>
+            );
+          }
+          const otherNative =
+            nv.badInput || nv.typeMismatch || nv.patternMismatch ||
+            nv.stepMismatch || nv.rangeOverflow || nv.rangeUnderflow ||
+            nv.tooLong || nv.tooShort;
+          if (otherNative) {
+            return (
+              <Field.Error match={true} className="text-xs text-(--color-danger)">
+                {t("field.invalid")}
+              </Field.Error>
+            );
+          }
+          return <Field.Error className="text-xs text-(--color-danger)" />;
+        }}
       </Field.Validity>
     </Field.Root>
   );

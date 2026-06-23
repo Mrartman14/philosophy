@@ -57,6 +57,7 @@ const common = {
   // `element.validationMessage`, localized to the BROWSER language, not the UI locale.
   field: {
     required: "Please fill out this field",
+    invalid: "Please enter a valid value",
   },
 
   // permission/status-banner

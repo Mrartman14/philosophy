@@ -161,6 +161,21 @@ describe("FormField — native required localized", () => {
     // jsdom-нативное сообщение (в браузере «Please fill in this field») НЕ дублируется
     expect(screen.queryByText("Constraints not satisfied")).toBeNull();
   });
+
+  it("native typeMismatch (не valueMissing) → локализованный generic, не браузерный текст", async () => {
+    render(
+      <Form aria-label="em">
+        <FormField name="email" label="Почта" required>
+          <TextInput type="email" aria-required defaultValue="not-an-email" />
+        </FormField>
+        <button type="submit">OK</button>
+      </Form>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "OK" }));
+    await waitFor(() => {
+      expect(screen.getByText("Введите корректное значение")).toBeInTheDocument();
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------
