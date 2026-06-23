@@ -1,6 +1,6 @@
 "use client";
 // src/features/canvas/ui/editor-inspector.tsx
-import { Label, Select, TextInput } from "@/components/ui";
+import { Label, NumberField, Select, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { EditorCommand, Side } from "../editor";
@@ -71,20 +71,18 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
         <div className="flex gap-2">
           <div className="flex flex-1 flex-col gap-1">
             <Label htmlFor="inspector-node-width">{t("inspector.widthLabel")}</Label>
-            <TextInput
+            <NumberField
               id="inspector-node-width"
-              type="number"
-              value={String(node.width ?? 0)}
-              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: Number(e.target.value), height: node.height ?? 0 }); }}
+              value={node.width ?? 0}
+              onValueChange={(v) => { dispatch({ type: "setNodeSize", nodeId, width: v ?? 0, height: node.height ?? 0 }); }}
             />
           </div>
           <div className="flex flex-1 flex-col gap-1">
             <Label htmlFor="inspector-node-height">{t("inspector.heightLabel")}</Label>
-            <TextInput
+            <NumberField
               id="inspector-node-height"
-              type="number"
-              value={String(node.height ?? 0)}
-              onChange={(e) => { dispatch({ type: "setNodeSize", nodeId, width: node.width ?? 0, height: Number(e.target.value) }); }}
+              value={node.height ?? 0}
+              onValueChange={(v) => { dispatch({ type: "setNodeSize", nodeId, width: node.width ?? 0, height: v ?? 0 }); }}
             />
           </div>
         </div>
