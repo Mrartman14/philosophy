@@ -2,7 +2,6 @@
 import type { ReactNode } from "react";
 
 import { NavRail } from "@/components/shared/nav-rail";
-import { WideShell } from "@/components/ui";
 import { getT } from "@/i18n";
 
 // Под-навигация личного кабинета: стики-сайдбар поверх каждой /me/* страницы.
@@ -25,18 +24,20 @@ export default async function MeLayout({ children }: { children: ReactNode }) {
     { href: "/me/tokens", label: t("meNavTokens") },
   ];
 
+  // Живём в общем 720-хребте (как весь контент) — сайдбar во флоу «вместе со
+  // всеми», непрерывные бордеры хребта от хедера донизу. БЕЗ WideShell: иначе
+  // .col-bleed гасит бордер хребта (см. layout.css opt-out), и узкий хедер
+  // повисал бы над широким неоформленным контентом.
   return (
-    <WideShell>
-      <div className="flex flex-col lg:flex-row">
-        <aside className="sticky top-(--header-height) z-10 border-b border-(--color-border) bg-(--color-surface) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:border-b-0 lg:border-e">
-          <NavRail
-            items={items}
-            ariaLabel={t("meNavAriaLabel")}
-            orientation="responsive"
-          />
-        </aside>
-        <div className="min-w-0 flex-1">{children}</div>
-      </div>
-    </WideShell>
+    <div className="flex flex-col lg:flex-row">
+      <aside className="sticky top-(--header-height) z-10 border-b border-(--color-border) bg-(--color-surface) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:border-b-0 lg:border-e">
+        <NavRail
+          items={items}
+          ariaLabel={t("meNavAriaLabel")}
+          orientation="responsive"
+        />
+      </aside>
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
   );
 }
