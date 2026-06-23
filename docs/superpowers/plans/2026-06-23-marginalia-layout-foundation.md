@@ -92,7 +92,21 @@ describe("layout.css", () => {
 
   it("бордер хребта логический (border-inline) и только md+", () => {
     expect(css).toMatch(/@media \(min-width:\s*768px\)[\s\S]*border-inline/);
-    expect(css).not.toMatch(/border-left|border-right/);
+  });
+
+  it("spine-frame держит непрерывность бордера (§5): inset-block/центрирование/ширина", () => {
+    expect(css).toMatch(/\.spine-frame[\s\S]*inset-block:\s*0/);
+    expect(css).toMatch(/\.spine-frame[\s\S]*margin-inline:\s*auto/);
+    expect(css).toMatch(/\.spine-frame[\s\S]*inline-size:\s*min\(\s*var\(--layout-spine\)/);
+  });
+
+  it("в app/wide-режиме (есть .col-bleed) хребет-бордер гасится (§6)", () => {
+    expect(css).toMatch(/\.page-grid:has\(>\s*\.col-bleed\)[\s\S]*\.spine-frame[\s\S]*display:\s*none/);
+  });
+
+  it("CSS на логических осях — нет физических left/right свойств", () => {
+    expect(css).not.toMatch(/(^|[\s;{])(margin|padding|border|inset)-(left|right)/);
+    expect(css).not.toMatch(/[\s;{](left|right)\s*:/);
   });
 
   it("globals.css импортирует layout.css", () => {
@@ -147,7 +161,7 @@ Expected: FAIL — `ENOENT: ... layout.css` (файл ещё не создан).
   isolation: isolate;     /* локальный stacking-context для z-index бордера */
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1280px) {  /* = --breakpoint-xl, держать синхронно с tokens.generated.css (media не читает var()) */
   .page-grid { column-gap: var(--layout-gutter); }
 }
 
@@ -171,19 +185,28 @@ Expected: FAIL — `ENOENT: ... layout.css` (файл ещё не создан).
   pointer-events: none;
   z-index: -1;
 }
-@media (min-width: 768px) {
+@media (min-width: 768px) {  /* 768 = --breakpoint-md, держать синхронно с tokens.generated.css */
   .spine-frame { border-inline: 1px solid var(--color-border); }
 }
 
+/* App/wide-режим: страница использует FullBleed/WideShell (оба эмитят .col-bleed
+   прямым потомком .page-grid) → хребет-бордер не нужен (спека §6: «секции теряют
+   внешний хребет-бордер»). Без этого правила фантомная 720-линия просвечивала бы
+   за широким контентом /me,/admin,/lectures,/canvases. :has() поддержан во всех
+   актуальных браузерах, SSR/zero-JS-совместим. */
+.page-grid:has(> .col-bleed) .spine-frame { display: none; }
+
 /* ── Классы размещения (потребляются kit-примитивами; элемент ДОЛЖЕН быть
-   прямым потомком .page-grid) ── */
+   ПРЯМЫМ потомком .page-grid — иначе grid-column не сошлётся на именованные линии
+   грида; для эмиссии из глубины дерева — поднять во фрагмент (см. Task 6) или
+   дождаться subgrid-обёртки (следующая итерация, спека §4)) ── */
 .col-margin-start { grid-column: margin-start / content-start; }
 .col-margin-end   { grid-column: content-end / margin-end; }
 .col-bleed        { grid-column: bleed-start / bleed-end; }
 
 /* Поведение маргиналий на узких экранах (< xl): inline втекает в хребет под
    своим местом; hidden прячется. */
-@media (max-width: 1279.98px) {
+@media (max-width: 1279.98px) {  /* < --breakpoint-xl (1280) */
   .margin-note--inline { grid-column: content-start / content-end; }
   .margin-note--hidden { display: none; }
 }
@@ -505,7 +528,7 @@ export function WideShell({ className, children }: WideShellProps) {
 
 - [ ] **Step 5: Экспортировать из kit-индекса**
 
-Добавить в `src/components/ui/index.ts`:
+Добавить в `src/components/ui/index.ts` непосредственно после строки `MarginNote` (Task 2), сохранив непрерывный блок structural-примитивов Stack → Inline → MarginNote → FullBleed → WideShell:
 
 ```ts
 export { FullBleed, FULL_BLEED_CLASS, type FullBleedProps } from "./full-bleed";
@@ -545,6 +568,8 @@ EOF
 - Consumes: классы `page-grid`, `spine-frame` (Task 1); CSS-var `--layout-spine`.
 
 > **Почему build + visual QA, а не unit-тест:** изменяется серверный async-`RootLayout` (зависит от `getMe`, `headers`, провайдеров) и computed-раскладка грида, которую jsdom не вычисляет. Корректность верифицируется билдом + браузерным QA по чеклисту (это устоявшаяся практика проекта для слоёв карты/3D/RTL). Поведение примитивов и движка уже покрыто Tasks 1–3.
+>
+> **⚠ Промежуточное состояние (коммит 4 → коммит 5):** после этого коммита и ДО Task 5 широкие страницы (/me, /admin, canvases, lectures, dev/ui) временно сжаты в 720-хребет, а map/graph несут вложенный `<main>` (двойной landmark) и сцену шириной хребта. Это приемлемо ТОЛЬКО потому, что Task 4 и Task 5 уходят в одном foundation-PR последовательными коммитами и НЕ пушатся/мержатся по-отдельности (Global Constraints: не пушить без явной просьбы). НЕ оценивать визуал на SHA между коммитами 4 и 5.
 
 - [ ] **Step 1: Переписать `<main>` в `src/app/layout.tsx`**
 
@@ -591,6 +616,8 @@ Run: `pnpm dev` → открыть `http://localhost:3001/` и любую кон
 - **Планшет 768–1024:** хребет центрирован + бордеры; полей нет.
 - **Мобайл 375px:** контент на всю ширину, без боковых бордеров; без горизонтального скролла.
 - **Вертикаль:** короткая страница НЕ растягивает контент на всю высоту (флоу сверху вниз); фон добивает вьюпорт.
+- **Ширина прозы:** существующие `max-w-3xl`(768)-страницы (документы/тропы/глоссарий) визуально сузятся до хребта 720 (~48px уже) — это **ожидаемо** (хребет = читаемая мера), НЕ баг.
+- **Баннеры:** StatusBanner/ActiveBanners/InstallBanner — сиблинги `<main>`, остаются full-bleed (на всю ширину, только нижний бордер) — это намеренно (системный слой над листом, см. спека §5). Убедиться, что нижний бордер баннера не выглядит «оборванным» относительно боковых бордеров хребта.
 - **RTL:** переключить локаль на язык с `dir=rtl` (или временно `<html dir="rtl">` в devtools) — хребет симметричен, бордеры на месте.
 
 - [ ] **Step 6: Коммит**
@@ -622,12 +649,17 @@ EOF
 - Modify: `src/app/map/page.tsx` (оба `return` с `<main className="h-[80vh] w-full">`, строки ~21-23 и ~44-46)
 - Modify: `src/app/graph/page.tsx` (оба `return`, строки ~17-19 и ~27-29)
 - Modify: `src/app/canvases/[id]/page.tsx:43`
+- Modify: `src/app/canvases/[id]/edit/page.tsx` (корневой `<div className="flex flex-col">` без max-w — редактор канвы)
+- Modify: `src/app/dev/ui/page.tsx` (корневой `<div className="flex flex-col gap-10 p-8">` без max-w — витрина дизайна)
 - Modify: `src/app/lectures/page.tsx:48`
+- Create (test): `src/app/map/single-main.test.ts`
 
 **Interfaces:**
 - Consumes: `WideShell`, `FullBleed` из `@/components/ui` (Task 3).
 
-> **Verify:** build + visual QA (серверные шеллы/страницы; примитивы уже покрыты Task 3).
+> **Verify:** build + visual QA (серверные шеллы/страницы; примитивы уже покрыты Task 3) + source-тест на единственность `<main>` (Step 7a).
+>
+> **Аудит ширины (обоснование охвата):** прогнан `find src/app -name page.tsx` на отсутствие корневого `max-w`. Регрессируют (шире 720, не под /me): `map`,`graph` (full-bleed-сцены), `canvases/[id]` (4xl), `canvases/[id]/edit` (редактор, без max-w), `dev/ui` (витрина, без max-w), `lectures` (5xl) → все в Task 5. `/saved` НЕ регрессирует (SavedList сам несёт `mx-auto max-w-3xl` — авто-вписывается, как ~24 прозовые страницы). Короткие auth/utility-страницы (login/register/push/offline/share-links/home) центрируются в хребте намеренно.
 
 - [ ] **Step 1: `/me` layout — обернуть в `WideShell`**
 
@@ -650,11 +682,13 @@ import { WideShell } from "@/components/ui";
             orientation="responsive"
           />
         </aside>
-        <main className="min-w-0 flex-1">{children}</main>
+        <div className="min-w-0 flex-1">{children}</div>
       </div>
     </WideShell>
   );
 ```
+
+> Внутренний `<main>` заменён на `<div>`: корневой layout.tsx уже несёт единственный landmark `<main className="page-grid">`, второй `<main>` внутри него — невалидный HTML / a11y-дефект (устранение пре-existing двойного landmark, тот же приём, что для map/graph ниже).
 
 - [ ] **Step 2: `/admin` layout — обернуть в `WideShell`**
 
@@ -692,11 +726,13 @@ import { RouterLink, WideShell } from "@/components/ui";
             orientation="vertical"
           />
         </aside>
-        <main className="flex-1 min-w-0 p-6">{children}</main>
+        <div className="flex-1 min-w-0 p-6">{children}</div>
       </div>
     </WideShell>
   );
 ```
+
+> Внутренний `<main>` → `<div>` (как в /me Step 1): единственный landmark `<main>` — корневой.
 
 - [ ] **Step 3: `map` — FullBleed + починить вложенный `<main>`**
 
@@ -730,30 +766,66 @@ import { FullBleed } from "@/components/ui";
 
 В `src/app/lectures/page.tsx` добавить `WideShell` в импорт из `@/components/ui`, обернуть корневой `<div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">…</div>` (строка 48) в `<WideShell>…</WideShell>`.
 
+- [ ] **Step 6a: `canvases/[id]/edit` — обернуть в `WideShell`**
+
+В `src/app/canvases/[id]/edit/page.tsx` корневой `<div className="flex flex-col">` (без max-w → сейчас занимает полный 1024-main, после Task 4 сжался бы до 720) обернуть в `<WideShell>` (импорт из `@/components/ui`). В QA (Step 8) проверить, что редактору канвы хватает ~1024; если визуальному холсту нужна ВСЯ ширина viewport — заменить `WideShell` на `FullBleed` (решение по результату QA).
+
+- [ ] **Step 6b: `dev/ui` — обернуть в `WideShell`**
+
+В `src/app/dev/ui/page.tsx` корневой `<div className="flex flex-col gap-10 p-8">` (без max-w, APCA-матрице/витрине нужна ширина) обернуть в `<WideShell>` (импорт из `@/components/ui`).
+
 - [ ] **Step 7: Линт + билд**
 
 Run: `pnpm lint && pnpm build`
 Expected: без ошибок. (ESLint Guardrail на cross-feature/deep-импорты — импорт `@/components/ui` легален.)
 
+- [ ] **Step 7a: Source-тест на единственность `<main>` (map/graph)**
+
+Закрепить устранение двойного landmark машинно (RTL-рендер этих server-страниц затруднён — проверяем исходник, как `layout.test.ts` проверяет CSS). Создать `src/app/map/single-main.test.ts`:
+
+```ts
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+import { describe, it, expect } from "vitest";
+
+// Единственный landmark <main> на странице — корневой (layout.tsx). map/graph
+// после Task 5 НЕ должны рендерить собственный <main> (были вложенные → <div>).
+describe("single <main> landmark", () => {
+  for (const page of ["src/app/map/page.tsx", "src/app/graph/page.tsx"]) {
+    it(`${page} не содержит <main>`, () => {
+      const src = readFileSync(resolve(process.cwd(), page), "utf-8");
+      expect(src).not.toMatch(/<main\b/);
+    });
+  }
+});
+```
+
+Run: `pnpm exec vitest run src/app/map/single-main.test.ts`
+Expected: PASS после правок map/graph (FAIL до них — на текущем `<main className="h-[80vh] w-full">`).
+
 - [ ] **Step 8: Браузерный QA-чеклист**
 
 Run: `pnpm dev`. Проверить (на ~1024 и ~1440):
-- `/me/documents`: сайдбар + контент во флоу, общая ширина ~1024 (НЕ сжата до 720), сайдбар не уехал в поля.
+- `/me/documents`: сайдбар + контент во флоу, общая ширина ~1024 (НЕ сжата до 720), сайдбар не уехал в поля. **Проскроллить длинный список — NavRail-сайдбар прилипает под хедером (sticky жив).**
 - `/admin` (под админом): сайдбар + контент, ширина ~1024.
-- `/map`, `/graph`: сцена на всю ширину viewport, без двойного `<main>` (проверить DOM — один `<main>` от root layout).
-- `/canvases/<id>`, `/lectures`: контент ~896/1024 как прежде, не сжат до 720.
+- `/map`, `/graph`: сцена на всю ширину viewport.
+- `/canvases/<id>`, `/canvases/<id>/edit`, `/dev/ui`, `/lectures`: контент ~896/1024 как прежде, не сжат до 720.
+- **DOM-инвариант:** `document.querySelectorAll('main').length === 1` на /me/*, /admin/*, /map, /graph, /canvases/[id], /canvases/[id]/edit, /lectures.
+- **Хребет-бордер опт-аут (находка spine-frame):** на /me, /admin, /lectures, /canvases (≥1280px) НЕТ фантомной вертикальной 720-линии, просвечивающей сквозь широкий контент (правило `.page-grid:has(> .col-bleed) .spine-frame { display:none }` из Task 1).
 - RTL: у `/me`,`/admin` сайдбар на инлайн-начале (зеркалится).
 
 - [ ] **Step 9: Коммит**
 
 ```bash
 git status
-git add src/app/me/layout.tsx src/app/admin/layout.tsx src/app/map/page.tsx src/app/graph/page.tsx "src/app/canvases/[id]/page.tsx" src/app/lectures/page.tsx
-git commit --only src/app/me/layout.tsx src/app/admin/layout.tsx src/app/map/page.tsx src/app/graph/page.tsx "src/app/canvases/[id]/page.tsx" src/app/lectures/page.tsx -m "$(cat <<'EOF'
+git add src/app/me/layout.tsx src/app/admin/layout.tsx src/app/map/page.tsx src/app/graph/page.tsx "src/app/canvases/[id]/page.tsx" "src/app/canvases/[id]/edit/page.tsx" src/app/dev/ui/page.tsx src/app/lectures/page.tsx src/app/map/single-main.test.ts
+git commit --only src/app/me/layout.tsx src/app/admin/layout.tsx src/app/map/page.tsx src/app/graph/page.tsx "src/app/canvases/[id]/page.tsx" "src/app/canvases/[id]/edit/page.tsx" src/app/dev/ui/page.tsx src/app/lectures/page.tsx src/app/map/single-main.test.ts -m "$(cat <<'EOF'
 feat(layout): широкие/full-bleed страницы escape из хребта
 
-/me,/admin,canvases/[id],lectures → WideShell (кап ~1024); map,graph →
-FullBleed на всю ширину + чинит вложенный <main>.
+/me,/admin,canvases/[id],canvases/[id]/edit,dev/ui,lectures → WideShell
+(кап ~1024); map,graph → FullBleed на всю ширину. Вложенный <main> → <div>
+во всех (единственный landmark — корневой), source-тест на это.
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 EOF
@@ -814,11 +886,13 @@ import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 
         <DocumentDetail document={document} />
 
-        {/* …остальные секции без изменений (Suspense-блоки, delete)… */}
+        {/* DocumentContainers (Suspense); AnnotationsSection (Suspense, если document.id);
+            DocumentRevisions (Suspense, если showRevisions && document.id);
+            delete-блок (если canDelete && document.id) — все БЕЗ изменений */}
       </div>
 
-      <MarginNote side="end">
-        <p className="p-6 text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>
+      <MarginNote side="end" className="p-6">
+        <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>
       </MarginNote>
     </>
   );
@@ -829,7 +903,7 @@ import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 - [ ] **Step 5: Линт + билд**
 
 Run: `pnpm lint && pnpm build`
-Expected: без ошибок. ICU-parity тест i18n (если есть) — зелёный (ключ добавлен в обе локали).
+Expected: без ошибок. Structural key-parity тест `src/i18n/messages/messages.test.ts` (set-equality ключей ru/en) останется зелёным — `documentMarginHint` добавлен в ОБЕ локали (Step 1/2), иначе тест красный. Namespace `pages` клиент-безопасен (НЕ в `SERVER_ONLY_NAMESPACES`).
 
 - [ ] **Step 6: Прогнать тесты**
 
@@ -876,6 +950,17 @@ EOF
 - §10 замороженные зоны → Global Constraints. ✓
 - §11 (RTL логические оси) → пронизывает Tasks 1–6 (именованные линии, `border-inline`, `MARGIN_NOTE_SIDE`). ✓
 - Якорные сноски (§4, «позже») — намеренно НЕ в этом PR (foundation = скелет зон). Subgrid для глубокой эмиссии — follow-up. ✓ (осознанный gap)
+
+**1a. Правки по мультиагент-ревью (2026-06-23, 22/25 находок подтверждено):**
+- **major** Фантомный хребет-бордер за широким контентом → Task 1 правило `.page-grid:has(> .col-bleed) .spine-frame { display:none }` + тест + QA-пункт. ✓
+- **major** Двойной landmark `<main>` в /me,/admin (непоследовательность с map/graph) → Task 5 Step 1/2 внутренний `<main>`→`<div>`; source-тест единственности `<main>` (Step 7a); QA-инвариант `querySelectorAll('main').length===1`. ✓
+- **major** Регрессия ширины не покрытых страниц → аудит `find src/app -name page.tsx`; добавлены `canvases/[id]/edit`, `dev/ui` в Task 5; `/saved` исключён (авто-вписывается). ✓
+- **minor** Сужение прозы 768→720 — зафиксировано как ожидаемое (Task 4 QA). ✓
+- **minor** RTL-гард CSS — общий негативный паттерн физических осей в `layout.test.ts`. ✓
+- **minor** Непрерывность spine-frame (§5) — ассерты `inset-block/margin-inline/inline-size`. ✓
+- **minor** Баннеры full-bleed vs хедер — зафиксировано как намеренное + QA-пункт. ✓
+- **minor/nit** justify-content drift, magic-1280, экспорт-порядок, i18n-формулировка, demo-padding, sticky-QA, доки direct-child — закрыты комментариями/уточнениями.
+- **3 опровергнуто** (ложные тревоги, отсеяны верификаторами): MarginNote НЕ падает под весь документ (сидит в строке 1 сбоку); demo-padding выравнивание НЕ ломается; Task 6-плейсхолдер достаточен. Действий не требуют.
 
 **2. Placeholder scan:** все шаги содержат реальный код/команды/ожидаемый вывод. В Task 5/6 фразы «существующее содержимое» сопровождены явным указанием, что переносится без изменений и какие именно строки — это не TODO, а инструкция сохранения. ✓
 
