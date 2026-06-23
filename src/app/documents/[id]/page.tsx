@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { RouterLink, Skeleton } from "@/components/ui";
+import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { AnnotationsSection } from "@/features/annotations";
 import {
   canEditDocument,
@@ -52,7 +52,8 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   ]);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
+    <>
+      <div className="flex flex-col gap-8 p-6">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{document.filename ?? t("documentDefaultTitle")}</h1>
         <div className="flex items-center gap-2">
@@ -114,7 +115,12 @@ export default async function DocumentPage({ params, searchParams }: Props) {
           <DocumentDeleteButton id={document.id} />
         </div>
       )}
-    </div>
+      </div>
+
+      <MarginNote side="end" className="p-6">
+        <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>
+      </MarginNote>
+    </>
   );
 }
 

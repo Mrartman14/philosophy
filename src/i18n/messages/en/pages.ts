@@ -157,6 +157,7 @@ const pages = {
   // ─── /documents/[id] ─────────────────────────────────────────────────
   documentDefaultTitle: "Document",
   documentEdit: "Edit",
+  documentMarginHint: "Notes in the margin appear here on wide screens.",
 
   // ─── /documents/[id]/edit ────────────────────────────────────────────
   documentEditHeading: "Edit",

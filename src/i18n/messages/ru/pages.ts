@@ -157,6 +157,7 @@ const pages = {
   // ─── /documents/[id] ─────────────────────────────────────────────────
   documentDefaultTitle: "Документ",
   documentEdit: "Редактировать",
+  documentMarginHint: "Заметки на полях появляются здесь на широких экранах.",
 
   // ─── /documents/[id]/edit ────────────────────────────────────────────
   documentEditHeading: "Редактирование",
