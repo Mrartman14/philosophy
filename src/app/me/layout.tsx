@@ -2,12 +2,13 @@
 import type { ReactNode } from "react";
 
 import { NavRail } from "@/components/shared/nav-rail";
-import { SidebarLayout } from "@/components/shared/sidebar-layout";
 import { getT } from "@/i18n";
 
-// Под-навигация личного кабинета над каждой /me/* страницей. Вид сайдбара
-// (responsive, sticky-десктоп, без фона) — в общем SidebarLayout (один паттерн
-// на всё приложение). Active-подсветка ссылок — в NavRail.
+// Под-навигация личного кабинета. Margin-nav раскладка: на ≥xl (1280) нав уходит
+// в ЛЕВОЕ ПОЛЕ (margin-start, sticky), а контент занимает ВЕСЬ хребет (~720) —
+// не делит его с сайдбаром. Ниже xl поле схлопывается → нав падает полосой сверху
+// (border-b) в хребте, контент под ней. Оба — прямые потомки .page-grid (фрагмент),
+// иначе именованные грид-линии не сработают. Active-подсветка ссылок — в NavRail.
 // Гейт авторизации — на самих страницах (requireUserOrRedirect).
 
 export default async function MeLayout({ children }: { children: ReactNode }) {
@@ -25,10 +26,11 @@ export default async function MeLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <SidebarLayout
-      nav={<NavRail items={items} ariaLabel={t("meNavAriaLabel")} orientation="responsive" />}
-    >
-      {children}
-    </SidebarLayout>
+    <>
+      <aside className="border-b border-(--color-border) p-4 xl:border-b-0 xl:p-0 xl:self-start xl:sticky xl:top-(--header-height) xl:col-start-[margin-start] xl:col-end-[content-start]">
+        <NavRail items={items} ariaLabel={t("meNavAriaLabel")} orientation="responsive" />
+      </aside>
+      <div className="min-w-0">{children}</div>
+    </>
   );
 }
