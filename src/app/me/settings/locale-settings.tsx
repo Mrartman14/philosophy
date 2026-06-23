@@ -17,6 +17,7 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
     { value: "ru", label: `🇷🇺 ${t("localeRu")}` },
     { value: "en", label: `🇬🇧 ${t("localeEn")}` },
     { value: "ar", label: `🇸🇦 ${t("localeAr")}` },
+    { value: "zh", label: `🇨🇳 ${t("localeZh")}` },
     // Псевдолокаль — инструмент визуального QA лейаута, не для конечных юзеров:
     // показываем только в dev (process.env.NODE_ENV инлайнится на билде → в проде
     // ветка отсутствует, опции нет).

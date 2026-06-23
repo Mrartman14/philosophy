@@ -2,8 +2,8 @@
 // "en-XA" — псевдолокаль для визуального QA лейаута (генерится из en, см.
 // ./pseudo + messages/pseudo). Реальная UI-локаль ей не является: авто-детект по
 // Accept-Language её не выбирает (primary-subtag "en"), пикер показывает только в dev.
-export const LOCALES = ["system", "ru", "en", "ar", "en-XA"] as const;
-export const RESOLVED_LOCALES = ["ru", "en", "ar", "en-XA"] as const;
+export const LOCALES = ["system", "ru", "en", "ar", "zh", "en-XA"] as const;
+export const RESOLVED_LOCALES = ["ru", "en", "ar", "zh", "en-XA"] as const;
 
 /** Хранимое значение предпочтения (в cookie / preferences). */
 export type Locale = (typeof LOCALES)[number];

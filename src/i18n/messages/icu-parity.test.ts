@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import ar from "./ar";
 import en from "./en";
 import ru from "./ru";
+import zh from "./zh";
 
 // ---------------------------------------------------------------------------
 // Утилиты
@@ -115,6 +116,7 @@ function extractPluralCategories(pluralBody: string): Set<string> {
 const ruFlat = flatEntries(ru as unknown as Record<string, unknown>);
 const enFlat = flatEntries(en as unknown as Record<string, unknown>);
 const arFlat = flatEntries(ar as unknown as Record<string, unknown>);
+const zhFlat = flatEntries(zh as unknown as Record<string, unknown>);
 
 // Ключи с хотя бы одним ICU-аргументом в ru
 const keysWithArgs = [...ruFlat.keys()].filter((k) => {
@@ -137,6 +139,12 @@ const keysWithPluralEn = [...enFlat.keys()].filter((k) => {
 // Ключи с plural-блоком в ar
 const keysWithPluralAr = [...arFlat.keys()].filter((k) => {
   const v = arFlat.get(k);
+  return v !== undefined && extractPluralBody(v) !== null;
+});
+
+// Ключи с plural-блоком в zh
+const keysWithPluralZh = [...zhFlat.keys()].filter((k) => {
+  const v = zhFlat.get(k);
   return v !== undefined && extractPluralBody(v) !== null;
 });
 
@@ -210,6 +218,42 @@ describe("ICU arg-name parity ru/ar", () => {
               : "") +
             `  ru: "${ruVal}"\n` +
             `  ar: "${arVal}"`,
+        );
+      }
+    }
+
+    expect(
+      mismatches,
+      `Расхождение ICU-аргументов в ${mismatches.length.toString()} ключе(ах):\n\n${mismatches.join("\n\n")}`,
+    ).toHaveLength(0);
+  });
+});
+
+describe("ICU arg-name parity ru/zh", () => {
+  it("имена ICU-аргументов идентичны в ru и zh для каждого ключа", () => {
+    const mismatches: string[] = [];
+
+    for (const key of [...ruFlat.keys()]) {
+      const ruVal = ruFlat.get(key) ?? "";
+      const zhVal = zhFlat.get(key) ?? "";
+
+      const ruArgs = extractArgNames(ruVal);
+      const zhArgs = extractArgNames(zhVal);
+
+      const inRuNotZh = [...ruArgs].filter((a) => !zhArgs.has(a));
+      const inZhNotRu = [...zhArgs].filter((a) => !ruArgs.has(a));
+
+      if (inRuNotZh.length > 0 || inZhNotRu.length > 0) {
+        mismatches.push(
+          `${key}:\n` +
+            (inRuNotZh.length
+              ? `  в ru, но не в zh: {${inRuNotZh.join("}, {")}}\n`
+              : "") +
+            (inZhNotRu.length
+              ? `  в zh, но не в ru: {${inZhNotRu.join("}, {")}}\n`
+              : "") +
+            `  ru: "${ruVal}"\n` +
+            `  zh: "${zhVal}"`,
         );
       }
     }
@@ -318,6 +362,38 @@ describe("ICU plural-category validity ar", () => {
   });
 });
 
+describe("ICU plural-category validity zh", () => {
+  // CLDR Chinese: грамматического множественного нет — обязательна ТОЛЬКО `other`.
+  const ZH_REQUIRED = ["other"] as const;
+
+  it("должен найти plural-блоки в zh (тест не вакуумный)", () => {
+    expect(keysWithPluralZh.length).toBeGreaterThan(0);
+  });
+
+  it("zh plural-блоки содержат обязательную CLDR-категорию (other)", () => {
+    const missing: string[] = [];
+
+    for (const key of keysWithPluralZh) {
+      const val = zhFlat.get(key) ?? "";
+      const body = extractPluralBody(val);
+      if (body === null) continue;
+      const cats = extractPluralCategories(body);
+
+      const absent = ZH_REQUIRED.filter((c) => !cats.has(c));
+      if (absent.length > 0) {
+        missing.push(
+          `${key}: отсутствуют категории [${absent.join(", ")}]\n  zh: "${val}"`,
+        );
+      }
+    }
+
+    expect(
+      missing,
+      `Неполные zh plural-категории в ${missing.length.toString()} ключе(ах):\n\n${missing.join("\n\n")}`,
+    ).toHaveLength(0);
+  });
+});
+
 describe("ICU compile validity — нет битых плейсхолдеров", () => {
   // next-intl парс-ошибки ICU приходят с кодом INVALID_MESSAGE; missing-value —
   // другой код, его НЕ ловим (плейсхолдеры резолвятся на вызове). Литеральные
@@ -330,6 +406,7 @@ describe("ICU compile validity — нет битых плейсхолдеров"
     ["ru", ru, ruFlat] as const,
     ["en", en, enFlat] as const,
     ["ar", ar, arFlat] as const,
+    ["zh", zh, zhFlat] as const,
   ])("%s: каждое сообщение компилируется как валидный ICU", (locale, catalog, flat) => {
     let currentKey = "";
     const broken: string[] = [];

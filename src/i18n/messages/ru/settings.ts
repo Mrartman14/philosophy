@@ -16,6 +16,7 @@ const settings = {
   localeRu: "Русский",
   localeEn: "English",
   localeAr: "Арабский",
+  localeZh: "Китайский",
   // timezone-settings.tsx
   timezoneLabelRow: "Часовой пояс",
   timezoneAriaLabel: "Выбор часового пояса",

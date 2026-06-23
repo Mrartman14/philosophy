@@ -7,8 +7,9 @@ import ar from "./ar";
 import en from "./en";
 import pseudo from "./pseudo";
 import ru from "./ru";
+import zh from "./zh";
 
-const CATALOG = { ru, en, ar, "en-XA": pseudo } as const;
+const CATALOG = { ru, en, ar, zh, "en-XA": pseudo } as const;
 
 export function loadMessages(locale: ResolvedLocale) {
   return CATALOG[locale];

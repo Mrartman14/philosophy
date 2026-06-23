@@ -6,6 +6,7 @@ const BCP47: Record<ResolvedLocale, string> = {
   ru: "ru-RU",
   en: "en-US",
   ar: "ar",
+  zh: "zh-CN",
   // Псевдолокаль форматирует даты/числа как английский (визуальный тест — про
   // строки UI, не про формат-локаль).
   "en-XA": "en-US",
