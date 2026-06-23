@@ -11,8 +11,9 @@
   --layout-gutter: 2rem;   /* зазор хребет <-> поле */
 }
 
-/* Поля раскрываются только когда есть место (>= --breakpoint-xl = 1280px). */
-@media (min-width: 1280px) {
+/* Поля раскрываются только когда есть место (>= --breakpoint-xl). Брейкпоинт —
+   из токена через Tailwind theme() (резолвится на сборке, без дубля числа). */
+@media (min-width: theme(--breakpoint-xl)) {
   :root { --layout-margin: 14rem; }   /* ~224px = ширина нав-сайдбара (w-56) */
 }
 
@@ -35,7 +36,7 @@
   position: relative;     /* якорь containing-block для .spine-frame */
 }
 
-@media (min-width: 1280px) {  /* = --breakpoint-xl, держать синхронно с tokens.generated.css (media не читает var()) */
+@media (min-width: theme(--breakpoint-xl)) {  /* брейкпоинт из токена (Tailwind theme() → на сборке) */
   .page-grid { column-gap: var(--layout-gutter); }
 }
 
@@ -62,7 +63,7 @@
   pointer-events: none;
   z-index: 40;
 }
-@media (min-width: 768px) {  /* 768 = --breakpoint-md, держать синхронно с tokens.generated.css */
+@media (min-width: theme(--breakpoint-md)) {  /* брейкпоинт из токена */
   .spine-frame { border-inline: 1px solid var(--color-border); }
 }
 
@@ -83,7 +84,7 @@
 
 /* Поведение маргиналий на узких экранах (< xl): inline втекает в хребет под
    своим местом; hidden прячется. */
-@media (max-width: 1279.98px) {  /* < --breakpoint-xl (1280) */
+@media (width < theme(--breakpoint-xl)) {  /* строго ниже xl, брейкпоинт из токена */
   .margin-note--inline { grid-column: content-start / content-end; }
   .margin-note--hidden { display: none; }
 }
@@ -97,7 +98,7 @@
   border-block-end: 1px solid var(--color-border);
   padding: 1rem;
 }
-@media (min-width: 1280px) {  /* ≥ --breakpoint-xl: поле есть → нав в него */
+@media (min-width: theme(--breakpoint-xl)) {  /* ≥ xl (из токена): поле есть → нав в него */
   .margin-nav {
     grid-column: margin-start / content-start;
     align-self: start;

@@ -13,8 +13,10 @@ describe("layout.css", () => {
     expect(css).toContain("--layout-gutter: 2rem");
   });
 
-  it("раскрывает поля только на >= 1280px", () => {
-    expect(css).toMatch(/@media \(min-width:\s*1280px\)[\s\S]*--layout-margin:\s*14rem/);
+  it("раскрывает поля только на >= xl (брейкпоинт из токена, не магическое число)", () => {
+    expect(css).toMatch(/@media \(min-width:\s*theme\(--breakpoint-xl\)\)[\s\S]*--layout-margin:\s*14rem/);
+    // никаких голых px-брейкпоинтов в @media — только токены через theme()
+    expect(css).not.toMatch(/@media[^{]*\d{3,4}px/);
   });
 
   it("грид page-grid использует именованные логические линии", () => {
@@ -41,7 +43,7 @@ describe("layout.css", () => {
   });
 
   it("бордер хребта логический (border-inline) и только md+", () => {
-    expect(css).toMatch(/@media \(min-width:\s*768px\)[\s\S]*border-inline/);
+    expect(css).toMatch(/@media \(min-width:\s*theme\(--breakpoint-md\)\)[\s\S]*border-inline/);
   });
 
   it("spine-frame держит непрерывность бордера (§5): inset-block/центрирование/ширина", () => {
@@ -58,8 +60,8 @@ describe("layout.css", () => {
 
   it("margin-nav: на ≥xl уходит в левое поле + sticky (сырой CSS, не Tailwind arbitrary)", () => {
     expect(css).toContain(".margin-nav");
-    // в @media min-width:1280 → grid-column в поле + sticky под шапкой
-    expect(css).toMatch(/@media \(min-width:\s*1280px\)[\s\S]*\.margin-nav[\s\S]*grid-column:\s*margin-start\s*\/\s*content-start/);
+    // в @media ≥xl (токен) → grid-column в поле + sticky под шапкой
+    expect(css).toMatch(/@media \(min-width:\s*theme\(--breakpoint-xl\)\)[\s\S]*\.margin-nav[\s\S]*grid-column:\s*margin-start\s*\/\s*content-start/);
     expect(css).toMatch(/\.margin-nav[\s\S]*position:\s*sticky/);
   });
 
