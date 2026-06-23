@@ -24,6 +24,12 @@ export interface RadioGroupProps {
  * Segmented single-select (выбор-одного-из-N). Drop-in под `Select` API:
  * same `{ options, value, onValueChange, aria-label }`. Сегменты встык, активный
  * залит. RTL-порядок корректен через flex + логические границы.
+ *
+ * Клавиатура: стрелки (←/→/↑/↓) переключают выбор по WAI-ARIA-паттерну
+ * `radiogroup` (roving focus, composite Base UI). Home/End по APG опциональны и
+ * не включены нижележащим Base UI-композитом (`RadioGroup` не отдаёт публичного
+ * пропа для их активации), поэтому здесь намеренно не эмулируются вручную —
+ * чтобы не воевать с библиотекой.
  */
 export function RadioGroup({
   options,
@@ -46,10 +52,11 @@ export function RadioGroup({
       name={name}
       disabled={disabled}
       value={value}
-      onValueChange={(v) => {
-        onValueChange(v);
-      }}
-      className="inline-flex overflow-hidden rounded border border-(--color-border)"
+      onValueChange={onValueChange}
+      // Без overflow-hidden: offset-2 focus-ring корневых сегментов иначе
+      // обрезался бы краем группы. Скругление концов даём логически на крайних
+      // сегментах (rounded-s/rounded-e), пилюля визуально цельная и RTL-safe.
+      className="inline-flex rounded border border-(--color-border)"
     >
       {options.map((opt) => {
         const labelId = `${labelIdPrefix}-${opt.value}`;
@@ -62,8 +69,15 @@ export function RadioGroup({
               "h-(--size-control-h-md) cursor-pointer px-(--space-control-pad-x) text-sm",
               "inline-flex items-center justify-center",
               "border-(--color-border) [&:not(:first-child)]:border-s",
+              "first:rounded-s last:rounded-e",
               FOCUS_RING_CONTROL,
+              // B1 (WCAG 1.4.1): выбор не только цветом. Заливка fg/surface (как у
+              // Checkbox, APCA-safe) + не-цветовой аффорданс font-semibold, а под
+              // forced-colors — системные Highlight/HighlightText, чтобы сегмент
+              // оставался различим в Windows High-Contrast.
               "data-[checked]:bg-(--color-fg) data-[checked]:text-(--color-surface)",
+              "data-[checked]:font-semibold",
+              "data-[checked]:forced-colors:bg-[Highlight] data-[checked]:forced-colors:text-[HighlightText]",
               "data-[disabled]:opacity-50",
             )}
           >
