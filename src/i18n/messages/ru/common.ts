@@ -52,6 +52,13 @@ const common = {
     placeholder: "Выберите…",
   },
 
+  // UI-kit: form-field (client) — локализация нативного браузерного сообщения
+  // валидации `required` (valueMissing). Без неё Base UI показывает
+  // `element.validationMessage`, локализованное по языку БРАУЗЕРА, а не UI-локали.
+  field: {
+    required: "Заполните это поле",
+  },
+
   // permission/status-banner
   statusBanner: {
     suspended: "Ваш аккаунт временно ограничен. Чтение доступно, новые действия — нет.",

@@ -2,6 +2,10 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+// FormField тянет useT("common") (локализация native required) — мокаем i18n-фасад.
+vi.mock("@/i18n/client", async () =>
+  (await import("@/test/i18n-client-mock")).i18nClientMock());
+
 import { Form } from "./form";
 import { FormField } from "./form-field";
 import { TextInput } from "./text-input";

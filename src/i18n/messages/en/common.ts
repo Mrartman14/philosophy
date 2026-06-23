@@ -52,6 +52,13 @@ const common = {
     placeholder: "Select…",
   },
 
+  // UI-kit: form-field (client) — localizes the native browser `required`
+  // (valueMissing) validation message. Without it Base UI surfaces
+  // `element.validationMessage`, localized to the BROWSER language, not the UI locale.
+  field: {
+    required: "Please fill out this field",
+  },
+
   // permission/status-banner
   statusBanner: {
     suspended: "Your account is temporarily restricted. Reading is available, new actions are not.",

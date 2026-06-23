@@ -10,17 +10,27 @@
  * All three layers are context-only, so they work correctly in jsdom.
  */
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ActionResult } from "@/utils/create-action";
 
-// FormFeedback тянет useT("errors") внутри — мокаем client-фасад на реальный ru-каталог.
+// FormFeedback тянет useT("errors"), FormField — useT("common"). Мокаем client-фасад
+// namespace-aware: "errors" → makeErrorsT (с {var}-подстановкой), прочие — резолв
+// dotted-ключа из реального ru-каталога (без поднятия next-intl провайдера).
 vi.mock("@/i18n/client", async () => {
   const { makeErrorsT } = await import("@/test/errors-t");
   const tErrors = makeErrorsT();
-  return { useT: () => tErrors };
+  const common = (await import("@/i18n/messages/ru/common")).default;
+  const tCommon = (key: string) =>
+    key
+      .split(".")
+      .reduce<unknown>(
+        (acc, k) => (acc as Record<string, unknown> | undefined)?.[k],
+        common,
+      ) ?? key;
+  return { useT: (ns?: string) => (ns === "common" ? tCommon : tErrors) };
 });
 
 import { Form } from "./form";
@@ -126,6 +136,30 @@ describe("Form + FormField — field error distribution (smoke)", () => {
     // label must exist but no error text
     expect(screen.getByText("Название")).toBeInTheDocument();
     expect(screen.queryByText("Обязательно")).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Native `required` (valueMissing) — локализованное сообщение вместо браузерного
+// ---------------------------------------------------------------------------
+describe("FormField — native required localized", () => {
+  it("на пустой required-сабмит показывает локализованный текст, а не browser-default", async () => {
+    render(
+      <Form aria-label="req">
+        <FormField name="title" label="Название" required>
+          <TextInput required />
+        </FormField>
+        <button type="submit">Сохранить</button>
+      </Form>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Сохранить" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Заполните это поле")).toBeInTheDocument();
+    });
+    // jsdom-нативное сообщение (в браузере «Please fill in this field») НЕ дублируется
+    expect(screen.queryByText("Constraints not satisfied")).toBeNull();
   });
 });
 
