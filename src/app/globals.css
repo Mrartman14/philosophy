@@ -2,6 +2,7 @@
 
 @import "../styles/tokens.generated.css";
 @import "../styles/content.css";
+@import "../styles/layout.css";
 
 /* Глобальная ось размера текста: масштабирует все rem (вкл. type-утилиты). */
 html { font-size: calc(100% * var(--text-scale, 1)); }

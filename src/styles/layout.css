@@ -1,0 +1,87 @@
+/* src/styles/layout.css
+   Глобальная система лейаута: центрированный «хребет» (content) + поля
+   (margin-start/-end) для маргиналий + full-bleed escape. Все оси ЛОГИЧЕСКИЕ
+   (грид раскладывает колонки вдоль inline-оси → следует dir → RTL-зеркалирование
+   бесплатно). Дизайн:
+   docs/superpowers/specs/2026-06-23-marginalia-layout-foundation-design.md */
+
+:root {
+  --layout-spine: 45rem;   /* ~720px: читаемая ширина хребта */
+  --layout-margin: 0px;    /* поля скрыты по умолчанию; раскрываются на >= xl */
+  --layout-gutter: 2rem;   /* зазор хребет <-> поле */
+}
+
+/* Поля раскрываются только когда есть место (>= --breakpoint-xl = 1280px). */
+@media (min-width: 1280px) {
+  :root { --layout-margin: 14rem; }   /* ~224px = ширина нав-сайдбара (w-56) */
+}
+
+/* Грид корневого <main>. Именованные линии вдоль inline-оси:
+   bleed(1fr) | margin | content(spine) | margin | bleed(1fr).
+   column-gap (только на xl) рисует зазоры; ниже xl margin=0 и gap=0 →
+   поля схлопываются, 1fr-края центрируют хребет (как сейчас). */
+.page-grid {
+  display: grid;
+  inline-size: 100%;
+  grid-template-columns:
+    [bleed-start] minmax(0, 1fr)
+    [margin-start] minmax(0, var(--layout-margin))
+    [content-start] min(var(--layout-spine), 100%)
+    [content-end] minmax(0, var(--layout-margin))
+    [margin-end] minmax(0, 1fr)
+    [bleed-end];
+  column-gap: 0;
+  align-content: start;   /* контент пакуется к верху — без растяжки по высоте */
+  position: relative;     /* якорь containing-block для .spine-frame */
+  isolation: isolate;     /* локальный stacking-context для z-index бордера */
+}
+
+@media (min-width: 1280px) {  /* = --breakpoint-xl, держать синхронно с tokens.generated.css (media не читает var()) */
+  .page-grid { column-gap: var(--layout-gutter); }
+}
+
+/* Дефолт: любой прямой потомок (кроме декоративного бордера) едет в хребет.
+   :where() → нулевая специфичность → классы размещения ниже легко перебивают.
+   Обратная совместимость: старые страницы со своим mx-auto max-w-* авто-
+   вписываются в content-колонку. */
+:where(.page-grid > *:not(.spine-frame)) {
+  grid-column: content-start / content-end;
+}
+
+/* Декоративный бордер хребта: непрерывная вертикаль во всю высоту main.
+   Абсолют + центрирование во всю ширину main → не зависит от грид-строк
+   контента. border-inline (логический) → корректно в RTL. Только md+. */
+.spine-frame {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: 0;
+  margin-inline: auto;
+  inline-size: min(var(--layout-spine), 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+@media (min-width: 768px) {  /* 768 = --breakpoint-md, держать синхронно с tokens.generated.css */
+  .spine-frame { border-inline: 1px solid var(--color-border); }
+}
+
+/* App/wide-режим: страница использует FullBleed/WideShell (оба эмитят .col-bleed
+   прямым потомком .page-grid) → хребет-бордер не нужен (спека §6: «секции теряют
+   внешний хребет-бордер»). Без этого правила фантомная 720-линия просвечивала бы
+   за широким контентом /me,/admin,/lectures,/canvases. :has() поддержан во всех
+   актуальных браузерах, SSR/zero-JS-совместим. */
+.page-grid:has(> .col-bleed) .spine-frame { display: none; }
+
+/* ── Классы размещения (потребляются kit-примитивами; элемент ДОЛЖЕН быть
+   ПРЯМЫМ потомком .page-grid — иначе grid-column не сошлётся на именованные линии
+   грида; для эмиссии из глубины дерева — поднять во фрагмент (см. Task 6) или
+   дождаться subgrid-обёртки (следующая итерация, спека §4)) ── */
+.col-margin-start { grid-column: margin-start / content-start; }
+.col-margin-end   { grid-column: content-end / margin-end; }
+.col-bleed        { grid-column: bleed-start / bleed-end; }
+
+/* Поведение маргиналий на узких экранах (< xl): inline втекает в хребет под
+   своим местом; hidden прячется. */
+@media (max-width: 1279.98px) {  /* < --breakpoint-xl (1280) */
+  .margin-note--inline { grid-column: content-start / content-end; }
+  .margin-note--hidden { display: none; }
+}
