@@ -56,6 +56,13 @@ describe("layout.css", () => {
     expect(css).not.toMatch(/\.spine-frame[\s\S]*z-index:\s*-1/);
   });
 
+  it("margin-nav: на ≥xl уходит в левое поле + sticky (сырой CSS, не Tailwind arbitrary)", () => {
+    expect(css).toContain(".margin-nav");
+    // в @media min-width:1280 → grid-column в поле + sticky под шапкой
+    expect(css).toMatch(/@media \(min-width:\s*1280px\)[\s\S]*\.margin-nav[\s\S]*grid-column:\s*margin-start\s*\/\s*content-start/);
+    expect(css).toMatch(/\.margin-nav[\s\S]*position:\s*sticky/);
+  });
+
   it("в app/wide-режиме (есть .col-bleed) хребет-бордер гасится (§6)", () => {
     expect(css).toMatch(/\.page-grid:has\(>\s*\.col-bleed\)[\s\S]*\.spine-frame[\s\S]*display:\s*none/);
   });
