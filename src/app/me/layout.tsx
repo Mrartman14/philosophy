@@ -1,42 +1,39 @@
 // src/app/me/layout.tsx
 import type { ReactNode } from "react";
 
-import { RouterLink } from "@/components/ui";
+import { NavRail } from "@/components/shared/nav-rail";
 import { getT } from "@/i18n";
 
-// Под-навигация личного кабинета. Рендерится поверх каждой /me/* страницы,
-// чтобы переход между разделами был возможен из любой подстраницы, а не
-// только с /me. Гейт авторизации — на самих страницах (requireUserOrRedirect).
+// Под-навигация личного кабинета: стики-сайдбар поверх каждой /me/* страницы.
+// На десктопе — вертикальная колонка слева (sticky под шапкой), контент справа;
+// на мобиле сворачивается в горизонтальную стики-полосу над контентом.
+// Active-подсветка и разметка ссылок — в shared-компоненте NavRail.
+// Гейт авторизации — на самих страницах (requireUserOrRedirect).
 
 export default async function MeLayout({ children }: { children: ReactNode }) {
   const t = await getT("pages");
-  const sections = [
-    { href: "/me/notifications", title: t("meNavNotifications") },
-    { href: "/me/documents", title: t("meNavDocuments") },
-    { href: "/me/media", title: t("meNavMedia") },
-    { href: "/me/annotations", title: t("meNavAnnotations") },
-    { href: "/me/forms", title: t("meNavForms") },
-    { href: "/me/submissions", title: t("meNavSubmissions") },
-    { href: "/me/stats", title: t("meNavStats") },
-    { href: "/me/settings", title: t("meNavSettings") },
+  const items = [
+    { href: "/me/notifications", label: t("meNavNotifications") },
+    { href: "/me/documents", label: t("meNavDocuments") },
+    { href: "/me/media", label: t("meNavMedia") },
+    { href: "/me/annotations", label: t("meNavAnnotations") },
+    { href: "/me/forms", label: t("meNavForms") },
+    { href: "/me/submissions", label: t("meNavSubmissions") },
+    { href: "/me/stats", label: t("meNavStats") },
+    { href: "/me/settings", label: t("meNavSettings") },
+    { href: "/me/tokens", label: t("meNavTokens") },
   ];
 
   return (
-    <>
-      <nav className="border-b border-(--color-border)">
-        <div className="mx-auto flex w-full max-w-4xl flex-wrap gap-2 px-6 py-4">
-          {sections.map((section) => (
-            <RouterLink
-              key={section.href}
-              href={section.href}
-              className="rounded border border-(--color-border) px-3 py-1.5 text-sm hover:border-(--color-accent) hover:text-(--color-accent)"
-            >
-              {section.title}
-            </RouterLink>
-          ))}
-        </div>
-      </nav>
-      {children}
-    </>
+    <div className="flex flex-col lg:flex-row">
+      <aside className="sticky top-(--header-height) z-10 border-b border-(--color-border) bg-(--color-surface) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:border-b-0 lg:border-e">
+        <NavRail
+          items={items}
+          ariaLabel={t("meNavAriaLabel")}
+          orientation="responsive"
+        />
+      </aside>
+      <main className="min-w-0 flex-1">{children}</main>
+    </div>
   );
 }

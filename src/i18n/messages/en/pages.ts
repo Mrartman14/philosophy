@@ -41,6 +41,8 @@ const pages = {
   meNavSubmissions: "My submissions",
   meNavStats: "My statistics",
   meNavSettings: "Settings",
+  meNavTokens: "Access tokens",
+  meNavAriaLabel: "Account navigation",
 
   // ─── /me/notifications ───────────────────────────────────────────────
   notificationsTitle: "Notifications",

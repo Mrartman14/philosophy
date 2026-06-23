@@ -1,7 +1,12 @@
+import type { NamespaceT } from "@/i18n";
 import type { MaybeMe } from "@/utils/me";
 import { can } from "@/utils/permissions";
 
-import type { NavItem } from "./admin-sidebar";
+export interface NavItem {
+  href: string;
+  /** Ключ внутри namespace "admin" (напр. "nav.lectures"); резолвится в layout.tsx. */
+  labelKey: Parameters<NamespaceT<"admin">>[0];
+}
 
 /**
  * Полный набор пунктов админки. Каждый пункт гейтится capability'ями: пока
@@ -16,7 +21,7 @@ import type { NavItem } from "./admin-sidebar";
 export function buildNavItems(me: MaybeMe): NavItem[] {
   const items: NavItem[] = [];
   // lecture.update не существует в rbac.Capability — ветка опущена (был дрейф).
-  // labelKey — ключ внутри namespace "admin" (резолвится в admin-sidebar.tsx).
+  // labelKey — ключ внутри namespace "admin" (резолвится в layout.tsx).
   if (can(me, "lecture.create") || can(me, "lecture.delete")) {
     items.push({ href: "/admin/lectures", labelKey: "nav.lectures" });
   }

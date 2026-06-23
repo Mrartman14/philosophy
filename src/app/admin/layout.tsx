@@ -2,12 +2,12 @@
 import { forbidden } from "next/navigation";
 
 import { ChevronIcon } from "@/assets/icons/chevron-icon";
+import { NavRail } from "@/components/shared/nav-rail";
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { buildNavItems, canAccessAdmin } from "./admin-access";
-import { AdminSidebar } from "./admin-sidebar";
 
 export async function generateMetadata() {
   const t = await getT("admin");
@@ -22,8 +22,11 @@ export default async function AdminLayout({
   const me = await getMe();
   if (!canAccessAdmin(me)) forbidden();
 
-  const navItems = buildNavItems(me);
   const t = await getT("admin");
+  const navItems = buildNavItems(me).map((item) => ({
+    href: item.href,
+    label: t(item.labelKey),
+  }));
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] w-full">
@@ -43,7 +46,11 @@ export default async function AdminLayout({
             </span>
           )}
         </div>
-        <AdminSidebar items={navItems} />
+        <NavRail
+          items={navItems}
+          ariaLabel={t("shellNavAriaLabel")}
+          orientation="vertical"
+        />
       </aside>
       <main className="flex-1 min-w-0 p-6">{children}</main>
     </div>
