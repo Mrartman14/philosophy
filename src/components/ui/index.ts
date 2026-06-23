@@ -35,5 +35,4 @@ export { Stack, STACK_CLASS, type StackProps } from "./stack";
 export { Inline, INLINE_CLASS, type InlineProps } from "./inline";
 export { MarginNote, MARGIN_NOTE_SIDE, type MarginNoteProps } from "./margin-note";
 export { FullBleed, FULL_BLEED_CLASS, type FullBleedProps } from "./full-bleed";
-export { WideShell, WIDE_SHELL_INNER, type WideShellProps } from "./wide-shell";
 export { FormFeedback } from "./form-feedback";

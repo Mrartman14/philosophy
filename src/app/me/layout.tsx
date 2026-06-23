@@ -24,10 +24,10 @@ export default async function MeLayout({ children }: { children: ReactNode }) {
     { href: "/me/tokens", label: t("meNavTokens") },
   ];
 
-  // Живём в общем 720-хребте (как весь контент) — сайдбar во флоу «вместе со
-  // всеми», непрерывные бордеры хребта от хедера донизу. БЕЗ WideShell: иначе
-  // .col-bleed гасит бордер хребта (см. layout.css opt-out), и узкий хедер
-  // повисал бы над широким неоформленным контентом.
+  // Живём в общем 720-хребте (как весь контент) — сайдбар во флоу «вместе со
+  // всеми», непрерывные бордеры хребта от хедера донизу. НЕ выходим в full-bleed:
+  // иначе .col-bleed погасил бы бордер хребта (см. layout.css opt-out), и узкий
+  // хедер повисал бы над широким неоформленным контентом.
   return (
     <div className="flex flex-col lg:flex-row">
       <aside className="sticky top-(--header-height) z-10 border-b border-(--color-border) bg-(--color-surface) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:border-b-0 lg:border-e">

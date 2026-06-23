@@ -1,7 +1,6 @@
 // src/app/canvases/[id]/edit/page.tsx
 import { notFound, forbidden } from "next/navigation";
 
-import { WideShell } from "@/components/ui";
 import { canEditCanvas, getCanvasById, CanvasEditor } from "@/features/canvas";
 import { getT } from "@/i18n";
 import { requireActiveUserOrRedirect } from "@/utils/me";
@@ -31,11 +30,9 @@ export default async function CanvasEditPage({ params }: Props) {
   const t = await getT("pages");
 
   return (
-    <WideShell>
-      <div className="flex flex-col">
-        <h1 className="sr-only">{t("canvasEditorHeading", { title: canvas.title ?? "" })}</h1>
-        <CanvasEditor canvas={canvas} etag={etag} />
-      </div>
-    </WideShell>
+    <div className="flex flex-col">
+      <h1 className="sr-only">{t("canvasEditorHeading", { title: canvas.title ?? "" })}</h1>
+      <CanvasEditor canvas={canvas} etag={etag} />
+    </div>
   );
 }

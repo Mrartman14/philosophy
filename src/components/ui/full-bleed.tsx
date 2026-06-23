@@ -12,9 +12,10 @@ export interface FullBleedProps {
 }
 
 /**
- * Full-bleed регион: escape из хребта на всю ширину. ДОЛЖЕН быть прямым потомком
- * `.page-grid`. Для широких app-страниц с капом ширины используй <WideShell>.
- * Structural-примитив → className ОТКРЫТ.
+ * Full-bleed регион: escape из хребта на всю ширину viewport. ДОЛЖЕН быть прямым
+ * потомком `.page-grid`. Единственное исключение из 720-хребта — для
+ * полноэкранных сцен (map/graph). Гасит декоративный бордер хребта (см. layout.css
+ * opt-out `:has(> .col-bleed)`). Structural-примитив → className ОТКРЫТ.
  */
 export function FullBleed({ className, children }: FullBleedProps) {
   return <div className={cn(FULL_BLEED_CLASS, className)}>{children}</div>;

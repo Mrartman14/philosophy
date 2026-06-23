@@ -1,7 +1,7 @@
 // src/app/canvases/[id]/page.tsx
 import { notFound } from "next/navigation";
 
-import { RouterLink, WideShell } from "@/components/ui";
+import { RouterLink } from "@/components/ui";
 import {
   canEditCanvas,
   canDeleteCanvas,
@@ -40,48 +40,46 @@ export default async function CanvasPage({ params, searchParams }: Props) {
   const t = await getT("pages");
 
   return (
-    <WideShell>
-      <div className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
-        <header className="flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold">{canvas.title ?? t("canvasDefaultTitle")}</h1>
-          {canvas.id && (
-            <ShareButton
-              resourceType="canvas"
-              resourceId={canvas.id}
-              canCreate={canShare}
-              initialLinks={shareLinks}
-            />
-          )}
-        </header>
-
-        <CanvasDetail data={canvas.data} />
-
-        {canvas.id && <CanvasContainers canvasId={canvas.id} token={token} />}
-
-        {canEdit && (
-          <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
-            <h2 className="text-lg font-semibold">{t("canvasEditSection")}</h2>
-            <RouterLink
-              href={`/canvases/${canvas.id}/edit`}
-              className="inline-flex h-10 w-fit items-center rounded bg-(--color-accent) px-4 text-sm font-medium text-(--color-surface)"
-            >
-              {t("canvasOpenEditor")}
-            </RouterLink>
-            {canPublish && canvas.id && <CanvasVisibilityButton id={canvas.id} />}
-          </section>
+    <div className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
+      <header className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">{canvas.title ?? t("canvasDefaultTitle")}</h1>
+        {canvas.id && (
+          <ShareButton
+            resourceType="canvas"
+            resourceId={canvas.id}
+            canCreate={canShare}
+            initialLinks={shareLinks}
+          />
         )}
+      </header>
 
-        {showRevisions && canvas.id && (
-          <CanvasRevisions canvasId={canvas.id} selectedRevision={revision} token={token} />
-        )}
+      <CanvasDetail data={canvas.data} />
 
-        {canDelete && canvas.id && (
-          <div>
-            <CanvasDeleteButton id={canvas.id} />
-          </div>
-        )}
-      </div>
-    </WideShell>
+      {canvas.id && <CanvasContainers canvasId={canvas.id} token={token} />}
+
+      {canEdit && (
+        <section className="flex flex-col gap-4 rounded border border-(--color-border) p-4">
+          <h2 className="text-lg font-semibold">{t("canvasEditSection")}</h2>
+          <RouterLink
+            href={`/canvases/${canvas.id}/edit`}
+            className="inline-flex h-10 w-fit items-center rounded bg-(--color-accent) px-4 text-sm font-medium text-(--color-surface)"
+          >
+            {t("canvasOpenEditor")}
+          </RouterLink>
+          {canPublish && canvas.id && <CanvasVisibilityButton id={canvas.id} />}
+        </section>
+      )}
+
+      {showRevisions && canvas.id && (
+        <CanvasRevisions canvasId={canvas.id} selectedRevision={revision} token={token} />
+      )}
+
+      {canDelete && canvas.id && (
+        <div>
+          <CanvasDeleteButton id={canvas.id} />
+        </div>
+      )}
+    </div>
   );
 }
 

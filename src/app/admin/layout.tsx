@@ -29,7 +29,7 @@ export default async function AdminLayout({
   }));
 
   // В общем 720-хребте (как весь контент): сайдбар во флоу, непрерывные бордеры
-  // хребта от хедера. БЕЗ WideShell (иначе .col-bleed гасит бордер хребта).
+  // хребта от хедера. НЕ выходим в full-bleed (иначе .col-bleed гасит бордер хребта).
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] w-full">
       <aside className="w-56 shrink-0 border-e border-(--color-border) bg-(--color-surface-subtle) p-4 flex flex-col gap-4">
