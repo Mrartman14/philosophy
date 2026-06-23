@@ -2,13 +2,12 @@
 import type { ReactNode } from "react";
 
 import { NavRail } from "@/components/shared/nav-rail";
+import { SidebarLayout } from "@/components/shared/sidebar-layout";
 import { getT } from "@/i18n";
 
-// Под-навигация личного кабинета над каждой /me/* страницей.
-// На десктопе — вертикальная колонка слева, sticky под шапкой (контент справа);
-// на мобиле — обычная полоса над контентом, БЕЗ sticky и фона (просто скроллится
-// вместе со страницей). Без фона: на мобиле ничего под навигацией не скроллится.
-// Active-подсветка и разметка ссылок — в shared-компоненте NavRail.
+// Под-навигация личного кабинета над каждой /me/* страницей. Вид сайдбара
+// (responsive, sticky-десктоп, без фона) — в общем SidebarLayout (один паттерн
+// на всё приложение). Active-подсветка ссылок — в NavRail.
 // Гейт авторизации — на самих страницах (requireUserOrRedirect).
 
 export default async function MeLayout({ children }: { children: ReactNode }) {
@@ -25,20 +24,11 @@ export default async function MeLayout({ children }: { children: ReactNode }) {
     { href: "/me/tokens", label: t("meNavTokens") },
   ];
 
-  // Живём в общем 720-хребте (как весь контент) — сайдбар во флоу «вместе со
-  // всеми», непрерывные бордеры хребта от хедера донизу. НЕ выходим в full-bleed:
-  // иначе .col-bleed погасил бы бордер хребта (см. layout.css opt-out), и узкий
-  // хедер повисал бы над широким неоформленным контентом.
   return (
-    <div className="flex flex-col lg:flex-row">
-      <aside className="border-b border-(--color-border) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:sticky lg:top-(--header-height) lg:border-b-0 lg:border-e">
-        <NavRail
-          items={items}
-          ariaLabel={t("meNavAriaLabel")}
-          orientation="responsive"
-        />
-      </aside>
-      <div className="min-w-0 flex-1">{children}</div>
-    </div>
+    <SidebarLayout
+      nav={<NavRail items={items} ariaLabel={t("meNavAriaLabel")} orientation="responsive" />}
+    >
+      {children}
+    </SidebarLayout>
   );
 }
