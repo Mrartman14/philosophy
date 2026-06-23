@@ -227,6 +227,18 @@ required-ключей. Required-enforcement действует только на
 при вводе (серверная валидация при этом не трогается — `Field.Root.validate` не задаём;
 кастом-виджеты вроде AST-редактора в фокус-цикл не входят — нет зарегистрированного контрола).
 
+**Валидация — серверный Zod, НЕ нативный `required`.** На контролах (`TextInput`/
+`Textarea`/`ColorInput`/native `<input>`) НЕ ставим HTML-атрибут `required`: Base UI
+читает `element.validationMessage` (строку, локализованную по языку БРАУЗЕРА, не
+UI-локали) и режет сабмит на клиенте, минуя серверную Zod-валидацию с локализованными
+сообщениями. Идиома Base UI (док «Using with Zod») — источник истины это схема: пустой
+сабмит уходит в server action, Zod возвращает `fieldErrors`, они текут через `errors`-проп
+в `<Field.Error>`. Для доступности на required-контроле ставим `aria-required` (чистый
+ARIA, без constraint-validation). Обязательность визуально — звёздочка из `<Field required>`.
+Исключения: (1) `<input type="file">` загрузок (multipart) пока сохраняет нативный
+`required`; (2) native typed-инпуты (`type="datetime-local"|"date"|"number"`) по природе
+типа всё равно могут поднять `badInput`/`typeMismatch` — это покрывает kit `FormField`.
+
 `Form` из `@/components/ui` оборачивает Base UI `Form` и принимает
 `errors: Record<string, string>` (Base UI допускает `string | string[]`,
 наш wrapper упрощает до `string`).
