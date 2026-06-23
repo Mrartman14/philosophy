@@ -1,6 +1,9 @@
 // Единый источник значений оси локали. Client-safe (без server-only / next).
-export const LOCALES = ["system", "ru", "en", "ar"] as const;
-export const RESOLVED_LOCALES = ["ru", "en", "ar"] as const;
+// "en-XA" — псевдолокаль для визуального QA лейаута (генерится из en, см.
+// ./pseudo + messages/pseudo). Реальная UI-локаль ей не является: авто-детект по
+// Accept-Language её не выбирает (primary-subtag "en"), пикер показывает только в dev.
+export const LOCALES = ["system", "ru", "en", "ar", "en-XA"] as const;
+export const RESOLVED_LOCALES = ["ru", "en", "ar", "en-XA"] as const;
 
 /** Хранимое значение предпочтения (в cookie / preferences). */
 export type Locale = (typeof LOCALES)[number];
@@ -9,6 +12,9 @@ export type ResolvedLocale = (typeof RESOLVED_LOCALES)[number];
 
 export const DEFAULT_LOCALE: ResolvedLocale = "ru";
 export const LOCALE_COOKIE = "locale";
+
+/** Псевдолокаль (визуальный QA лейаута). Не персистится на бэк, dev-only в пикере. */
+export const PSEUDO_LOCALE = "en-XA" as const;
 
 export function isLocale(v: unknown): v is Locale {
   return typeof v === "string" && (LOCALES as readonly string[]).includes(v);

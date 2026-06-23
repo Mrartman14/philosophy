@@ -4,7 +4,7 @@ import { useTransition } from "react";
 
 import { FormField, Select } from "@/components/ui";
 import { useT } from "@/i18n/client";
-import { LOCALE_COOKIE, type Locale } from "@/i18n/locales";
+import { LOCALE_COOKIE, PSEUDO_LOCALE, type Locale } from "@/i18n/locales";
 import { persistLocale } from "@/i18n/persist-locale";
 
 export function LocaleSettings({ initial }: { initial: Locale }) {
@@ -17,12 +17,19 @@ export function LocaleSettings({ initial }: { initial: Locale }) {
     { value: "ru", label: `🇷🇺 ${t("localeRu")}` },
     { value: "en", label: `🇬🇧 ${t("localeEn")}` },
     { value: "ar", label: `🇸🇦 ${t("localeAr")}` },
+    // Псевдолокаль — инструмент визуального QA лейаута, не для конечных юзеров:
+    // показываем только в dev (process.env.NODE_ENV инлайнится на билде → в проде
+    // ветка отсутствует, опции нет).
+    ...(process.env.NODE_ENV !== "production"
+      ? [{ value: PSEUDO_LOCALE, label: "🧪 Pseudo (dev)" }]
+      : []),
   ];
 
   function onChange(v: string) {
     const next = v as Locale;
     document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax; secure`;
-    void persistLocale(next);
+    // Псевдолокаль на бэк не персистим — бэк её не знает, это локальный тест.
+    if (next !== PSEUDO_LOCALE) void persistLocale(next);
     // Локаль-зависимые сообщения приходят с сервера → перечитываем дерево.
     startTransition(() => {
       router.refresh();

@@ -5,9 +5,10 @@ import type { ResolvedLocale } from "../locales";
 
 import ar from "./ar";
 import en from "./en";
+import pseudo from "./pseudo";
 import ru from "./ru";
 
-const CATALOG = { ru, en, ar } as const;
+const CATALOG = { ru, en, ar, "en-XA": pseudo } as const;
 
 export function loadMessages(locale: ResolvedLocale) {
   return CATALOG[locale];
