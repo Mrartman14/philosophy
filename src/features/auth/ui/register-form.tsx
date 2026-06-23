@@ -44,19 +44,19 @@ export function RegisterForm({ next }: RegisterFormProps) {
       <Stack className="max-w-sm">
         <input type="hidden" name={f("next")} value={next} />
         <Field name="username" label={t("register.usernameLabel")} required>
-          <TextInput required autoComplete="username" />
+          <TextInput aria-required autoComplete="username" />
         </Field>
         <Field name="password" label={t("register.passwordLabel")} required>
           <TextInput
             type="password"
-            required
+            aria-required
             autoComplete="new-password"
           />
         </Field>
         <Field name="password_confirm" label={t("register.passwordConfirmLabel")} required>
           <TextInput
             type="password"
-            required
+            aria-required
             autoComplete="new-password"
           />
         </Field>

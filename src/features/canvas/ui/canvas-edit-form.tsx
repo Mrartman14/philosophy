@@ -63,7 +63,7 @@ export function CanvasEditForm({ canvas, etag }: Props) {
         {/* etag — не ключ схемы (читается через formData.get как If-Match), оставляем raw */}
         <input type="hidden" name="etag" value={etag ?? ""} />
         <Field name="title" label={t("editForm.titleLabel")} required>
-          <TextInput defaultValue={canvas.title ?? ""} required />
+          <TextInput defaultValue={canvas.title ?? ""} aria-required />
         </Field>
         <Field name="data" label={t("editForm.dataLabel")}>
           <Textarea rows={14} defaultValue={dataJson} mono />

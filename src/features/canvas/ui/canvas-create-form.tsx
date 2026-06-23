@@ -45,7 +45,7 @@ export function CanvasCreateForm() {
     <Form action={action} errors={errors(state)}>
       <Stack>
         <Field name="title" label={t("createForm.titleLabel")} required>
-          <TextInput required />
+          <TextInput aria-required />
         </Field>
         <Field name="visibility" label={t("createForm.visibilityLabel")}>
           <Select

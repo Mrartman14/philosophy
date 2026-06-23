@@ -43,12 +43,12 @@ export function LoginForm({ next }: LoginFormProps) {
       <Stack className="max-w-sm">
         <input type="hidden" name={f("next")} value={next} />
         <Field name="username" label={t("login.usernameLabel")} required>
-          <TextInput required autoComplete="username" />
+          <TextInput aria-required autoComplete="username" />
         </Field>
         <Field name="password" label={t("login.passwordLabel")} required>
           <TextInput
             type="password"
-            required
+            aria-required
             autoComplete="current-password"
           />
         </Field>
