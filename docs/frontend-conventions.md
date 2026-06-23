@@ -240,6 +240,13 @@ ARIA, без constraint-validation). Обязательность визуаль
 (3) `type="datetime-local"|"date"` (у Base UI нет date-компонента) по природе типа
 поднимают `badInput`/`typeMismatch` — это покрывает локализация в kit `FormField`.
 
+Чтобы ПОЛНОСТЬЮ убрать kit-локализацию native-ошибок (`Field.Validity` в `FormField`),
+нужно увести оставшиеся native-инпуты на не-нативные контролы: **(а) kit date/datetime-field**
+(у Base UI его нет → свой на тексте+Zod-парсе или ждать апстрим) вместо `<input type="date|datetime-local">`;
+**(б) file-контрол** с серверным/клиентским «файл обязателен» без native `required` вместо
+`<input type="file" required>`. Число уже закрыто `NumberField`. Пока эти два не сделаны —
+`Field.Validity`-сетка остаётся (несёт ровно эти два кейса).
+
 `Form` из `@/components/ui` оборачивает Base UI `Form` и принимает
 `errors: Record<string, string>` (Base UI допускает `string | string[]`,
 наш wrapper упрощает до `string`).
