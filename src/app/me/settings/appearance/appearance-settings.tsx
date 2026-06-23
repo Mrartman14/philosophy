@@ -1,7 +1,9 @@
 "use client";
 import { useAppearance } from "@/components/appearance";
-import { FormField, RadioGroup, Select } from "@/components/ui";
+import { FormField, RadioGroup } from "@/components/ui";
 import { useT } from "@/i18n/client";
+import { type TextSize } from "@/styles/tokens/enums";
+import { TEXT_SCALE } from "@/styles/tokens/scales";
 import { withViewTransition } from "@/utils/view-transition";
 
 export function AppearanceSettings() {
@@ -27,12 +29,21 @@ export function AppearanceSettings() {
     { value: "legible", label: t("appearance.font.legible") },
     { value: "serif", label: t("appearance.font.serif") },
   ];
+  // Каждый сегмент — глиф «Aa» в масштабе своего размера (визуальный превью),
+  // доступным именем остаётся локализованный текст-метка (см. RadioGroup.content).
   const TEXT_SIZE = [
     { value: "sm", label: t("appearance.textSize.sm") },
     { value: "md", label: t("appearance.textSize.md") },
     { value: "lg", label: t("appearance.textSize.lg") },
     { value: "xl", label: t("appearance.textSize.xl") },
-  ];
+  ].map((o) => ({
+    ...o,
+    content: (
+      <span title={o.label} className="leading-none" style={{ fontSize: `${TEXT_SCALE[o.value as TextSize]}rem` }}>
+        Aa
+      </span>
+    ),
+  }));
   const MOTION = [
     { value: "system", label: t("appearance.motion.system") },
     { value: "reduced", label: t("appearance.motion.reduced") },
@@ -46,7 +57,7 @@ export function AppearanceSettings() {
       <Row name="contrast" label={t("appearance.contrastLabel")}><RadioGroup aria-label={t("appearance.contrastLabel")} options={CONTRAST} value={appearance.contrast} onValueChange={(v) => { setAxis("contrast", v as typeof appearance.contrast); }} /></Row>
       <Row name="density" label={t("appearance.densityLabel")}><RadioGroup aria-label={t("appearance.densityLabel")} options={DENSITY} value={appearance.density} onValueChange={(v) => { setAxis("density", v as typeof appearance.density); }} /></Row>
       <Row name="font" label={t("appearance.fontLabel")}><RadioGroup aria-label={t("appearance.fontLabel")} options={FONT} value={appearance.font} onValueChange={(v) => { setAxis("font", v as typeof appearance.font); }} /></Row>
-      <Row name="textSize" label={t("appearance.textSizeLabel")}><Select aria-label={t("appearance.textSizeLabel")} options={TEXT_SIZE} value={appearance.textSize} onValueChange={(v) => { setAxis("textSize", v as typeof appearance.textSize); }} /></Row>
+      <Row name="textSize" label={t("appearance.textSizeLabel")}><RadioGroup aria-label={t("appearance.textSizeLabel")} options={TEXT_SIZE} value={appearance.textSize} onValueChange={(v) => { setAxis("textSize", v as typeof appearance.textSize); }} /></Row>
       <Row name="motion" label={t("appearance.motionLabel")}><RadioGroup aria-label={t("appearance.motionLabel")} options={MOTION} value={appearance.motion} onValueChange={(v) => { setAxis("motion", v as typeof appearance.motion); }} /></Row>
     </section>
   );

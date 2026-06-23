@@ -44,4 +44,12 @@ describe("AppearanceSettings", () => {
     expect(setAxis).toHaveBeenCalledWith("density", "compact");
     expect(withViewTransition).not.toHaveBeenCalled();
   });
+
+  it("размер текста — radiogroup; выбор сегмента зовёт setAxis('textSize')", () => {
+    render(<AppearanceSettings />);
+    const group = screen.getByRole("radiogroup", { name: /размер текста/i });
+    // Сегменты подписаны локализованным текстом (sr-only), визуал — глиф «Aa».
+    fireEvent.click(within(group).getByText(/крупнее/i));
+    expect(setAxis).toHaveBeenCalledWith("textSize", "lg");
+  });
 });

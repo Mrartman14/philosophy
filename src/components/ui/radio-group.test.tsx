@@ -98,6 +98,20 @@ describe("RadioGroup", () => {
     expect(new Set(labelledByIds).size).toBe(labelledByIds.length);
   });
 
+  it("опция с content: визуал виден, но в доступное имя не попадает (имя = label)", () => {
+    const opts = [
+      { value: "sm", label: "Меньше", content: <span>Aa</span> },
+      { value: "md", label: "Обычный", content: <span>Aa</span> },
+    ];
+    render(<RadioGroup aria-label="Размер" options={opts} value="md" onValueChange={vi.fn()} />);
+    // Доступное имя сегмента — текст-метка, декоративный глиф «Aa» в имя не попадает.
+    expect(screen.getByRole("radio", { name: "Меньше" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Обычный" })).toBeChecked();
+    expect(screen.queryByRole("radio", { name: /Aa/ })).toBeNull();
+    // При этом глиф отрендерен как визуальный превью (по одному на сегмент).
+    expect(screen.getAllByText("Aa")).toHaveLength(2);
+  });
+
   it("выбранный сегмент несёт не-цветовой аффорданс (font-semibold, B1 WCAG 1.4.1)", () => {
     render(<RadioGroup aria-label="Тема" options={OPTIONS} value="light" onValueChange={vi.fn()} />);
     // Класс с data-[checked]:font-semibold присутствует на сегменте; в активном

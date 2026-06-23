@@ -2,13 +2,19 @@
 // src/components/ui/radio-group.tsx
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 
 import { cn, FOCUS_RING_CONTROL } from "./cn";
 
 interface RadioGroupOption {
   value: string;
   label: string;
+  /**
+   * Опциональный визуал сегмента (например, глиф «Aa» нужного размера). Когда
+   * задан — рендерится как `aria-hidden` декорация, а доступным именем сегмента
+   * остаётся текстовый `label` (sr-only). Без него `label` рендерится как обычно.
+   */
+  content?: ReactNode;
 }
 
 export interface RadioGroupProps {
@@ -81,7 +87,16 @@ export function RadioGroup({
               "data-[disabled]:opacity-50",
             )}
           >
-            <span id={labelId}>{opt.label}</span>
+            {opt.content == null ? (
+              <span id={labelId}>{opt.label}</span>
+            ) : (
+              <>
+                {/* Декоративный визуал скрыт от AT, чтобы доступным именем
+                    сегмента остался текст-метка (opt.label), а не глиф. */}
+                <span aria-hidden="true">{opt.content}</span>
+                <span id={labelId} className="sr-only">{opt.label}</span>
+              </>
+            )}
           </Radio.Root>
         );
       })}
