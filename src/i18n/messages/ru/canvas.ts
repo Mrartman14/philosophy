@@ -7,7 +7,9 @@ const canvas = {
     titleLabel: "Название",
     visibilityLabel: "Видимость",
     dataLabel: "Данные графа (JSON, необязательно)",
-    dataDescription: 'Например: {"nodes":[],"edges":[]}',
+    // ICU: фигурные скобки экранируем одинарными кавычками, иначе {"nodes"…}
+    // парсится next-intl как (битый) плейсхолдер → выводится сам ключ.
+    dataDescription: "Например: '{\"nodes\":[],\"edges\":[]}'",
     visibilityPrivate: "Приватный",
     visibilityPublic: "Публичный",
     submitCreate: "Создать",

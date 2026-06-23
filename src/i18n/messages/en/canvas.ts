@@ -8,7 +8,9 @@ const canvas: Messages["canvas"] = {
     titleLabel: "Title",
     visibilityLabel: "Visibility",
     dataLabel: "Graph data (JSON, optional)",
-    dataDescription: 'Example: {"nodes":[],"edges":[]}',
+    // ICU: escape the braces with single quotes, otherwise {"nodes"…} is parsed
+    // by next-intl as a (malformed) placeholder → the key itself is rendered.
+    dataDescription: "Example: '{\"nodes\":[],\"edges\":[]}'",
     visibilityPrivate: "Private",
     visibilityPublic: "Public",
     submitCreate: "Create",

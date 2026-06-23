@@ -2,6 +2,7 @@
 // Рантайм-тест ICU-паритета: проверяет, что имена аргументов плейсхолдеров
 // и plural-категории в ru и en совпадают (там где должны) по каждому ключу.
 // Закрывает находку B4 из ревью 2026-06-20.
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import en from "./en";
@@ -237,6 +238,41 @@ describe("ICU plural-category validity en", () => {
     expect(
       missing,
       `Неполные en plural-категории в ${missing.length.toString()} ключе(ах):\n\n${missing.join("\n\n")}`,
+    ).toHaveLength(0);
+  });
+});
+
+describe("ICU compile validity — нет битых плейсхолдеров", () => {
+  // next-intl парс-ошибки ICU приходят с кодом INVALID_MESSAGE; missing-value —
+  // другой код, его НЕ ловим (плейсхолдеры резолвятся на вызове). Литеральные
+  // фигурные скобки в тексте (например JSON-пример `{"nodes":[]}`) ОБЯЗАНЫ быть
+  // ICU-экранированы одинарными кавычками — иначе next-intl парсит их как (битый)
+  // плейсхолдер и выводит сам ключ вместо текста. Закрывает регрессию dataDescription.
+  const PARSE_ERROR_CODES = new Set(["INVALID_MESSAGE", "SYNTAX_ERROR"]);
+
+  it.each([
+    ["ru", ru, ruFlat] as const,
+    ["en", en, enFlat] as const,
+  ])("%s: каждое сообщение компилируется как валидный ICU", (locale, catalog, flat) => {
+    let currentKey = "";
+    const broken: string[] = [];
+    const t = createTranslator({
+      locale,
+      messages: catalog,
+      onError: (e) => {
+        if (PARSE_ERROR_CODES.has(e.code)) broken.push(`${currentKey} :: ${e.code}`);
+      },
+    }) as unknown as (key: string, values?: Record<string, unknown>) => string;
+
+    for (const key of flat.keys()) {
+      currentKey = key;
+      // Пустой {} форсит ленивую компиляцию next-intl (без values она пропускается).
+      t(key, {});
+    }
+
+    expect(
+      broken,
+      `Битые ICU-сообщения (${broken.length.toString()}):\n${broken.join("\n")}`,
     ).toHaveLength(0);
   });
 });
