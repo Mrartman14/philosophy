@@ -69,7 +69,7 @@ export function BannerEditForm({ banner, tz }: Props) {
         <Field name="background_color" label={t("fieldColor")} required>
           <ColorInput
             defaultValue={toColorInputValue(banner.background_color)}
-            required
+            aria-required
             aria-label={t("fieldColor")}
           />
         </Field>
@@ -91,7 +91,7 @@ export function BannerEditForm({ banner, tz }: Props) {
           <TextInput
             type="datetime-local"
             defaultValue={instantToWallClock(banner.start_at, tz)}
-            required
+            aria-required
           />
         </Field>
 

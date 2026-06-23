@@ -101,7 +101,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
       <input type="hidden" name="payload" value={payload} />
 
       <FormField name="title" label={t("builder.titleLabel")} required>
-        <TextInput id="form-builder-title" value={title} disabled={disabled} maxLength={500} onChange={(e) => { setTitle(e.target.value); }} required />
+        <TextInput id="form-builder-title" value={title} disabled={disabled} maxLength={500} onChange={(e) => { setTitle(e.target.value); }} aria-required />
       </FormField>
 
       <FormField name="description" label={t("builder.descriptionLabel")}>

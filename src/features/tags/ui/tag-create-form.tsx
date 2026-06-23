@@ -29,7 +29,7 @@ export function TagCreateForm() {
       <Stack className="max-w-xl">
         <IdempotencyField result={state} />
         <Field name="name" label={tTags("newTagLabel")} required>
-          <TextInput required maxLength={100} placeholder={tTags("namePlaceholder")} />
+          <TextInput aria-required maxLength={100} placeholder={tTags("namePlaceholder")} />
         </Field>
 
         <FormFeedback

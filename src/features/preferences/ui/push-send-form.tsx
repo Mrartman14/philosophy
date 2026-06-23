@@ -42,7 +42,7 @@ export function PushSendForm() {
         <IdempotencyField result={state} />
         <Field name="title" label={tPrefs("pushTitleLabel")} required>
           <TextInput
-            required
+            aria-required
             maxLength={200}
             placeholder={tPrefs("pushTitlePlaceholder")}
           />

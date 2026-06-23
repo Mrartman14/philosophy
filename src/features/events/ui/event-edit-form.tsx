@@ -80,7 +80,7 @@ export function EventEditForm({ event, tz }: Props) {
         <Field name="title" label={t("fieldTitle")} required>
           <TextInput
             defaultValue={event.title ?? ""}
-            required
+            aria-required
             maxLength={500}
           />
         </Field>
@@ -104,7 +104,7 @@ export function EventEditForm({ event, tz }: Props) {
             type={allDay ? "date" : "datetime-local"}
             value={startDate}
             onChange={(e) => { setStartDate(e.target.value); }}
-            required
+            aria-required
           />
         </Field>
 

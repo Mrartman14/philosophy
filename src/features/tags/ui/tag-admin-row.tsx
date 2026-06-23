@@ -59,7 +59,7 @@ export function TagAdminRow({ tag, canEdit, canDelete }: Props) {
           <Inline align="end">
             <input type="hidden" name={f("id")} value={tag.id} />
             <Field name="name" label={tTags("newNameLabel")} className="flex-1" required>
-              <TextInput name="name" required maxLength={100} defaultValue={tag.name} />
+              <TextInput name="name" aria-required maxLength={100} defaultValue={tag.name} />
             </Field>
             <SubmitButton>{tTags("saveButton")}</SubmitButton>
           </Inline>

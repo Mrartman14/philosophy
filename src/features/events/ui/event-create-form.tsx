@@ -39,7 +39,7 @@ export function EventCreateForm() {
         <IdempotencyField result={state} />
         <Field name="title" label={t("fieldTitle")} required>
           <TextInput
-            required
+            aria-required
             maxLength={500}
             placeholder={t("titlePlaceholder")}
           />
@@ -57,7 +57,7 @@ export function EventCreateForm() {
         >
           <TextInput
             type={allDay ? "date" : "datetime-local"}
-            required
+            aria-required
           />
         </Field>
 

@@ -92,7 +92,7 @@ export function TokensManager({ initialTokens, canManage, mcpUrl, trackingEnable
               <Field name="label" label={t("labelField")} required className="flex-1">
                 <TextInput
                   name="label"
-                  required
+                  aria-required
                   maxLength={100}
                   placeholder={t("labelPlaceholder")}
                 />

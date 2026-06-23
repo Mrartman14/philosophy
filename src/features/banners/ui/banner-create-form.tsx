@@ -50,7 +50,7 @@ export function BannerCreateForm() {
         <Field name="background_color" label={t("fieldColor")} required>
           <ColorInput
             defaultValue="#336699"
-            required
+            aria-required
             aria-label={t("fieldColor")}
           />
         </Field>
@@ -69,7 +69,7 @@ export function BannerCreateForm() {
         </Inline>
 
         <Field name="start_at" label={t("fieldStartAt")} required>
-          <TextInput type="datetime-local" required />
+          <TextInput type="datetime-local" aria-required />
         </Field>
 
         <Field name="end_at" label={t("fieldEndAt")}>
