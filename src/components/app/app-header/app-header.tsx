@@ -16,7 +16,7 @@ export const AppHeader = async () => {
   const t = await getT("common");
   return (
     <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--color-surface) border-t-0 border-b md:border-t border-(--color-border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:start-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
-      <NavigationMenu.Root className="w-full max-w-[100vw] lg:max-w-screen-lg md:border-x border-(--color-border) bg-(--color-surface) px-4">
+      <NavigationMenu.Root className="w-full max-w-[var(--layout-spine)] md:border-x border-(--color-border) bg-(--color-surface) px-4">
         <NavigationMenu.List className="relative grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 w-full h-full items-stretch">
           <NavigationMenu.Item className="flex items-stretch">
             <RouterLink href="/" className="flex group">

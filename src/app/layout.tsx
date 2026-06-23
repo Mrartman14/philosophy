@@ -143,7 +143,8 @@ export default async function RootLayout({
                   <StatusBanner me={me} />
                   <ActiveBanners />
                   <InstallBanner />
-                  <main className="w-[100vw] max-w-[100vw] lg:w-full lg:max-w-screen-lg flex flex-col items-center md:border-x md:border-(--color-border)">
+                  <main className="page-grid">
+                    <div className="spine-frame" aria-hidden="true" />
                     {children}
                   </main>
                   <WebVitalsReporter />
