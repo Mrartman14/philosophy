@@ -26,7 +26,7 @@ export function TrailCreateForm() {
       <Stack>
         <IdempotencyField result={state} />
         <Field name="title" label={t("createTitleLabel")} required>
-          <TextInput required maxLength={200} placeholder={t("createTitlePlaceholder")} />
+          <TextInput aria-required maxLength={200} placeholder={t("createTitlePlaceholder")} />
         </Field>
 
         <Field name="description" label={t("createDescriptionLabel")}>

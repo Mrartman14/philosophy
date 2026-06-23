@@ -35,11 +35,11 @@ export function LectureCreateForm() {
       <Stack className="max-w-xl">
         <IdempotencyField result={state} />
         <Field name="title" label={tL("titleLabel")} required>
-          <TextInput name="title" required maxLength={200} />
+          <TextInput name="title" aria-required maxLength={200} />
         </Field>
 
         <Field name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
-          <TextInput name="date" required placeholder="2026-04-27" />
+          <TextInput name="date" aria-required placeholder="2026-04-27" />
         </Field>
 
         <Field name="description" label={tL("descriptionLabel")}>

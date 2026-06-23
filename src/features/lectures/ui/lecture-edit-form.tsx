@@ -48,11 +48,11 @@ export function LectureEditForm({ lecture, canSetVisibility, canDelete }: Props)
           <VersionField version={lecture.version} />
 
           <Field name="title" label={tL("titleLabel")} required>
-            <TextInput name="title" required maxLength={200} defaultValue={lecture.title} />
+            <TextInput name="title" aria-required maxLength={200} defaultValue={lecture.title} />
           </Field>
 
           <Field name="date" label={tL("dateLabel")} required description={tL("dateDescription")}>
-            <TextInput name="date" required defaultValue={lecture.date} />
+            <TextInput name="date" aria-required defaultValue={lecture.date} />
           </Field>
 
           <Field name="description" label={tL("descriptionLabel")}>

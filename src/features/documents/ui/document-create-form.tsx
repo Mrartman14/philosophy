@@ -31,7 +31,7 @@ export function DocumentCreateForm() {
         <IdempotencyField result={state} />
 
         <Field name="title" label={t("titleLabel")} required>
-          <TextInput required maxLength={500} placeholder={t("titlePlaceholder")} />
+          <TextInput aria-required maxLength={500} placeholder={t("titlePlaceholder")} />
         </Field>
 
         <Field name="visibility" label={t("visibilityLabel")}>

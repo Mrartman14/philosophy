@@ -33,7 +33,7 @@ export function TrailMetaForm({ trail }: Props) {
         <IdempotencyField result={state} />
 
         <Field name="title" label={t("metaTitleLabel")} required>
-          <TextInput required maxLength={200} defaultValue={trail.title} />
+          <TextInput aria-required maxLength={200} defaultValue={trail.title} />
         </Field>
 
         {/* description — required-ключ z.input (нет .optional() в makeTrailMetaSchema:

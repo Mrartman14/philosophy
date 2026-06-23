@@ -34,7 +34,7 @@ export function DocumentMetaForm({ document }: Props) {
         <Field name="title" label={t("titleLabel")} required>
           <TextInput
             defaultValue={document.filename ?? ""}
-            required
+            aria-required
             maxLength={500}
           />
         </Field>
