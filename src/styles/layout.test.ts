@@ -50,6 +50,12 @@ describe("layout.css", () => {
     expect(css).toMatch(/\.spine-frame[\s\S]*inline-size:\s*min\(\s*var\(--layout-spine\)/);
   });
 
+  it("бордер хребта рисуется ПОВЕРХ контента (не позади) — z-index положительный", () => {
+    // z-index:-1 пряtal бы бордер за непрозрачными фонами (напр. сайдбар /me).
+    expect(css).toMatch(/\.spine-frame[\s\S]*z-index:\s*40/);
+    expect(css).not.toMatch(/\.spine-frame[\s\S]*z-index:\s*-1/);
+  });
+
   it("в app/wide-режиме (есть .col-bleed) хребет-бордер гасится (§6)", () => {
     expect(css).toMatch(/\.page-grid:has\(>\s*\.col-bleed\)[\s\S]*\.spine-frame[\s\S]*display:\s*none/);
   });

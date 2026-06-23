@@ -33,7 +33,6 @@
   column-gap: 0;
   align-content: start;   /* контент пакуется к верху — без растяжки по высоте */
   position: relative;     /* якорь containing-block для .spine-frame */
-  isolation: isolate;     /* локальный stacking-context для z-index бордера */
 }
 
 @media (min-width: 1280px) {  /* = --breakpoint-xl, держать синхронно с tokens.generated.css (media не читает var()) */
@@ -50,7 +49,10 @@
 
 /* Декоративный бордер хребта: непрерывная вертикаль во всю высоту main.
    Абсолют + центрирование во всю ширину main → не зависит от грид-строк
-   контента. border-inline (логический) → корректно в RTL. Только md+. */
+   контента. border-inline (логический) → корректно в RTL. Только md+.
+   z-index:40 — рисуем бордер ПОВЕРХ контента (как оконную раму), ниже sticky-
+   хедера (z-50): иначе непрозрачные фоны контента (напр. bg сайдбара /me с z-10)
+   перекрыли бы его. pointer-events:none — рамка декоративна, клики проходят. */
 .spine-frame {
   position: absolute;
   inset-block: 0;
@@ -58,7 +60,7 @@
   margin-inline: auto;
   inline-size: min(var(--layout-spine), 100%);
   pointer-events: none;
-  z-index: -1;
+  z-index: 40;
 }
 @media (min-width: 768px) {  /* 768 = --breakpoint-md, держать синхронно с tokens.generated.css */
   .spine-frame { border-inline: 1px solid var(--color-border); }
