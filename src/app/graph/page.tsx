@@ -2,6 +2,7 @@
 // Публичная (optional-auth) страница графа связности корпуса. Зеркало app/map/page.tsx
 // без search-overlay (вне объёма, спека §38): getGraph() → SceneStatePanel при не-ok, иначе Graph.
 import { SceneStatePanel } from "@/components/scene-3d";
+import { FullBleed } from "@/components/ui";
 import { getGraph, Graph } from "@/features/reference-graph";
 import { getT } from "@/i18n";
 
@@ -15,18 +16,22 @@ export default async function GraphPage() {
   const t = await getT("referenceGraph");
   if (!result.ok) {
     return (
-      <main className="h-[80vh] w-full">
-        <SceneStatePanel
-          reason={result.reason}
-          buildingText={t("building")}
-          errorText={t("loadError")}
-        />
-      </main>
+      <FullBleed>
+        <div className="h-[80vh] w-full">
+          <SceneStatePanel
+            reason={result.reason}
+            buildingText={t("building")}
+            errorText={t("loadError")}
+          />
+        </div>
+      </FullBleed>
     );
   }
   return (
-    <main className="h-[80vh] w-full">
-      <Graph data={result.graph} />
-    </main>
+    <FullBleed>
+      <div className="h-[80vh] w-full">
+        <Graph data={result.graph} />
+      </div>
+    </FullBleed>
   );
 }

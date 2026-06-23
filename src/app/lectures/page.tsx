@@ -1,5 +1,5 @@
 // src/app/lectures/page.tsx
-import { Pagination } from "@/components/ui";
+import { Pagination, WideShell } from "@/components/ui";
 import { getPaginationLabels } from "@/components/ui/pagination.server";
 import { getLectures, LectureList, LectureSearchForm } from "@/features/lectures";
 import { getLectureTags, getTags } from "@/features/tags";
@@ -45,16 +45,18 @@ export default async function LecturesPage({ searchParams }: Props) {
 
   const paginationLabels = await getPaginationLabels();
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
-      <h1 className="text-3xl font-bold">{t("lecturesHeading")}</h1>
-      <LectureSearchForm
-        basePath="/lectures"
-        tagOptions={allTags.items.map((t) => t.name)}
-      />
-      <LectureList items={items} tagsByLectureId={tagsByLectureId} />
-      {total > limit && (
-        <Pagination basePath="/lectures" offset={offset} limit={limit} total={total} searchParams={sp} labels={paginationLabels} />
-      )}
-    </div>
+    <WideShell>
+      <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
+        <h1 className="text-3xl font-bold">{t("lecturesHeading")}</h1>
+        <LectureSearchForm
+          basePath="/lectures"
+          tagOptions={allTags.items.map((t) => t.name)}
+        />
+        <LectureList items={items} tagsByLectureId={tagsByLectureId} />
+        {total > limit && (
+          <Pagination basePath="/lectures" offset={offset} limit={limit} total={total} searchParams={sp} labels={paginationLabels} />
+        )}
+      </div>
+    </WideShell>
   );
 }

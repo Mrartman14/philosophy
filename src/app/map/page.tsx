@@ -1,4 +1,5 @@
 // src/app/map/page.tsx
+import { FullBleed } from "@/components/ui";
 import { getSearchResults, SEARCH_RESULT_LIMIT } from "@/features/search";
 import { getMap, MapStatePanel, SemanticMap, type MapOverlay } from "@/features/semantic-map";
 import { getT } from "@/i18n";
@@ -19,9 +20,11 @@ export default async function MapPage({
   const result = await getMap();
   if (!result.ok) {
     return (
-      <main className="h-[80vh] w-full">
-        <MapStatePanel reason={result.reason} />
-      </main>
+      <FullBleed>
+        <div className="h-[80vh] w-full">
+          <MapStatePanel reason={result.reason} />
+        </div>
+      </FullBleed>
     );
   }
 
@@ -42,8 +45,10 @@ export default async function MapPage({
   }
 
   return (
-    <main className="h-[80vh] w-full">
-      <SemanticMap data={result.map} {...(overlay !== undefined ? { overlay } : {})} />
-    </main>
+    <FullBleed>
+      <div className="h-[80vh] w-full">
+        <SemanticMap data={result.map} {...(overlay !== undefined ? { overlay } : {})} />
+      </div>
+    </FullBleed>
   );
 }

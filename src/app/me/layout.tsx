@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 
 import { NavRail } from "@/components/shared/nav-rail";
+import { WideShell } from "@/components/ui";
 import { getT } from "@/i18n";
 
 // Под-навигация личного кабинета: стики-сайдбар поверх каждой /me/* страницы.
@@ -25,15 +26,17 @@ export default async function MeLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      <aside className="sticky top-(--header-height) z-10 border-b border-(--color-border) bg-(--color-surface) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:border-b-0 lg:border-e">
-        <NavRail
-          items={items}
-          ariaLabel={t("meNavAriaLabel")}
-          orientation="responsive"
-        />
-      </aside>
-      <main className="min-w-0 flex-1">{children}</main>
-    </div>
+    <WideShell>
+      <div className="flex flex-col lg:flex-row">
+        <aside className="sticky top-(--header-height) z-10 border-b border-(--color-border) bg-(--color-surface) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:border-b-0 lg:border-e">
+          <NavRail
+            items={items}
+            ariaLabel={t("meNavAriaLabel")}
+            orientation="responsive"
+          />
+        </aside>
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
+    </WideShell>
   );
 }
