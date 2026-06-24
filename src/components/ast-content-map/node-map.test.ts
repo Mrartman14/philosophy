@@ -47,6 +47,16 @@ describe("NODE_MAP — простые блоки", () => {
       HOLE,
     ]);
   });
+  it("list_item с blockId → data-block-id (текст-блок субстрата)", () => {
+    expect(node("list_item", { blockId: "li1" })).toEqual(["li", { "data-block-id": "li1" }, HOLE]);
+  });
+  it("list_item с id и checked → оба атрибута", () => {
+    expect(node("list_item", { blockId: "li2", checked: false })).toEqual([
+      "li",
+      { "data-block-id": "li2", "data-checked": "false" },
+      HOLE,
+    ]);
+  });
 });
 
 describe("MARK_MAP — простые марки", () => {

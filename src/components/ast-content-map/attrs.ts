@@ -24,8 +24,13 @@ export function listAttrs(node: AstNode): Record<string, string> {
 }
 
 export function listItemAttrs(node: AstNode): Record<string, string> {
+  // list_item — текст-блок субстрата аннотаций: несёт data-block-id (паритет с
+  // текущим production block-renderer, block-renderer.test.tsx ассертит li1).
   const checked = (node.attrs as { checked?: unknown } | undefined)?.checked;
-  return typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {};
+  return {
+    ...blockIdAttr(node),
+    ...(typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {}),
+  };
 }
 
 export function headingTag(node: AstNode): string {

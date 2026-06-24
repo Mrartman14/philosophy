@@ -328,8 +328,12 @@ export function listAttrs(node: AstNode): Record<string, string> {
 }
 
 export function listItemAttrs(node: AstNode): Record<string, string> {
+  // list_item — текст-блок: несёт data-block-id (паритет с production block-renderer).
   const checked = (node.attrs as { checked?: unknown } | undefined)?.checked;
-  return typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {};
+  return {
+    ...blockIdAttr(node),
+    ...(typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {}),
+  };
 }
 ```
 
