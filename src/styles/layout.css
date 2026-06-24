@@ -120,9 +120,16 @@
 
 /* Длинное оглавление не должно уходить за нижнюю кромку sticky-сайдбара —
    собственный скролл вместо обрезки нижних пунктов. Логические свойства
-   (max-block-size/overflow) — RTL/writing-mode-safe. */
+   (max-block-size/overflow) — RTL/writing-mode-safe.
+   grid-row: 1 — КРИТИЧНО: этот <aside> идёт ПОСЛЕ контент-блока в порядке
+   источника (на странице документа TOC рендерится после контента ради
+   reading-order «контент сначала»). Его колонка margin-start левее курсора
+   auto-placement после контент-колонки → grid-auto-flow row уносит элемент в
+   row 2 (под контент, без sticky-места). Явный grid-row: 1 сажает его в первую
+   строку рядом с контентом (как nav-first в MarginSidebarLayout/me). */
 @media (min-width: theme(--breakpoint-xl)) {
   .margin-nav--hide-narrow {
+    grid-row: 1;
     max-block-size: calc(100dvh - var(--layout-sticky-top) - 1rem);
     overflow-y: auto;
     overscroll-behavior: contain;
