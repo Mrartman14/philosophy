@@ -2,8 +2,8 @@
 import { forbidden } from "next/navigation";
 
 import { ChevronIcon } from "@/assets/icons/chevron-icon";
+import { MarginSidebarLayout } from "@/components/shared/margin-sidebar-layout";
 import { NavRail } from "@/components/shared/nav-rail";
-import { SidebarLayout } from "@/components/shared/sidebar-layout";
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
@@ -29,13 +29,14 @@ export default async function AdminLayout({
     label: t(item.labelKey),
   }));
 
-  // Сайдбар админки — тот же общий SidebarLayout, что и /me (один паттерн на всё
-  // приложение): responsive, sticky-десктоп, без фона. В слот nav — шапка секции
-  // (назад/тайтл/юзер) + NavRail. Контент со своим p-6.
+  // Сайдбар админки — тот же margin-nav паттерн, что и /me: на ≥xl нав уходит в
+  // ЛЕВОЕ ПОЛЕ (sticky под шапкой), контент занимает весь хребет; ниже xl нав
+  // падает полосой сверху. В слот nav — шапка секции (назад/тайтл/юзер) + NavRail.
+  // Контент со своим p-6.
   return (
-    <SidebarLayout
+    <MarginSidebarLayout
       nav={
-        <>
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <RouterLink
               href="/"
@@ -56,10 +57,10 @@ export default async function AdminLayout({
             ariaLabel={t("shellNavAriaLabel")}
             orientation="responsive"
           />
-        </>
+        </div>
       }
     >
       <div className="p-6">{children}</div>
-    </SidebarLayout>
+    </MarginSidebarLayout>
   );
 }
