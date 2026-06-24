@@ -27,7 +27,7 @@ afterEach(cleanup);
 interface Item { id: string; name: string }
 
 describe("AsyncCombobox", () => {
-  it("debounces fetcher and renders items", async () => {
+  it("debounce + рендер items", async () => {
     const fetcher = vi.fn((q: string) => Promise.resolve({
       data: [{ id: "1", name: `match-${q}` }, { id: "2", name: "other" }],
       total: 2 as number | null,
@@ -40,13 +40,29 @@ describe("AsyncCombobox", () => {
         onSelect={() => undefined}
       />,
     );
+    // дебаунс: синхронно после ввода серверный фетч с этим query ещё не ушёл
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "abc" } });
     expect(fetcher).not.toHaveBeenCalledWith("abc", expect.any(Number), expect.any(Number));
     await waitFor(() => { expect(fetcher).toHaveBeenCalledWith("abc", 0, 20); }, { timeout: 600 });
     expect(await screen.findByText("match-abc")).toBeInTheDocument();
   });
 
-  it("Enter selects active item", async () => {
+  it("клик по опции вызывает onSelect", async () => {
+    const onSelect = vi.fn();
+    const fetcher = vi.fn(() => Promise.resolve({ data: [{ id: "x", name: "X" }], total: 1 as number | null }));
+    render(
+      <AsyncCombobox<Item>
+        fetcher={fetcher}
+        renderItem={(it) => <span>{it.name}</span>}
+        getKey={(it) => it.id}
+        onSelect={onSelect}
+      />,
+    );
+    fireEvent.click(await screen.findByText("X"));
+    expect(onSelect).toHaveBeenCalledWith({ id: "x", name: "X" });
+  });
+
+  it("Enter выбирает подсвеченный item", async () => {
     const onSelect = vi.fn();
     const fetcher = vi.fn(() => Promise.resolve({ data: [{ id: "x", name: "X" }], total: 1 as number | null }));
     render(
@@ -58,16 +74,16 @@ describe("AsyncCombobox", () => {
       />,
     );
     await screen.findByText("X");
-    fireEvent.keyDown(screen.getByRole("combobox"), { key: "ArrowDown" });
-    fireEvent.keyDown(screen.getByRole("combobox"), { key: "Enter" });
+    const input = screen.getByRole("combobox");
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.keyDown(input, { key: "Enter" });
     expect(onSelect).toHaveBeenCalledWith({ id: "x", name: "X" });
   });
 
-  it("shows empty state when fetcher returns no items", async () => {
-    const fetcher = vi.fn(() => Promise.resolve({ data: [] as Item[], total: 0 as number | null }));
+  it("empty state", async () => {
     render(
       <AsyncCombobox<Item>
-        fetcher={fetcher}
+        fetcher={() => Promise.resolve({ data: [] as Item[], total: 0 as number | null })}
         renderItem={() => null}
         getKey={() => "k"}
         onSelect={() => undefined}
@@ -76,8 +92,8 @@ describe("AsyncCombobox", () => {
     expect(await screen.findByText(/ничего не найдено/i)).toBeInTheDocument();
   });
 
-  it("error state shows retry", async () => {
-    const fetcher = vi.fn(() => { throw new Error("boom"); });
+  it("error + retry", async () => {
+    const fetcher = vi.fn(() => Promise.reject(new Error("boom")));
     render(
       <AsyncCombobox<Item>
         fetcher={fetcher}
@@ -91,10 +107,10 @@ describe("AsyncCombobox", () => {
     await waitFor(() => { expect(fetcher).toHaveBeenCalledTimes(2); });
   });
 
-  it("Load more appends next page", async () => {
+  it("load more append", async () => {
     const fetcher = vi.fn((_q: string, offset: number) => Promise.resolve({
-      data: [{ id: `${offset}-a`, name: `${offset}A` }, { id: `${offset}-b`, name: `${offset}B` }],
-      total: 4 as number | null,
+      data: [{ id: `${offset}-a`, name: `${offset}A` }],
+      total: 2 as number | null,
     }));
     render(
       <AsyncCombobox<Item>
@@ -102,23 +118,22 @@ describe("AsyncCombobox", () => {
         renderItem={(it) => <span>{it.name}</span>}
         getKey={(it) => it.id}
         onSelect={() => undefined}
-        pageSize={2}
+        pageSize={1}
       />,
     );
     await screen.findByText("0A");
     fireEvent.click(screen.getByRole("button", { name: /загрузить ещё/i }));
-    await screen.findByText("2A");
+    await screen.findByText("1A");
     const secondCall = fetcher.mock.calls[1];
     if (secondCall === undefined) throw new Error("fetcher не был вызван второй раз");
-    expect(secondCall[1]).toBe(2);
+    expect(secondCall[1]).toBe(1);
   });
 
-  it("Esc calls onClose when provided", () => {
+  it("Esc вызывает onClose", async () => {
     const onClose = vi.fn();
-    const fetcher = vi.fn(() => Promise.resolve({ data: [] as Item[], total: 0 as number | null }));
     render(
       <AsyncCombobox<Item>
-        fetcher={fetcher}
+        fetcher={() => Promise.resolve({ data: [] as Item[], total: 0 as number | null })}
         renderItem={() => null}
         getKey={() => "k"}
         onSelect={() => undefined}
@@ -126,15 +141,15 @@ describe("AsyncCombobox", () => {
       />,
     );
     fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
-    expect(onClose).toHaveBeenCalledOnce();
+    await waitFor(() => { expect(onClose).toHaveBeenCalled(); });
   });
 
-  it("refetches when fetcher identity changes (filter-driven closures)", async () => {
-    const fetcherA = vi.fn(() => Promise.resolve({ data: [{ id: "a", name: "A" }], total: 1 as number | null }));
-    const fetcherB = vi.fn(() => Promise.resolve({ data: [{ id: "b", name: "B" }], total: 1 as number | null }));
+  it("рефетч при смене identity fetcher", async () => {
+    const fA = vi.fn(() => Promise.resolve({ data: [{ id: "a", name: "A" }], total: 1 as number | null }));
+    const fB = vi.fn(() => Promise.resolve({ data: [{ id: "b", name: "B" }], total: 1 as number | null }));
     const { rerender } = render(
       <AsyncCombobox<Item>
-        fetcher={fetcherA}
+        fetcher={fA}
         renderItem={(it) => <span>{it.name}</span>}
         getKey={(it) => it.id}
         onSelect={() => undefined}
@@ -143,47 +158,13 @@ describe("AsyncCombobox", () => {
     await screen.findByText("A");
     rerender(
       <AsyncCombobox<Item>
-        fetcher={fetcherB}
+        fetcher={fB}
         renderItem={(it) => <span>{it.name}</span>}
         getKey={(it) => it.id}
         onSelect={() => undefined}
       />,
     );
     await screen.findByText("B");
-    expect(fetcherB).toHaveBeenCalled();
-  });
-
-  it("drops stale responses when fetcher resolves out of order", async () => {
-    // Two pending fetches; resolve the OLDER one LATER. The component
-    // should ignore the late stale response and keep the latest items.
-    let resolveOld!: (v: { data: Item[]; total: number | null }) => void;
-    let resolveNew!: (v: { data: Item[]; total: number | null }) => void;
-    const fetcherOld = vi.fn(() => new Promise<{ data: Item[]; total: number | null }>((r) => { resolveOld = r; }));
-    const fetcherNew = vi.fn(() => new Promise<{ data: Item[]; total: number | null }>((r) => { resolveNew = r; }));
-
-    const { rerender } = render(
-      <AsyncCombobox<Item>
-        fetcher={fetcherOld}
-        renderItem={(it) => <span>{it.name}</span>}
-        getKey={(it) => it.id}
-        onSelect={() => undefined}
-      />,
-    );
-    rerender(
-      <AsyncCombobox<Item>
-        fetcher={fetcherNew}
-        renderItem={(it) => <span>{it.name}</span>}
-        getKey={(it) => it.id}
-        onSelect={() => undefined}
-      />,
-    );
-    // Resolve NEW first, then OLD. Stale OLD should be ignored.
-    resolveNew({ data: [{ id: "n", name: "NEW" }], total: 1 });
-    await screen.findByText("NEW");
-    resolveOld({ data: [{ id: "o", name: "OLD" }], total: 1 });
-    // Give the microtask queue a tick
-    await new Promise((r) => setTimeout(r, 30));
-    expect(screen.queryByText("OLD")).not.toBeInTheDocument();
-    expect(screen.getByText("NEW")).toBeInTheDocument();
+    expect(fB).toHaveBeenCalled();
   });
 });

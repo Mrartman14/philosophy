@@ -1,33 +1,35 @@
 "use client";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useId } from "react";
 
-import { Button } from "@/components/ui";
+import { Button, Combobox } from "@/components/ui";
 import { useT } from "@/i18n/client";
+
+import { useAsyncComboboxItems, type AsyncFetcher } from "./use-async-combobox-items";
 
 export interface AsyncComboboxProps<T> {
   /**
-   * Stable reference recommended (`useCallback`). Component refetches when
-   * the fetcher identity changes — useful for filter-driven closures, but
-   * a fresh closure on every render will trigger a fetch loop.
+   * ОБЯЗАТЕЛЬНО стабильная ссылка (useCallback / module-const): смена identity =
+   * рефетч. Нестабильный (инлайновый) fetcher → БЕСКОНЕЧНЫЙ цикл фетчей (не просто
+   * лишний запрос): хук пересоздаёт load → effect → setState → ре-рендер → новый fetcher.
    */
-  fetcher: (q: string, offset: number, limit: number) => Promise<{ data: T[]; total: number | null }>;
-  renderItem: (item: T, isActive: boolean) => React.ReactNode;
+  fetcher: AsyncFetcher<T>;
+  renderItem: (item: T) => React.ReactNode;
   getKey: (item: T) => string;
   onSelect: (item: T) => void;
-  /** Called when the user presses Esc inside the combobox. */
+  /** Вызывается при Esc внутри combobox. */
   onClose?: () => void;
   placeholder?: string;
   pageSize?: number;
   copy?: { empty?: string; error?: string; loading?: string };
 }
 
-interface State<T> {
-  items: T[];
-  total: number | null;
-  loading: boolean;
-  error: string | null;
-}
-
+/**
+ * Универсальный асинхронный combobox поверх kit `Combobox` (Base UI) и хука
+ * `useAsyncComboboxItems`. Серверный поиск (`filter={null}` — клиентская фильтрация
+ * отключена), пагинация «загрузить ещё», состояния loading/empty/error+retry.
+ * Рендерит self-contained inline-список (без собственного Portal) — встраивается в
+ * родительский попап/диалог. Внешний API сохранён ради zero-change consumers.
+ */
 export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
   const t = useT("editor");
   const pageSize = props.pageSize ?? 20;
@@ -35,116 +37,54 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
   const errorCopy = props.copy?.error ?? t("comboboxError");
   const loadingCopy = props.copy?.loading ?? t("comboboxLoading");
 
-  const listboxId = useId();
-  const [q, setQ] = useState("");
-  const [active, setActive] = useState(0);
-  const [s, setS] = useState<State<T>>({ items: [], total: null, loading: false, error: null });
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Sequence token: each load() bumps the counter; only the latest result
-  // is allowed to commit. Drops stale responses when q-debounce, fetcher
-  // identity or pagination overlap.
-  const seqRef = useRef(0);
-
-  const debouncedQ = useDebounced(q, 200);
-
-  const fetcher = props.fetcher;
-  const load = useCallback(
-    async (qNow: string, offset: number) => {
-      const seq = ++seqRef.current;
-      setS((prev) => ({ ...prev, loading: true, error: null }));
-      try {
-        const { data, total } = await fetcher(qNow, offset, pageSize);
-        if (seq !== seqRef.current) return;
-        setS((prev) => ({
-          items: offset === 0 ? data : prev.items.concat(data),
-          total,
-          loading: false,
-          error: null,
-        }));
-      } catch (e) {
-        if (seq !== seqRef.current) return;
-        setS((prev) => ({ ...prev, loading: false, error: e instanceof Error ? e.message : errorCopy }));
-      }
-    },
-    [fetcher, pageSize, errorCopy],
-  );
-
-  useEffect(() => {
-    setActive(0);
-    void load(debouncedQ, 0);
-  }, [debouncedQ, load]);
-
-  useEffect(() => { inputRef.current?.focus(); }, []);
-
-  const onKey = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") { e.preventDefault(); setActive((i) => Math.min(i + 1, s.items.length - 1)); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((i) => Math.max(0, i - 1)); }
-    else if (e.key === "Enter") {
-      e.preventDefault();
-      const item = s.items[active];
-      if (item) props.onSelect(item);
-    } else if (e.key === "Escape" && props.onClose) {
-      e.preventDefault();
-      props.onClose();
-    }
-  };
-
-  const canLoadMore = s.total !== null && s.items.length < s.total && !s.loading;
+  const listId = useId();
+  const { items, status, query, setQuery, loadMore, canLoadMore, reload } =
+    useAsyncComboboxItems<T>(props.fetcher, pageSize);
 
   return (
-    <div className="async-combobox">
-      <input
-        ref={inputRef}
-        role="combobox"
-        aria-expanded
-        aria-controls={listboxId}
-        aria-activedescendant={s.items[active] ? `${listboxId}-opt-${String(active)}` : undefined}
-        type="text"
-        value={q}
-        placeholder={props.placeholder}
-        onChange={(e) => { setQ(e.target.value); }}
-        onKeyDown={onKey}
-      />
-      <div id={listboxId} role="listbox">
-        {s.items.map((item, i) => (
-          <div
-            key={props.getKey(item)}
-            id={`${listboxId}-opt-${String(i)}`}
-            role="option"
-            tabIndex={-1}
-            aria-selected={active === i}
-            onMouseDown={(e) => { e.preventDefault(); props.onSelect(item); }}
-            onMouseEnter={() => { setActive(i); }}
-          >
-            {props.renderItem(item, active === i)}
-          </div>
-        ))}
-        {!s.loading && s.items.length === 0 && !s.error && <div role="presentation">{empty}</div>}
-        {s.loading && <div role="presentation">{loadingCopy}</div>}
-        {s.error && (
+    <Combobox.Root
+      items={items as readonly T[]}
+      filter={null}
+      inputValue={query}
+      onInputValueChange={(v) => { setQuery(v); }}
+      onValueChange={(value) => { if (value != null) props.onSelect(value as T); }}
+      isItemEqualToValue={(a, b) => props.getKey(a as T) === props.getKey(b as T)}
+    >
+      <div className="async-combobox">
+        {/*
+          Esc-роутинг через onKeyDown на Input, а не onOpenChange: combobox
+          встраивается inline в родительский попап и его собственный список,
+          как правило, закрыт (popup open=false). В закрытом состоянии
+          onOpenChange(reason:"escape-key") НЕ срабатывает (нет перехода
+          open→closed), тогда как onKeyDown ловит Escape детерминированно
+          и ровно один раз — открыт список или нет. (Проверено эмпирически
+          в jsdom с @base-ui/react@1.4.1.)
+        */}
+        <Combobox.Input
+          placeholder={props.placeholder}
+          onKeyDown={(e) => { if (e.key === "Escape") props.onClose?.(); }}
+        />
+        <Combobox.List id={listId}>
+          {(item: T) => (
+            <Combobox.Item key={props.getKey(item)} value={item}>
+              {props.renderItem(item)}
+            </Combobox.Item>
+          )}
+        </Combobox.List>
+        {status === "empty" && <div role="presentation">{empty}</div>}
+        {status === "loading" && <div role="presentation">{loadingCopy}</div>}
+        {status === "error" && (
           <div role="presentation">
             {errorCopy}
-            <Button tone="quiet" compact onClick={() => void load(debouncedQ, 0)}>{t("comboboxRetry")}</Button>
+            <Button tone="quiet" compact onClick={() => { reload(); }}>{t("comboboxRetry")}</Button>
           </div>
         )}
         {canLoadMore && (
           <div role="presentation">
-            <Button tone="quiet" compact onClick={() => void load(debouncedQ, s.items.length)}>
-              {t("comboboxLoadMore")}
-            </Button>
+            <Button tone="quiet" compact onClick={() => { loadMore(); }}>{t("comboboxLoadMore")}</Button>
           </div>
         )}
       </div>
-    </div>
+    </Combobox.Root>
   );
-}
-
-function useDebounced<T>(value: T, ms: number): T {
-  const [v, setV] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => { setV(value); }, ms);
-    return () => { clearTimeout(t); };
-  }, [value, ms]);
-  return v;
 }
