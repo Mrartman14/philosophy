@@ -20,6 +20,7 @@ import type { Motion } from "@/styles/tokens/enums";
 import { isReducedMotion } from "@/utils/is-reduced-motion";
 
 import { rangeFromAnchor } from "./anchor-to-range";
+import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
 import { noteAtPoint } from "./hit-test";
@@ -54,11 +55,8 @@ function scrollBehavior(): ScrollBehavior {
   return isReducedMotion({ motion, osReduce }) ? "auto" : "smooth";
 }
 
-// jsdom не имеет глобального CSS → guard (как в anchor-to-range.ts).
-function escapeAttr(id: string): string {
-  const css = (globalThis as { CSS?: { escape?: (s: string) => string } }).CSS;
-  return css?.escape ? css.escape(id) : id.replace(/["\\]/g, "\\$&");
-}
+// Компенсация sticky-хедера при скролле к фрагменту (ср. --layout-sticky-top).
+const ACTIVATE_SCROLL_OFFSET_PX = 100;
 
 export function AnnotationLayer(props: AnnotationLayerProps) {
   const {
@@ -152,7 +150,7 @@ export function AnnotationLayer(props: AnnotationLayerProps) {
       if (id) {
         setActiveId(id);
         document
-          .querySelector(`[data-note-card="${escapeAttr(id)}"]`)
+          .querySelector(`[data-note-card="${cssEscape(id)}"]`)
           ?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
       }
     };
@@ -170,7 +168,10 @@ export function AnnotationLayer(props: AnnotationLayerProps) {
       const r = ranges.get(id);
       if (r) {
         const rect = r.getBoundingClientRect();
-        window.scrollTo({ top: rect.top + window.scrollY - 100, behavior: scrollBehavior() });
+        window.scrollTo({
+          top: rect.top + window.scrollY - ACTIVATE_SCROLL_OFFSET_PX,
+          behavior: scrollBehavior(),
+        });
       }
     },
     [ranges],

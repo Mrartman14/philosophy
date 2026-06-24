@@ -1,53 +1,54 @@
 // src/components/annotation-layer/anchor-to-range.ts
+import { cssEscape } from "./css-escape";
 import { locateOffset } from "./dom-text";
 import type { TextAnchor } from "./types";
 
-// jsdom не имеет глобального CSS → guard (иначе TypeError, а не graceful).
-function escapeId(id: string): string {
-  const css = (globalThis as { CSS?: { escape?: (s: string) => string } }).CSS;
-  return css?.escape ? css.escape(id) : id.replace(/["\\]/g, "\\$&");
-}
 function block(root: HTMLElement, id: string): Element | null {
-  return root.querySelector(`[data-block-id="${escapeId(id)}"]`);
+  return root.querySelector(`[data-block-id="${cssEscape(id)}"]`);
 }
 
-function rangeAt(root: HTMLElement, globalStart: number, length: number): Range | null {
-  const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+// Один SHOW_TEXT-walker по scope: возвращает текстовые узлы с их глобальным офсетом
+// и конкатенированный full. Строится один раз в searchQuote и переиспользуется rangeAt.
+function textIndex(scope: Element): { nodes: { node: Text; start: number }[]; full: string } {
+  const walker = scope.ownerDocument.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
   const nodes: { node: Text; start: number }[] = [];
   let full = "";
   let n = walker.nextNode() as Text | null;
   while (n) { nodes.push({ node: n, start: full.length }); full += n.textContent; n = walker.nextNode() as Text | null; }
+  return { nodes, full };
+}
+
+function rangeAt(
+  scope: Element,
+  index: { nodes: { node: Text; start: number }[] },
+  globalStart: number,
+  length: number,
+): Range | null {
   const locate = (g: number) => {
-    for (let i = nodes.length - 1; i >= 0; i--) {
-      const item = nodes[i];
+    for (let i = index.nodes.length - 1; i >= 0; i--) {
+      const item = index.nodes[i];
       if (item && g >= item.start) return { node: item.node, offset: g - item.start };
     }
     return null;
   };
   const s = locate(globalStart), e = locate(globalStart + length);
   if (!s || !e) return null;
-  const r = root.ownerDocument.createRange();
+  const r = scope.ownerDocument.createRange();
   r.setStart(s.node, s.offset); r.setEnd(e.node, e.offset);
   return r;
 }
 
-function fullText(scope: Element): string {
-  const walker = scope.ownerDocument.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
-  let full = "", n = walker.nextNode();
-  while (n) { full += n.textContent ?? ""; n = walker.nextNode(); }
-  return full;
-}
-
 // Квота-поиск exact (дизамбигуация по prefix/suffix) ВНУТРИ scope.
 function searchQuote(scope: Element, a: TextAnchor): Range | null {
-  const full = fullText(scope);
+  const index = textIndex(scope);
+  const full = index.full;
   const withCtx = `${a.prefix ?? ""}${a.exact}${a.suffix ?? ""}`;
   if (withCtx !== a.exact) {
     const ctxAt = full.indexOf(withCtx);
-    if (ctxAt >= 0) return rangeAt(scope as HTMLElement, ctxAt + (a.prefix?.length ?? 0), a.exact.length);
+    if (ctxAt >= 0) return rangeAt(scope, index, ctxAt + (a.prefix?.length ?? 0), a.exact.length);
   }
   const at = full.indexOf(a.exact);
-  return at >= 0 ? rangeAt(scope as HTMLElement, at, a.exact.length) : null;
+  return at >= 0 ? rangeAt(scope, index, at, a.exact.length) : null;
 }
 
 function tryExact(a: TextAnchor, root: HTMLElement): Range | null {

@@ -5,6 +5,9 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { anchorFromSelection } from "./anchor-from-selection";
 import type { AnchorDraft } from "./types";
 
+// Дебаунс пересчёта якоря после selectionchange (drag-выделение шлёт залп событий).
+const SELECTION_DEBOUNCE_MS = 250;
+
 export function useSelectionCapture({
   rootRef,
   enabled,
@@ -55,7 +58,7 @@ export function useSelectionCapture({
         return;
       }
       if (timer) clearTimeout(timer);
-      timer = setTimeout(recompute, 250);
+      timer = setTimeout(recompute, SELECTION_DEBOUNCE_MS);
     };
     const onPointerUp = () => {
       if (timer) clearTimeout(timer);

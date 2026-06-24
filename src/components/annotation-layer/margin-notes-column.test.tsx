@@ -59,10 +59,10 @@ describe("MarginNotesColumn (smoke)", () => {
         recomputeKey={0}
       />,
     );
-    // Привязанные карточки помечены data-annotation-card (НЕ role="button" —
+    // Привязанные карточки помечены data-note-card-wrapper (НЕ role="button" —
     // nested-interactive антипаттерн); в потоке у них нет inline-стиля.
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- карточка без роли по дизайну (прецедент: semantic-map-direction.test.tsx)
-    const cards = container.querySelectorAll("[data-annotation-card]");
+    const cards = container.querySelectorAll("[data-note-card-wrapper]");
     expect(cards.length).toBe(2);
     for (const card of cards) {
       expect(card.getAttribute("style")).toBeNull();
@@ -79,7 +79,7 @@ describe("MarginNotesColumn (smoke)", () => {
       />,
     );
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- карточка без роли по дизайну (прецедент: semantic-map-direction.test.tsx)
-    for (const card of container.querySelectorAll("[data-annotation-card]")) {
+    for (const card of container.querySelectorAll("[data-note-card-wrapper]")) {
       expect(card.getAttribute("role")).toBeNull();
       expect(card.getAttribute("tabindex")).toBeNull();
     }

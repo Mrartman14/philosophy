@@ -28,7 +28,8 @@ interface Props {
   notes: ColumnNote[];
   getAnchorRect: (id: string) => DOMRect | null; // viewport-координаты якоря
   onActivate: (id: string) => void;
-  recomputeKey: number; // меняется при resize/fonts/scroll от движка
+  recomputeKey: number; // меняется при resize/fonts от движка (scroll не требует
+  // пересчёта — позиции относительны контейнеру колонки)
 }
 
 const WIDE = "(min-width: 80rem)";
@@ -58,7 +59,8 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, recomputeK
   // Пересчёт позиций — синхронизация измерительного слоя с внешней геометрией
   // (DOM-rect якорей, offsetHeight карточек, viewport). Логика в named-closure
   // `update`, чтобы setState читался как обновление под внешнюю систему, а не
-  // каскад в теле эффекта. recomputeKey в deps дёргает пересчёт при resize/fonts/scroll.
+  // каскад в теле эффекта. recomputeKey в deps дёргает пересчёт при resize/fonts
+  // (scroll не требует пересчёта — позиции относительны контейнеру колонки).
   useLayoutEffect(() => {
     const update = () => {
       const container = anchoredRef.current;
@@ -94,7 +96,7 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, recomputeK
   };
 
   return (
-    <div className="flex flex-col gap-3" data-annotation-column>
+    <div className="flex flex-col gap-3" data-note-column>
       {orphans.map((n) => (
         <div key={n.id}>{n.node}</div>
       ))}
@@ -113,7 +115,7 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, recomputeK
           // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- pointer-only enhancement; избегаем nested-interactive (карточка имеет свои фокус-контролы + реципрокный текст→карточка)
           <div
             key={n.id}
-            data-annotation-card={n.id}
+            data-note-card-wrapper={n.id}
             ref={(el) => {
               if (el) cardRefs.current.set(n.id, el);
               else cardRefs.current.delete(n.id);

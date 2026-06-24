@@ -10,8 +10,11 @@ interface Props {
   onCreate: () => void;
 }
 
+// Подъём аффорданса над выделением (по верхней грани selection-rect).
+const AFFORDANCE_OFFSET_PX = 40;
+
 export function SelectionAffordance({ rect, label, onCreate }: Props) {
-  const top = rect.top + window.scrollY - 40;
+  const top = rect.top + window.scrollY - AFFORDANCE_OFFSET_PX;
   const left = rect.left + window.scrollX + rect.width / 2;
   return createPortal(
     <div
