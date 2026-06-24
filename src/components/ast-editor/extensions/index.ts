@@ -9,6 +9,9 @@ import { createLimitsPlugin } from "../validation/limits-plugin";
 
 import { createDedupBlockIdPlugin } from "./dedup-block-id-plugin";
 import { createImagePasteDropPlugin } from "./image-paste-drop-plugin";
+import { BoldExt } from "./marks/bold";
+import { CodeExt } from "./marks/code";
+import { ItalicExt } from "./marks/italic";
 import { LinkExt } from "./marks/link";
 import { navRefMarks } from "./marks/nav-ref";
 import { BlockquoteExt } from "./nodes/blockquote";
@@ -37,9 +40,13 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
   // camelCase names (hardBreak, codeBlock) where AST canonicals are snake_case
   // — those are re-registered under the right names by our extensions. We
   // also disable StarterKit's bundled Link (we ship our own LinkExt that
-  // doesn't leak rel/target/class into AST attrs).
-  // Keep StarterKit only for: text, history, dropcursor, gapcursor,
-  // bold/italic/code marks.
+  // doesn't leak rel/target/class into AST attrs). The bold/italic/code marks
+  // are likewise disabled here and re-registered via BoldExt/ItalicExt/CodeExt,
+  // which delegate mark→DOM to the shared MARK_MAP (single source of truth) —
+  // StarterKit's defaults would emit a bare `<code>` (no `dir="ltr"`) and bypass
+  // the map, drifting from read. The standalone @tiptap/extension-* bases
+  // preserve keymaps + input rules (**bold**, *italic*, `code`).
+  // Keep StarterKit only for: text, history, dropcursor, gapcursor.
   const starter = StarterKit.configure({
     paragraph: false,
     blockquote: false,
@@ -51,6 +58,9 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
     horizontalRule: false,
     hardBreak: false,
     link: false,
+    bold: false,
+    italic: false,
+    code: false,
   });
 
   // ParagraphExt is always required (it's the default block + appears inside
@@ -73,7 +83,7 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
   if (allowedBlocks.has("thematic_break")) exts.push(ThematicBreakExt);
 
   // Marks are universally available (per-context filtering for marks lives in toolbar gating, Phase 2).
-  exts.push(LinkExt, ...navRefMarks);
+  exts.push(BoldExt, ItalicExt, CodeExt, LinkExt, ...navRefMarks);
 
   const validation = Extension.create({
     name: "ast-validation",

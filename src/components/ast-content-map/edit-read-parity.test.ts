@@ -158,6 +158,49 @@ const cases: [string, AstBlock][] = [
   ["table тело (tbody > tr > td data-align)", fixtureBodyTable],
 ];
 
+// Маркированный параграф: по одному текст-спану на каждую марку, чтобы
+// получить РОВНО пять inline-обёрток (<strong>/<em>/<code>/<a>/<a>) в обоих
+// медиумах. nav-ref берём glossary_ref (id непустой → карта даёт <a>, не <span>).
+const fixtureMarkedParagraph: AstBlock = {
+  id: "mk1",
+  type: "paragraph",
+  position: 0,
+  content: [
+    { type: "text", marks: [{ type: "bold" }], text: "ж" },
+    { type: "text", marks: [{ type: "italic" }], text: "к" },
+    { type: "text", marks: [{ type: "code" }], text: "c" },
+    { type: "text", marks: [{ type: "link", attrs: { href: "https://example.com", title: "пример" } }], text: "ссылка" },
+    {
+      type: "text",
+      marks: [{ type: "glossary_ref", attrs: { id: "22222222-2222-2222-2222-222222222222" } }],
+      text: "термин",
+    },
+  ],
+  text: "жкcссылкатермин",
+};
+
+/**
+ * Структурная база ОДНОЙ inline-обёртки марки: tag + только те attrs, что
+ * ОБЯЗАНЫ совпадать в edit И read. НАМЕРЕННО опускаем per-medium слои —
+ * read-only link rel/target (санитайз) и editor-only round-trip attrs nav-ref
+ * (id/start_block_id/…) и link (title): их сверка дала бы ложный фейл (это
+ * задокументированная законная дивергенция, как td↔th у header-ячейки).
+ *   • code  → tag + dir   (bidi-изоляция, общая база — это и есть Fix 1)
+ *   • link / nav-ref → tag + href + data-mark + class (структура навигации)
+ *   • bold / italic → только tag (attrs нет)
+ */
+function markSignature(el: Element): Record<string, string | null> {
+  const tag = el.tagName.toLowerCase();
+  const sig: Record<string, string | null> = { tag };
+  if (tag === "code") sig.dir = el.getAttribute("dir");
+  if (tag === "a") {
+    sig.href = el.getAttribute("href");
+    sig["data-mark"] = el.getAttribute("data-mark");
+    sig.class = el.getAttribute("class");
+  }
+  return sig;
+}
+
 describe("EDIT↔READ структурный паритет node→DOM (реальные конвейеры)", () => {
   for (const [name, block] of cases) {
     it(`общая база совпадает: ${name}`, () => {
@@ -205,5 +248,51 @@ describe("EDIT↔READ структурный паритет node→DOM (реал
     // но общий структурный атрибут data-align идентичен в обоих медиумах.
     expect(readCell.getAttribute("data-align")).toBe(editCell.getAttribute("data-align"));
     expect(readCell.getAttribute("data-align")).toBe("left");
+  });
+
+  // ПАРИТЕТ МАРОК (Fix 1: bold/italic/code теперь делегируют MARK_MAP в обоих
+  // медиумах, как link/nav-ref). Параграф несёт по одному спану на марку →
+  // ровно 5 inline-обёрток. Спускаемся в каждую и сверяем общую структурную
+  // базу (markSignature). Per-medium слои НЕ ассертим — карвируем как td↔th:
+  //   • READ-only: link rel/target (санитайз внешней ссылки).
+  //   • EDIT-only: link title, nav-ref round-trip attrs (id/start_block_id/…).
+  it("marked-параграф: inline-обёртки (strong/em/code/a/nav-ref-a) совпадают по общей базе", () => {
+    const edit = editElement(fixtureMarkedParagraph);
+    const read = readElement(fixtureMarkedParagraph);
+
+    // Корень параграфа — общая база совпадает (data-block-id и пр.).
+    expect(structuralSignature(read)).toEqual(structuralSignature(edit));
+
+    const editWraps = Array.from(edit.children);
+    const readWraps = Array.from(read.children);
+    expect(readWraps.length, "число inline-обёрток").toBe(editWraps.length);
+    expect(editWraps.length).toBe(5); // strong, em, code, link-a, nav-ref-a
+
+    const order = ["strong (bold)", "em (italic)", "code (dir=ltr)", "a (link)", "a (nav-ref)"];
+    for (let i = 0; i < editWraps.length; i++) {
+      const e = must(editWraps[i]);
+      const r = must(readWraps[i]);
+      expect(markSignature(r), `READ-сигнатура марки @ ${order[i]}`).toEqual(markSignature(e));
+    }
+
+    // Явно фиксируем Fix 1: inline code несёт dir="ltr" в ОБОИХ медиумах.
+    const editCode = must(editWraps[2]);
+    const readCode = must(readWraps[2]);
+    expect(editCode.tagName.toLowerCase()).toBe("code");
+    expect(editCode.getAttribute("dir")).toBe("ltr");
+    expect(readCode.getAttribute("dir")).toBe("ltr");
+
+    // И явно фиксируем КАРВ-АУТ per-medium слоёв (расхождение законно):
+    const editLink = must(editWraps[3]);
+    const readLink = must(readWraps[3]);
+    expect(editLink.getAttribute("title")).toBe("пример"); // EDIT-only round-trip
+    expect(readLink.hasAttribute("title")).toBe(false);
+    expect(readLink.getAttribute("rel")).toContain("noopener"); // READ-only санитайз
+    expect(editLink.hasAttribute("rel")).toBe(false);
+
+    const editNav = must(editWraps[4]);
+    const readNav = must(readWraps[4]);
+    expect(editNav.getAttribute("id")).toBe("22222222-2222-2222-2222-222222222222"); // EDIT-only round-trip
+    expect(readNav.hasAttribute("id")).toBe(false);
   });
 });
