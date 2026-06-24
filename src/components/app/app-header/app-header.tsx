@@ -15,7 +15,7 @@ export const AppHeader = async () => {
     : null;
   const t = await getT("common");
   return (
-    <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--color-surface) border-t-0 border-b md:border-t border-(--color-border) h-(--header-height) before:content-[''] before:absolute before:bottom-[calc(100%+1px)] before:start-0 before:w-full before:h-[300px] before:backdrop-blur-[8px]">
+    <header className="relative sticky top-0 z-50 w-full flex justify-center items-stretch gap-4 bg-(--color-surface) border-t-0 border-b border-(--color-border) h-(--header-height) before:content-[''] before:absolute before:bottom-full before:start-0 before:w-full before:h-[300px] before:backdrop-blur-[8px] md:before:border-b md:before:border-(--color-border)">
       <NavigationMenu.Root className="w-full max-w-[var(--layout-spine)] md:border-x border-(--color-border) bg-(--color-surface) px-4">
         <NavigationMenu.List className="relative grid grid-cols-[auto_auto_auto_1fr_auto] gap-4 w-full h-full items-stretch">
           <NavigationMenu.Item className="flex items-stretch">
