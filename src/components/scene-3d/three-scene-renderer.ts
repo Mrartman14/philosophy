@@ -5,7 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { fit2D, fit3D } from "./camera-fit";
 import { pickNearestPoint } from "./pick";
 import type { SceneRenderModel } from "./scene-render-model";
-import type { SceneRenderer, SceneRenderMode } from "./scene-renderer";
+import type { CameraState, SceneRenderer, SceneRenderMode } from "./scene-renderer";
 
 const PICK_THRESHOLD_PX = 10; // радиус попадания по точке
 const DRAG_SUPPRESS_PX = 5; // смещение, выше которого жест — драг, не клик
@@ -221,6 +221,37 @@ export class ThreeSceneRenderer implements SceneRenderer {
     const viewInverse = cam.matrixWorld.clone().invert();
     const m = new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, viewInverse);
     return new Float32Array(m.elements);
+  }
+
+  getCamera(): CameraState | null {
+    if (this.disposed || !this.controls || !this.model) return null;
+    const t = this.controls.target;
+    if (this.mode === "2d") {
+      return { mode: "2d", values: [t.x, t.y, this.ortho.zoom] };
+    }
+    const p = this.persp.position;
+    return { mode: "3d", values: [p.x, p.y, p.z, t.x, t.y, t.z] };
+  }
+
+  applyCamera(state: CameraState): void {
+    if (this.disposed || !this.controls || state.mode !== this.mode) return;
+    if (state.mode === "2d") {
+      const [tx, ty, zoom] = state.values as [number, number, number];
+      this.ortho.position.set(tx, ty, 10);
+      this.ortho.up.set(0, 1, 0);
+      this.ortho.zoom = zoom;
+      this.ortho.lookAt(tx, ty, 0);
+      this.ortho.updateProjectionMatrix();
+      this.controls.target.set(tx, ty, 0);
+    } else {
+      const [px, py, pz, tx, ty, tz] = state.values as [number, number, number, number, number, number];
+      this.persp.position.set(px, py, pz);
+      this.persp.lookAt(tx, ty, tz);
+      this.persp.updateProjectionMatrix();
+      this.controls.target.set(tx, ty, tz);
+    }
+    this.controls.update();
+    this.dirty = true;
   }
 
   onChange(cb: () => void): void {

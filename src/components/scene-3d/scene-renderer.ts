@@ -31,6 +31,10 @@ export interface SceneRenderer {
   onPick?(cb: (id: string | null) => void): void;
   /** Уменьшить движение: выключает инерцию камеры (OrbitControls damping). */
   setReducedMotion(reduce: boolean): void;
+  /** Текущая камера → сериализуемый снимок. null если disposed/нет controls/нет модели. */
+  getCamera(): CameraState | null;
+  /** Применить сохранённый снимок. Игнор, если state.mode не совпал с текущим режимом. */
+  applyCamera(state: CameraState): void;
   /** Освободить GPU-ресурсы и остановить loop. */
   destroy(): void;
 }
