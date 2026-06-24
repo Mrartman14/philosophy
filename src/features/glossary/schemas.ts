@@ -14,6 +14,17 @@ export function makeTermCreateSchema(t: ValidationT) {
       .trim()
       .min(1, t("glossary.titleRequired"))
       .max(300, t("glossary.titleMax")),
+    // Создание термина — единый шаг: title + тело сразу (один POST). Тело
+    // обязательно (allowEmpty: false) — пустой массив бэк отклонит BLOCKS_EMPTY.
+    blocks: blocksJsonField({
+      allowEmpty: false,
+      messages: {
+        minLength: t("glossary.blocksMinLength"),
+        invalidJson: t("glossary.blocksInvalidJson"),
+        notArray: t("common.blocksNotArray"),
+        empty: t("glossary.blocksEmpty"),
+      },
+    }),
   });
 }
 

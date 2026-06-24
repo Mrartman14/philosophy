@@ -1,6 +1,8 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
+import type { AstBlock } from "@/components/ast-editor";
+import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   createTypedForm,
   Form,
@@ -20,20 +22,32 @@ import type { Term } from "../types";
 
 const initial = initialActionState<Term | null>(null);
 
-const { Field, errors } = createTypedForm<TermCreateFormInput>();
+const { Field, f, errors } = createTypedForm<TermCreateFormInput>();
 
 export function GlossaryCreateForm() {
   const t = useT("glossary");
+  const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createTerm, initial);
 
-  useActionRedirect(state, (data) => `/admin/glossary/${data.id}/edit`);
+  // Термин создан целиком (title + тело) — возвращаемся к списку.
+  useActionRedirect(state, () => `/admin/glossary`);
 
   return (
     <Form action={action} errors={errors(state)}>
-      <Stack className="max-w-xl">
+      <Stack>
+        <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
+
         <Field name="title" label={t("titleLabel")} required>
           <TextInput aria-required maxLength={300} placeholder={t("titlePlaceholder")} />
+        </Field>
+
+        <Field name="blocks" label={t("blocksLabel")} required>
+          <LazyAstEditor
+            defaultValue={[]}
+            entityContext="glossary"
+            onChange={(next: AstBlock[]) => { setBlocks(next); }}
+          />
         </Field>
 
         <FormFeedback result={state} forbiddenAction={t("createTermAction")} />

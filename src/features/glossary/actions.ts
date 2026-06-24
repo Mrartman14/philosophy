@@ -43,13 +43,7 @@ export const createTerm = createFormAction(async (formData, ctx) => {
   const { data, error } = await api.POST("/api/admin/glossary", {
     body: {
       title: input.title,
-      blocks: [
-        {
-          id: "",
-          type: "paragraph",
-          content: [],
-        },
-      ],
+      blocks: input.blocks,
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });

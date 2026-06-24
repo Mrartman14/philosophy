@@ -166,6 +166,8 @@ const validation = {
     titleMax: "Up to 300 characters",
     invalidTermId: "Invalid term ID",
     blocksInvalidJson: "Invalid JSON in the form body",
+    blocksMinLength: "Term body cannot be empty",
+    blocksEmpty: "Add at least one block",
   },
 
   // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---

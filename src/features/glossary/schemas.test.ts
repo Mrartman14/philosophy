@@ -14,17 +14,29 @@ const t = ((key: string) => key) as unknown as NamespaceT<"validation">;
 
 describe("TermCreateSchema", () => {
   const TermCreateSchema = makeTermCreateSchema(t);
+  const validBlocks = JSON.stringify([
+    { type: "paragraph", content: [{ type: "text", text: "тело" }] },
+  ]);
 
-  it("принимает валидный title", () => {
-    const r = TermCreateSchema.safeParse({ title: "Эпистемология" });
+  it("принимает валидный title и непустые blocks", () => {
+    const r = TermCreateSchema.safeParse({ title: "Эпистемология", blocks: validBlocks });
     expect(r.success).toBe(true);
+    if (r.success) expect(Array.isArray(r.data.blocks)).toBe(true);
   });
   it("отклоняет пустой title", () => {
-    const r = TermCreateSchema.safeParse({ title: "  " });
+    const r = TermCreateSchema.safeParse({ title: "  ", blocks: validBlocks });
     expect(r.success).toBe(false);
   });
   it("отклоняет title длиннее 300", () => {
-    const r = TermCreateSchema.safeParse({ title: "a".repeat(301) });
+    const r = TermCreateSchema.safeParse({ title: "a".repeat(301), blocks: validBlocks });
+    expect(r.success).toBe(false);
+  });
+  it("отклоняет пустой массив blocks (тело обязательно)", () => {
+    const r = TermCreateSchema.safeParse({ title: "Эпистемология", blocks: "[]" });
+    expect(r.success).toBe(false);
+  });
+  it("отклоняет битый JSON в blocks", () => {
+    const r = TermCreateSchema.safeParse({ title: "Эпистемология", blocks: "{not-json" });
     expect(r.success).toBe(false);
   });
 });
