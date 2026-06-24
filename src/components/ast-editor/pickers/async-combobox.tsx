@@ -1,7 +1,8 @@
 "use client";
-import { Button, Combobox } from "@/components/ui";
+import { Combobox } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
+import { ComboboxResultsStatus } from "./combobox-results-status";
 import { useAsyncComboboxItems, type AsyncFetcher } from "./use-async-combobox-items";
 
 export interface AsyncComboboxProps<T> {
@@ -49,45 +50,49 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
     >
       <div className="async-combobox">
         {/*
-          Esc-роутинг через onKeyDown на Input, а не onOpenChange: combobox
-          встраивается inline в родительский попап и его собственный список,
-          как правило, закрыт (popup open=false). В закрытом состоянии
-          onOpenChange(reason:"escape-key") НЕ срабатывает (нет перехода
-          open→closed), тогда как onKeyDown ловит Escape детерминированно
-          и ровно один раз — открыт список или нет. (Проверено эмпирически
-          в jsdom с @base-ui/react@1.4.1.)
+          autoFocus: combobox рендерится inline (НЕ в Popup), монтируется уже
+          видимым → фокус на mount корректен и восстанавливает поведение старого
+          async-combobox (клавиатурные юзеры в canvas/trails/attachments не
+          обязаны Tab'ать в поле поиска). Esc-роутинг — через onKeyDown на Input,
+          а не onOpenChange: combobox встроен в родительский попап и его
+          собственный список обычно закрыт (popup open=false); в закрытом
+          состоянии onOpenChange(reason:"escape-key") НЕ срабатывает (нет перехода
+          open→closed), тогда как onKeyDown ловит Escape детерминированно и ровно
+          один раз — открыт список или нет. (Проверено эмпирически в jsdom с
+          @base-ui/react@1.4.1.)
+        */}
+        {/*
+          autoFocus оправдан: combobox рендерится inline и монтируется только как
+          намеренно открытая поисковая поверхность (canvas/trails/attachments-пикеры)
+          по действию пользователя — это НЕ неожиданный фокус при загрузке страницы.
+          Восстанавливает клавиатурный доступ старого async-combobox (без Tab в поле).
         */}
         <Combobox.Input
+          // eslint-disable-next-line jsx-a11y/no-autofocus -- inline mount-visible search surface, см. коммент выше
+          autoFocus
           placeholder={props.placeholder}
           onKeyDown={(e) => { if (e.key === "Escape") props.onClose?.(); }}
         />
-        <Combobox.List>
+        <Combobox.List className="max-h-[min(60vh,24rem)] overflow-y-auto [&_[role=option]]:line-clamp-2">
           {(item: T) => (
             <Combobox.Item key={props.getKey(item)} value={item}>
               {props.renderItem(item)}
             </Combobox.Item>
           )}
         </Combobox.List>
-        {/*
-          Combobox.Empty/Combobox.Status (Base UI, через kit) рендерят children
-          inline даже без Popup/Positioner-предка и дают бесплатные
-          role="status" + aria-live="polite" анонсы — манипулировать видимостью
-          продолжаем через наш status (серверный поиск, filter=null), но a11y
-          live-region берём от нативных частей.
-        */}
-        {status === "empty" && <Combobox.Empty>{empty}</Combobox.Empty>}
-        {status === "loading" && <Combobox.Status>{loadingCopy}</Combobox.Status>}
-        {status === "error" && (
-          <Combobox.Status>
-            {errorCopy}
-            <Button tone="quiet" compact onClick={() => { reload(); }}>{t("comboboxRetry")}</Button>
-          </Combobox.Status>
-        )}
-        {canLoadMore && (
-          <div role="presentation">
-            <Button tone="quiet" compact onClick={() => { loadMore(); }}>{t("comboboxLoadMore")}</Button>
-          </div>
-        )}
+        <ComboboxResultsStatus
+          status={status}
+          canLoadMore={canLoadMore}
+          onReload={() => { reload(); }}
+          onLoadMore={() => { loadMore(); }}
+          copy={{
+            empty,
+            loading: loadingCopy,
+            error: errorCopy,
+            retry: t("comboboxRetry"),
+            loadMore: t("comboboxLoadMore"),
+          }}
+        />
       </div>
     </Combobox.Root>
   );

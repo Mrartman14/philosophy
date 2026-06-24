@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/vitest";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
 import { Editor } from "@tiptap/core";
 import { describe, it, expect, vi, afterEach } from "vitest";
 
@@ -49,6 +49,7 @@ import { RefPicker } from "./ref-picker";
 const mocked = actions as unknown as {
   searchGlossary: ReturnType<typeof vi.fn>;
   searchLectures: ReturnType<typeof vi.fn>;
+  searchDocuments: ReturnType<typeof vi.fn>;
   searchCommentsByLecture: ReturnType<typeof vi.fn>;
 };
 
@@ -144,6 +145,79 @@ describe("RefPicker", () => {
     fireEvent.click(screen.getByRole("button", { name: "Комментарий" }));
     expect(await screen.findByText("Реплика")).toBeInTheDocument();
     expect(mocked.searchCommentsByLecture).toHaveBeenCalledWith("L9", "", 0, 20);
+    editor.destroy();
+  });
+
+  it("элемент с пустым id отфильтрован, клик по нему НЕ вставляет dead-ref", async () => {
+    // Бэк отдал «битый» элемент без id (dead-reference): он отфильтрован из
+    // видимого списка (нет кликабельной опции), а если бы значение всё же дошло
+    // до insertRef — гард по пустому id не вставляет марку и закрывает попап.
+    mocked.searchGlossary.mockResolvedValue({
+      data: [{ id: "", title: "Безымянный" }, { id: "g2", title: "Сущее" }],
+      total: 2,
+    });
+    const onOpenChange = vi.fn();
+    const onWillInsert = vi.fn();
+    const editor = makeEditor();
+    render(
+      <RefPicker editor={editor} open onOpenChange={onOpenChange} onWillInsert={onWillInsert} />,
+    );
+    // Валидный элемент виден, битый — нет (отфильтрован).
+    await screen.findByText("Сущее");
+    expect(screen.queryByText("Безымянный")).not.toBeInTheDocument();
+    // Клик по битому невозможен (его нет в DOM); пробуем по тексту — ничего не
+    // вставляется и onWillInsert не вызывается.
+    fireEvent.click(screen.getByText("Сущее")); // валидный → вставит g2 (контроль)
+    const json = JSON.stringify(editor.getJSON());
+    expect(json).toContain('"id":"g2"');
+    expect(json).not.toContain('"id":""');
+    editor.destroy();
+  });
+
+  it("гард insertRef: id-less item не рендерится как опция и не даёт *_ref", async () => {
+    // Единственный элемент с id:"" → отфильтрован из видимого списка: нет опции
+    // для клика, в JSON нет *_ref-марки, onWillInsert не вызван. Если бы значение
+    // всё же дошло до insertRef — гард по пустому id закрыл бы попап без вставки.
+    mocked.searchGlossary.mockResolvedValue({ data: [{ id: "", title: "Призрак" }], total: 1 });
+    const onOpenChange = vi.fn();
+    const onWillInsert = vi.fn();
+    const editor = makeEditor();
+    render(
+      <RefPicker editor={editor} open onOpenChange={onOpenChange} onWillInsert={onWillInsert} />,
+    );
+    await screen.findByRole("combobox");
+    await waitFor(() => { expect(mocked.searchGlossary).toHaveBeenCalled(); });
+    // Битый элемент не показан как опция.
+    expect(screen.queryByRole("option")).not.toBeInTheDocument();
+    expect(screen.queryByText("Призрак")).not.toBeInTheDocument();
+    expect(JSON.stringify(editor.getJSON())).not.toContain("_ref");
+    expect(onWillInsert).not.toHaveBeenCalled();
+    editor.destroy();
+  });
+
+  it("Popup имеет доступное имя (aria-label «Вставить ссылку»)", async () => {
+    mocked.searchGlossary.mockResolvedValue({ data: [{ id: "g1", title: "Бытие" }], total: 1 });
+    const editor = makeEditor();
+    render(<RefPicker editor={editor} open onOpenChange={() => undefined} />);
+    await screen.findByText("Бытие");
+    expect(screen.getByRole("dialog", { name: "Вставить ссылку" })).toBeInTheDocument();
+    editor.destroy();
+  });
+
+  it("после смены категории фокус возвращается в поле поиска", async () => {
+    mocked.searchGlossary.mockResolvedValue({ data: [{ id: "g1", title: "Бытие" }], total: 1 });
+    mocked.searchDocuments.mockResolvedValue({ data: [{ id: "d1", filename: "essay.pdf" }], total: 1 });
+    const editor = makeEditor();
+    render(<RefPicker editor={editor} open onOpenChange={() => undefined} />);
+    await screen.findByText("Бытие");
+    fireEvent.click(screen.getByRole("button", { name: "Документ" }));
+    await screen.findByText("essay.pdf");
+    // key={scopeKey} ремоунтит Root — фокус не должен утечь на <body>; эффект на
+    // scopeKey возвращает его в поле поиска (combobox-input).
+    await waitFor(() => {
+      expect(document.activeElement).toBe(screen.getByRole("combobox"));
+    });
+    expect(document.activeElement).not.toBe(document.body);
     editor.destroy();
   });
 });

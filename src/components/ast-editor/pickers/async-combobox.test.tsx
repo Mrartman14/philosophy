@@ -144,6 +144,21 @@ describe("AsyncCombobox", () => {
     await waitFor(() => { expect(onClose).toHaveBeenCalled(); });
   });
 
+  it("автофокус на поле поиска при монтировании", async () => {
+    // Combobox рендерится inline (не в Popup) — autoFocus на mount корректен и
+    // восстанавливает поведение старого async-combobox (клавиатурный доступ без Tab).
+    render(
+      <AsyncCombobox<Item>
+        fetcher={() => Promise.resolve({ data: [] as Item[], total: 0 as number | null })}
+        renderItem={() => null}
+        getKey={() => "k"}
+        onSelect={() => undefined}
+      />,
+    );
+    const input = screen.getByRole("combobox");
+    await waitFor(() => { expect(input).toHaveFocus(); });
+  });
+
   it("рефетч при смене identity fetcher", async () => {
     const fA = vi.fn(() => Promise.resolve({ data: [{ id: "a", name: "A" }], total: 1 as number | null }));
     const fB = vi.fn(() => Promise.resolve({ data: [{ id: "b", name: "B" }], total: 1 as number | null }));

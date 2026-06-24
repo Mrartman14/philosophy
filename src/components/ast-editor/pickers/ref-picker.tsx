@@ -1,10 +1,11 @@
 "use client";
 import type { Editor } from "@tiptap/core";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button, Combobox } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
+import { ComboboxResultsStatus } from "./combobox-results-status";
 import { REF_TYPES, type RefTypeDef } from "./ref-types";
 import { useAsyncComboboxItems, type AsyncFetcher } from "./use-async-combobox-items";
 
@@ -76,13 +77,21 @@ export function RefPicker(props: RefPickerProps) {
   };
 
   const insertRef = (item: unknown) => {
-    props.onWillInsert?.();
     const id = active.getKey(item);
+    // Пустой id = «мёртвая» ссылка (glossary_ref/… c id:"" никуда не ведёт):
+    // не вставляем марку, просто закрываем попап. Сюда обычно не доходим, т.к.
+    // id-less элементы отфильтрованы из списка ниже, но это последний барьер.
+    if (!id) {
+      props.onOpenChange(false);
+      return;
+    }
+    props.onWillInsert?.();
     const label = active.getLabel(item);
     const editor = props.editor;
     if (editor.state.selection.empty) {
       // Collapsed — вставляем label-текст с маркой (иначе setMark уходит только в
-      // storedMarks и пользователь не видит видимой nav-ref). Зеркалит ref-menu.apply().
+      // storedMarks и пользователь не видит видимой nav-ref). Поведение локального
+      // insertRef: текст-метка + nav-ref марка на ней (раньше — ref-menu.apply).
       editor
         .chain()
         .focus()
@@ -126,16 +135,34 @@ export function RefPicker(props: RefPickerProps) {
       ? active.scope.parentKey(item as never)
       : active.getKey(item);
 
+  // Отбрасываем элементы с пустым id: вставлять «мёртвую» ссылку нельзя
+  // (insertRef всё равно забракует), а одинаковые пустые key дают React
+  // duplicate-key warning при >1 таком элементе.
+  const visibleItems = list.items.filter((item) => getKey(item) !== "");
+
   // Ремоунт Combobox.Root на смене scope — иначе внутренняя selected-value/highlight
   // Base UI протекает между категориями (stale объект → getKey по чужой форме).
   const scopeKey = `${activeId}:${parentId ?? ""}`;
 
+  // key={scopeKey} ремоунтит Root на смене категории/drill-in → фокус слетает на
+  // <body>. Возвращаем его в поле поиска после ремоунта (эффект кейован на
+  // scopeKey: после remount-commit ref указывает уже на новый input). Защита от
+  // протечки scope (через key) сохранена — лечим только потерю фокуса.
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (props.open) inputRef.current?.focus();
+  }, [scopeKey, props.open]);
+
   return (
     <Combobox.Root
       key={scopeKey}
-      items={list.items as readonly unknown[]}
+      items={visibleItems as readonly unknown[]}
       filter={null}
       open={props.open}
+      // RefPicker сам владеет попапом, поэтому Esc приходит сюда как
+      // onOpenChange(open:false, reason:"escape-key") — закрытие через него
+      // (в отличие от AsyncCombobox, который встроен inline и ловит Esc через
+      // onKeyDown на Input, т.к. его список обычно закрыт и перехода open→closed нет).
       onOpenChange={(open) => { props.onOpenChange(open); }}
       inputValue={list.query}
       onInputValueChange={(v) => { list.setQuery(v); }}
@@ -150,7 +177,10 @@ export function RefPicker(props: RefPickerProps) {
           align="start"
           sideOffset={4}
         >
-          <Combobox.Popup className="ref-picker p-1 min-w-[320px] max-w-[480px]">
+          <Combobox.Popup
+            className="ref-picker p-1 min-w-[320px] max-w-[480px]"
+            aria-label={t("insertRefDialogAriaLabel")}
+          >
             <div role="group" aria-label={t("refCategoryAriaLabel")} className="flex gap-1 p-1">
               {REF_TYPES.map((r) => (
                 <Button
@@ -173,30 +203,25 @@ export function RefPicker(props: RefPickerProps) {
                 {t("refLectureCrumb", { title: parentLabel ?? "" })}
               </Button>
             )}
-            <Combobox.Input placeholder={placeholder} />
-            <Combobox.List>
+            <Combobox.Input ref={inputRef} placeholder={placeholder} />
+            <Combobox.List className="max-h-[min(60vh,24rem)] overflow-y-auto [&_[role=option]]:line-clamp-2">
               {(item: unknown) => (
                 <Combobox.Item key={getKey(item)} value={item}>{renderItem(item)}</Combobox.Item>
               )}
             </Combobox.List>
-            {/*
-              Combobox.Empty/Combobox.Status (Base UI, через kit) дают бесплатные
-              role="status" + aria-live="polite" анонсы для SR — видимостью рулим
-              нашим status (серверный поиск, filter=null), live-region берём от частей.
-            */}
-            {list.status === "empty" && <Combobox.Empty>{t("comboboxEmpty")}</Combobox.Empty>}
-            {list.status === "loading" && <Combobox.Status>{t("comboboxLoading")}</Combobox.Status>}
-            {list.status === "error" && (
-              <Combobox.Status>
-                {t("comboboxError")}
-                <Button tone="quiet" compact onClick={() => { list.reload(); }}>{t("comboboxRetry")}</Button>
-              </Combobox.Status>
-            )}
-            {list.canLoadMore && (
-              <div role="presentation">
-                <Button tone="quiet" compact onClick={() => { list.loadMore(); }}>{t("comboboxLoadMore")}</Button>
-              </div>
-            )}
+            <ComboboxResultsStatus
+              status={list.status}
+              canLoadMore={list.canLoadMore}
+              onReload={() => { list.reload(); }}
+              onLoadMore={() => { list.loadMore(); }}
+              copy={{
+                empty: t("comboboxEmpty"),
+                loading: t("comboboxLoading"),
+                error: t("comboboxError"),
+                retry: t("comboboxRetry"),
+                loadMore: t("comboboxLoadMore"),
+              }}
+            />
           </Combobox.Popup>
         </Combobox.Positioner>
       </Combobox.Portal>
