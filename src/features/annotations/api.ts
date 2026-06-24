@@ -1,18 +1,13 @@
 // src/features/annotations/api.ts
 import "server-only";
-import { cookies } from "next/headers";
 import { cache } from "react";
 
-import { API_URL } from "@/api/base-url";
 import { createApiClient } from "@/api/client";
 import { getT } from "@/i18n";
-import { instrumentedFetch } from "@/services/observability/server-fetch";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import {
-  PER_ENTITY_PATH,
   type Annotation,
-  type AnnotationListResponse,
   type AnnotationListResult,
   type AnnotationRevisionMeta,
   type AnnotationRevision,
@@ -20,23 +15,12 @@ import {
   type ParentEntityType,
 } from "./types";
 
-function toResult(
-  resp: AnnotationListResponse | null,
-  offset: number,
-  limit: number,
-): AnnotationListResult {
-  return {
-    items: resp?.data ?? [],
-    total: resp?.pagination.total ?? 0,
-    offset: resp?.pagination.offset ?? offset,
-    limit: resp?.pagination.limit ?? limit,
-  };
-}
-
 /**
- * Список аннотаций на конкретной сущности. Роут `GET /api/{entity}/{id}/
- * annotations` НЕ описан в schema.ts (§10.2) — ручной fetch с токеном из
- * cookie (паттерн export/route.ts). Бек применяет матрицу видимости: аноним
+ * Список аннотаций на конкретной сущности через типизированный openapi-fetch
+ * клиент. Роут `GET /api/{entity}/{id}/annotations` (§10.2) бэк добавил в
+ * OpenAPI → ручной fetch-стопгап снят. openapi-fetch требует ЛИТЕРАЛЬНЫЙ путь
+ * для вывода типов params/query, поэтому диспатчим по 4 значениям
+ * ParentEntityType через `switch`. Бек применяет матрицу видимости: аноним
  * видит только public, актор — свои (любые) + чужие public.
  */
 export const getAnnotationsFor = cache(
@@ -46,25 +30,32 @@ export const getAnnotationsFor = cache(
     offset = 0,
     limit = 20,
   ): Promise<AnnotationListResult> => {
-    const token = (await cookies()).get("token")?.value;
-    const seg = PER_ENTITY_PATH[parentEntityType];
-    const url = new URL(
-      `${API_URL}/api/${seg}/${encodeURIComponent(parentId)}/annotations`,
-    );
-    url.searchParams.set("offset", String(offset));
-    url.searchParams.set("limit", String(limit));
-    const res = await instrumentedFetch(url, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      cache: "no-store",
-    }, { surface: "annotations.list" });
+    const api = await createApiClient();
+    const init = {
+      params: { path: { id: parentId }, query: { offset, limit } },
+    } as const;
+    const get = (type: ParentEntityType) => {
+      switch (type) {
+        case "document":
+          return api.GET("/api/documents/{id}/annotations", init);
+        case "comment":
+          return api.GET("/api/comments/{id}/annotations", init);
+        case "glossary":
+          return api.GET("/api/glossary/{id}/annotations", init);
+        case "media":
+          return api.GET("/api/media/{id}/annotations", init);
+      }
+    };
+    const { data, error, response } = await get(parentEntityType);
     // 404 (parent невидим) → пустой список, не валим страницу.
-    if (res.status === 404) return toResult(null, offset, limit);
-    if (!res.ok) {
+    if (response.status === 404) return unwrapList({}, { offset, limit });
+    if (error) {
       const t = await getT("annotations");
-      throw new Error(t("api.loadListFailedStatus", { status: res.status }));
+      throw new Error(
+        t("api.loadListFailedStatus", { status: response.status }),
+      );
     }
-    const json = (await res.json()) as AnnotationListResponse;
-    return toResult(json, offset, limit);
+    return unwrapList(data, { offset, limit });
   },
 );
 

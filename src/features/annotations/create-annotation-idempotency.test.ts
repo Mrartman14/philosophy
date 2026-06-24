@@ -1,16 +1,16 @@
 // src/features/annotations/create-annotation-idempotency.test.ts
 //
-// Verifies that createAnnotation forwards the Idempotency-Key header
-// through its RAW fetch path (not createApiClient) — the highest-risk
-// drop point because a manual header spread is different from the
-// openapi-fetch client used in other slices.
+// Verifies that createAnnotation forwards the Idempotency-Key header through the
+// TYPED openapi-fetch client (per-entity POST routes are now in OpenAPI, so the
+// raw-fetch стопгап was removed) and dispatches to the correct literal route per
+// parent_entity_type.
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// createAnnotation reads the auth cookie for the Bearer token.
-vi.mock("next/headers", () => ({
-  cookies: () =>
-    Promise.resolve({ get: (_name: string) => ({ value: "mock-token" }) }),
+const post = vi.fn();
+
+vi.mock("@/api/client", () => ({
+  createApiClient: () => Promise.resolve({ POST: post }),
 }));
 
 vi.mock("@/utils/me", () => ({
@@ -55,57 +55,48 @@ function annotationForm(extra: Record<string, string>): FormData {
   return fd;
 }
 
-function mockFetchSuccess() {
-  const mockResponse = {
-    ok: true,
-    json: () => Promise.resolve({ data: { id: "ann-1", owner_id: "u1" } }),
-  } as unknown as Response;
-  return vi.spyOn(globalThis, "fetch").mockResolvedValue(mockResponse);
-}
-
-describe("createAnnotation — Idempotency-Key wiring (raw fetch path)", () => {
-  let fetchSpy: ReturnType<typeof mockFetchSuccess>;
-
+describe("createAnnotation — Idempotency-Key wiring (typed client)", () => {
   beforeEach(() => {
-    fetchSpy = mockFetchSuccess();
-  });
-
-  afterEach(() => {
-    fetchSpy.mockRestore();
+    post.mockReset();
+    post.mockResolvedValue({ data: { data: { id: "ann-1" } }, error: undefined });
   });
 
   it("forwards Idempotency-Key header from the hidden field", async () => {
     await createAnnotation(initial, annotationForm({ __idempotency_key: "key-anno-001" }));
 
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-    const [_url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers);
-    expect(headers.get("Idempotency-Key")).toBe("key-anno-001");
+    expect(post).toHaveBeenCalledTimes(1);
+    expect(post).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ headers: { "Idempotency-Key": "key-anno-001" } }),
+    );
   });
 
   it("sends no Idempotency-Key header when the hidden field is absent", async () => {
     await createAnnotation(initial, annotationForm({}));
 
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-    const [_url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers);
-    expect(headers.get("Idempotency-Key")).toBeNull();
+    expect(post).toHaveBeenCalledTimes(1);
+    expect(post).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ headers: {} }),
+    );
   });
 
-  it("still includes Authorization and Content-Type regardless of idempotency key", async () => {
-    await createAnnotation(initial, annotationForm({ __idempotency_key: "key-anno-002" }));
-
-    const [_url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers);
-    expect(headers.get("Authorization")).toBe("Bearer mock-token");
-    expect(headers.get("Content-Type")).toBe("application/json");
-  });
-
-  it("uses POST method and encodes the correct URL segment for 'document' parent type", async () => {
+  it("dispatches to the documents literal route with id path param", async () => {
     await createAnnotation(initial, annotationForm({ __idempotency_key: "key-anno-003" }));
 
-    const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-    expect(init.method).toBe("POST");
-    expect(url).toContain(`/documents/${PARENT_ID}/annotations`);
+    expect(post).toHaveBeenCalledWith(
+      "/api/documents/{id}/annotations",
+      expect.objectContaining({ params: { path: { id: PARENT_ID } } }),
+    );
+  });
+
+  it("dispatches to the per-entity literal route matching parent_entity_type", async () => {
+    await createAnnotation(
+      initial,
+      annotationForm({ parent_entity_type: "glossary" }),
+    );
+
+    const [route] = post.mock.calls[0] as [string, unknown];
+    expect(route).toBe("/api/glossary/{id}/annotations");
   });
 });

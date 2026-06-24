@@ -1,16 +1,12 @@
 // src/features/annotations/actions.ts
 "use server";
 import "server-only";
-import { cookies } from "next/headers";
 
-import { API_URL } from "@/api/base-url";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { getT } from "@/i18n";
-import { instrumentedFetch } from "@/services/observability/server-fetch";
 import {
   rethrowApiError,
-  type ApiError,
   type ApiErrorMessageKeys,
 } from "@/utils/api-error";
 import { unwrap } from "@/utils/api-unwrap";
@@ -37,7 +33,7 @@ import {
   makeAnnotationUpdateSchema,
   makeAnnotationIdSchema,
 } from "./schemas";
-import { PER_ENTITY_PATH, type Annotation } from "./types";
+import { type AnnotationCreateBody, type ParentEntityType } from "./types";
 
 /** Маппинг UPPER_SNAKE-кодов бекенда на ключи каталога errors (локализуемый канал). */
 const ERRORS: ApiErrorMessageKeys = {
@@ -49,10 +45,14 @@ const ERRORS: ApiErrorMessageKeys = {
 };
 
 /**
- * Создание аннотации. Реальный роут — пер-сущностный POST
- * `/api/{entity}/{id}/annotations` (§10.1), которого нет в openapi-fetch
- * (там фикция /api/entities/{type}/{id}/annotations). Поэтому ручной fetch
- * с токеном из cookie. Тело — annotation.CreateRequest (тип валиден).
+ * Создание аннотации через типизированный openapi-fetch клиент. Реальный роут —
+ * пер-сущностный POST `/api/{entity}/{id}/annotations` (§10.1). Бэк добавил эти
+ * 4 роута в OpenAPI → ручной `instrumentedFetch`-стопгап снят (правило AGENTS
+ * «корень починен → убрать обход»).
+ *
+ * openapi-fetch типизирует пути по ЛИТЕРАЛУ (шаблонный union как первый аргумент
+ * `POST` не выводит params/body), поэтому диспатч по 4 литералам через `switch`.
+ * Тело идентично у всех 4 роутов (`annotation.CreateRequest`) — строим один раз.
  * visibility ФИКСИРУЕТСЯ здесь и не меняется (§6.8).
  */
 export const createAnnotation = createFormAction(async (formData, ctx) => {
@@ -61,35 +61,36 @@ export const createAnnotation = createFormAction(async (formData, ctx) => {
   const t = await getT("validation");
   const input = parseFormData(makeAnnotationCreateSchema(t), formData);
 
-  const token = (await cookies()).get("token")?.value;
-  const seg = PER_ENTITY_PATH[input.parent_entity_type];
-  const body: Record<string, unknown> = {
+  const api = await createApiClient();
+  const body: AnnotationCreateBody = {
     blocks: input.blocks,
     visibility: input.visibility,
+    ...(input.anchor !== undefined ? { anchor: input.anchor } : {}),
   };
-  if (input.anchor !== undefined) body.anchor = input.anchor;
+  const init = {
+    params: { path: { id: input.parent_entity_id } },
+    body,
+    headers: idempotencyHeaders(ctx.idempotencyKey),
+  } as const;
 
-  const res = await instrumentedFetch(
-    `${API_URL}/api/${seg}/${encodeURIComponent(input.parent_entity_id)}/annotations`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...idempotencyHeaders(ctx.idempotencyKey),
-      },
-      body: JSON.stringify(body),
-      cache: "no-store",
-    },
-    { surface: "annotations.create" },
-  );
-  if (!res.ok) {
-    const errBody = (await res.json().catch(() => ({}))) as ApiError;
-    rethrowApiError(errBody, ERRORS);
-  }
-  const json = (await res.json()) as { data?: Annotation };
+  // openapi-fetch требует литеральный путь для вывода типов params/body —
+  // диспатчим по 4 значениям ParentEntityType.
+  const post = (type: ParentEntityType) => {
+    switch (type) {
+      case "document":
+        return api.POST("/api/documents/{id}/annotations", init);
+      case "comment":
+        return api.POST("/api/comments/{id}/annotations", init);
+      case "glossary":
+        return api.POST("/api/glossary/{id}/annotations", init);
+      case "media":
+        return api.POST("/api/media/{id}/annotations", init);
+    }
+  };
+  const { data, error } = await post(input.parent_entity_type);
+  if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.ANNOTATIONS);
-  return (json.data ?? null);
+  return unwrap(data);
 }, "createAnnotation");
 
 /**
