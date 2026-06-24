@@ -48,8 +48,11 @@ export function BlockRenderer({ block }: Props): ReactNode {
 }
 
 function renderChildren(block: AstBlock, type: AstNodeType | undefined): ReactNode {
-  // text-content: code_block → объединённый текст текст-нод (без inline-марок).
+  // text-content: code_block → текст кода. Канонически он в block.text
+  // (ast-editor/serializer: "code_block stores text on Block.Text, no Content").
+  // Фолбэк на объединённый текст content-нод — совместимость со старой формой.
   if (type === "code_block") {
+    if (typeof block.text === "string") return block.text;
     return (block.content ?? [])
       .map((n) => (n.type === "text" ? (n.text ?? "") : ""))
       .join("");
