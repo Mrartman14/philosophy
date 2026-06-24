@@ -1,14 +1,8 @@
-// src/components/ast-render/marks/link.tsx
-import type { ReactNode } from "react";
-
-interface Props {
-  href: string | undefined;
-  children: ReactNode;
-}
-
+// src/components/ast-render/safe-href.ts
 /**
  * Разрешённые href: абсолютные http(s):, относительные (начинаются с "/"),
  * якоря (начинаются с "#") и mailto:. Остальные — рендерятся как plain text.
+ * Read-only санитайз пользовательского href в `link`-марке (см. SANITIZE_HREF_MARKS).
  */
 export function isSafeHref(href: unknown): href is string {
   if (typeof href !== "string" || href.length === 0) return false;
@@ -20,16 +14,7 @@ export function isSafeHref(href: unknown): href is string {
   return false;
 }
 
-export function LinkMark({ href, children }: Props): ReactNode {
-  if (!isSafeHref(href)) return <>{children}</>;
-  const external = href.startsWith("http://") || href.startsWith("https://");
-  return (
-    <a
-      href={href}
-      rel={external ? "noopener noreferrer" : undefined}
-      target={external ? "_blank" : undefined}
-    >
-      {children}
-    </a>
-  );
+/** http(s)-абсолютная ссылка → нужен rel/target для внешнего перехода. */
+export function isExternalHref(href: string): boolean {
+  return href.startsWith("http://") || href.startsWith("https://");
 }

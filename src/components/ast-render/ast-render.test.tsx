@@ -257,42 +257,37 @@ describe("AstRender — image node", () => {
     expect(container.querySelector("figure figcaption")?.textContent).toBe("Подпись");
   });
 
-  it("без storage_key рендерит data-unsupported (без <img>)", () => {
+  // INTENDED (map-driven): невалидный/отсутствующий storage_key → пустой
+  // <figure> без <img> (ast-content-map NODE_MAP.image — единый SOT). Ранее
+  // read-рендерер давал <div data-unsupported="image">; <figure> — паритет с
+  // редактором, без инъекции (STORAGE_KEY_RE отклоняет ключ).
+  it("без storage_key → пустой <figure> без <img>", () => {
     const { container } = render(<AstRender blocks={[IMAGE_BLOCK_NO_KEY]} />);
     expect(container.querySelector("img")).toBeNull();
-    expect(container.querySelector("[data-unsupported='image']")).not.toBeNull();
+    const figure = container.querySelector("figure");
+    expect(figure).not.toBeNull();
+    expect(figure?.childElementCount).toBe(0);
   });
 
-  it("невалидный storage_key (не 64-hex) отклоняется как unsupported", () => {
+  it("невалидный storage_key (не 64-hex) → пустой <figure> без <img>", () => {
     const { container } = render(<AstRender blocks={[IMAGE_BLOCK_INVALID_KEY]} />);
     expect(container.querySelector("img")).toBeNull();
-    expect(container.querySelector("[data-unsupported='image']")).not.toBeNull();
+    const figure = container.querySelector("figure");
+    expect(figure).not.toBeNull();
+    expect(figure?.childElementCount).toBe(0);
   });
 });
 
 describe("AstRender — ref-marks", () => {
-  it("default: glossary_ref → <a href='/glossary/{id}'>", () => {
+  // INTENDED: nav-ref теперь несёт data-mark + class (паритет с редактором,
+  // MARK_MAP единый SOT). Ранее read-рендерер давал голый <a href>.
+  it("glossary_ref → <a href + data-mark + class nav-ref> (паритет с редактором)", () => {
     const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_GLOSSARY_REF]} />);
     const a = container.querySelector("a");
     expect(a?.getAttribute("href")).toBe("/glossary/term-uuid-123");
+    expect(a?.getAttribute("data-mark")).toBe("glossary_ref");
+    expect(a?.className).toBe("nav-ref nav-ref--glossary_ref");
     expect(a?.textContent).toBe("термин");
-  });
-
-  it("ctx.renderGlossaryRef переопределяет рендер", () => {
-    const { container } = render(
-      <AstRender
-        blocks={[PARAGRAPH_WITH_GLOSSARY_REF]}
-        ctx={{
-          renderGlossaryRef: ({ id, label }) => (
-            <span data-custom-glossary-ref={id}>{label}</span>
-          ),
-        }}
-      />
-    );
-    expect(container.querySelector("a")).toBeNull();
-    expect(
-      container.querySelector("[data-custom-glossary-ref='term-uuid-123']")?.textContent
-    ).toBe("термин");
   });
 
   it("ref с пустым id рендерится как plain text", () => {
@@ -301,40 +296,26 @@ describe("AstRender — ref-marks", () => {
     expect(container.querySelector("p")?.textContent).toBe("пустой");
   });
 
-  it("default: media_ref → <a href='/media/{id}'>", () => {
+  it("media_ref → <a href + data-mark + class nav-ref>", () => {
     const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_MEDIA_REF]} />);
     const a = container.querySelector("a");
     expect(a?.getAttribute("href")).toBe("/media/med-uuid-789");
+    expect(a?.getAttribute("data-mark")).toBe("media_ref");
+    expect(a?.className).toBe("nav-ref nav-ref--media_ref");
     expect(a?.textContent).toBe("запись");
   });
 
-  it("default: comment_ref → <a href='/comments/{id}'>", () => {
+  it("comment_ref → <a href + data-mark + class nav-ref>", () => {
     const { container } = render(<AstRender blocks={[PARAGRAPH_WITH_COMMENT_REF]} />);
-    expect(container.querySelector("a")?.getAttribute("href")).toBe(
-      "/comments/com-uuid-012",
-    );
-  });
-
-  it("ctx.renderMediaRef переопределяет рендер", () => {
-    const { container } = render(
-      <AstRender
-        blocks={[PARAGRAPH_WITH_MEDIA_REF]}
-        ctx={{
-          renderMediaRef: ({ id, label }) => (
-            <span data-custom-media-ref={id}>{label}</span>
-          ),
-        }}
-      />
-    );
-    expect(container.querySelector("a")).toBeNull();
-    expect(
-      container.querySelector("[data-custom-media-ref='med-uuid-789']")?.textContent
-    ).toBe("запись");
+    const a = container.querySelector("a");
+    expect(a?.getAttribute("href")).toBe("/comments/com-uuid-012");
+    expect(a?.getAttribute("data-mark")).toBe("comment_ref");
+    expect(a?.className).toBe("nav-ref nav-ref--comment_ref");
   });
 });
 
 describe("AstRender — canvas_ref mark", () => {
-  it("default: canvas_ref → <a href='/canvases/{id}'>", () => {
+  it("canvas_ref → <a href + data-mark + class nav-ref>", () => {
     const block: import("./types").AstBlock = {
       id: "p-cv",
       type: "paragraph",
@@ -349,35 +330,9 @@ describe("AstRender — canvas_ref mark", () => {
     const { container } = render(<AstRender blocks={[block]} />);
     const a = container.querySelector("a");
     expect(a?.getAttribute("href")).toBe("/canvases/cv-uuid-345");
+    expect(a?.getAttribute("data-mark")).toBe("canvas_ref");
+    expect(a?.className).toBe("nav-ref nav-ref--canvas_ref");
     expect(a?.textContent).toBe("canvas-ref");
-  });
-
-  it("ctx.renderCanvasRef переопределяет рендер", () => {
-    const block: import("./types").AstBlock = {
-      id: "p-cv2",
-      type: "paragraph",
-      content: [
-        {
-          type: "text",
-          text: "canvas-ref",
-          marks: [{ type: "canvas_ref", attrs: { id: "cv-uuid-345" } }],
-        },
-      ],
-    };
-    const { container } = render(
-      <AstRender
-        blocks={[block]}
-        ctx={{
-          renderCanvasRef: ({ id, label }) => (
-            <span data-custom-canvas-ref={id}>{label}</span>
-          ),
-        }}
-      />
-    );
-    expect(container.querySelector("a")).toBeNull();
-    expect(
-      container.querySelector("[data-custom-canvas-ref='cv-uuid-345']")?.textContent
-    ).toBe("canvas-ref");
   });
 });
 

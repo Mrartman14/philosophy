@@ -10,8 +10,6 @@ vi.mock("@/services/observability/client", () => ({
 
 afterEach(cleanup);
 
-const baseCtx = {};
-
 describe("InlineRenderer наблюдаемость", () => {
   it("логирует неизвестный тип марки через log.warn, а не console", async () => {
     const { log } = await import("@/services/observability/client");
@@ -23,7 +21,6 @@ describe("InlineRenderer наблюдаемость", () => {
       <InlineRenderer
         // @ts-expect-error — намеренно невалидный тип марки для ветки default
         nodes={[{ type: "text", text: "hello", marks: [{ type: "bogus-mark" }] }]}
-        ctx={baseCtx}
       />,
     );
     // eslint-disable-next-line @typescript-eslint/unbound-method

@@ -12,8 +12,6 @@ vi.mock("@/services/observability/client", () => ({
 
 afterEach(cleanup);
 
-const baseCtx = {};
-
 describe("BlockRenderer наблюдаемость", () => {
   it("логирует неизвестный тип блока через log.warn, а не console", async () => {
     const { log } = await import("@/services/observability/client");
@@ -22,7 +20,7 @@ describe("BlockRenderer наблюдаемость", () => {
       () => {},
     );
     // @ts-expect-error — намеренно невалидный тип блока для ветки default
-    render(<BlockRenderer block={{ type: "__unknown__" }} ctx={baseCtx} />);
+    render(<BlockRenderer block={{ type: "__unknown__" }} />);
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(log.warn).toHaveBeenCalledWith(
       expect.stringContaining("unsupported block type"),
@@ -39,7 +37,7 @@ describe("BlockRenderer наблюдаемость", () => {
 // (строки/ячейки без id → мусорный якорь), image — DOM не меняется.
 // renderToStaticMarkup (а не RTL render): проверяем строковый HTML на атрибут.
 const markupFor = (b: AstBlock): string =>
-  renderToStaticMarkup(<BlockRenderer block={b} ctx={{}} />);
+  renderToStaticMarkup(<BlockRenderer block={b} />);
 
 describe("BlockRenderer — data-block-id (DOM-контракт движка)", () => {
   it("paragraph несёт data-block-id", () => {

@@ -1,132 +1,85 @@
 // src/components/ast-render/block-renderer.tsx
 import type { ReactNode } from "react";
 
+import { HOLE, NODE_MAP, type AstNodeType, type NeutralSpec } from "@/components/ast-content-map";
 import { log } from "@/services/observability/client";
 
-import { readHeadingLevel } from "./heading";
 import { InlineRenderer } from "./inline-renderer";
-import { ImageNode } from "./nodes/image";
-import type { AstBlock, AstNode, AstRenderContext } from "./types";
+import { specToReact } from "./spec-to-react";
+import type { AstBlock, AstNode } from "./types";
 
 interface Props {
   block: AstBlock;
-  ctx: AstRenderContext;
 }
 
-export function BlockRenderer({ block, ctx }: Props): ReactNode {
-  // DOM-контракт движка маргиналий (annotation-layer): каждый текст-блок несёт
-  // data-block-id={block.id} как стабильный якорь для anchor-to-range /
-  // anchor-from-selection. table — БЕЗ id (строки/ячейки без id → мусорный
-  // якорь), image — DOM не меняем (без обёрток).
-  const idAttr = block.id ? { "data-block-id": block.id } : {};
-  switch (block.type) {
-    case "paragraph":
-      return <p {...idAttr}><InlineRenderer nodes={block.content} ctx={ctx} /></p>;
-    case "heading": {
-      const level = readHeadingLevel(block.attrs);
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc requires the literal union for the dynamic JSX tag; ESLint mis-flags it as a no-op
-      const Tag = (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
-      return <Tag {...idAttr} id={block.id}><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
-    }
-    case "list": {
-      // Бэк отдаёт `attrs.ordered: boolean` (см. ast-schema/document_blocks), НЕ `kind`.
-      const ordered = (block.attrs as { ordered?: unknown } | undefined)?.ordered === true;
-      const Tag = ordered ? "ol" : "ul";
-      const items = (block.content ?? []) as unknown as AstBlock[];
-      return (
-        <Tag {...idAttr}>
-          {items.map((child, i) => (
-            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
-          ))}
-        </Tag>
-      );
-    }
-    case "list_item": {
-      // list_item содержит БЛОЧНЫЕ ноды (paragraph, вложенный list, code_block,
-      // blockquote) — не inline. Обёрточный <p> даёт паритет с редактором.
-      const children = (block.content ?? []) as unknown as AstBlock[];
-      return (
-        <li {...idAttr}>
-          {children.map((child, i) => (
-            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
-          ))}
-        </li>
-      );
-    }
-    case "code_block": {
-      const lang = (block.attrs as { language?: unknown } | undefined)?.language;
-      const langStr = typeof lang === "string" ? lang : undefined;
-      const text = (block.content ?? [])
-        .map((n) => (n.type === "text" ? n.text ?? "" : ""))
-        .join("");
-      return (
-        // dir=ltr: код всегда LTR — иначе bidi рвёт пунктуацию/скобки в RTL-контексте.
-        <pre {...idAttr} dir="ltr" data-language={langStr}>
-          <code>{text}</code>
-        </pre>
-      );
-    }
-    case "blockquote": {
-      // Блочный контейнер: paragraph/heading/list/code_block/вложенный blockquote.
-      const children = (block.content ?? []) as unknown as AstBlock[];
-      return (
-        <blockquote {...idAttr}>
-          {children.map((child, i) => (
-            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
-          ))}
-        </blockquote>
-      );
-    }
-    case "thematic_break":
-      return <hr {...idAttr} />;
-    case "table": {
-      // table → table_row → table_cell → inline. `header` живёт на строке;
-      // header-строка → <th scope="col"> (семантика + .content th CSS).
-      // Строки/ячейки — AST-ноды без id, ключи по индексу.
-      const rows = block.content ?? [];
-      return (
-        <table>
-          <tbody>
-            {rows.map((row, ri) => {
-              const header = (row.attrs as { header?: unknown } | undefined)?.header === true;
-              const cells = row.content ?? [];
-              return (
-                <tr key={ri}>
-                  {cells.map((cell, ci) => {
-                    const align = readCellAlign(cell.attrs);
-                    const inner = <InlineRenderer nodes={cell.content} ctx={ctx} />;
-                    return header ? (
-                      <th key={ci} scope="col" data-align={align}>{inner}</th>
-                    ) : (
-                      <td key={ci} data-align={align}>{inner}</td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      );
-    }
-    case "image":
-      return <ImageNode attrs={block.attrs} />;
-    default: {
-      // @ts-expect-error — drift-detector: при добавлении нового block.type в схему,
-      // TS-компилятор подсветит эту строку (нет ts-error → switch неполный).
-      const _exhaustive: never = block.type;
-      log.warn(`AstRender: unsupported block type "${String(_exhaustive)}"`, {
-        blockType: String(_exhaustive),
-      });
-      return (
-        <div {...idAttr} data-unsupported={block.type ?? "unknown"}>
-          <InlineRenderer nodes={block.content} ctx={ctx} />
-        </div>
-      );
-    }
+// Блочные контейнеры: их content — дочерние БЛОКИ (рекурсивный BlockRenderer).
+const BLOCK_CONTAINERS = new Set<AstNodeType>([
+  "list",
+  "list_item",
+  "blockquote",
+  "table",
+  "table_row",
+]);
+// Inline-контейнеры: их content — inline-ноды (text/hard_break) → InlineRenderer.
+const INLINE_CONTAINERS = new Set<AstNodeType>(["paragraph", "heading", "table_cell"]);
+
+export function BlockRenderer({ block }: Props): ReactNode {
+  const type = block.type;
+  const renderer = type ? NODE_MAP[type] : undefined;
+  if (!renderer) {
+    // Нет записи в NODE_MAP: неизвестный/будущий block.type ИЛИ inline-тип
+    // (text/hard_break), пришедший на блок-позицию. Graceful fallback + лог.
+    // Полнота block-карты сторожится node-map.test.ts (единый SOT).
+    const label = (block.type as string | undefined) ?? "unknown";
+    log.warn(`AstRender: unsupported block type "${label}"`, { blockType: label });
+    return <div data-unsupported={label} />;
   }
+
+  let spec: NeutralSpec = renderer(block as AstNode);
+  // READ-only: id заголовка (scroll-spy/TOC). Карта его не добавляет — это
+  // read-атрибут поверх data-block-id. Сливаем в attrs спека до рендера.
+  if (type === "heading" && typeof block.id === "string" && block.id.length > 0) {
+    const [tag, attrs, ...kids] = spec;
+    spec = [tag, { ...attrs, id: block.id }, ...kids];
+  }
+
+  return specToReact(spec, renderChildren(block, type));
 }
 
-function readCellAlign(attrs: AstNode["attrs"]): "left" | "center" | "right" | undefined {
-  const raw = (attrs as { align?: unknown } | undefined)?.align;
-  return raw === "left" || raw === "center" || raw === "right" ? raw : undefined;
+function renderChildren(block: AstBlock, type: AstNodeType | undefined): ReactNode {
+  // text-content: code_block → объединённый текст текст-нод (без inline-марок).
+  if (type === "code_block") {
+    return (block.content ?? [])
+      .map((n) => (n.type === "text" ? (n.text ?? "") : ""))
+      .join("");
+  }
+  if (type && INLINE_CONTAINERS.has(type)) {
+    return <InlineRenderer nodes={block.content} />;
+  }
+  if (type && BLOCK_CONTAINERS.has(type)) {
+    const isHeaderRow =
+      type === "table_row" &&
+      (block.attrs as { header?: unknown } | undefined)?.header === true;
+    const children = (block.content ?? []) as unknown as AstBlock[];
+    return children.map((child, i) => {
+      const key = child.id ?? i;
+      // READ-апгрейд: ячейки header-строки → <th scope="col"> (семантика +
+      // .content th CSS). Per-node карта не знает родителя → th только в read.
+      if (isHeaderRow && child.type === "table_cell") {
+        return <HeaderCell key={key} cell={child} />;
+      }
+      return <BlockRenderer key={key} block={child} />;
+    });
+  }
+  // Лист без HOLE (thematic_break, image): детей нет.
+  return null;
+}
+
+/** table_cell в header-строке: <td> карты апгрейдится до <th scope="col">. */
+function HeaderCell({ cell }: { cell: AstBlock }): ReactNode {
+  const renderer = NODE_MAP.table_cell;
+  if (!renderer) return null;
+  const [, attrs] = renderer(cell as AstNode);
+  const spec: NeutralSpec = ["th", { ...attrs, scope: "col" }, HOLE];
+  return specToReact(spec, <InlineRenderer nodes={cell.content} />);
 }
