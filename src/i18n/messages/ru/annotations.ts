@@ -57,6 +57,15 @@ const annotations = {
   // --- actions.ts: internal error when annotation not found ---
   notFound: "Аннотация не найдена.",
 
+  // --- marginalia engine (composer / connector) ---
+  marginAddButton: "Аннотация",
+  marginAddUnanchored: "Добавить аннотацию",
+  marginComposerTitle: "Новая аннотация",
+  marginOrphanLabel: "Фрагмент не найден",
+  marginHighlightToggleOn: "Скрыть подсветку",
+  marginHighlightToggleOff: "Показать подсветку",
+  marginColumnLabel: "Аннотации на полях",
+
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
     loadListFailed: "Не удалось загрузить аннотации",

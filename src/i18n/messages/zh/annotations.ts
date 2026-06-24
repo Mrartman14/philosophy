@@ -57,6 +57,15 @@ const annotations = {
   // --- actions.ts: internal error when annotation not found ---
   notFound: "未找到批注。",
 
+  // --- marginalia engine (composer / connector) ---
+  marginAddButton: "批注",
+  marginAddUnanchored: "添加批注",
+  marginComposerTitle: "新批注",
+  marginOrphanLabel: "未找到片段",
+  marginHighlightToggleOn: "隐藏高亮",
+  marginHighlightToggleOff: "显示高亮",
+  marginColumnLabel: "页边批注",
+
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
     loadListFailed: "无法加载批注",

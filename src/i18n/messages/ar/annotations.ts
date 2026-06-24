@@ -57,6 +57,15 @@ const annotations = {
   // --- actions.ts: internal error when annotation not found ---
   notFound: "لم يُعثر على التعليق التوضيحي.",
 
+  // --- marginalia engine (composer / connector) ---
+  marginAddButton: "تعليق",
+  marginAddUnanchored: "إضافة تعليق",
+  marginComposerTitle: "تعليق جديد",
+  marginOrphanLabel: "لم يتم العثور على المقطع",
+  marginHighlightToggleOn: "إخفاء التظليل",
+  marginHighlightToggleOff: "إظهار التظليل",
+  marginColumnLabel: "تعليقات الهامش",
+
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
     loadListFailed: "تعذّر تحميل التعليقات التوضيحية",
