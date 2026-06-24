@@ -21,7 +21,7 @@ import type { Term } from "../types";
 
 const initial = initialActionState<Term | null>(null);
 
-const { Field, f, errors } = createTypedForm<TermBlocksUpdateFormInput>();
+const { f, errors } = createTypedForm<TermBlocksUpdateFormInput>();
 
 interface Props {
   term: Term;
@@ -37,6 +37,8 @@ export function GlossaryEditForm({ term }: Props) {
   const successText =
     state.success && state.data ? { successText: t("savedMessage") } : {};
 
+  const blocksError = errors(state).blocks;
+
   return (
     <Form action={action} errors={errors(state)}>
       <Stack>
@@ -46,13 +48,26 @@ export function GlossaryEditForm({ term }: Props) {
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
         <IdempotencyField result={state} />
 
-        <Field name="blocks" label={t("blocksLabel")} required>
+        {/*
+          Тело НЕ оборачиваем в <Field name="blocks">: Base UI Field.Root
+          пробрасывает name="blocks" на kit-контролы тулбара редактора и они
+          уходят в FormData дублями (Object.fromEntries берёт последнее → пусто).
+          Имя несёт ТОЛЬКО скрытый input выше; лейбл и ошибку рендерим рядом.
+        */}
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium">
+            {t("blocksLabel")}
+            <span className="ms-0.5 text-(--color-danger)">*</span>
+          </span>
           <LazyAstEditor
             defaultValue={term.blocks ?? []}
             entityContext="glossary"
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
           />
-        </Field>
+          {blocksError && (
+            <span className="text-xs text-(--color-danger)">{blocksError}</span>
+          )}
+        </div>
 
         <FormFeedback
           result={state}

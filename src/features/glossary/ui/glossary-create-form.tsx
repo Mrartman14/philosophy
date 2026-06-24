@@ -32,6 +32,8 @@ export function GlossaryCreateForm() {
   // Термин создан целиком (title + тело) — возвращаемся к списку.
   useActionRedirect(state, () => `/admin/glossary`);
 
+  const blocksError = errors(state).blocks;
+
   return (
     <Form action={action} errors={errors(state)}>
       <Stack>
@@ -42,13 +44,28 @@ export function GlossaryCreateForm() {
           <TextInput aria-required maxLength={300} placeholder={t("titlePlaceholder")} />
         </Field>
 
-        <Field name="blocks" label={t("blocksLabel")} required>
+        {/*
+          Тело НЕ оборачиваем в <Field name="blocks">: Base UI Field.Root
+          пробрасывает name="blocks" на kit-контролы тулбара редактора
+          (HeadingSelect и пр.) как Field.Control — и они уходят в FormData
+          дублями поля blocks. Object.fromEntries берёт ПОСЛЕДНЕЕ значение
+          (пустое) → «тело пустое». Имя blocks несёт ТОЛЬКО скрытый input выше;
+          лейбл и ошибку рендерим рядом вручную.
+        */}
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium">
+            {t("blocksLabel")}
+            <span className="ms-0.5 text-(--color-danger)">*</span>
+          </span>
           <LazyAstEditor
             defaultValue={[]}
             entityContext="glossary"
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
           />
-        </Field>
+          {blocksError && (
+            <span className="text-xs text-(--color-danger)">{blocksError}</span>
+          )}
+        </div>
 
         <FormFeedback result={state} forbiddenAction={t("createTermAction")} />
 
