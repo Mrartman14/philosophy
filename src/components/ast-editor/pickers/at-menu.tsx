@@ -1,7 +1,11 @@
 // src/components/ast-editor/pickers/at-menu.tsx
 "use client";
 import type { Editor } from "@tiptap/core";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { Popover } from "@/components/ui";
+
+import { caretVirtualElement } from "../caret-anchor";
 
 import {
   atSuggestionKey,
@@ -18,15 +22,17 @@ interface Props {
 
 /**
  * Inline-обёртка RefMenu для @-suggestion. Требует createAtSuggestionPlugin
- * в extensions редактора (atHost в ast-editor.tsx). MVP: панель рендерится
- * под редактором (как slash-menu); позиционирование под курсор — follow-up.
+ * в extensions редактора (atHost в ast-editor.tsx).
  *
- * Focus management (scoped to AtMenu only — NOT inside shared RefMenu):
- * - On open: focuses the first category button inside the wrapper via wrapperRef.
- * - Escape: closes the suggestion state and restores focus to the editor.
- *   Uses a document capture-phase listener (same pattern as SlashMenu) so it
- *   intercepts Escape regardless of which element inside the menu has focus.
- * No Tab trap: this is a non-modal inline sibling, not a modal dialog.
+ * Позиционирование под каретку, портал, коллизии (flip/shift), управление фокусом
+ * и Escape делегированы Base UI Popover (как у тулбарного RefPopover) — меню
+ * якорится к каретке через virtual-anchor (caretVirtualElement → coordsAtPos),
+ * больше не рендерится статикой в потоке под контентом.
+ *
+ * Источник истины — плагин-состояние {open, from}: `open` контролируем им,
+ * `onOpenChange(false)` (Escape / клик вне / вставка) закрывает состояние и
+ * возвращает фокус в редактор. Initial-focus в меню и Escape Base UI делает сам,
+ * поэтому собственных rAF-фокуса и document-listener'ов здесь больше нет.
  */
 export function AtMenu({ editor, defaultLectureId }: Props) {
   const [state, setState] = useState<AtSuggestionState>({
@@ -34,10 +40,6 @@ export function AtMenu({ editor, defaultLectureId }: Props) {
     from: -1,
     query: "",
   });
-
-  // Ref on the AtMenu wrapper — used to focus the first category button on open.
-  // Scoped to AtMenu; RefMenu and RefPopover are not touched.
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const upd = () => {
@@ -50,59 +52,35 @@ export function AtMenu({ editor, defaultLectureId }: Props) {
     };
   }, [editor]);
 
-  // Move initial focus into the menu when it opens.
-  // We query the wrapper for the first button (the category buttons rendered by RefMenu).
-  // This is scoped to the AtMenu wrapper and does NOT change RefMenu's behavior for
-  // the RefPopover path (Base UI Popover already manages focus there).
-  useEffect(() => {
-    if (!state.open) return;
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-    // Use rAF so the DOM is fully painted before we attempt to focus.
-    const rafId = requestAnimationFrame(() => {
-      const firstButton = wrapper.querySelector<HTMLElement>("button,[role='button']");
-      firstButton?.focus();
-    });
-    return () => { cancelAnimationFrame(rafId); };
-  }, [state.open]);
-
-  // Escape: close + restore editor focus.
-  // Document capture-phase listener intercepts Escape regardless of which element
-  // inside the menu has focus (category buttons, combobox inputs, etc.).
-  // We only act when the event originated inside our wrapper (event.target check)
-  // or focus is there (document.activeElement fallback) to avoid interfering with
-  // other menus/popovers that handle their own Escape (e.g. RefPopover via Base UI).
-  useEffect(() => {
-    if (!state.open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      const wrapper = wrapperRef.current;
-      if (!wrapper) return;
-      // Intercept Escape when the event target is inside the AtMenu wrapper, OR
-      // when focus is inside the wrapper (covers synthetic events from tests that
-      // use document.activeElement rather than event.target).
-      const eventInside = e.target instanceof Node && wrapper.contains(e.target);
-      const focusInside = wrapper.contains(document.activeElement);
-      if (!eventInside && !focusInside) return;
-      e.preventDefault();
-      e.stopPropagation();
-      closeAtSuggestion(editor.view);
-      editor.commands.focus();
-    };
-    document.addEventListener("keydown", handler, true);
-    return () => { document.removeEventListener("keydown", handler, true); };
-  }, [state.open, editor]);
-
-  if (!state.open) return null;
+  // Virtual-anchor каретки для Positioner. Пересчёт при сдвиге позиции "@"
+  // (state.from); scroll/resize floating-ui отслеживает сам.
+  const anchor = useMemo(
+    () => caretVirtualElement(editor, state.from),
+    [editor, state.from],
+  );
 
   return (
-    <div ref={wrapperRef} className="ast-at-menu" data-at-menu="">
-      <RefMenu
-        editor={editor}
-        defaultLectureId={defaultLectureId}
-        onWillInsert={() => { consumeAtMarker(editor.view, state.from); }}
-        onClose={() => { closeAtSuggestion(editor.view); }}
-      />
-    </div>
+    <Popover.Root
+      open={state.open}
+      onOpenChange={(open) => {
+        if (!open) {
+          closeAtSuggestion(editor.view);
+          editor.commands.focus();
+        }
+      }}
+    >
+      <Popover.Portal>
+        <Popover.Positioner anchor={anchor} side="bottom" align="start" sideOffset={4}>
+          <Popover.Popup className="p-1 min-w-[320px] max-w-[480px]">
+            <RefMenu
+              editor={editor}
+              defaultLectureId={defaultLectureId}
+              onWillInsert={() => { consumeAtMarker(editor.view, state.from); }}
+              onClose={() => { closeAtSuggestion(editor.view); }}
+            />
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }

@@ -1,10 +1,11 @@
 "use client";
 import type { Editor } from "@tiptap/core";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
-import { Button } from "@/components/ui";
+import { Button, Popover } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
+import { caretVirtualElement } from "../caret-anchor";
 import type { SchemaSnapshot, EntityContext } from "../types";
 
 import { slashMenuKey, consumeSlashMarker, closeSlashMenu } from "./slash-menu-plugin";
@@ -140,6 +141,13 @@ export function SlashMenu({ editor, schema, context }: Props) {
     };
   }, [editor]);
 
+  // Virtual-anchor каретки для Base UI Positioner (см. caret-anchor.ts). Якорь —
+  // позиция "/" (state.from), стабильная пока печатается query.
+  const anchor = useMemo(
+    () => caretVirtualElement(editor, state.from),
+    [editor, state.from],
+  );
+
   const allCmds = buildCommands(schema, context, t);
   const cmds = state.query
     ? allCmds.filter((c) => c.label.toLowerCase().includes(state.query.toLowerCase()))
@@ -206,41 +214,64 @@ export function SlashMenu({ editor, schema, context }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.open, state.from, state.query, active]);
 
-  if (!state.open) return null;
-  if (cmds.length === 0) {
-    return (
-      <div role="status" className="ast-slash-menu ast-slash-menu--empty">
-        {t("slashMenuNoMatches")}
-      </div>
-    );
-  }
-
   return (
-    <div id={listboxId} role="listbox" aria-label={t("slashMenuAriaLabel")} className="ast-slash-menu">
-      {cmds.map((c, i) => (
-        <Button
-          key={c.id}
-          id={`${listboxId}-opt-${String(i)}`}
-          unstyled
-          role="option"
-          aria-selected={safeActive === i}
-          className={SLASH_MENU_ITEM_CLASS}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            apply(c);
-          }}
-          onMouseEnter={() => { setActive(i); }}
-        >
-          {c.label}
-        </Button>
-      ))}
-      <Button
-        unstyled
-        className={SLASH_MENU_ITEM_CLASS}
-        onClick={() => { closeSlashMenu(editor.view); }}
-      >
-        {t("slashMenuClose")}
-      </Button>
-    </div>
+    <Popover.Root
+      open={state.open}
+      onOpenChange={(open, details) => {
+        // Меню — комбобокс при редакторе: фокус намеренно остаётся в
+        // contenteditable (initialFocus={false}) ради aria-activedescendant и
+        // набора "/query". Base UI на это шлёт focus-out — игнорируем его, иначе
+        // меню само закроется. Закрываем только по Escape / клику вне (Escape
+        // также ловит сам slash-плагин).
+        if (!open && details.reason !== "focus-out") {
+          closeSlashMenu(editor.view);
+        }
+      }}
+    >
+      <Popover.Portal>
+        <Popover.Positioner anchor={anchor} side="bottom" align="start" sideOffset={4}>
+          <Popover.Popup className="p-1 min-w-[220px]" initialFocus={false} finalFocus={false}>
+            {cmds.length === 0 ? (
+              <div role="status" className="ast-slash-menu ast-slash-menu--empty" data-slash-menu="">
+                {t("slashMenuNoMatches")}
+              </div>
+            ) : (
+              <div
+                id={listboxId}
+                role="listbox"
+                aria-label={t("slashMenuAriaLabel")}
+                className="ast-slash-menu"
+                data-slash-menu=""
+              >
+                {cmds.map((c, i) => (
+                  <Button
+                    key={c.id}
+                    id={`${listboxId}-opt-${String(i)}`}
+                    unstyled
+                    role="option"
+                    aria-selected={safeActive === i}
+                    className={SLASH_MENU_ITEM_CLASS}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      apply(c);
+                    }}
+                    onMouseEnter={() => { setActive(i); }}
+                  >
+                    {c.label}
+                  </Button>
+                ))}
+                <Button
+                  unstyled
+                  className={SLASH_MENU_ITEM_CLASS}
+                  onClick={() => { closeSlashMenu(editor.view); }}
+                >
+                  {t("slashMenuClose")}
+                </Button>
+              </div>
+            )}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }

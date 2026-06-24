@@ -82,9 +82,8 @@ describe("createSlashMenuPlugin", () => {
 describe("SlashMenu UI", () => {
   it("renders palette when state is open and applies heading on click", async () => {
     const editor = makeEditor();
-    const { container } = render(
-      <SlashMenu editor={editor} schema={SchemaSnap} context="document" />,
-    );
+    // Контент меню портализуется Base UI на body → ищем через screen.
+    render(<SlashMenu editor={editor} schema={SchemaSnap} context="document" />);
     // Open via meta directly — UI-кейс не зависит от пути открытия.
     const pos = editor.view.state.selection.from;
     editor.view.dispatch(
@@ -92,38 +91,54 @@ describe("SlashMenu UI", () => {
         .insertText("/", pos)
         .setMeta(slashMenuKey, { open: true, from: pos, query: "" }),
     );
-    await waitFor(() =>
-      { expect(container.querySelector('[role="listbox"]')).not.toBeNull(); },
-    );
+    await screen.findByRole("listbox");
     fireEvent.mouseDown(screen.getByText(/заголовок 1/i));
     expect(JSON.stringify(editor.getJSON())).toContain('"type":"heading"');
     editor.destroy();
   });
 
-  it("listbox and options have stable ids for aria-activedescendant bridge", async () => {
+  it("якорится под каретку через Base UI Positioner (coordsAtPos)", async () => {
     const editor = makeEditor();
-    const { container } = render(
-      <SlashMenu editor={editor} schema={SchemaSnap} context="document" />,
-    );
+    // Позиционирование делегировано Base UI Popover.Positioner: якорь — virtual
+    // element поверх coordsAtPos (caret-anchor.ts). jsdom отдаёт нули, мокаем.
+    const coordsSpy = vi.spyOn(editor.view, "coordsAtPos").mockReturnValue({
+      top: 150,
+      bottom: 168,
+      left: 40,
+      right: 46,
+    });
+    render(<SlashMenu editor={editor} schema={SchemaSnap} context="document" />);
     const pos = editor.view.state.selection.from;
     editor.view.dispatch(
       editor.view.state.tr
         .insertText("/", pos)
         .setMeta(slashMenuKey, { open: true, from: pos, query: "" }),
     );
-    await waitFor(() =>
-      { expect(container.querySelector('[role="listbox"]')).not.toBeNull(); },
+    // Контент портализуется на body → ищем через screen, не через container.
+    await screen.findByRole("listbox");
+    await waitFor(() => { expect(coordsSpy).toHaveBeenCalled(); });
+
+    editor.destroy();
+  });
+
+  it("listbox and options have stable ids for aria-activedescendant bridge", async () => {
+    const editor = makeEditor();
+    render(<SlashMenu editor={editor} schema={SchemaSnap} context="document" />);
+    const pos = editor.view.state.selection.from;
+    editor.view.dispatch(
+      editor.view.state.tr
+        .insertText("/", pos)
+        .setMeta(slashMenuKey, { open: true, from: pos, query: "" }),
     );
+    // Контент портализуется на body → запросы через screen, не через container.
+    const listbox = await screen.findByRole("listbox");
 
     // Listbox must have a stable non-empty id.
-    const listbox = container.querySelector('[role="listbox"]');
-    expect(listbox).not.toBeNull();
-    if (!listbox) throw new Error("listbox not found");
     const listboxId = listbox.getAttribute("id");
     expect(listboxId).toBeTruthy();
 
     // Each option must have an id in the form `${listboxId}-opt-${i}`.
-    const options = container.querySelectorAll('[role="option"]');
+    const options = screen.getAllByRole("option");
     expect(options.length).toBeGreaterThan(0);
     options.forEach((opt, i) => {
       expect(opt.getAttribute("id")).toBe(`${listboxId}-opt-${i}`);
@@ -140,9 +155,7 @@ describe("SlashMenu UI", () => {
 
   it("removes aria bridge attrs from editor.view.dom after menu closes", async () => {
     const editor = makeEditor();
-    const { container } = render(
-      <SlashMenu editor={editor} schema={SchemaSnap} context="document" />,
-    );
+    render(<SlashMenu editor={editor} schema={SchemaSnap} context="document" />);
     const pos = editor.view.state.selection.from;
     // Open the menu.
     editor.view.dispatch(
@@ -150,15 +163,14 @@ describe("SlashMenu UI", () => {
         .insertText("/", pos)
         .setMeta(slashMenuKey, { open: true, from: pos, query: "" }),
     );
-    await waitFor(() =>
-      { expect(container.querySelector('[role="listbox"]')).not.toBeNull(); },
-    );
+    // Контент портализуется на body → запросы через screen, не через container.
+    await screen.findByRole("listbox");
     // Close the menu.
     editor.view.dispatch(
       editor.view.state.tr.setMeta(slashMenuKey, { open: false, from: -1, query: "" }),
     );
     await waitFor(() =>
-      { expect(container.querySelector('[role="listbox"]')).toBeNull(); },
+      { expect(screen.queryByRole("listbox")).toBeNull(); },
     );
     const editorDom = editor.view.dom;
     expect(editorDom.getAttribute("aria-controls")).toBeNull();

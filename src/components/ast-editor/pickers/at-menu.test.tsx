@@ -115,38 +115,48 @@ describe("AtMenu", () => {
     editor.destroy();
   });
 
-  it("при открытии фокусирует первую кнопку категории", async () => {
-    // Make rAF run the callback synchronously so we can observe focus immediately.
-    vi.stubGlobal(
-      "requestAnimationFrame",
-      (cb: FrameRequestCallback) => { cb(0); return 0; },
-    );
+  it("якорится под каретку через Base UI Positioner (coordsAtPos), а не в поток", async () => {
+    const editor = makeEditor();
+    // Позиционирование делегировано Base UI Popover.Positioner: якорь — virtual
+    // element поверх coordsAtPos. coordsAtPos в jsdom даёт нули, мокаем явные
+    // координаты — важен сам факт, что floating-ui замеряет каретку.
+    const coordsSpy = vi.spyOn(editor.view, "coordsAtPos").mockReturnValue({
+      top: 200,
+      bottom: 218,
+      left: 80,
+      right: 86,
+    });
+    render(<AtMenu editor={editor} />);
+    openMenu(editor);
 
+    // Меню портализуется на body (вне in-flow контейнера редактора) и якорится
+    // к каретке → coordsAtPos должен быть вызван при замере позиции.
+    await screen.findByRole("dialog", { name: /вставить ссылку/i });
+    await waitFor(() => { expect(coordsSpy).toHaveBeenCalled(); });
+
+    editor.destroy();
+  });
+
+  it("при открытии переносит фокус в меню (первая категория)", async () => {
     const editor = makeEditor();
     render(<AtMenu editor={editor} />);
 
     openMenu(editor);
 
-    // role="dialog" должен присутствовать (existing assertion stays green).
     const dialog = await screen.findByRole("dialog", { name: /вставить ссылку/i });
     expect(dialog).toBeInTheDocument();
 
-    // Первая кнопка категории внутри меню получила фокус.
+    // Base UI Popover переносит фокус на первый tabbable в попапе — это кнопка
+    // категории "Термин". Имя кнопки устойчивее индекса: Base UI добавляет
+    // focus-guard'ы с role="button", и getAllByRole("button")[0] был бы хрупок.
     await waitFor(() => {
-      const firstButton = screen.getAllByRole("button")[0];
-      expect(firstButton).toHaveFocus();
+      expect(screen.getByRole("button", { name: "Термин" })).toHaveFocus();
     });
 
     editor.destroy();
   });
 
   it("Escape закрывает меню и возвращает фокус в редактор", async () => {
-    // Make rAF run the callback synchronously.
-    vi.stubGlobal(
-      "requestAnimationFrame",
-      (cb: FrameRequestCallback) => { cb(0); return 0; },
-    );
-
     const editor = makeEditor();
     // editor.commands.focus() is a getter returning a new object each call, so spy
     // on editor.view.focus instead — that's what the focus command ultimately calls.
@@ -156,33 +166,21 @@ describe("AtMenu", () => {
 
     openMenu(editor);
 
-    // Убеждаемся, что меню открыто и первая кнопка сфокусирована.
     await screen.findByRole("dialog", { name: /вставить ссылку/i });
 
-    // Дожидаемся, пока rAF-фокус отработает.
-    await waitFor(() => {
-      const firstButton = screen.getAllByRole("button")[0];
-      expect(firstButton).toHaveFocus();
+    // Дожидаемся, пока Base UI перенесёт фокус в меню.
+    const firstCategory = await waitFor(() => {
+      const btn = screen.getByRole("button", { name: "Термин" });
+      expect(btn).toHaveFocus();
+      return btn;
     });
 
-    // Нажатие Escape должно закрыть меню.
-    // fireEvent.keyDown диспетчирует событие с bubbles:true, его поймает наш
-    // document-level capture listener (event.target — кнопка внутри wrapper).
-    // getAllByRole всегда возвращает минимум один элемент (иначе throws), поэтому
-    // утверждение через non-null assertion безопасно.
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const firstButton = screen.getAllByRole("button")[0]!;
-    // Гарантируем, что event.target находится внутри wrapper.
-    firstButton.focus();
+    // Escape ловит dismiss Base UI (событие всплывает на document) →
+    // onOpenChange(false) → закрытие состояния + возврат фокуса в редактор.
+    fireEvent.keyDown(firstCategory, { key: "Escape", bubbles: true });
 
-    fireEvent.keyDown(firstButton, { key: "Escape", bubbles: true });
-
-    // Меню закрывается (через transaction-listener, ждём React).
     await waitFor(() => { expect(screen.queryByRole("dialog")).toBeNull(); });
-
-    // editor.commands.focus() в итоге вызывает editor.view.focus() через rAF.
-    // Поскольку rAF замокан как синхронный вызов, viewFocusSpy уже сработал.
-    expect(viewFocusSpy).toHaveBeenCalled();
+    await waitFor(() => { expect(viewFocusSpy).toHaveBeenCalled(); });
 
     editor.destroy();
   });
