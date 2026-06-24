@@ -13,6 +13,9 @@ const rendererInstance = {
   onChange: vi.fn(),
   onPick: vi.fn(),
   setReducedMotion: vi.fn(),
+  getCamera: vi.fn(() => null),
+  applyCamera: vi.fn(),
+  onSettle: vi.fn(),
   destroy: vi.fn(),
 };
 vi.mock("./three-graph-renderer", () => ({
@@ -29,6 +32,7 @@ vi.mock("@/components/scene-3d", () => ({
   SceneRegionLabels: () => <div data-testid="region-labels" />,
   readSavedMode: () => "2d",
   projectToScreen: () => ({ visible: false, x: 0, y: 0 }),
+  writeViewToUrl: vi.fn(),
 }));
 // Модель: два узла (тип во view берётся из data.nodes, а не из модели).
 vi.mock("../to-graph-render-model", () => ({
@@ -57,6 +61,8 @@ const DATA: Parameters<typeof GraphView>[0]["data"] = {
   ],
   edges: [],
 };
+// «Нет URL-состояния» ParsedView: mode=null → fallback на readSavedMode, camera=null → без restore.
+const NO_VIEW = { mode: null, camera: null };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -84,24 +90,24 @@ describe("GraphView navigation wiring", () => {
   }
 
   it("подписывает onPick в lifecycle-эффекте", () => {
-    render(<GraphView data={DATA} />);
+    render(<GraphView data={DATA} initialView={NO_VIEW} />);
     expect(rendererInstance.onPick).toHaveBeenCalled();
   });
 
   it("клик по document-узлу → router.push(/documents/{id})", () => {
-    render(<GraphView data={DATA} />);
+    render(<GraphView data={DATA} initialView={NO_VIEW} />);
     getPickCb()("a");
     expect(push).toHaveBeenCalledWith("/documents/a");
   });
 
   it("клик по узлу без type → навигации нет (href=null)", () => {
-    render(<GraphView data={DATA} />);
+    render(<GraphView data={DATA} initialView={NO_VIEW} />);
     getPickCb()("b");
     expect(push).not.toHaveBeenCalled();
   });
 
   it("клик в пустоту (null) → навигации нет", () => {
-    render(<GraphView data={DATA} />);
+    render(<GraphView data={DATA} initialView={NO_VIEW} />);
     getPickCb()(null);
     expect(push).not.toHaveBeenCalled();
   });

@@ -13,6 +13,9 @@ const rendererInstance = {
   onChange: vi.fn(),
   onPick: vi.fn(),
   setReducedMotion: vi.fn(),
+  getCamera: vi.fn(() => null),
+  applyCamera: vi.fn(),
+  onSettle: vi.fn(),
   destroy: vi.fn(),
 };
 vi.mock("./three-graph-renderer", () => ({
@@ -38,6 +41,8 @@ const DATA = {
   nodes: [{ id: "n-A", type: "document", title: "A", degree: 1 }],
   edges: [],
 } as unknown as Parameters<typeof GraphView>[0]["data"];
+// «Нет URL-состояния» ParsedView: mode=null → fallback на readSavedMode, camera=null → без restore.
+const NO_VIEW = { mode: null, camera: null };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -59,7 +64,7 @@ describe("3D-изоляция направления (граф)", () => {
   it("canvas под dir=ltr, а оверлей-тогл — снаружи (зеркалится)", () => {
     const { container } = render(
       <div dir="rtl" style={{ height: 400 }}>
-        <GraphView data={DATA} />
+        <GraphView data={DATA} initialView={NO_VIEW} />
       </div>,
     );
 

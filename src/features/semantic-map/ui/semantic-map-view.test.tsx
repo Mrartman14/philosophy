@@ -16,6 +16,9 @@ const rendererInstance = {
   onPick: vi.fn(),
   setOverlay: vi.fn(),
   setReducedMotion,
+  getCamera: vi.fn(() => null),
+  applyCamera: vi.fn(),
+  onSettle: vi.fn(),
   destroy: vi.fn(),
 };
 vi.mock("../renderer", () => ({
@@ -62,6 +65,8 @@ import SemanticMapView from "./semantic-map-view";
 
 // data пустой — toRenderModel замокан и игнорирует содержимое.
 const DATA = {} as Parameters<typeof SemanticMapView>[0]["data"];
+// «Нет URL-состояния» ParsedView: mode=null → fallback на readSavedMode, camera=null → без restore.
+const NO_VIEW = { mode: null, camera: null };
 
 beforeEach(() => {
   reduceValue = false;
@@ -83,30 +88,30 @@ afterEach(() => {
 describe("SemanticMapView reduced-motion wiring", () => {
   it("applies reduce=true to the renderer on mount", () => {
     reduceValue = true;
-    render(<SemanticMapView data={DATA} />);
+    render(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     expect(setReducedMotion).toHaveBeenCalledWith(true);
   });
 
   it("applies reduce=false to the renderer on mount", () => {
     reduceValue = false;
-    render(<SemanticMapView data={DATA} />);
+    render(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     expect(setReducedMotion).toHaveBeenCalledWith(false);
   });
 
   it("re-applies when the motion preference changes", () => {
-    const { rerender } = render(<SemanticMapView data={DATA} />);
+    const { rerender } = render(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     expect(setReducedMotion).toHaveBeenLastCalledWith(false);
     reduceValue = true;
-    rerender(<SemanticMapView data={DATA} />);
+    rerender(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     expect(setReducedMotion).toHaveBeenLastCalledWith(true);
   });
 
   it("re-applies the current reduce after a data change (renderer re-created)", () => {
     reduceValue = true;
-    const { rerender } = render(<SemanticMapView data={DATA} />);
+    const { rerender } = render(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     setReducedMotion.mockClear();
     // Новая ссылка data → useMemo пересчитывает model → [model]-эффект пере-маунтит рендерер.
-    rerender(<SemanticMapView data={{ ...DATA } as typeof DATA} />);
+    rerender(<SemanticMapView data={{ ...DATA } as typeof DATA} initialView={NO_VIEW} />);
     expect(setReducedMotion).toHaveBeenCalledWith(true);
   });
 });
@@ -122,12 +127,12 @@ describe("SemanticMapView point-pick → fetch → panel wiring", () => {
   }
 
   it("subscribes onPick inside the lifecycle effect", () => {
-    render(<SemanticMapView data={DATA} />);
+    render(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     expect(rendererInstance.onPick).toHaveBeenCalled();
   });
 
   it("on pick(id) fetches detail and shows the panel; pick(null) hides it", async () => {
-    render(<SemanticMapView data={DATA} />);
+    render(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     const pick = getPickCb();
 
     // Клик по точке → fetch одной детали → панель видна с doc из ответа.
@@ -146,12 +151,12 @@ describe("SemanticMapView point-pick → fetch → panel wiring", () => {
   });
 
   it("resets the selection when the data (model) changes", async () => {
-    const { rerender } = render(<SemanticMapView data={DATA} />);
+    const { rerender } = render(<SemanticMapView data={DATA} initialView={NO_VIEW} />);
     getPickCb()("pt-A");
     expect(await screen.findByTestId("point-panel")).toBeInTheDocument();
 
     // Новая ссылка data → пере-маунт рендерера → выбор сбрасывается, панель уходит.
-    rerender(<SemanticMapView data={{ ...DATA } as typeof DATA} />);
+    rerender(<SemanticMapView data={{ ...DATA } as typeof DATA} initialView={NO_VIEW} />);
     await waitFor(() => {
       expect(screen.queryByTestId("point-panel")).toBeNull();
     });

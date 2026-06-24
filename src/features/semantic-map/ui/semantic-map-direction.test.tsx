@@ -15,6 +15,9 @@ const rendererInstance = {
   onPick: vi.fn(),
   setOverlay: vi.fn(),
   setReducedMotion: vi.fn(),
+  getCamera: vi.fn(() => null),
+  applyCamera: vi.fn(),
+  onSettle: vi.fn(),
   destroy: vi.fn(),
 };
 vi.mock("../renderer", () => ({
@@ -45,6 +48,8 @@ vi.mock("@/components/appearance", () => ({ useReducedMotion: () => false }));
 import SemanticMapView from "./semantic-map-view";
 
 const DATA = {} as Parameters<typeof SemanticMapView>[0]["data"];
+// «Нет URL-состояния» ParsedView: mode=null → fallback на readSavedMode, camera=null → без restore.
+const NO_VIEW = { mode: null, camera: null };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -66,7 +71,7 @@ describe("3D-изоляция направления (карта)", () => {
   it("canvas+labels под dir=ltr, а оверлей-панель — снаружи (зеркалится)", () => {
     const { container } = render(
       <div dir="rtl" style={{ height: 400 }}>
-        <SemanticMapView data={DATA} />
+        <SemanticMapView data={DATA} initialView={NO_VIEW} />
       </div>,
     );
 
