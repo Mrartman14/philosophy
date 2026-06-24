@@ -169,6 +169,7 @@ const pages = {
   documentDefaultTitle: "文档",
   documentEdit: "编辑",
   documentMarginHint: "页边批注在宽屏上显示于此处。",
+  documentToc: "目录",
 
   // ─── /documents/[id]/edit ────────────────────────────────────────────
   documentEditHeading: "编辑",
