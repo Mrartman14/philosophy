@@ -77,6 +77,11 @@ const pages = {
   myFormsHeading: "Мои формы",
   myFormsCreate: "Создать форму",
 
+  // ─── /forms/new ──────────────────────────────────────────────────────
+  createFormTitle: "Создать форму",
+  createFormHeading: "Создать форму",
+  createFormBack: "К моим формам",
+
   // ─── /me/submissions ─────────────────────────────────────────────────
   mySubmissionsTitle: "Мои отклики",
   mySubmissionsHeading: "Мои отклики",

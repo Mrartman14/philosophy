@@ -77,6 +77,11 @@ const pages = {
   myFormsHeading: "نماذجي",
   myFormsCreate: "إنشاء نموذج",
 
+  // ─── /forms/new ──────────────────────────────────────────────────────
+  createFormTitle: "إنشاء نموذج",
+  createFormHeading: "إنشاء نموذج",
+  createFormBack: "العودة إلى نماذجي",
+
   // ─── /me/submissions ─────────────────────────────────────────────────
   mySubmissionsTitle: "ردودي",
   mySubmissionsHeading: "ردودي",

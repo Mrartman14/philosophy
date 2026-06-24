@@ -77,6 +77,11 @@ const pages = {
   myFormsHeading: "我的表单",
   myFormsCreate: "创建表单",
 
+  // ─── /forms/new ──────────────────────────────────────────────────────
+  createFormTitle: "创建表单",
+  createFormHeading: "创建表单",
+  createFormBack: "返回我的表单",
+
   // ─── /me/submissions ─────────────────────────────────────────────────
   mySubmissionsTitle: "我的提交",
   mySubmissionsHeading: "我的提交",

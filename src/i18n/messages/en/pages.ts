@@ -77,6 +77,11 @@ const pages = {
   myFormsHeading: "My forms",
   myFormsCreate: "Create form",
 
+  // ─── /forms/new ──────────────────────────────────────────────────────
+  createFormTitle: "Create form",
+  createFormHeading: "Create form",
+  createFormBack: "Back to my forms",
+
   // ─── /me/submissions ─────────────────────────────────────────────────
   mySubmissionsTitle: "My submissions",
   mySubmissionsHeading: "My submissions",
