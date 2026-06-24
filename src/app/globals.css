@@ -53,6 +53,15 @@ body:has(dialog[open]) {
   text-decoration: underline;
 }
 
+/* Оверлей-фолбэк подсветки для браузеров без CSS Custom Highlight API:
+   абсолютные прямоугольники из range.getClientRects() (HighlightOverlay). */
+.annotation-overlay {
+  background-color: var(--color-highlight);
+}
+.annotation-overlay--active {
+  background-color: var(--color-highlight-active);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    CUSTOM COMPONENTS
    ═══════════════════════════════════════════════════════════════ */
