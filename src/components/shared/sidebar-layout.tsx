@@ -19,7 +19,7 @@ import type { ReactNode } from "react";
 export const SIDEBAR_LAYOUT_CLASS = "flex flex-col lg:flex-row";
 
 export const SIDEBAR_ASIDE_CLASS =
-  "flex flex-col gap-4 border-b border-(--color-border) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:sticky lg:top-(--header-height) lg:border-b-0 lg:border-e";
+  "flex flex-col gap-4 border-b border-(--color-border) p-4 lg:w-56 lg:shrink-0 lg:self-start lg:sticky lg:top-(--layout-sticky-top) lg:border-b-0 lg:border-e";
 
 export function SidebarLayout({
   nav,

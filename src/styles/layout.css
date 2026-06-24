@@ -9,6 +9,8 @@
   --layout-spine: 45rem;   /* ~720px: читаемая ширина хребта */
   --layout-margin: 0px;    /* поля скрыты по умолчанию; раскрываются на >= xl */
   --layout-gutter: 2rem;   /* зазор хребет <-> поле */
+  /* top sticky-навов: ниже хедера + небольшой зазор (не примыкать вплотную). */
+  --layout-sticky-top: calc(var(--header-height) + 1rem);
 }
 
 /* Поля раскрываются только когда есть место (>= --breakpoint-xl). Брейкпоинт —
@@ -103,7 +105,7 @@
     grid-column: margin-start / content-start;
     align-self: start;
     position: sticky;
-    inset-block-start: var(--header-height);
+    inset-block-start: var(--layout-sticky-top);  /* хедер + зазор, не вплотную */
     border-block-end: 0;
     padding: 0;
   }

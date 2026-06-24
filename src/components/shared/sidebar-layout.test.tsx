@@ -16,7 +16,7 @@ describe("SidebarLayout", () => {
   it("aside: на мобиле обычный блок (НЕ sticky), на lg — sticky боковая колонка", () => {
     // sticky только с lg: — на мобиле сайдбар скроллится со страницей.
     expect(SIDEBAR_ASIDE_CLASS).toContain("lg:sticky");
-    expect(SIDEBAR_ASIDE_CLASS).toContain("lg:top-(--header-height)");
+    expect(SIDEBAR_ASIDE_CLASS).toContain("lg:top-(--layout-sticky-top)"); // хедер + зазор, не вплотную
     expect(SIDEBAR_ASIDE_CLASS).not.toMatch(/(^|\s)sticky(\s|$)/); // нет безусловного sticky
   });
 

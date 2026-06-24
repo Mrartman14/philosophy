@@ -65,6 +65,11 @@ describe("layout.css", () => {
     expect(css).toMatch(/\.margin-nav[\s\S]*position:\s*sticky/);
   });
 
+  it("sticky-нав не примыкает к хедеру вплотную (хедер + зазор)", () => {
+    expect(css).toMatch(/--layout-sticky-top:\s*calc\(\s*var\(--header-height\)\s*\+\s*1rem\s*\)/);
+    expect(css).toMatch(/\.margin-nav[\s\S]*inset-block-start:\s*var\(--layout-sticky-top\)/);
+  });
+
   it("в app/wide-режиме (есть .col-bleed) хребет-бордер гасится (§6)", () => {
     expect(css).toMatch(/\.page-grid:has\(>\s*\.col-bleed\)[\s\S]*\.spine-frame[\s\S]*display:\s*none/);
   });
