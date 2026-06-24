@@ -56,6 +56,12 @@ const pages = {
   myDocumentsCreate: "创建文档",
   myDocumentsUpload: "上传 .md",
 
+  // ─── /documents/new ──────────────────────────────────────────────────
+  createDocumentTitle: "创建文档",
+  createDocumentHeading: "创建文档",
+  createDocumentBack: "返回我的文档",
+  createDocumentEditorSection: "在编辑器中撰写",
+
   // ─── /me/media ───────────────────────────────────────────────────────
   myMediaTitle: "我的媒体",
   myMediaHeading: "我的媒体",

@@ -56,6 +56,12 @@ const pages = {
   myDocumentsCreate: "Создать документ",
   myDocumentsUpload: "Загрузить .md",
 
+  // ─── /documents/new ──────────────────────────────────────────────────
+  createDocumentTitle: "Создать документ",
+  createDocumentHeading: "Создать документ",
+  createDocumentBack: "К моим документам",
+  createDocumentEditorSection: "Написать в редакторе",
+
   // ─── /me/media ───────────────────────────────────────────────────────
   myMediaTitle: "Мои медиа",
   myMediaHeading: "Мои медиа",

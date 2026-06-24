@@ -56,6 +56,12 @@ const pages = {
   myDocumentsCreate: "إنشاء مستند",
   myDocumentsUpload: "رفع ملف ‎.md",
 
+  // ─── /documents/new ──────────────────────────────────────────────────
+  createDocumentTitle: "إنشاء مستند",
+  createDocumentHeading: "إنشاء مستند",
+  createDocumentBack: "العودة إلى مستنداتي",
+  createDocumentEditorSection: "الكتابة في المحرر",
+
   // ─── /me/media ───────────────────────────────────────────────────────
   myMediaTitle: "وسائطي",
   myMediaHeading: "وسائطي",
