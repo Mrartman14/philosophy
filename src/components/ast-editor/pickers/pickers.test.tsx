@@ -81,7 +81,7 @@ describe("GlossaryPicker", () => {
     render(<GlossaryPicker onSelect={onSelect} />);
     await screen.findByText("Эйдос");
     expect(mocked.searchGlossary).toHaveBeenCalled();
-    fireEvent.mouseDown(screen.getByText("Эйдос"));
+    fireEvent.click(screen.getByText("Эйдос"));
     expect(onSelect).toHaveBeenCalledWith("g1", "Эйдос");
   });
 });
@@ -95,7 +95,7 @@ describe("DocumentPicker", () => {
     const onSelect = vi.fn();
     render(<DocumentPicker onSelect={onSelect} />);
     await screen.findByText("essay.pdf");
-    fireEvent.mouseDown(screen.getByText("essay.pdf"));
+    fireEvent.click(screen.getByText("essay.pdf"));
     expect(onSelect).toHaveBeenCalledWith("d1", "essay.pdf");
   });
 });
@@ -109,7 +109,7 @@ describe("CanvasPicker", () => {
     const onSelect = vi.fn();
     render(<CanvasPicker onSelect={onSelect} />);
     await screen.findByText("Дерево понятий");
-    fireEvent.mouseDown(screen.getByText("Дерево понятий"));
+    fireEvent.click(screen.getByText("Дерево понятий"));
     expect(onSelect).toHaveBeenCalledWith("cv1", "Дерево понятий");
   });
 });
@@ -127,7 +127,7 @@ describe("CommentPicker", () => {
     const firstCall = mocked.searchCommentsByLecture.mock.calls[0];
     if (firstCall === undefined) throw new Error("searchCommentsByLecture не был вызван");
     expect(firstCall[0]).toBe("L42");
-    fireEvent.mouseDown(screen.getByText("интересная мысль"));
+    fireEvent.click(screen.getByText("интересная мысль"));
     expect(onSelect).toHaveBeenCalledWith("c1", "интересная мысль");
   });
 });
@@ -163,9 +163,9 @@ describe("Comment2StagePicker", () => {
     const onSelect = vi.fn();
     render(<Comment2StagePicker onSelect={onSelect} />);
     expect(screen.getByText(/шаг 1/i)).toBeInTheDocument();
-    fireEvent.mouseDown(await screen.findByText("L1"));
+    fireEvent.click(await screen.findByText("L1"));
     await screen.findByText(/шаг 2/i);
-    fireEvent.mouseDown(await screen.findByText("hi"));
+    fireEvent.click(await screen.findByText("hi"));
     expect(onSelect).toHaveBeenCalledWith("c1", "hi");
   });
 
