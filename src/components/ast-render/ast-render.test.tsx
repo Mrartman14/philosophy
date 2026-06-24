@@ -336,13 +336,6 @@ describe("AstRender — canvas_ref mark", () => {
   });
 });
 
-describe("AstRender — exhaustive switch drift detection", () => {
-  it.todo(
-    "exhaustive switch detection: добавление нового block/mark type в OpenAPI " +
-    "должно вызвать TS-ошибку в block-renderer.tsx default-case (через @ts-expect-error)"
-  );
-});
-
 describe("AstRender — combo snapshot", () => {
   it("рендерит all-supported AST стабильно", () => {
     const { container } = render(

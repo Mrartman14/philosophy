@@ -1,13 +1,14 @@
 // src/components/ast-render/heading.ts
-// Единый источник правды по уровню заголовка. Зовётся и рендерером
-// (block-renderer), и оглавлением (ast-toc). DOM-id заголовка = backend-owned
+// Тонкая обёртка над общим клампом уровня заголовка (clampHeadingLevel живёт в
+// ast-content-map — единый источник правды). Рендерер выбирает тег <h1..6> через
+// карту (headingTag → clampHeadingLevel), а readHeadingLevel потребляет только
+// оглавление (ast-toc/extract-headings). DOM-id заголовка = backend-owned
 // block.id (UUID, см. docs/domain/anchors.md) — фолбэка по индексу нет:
 // он мог коллидировать с id топ-левел заголовка (дубль DOM id → битый якорь).
+import { clampHeadingLevel } from "@/components/ast-content-map";
+
 import type { AstBlock } from "./types";
 
 export function readHeadingLevel(attrs: AstBlock["attrs"]): 1 | 2 | 3 | 4 | 5 | 6 {
-  const raw = (attrs as { level?: unknown } | undefined)?.level;
-  if (typeof raw !== "number") return 2;
-  if (raw < 1 || raw > 6) return 2;
-  return raw as 1 | 2 | 3 | 4 | 5 | 6;
+  return clampHeadingLevel((attrs as { level?: unknown } | undefined)?.level);
 }

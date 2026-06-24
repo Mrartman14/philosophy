@@ -4,6 +4,7 @@ import {
   codeBlockAttrs,
   headingTag,
   imageChildren,
+  isOrdered,
   listAttrs,
   listItemAttrs,
 } from "./attrs";
@@ -14,11 +15,7 @@ export const NODE_MAP: Partial<Record<AstNodeType, NodeRenderer>> = {
   heading: (node) => [headingTag(node), blockIdAttr(node), HOLE],
   blockquote: (node) => ["blockquote", blockIdAttr(node), HOLE],
   thematic_break: (node) => ["hr", blockIdAttr(node)],
-  list: (node) => [
-    (node.attrs as { ordered?: unknown } | undefined)?.ordered === true ? "ol" : "ul",
-    listAttrs(node),
-    HOLE,
-  ],
+  list: (node) => [isOrdered(node) ? "ol" : "ul", listAttrs(node), HOLE],
   list_item: (node) => ["li", listItemAttrs(node), HOLE],
   code_block: (node) => ["pre", codeBlockAttrs(node), ["code", {}, HOLE]],
   // image: НЕ несёт data-block-id (контракт аннотаций). Лист с вычисленными детьми.

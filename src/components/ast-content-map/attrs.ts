@@ -3,8 +3,9 @@ import { resolveStorageUrl } from "@/utils/storage-url";
 import type { AstNode, AstMark, NeutralChild } from "./types";
 
 /**
- * content-address ключ файла (SHA256-hex). Локальная копия паттерна из
- * `ast-render/nodes/image.tsx` — `storage-url.ts` (frozen-зона) его НЕ экспортирует.
+ * content-address ключ файла (SHA256-hex). Локальная копия паттерна (см. также
+ * `src/app/_offline/descriptors/lecture-descriptor.ts`) — `storage-url.ts`
+ * (frozen-зона) его НЕ экспортирует.
  */
 export const STORAGE_KEY_RE = /^[0-9a-f]{64}$/i;
 
@@ -19,11 +20,15 @@ export function blockIdAttr(node: AstNode): Record<string, string> {
   return typeof id === "string" && id.length > 0 ? { "data-block-id": id } : {};
 }
 
+/** Список упорядочен (ol vs ul). Единая точка: и выбор тега, и gate для `start`. */
+export function isOrdered(node: AstNode): boolean {
+  return (node.attrs as { ordered?: unknown } | undefined)?.ordered === true;
+}
+
 export function listAttrs(node: AstNode): Record<string, string> {
-  const a = (node.attrs ?? {}) as { ordered?: unknown; start?: unknown };
-  const ordered = a.ordered === true;
-  const start = a.start;
-  const startOk = ordered && (typeof start === "number" || typeof start === "string");
+  const a = node.attrs as { ordered?: unknown; start?: unknown } | undefined;
+  const start = a?.start;
+  const startOk = isOrdered(node) && (typeof start === "number" || typeof start === "string");
   return {
     ...blockIdAttr(node),
     "data-list": "",
@@ -41,10 +46,19 @@ export function listItemAttrs(node: AstNode): Record<string, string> {
   };
 }
 
+/**
+ * Уровень заголовка: число 1..6, дефолт 2. Единый источник правды по клампу —
+ * зовётся headingTag (выбор тега <h1..6>) и оглавлением (ast-toc/extract-headings
+ * через ast-render/heading.ts readHeadingLevel).
+ */
+export function clampHeadingLevel(level: unknown): 1 | 2 | 3 | 4 | 5 | 6 {
+  if (typeof level !== "number") return 2;
+  if (level < 1 || level > 6) return 2;
+  return level as 1 | 2 | 3 | 4 | 5 | 6;
+}
+
 export function headingTag(node: AstNode): string {
-  const raw = (node.attrs as { level?: unknown } | undefined)?.level;
-  const lvl = typeof raw === "number" && raw >= 1 && raw <= 6 ? raw : 2;
-  return `h${lvl}`;
+  return `h${clampHeadingLevel((node.attrs as { level?: unknown } | undefined)?.level)}`;
 }
 
 /** Базовые атрибуты ссылки (структура). Санитайз — read-only enhancement. */
