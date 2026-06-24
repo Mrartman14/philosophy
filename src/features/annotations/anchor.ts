@@ -1,4 +1,6 @@
 // src/features/annotations/anchor.ts
+import type { TextAnchor } from "@/components/annotation-layer";
+
 import type { Anchor } from "./types";
 
 /**
@@ -67,4 +69,48 @@ export function isValidMediaAnchor(a: Anchor): boolean {
   if (a.start_sec === undefined || a.start_sec < 0) return false;
   if (a.end_sec !== undefined && a.end_sec <= a.start_sec) return false;
   return true;
+}
+
+/**
+ * Маппит доменный `annotation.Anchor` (snake_case, все поля опциональны) в
+ * `TextAnchor` движка маргиналий (camelCase, char-поля обязательны).
+ *
+ * Возвращает `null`, если якорь не является валидным text-range:
+ * - есть media-поля (`start_sec`/`end_sec`) — движок не рендерит media;
+ * - неполный text-range (нет `start_block_id`/`end_block_id`/`exact`).
+ *
+ * Единицы (`start_char`/`end_char`) идентичны — UTF-16 code units, маппинг
+ * без преобразования. Отсутствующие char-поля дефолтятся в 0.
+ */
+export function toEngineAnchor(a: Anchor): TextAnchor | null {
+  if (a.start_sec !== undefined || a.end_sec !== undefined) return null;
+  if (!a.start_block_id || !a.end_block_id || !a.exact) return null;
+  const engine: TextAnchor = {
+    startBlockId: a.start_block_id,
+    endBlockId: a.end_block_id,
+    startChar: a.start_char ?? 0,
+    endChar: a.end_char ?? 0,
+    exact: a.exact,
+  };
+  if (a.prefix) engine.prefix = a.prefix;
+  if (a.suffix) engine.suffix = a.suffix;
+  return engine;
+}
+
+/**
+ * Маппит `TextAnchor` движка обратно в доменный `annotation.Anchor`.
+ * Делегирует `buildTextAnchor` — единый источник правил опускания пустых
+ * prefix/suffix.
+ */
+export function fromEngineAnchor(a: TextAnchor): Anchor {
+  const input: TextAnchorInput = {
+    startBlockId: a.startBlockId,
+    endBlockId: a.endBlockId,
+    startChar: a.startChar,
+    endChar: a.endChar,
+    exact: a.exact,
+  };
+  if (a.prefix !== undefined) input.prefix = a.prefix;
+  if (a.suffix !== undefined) input.suffix = a.suffix;
+  return buildTextAnchor(input);
 }
