@@ -31,10 +31,11 @@ describe("BlockRenderer наблюдаемость", () => {
   });
 });
 
-// DOM-контракт движка маргиналий (annotation-layer): каждый текст-блок несёт
-// data-block-id={block.id}, чтобы anchor-to-range/anchor-from-selection могли
-// надёжно querySelector('[data-block-id]') внутри AST-рута. table — БЕЗ id
-// (строки/ячейки без id → мусорный якорь), image — DOM не меняется.
+// DOM-контракт движка маргиналий (annotation-layer): block-блоки несут
+// data-block-id={block.id} как scope-хинт для anchor-to-range/anchor-from-selection
+// (querySelector('[data-block-id]') внутри AST-рута). НЕ несут: table, image и
+// вложенные ast.Node (list_item, строки/ячейки) — у них нет id; текст внутри
+// якорится к объемлющему block-блоку (list/table) + exact/prefix/suffix (anchors.md).
 // renderToStaticMarkup (а не RTL render): проверяем строковый HTML на атрибут.
 const markupFor = (b: AstBlock): string =>
   renderToStaticMarkup(<BlockRenderer block={b} />);
@@ -73,21 +74,21 @@ describe("BlockRenderer — data-block-id (DOM-контракт движка)", 
     ).toContain('data-block-id="ul1"');
   });
 
-  it("list_item несёт data-block-id", () => {
-    expect(
-      markupFor({
-        id: "ul1",
-        type: "list",
-        attrs: { ordered: false },
-        content: [
-          {
-            id: "li1",
-            type: "list_item",
-            content: [{ type: "paragraph", content: [{ type: "text", text: "x" }] }],
-          },
-        ],
-      } as unknown as AstBlock),
-    ).toContain('data-block-id="li1"');
+  it("list_item НЕ несёт data-block-id (текст в списке якорится через list-блок)", () => {
+    const listBlock = {
+      id: "ul1",
+      type: "list",
+      attrs: { ordered: false },
+      content: [
+        {
+          type: "list_item",
+          content: [{ type: "paragraph", content: [{ type: "text", text: "x" }] }],
+        },
+      ],
+    } as unknown as AstBlock;
+    // <ul> несёт data-block-id (scope-хинт), <li> — нет.
+    expect(markupFor(listBlock)).toContain('data-block-id="ul1"');
+    expect(markupFor(listBlock)).not.toMatch(/<li[^>]*data-block-id/);
   });
 
   it("code_block несёт data-block-id", () => {

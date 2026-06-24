@@ -47,15 +47,9 @@ describe("NODE_MAP — простые блоки", () => {
       HOLE,
     ]);
   });
-  it("list_item с blockId → data-block-id (текст-блок субстрата)", () => {
-    expect(node("list_item", { blockId: "li1" })).toEqual(["li", { "data-block-id": "li1" }, HOLE]);
-  });
-  it("list_item с id и checked → оба атрибута", () => {
-    expect(node("list_item", { blockId: "li2", checked: false })).toEqual([
-      "li",
-      { "data-block-id": "li2", "data-checked": "false" },
-      HOLE,
-    ]);
+  it("list_item НЕ несёт data-block-id (якорится через объемлющий list-блок)", () => {
+    // ast.Node без id; data-block-id живёт на list-блоке, не на пункте (anchors.md).
+    expect(node("list_item", { blockId: "li1" })).toEqual(["li", {}, HOLE]);
   });
 });
 

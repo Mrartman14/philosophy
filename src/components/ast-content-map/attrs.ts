@@ -37,13 +37,11 @@ export function listAttrs(node: AstNode): Record<string, string> {
 }
 
 export function listItemAttrs(node: AstNode): Record<string, string> {
-  // list_item — текст-блок субстрата аннотаций: несёт data-block-id (паритет с
-  // текущим production block-renderer, block-renderer.test.tsx ассертит li1).
+  // list_item НЕ несёт data-block-id: в схеме это ast.Node (нет поля id), а текст
+  // внутри пункта якорится к ОБЪЕМЛЮЩЕМУ list-блоку (start_block_id = id списка) +
+  // exact/prefix/suffix — W3C TextQuoteSelector (бэк подтвердил: anchors.md). Только data-checked.
   const checked = (node.attrs as { checked?: unknown } | undefined)?.checked;
-  return {
-    ...blockIdAttr(node),
-    ...(typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {}),
-  };
+  return typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {};
 }
 
 /**
