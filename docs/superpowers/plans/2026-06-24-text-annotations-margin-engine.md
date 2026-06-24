@@ -458,6 +458,14 @@ describe("rangeFromAnchor", () => {
     const pre = root.textContent!.slice(0, root.textContent!.indexOf("кант тут") + 0);
     expect(r.startOffset).toBeGreaterThan(5); // не первое вхождение (offset 0)
   });
+  it("дизамбигуация по блоку: дубль exact в разных блоках → берёт из start-блока", () => {
+    const root = setup('<p data-block-id="p1">кант здесь</p><p data-block-id="p2">и кант там</p>');
+    // tryExact провалится (char 0..4 в p2 = "и ка" ≠ "кант") → block-scoped поиск в p2.
+    const a: TextAnchor = { startBlockId: "p2", endBlockId: "p2", startChar: 0, endChar: 4, exact: "кант" };
+    const r = rangeFromAnchor(a, root)!;
+    expect(r.toString()).toBe("кант");
+    expect(root.querySelector('[data-block-id="p2"]')!.contains(r.startContainer)).toBe(true);
+  });
   it("сирота → null", () => {
     const root = setup('<p data-block-id="p1">Totally different</p>');
     const a: TextAnchor = { startBlockId: "p1", endBlockId: "p1", startChar: 0, endChar: 4, exact: "zzzz" };
@@ -506,11 +514,23 @@ function rangeAt(root: HTMLElement, globalStart: number, length: number): Range 
   return r;
 }
 
-function fullText(root: HTMLElement): string {
-  const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+function fullText(scope: Element): string {
+  const walker = scope.ownerDocument.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
   let full = "", n = walker.nextNode();
   while (n) { full += n.textContent ?? ""; n = walker.nextNode(); }
   return full;
+}
+
+// Квота-поиск exact (дизамбигуация по prefix/suffix) ВНУТРИ scope.
+function searchQuote(scope: Element, a: TextAnchor): Range | null {
+  const full = fullText(scope);
+  const withCtx = `${a.prefix ?? ""}${a.exact}${a.suffix ?? ""}`;
+  if (withCtx !== a.exact) {
+    const ctxAt = full.indexOf(withCtx);
+    if (ctxAt >= 0) return rangeAt(scope as HTMLElement, ctxAt + (a.prefix?.length ?? 0), a.exact.length);
+  }
+  const at = full.indexOf(a.exact);
+  return at >= 0 ? rangeAt(scope as HTMLElement, at, a.exact.length) : null;
 }
 
 function tryExact(a: TextAnchor, root: HTMLElement): Range | null {
@@ -524,18 +544,16 @@ function tryExact(a: TextAnchor, root: HTMLElement): Range | null {
 }
 
 export function rangeFromAnchor(a: TextAnchor, root: HTMLElement): Range | null {
+  // 1) Быстрый путь: офсеты block_id+char, сверка с exact (authoritative).
   const exact = tryExact(a, root);
   if (exact) return exact;
-  const full = fullText(root);
-  // Фолбэк с дизамбигуацией: ищем prefix+exact+suffix, вырезаем exact ВНУТРИ.
-  const withCtx = `${a.prefix ?? ""}${a.exact}${a.suffix ?? ""}`;
-  if (withCtx !== a.exact) {
-    const ctxAt = full.indexOf(withCtx);
-    if (ctxAt >= 0) return rangeAt(root, ctxAt + (a.prefix?.length ?? 0), a.exact.length);
-  }
-  // Голый exact (первое вхождение).
-  const at = full.indexOf(a.exact);
-  return at >= 0 ? rangeAt(root, at, a.exact.length) : null;
+  // 2) Дрейф: блок гарантированно жив (бэк отвечает 409 BLOCKS_HAVE_ANCHORS на
+  //    удаление запинённого блока) → ищем цитату ВНУТРИ того же блока — точнее
+  //    дизамбигуация дубликатов, чем поиск по всему документу.
+  const startBlock = block(root, a.startBlockId);
+  if (startBlock) { const r = searchQuote(startBlock, a); if (r) return r; }
+  // 3) Последний резерв: квота-поиск по всему руту.
+  return searchQuote(root, a);
 }
 ```
 
@@ -866,8 +884,12 @@ export function useSelectionCapture({ rootRef, enabled }: { rootRef: RefObject<H
       const root = rootRef.current;
       if (!root) { setDraft(null); return; }
       const sel = window.getSelection();
+      // AST-рамка (устрожение): выделение вне контент-рута даже не обрабатываем —
+      // обе границы обязаны быть внутри AST-рута. Это гейт ПЕРВЫМ, до построения якоря.
+      if (!sel || !sel.anchorNode || !sel.focusNode ||
+          !root.contains(sel.anchorNode) || !root.contains(sel.focusNode)) { setDraft(null); return; }
       const anchor = anchorFromSelection(sel, root);
-      if (!anchor || !sel || sel.rangeCount === 0) { setDraft(null); return; }
+      if (!anchor || sel.rangeCount === 0) { setDraft(null); return; }
       const rect = sel.getRangeAt(0).getBoundingClientRect();
       setDraft({ anchor, rect });
     };
@@ -1324,7 +1346,7 @@ revalidateEntity(Tags.ANNOTATIONS);
 return data?.data ?? null;
 ```
 
-> Если openapi-fetch не принимает динамический `path` union — развести явным `switch (input.parent_entity_type)` по 4 литеральным путям (документировать как необходимость литералов для типизации). Добавить новые коды в `ERRORS`: `BLOCKS_HAVE_ANCHORS`, `IDEMPOTENCY_KEY_IN_USE` → ключи каталога errors (согласовать имена с существующим `ApiErrorMessageKeys`).
+> Если openapi-fetch не принимает динамический `path` union — развести явным `switch (input.parent_entity_type)` по 4 литеральным путям (документировать как необходимость литералов для типизации). В `ERRORS` добавить только `IDEMPOTENCY_KEY_IN_USE` (ключ каталога errors). **`BLOCKS_HAVE_ANCHORS` (409) НЕ добавлять** — это ошибка редактирования документа (`aststore`, удаление запинённого блока), не создания аннотации; её обрабатывает слайс `documents` (см. spec §9, cross-feature follow-up).
 
 - [ ] **Step 3: `getAnnotationsFor` в `api.ts`** — аналогично на `api.GET(path, { params: { path: { id }, query: { offset, limit } } })`, снять ручной fetch. Сохранить `AnnotationListResult` форму.
 
