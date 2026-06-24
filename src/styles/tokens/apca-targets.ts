@@ -7,7 +7,8 @@ export type ColorTokenName =
   | "danger" | "danger-bg" | "danger-fg" | "danger-solid" | "danger-on-solid"
   | "success" | "success-bg" | "success-fg"
   | "warning" | "warning-bg" | "warning-fg"
-  | "info" | "info-bg" | "info-fg";
+  | "info" | "info-bg" | "info-fg"
+  | "highlight" | "highlight-active";
 
 // NB: ключи fg:/bg: ниже — это поля пары (foreground/background), а не имена токенов.
 // Значения — токены ColorTokenName. Статусные -bg/-fg — тинт-подложка/текст-на-тинте.
@@ -42,6 +43,13 @@ export const CONTRAST_PAIRS: { fg: ColorTokenName; bg: ColorTokenName; minLc: nu
   { fg: "warning-fg", bg: "warning-bg", minLc: 60, note: "warning text on tint" },
   { fg: "info", bg: "surface", minLc: 60, note: "info text/icon" },
   { fg: "info-fg", bg: "info-bg", minLc: 60, note: "info text on tint" },
+  // Аннотации-маркер: текст документа (fg) ДОЛЖЕН оставаться читаемым под подсветкой.
+  // highlight/-active — полупрозрачные «маркеры» (alpha); APCAcontrast меряет их
+  // ИНТРИНСИК-цвет (alpha игнорируется в sRGBtoY) → это worst-case подложка, по которой
+  // и держим тело-уровень Lc≥75. Различимость самого маркера от surface идёт по chroma
+  // (amber-тинт), который APCA не меряет, поэтому пары highlight-vs-surface здесь нет.
+  { fg: "fg", bg: "highlight", minLc: 75, note: "body text on annotation highlight" },
+  { fg: "fg", bg: "highlight-active", minLc: 75, note: "body text on active annotation highlight" },
 ];
 // NB: surface-overlay — полупрозрачный слой; APCAcontrast напрямую его не меряет.
 // Контент модалок рендерится на surface-raised поверх overlay → покрыто парой fg на surface-raised.

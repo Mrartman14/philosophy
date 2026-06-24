@@ -38,6 +38,22 @@ body:has(dialog[open]) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   ANNOTATIONS — подсветка аннотированных фрагментов (CSS Custom Highlight API).
+   Range'ы регистрирует контроллер движка маргиналий (CSS.highlights).
+   active-слой отличается ВТОРЫМ визуальным каналом (underline), а не только
+   альфой/цветом — чтобы отделяться от перекрытия нескольких подсветок.
+   Токены --color-highlight(-active) держат fg читаемым (APCA-гард, 4 комбо).
+   Фолбэк-оверлей (.annotation-overlay) добавляет отдельная задача.
+   ═══════════════════════════════════════════════════════════════ */
+::highlight(annotation) {
+  background-color: var(--color-highlight);
+}
+::highlight(annotation-active) {
+  background-color: var(--color-highlight-active);
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    CUSTOM COMPONENTS
    ═══════════════════════════════════════════════════════════════ */
 

@@ -7,7 +7,7 @@ const ALL: ColorTokenName[] = [
   "surface","surface-subtle","surface-raised","surface-overlay","fg","fg-muted","fg-subtle","fg-on-accent",
   "border","border-strong","ring","accent","accent-hover","accent-fg","link","link-hover",
   "danger","danger-bg","danger-fg","danger-solid","danger-on-solid","success","success-bg","success-fg",
-  "warning","warning-bg","warning-fg","info","info-bg","info-fg",
+  "warning","warning-bg","warning-fg","info","info-bg","info-fg","highlight","highlight-active",
 ];
 
 describe("semantic color layers", () => {

@@ -55,6 +55,22 @@ export function buildColorLayer(theme: ThemeMode, contrast: Contrast): Record<Co
   // Derive status tokens with a higher target in dark to overcome quantisation gaps
   const statusTarget = theme === "dark" ? Math.max(t.status, 65) : t.status;
 
+  // Annotation highlight ("маркер") — полупрозрачный амбер-слой поверх текста документа.
+  // Задаётся ЛИТЕРАЛАМИ (как surface-overlay), а не deriveOn: токену нужен alpha-канал,
+  // которого derive-пайплайн (apcach) не даёт. Подбор оттенков/L под APCA-гард:
+  //   • fg остаётся читаемым под маркером (Lc≥75 во всех 4 комбо — apca.test.ts);
+  //   • light: яркий амбер (высокий L) под чёрным fg; dark: тёмный амбер (низкий L)
+  //     под near-white fg — оба дают translucent-тинт, различимый по chroma;
+  //   • -active отличается ВТОРЫМ каналом: выше alpha + насыщеннее + (в CSS) underline;
+  //   • high-contrast → чуть выше alpha (плотнее маркер), L отодвинут для запаса Lc.
+  //   Chroma выбран В ПРЕДЕЛАХ sRGB-gamut при данных L/hue (primitives.test.ts gamut-гард).
+  const highlight = theme === "light"
+    ? (contrast === "high" ? "oklch(0.92 0.082 85 / 0.55)" : "oklch(0.90 0.105 85 / 0.45)")
+    : (contrast === "high" ? "oklch(0.38 0.074 85 / 0.55)" : "oklch(0.42 0.083 85 / 0.45)");
+  const highlightActive = theme === "light"
+    ? (contrast === "high" ? "oklch(0.88 0.110 80 / 0.70)" : "oklch(0.86 0.130 80 / 0.60)")
+    : (contrast === "high" ? "oklch(0.40 0.079 80 / 0.70)" : "oklch(0.44 0.088 80 / 0.60)");
+
   return {
     surface: bd.bg, "surface-subtle": bd.bgSubtle, "surface-raised": bd.bgRaised,
     "surface-overlay": theme === "light" ? "oklch(0.21 0.018 250 / 0.45)" : "oklch(0 0 0 / 0.6)",
@@ -91,6 +107,8 @@ export function buildColorLayer(theme: ThemeMode, contrast: Contrast): Record<Co
     info: deriveOn(bd.bg, statusTarget, HUE.info.h, HUE.info.c, dir),
     "info-bg": infoBg,
     "info-fg": deriveOn(infoBg, t.statusOnTint, HUE.info.h, HUE.info.c, dir),
+
+    highlight, "highlight-active": highlightActive,
   };
 }
 
