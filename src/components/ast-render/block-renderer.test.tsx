@@ -22,7 +22,7 @@ describe("BlockRenderer наблюдаемость", () => {
       () => {},
     );
     // @ts-expect-error — намеренно невалидный тип блока для ветки default
-    render(<BlockRenderer block={{ type: "__unknown__" }} ctx={baseCtx} />);
+    render(<BlockRenderer block={{ type: "__unknown__" }} ctx={baseCtx} index={0} />);
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(log.warn).toHaveBeenCalledWith(
       expect.stringContaining("unsupported block type"),
