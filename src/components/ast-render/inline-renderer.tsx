@@ -47,7 +47,8 @@ function applyMark(mark: AstMark, children: ReactNode): ReactNode {
   const renderer = type ? MARK_MAP[type] : undefined;
   if (!renderer) {
     // undefined mark.type (опционален в схеме) или будущая марка — graceful
-    // fallback + лог. Полнота MARK_MAP сторожится тестами карты (единый SOT).
+    // fallback + лог. Полнота MARK_MAP сторожится map-completeness.test.ts:
+    // исчерпывающий Record<AstMarkType> ломает компиляцию при дрейфе schema.ts.
     const label = (mark.type as string | undefined) ?? "unknown";
     log.warn(`AstRender: unsupported mark type "${label}"`, { markType: label });
     return <span data-unsupported-mark={label}>{children}</span>;

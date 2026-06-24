@@ -29,7 +29,8 @@ export function BlockRenderer({ block }: Props): ReactNode {
   if (!renderer) {
     // Нет записи в NODE_MAP: неизвестный/будущий block.type ИЛИ inline-тип
     // (text/hard_break), пришедший на блок-позицию. Graceful fallback + лог.
-    // Полнота block-карты сторожится node-map.test.ts (единый SOT).
+    // Полнота block-карты сторожится map-completeness.test.ts (единый SOT):
+    // исчерпывающий Record<AstNodeType> ломает компиляцию при дрейфе schema.ts.
     const label = (block.type as string | undefined) ?? "unknown";
     log.warn(`AstRender: unsupported block type "${label}"`, { blockType: label });
     return <div data-unsupported={label} />;
