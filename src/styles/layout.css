@@ -9,7 +9,7 @@
   --layout-spine: 45rem;   /* ~720px: читаемая ширина хребта */
   --layout-margin: 0px;    /* поля скрыты по умолчанию; раскрываются на >= xl */
   --layout-margin-wide: 32rem;  /* cap ширины растянутого поля (col-margin-*-wide) */
-  --layout-gutter: 2rem;   /* зазор хребет <-> поле */
+  --layout-gutter: 1.5rem; /* зазор хребет <-> поле = паддинг контента (p-6) → единый отступ по лейауту */
   /* top sticky-навов: ниже хедера + небольшой зазор (не примыкать вплотную). */
   --layout-sticky-top: calc(var(--header-height) + 1rem);
 }
