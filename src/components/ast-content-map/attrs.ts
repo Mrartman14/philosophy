@@ -1,4 +1,12 @@
-import type { AstNode, AstMark } from "./types";
+import { resolveStorageUrl } from "@/utils/storage-url";
+
+import type { AstNode, AstMark, NeutralChild } from "./types";
+
+/**
+ * content-address ключ файла (SHA256-hex). Локальная копия паттерна из
+ * `ast-render/nodes/image.tsx` — `storage-url.ts` (frozen-зона) его НЕ экспортирует.
+ */
+export const STORAGE_KEY_RE = /^[0-9a-f]{64}$/i;
 
 /**
  * data-block-id ТОЛЬКО для текст-блоков. Источник id различается по потребителю:
@@ -61,4 +69,40 @@ export function navRefAttrs(mark: AstMark): Record<string, string> | null {
   const prefix = REF_PREFIX[type];
   if (prefix === undefined) return null;
   return { href: `${prefix}${id}`, "data-mark": type, class: `nav-ref nav-ref--${type}` };
+}
+
+/** code_block — текст-блок: несёт data-block-id + dir=ltr + опц. data-language. */
+export function codeBlockAttrs(node: AstNode): Record<string, string> {
+  const lang = (node.attrs as { language?: unknown } | undefined)?.language;
+  return {
+    ...blockIdAttr(node),
+    dir: "ltr",
+    ...(typeof lang === "string" && lang.length > 0 ? { "data-language": lang } : {}),
+  };
+}
+
+export function cellAlignAttr(node: AstNode): Record<string, string> {
+  const a = (node.attrs as { align?: unknown } | undefined)?.align;
+  return a === "left" || a === "center" || a === "right" ? { "data-align": a } : {};
+}
+
+/** Дети <figure>: <img> (если валиден storage_key) + опц. <figcaption>. */
+export function imageChildren(node: AstNode): NeutralChild[] {
+  const a = node.attrs as { storage_key?: unknown; alt?: unknown; caption?: unknown } | undefined;
+  const key = a?.storage_key;
+  const out: NeutralChild[] = [];
+  if (typeof key === "string" && STORAGE_KEY_RE.test(key)) {
+    out.push([
+      "img",
+      {
+        src: resolveStorageUrl(key),
+        alt: typeof a?.alt === "string" ? a.alt : "",
+        loading: "lazy",
+      },
+    ]);
+  }
+  if (typeof a?.caption === "string" && a.caption.length > 0) {
+    out.push(["figcaption", {}, a.caption]);
+  }
+  return out;
 }

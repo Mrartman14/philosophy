@@ -1,4 +1,12 @@
-import { blockIdAttr, headingTag, listAttrs, listItemAttrs } from "./attrs";
+import {
+  blockIdAttr,
+  cellAlignAttr,
+  codeBlockAttrs,
+  headingTag,
+  imageChildren,
+  listAttrs,
+  listItemAttrs,
+} from "./attrs";
 import { HOLE, type AstNodeType, type NodeRenderer } from "./types";
 
 export const NODE_MAP: Partial<Record<AstNodeType, NodeRenderer>> = {
@@ -12,4 +20,17 @@ export const NODE_MAP: Partial<Record<AstNodeType, NodeRenderer>> = {
     HOLE,
   ],
   list_item: (node) => ["li", listItemAttrs(node), HOLE],
+  code_block: (node) => ["pre", codeBlockAttrs(node), ["code", {}, HOLE]],
+  // image: НЕ несёт data-block-id (контракт аннотаций). Лист с вычисленными детьми.
+  image: (node) => ["figure", {}, ...imageChildren(node)],
+  // table: БЕЗ data-block-id. tbody-обёртка, дети-строки в HOLE.
+  table: () => ["table", {}, ["tbody", {}, HOLE]],
+  table_row: (node) => [
+    "tr",
+    (node.attrs as { header?: unknown } | undefined)?.header === true ? { "data-header": "true" } : {},
+    HOLE,
+  ],
+  // table_cell: базово <td>. READ-адаптер апгрейдит до <th scope=col> в header-строке
+  // (per-node renderHTML редактора не знает родителя → th только в read).
+  table_cell: (node) => ["td", cellAlignAttr(node), HOLE],
 };
