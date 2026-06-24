@@ -86,6 +86,21 @@ describe("AstRender — heading", () => {
     const { container } = render(<AstRender blocks={[HEADING_NO_LEVEL]} />);
     expect(container.querySelector("h2")?.textContent).toBe("Заголовок без уровня");
   });
+
+  it("проставляет id заголовку из block.id", () => {
+    const { container } = render(<AstRender blocks={[HEADING_LEVEL_1]} />);
+    expect(container.querySelector("h1")?.id).toBe("h1");
+  });
+
+  it("без block.id проставляет фолбэк-id heading-{index}", () => {
+    const block: import("./types").AstBlock = {
+      type: "heading",
+      attrs: { level: 2 },
+      content: [{ type: "text", text: "Без id" }],
+    };
+    const { container } = render(<AstRender blocks={[block]} />);
+    expect(container.querySelector("h2")?.id).toBe("heading-0");
+  });
 });
 
 describe("AstRender — list", () => {

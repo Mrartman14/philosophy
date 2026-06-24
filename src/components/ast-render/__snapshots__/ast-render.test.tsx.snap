@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`AstRender — combo snapshot > рендерит all-supported AST стабильно 1`] = `
-"<h1 data-block-id="h1">Главный заголовок</h1><p data-block-id="p1">Простой текст.</p><p data-block-id="p2">Жирное <strong>слово</strong>.</p><p data-block-id="p-link">Ссылка: <a href="https://anthropic.com" rel="noopener noreferrer" target="_blank">Anthropic</a></p><p data-block-id="p-gref">См. <a href="/glossary/term-uuid-123">термин</a></p><ul data-block-id="ul1"><li><p>Первый</p></li><li><p>Второй</p></li></ul><pre data-block-id="code1" dir="ltr" data-language="ts"><code>const x = 1;
+"<h1 data-block-id="h1" id="h1">Главный заголовок</h1><p data-block-id="p1">Простой текст.</p><p data-block-id="p2">Жирное <strong>слово</strong>.</p><p data-block-id="p-link">Ссылка: <a href="https://anthropic.com" rel="noopener noreferrer" target="_blank">Anthropic</a></p><p data-block-id="p-gref">См. <a href="/glossary/term-uuid-123">термин</a></p><ul data-block-id="ul1"><li><p>Первый</p></li><li><p>Второй</p></li></ul><pre data-block-id="code1" dir="ltr" data-language="ts"><code>const x = 1;
 const y = 2;</code></pre><figure><img alt="Описание" loading="lazy" src="/static/files/deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"></figure>"
 `;

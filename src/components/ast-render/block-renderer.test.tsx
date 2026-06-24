@@ -39,7 +39,7 @@ describe("BlockRenderer наблюдаемость", () => {
 // (строки/ячейки без id → мусорный якорь), image — DOM не меняется.
 // renderToStaticMarkup (а не RTL render): проверяем строковый HTML на атрибут.
 const markupFor = (b: AstBlock): string =>
-  renderToStaticMarkup(<BlockRenderer block={b} ctx={{}} />);
+  renderToStaticMarkup(<BlockRenderer block={b} ctx={{}} index={0} />);
 
 describe("BlockRenderer — data-block-id (DOM-контракт движка)", () => {
   it("paragraph несёт data-block-id", () => {

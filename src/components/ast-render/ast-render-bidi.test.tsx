@@ -19,7 +19,7 @@ const CODE_BLOCK: AstBlock = {
 
 describe("ast-render bidi-изоляция (always-LTR код)", () => {
   it("code-блок несёт dir=ltr на <pre> (bidi не рвёт код в RTL)", () => {
-    const { container } = render(<BlockRenderer block={CODE_BLOCK} ctx={ctx} />);
+    const { container } = render(<BlockRenderer block={CODE_BLOCK} ctx={ctx} index={0} />);
     const pre = container.querySelector("pre");
     expect(pre).not.toBeNull();
     expect(pre?.getAttribute("dir")).toBe("ltr");
