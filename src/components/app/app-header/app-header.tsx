@@ -25,6 +25,12 @@ export const AppHeader = async () => {
           </NavigationMenu.Item>
           <NavigationMenu.Item className="flex items-center gap-4">
             <RouterLink
+              href="/lectures"
+              className="text-sm text-(--color-fg-muted) hover:text-(--color-accent)"
+            >
+              {t("nav.lectures")}
+            </RouterLink>
+            <RouterLink
               href="/calendar"
               className="text-sm text-(--color-fg-muted) hover:text-(--color-accent)"
             >
