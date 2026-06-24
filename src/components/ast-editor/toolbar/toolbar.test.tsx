@@ -128,8 +128,11 @@ describe("EditorToolbar gating", () => {
 });
 
 describe("EditorToolbar defaultLectureId", () => {
-  it("прокидывает defaultLectureId до Comment2StagePicker (сразу шаг 2)", async () => {
-    mockedActions.searchCommentsByLecture.mockResolvedValue({ data: [], total: 0 });
+  it("прокидывает defaultLectureId в RefPicker (категория Комментарий → сразу поиск комментариев лекции)", async () => {
+    mockedActions.searchCommentsByLecture.mockResolvedValue({
+      data: [{ id: "c1", snippet: "Реплика" }],
+      total: 1,
+    });
     const navSchema: SchemaSnapshot = {
       ...fullSchema,
       marks: new Map([["glossary_ref", { attrs: {} }]]),
@@ -143,9 +146,16 @@ describe("EditorToolbar defaultLectureId", () => {
         defaultLectureId="L42"
       />,
     );
+    // Открыть RefPicker кликом по @-триггеру в тулбаре.
     fireEvent.click(screen.getByLabelText(/вставить ссылку на сущность/i));
+    // Переключиться на категорию «Комментарий» — drill-in префиллен defaultLectureId,
+    // поэтому поиск комментариев лекции стартует сразу, без шага выбора лекции.
     fireEvent.click(await screen.findByRole("button", { name: "Комментарий" }));
-    expect(await screen.findByText(/шаг 2/i)).toBeInTheDocument();
+    expect(await screen.findByText("Реплика")).toBeInTheDocument();
+    expect(mockedActions.searchCommentsByLecture).toHaveBeenCalledWith("L42", "", 0, 20);
+    // Новый RefPicker не имеет отдельного шага выбора лекции (это был маркер старого
+    // двухступенчатого Comment2StagePicker): комментарии ищутся сразу.
+    expect(screen.queryByText(/шаг 2/i)).toBeNull();
     editor.destroy();
   });
 });

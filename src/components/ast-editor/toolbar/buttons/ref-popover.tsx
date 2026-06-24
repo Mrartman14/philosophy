@@ -3,10 +3,10 @@ import type { Editor } from "@tiptap/core";
 import { useState } from "react";
 
 import { AtIcon } from "@/assets/icons/at-icon";
-import { Popover, Toolbar } from "@/components/ui";
+import { Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
-import { RefMenu } from "../../pickers/ref-menu";
+import { RefPicker } from "../../pickers/ref-picker";
 import type { SchemaSnapshot } from "../../types";
 
 interface Props {
@@ -23,24 +23,16 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
   if (!schema.marks.has("glossary_ref")) return null;
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger
-        render={<Toolbar.Button aria-label={t("insertRefAriaLabel")} />}
-      >
-        <AtIcon />
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner sideOffset={8}>
-          <Popover.Popup className="p-3 min-w-[320px] max-w-[480px]">
-            <Popover.Arrow />
-            <RefMenu
-              editor={editor}
-              defaultLectureId={defaultLectureId}
-              onClose={() => { setOpen(false); }}
-            />
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
+    <RefPicker
+      editor={editor}
+      defaultLectureId={defaultLectureId}
+      open={open}
+      onOpenChange={setOpen}
+      trigger={
+        <Toolbar.Button aria-label={t("insertRefAriaLabel")}>
+          <AtIcon />
+        </Toolbar.Button>
+      }
+    />
   );
 }
