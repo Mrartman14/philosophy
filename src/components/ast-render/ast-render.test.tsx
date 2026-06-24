@@ -92,14 +92,14 @@ describe("AstRender — heading", () => {
     expect(container.querySelector("h1")?.id).toBe("h1");
   });
 
-  it("без block.id проставляет фолбэк-id heading-{index}", () => {
+  it("без block.id заголовок не получает id", () => {
     const block: import("./types").AstBlock = {
       type: "heading",
       attrs: { level: 2 },
       content: [{ type: "text", text: "Без id" }],
     };
     const { container } = render(<AstRender blocks={[block]} />);
-    expect(container.querySelector("h2")?.id).toBe("heading-0");
+    expect(container.querySelector("h2")?.getAttribute("id")).toBeNull();
   });
 });
 

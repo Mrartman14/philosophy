@@ -1,7 +1,7 @@
 // src/components/ast-toc/extract-headings.ts
 // Чистое извлечение оглавления из AST. Агностично к роду сущности — на входе
 // только AstBlock[]. Сериализуемый результат уходит в клиентский <AstToc>.
-import { readHeadingLevel, headingDomId, type AstBlock, type AstNode } from "@/components/ast-render";
+import { readHeadingLevel, type AstBlock, type AstNode } from "@/components/ast-render";
 
 export interface HeadingEntry {
   id: string;
@@ -21,16 +21,16 @@ function inlineText(nodes: AstNode[] | undefined): string {
 }
 
 /**
- * Возвращает заголовки top-level блоков в порядке документа. `index` — позиция
- * в ПОЛНОМ массиве (не среди заголовков): так фолбэк-id совпадает с тем, что
- * проставляет BlockRenderer на тот же блок.
+ * Возвращает заголовки top-level блоков в порядке документа. id заголовка =
+ * backend-owned block.id (тот же, что ставит BlockRenderer). Заголовки без
+ * block.id пропускаются: без стабильного DOM-id якорь оглавления некуда вести.
  */
 export function extractHeadings(blocks: AstBlock[]): HeadingEntry[] {
   const out: HeadingEntry[] = [];
-  blocks.forEach((block, index) => {
-    if (block.type !== "heading") return;
+  blocks.forEach((block) => {
+    if (block.type !== "heading" || !block.id) return;
     out.push({
-      id: headingDomId(block, index),
+      id: block.id,
       level: readHeadingLevel(block.attrs),
       text: typeof block.text === "string" && block.text.length > 0
         ? block.text

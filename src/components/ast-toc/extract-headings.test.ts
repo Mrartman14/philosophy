@@ -47,12 +47,12 @@ describe("extractHeadings", () => {
     expect(extractHeadings(blocks)[0]?.level).toBe(2);
   });
 
-  it("фолбэк-id берёт позицию в ПОЛНОМ массиве (паритет с рендером)", () => {
+  it("заголовок без block.id пропускается (нет стабильного DOM-якоря)", () => {
     const blocks: AstBlock[] = [
       { type: "paragraph", content: [{ type: "text", text: "intro" }] },
       { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "H" }] },
     ];
-    expect(extractHeadings(blocks)[0]?.id).toBe("heading-1");
+    expect(extractHeadings(blocks)).toEqual([]);
   });
 
   it("пустой ввод → []", () => {

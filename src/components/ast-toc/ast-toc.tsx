@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 
 import { useReducedMotion } from "@/components/appearance";
+import { cn } from "@/components/ui";
 
 import type { HeadingEntry } from "./extract-headings";
 
@@ -62,7 +63,7 @@ export function AstToc({ headings, label, maxLevel }: Props) {
     // программно-фокусируемый, вне tab-order; preventScroll — скролл уже сделан.
     el.setAttribute("tabindex", "-1");
     el.focus({ preventScroll: true });
-    history.replaceState(null, "", `#${id}`);
+    window.history.replaceState(null, "", `#${id}`);
     setActiveId(id);
   }
 
@@ -78,11 +79,12 @@ export function AstToc({ headings, label, maxLevel }: Props) {
               aria-current={activeId === h.id ? "location" : undefined}
               onClick={(e) => { onClick(e, h.id); }}
               style={{ paddingInlineStart: `${(h.level - minLevel) * INDENT_REM_PER_LEVEL}rem` }}
-              className={
+              className={cn(
+                "block break-words text-sm",
                 activeId === h.id
-                  ? "block break-words text-sm text-(--color-link)"
-                  : "block break-words text-sm text-(--color-fg-muted) hover:text-(--color-fg)"
-              }
+                  ? "text-(--color-link)"
+                  : "text-(--color-fg-muted) hover:text-(--color-fg)",
+              )}
             >
               {h.text}
             </a>

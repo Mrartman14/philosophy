@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { log } from "@/services/observability/client";
 
-import { readHeadingLevel, headingDomId } from "./heading";
+import { readHeadingLevel } from "./heading";
 import { InlineRenderer } from "./inline-renderer";
 import { ImageNode } from "./nodes/image";
 import type { AstBlock, AstNode, AstRenderContext } from "./types";
@@ -11,10 +11,9 @@ import type { AstBlock, AstNode, AstRenderContext } from "./types";
 interface Props {
   block: AstBlock;
   ctx: AstRenderContext;
-  index: number;
 }
 
-export function BlockRenderer({ block, ctx, index }: Props): ReactNode {
+export function BlockRenderer({ block, ctx }: Props): ReactNode {
   // DOM-контракт движка маргиналий (annotation-layer): каждый текст-блок несёт
   // data-block-id={block.id} как стабильный якорь для anchor-to-range /
   // anchor-from-selection. table — БЕЗ id (строки/ячейки без id → мусорный
@@ -27,7 +26,7 @@ export function BlockRenderer({ block, ctx, index }: Props): ReactNode {
       const level = readHeadingLevel(block.attrs);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc requires the literal union for the dynamic JSX tag; ESLint mis-flags it as a no-op
       const Tag = (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
-      return <Tag {...idAttr} id={headingDomId(block, index)}><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
+      return <Tag {...idAttr} id={block.id}><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
     }
     case "list": {
       // Бэк отдаёт `attrs.ordered: boolean` (см. ast-schema/document_blocks), НЕ `kind`.
@@ -37,7 +36,7 @@ export function BlockRenderer({ block, ctx, index }: Props): ReactNode {
       return (
         <Tag {...idAttr}>
           {items.map((child, i) => (
-            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} index={i} />
+            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
           ))}
         </Tag>
       );
@@ -49,7 +48,7 @@ export function BlockRenderer({ block, ctx, index }: Props): ReactNode {
       return (
         <li {...idAttr}>
           {children.map((child, i) => (
-            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} index={i} />
+            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
           ))}
         </li>
       );
@@ -73,7 +72,7 @@ export function BlockRenderer({ block, ctx, index }: Props): ReactNode {
       return (
         <blockquote {...idAttr}>
           {children.map((child, i) => (
-            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} index={i} />
+            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
           ))}
         </blockquote>
       );

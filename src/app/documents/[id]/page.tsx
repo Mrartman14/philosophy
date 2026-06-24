@@ -120,9 +120,11 @@ export default async function DocumentPage({ params, searchParams }: Props) {
       )}
       </div>
 
-      <aside className="margin-nav margin-nav--hide-narrow">
-        <AstToc headings={tocHeadings} label={t("documentToc")} />
-      </aside>
+      {tocHeadings.length > 0 && (
+        <aside className="margin-nav margin-nav--hide-narrow">
+          <AstToc headings={tocHeadings} label={t("documentToc")} />
+        </aside>
+      )}
 
       <MarginNote side="end" className="p-6">
         <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>

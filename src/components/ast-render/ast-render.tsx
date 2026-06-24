@@ -12,7 +12,7 @@ export function AstRender({ blocks, ctx }: AstRenderProps): ReactNode {
   return (
     <>
       {blocks.map((block, i) => (
-        <BlockRenderer key={block.id ?? i} block={block} ctx={effectiveCtx} index={i} />
+        <BlockRenderer key={block.id ?? i} block={block} ctx={effectiveCtx} />
       ))}
     </>
   );

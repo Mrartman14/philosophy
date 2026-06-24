@@ -1,7 +1,7 @@
 // src/components/ast-render/heading.test.ts
 import { describe, it, expect } from "vitest";
 
-import { readHeadingLevel, headingDomId } from "./heading";
+import { readHeadingLevel } from "./heading";
 
 describe("readHeadingLevel", () => {
   it("возвращает число 1–6 как есть", () => {
@@ -18,14 +18,5 @@ describe("readHeadingLevel", () => {
   });
   it("дефолт 2 при нечисловом level", () => {
     expect(readHeadingLevel({ level: "3" as unknown as number })).toBe(2);
-  });
-});
-
-describe("headingDomId", () => {
-  it("использует block.id когда он есть", () => {
-    expect(headingDomId({ id: "blk-uuid", type: "heading" }, 0)).toBe("blk-uuid");
-  });
-  it("фолбэк heading-{index} когда block.id отсутствует", () => {
-    expect(headingDomId({ type: "heading" }, 4)).toBe("heading-4");
   });
 });

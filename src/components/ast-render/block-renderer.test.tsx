@@ -22,7 +22,7 @@ describe("BlockRenderer наблюдаемость", () => {
       () => {},
     );
     // @ts-expect-error — намеренно невалидный тип блока для ветки default
-    render(<BlockRenderer block={{ type: "__unknown__" }} ctx={baseCtx} index={0} />);
+    render(<BlockRenderer block={{ type: "__unknown__" }} ctx={baseCtx} />);
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(log.warn).toHaveBeenCalledWith(
       expect.stringContaining("unsupported block type"),
@@ -39,7 +39,7 @@ describe("BlockRenderer наблюдаемость", () => {
 // (строки/ячейки без id → мусорный якорь), image — DOM не меняется.
 // renderToStaticMarkup (а не RTL render): проверяем строковый HTML на атрибут.
 const markupFor = (b: AstBlock): string =>
-  renderToStaticMarkup(<BlockRenderer block={b} ctx={{}} index={0} />);
+  renderToStaticMarkup(<BlockRenderer block={b} ctx={{}} />);
 
 describe("BlockRenderer — data-block-id (DOM-контракт движка)", () => {
   it("paragraph несёт data-block-id", () => {
