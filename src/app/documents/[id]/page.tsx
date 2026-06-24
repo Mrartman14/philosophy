@@ -56,7 +56,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
 
   return (
     <>
-      <div className="flex flex-col gap-8 p-6">
+      <div className="flex flex-col gap-8 p-4">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{document.filename ?? t("documentDefaultTitle")}</h1>
         <div className="flex items-center gap-2">
@@ -116,11 +116,11 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         </aside>
       )}
 
-      {/* px-0 на ≥xl: на широких единый горизонтальный отступ от хребта даёт
-          грид-гаттер (--layout-gutter), как у TOC-сайдбара (.margin-nav: padding 0
-          на ≥xl) — паддинг панели больше не задваивается с гаттером. На узких
-          (панель втекает в поток, гаттера нет) — собственный p-6. */}
-      <MarginNote side="end" grow className="p-6 xl:px-0">
+      {/* ps-0 на ≥xl: внутренний (к хребту) отступ убираем — его роль играет
+          грид-гаттер (--layout-gutter), как у TOC-сайдбара. Внешний (pe, к краю
+          экрана) ОСТАЁТСЯ — иначе при широком контенте панель упирается в край.
+          На узких (панель втекает в поток, гаттера нет) — собственный p-4. */}
+      <MarginNote side="end" grow className="p-4 xl:ps-0">
         {document.id ? (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={document.id} />
