@@ -110,3 +110,31 @@
     padding: 0;
   }
 }
+
+/* Вариант нав-сайдбара: на узких экранах (< xl) ПОЛНОСТЬЮ скрыт (а не падает
+   полосой сверху, как базовый .margin-nav). Для оглавления документа: на ≥xl —
+   sticky в левом поле (правила .margin-nav), ниже — нет. */
+@media (width < theme(--breakpoint-xl)) {
+  .margin-nav--hide-narrow { display: none; }
+}
+
+/* Длинное оглавление не должно уходить за нижнюю кромку sticky-сайдбара —
+   собственный скролл вместо обрезки нижних пунктов. Логические свойства
+   (max-block-size/overflow) — RTL/writing-mode-safe. */
+@media (min-width: theme(--breakpoint-xl)) {
+  .margin-nav--hide-narrow {
+    max-block-size: calc(100dvh - var(--layout-sticky-top) - 1rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Якорь заголовка встаёт с «воздухом» под sticky-шапкой. Глобальный
+   `* { scroll-margin-top: var(--spacing-header) }` (globals.css) = РОВНО высота
+   шапки → заголовок впритык. Для заголовков контента поднимаем до
+   --layout-sticky-top (= шапка + 1rem), как у прочих sticky-навов проекта.
+   Логический scroll-margin-block-start; специфичность .content :is(...) бьёт `*`.
+   Бонус: корректнее встают и deep-link-якори на любой заголовок. */
+.content :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-block-start: var(--layout-sticky-top);
+}

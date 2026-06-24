@@ -2,6 +2,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { AstToc, extractHeadings } from "@/components/ast-toc";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { AnnotationsSection } from "@/features/annotations";
 import {
@@ -37,6 +38,8 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   const { revision, token } = await searchParams;
   const [me, document] = await Promise.all([getMe(), getDocumentById(id, token)]);
   if (!document) notFound();
+
+  const tocHeadings = extractHeadings(document.blocks ?? []);
 
   const canEdit = canEditDocument(me, document);
   const canDelete = canDeleteDocument(me, document);
@@ -116,6 +119,12 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         </div>
       )}
       </div>
+
+      {tocHeadings.length > 0 && (
+        <aside className="margin-nav margin-nav--hide-narrow">
+          <AstToc headings={tocHeadings} label={t("documentToc")} />
+        </aside>
+      )}
 
       <MarginNote side="end" className="p-6">
         <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>

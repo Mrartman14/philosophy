@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { log } from "@/services/observability/client";
 
+import { readHeadingLevel } from "./heading";
 import { InlineRenderer } from "./inline-renderer";
 import { ImageNode } from "./nodes/image";
 import type { AstBlock, AstNode, AstRenderContext } from "./types";
@@ -25,7 +26,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       const level = readHeadingLevel(block.attrs);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc requires the literal union for the dynamic JSX tag; ESLint mis-flags it as a no-op
       const Tag = (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
-      return <Tag {...idAttr}><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
+      return <Tag {...idAttr} id={block.id}><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
     }
     case "list": {
       // Бэк отдаёт `attrs.ordered: boolean` (см. ast-schema/document_blocks), НЕ `kind`.
@@ -128,11 +129,4 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
 function readCellAlign(attrs: AstNode["attrs"]): "left" | "center" | "right" | undefined {
   const raw = (attrs as { align?: unknown } | undefined)?.align;
   return raw === "left" || raw === "center" || raw === "right" ? raw : undefined;
-}
-
-function readHeadingLevel(attrs: AstBlock["attrs"]): 1 | 2 | 3 | 4 | 5 | 6 {
-  const raw = (attrs as { level?: unknown } | undefined)?.level;
-  if (typeof raw !== "number") return 2;
-  if (raw < 1 || raw > 6) return 2;
-  return raw as 1 | 2 | 3 | 4 | 5 | 6;
 }

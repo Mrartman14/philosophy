@@ -169,6 +169,7 @@ const pages = {
   documentDefaultTitle: "Document",
   documentEdit: "Edit",
   documentMarginHint: "Notes in the margin appear here on wide screens.",
+  documentToc: "On this page",
 
   // ─── /documents/[id]/edit ────────────────────────────────────────────
   documentEditHeading: "Edit",

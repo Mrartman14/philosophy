@@ -169,6 +169,7 @@ const pages = {
   documentDefaultTitle: "مستند",
   documentEdit: "تحرير",
   documentMarginHint: "تظهر الملاحظات الهامشية هنا على الشاشات العريضة.",
+  documentToc: "في هذه الصفحة",
 
   // ─── /documents/[id]/edit ────────────────────────────────────────────
   documentEditHeading: "تحرير",
