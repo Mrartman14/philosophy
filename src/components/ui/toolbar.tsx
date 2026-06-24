@@ -3,7 +3,7 @@
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "react";
 
-import { cn, FOCUS_RING_CONTROL } from "./cn";
+import { cn, CONTROL_BOX, FOCUS_RING_CONTROL } from "./cn";
 
 /**
  * Compound-обёртка над Base UI Toolbar. Root/Button/Group/Separator несут общие
@@ -32,7 +32,12 @@ const Button = forwardRef<
     <BaseToolbar.Button
       ref={ref}
       className={cn(
-        "inline-flex h-9 min-w-9 items-center justify-center rounded px-2 transition",
+        CONTROL_BOX,
+        // Высота — density-aware токен контрола (тот же тир, что дефолтный
+        // IconButton), а не литерал `h-9`. `min-w` + `px-2` оставлены, чтобы
+        // кнопка могла растягиваться шире квадрата (icon-only сейчас, но без
+        // регресса для текстовых триггеров).
+        "h-(--size-control-h-md) min-w-(--size-control-h-md) px-2",
         "hover:bg-(--color-surface-subtle)",
         // Активное (выбранное) состояние — инверсная заливка, тот же язык, что
         // у IconButton tone="primary" (bg-fg / text-surface). Отдельно от hover,

@@ -35,3 +35,12 @@ export const FOCUS_RING_CONTROL =
  * toast-карточкой; каждый потребитель дописывает собственные токены размера/состояния.
  */
 export const SHELL_BASE = "rounded border border-(--color-border) bg-(--color-surface)";
+
+/**
+ * Базовый бокс иконочного/тулбар leaf-контрола: центрирующий inline-flex,
+ * скругление, transition. Размер (квадрат-токен `--size-control-h-*` либо
+ * `min-w` + горизонтальный паддинг) и тон дописывает потребитель. Общий для
+ * IconButton и Toolbar.Button — чтобы геометрия leaf-контролов не разъезжалась
+ * (Toolbar.Button раньше нёс литерал `h-9`, мимо density-aware токенов).
+ */
+export const CONTROL_BOX = "inline-flex items-center justify-center rounded transition";

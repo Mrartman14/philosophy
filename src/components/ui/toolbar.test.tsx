@@ -19,6 +19,19 @@ describe("Toolbar (compound)", () => {
     expect(screen.getByRole("button", { name: "bold" })).toBeInTheDocument();
   });
 
+  it("Button height binds to the density-aware control token, not a literal", () => {
+    render(
+      <Toolbar.Root>
+        <Toolbar.Button aria-label="b">B</Toolbar.Button>
+      </Toolbar.Root>,
+    );
+    const btn = screen.getByRole("button", { name: "b" });
+    expect(btn).toHaveClass("h-(--size-control-h-md)");
+    expect(btn).toHaveClass("min-w-(--size-control-h-md)");
+    // Регресс-гард: больше не литерал h-9 (density-aware токен вместо фикс-px).
+    expect(btn).not.toHaveClass("h-9");
+  });
+
   it("Button merges custom className over the default", () => {
     render(
       <Toolbar.Root>

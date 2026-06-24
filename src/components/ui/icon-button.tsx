@@ -1,7 +1,7 @@
 // src/components/ui/icon-button.tsx
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 
-import { cn, FOCUS_RING_CONTROL } from "./cn";
+import { cn, CONTROL_BOX, FOCUS_RING_CONTROL } from "./cn";
 
 export type IconButtonTone = "neutral" | "primary" | "danger";
 
@@ -47,7 +47,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         type={type}
         className={cn(
-          "inline-flex items-center justify-center rounded transition",
+          CONTROL_BOX,
           compact
             ? "h-(--size-control-h-sm) w-(--size-control-h-sm)"
             : "h-(--size-control-h-md) w-(--size-control-h-md)",
