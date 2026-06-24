@@ -6,6 +6,12 @@ import type { SceneRenderModel } from "./scene-render-model";
 
 export type SceneRenderMode = "2d" | "3d";
 
+/** Сериализуемый снимок камеры. 2d: [tx,ty,zoom]; 3d: [px,py,pz,tx,ty,tz]. */
+export interface CameraState {
+  mode: SceneRenderMode;
+  values: number[];
+}
+
 export interface SceneRenderer {
   /** Привязать к <canvas> и запустить render-loop. */
   mount(canvas: HTMLCanvasElement): void;
