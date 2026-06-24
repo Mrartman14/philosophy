@@ -13,14 +13,19 @@ interface Props {
 }
 
 export function BlockRenderer({ block, ctx }: Props): ReactNode {
+  // DOM-контракт движка маргиналий (annotation-layer): каждый текст-блок несёт
+  // data-block-id={block.id} как стабильный якорь для anchor-to-range /
+  // anchor-from-selection. table — БЕЗ id (строки/ячейки без id → мусорный
+  // якорь), image — DOM не меняем (без обёрток).
+  const idAttr = block.id ? { "data-block-id": block.id } : {};
   switch (block.type) {
     case "paragraph":
-      return <p><InlineRenderer nodes={block.content} ctx={ctx} /></p>;
+      return <p {...idAttr}><InlineRenderer nodes={block.content} ctx={ctx} /></p>;
     case "heading": {
       const level = readHeadingLevel(block.attrs);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc requires the literal union for the dynamic JSX tag; ESLint mis-flags it as a no-op
       const Tag = (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
-      return <Tag><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
+      return <Tag {...idAttr}><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
     }
     case "list": {
       // Бэк отдаёт `attrs.ordered: boolean` (см. ast-schema/document_blocks), НЕ `kind`.
@@ -28,7 +33,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       const Tag = ordered ? "ol" : "ul";
       const items = (block.content ?? []) as unknown as AstBlock[];
       return (
-        <Tag>
+        <Tag {...idAttr}>
           {items.map((child, i) => (
             <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
           ))}
@@ -40,7 +45,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       // blockquote) — не inline. Обёрточный <p> даёт паритет с редактором.
       const children = (block.content ?? []) as unknown as AstBlock[];
       return (
-        <li>
+        <li {...idAttr}>
           {children.map((child, i) => (
             <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
           ))}
@@ -55,7 +60,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
         .join("");
       return (
         // dir=ltr: код всегда LTR — иначе bidi рвёт пунктуацию/скобки в RTL-контексте.
-        <pre dir="ltr" data-language={langStr}>
+        <pre {...idAttr} dir="ltr" data-language={langStr}>
           <code>{text}</code>
         </pre>
       );
@@ -64,7 +69,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       // Блочный контейнер: paragraph/heading/list/code_block/вложенный blockquote.
       const children = (block.content ?? []) as unknown as AstBlock[];
       return (
-        <blockquote>
+        <blockquote {...idAttr}>
           {children.map((child, i) => (
             <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
           ))}
@@ -72,7 +77,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       );
     }
     case "thematic_break":
-      return <hr />;
+      return <hr {...idAttr} />;
     case "table": {
       // table → table_row → table_cell → inline. `header` живёт на строке;
       // header-строка → <th scope="col"> (семантика + .content th CSS).
@@ -112,7 +117,7 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
         blockType: String(_exhaustive),
       });
       return (
-        <div data-unsupported={block.type ?? "unknown"}>
+        <div {...idAttr} data-unsupported={block.type ?? "unknown"}>
           <InlineRenderer nodes={block.content} ctx={ctx} />
         </div>
       );
