@@ -49,12 +49,13 @@ export const getAnnotationsFor = cache(
     const { data, error, response } = await get(parentEntityType);
     // 404 (parent невидим) → пустой список, не валим страницу.
     if (response.status === 404) return unwrapList({}, { offset, limit });
-    if (error) {
-      const t = await getT("annotations");
+    if (error)
       throw new Error(
-        t("api.loadListFailedStatus", { status: response.status }),
+        error.error ??
+          (await getT("annotations"))("api.loadListFailedStatus", {
+            status: response.status,
+          }),
       );
-    }
     return unwrapList(data, { offset, limit });
   },
 );

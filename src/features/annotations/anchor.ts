@@ -110,7 +110,7 @@ export function fromEngineAnchor(a: TextAnchor): Anchor {
     endChar: a.endChar,
     exact: a.exact,
   };
-  if (a.prefix !== undefined) input.prefix = a.prefix;
-  if (a.suffix !== undefined) input.suffix = a.suffix;
+  if (a.prefix) input.prefix = a.prefix;
+  if (a.suffix) input.suffix = a.suffix;
   return buildTextAnchor(input);
 }

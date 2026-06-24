@@ -1,14 +1,16 @@
 // src/features/annotations/ui/annotations-section.tsx
 import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
-import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { getAnnotationsFor } from "../api";
-import { canCreateAnnotation, canEditAnnotation } from "../permissions";
+import { canCreateAnnotation } from "../permissions";
 import type { ParentEntityType } from "../types";
 
-import { buildAnnotationCards } from "./annotation-cards-builder";
+import {
+  buildAnnotationCards,
+  loadSchemaIfNeeded,
+} from "./annotation-cards-builder";
 import { AnnotationCreateForm } from "./annotation-create-form";
 
 interface Props {
@@ -33,9 +35,7 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
   // Схема нужна, если пользователь может создать аннотацию или редактировать
   // хотя бы одну существующую (диалог редактирования монтирует AstEditor).
   // Грузим серверно один раз и прокидываем пропом — браузер за ней не ходит.
-  const needsSchema =
-    canCreate || items.some((a) => Boolean(a.id) && canEditAnnotation(me, a));
-  const astSchema = needsSchema ? await getAstSchema() : null;
+  const astSchema = await loadSchemaIfNeeded(me, items, canCreate);
 
   // Сборка карточек вынесена в общий server-хелпер (DRY: тот же билдер питает
   // margin-режим DocumentAnnotations). Секция отвечает лишь за list-каркас.

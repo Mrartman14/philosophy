@@ -4,14 +4,16 @@
 // раз, собирает карточки общим билдером (DRY с AnnotationsSection) и связывает с
 // client-коннектором под SchemaContextProvider. Связка движок↔домен.
 import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
-import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { getAnnotationsFor } from "../api";
-import { canCreateAnnotation, canEditAnnotation } from "../permissions";
+import { canCreateAnnotation } from "../permissions";
 
-import { buildAnnotationCards } from "./annotation-cards-builder";
+import {
+  buildAnnotationCards,
+  loadSchemaIfNeeded,
+} from "./annotation-cards-builder";
 import { DocumentAnnotationLayer } from "./document-annotation-layer";
 
 /**
@@ -27,9 +29,7 @@ export async function DocumentAnnotations({ parentId }: { parentId: string }) {
   const [me, t] = await Promise.all([getMe(), getT("annotations")]);
   const { items } = await getAnnotationsFor("document", parentId);
   const canCreate = canCreateAnnotation(me);
-  const needsSchema =
-    canCreate || items.some((a) => Boolean(a.id) && canEditAnnotation(me, a));
-  const astSchema = needsSchema ? await getAstSchema() : null;
+  const astSchema = await loadSchemaIfNeeded(me, items, canCreate);
   const notes = buildAnnotationCards({ items, me, astSchema });
 
   return (

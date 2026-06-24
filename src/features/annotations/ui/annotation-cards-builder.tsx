@@ -3,6 +3,7 @@ import "server-only";
 import type { ReactNode } from "react";
 
 import type { SchemaResponse } from "@/components/ast-editor";
+import { getAstSchema } from "@/components/ast-editor/schema-server";
 import type { Me } from "@/utils/me";
 
 import { canEditAnnotation } from "../permissions";
@@ -23,6 +24,25 @@ export interface AnnotationCardVM {
   id: string;
   anchor: Anchor | undefined;
   card: ReactNode;
+}
+
+/**
+ * Серверно грузит AST-схему, только если она реально понадобится в браузере:
+ * пользователь может создать аннотацию (диалог-композер) либо редактировать
+ * хотя бы одну существующую (диалог редактирования монтирует AstEditor).
+ * Иначе → `null` (редактор при необходимости подтянет схему сам).
+ *
+ * DRY-хелпер: общий для list-режима (`AnnotationsSection`) и margin-режима
+ * (`DocumentAnnotations`) — оба считают «нужна ли схема» по одному правилу.
+ */
+export async function loadSchemaIfNeeded(
+  me: Me | null,
+  items: Annotation[],
+  canCreate: boolean,
+): Promise<SchemaResponse | null> {
+  const needsSchema =
+    canCreate || items.some((a) => Boolean(a.id) && canEditAnnotation(me, a));
+  return needsSchema ? await getAstSchema() : null;
 }
 
 /**
