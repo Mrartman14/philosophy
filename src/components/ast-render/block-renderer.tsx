@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { log } from "@/services/observability/client";
 
+import { readHeadingLevel } from "./heading";
 import { InlineRenderer } from "./inline-renderer";
 import { ImageNode } from "./nodes/image";
 import type { AstBlock, AstNode, AstRenderContext } from "./types";
@@ -128,11 +129,4 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
 function readCellAlign(attrs: AstNode["attrs"]): "left" | "center" | "right" | undefined {
   const raw = (attrs as { align?: unknown } | undefined)?.align;
   return raw === "left" || raw === "center" || raw === "right" ? raw : undefined;
-}
-
-function readHeadingLevel(attrs: AstBlock["attrs"]): 1 | 2 | 3 | 4 | 5 | 6 {
-  const raw = (attrs as { level?: unknown } | undefined)?.level;
-  if (typeof raw !== "number") return 2;
-  if (raw < 1 || raw > 6) return 2;
-  return raw as 1 | 2 | 3 | 4 | 5 | 6;
 }
