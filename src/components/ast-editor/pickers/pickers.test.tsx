@@ -30,7 +30,6 @@ vi.mock("./actions", () => ({
 
 import * as actions from "./actions";
 import { CanvasPicker } from "./canvas-picker";
-import { Comment2StagePicker } from "./comment-2stage-picker";
 import { CommentPicker } from "./comment-picker";
 import { DocumentPicker } from "./document-picker";
 import { GlossaryPicker } from "./glossary-picker";
@@ -147,34 +146,5 @@ describe("MediaPicker", () => {
       },
       { timeout: 600 },
     );
-  });
-});
-
-describe("Comment2StagePicker", () => {
-  it("starts at step 1 without defaultLectureId, advances on select", async () => {
-    mocked.searchLectures.mockResolvedValue({
-      data: [{ id: "l1", title: "L1" }],
-      total: 1,
-    });
-    mocked.searchCommentsByLecture.mockResolvedValue({
-      data: [{ id: "c1", snippet: "hi" }],
-      total: 1,
-    });
-    const onSelect = vi.fn();
-    render(<Comment2StagePicker onSelect={onSelect} />);
-    expect(screen.getByText(/шаг 1/i)).toBeInTheDocument();
-    fireEvent.click(await screen.findByText("L1"));
-    await screen.findByText(/шаг 2/i);
-    fireEvent.click(await screen.findByText("hi"));
-    expect(onSelect).toHaveBeenCalledWith("c1", "hi");
-  });
-
-  it("starts at step 2 with defaultLectureId, back returns to step 1", async () => {
-    mocked.searchCommentsByLecture.mockResolvedValue({ data: [], total: 0 });
-    mocked.searchLectures.mockResolvedValue({ data: [], total: 0 });
-    render(<Comment2StagePicker defaultLectureId="L0" onSelect={() => undefined} />);
-    await screen.findByText(/шаг 2/i);
-    fireEvent.click(screen.getByRole("button", { name: /сменить лекцию/i }));
-    expect(await screen.findByText(/шаг 1/i)).toBeInTheDocument();
   });
 });

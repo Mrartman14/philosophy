@@ -26,10 +26,10 @@ import { AstEditor, SchemaContextProvider } from "@/components/ast-editor";
 - **Runtime schema** (Phase 1, schema-context): `/api/ast/schema` → `block_levels`, лимиты, attr-правила, url-policy.
 - **Validation plugins** (Phase 1): `limits-plugin` (численные лимиты), `attr-plugin` (per-attr из ExportedAttr), `dedup-block-id-plugin` (split-paragraph fixup).
 - **Image upload** (Phase 2a): `upload/upload-image.ts` server action + paste/drop plugin.
-- **Pickers** (Phase 2b): AsyncCombobox + 5 активных категорий + 2-stage comment picker. `canvas-picker.tsx` — dormant (canvas вне скоупа программы), в RefMenu не подключён.
+- **Pickers** (Phase 2b): `useAsyncComboboxItems` (движок поиска) → `AsyncCombobox` (generic, на Base UI Combobox) + `RefPicker` (scoped: переключатель категорий + drill-in лекции, питается из `ref-types`). RefMenu и Comment2StagePicker удалены — обе поверхности (toolbar-кнопка и `@`-подсказка) теперь рендерят `RefPicker`. Пер-типовые пикеры (`glossary-picker`/`document-picker`/`media-picker`/`lecture-picker`/`comment-picker`/`canvas-picker`) остаются тонкими обёртками над `AsyncCombobox` для canvas/трейлов/вложений. `canvas-picker.tsx` — dormant (canvas вне скоупа программы).
 - **Toolbar + slash-menu** (Phase 2c): per-context кнопки и `/`-палитра.
 - **Drift-warn** (Phase 2c): dev-only sanity-check hardcode ⊆ runtime.
-- **Integration** (Phase 2d): image-кнопка в toolbar (`toolbar/buttons/image-button.tsx`), RefMenu-кнопка (`toolbar/buttons/ref-popover.tsx`), `@`-suggestion (`pickers/at-suggestion-plugin.ts` + `pickers/at-menu.tsx`), прокид `defaultLectureId` до comment-picker'а.
+- **Integration** (Phase 2d): image-кнопка в toolbar (`toolbar/buttons/image-button.tsx`), ref-кнопка в toolbar (`toolbar/buttons/ref-popover.tsx`) и `@`-suggestion (`pickers/at-suggestion-plugin.ts` + `pickers/at-menu.tsx`) — обе рендерят `RefPicker`, прокид `defaultLectureId`.
 
 ## Frozen zones
 
