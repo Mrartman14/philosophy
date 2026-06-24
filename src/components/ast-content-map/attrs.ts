@@ -50,8 +50,10 @@ const REF_PREFIX: Record<string, string> = {
 
 /** nav-ref → <a href из id>. Решение: <a> в edit И read. null если id пуст/тип неизвестен. */
 export function navRefAttrs(mark: AstMark): Record<string, string> | null {
-  const type = mark.type as string | undefined;
+  const type = mark.type;
   const id = (mark.attrs as { id?: unknown } | undefined)?.id;
-  if (!type || !(type in REF_PREFIX) || typeof id !== "string" || id.length === 0) return null;
-  return { href: REF_PREFIX[type] + id, "data-mark": type, class: `nav-ref nav-ref--${type}` };
+  if (typeof type !== "string" || typeof id !== "string" || id.length === 0) return null;
+  const prefix = REF_PREFIX[type];
+  if (prefix === undefined) return null;
+  return { href: `${prefix}${id}`, "data-mark": type, class: `nav-ref nav-ref--${type}` };
 }

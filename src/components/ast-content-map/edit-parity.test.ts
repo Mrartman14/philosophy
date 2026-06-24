@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 
+import { must } from "./test-support";
+
 import { NODE_MAP, MARK_MAP, HOLE } from "./index";
 
 // Эмуляция вызова из editor renderHTML: PM-нода даёт {type:{name}, attrs}. EDIT-адаптер
@@ -28,7 +30,7 @@ describe("EDIT-адаптер: NODE_MAP → DOMOutputSpec без Tiptap-типо
   });
 
   it("glossary_ref mark → ['a', {...}] (структура для оборачивания)", () => {
-    expect(MARK_MAP.glossary_ref!({ type: "glossary_ref", attrs: { id: "g1" } })).toEqual([
+    expect(must(MARK_MAP.glossary_ref)({ type: "glossary_ref", attrs: { id: "g1" } })).toEqual([
       "a",
       { href: "/glossary/g1", "data-mark": "glossary_ref", class: "nav-ref nav-ref--glossary_ref" },
     ]);
