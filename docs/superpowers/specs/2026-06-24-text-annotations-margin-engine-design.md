@@ -1,8 +1,8 @@
 # Аннотации к выделенному тексту — движок маргиналий (Word-style)
 
 - **Дата:** 2026-06-24
-- **Статус:** Draft (на ревью)
-- **Автор:** дизайн-сессия (brainstorming)
+- **Статус:** Draft v2 (ревизия после адверсариального ревью + фиксов бэкенда)
+- **Версии:** v1 — исходный дизайн; v2 — учтены 6-осевое адверсариальное ревью и обновление `src/api/schema.ts` бэкендом.
 
 ## 1. Цель
 
@@ -14,304 +14,270 @@
 
 ### Ключевое нефункциональное требование
 
-Функционал привязки заметок к тексту будет **переиспользоваться в других местах приложения**
-(глоссарий, комментарии, транскрипты медиа). Поэтому ядро проектируется как **изолированный,
-оттестированный «движок»**, который инжектится на поверхность просмотра, ничего не зная о
-конкретной доменной сущности. Это аналог того, как `src/components/scene-3d/` стал общей
-базой для карты и графа.
+Функционал привязки заметок к тексту будет **переиспользоваться** (глоссарий, комментарии,
+транскрипты медиа). Ядро проектируется как **изолированный, оттестированный «движок»**,
+инжектируемый на поверхность просмотра, доменно-агностичный. Аналог общей базы
+`src/components/scene-3d/` для карты и графа.
 
-## 2. Зафиксированные решения
+## 2. Зафиксированные решения (v2)
 
 | Развилка | Решение |
 | --- | --- |
-| Ввод заметки | **Модалка** (`Dialog` из kit) с полем текста |
-| Видимость | **Выбор private/public**, дефолт — private (модель бэка уже есть) |
-| Сторона панели | **Справа** (логическое `end`, зеркалится в RTL); на узких экранах (<1280px) — список снизу |
-| Объём v1 | **Полный Word-эффект**: подсветка фрагмента + двусторонний клик (текст↔карточка) |
-| Reading-mode | Подсветку можно **выключить**; v1 — локальный тумблер (`localStorage`), движок агностичен к источнику флага |
-| Техника подсветки | **CSS Custom Highlight API** (ноль мутаций DOM), фолбэк — оверлей-прямоугольники |
+| Ввод заметки | **Модалка** (`Dialog` kit) с **урезанным AST-редактором** (`entityContext="annotation"`), НЕ plain-text. Урезание диктует бэк через `/api/ast/schema` (level `annotation`). |
+| Видимость | **Выбор private/public**, дефолт private |
+| Сторона панели | **Справа** (логическое `end`, RTL-зеркалится); <1280px — список снизу |
+| Подсветка | CSS Custom Highlight API + **обязательный** оверлей-фолбэк (см. §4.4); отключаемая (reading-mode) |
+| Платформы/a11y v1 | **Тач + клавиатура** обязательны: захват через `selectionchange` + `pointerup`/`touchend`, фокус-достижимый аффорданс |
+| Двусторонний клик | **В v1, отдельной задачей**: клик по подсветке ↔ клик по карточке (хит-тест + `setActive` + скролл с reduced-motion) |
+| Reading-mode | Локальный тумблер (`localStorage`); движок агностичен к источнику флага |
 | Имя движка | `src/components/annotation-layer/` |
-| Офлайн | **Вне scope** (slice A офлайн-write остаётся на паузе) |
+| Токен подсветки | Новый foundation-токен `--color-highlight` (+ APCA-пара в CI-гард), НЕ переиспользование `--color-accent` |
+| Офлайн / media | Вне scope v1 |
 
 ## 3. Архитектура: движок (foundation) ↔ обвязка (фича)
 
-Строгая граница: **фича зависит от движка, движок не знает о фиче.** Без cross-feature
-импортов, без upward-coupling (ESLint Guardrail-чисто). Движок — `"use client"` shared-foundation
-в `src/components/` (можно импортировать из фич), не импортирует ни одну `src/features/*`.
+**Граница выстояла в ревью.** Фича зависит от движка; движок не знает о фиче (без
+cross-feature, без upward-coupling). Движок — `"use client"` foundation в `src/components/`,
+не импортирует ни одну `src/features/*`.
 
 ```
 ┌─ src/features/annotations/ (обвязка) ─────────────────────────┐
-│  SSR-фетч аннотаций · createAnnotation(anchor) · RBAC-булевы   │
-│  модалка на базе AnnotationCreateForm · renderNote(card)       │
-│         │ передаёт данные + колбэки вниз                       │
+│  SSR-сбор карточек (общий билдер) · createAnnotation(anchor)   │
+│  RBAC-булевы · урезанная AST-модалка · renderNote(card)       │
+│         │ данные + колбэки вниз                                │
 │         ▼                                                      │
 ├─ src/components/annotation-layer/ (движок, доменно-агностичен) ┤
-│  React-слой: <AnnotationLayer> <SelectionToolbar>             │
-│              <MarginNotesColumn>                              │
-│  Чистое ядро: anchor-from-selection · anchor-to-range ·       │
-│               stacking · highlight-controller                 │
+│  React: <AnnotationLayer> <SelectionAffordance>               │
+│         <MarginNotesColumn> <HighlightOverlay?>               │
+│  Ядро: anchor-from-selection · anchor-to-range · stacking ·   │
+│        highlight-controller · hit-test                        │
 └───────────────────────────────────────────────────────────────┘
-            │ читает DOM-контракт
+            │ DOM-контракт (data-block-id) + общий референс-контейнер
             ▼
-   src/components/ast-render/  (каждый блок несёт data-block-id)
+   src/components/ast-render/
 ```
 
 ### 3.1. Доменно-агностичные типы движка
 
-Движок определяет **собственный** `TextAnchor` (структурный подмножество-тип), чтобы не
-импортировать схему аннотаций. Фича маппит `annotation.Anchor` ↔ `TextAnchor` (поля
-идентичны для text-range).
-
 ```ts
 // src/components/annotation-layer/types.ts
 export interface TextAnchor {
-  startBlockId: string;
-  endBlockId: string;
-  startChar: number;
-  endChar: number;
-  exact: string;
-  prefix?: string;
-  suffix?: string;
+  startBlockId: string; endBlockId: string;
+  startChar: number; endChar: number;   // UTF-16 code units (контракт бэка)
+  exact: string; prefix?: string; suffix?: string;
 }
-
-export interface AnchoredNote {
-  id: string;
-  anchor: TextAnchor;
-}
-
-export interface AnchorDraft {
-  anchor: TextAnchor;
-  /** Прямоугольник выделения (вьюпорт-координаты) для позиционирования тулбара. */
-  rect: DOMRect;
-}
+export interface AnchoredNote { id: string; anchor: TextAnchor }
+export interface AnchorDraft { anchor: TextAnchor; rect: DOMRect }
 ```
+
+Фича маппит `annotation.Anchor` ↔ `TextAnchor` (поля идентичны; единицы совпадают — UTF-16).
 
 ## 4. Чистое ядро движка (юнит-тестируемо на jsdom)
 
-Вся доменная-агностичная логика — **чистые функции**, отделённые от React. Это и есть
-«оттестированный движок».
-
 ### 4.1. `anchor-from-selection.ts`
-
-`Selection` / `Range` + контент-рут → `TextAnchor | null`.
-
-- Находит ближайший предок с `data-block-id` для start- и end-границы.
-- Считает **plaintext-офсет** внутри блока: обходит текстовые узлы блока в порядке документа,
-  суммируя длины, пока не дойдёт до границы Range. Inline-форматирование (`<strong>`, `<em>`,
-  `<a>`, рефы) прозрачно — учитываются только текстовые узлы.
-- `exact` = выделенный plaintext; `prefix`/`suffix` = N символов (напр. 32) контекста до/после
-  в пределах блока (W3C TextQuoteSelector).
-- Возвращает `null`, если выделение вне контент-рута, пустое (collapsed), или границы не
-  принадлежат блокам с `data-block-id`.
-- **Единицы офсетов** — см. §9 (вопрос к бэку): фиксируем UTF-16 code units по умолчанию,
-  выравниваем под ответ.
+`Selection`/`Range` + контент-рут → `TextAnchor | null`. Находит ближайший
+`closest('[data-block-id]')`; считает **plaintext-офсет в UTF-16** (`String.length` /
+`node.textContent.length` — единицы совпадают с контрактом бэка, конверсия НЕ нужна).
+`exact`=выделенный plaintext; `prefix`/`suffix`=±32 символа контекста.
+**`<br>` (hard_break)** учитывается как `"\n"` при обходе (иначе офсеты после переноса
+разойдутся). `null` вне блоков/при collapsed.
 
 ### 4.2. `anchor-to-range.ts`
-
-Сохранённый `TextAnchor` + контент-рут → `Range | null` (ре-анкоринг для подсветки).
-
-- **Первично:** найти блоки по `data-block-id`, отмотать `startChar`/`endChar` по текстовым
-  узлам, собрать `Range`.
-- **Фолбэк по цитате:** если блок не найден или текст в нём изменился (не совпал `exact`) —
-  искать `prefix + exact + suffix` в plaintext документа и привязаться к найденному месту.
-- **`null` → сирота** (anchor не разрешился): фрагмент исчез после правки документа.
+`TextAnchor` + root → `Range | null`. **Первично** по `block_id`+`char`. **Фолбэк по
+цитате (исправлен):** ищем `prefix+exact+suffix`, получаем глобальный офсет вхождения,
+**вырезаем `exact` ВНУТРИ найденного контекста** (`[off+prefix.len, off+prefix.len+exact.len]`)
+— не ищем голый `exact` заново (это был баг v1: терялась дизамбигуация дубликатов). Перебор
+вхождений через `indexOf(needle, from)`. `null` = сирота. **`CSS.escape` — через guard-хелпер**
+(в jsdom глобального `CSS` нет → иначе TypeError).
 
 ### 4.3. `stacking.ts`
+`Array<{id,top,height}>` → `Map<id,top>` непересекающихся позиций, порядок по `top`. Чистая.
+Также экспонирует итоговую суммарную высоту (для min-height-распорки колонки).
 
-`Array<{ id; anchorTop; height }>` → `Map<id, top>` — непересекающиеся вертикальные позиции
-с сохранением порядка («магия Word»: при наезде карточка толкается вниз; при фокусе можно
-сдвинуть к точной высоте якоря). Полностью чистая, центральный объект тестирования.
+### 4.4. `highlight-controller.ts` + ОБЯЗАТЕЛЬНЫЙ оверлей-фолбэк
+Подсветка `Range[]`:
+- **Основной путь:** CSS Custom Highlight API (`CSS.highlights.set("annotation", …)`), ноль
+  мутаций DOM. `setActive(range)` — отдельный слой `annotation-active`, отличающийся **вторым
+  визуальным каналом** (underline/outline через `::highlight()`), а не только альфой — иначе
+  active неотличим от перекрытия.
+- **Фолбэк (реализуется в v1, не «опционально»):** при отсутствии `CSS.highlights` —
+  оверлей-`<div>` из `range.getClientRects()` в абсолютном слое, репозиция на resize/scroll/fonts.
+  Ценность фичи («видеть подсветку») явно требовалась пользователем → молчаливая деградация
+  без подсветки недопустима на части браузеров (старый iOS-Safari/Firefox).
+- **Перекрытия аннотаций — известное ограничение v1:** все диапазоны в одном highlight красятся
+  плоским объединением, границы отдельных заметок не видны. Зафиксировано (§13). Дизамбигуация
+  при клике — через хит-тест (§5.4).
 
-### 4.4. `highlight-controller.ts`
+### 4.5. `hit-test.ts` (для двустороннего клика)
+Точка клика (x,y) в контент-руте → `noteId | null`: `document.caretRangeFromPoint`/
+`caretPositionFromPoint` → проверка, какой из note-`Range` накрывает позицию. Чистая (given DOM).
 
-Императивный контроллер подсветки поверх `Range`'ов:
+## 5. React-слой движка
 
-- `apply(ranges)` — через CSS Custom Highlight API (`CSS.highlights.set("annotation", new Highlight(...))`).
-- `clear()` — снять (reading-mode / unmount).
-- `setActive(id)` — выделенная подсветка активной заметки (отдельный `::highlight()` слой).
-- **Фолбэк:** если `CSS.highlights` недоступен (старый Firefox) — оверлей-`<div>` из
-  `range.getClientRects()` в абсолютном слое; репозиция на resize/scroll. Если и это
-  отключено — деградация до «панель без подсветки» (функция сохранения не страдает).
+### 5.1. Захват выделения (тач + клавиатура)
+Источник — **`selectionchange`** (дебаунс ~250мс) как первичный + `pointerup`/`touchend` как
+«выделение завершено». НЕ только `mouseup` (это desktop-mouse-only — провал v1-требования).
+`selectionchange` автоматически покрывает и клавиатурное выделение (Shift+стрелки). Guard на
+программное снятие (`removeAllRanges` сам диспатчит `selectionchange`).
 
-## 5. React-слой движка («то, что инжектится»)
+### 5.2. Доступный аффорданс создания
+- **Координатный тултип** (`<SelectionAffordance>`, портал) — визуальное усиление для мыши/тача,
+  у выделения. Позиционируется от `selection.getRangeAt(0).getBoundingClientRect()`. Прячется на
+  scroll/resize/снятии выделения.
+- **Фокус-достижимая кнопка** «Аннотировать выделение» в шапке колонки, активна при непустом
+  выделении в контент-руте — клавиатурный путь (тултип по координатам Tab-ом недостижим).
+- `aria-live="polite"` анонс появления; `aria-label` с цитатой фрагмента.
 
-### 5.1. `<AnnotationLayer>`
+### 5.3. Позиционирование карточек (РЕДИЗАЙН — был блокер v1)
+v1-схема (`anchorTop = rect.top + scrollY − 0`) была геометрически сломана: измерение в
+координатах документа, применение — в offset-родителе другой колонки → постоянный сдвиг `Y_col`.
 
-Оркестратор. Props (доменно-агностичны):
+**v2-схема:** измерять Y якоря **относительно контейнера колонки** (общий референс):
+`topCSS = textRect.top − columnRect.top` (оба `getBoundingClientRect()` в одной вьюпорт-системе;
+`scrollY`/header сокращаются). Измерение живёт **внутри** `MarginNotesColumn` (где есть ref на
+`relative`-контейнер), либо `columnRef` пробрасывается в движок.
+- **Реактивность:** `ResizeObserver` на контент-рут И колонку + слушатели `resize` +
+  `document.fonts.ready` + `load` картинок → пересчёт. Без этого смена оси шрифта/плотности
+  (appearance) или догрузка картинок ломают привязку.
+- **Narrow-гард:** `matchMedia("(min-width: 80rem)")` — на узких НЕ применять абсолют (чистый
+  поток-список), иначе абсолютные `top` дают мусор в схлопнутой колонке.
+- **Распорка:** `min-height` контейнера = суммарная высота стека (из `stacking`), иначе
+  абсолютные карточки схлопывают контейнер в 0 и наезжают на соседний контент.
+- Подсветка (CSS Highlight / оверлей) и карточки репозиционируются от **одного** источника
+  геометрии → не расходятся.
 
-```ts
-interface AnnotationLayerProps {
-  contentRef: RefObject<HTMLElement>;     // контент-рут с data-block-id блоками
-  notes: AnchoredNote[];                  // из SSR-данных фичи
-  renderNote: (note: AnchoredNote) => ReactNode;  // фича рисует карточку
-  highlightEnabled: boolean;
-  canCreate: boolean;
-  onCreateRequest: (draft: AnchorDraft) => void;   // фича открывает свою модалку
-  side?: "start" | "end";                 // дефолт "end"
-  toolbarLabel: string;                   // i18n из фичи
-}
-```
-
-- Подписка на `selectionchange` + `mouseup` (дебаунс), вычисление `AnchorDraft` через
-  `anchor-from-selection`.
-- При валидном выделении и `canCreate` → показывает `<SelectionToolbar>` у `rect`.
-- Клик по тулбару → `onCreateRequest(draft)` (модалку владеет **фича**, не движок).
-- Для каждой `note` → `anchor-to-range` → подсветка (если `highlightEnabled`) + позиция
-  карточки в колонке через `stacking`.
-- Двусторонний клик: клик по подсветке → `setActive` + скролл карточки; клик по карточке →
-  `setActive` + скролл/вспышка фрагмента.
-- Сироты (`anchor-to-range` → `null`) → карточка в начале колонки с пометкой, без подсветки.
-
-### 5.2. `<SelectionToolbar>`
-
-Плавающая кнопка (kit `Button`) в портале, спозиционированная по `rect` выделения. Скрывается
-при снятии выделения / scroll.
-
-### 5.3. `<MarginNotesColumn>`
-
-Контейнер-колонка (рендерится в поле `.col-margin-end` через грид `.page-grid`). Позиционирует
-карточки абсолютно по результату `stacking`. Контент карточки — `renderNote(note)` от фичи.
-Движок владеет геометрией, фича — содержимым.
+### 5.4. Двусторонний клик (отдельная задача v1)
+- Клик по контент-руту → `hit-test` → `noteId` → `setActive` + скролл карточки.
+- Клик по карточке → `setActive(range)` + скролл фрагмента. Скролл — `behavior` зависит от
+  `useReducedMotion()` (ось motion=reduced глушит smooth). «Вспышка» — не CSS-keyframes (их
+  убьёт motion-гард на `*` и `::highlight` им не подвластен), а таймерный свап active-слоя; при
+  reduced — статичная подсветка без мигания.
 
 ## 6. Обвязка фичи `src/features/annotations/`
 
-Дополняем существующий слайс (CRUD/RBAC/форма уже есть), **не переписываем**.
+### 6.1. Урезанный AST-ввод (подтверждено по коду)
+Модалка = `Dialog` + существующая `AnnotationCreateForm` с `entityContext="annotation"` (уже
+так). Урезание набора блоков диктует бэк через `/api/ast/schema` (level `annotation`); FE ничего
+не хардкодит. Контекст уходит бэку **через сам роут** `/api/{entity}/{id}/annotations` — бэк
+применяет `ast.ValidateForContext` для аннотаций. Отдельного поля профиля в `CreateRequest` нет
+и не требуется. Форма монтируется внутри `SchemaContextProvider` с серверно-гидрированной схемой.
+Добавляем: приём `anchor` пропом + скрытое поле; колбэк `onSuccess`/`onClose` (закрыть модалку).
 
-### 6.1. Новый клиентский компонент-связка
+### 6.2. SSR-фолбэк (ИСПРАВЛЕН — был баг v1)
+v1 прятал якорённые карточки за `mounted` → их не было в SSR/no-JS HTML (противоречие §6.3, удар
+по SEO/a11y). **v2:** server-компонент рендерит ВСЕ карточки (anchored+unanchored) обычным
+списком — это zero-JS/узко-экранный/индексируемый базис. Клиент **только улучшает** существующие
+узлы (позиционирует + подсвечивает), а НЕ создаёт контент. `mounted` управляет лишь
+позиционированием/подсветкой, не существованием карточек.
 
-`ui/document-annotation-layer.tsx` (`"use client"`):
+### 6.3. Общий сборщик карточек (DRY)
+Логика сбора карточек (RBAC + schema + `AnnotationCard` с действиями) выносится в общий
+server-хелпер, потребляемый и `AnnotationsSection` (list-режим glossary/media), и
+`DocumentAnnotations` (margin-режим). Не клонировать (v1 дублировал).
 
-- Получает initial-список аннотаций (SSR-проп) и мапит `annotation.Anchor` → `TextAnchor`.
-- Рендерит `<AnnotationLayer>` с `contentRef` на тело документа.
-- `renderNote` → существующий `AnnotationCard` (+ `AnnotationAnchorContext` для цитаты).
-- `onCreateRequest(draft)` → открывает `<Dialog>` с формой создания.
-- `highlightEnabled` ← локальный тумблер (`localStorage`, дефолт `true`).
-- `canCreate` ← булев-проп от server-компонента (`canCreateAnnotation(me)`).
+### 6.4. Поток после создания
+`createAnnotation` → `revalidateEntity` + форма закрывает модалку (`onClose`) и вызывает
+`router.refresh()` (server-снимок карточек обновляется только через refetch родителя; одного
+`revalidateEntity` мало). Документируется как требование.
 
-### 6.2. Модалка создания
+### 6.5. Discovery контент-рута (укреплён)
+Вместо глобального `querySelector('[data-annotation-content]')` + гонки `useMemo` по стабильному
+ref — обернуть контент-рут клиентской обёрткой с **реальным React-ref** и пробросить его (или
+через контекст). Пересчёт подсветки/позиций завязать на `mounted`/ref-готовность.
 
-`Dialog` (kit) оборачивает вариант существующей `AnnotationCreateForm`:
+### 6.6. Reading-mode тумблер
+Кнопка в шапке колонки прячет подсветку (и опц. колонку). `localStorage`, дефолт on.
 
-- Форма получает `anchor: TextAnchor` пропом и рендерит **скрытое поле** `anchor` (JSON).
-  Сейчас форма осознанно не задаёт anchor ([annotation-create-form.tsx:31-32](../../src/features/annotations/ui/annotation-create-form.tsx)) —
-  добавляем `<input type="hidden" name={f("anchor")} value={JSON.stringify(anchor)} />`.
-- Над формой — цитата выделенного фрагмента как контекст (переиспользуем
-  `AnnotationAnchorContext`).
-- `schemas.ts`: убедиться, что есть `makeAnchorJsonSchema` (парс JSON → объект, кастомные
-  ошибки), привязать поле `anchor` к `CreateRequest`. Бэк-валидация — финальная (422
-  `ANCHOR_INVALID`).
-- `actions.ts` `createAnnotation` уже шлёт `anchor` если он есть; на сохранении —
-  `revalidateEntity` → SSR-список обновляется → слой перечитывает.
+### 6.7. Семантика для AT
+Аннотированность текста для скринридера живёт НЕ в CSS-подсветке (чистый пиксель), а в
+**SSR-списке карточек + цитата** (`AnnotationAnchorContext` показывает prefix/exact/suffix).
+Зафиксировано как a11y-канал v1; опц. `aria-details` от обёртки фрагмента к карточке — follow-up.
 
-### 6.3. Прогрессивное улучшение / SSR
+## 7. DOM-контракт (foundation-касание)
 
-- **Сервер** рендерит аннотации обычным списком (текущий `AnnotationsSection`) — это zero-JS
-  и узко-экранный вид (доступно, индексируемо).
-- **Клиент** `<AnnotationLayer>` получает те же данные и улучшает список в позиционированную
-  колонку на ≥1280px (грид-поля `.page-grid` / `MarginNote`).
-- На узких экранах подсветка работает, колонка деградирует до списка снизу.
-
-### 6.4. Reading-mode тумблер
-
-Кнопка в шапке колонки: прячет подсветку (и опц. колонку). Состояние в `localStorage`,
-дефолт — включено. Движок получает только `boolean`; поднятие до оси appearance в будущем
-не затронет движок (только проводок).
-
-## 7. DOM-контракт (foundation-касание — флагуется)
-
-Движку нужен стабильный якорь в DOM: каждый блок должен нести `data-block-id`. Сейчас
-`block.id` идёт только в React-`key`, в DOM не попадает
-([block-renderer.tsx](../../src/components/ast-render/block-renderer.tsx)).
-
-**Изменение:** аддитивно добавить `data-block-id={block.id}` на корневой элемент каждого
-блока в `BlockRenderer` (paragraph/heading/list/list_item/blockquote/code_block/table/image).
-
-Это касание **shared-компонента `src/components/ast-render/`** (foundation-зона по AGENTS.md) —
-безопасное и аддитивное (новый data-атрибут, поведение не меняется), но фиксируется как
-**foundation-часть** работы, не «внутри фичи». Контракт: «контент-рут содержит элементы с
-`data-block-id`, текст блока = конкатенация его текстовых узлов».
+`data-block-id={block.id}` на блоках, несущих текст: paragraph/heading/list_item/blockquote/
+code_block (и вложенные). **НЕ ставить на `<table>`** (ячейки без id → `closest` поднялся бы до
+таблицы и дал мусорный якорь по всему textContent; лучше честный `null`). **`<image>` — не менять
+DOM-структуру** (без обёрток). Контракт: «контент-рут содержит элементы с `data-block-id`; текст
+блока = конкатенация его текстовых узлов (+`\n` за `<br>`)». Касание `src/components/ast-render/`
+— foundation, аддитивно, флагуется. Открытый FE-вопрос: вложенные блоки (параграфы в
+list_item/blockquote) должны нести стабильный `block.id` — проверить на реальных данных; если у
+части нет id, анкоринг ограничен блоками с id.
 
 ## 8. Устойчивость anchor / сироты
 
-- Якорь хранит и `block_id`+`char` (точный), и цитату `exact`/`prefix`/`suffix` (устойчивый
-  фолбэк). Ре-анкоринг — сперва по id+char, затем по цитате (§4.2).
-- Если документ отредактирован и фрагмент исчез → `anchor-to-range` = `null` → карточка-сирота
-  в начале колонки с цитатой и пометкой «фрагмент не найден», без подсветки. Данные не теряются.
+Хранит `block_id`+`char` (точный, UTF-16) и цитату `exact`/`prefix`/`suffix` (фолбэк). Бэк хранит
+anchor «opaquely» (не нормализует) → FE — источник истины для `exact`. Не разрешился →
+карточка-сирота в начале колонки с цитатой и пометкой, без подсветки.
 
-## 9. Вопросы к бэкенду (правило «корень на бэке»)
+## 9. Контракт с бэком (статус после фиксов 2026-06-24)
 
-1. **Единицы `start_char`/`end_char`** — UTF-16 code units или руны (Go-байты/руны)? Должны
-   совпасть точно (эмодзи/суррогаты), иначе подсветка съезжает. Цитата `exact` страхует, но
-   офсеты должны быть детерминированы.
-2. **Дрейф anchor при правке документа** — бэк пересчитывает/мигрирует якоря при изменении тела,
-   или хранит как есть, а FE сам ре-анкорит по цитате? От ответа зависит частота «сиротского» пути.
-3. **Per-entity роуты** `GET/POST /api/{entity}/{id}/annotations` отсутствуют в OpenAPI
-   (`src/api/schema.ts`) — типизируются вручную в `types.ts`. Просьба внести в контракт.
+- ✅ **Единицы офсетов — РЕШЕНО.** Схема дословно: `start_char`/`end_char` — «UTF-16 code units
+  (JS String.length / DOM Range semantics). Stored opaquely.» Совпадает с ядром; конверсия не
+  нужна; бэк не нормализует.
+- ✅ **Per-entity роуты — РЕШЕНО.** `/api/documents/{id}/annotations` и др. теперь в OpenAPI
+  (`schema.ts`); фикция `/api/entities/{type}/...` удалена. Следствие: **снять ручной-fetch
+  стопгап** в `actions.ts`/`api.ts`, перейти на типизированный клиент (по правилу AGENTS «корень
+  починен → убрать обход»). Новые коды ошибок: `BLOCKS_HAVE_ANCHORS`, `IDEMPOTENCY_KEY_IN_USE`.
+- ✅ **Нормализация `exact` — РЕШЕНО** (de facto): «stored opaquely» → бэк не трогает, FE владеет.
+- ⚠️ **Открыто (FE-проверка, не блокер):** имеют ли вложенные блоки (param в list_item/blockquote)
+  стабильный персистентный `id` в `document.blocks[].content[].id`. Проверить на данных; влияет на
+  глубину анкоринга. Если нет — анкоринг по top-level блокам с id.
 
-## 10. Тестирование
+## 10. Токен подсветки (foundation)
 
-Ядро движка — плотные юнит-тесты (Vitest + jsdom):
+Завести `--color-highlight` (+ `--color-highlight-active`) в генераторе токенов
+(`src/styles/tokens/`), 4 комбо тема×контраст, и добавить APCA-пары `fg`-on-highlight в
+`CONTRAST_PAIRS` (`apca-targets.ts`) — чтобы CI-гард покрыл читаемость текста на подсветке.
+Переиспользование `--color-accent` (амбер primary) отклонено: семантический конфликт + вне
+APCA-гарантий. Это отдельное foundation-касание токенов (координированно по AGENTS).
 
-- `anchor-from-selection`: офсеты при inline-форматировании; кросс-блочные выделения;
-  collapsed/вне-рута → `null`; извлечение `exact`/`prefix`/`suffix`.
-- `anchor-to-range`: точный путь (id+char); фолбэк по цитате; сирота → `null`.
-- `stacking`: наезды → раздвижка; сохранение порядка; пустой/одиночный вход; фокус-сдвиг.
-- `highlight-controller`: применение/очистка; ветка фолбэка (мок отсутствия `CSS.highlights`).
+## 11. Тестирование
 
-Дельта фичи:
+Ядро (Vitest+jsdom): `stacking` (наезды/порядок/сумма); `dom-text` (офсеты, `<br>`→\n,
+**кириллица + эмодзи** — UTF-16); `anchor-from` (одно/кросс-блок, collapsed, контекст);
+`anchor-to` (точный путь, фолбэк-дизамбигуация **дубликатов**, сирота, `CSS.escape`-guard);
+`highlight-controller` (apply/clear, фолбэк-ветка); `hit-test`; мапперы anchor.
+Дельта фичи: `permissions.test.ts`/`schemas.test.ts` (anchor JSON).
+**Честно:** позиционная геометрия (`getBoundingClientRect`/`Range.getBoundingClientRect` —
+в jsdom бросает/нули) НЕ юнит-тестируема → ручной браузер-QA (фиксируется явно).
 
-- `permissions.test.ts` / `schemas.test.ts` — для `anchor` JSON-схемы (min 1 success + 1 failure).
+## 12. Фазировка
 
-## 11. Фазировка (для implementation-плана)
+1. Ядро (`stacking`/`dom-text`/`anchor-from`/`anchor-to`/`highlight-controller`/`hit-test`) + тесты.
+2. DOM-контракт `data-block-id` (foundation, без table).
+3. Foundation-токен `--color-highlight` + APCA-пара.
+4. React-слой: захват (selectionchange+touch+keyboard), аффорданс, позиционирование (референс+RO+
+   narrow+strut), подсветка + оверлей-фолбэк.
+5. Двусторонний клик (hit-test + setActive + скролл reduced-motion).
+6. Обвязка: общий сборщик карточек, SSR-фолбэк, ref-discovery, урезанная модалка + onClose,
+   reading-mode, AT-семантика. Снять ручной-fetch стопгап (типизированный клиент).
+7. Монтаж на странице + ручной браузер/тач/RTL/a11y-QA.
 
-1. **Ядро движка** — чистая логика (`anchor-from-selection`, `anchor-to-range`, `stacking`,
-   `highlight-controller`) + юнит-тесты. Без UI.
-2. **DOM-контракт** — `data-block-id` в `ast-render` (foundation, аддитивно).
-3. **React-слой движка** — `<AnnotationLayer>` + `<SelectionToolbar>` + `<MarginNotesColumn>`.
-4. **Обвязка фичи** — связка-компонент, модалка на базе `AnnotationCreateForm` + скрытый anchor,
-   SSR-фетч, RBAC-булевы, двусторонний клик, reading-mode тумблер.
-5. **Полировка** — сироты, RTL, a11y (роли/фокус/клавиатура для тулбара и карточек), узкие
-   экраны, наведение/активное состояние подсветки.
+## 13. Вне scope / известные ограничения v1
 
-## 12. Вне scope (явно)
+- **Перекрытия аннотаций** красятся плоским объединением (границы не видны); дизамбигуация —
+  только хит-тестом при клике. Полноценная визуализация перекрытий — follow-up.
+- **Печать/PDF:** CSS Highlight не печатается → аннотированность на бумаге несёт SSR-список
+  карточек (с цитатами), не in-text подсветка.
+- Офлайн-создание (slice A — пауза); media-interval якоря; глоссарий/комменты как поверхности
+  (движок готов, подключение — отдельно); поднятие reading-mode до оси appearance.
 
-- Офлайн-создание аннотаций (slice A офлайн-write — на паузе).
-- Media-interval якоря (видео-транскрипты) — движок проектируется расширяемым, но v1 = только
-  text-range на документах.
-- Глоссарий/комментарии как поверхности — движок доменно-агностичен и готов к ним, но
-  подключение — отдельная работа.
-- Поднятие reading-mode до оси appearance.
-- Редактирование/удаление из колонки сверх существующего CRUD (используем готовые действия).
+## 14. Инвентарь файлов
 
-## 13. Инвентарь файлов
+**Движок `src/components/annotation-layer/`:** `types.ts`, `stacking.ts`, `dom-text.ts`,
+`anchor-from-selection.ts`, `anchor-to-range.ts`, `highlight-controller.ts`, `hit-test.ts`
+(+ тесты); `annotation-layer.tsx`, `selection-affordance.tsx`, `margin-notes-column.tsx`,
+`highlight-overlay.tsx`, `index.ts`.
 
-**Новое — движок (`src/components/annotation-layer/`):**
+**Foundation:** `ast-render/block-renderer.tsx` (+ тест) — `data-block-id`;
+`styles/tokens/*` + `apca-targets.ts` — `--color-highlight`; `app/globals.css` — `::highlight`.
 
-- `types.ts` — `TextAnchor`, `AnchoredNote`, `AnchorDraft`.
-- `anchor-from-selection.ts` + тест.
-- `anchor-to-range.ts` + тест.
-- `stacking.ts` + тест.
-- `highlight-controller.ts` + тест.
-- `annotation-layer.tsx` — `<AnnotationLayer>`.
-- `selection-toolbar.tsx` — `<SelectionToolbar>`.
-- `margin-notes-column.tsx` — `<MarginNotesColumn>`.
-- `index.ts` — публичный barrel.
+**Обвязка `src/features/annotations/`:** `anchor.ts` (мапперы), `ui/annotation-create-form.tsx`
+(anchor-проп + onClose), `ui/annotation-composer-dialog.tsx`, `ui/document-annotation-layer.tsx`,
+`ui/document-annotations.tsx`, `ui/annotation-cards-builder.tsx` (общий сборщик), `actions.ts`/
+`api.ts` (типизированный клиент вместо ручного fetch), `index.ts`.
 
-**Изменения — `src/components/ast-render/`:**
+**Страница:** `app/documents/[id]/page.tsx` — client-обёртка контент-рута + монтаж.
 
-- `block-renderer.tsx` — `data-block-id` на блоках (foundation).
-
-**Изменения/новое — `src/features/annotations/`:**
-
-- `ui/document-annotation-layer.tsx` — `"use client"` связка движок↔домен.
-- `ui/annotation-create-form.tsx` — приём `anchor` пропом + скрытое поле.
-- `ui/annotation-composer-dialog.tsx` — модалка-обёртка формы.
-- `schemas.ts` — `anchor` JSON-поле (если ещё нет).
-- `anchor.ts` — `annotation.Anchor` ↔ `TextAnchor` мапперы (рядом с `buildTextAnchor`).
-- `index.ts` — экспорт нового связка-компонента.
-
-**Изменения — страница:**
-
-- `src/app/documents/[id]/page.tsx` — монтаж связка-компонента (передать `contentRef`/данные/`canCreate`).
-
-**i18n:** ключи тулбара/модалки/тумблера/сирот в каталогах `ru`/`en`/`ar`/`zh` (+ псевдо en-XA).
+**i18n:** ключи в `messages/{ru,en,ar,zh}/annotations.ts` (pseudo en-XA — авто из en).
