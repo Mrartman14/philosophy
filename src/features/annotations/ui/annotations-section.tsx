@@ -8,12 +8,8 @@ import { getAnnotationsFor } from "../api";
 import { canCreateAnnotation, canEditAnnotation } from "../permissions";
 import type { ParentEntityType } from "../types";
 
-import { AnnotationAnchorContext } from "./annotation-anchor-context";
-import { AnnotationCard } from "./annotation-card";
+import { buildAnnotationCards } from "./annotation-cards-builder";
 import { AnnotationCreateForm } from "./annotation-create-form";
-import { AnnotationDeleteButton } from "./annotation-delete-button";
-import { AnnotationEditButton } from "./annotation-edit-button";
-import { AnnotationExportLinks } from "./annotation-export-links";
 
 interface Props {
   parentEntityType: ParentEntityType;
@@ -41,6 +37,10 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
     canCreate || items.some((a) => Boolean(a.id) && canEditAnnotation(me, a));
   const astSchema = needsSchema ? await getAstSchema() : null;
 
+  // Сборка карточек вынесена в общий server-хелпер (DRY: тот же билдер питает
+  // margin-режим DocumentAnnotations). Секция отвечает лишь за list-каркас.
+  const cards = buildAnnotationCards({ items, me, astSchema });
+
   return (
     <section className="flex flex-col gap-4" aria-label={t("sectionLabel")}>
       <h2 className="text-lg font-semibold">{t("sectionHeading")}</h2>
@@ -49,31 +49,9 @@ export async function AnnotationsSection({ parentEntityType, parentId }: Props) 
         <p className="text-sm text-(--color-fg-muted)">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {items.map((a) => {
-            const ownEditable = canEditAnnotation(me, a);
-            return (
-              <li key={a.id}>
-                <AnnotationCard
-                  annotation={a}
-                  anchorContext={<AnnotationAnchorContext anchor={a.anchor} />}
-                  actions={
-                    <>
-                      {a.id && <AnnotationExportLinks id={a.id} />}
-                      {ownEditable && a.id && (
-                        <>
-                          <AnnotationEditButton
-                            annotation={a}
-                            initial={astSchema ?? undefined}
-                          />
-                          <AnnotationDeleteButton annotationId={a.id} />
-                        </>
-                      )}
-                    </>
-                  }
-                />
-              </li>
-            );
-          })}
+          {cards.map((vm) => (
+            <li key={vm.id}>{vm.card}</li>
+          ))}
         </ul>
       )}
 
