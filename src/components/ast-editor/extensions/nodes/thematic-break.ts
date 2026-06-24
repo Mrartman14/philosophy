@@ -1,5 +1,7 @@
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 
+import { domSpecFromNode } from "../render-from-map";
+
 /**
  * AST `thematic_break` ↔ Tiptap HorizontalRule.
  * The Tiptap node-name for HorizontalRule is "horizontalRule" by default;
@@ -8,6 +10,11 @@ import HorizontalRule from "@tiptap/extension-horizontal-rule";
  */
 export const ThematicBreakExt = HorizontalRule.extend({
   name: "thematic_break",
+
+  // node→DOM делегируется единой карте: `<hr data-block-id>` (лист, без HOLE).
+  renderHTML({ node }) {
+    return domSpecFromNode(node.type.name, node.attrs);
+  },
 
   addAttributes() {
     return {

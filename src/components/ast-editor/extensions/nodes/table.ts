@@ -1,4 +1,6 @@
-import { Node, mergeAttributes } from "@tiptap/core";
+import { Node } from "@tiptap/core";
+
+import { domSpecFromNode } from "../render-from-map";
 
 /**
  * AST table tree: table > table_row+ > table_cell > (text | hard_break)*.
@@ -34,8 +36,17 @@ export const TableExt = Node.create({
     return [{ tag: "table" }];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["table", mergeAttributes(HTMLAttributes), ["tbody", 0]];
+  // node→DOM делегируется единой карте: `<table>` > `<tbody>` (HOLE). Карта НЕ
+  // несёт `data-block-id` (table — read-нода без id-attr в карте), но в
+  // редакторе table — верхнеуровневый Block и хранит blockId для round-trip —
+  // накладываем его СВЕРХУ через HTMLAttributes на структурную базу.
+  renderHTML({ node, HTMLAttributes }) {
+    const spec = domSpecFromNode(node.type.name, node.attrs);
+    if (!Array.isArray(spec)) {
+      return spec;
+    }
+    const [tag, base, ...rest] = spec as [string, Record<string, string>, ...unknown[]];
+    return [tag, { ...base, ...HTMLAttributes }, ...rest] as typeof spec;
   },
 });
 
@@ -58,11 +69,9 @@ export const TableRowExt = Node.create({
     return [{ tag: "tr" }];
   },
 
-  renderHTML({ HTMLAttributes, node }) {
-    const attrs = mergeAttributes(HTMLAttributes, {
-      ...(node.attrs.header ? { "data-header": "true" } : {}),
-    });
-    return ["tr", attrs, 0];
+  // node→DOM делегируется единой карте: `<tr data-header?>`.
+  renderHTML({ node }) {
+    return domSpecFromNode(node.type.name, node.attrs);
   },
 });
 
@@ -88,7 +97,11 @@ export const TableCellExt = Node.create({
     return [{ tag: "td" }, { tag: "th" }];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["td", mergeAttributes(HTMLAttributes), 0];
+  // node→DOM делегируется единой карте: `<td data-align?>`. Редактор всегда
+  // рендерит `<td>` (карта `table_cell` → td); `<th>` для header-строк — это
+  // read-only апгрейд (per-node renderHTML не знает родителя). Зафиксированная
+  // законная дивергенция edit↔read.
+  renderHTML({ node }) {
+    return domSpecFromNode(node.type.name, node.attrs);
   },
 });

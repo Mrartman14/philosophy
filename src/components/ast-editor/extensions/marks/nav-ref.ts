@@ -1,5 +1,7 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 
+import { domSpecFromMark } from "../render-from-map";
+
 const NAV_MARK_TYPES = [
   "glossary_ref",
   "document_ref",
@@ -41,12 +43,23 @@ export function createNavRefMark(type: NavMarkType) {
       return [{ tag: `span[data-mark="${type}"]` }];
     },
 
-    renderHTML({ HTMLAttributes }) {
-      return [
-        "span",
-        mergeAttributes(HTMLAttributes, { "data-mark": type, class: `nav-ref nav-ref--${type}` }),
-        0,
-      ];
+    // mark→DOM делегируется единой карте: структурная база `<a href data-mark
+    // class>` (зафиксированная унификация span→a, edit И read). Карта НЕ несёт
+    // ~11 anchor round-trip attrs (id, start_block_id, start_char, …) —
+    // редактор кладёт их через дефолтный рендер attrs в HTMLAttributes;
+    // накладываем структурную базу СВЕРХУ, чтобы href/class/data-mark
+    // унифицировались, а round-trip attrs выжили. Фолбэк (пустой id → карта
+    // вернула null): прежнее поведение — `<span>` с round-trip attrs.
+    renderHTML({ mark, HTMLAttributes }) {
+      const base = domSpecFromMark(mark.type.name, mark.attrs);
+      if (base === null) {
+        return [
+          "span",
+          mergeAttributes(HTMLAttributes, { "data-mark": type, class: `nav-ref nav-ref--${type}` }),
+          0,
+        ];
+      }
+      return ["a", { ...HTMLAttributes, ...base[1] }, 0];
     },
   });
 }
