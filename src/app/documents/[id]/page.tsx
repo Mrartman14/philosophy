@@ -116,7 +116,11 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         </aside>
       )}
 
-      <MarginNote side="end" grow className="p-6">
+      {/* px-0 на ≥xl: на широких единый горизонтальный отступ от хребта даёт
+          грид-гаттер (--layout-gutter), как у TOC-сайдбара (.margin-nav: padding 0
+          на ≥xl) — паддинг панели больше не задваивается с гаттером. На узких
+          (панель втекает в поток, гаттера нет) — собственный p-6. */}
+      <MarginNote side="end" grow className="p-6 xl:px-0">
         {document.id ? (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={document.id} />
