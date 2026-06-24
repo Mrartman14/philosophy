@@ -1,5 +1,6 @@
 "use client";
 import type { Editor } from "@tiptap/core";
+import { useEditorState } from "@tiptap/react";
 import { useRef, useState } from "react";
 
 import { LinkIcon } from "@/assets/icons/link-icon";
@@ -19,6 +20,11 @@ export function LinkPopover({ editor, schema }: Props) {
   const [href, setHref] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Реактивное активное состояние ссылки через useEditorState (см. inline-marks).
+  const isActive = useEditorState({
+    editor,
+    selector: ({ editor: e }) => e.isActive("link"),
+  });
 
   if (!schema.marks.has("link")) return null;
 
@@ -72,8 +78,6 @@ export function LinkPopover({ editor, schema }: Props) {
       onApply();
     }
   };
-
-  const isActive = editor.isActive("link");
 
   const handleRemove = () => {
     editor.chain().focus().unsetMark("link").run();

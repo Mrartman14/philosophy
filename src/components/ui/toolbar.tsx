@@ -33,7 +33,12 @@ const Button = forwardRef<
       ref={ref}
       className={cn(
         "inline-flex h-9 min-w-9 items-center justify-center rounded px-2 transition",
-        "hover:bg-(--color-surface-subtle) aria-pressed:bg-(--color-surface-subtle)",
+        "hover:bg-(--color-surface-subtle)",
+        // Активное (выбранное) состояние — инверсная заливка, тот же язык, что
+        // у IconButton tone="primary" (bg-fg / text-surface). Отдельно от hover,
+        // чтобы «формат включён» читался сразу; на hover активной кнопки — opacity-90.
+        "aria-pressed:bg-(--color-fg) aria-pressed:text-(--color-surface)",
+        "aria-pressed:hover:bg-(--color-fg) aria-pressed:hover:opacity-90",
         "disabled:opacity-50",
         FOCUS_RING_CONTROL,
         className as string,

@@ -1,5 +1,6 @@
 "use client";
 import type { Editor } from "@tiptap/core";
+import { useEditorState } from "@tiptap/react";
 
 import { Select } from "@/components/ui/select";
 import { useT } from "@/i18n/client";
@@ -27,6 +28,8 @@ function getActive(editor: Editor): Value {
 
 export function HeadingSelect({ editor, schema, context }: Props) {
   const t = useT("editor");
+  // Реактивный активный уровень заголовка через useEditorState (см. inline-marks).
+  const active = useEditorState({ editor, selector: ({ editor: e }) => getActive(e) });
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
   if (!allowed.has("heading")) return null;
@@ -41,7 +44,6 @@ export function HeadingSelect({ editor, schema, context }: Props) {
     { label: t("heading6"), value: "h6" },
   ];
 
-  const active = getActive(editor);
   const onChange = (v: string) => {
     if (!v) return;
     if (v === "paragraph") {

@@ -1,5 +1,6 @@
 "use client";
 import type { Editor } from "@tiptap/core";
+import { useEditorState } from "@tiptap/react";
 
 import { ListBulletIcon } from "@/assets/icons/list-bullet-icon";
 import { ListOrderedIcon } from "@/assets/icons/list-ordered-icon";
@@ -16,6 +17,18 @@ interface Props {
 
 export function ListButtonsGroup({ editor, schema, context }: Props) {
   const t = useT("editor");
+  // Реактивное активное состояние через useEditorState (см. inline-marks).
+  const active = useEditorState({
+    editor,
+    selector: ({ editor: e }) => {
+      const itemChecked = (e.getAttributes("list_item") as { checked?: boolean | null } | undefined)?.checked;
+      return {
+        bullet: e.isActive("list", { ordered: false }),
+        ordered: e.isActive("list", { ordered: true }),
+        task: e.isActive("list_item") && itemChecked != null,
+      };
+    },
+  });
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
   if (!allowed.has("list")) return null;
@@ -34,28 +47,25 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
     }
   };
 
-  const itemChecked = (editor.getAttributes("list_item") as { checked?: boolean | null } | undefined)?.checked;
-  const isTaskActive = editor.isActive("list_item") && itemChecked != null;
-
   return (
     <Toolbar.Group>
       <Toolbar.Button
         aria-label={t("bulletList")}
-        aria-pressed={editor.isActive("list", { ordered: false })}
+        aria-pressed={active.bullet}
         onClick={() => { toggle(false); }}
       >
         <ListBulletIcon />
       </Toolbar.Button>
       <Toolbar.Button
         aria-label={t("orderedList")}
-        aria-pressed={editor.isActive("list", { ordered: true })}
+        aria-pressed={active.ordered}
         onClick={() => { toggle(true); }}
       >
         <ListOrderedIcon />
       </Toolbar.Button>
       <Toolbar.Button
         aria-label={t("checkList")}
-        aria-pressed={isTaskActive}
+        aria-pressed={active.task}
         onClick={() => { toggle(false, true); }}
       >
         ☐

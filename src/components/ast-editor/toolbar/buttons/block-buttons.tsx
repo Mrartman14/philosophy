@@ -1,5 +1,6 @@
 "use client";
 import type { Editor } from "@tiptap/core";
+import { useEditorState } from "@tiptap/react";
 
 import { CodeBlockIcon } from "@/assets/icons/code-block-icon";
 import { HorizontalRuleIcon } from "@/assets/icons/horizontal-rule-icon";
@@ -18,6 +19,14 @@ interface Props {
 
 export function BlockButtonsGroup({ editor, schema, context }: Props) {
   const t = useT("editor");
+  // Реактивное активное состояние через useEditorState (см. inline-marks).
+  const active = useEditorState({
+    editor,
+    selector: ({ editor: e }) => ({
+      blockquote: e.isActive("blockquote"),
+      codeBlock: e.isActive("code_block"),
+    }),
+  });
   const level = schema.entityContexts[context] ?? "";
   const allowed = new Set(schema.blockLevels[level] ?? []);
   if (
@@ -34,7 +43,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
       {allowed.has("blockquote") && (
         <Toolbar.Button
           aria-label={t("blockquote")}
-          aria-pressed={editor.isActive("blockquote")}
+          aria-pressed={active.blockquote}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
         >
           <QuoteIcon />
@@ -43,7 +52,7 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
       {allowed.has("code_block") && (
         <Toolbar.Button
           aria-label={t("codeBlock")}
-          aria-pressed={editor.isActive("code_block")}
+          aria-pressed={active.codeBlock}
           onClick={() =>
             editor.chain().focus().toggleNode("code_block", "paragraph").run()
           }
