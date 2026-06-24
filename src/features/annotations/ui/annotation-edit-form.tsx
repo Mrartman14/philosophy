@@ -28,6 +28,10 @@ interface Props {
 /**
  * Форма редактирования. Меняются только blocks (visibility иммутабельна —
  * её нет в форме, §6.8). Монтируется под <SchemaContextProvider>.
+ *
+ * anchor ПЕРЕОТПРАВЛЯЕТСЯ скрытым полем (как version) — UpdateRequest на бэке
+ * full-replace с опциональным anchor; без переотправки правка тела открепила бы
+ * якорь (бэк сбросил бы anchor в null).
  */
 export function AnnotationEditForm({ annotation, onSuccess }: Props) {
   const t = useT("annotations");
@@ -54,6 +58,12 @@ export function AnnotationEditForm({ annotation, onSuccess }: Props) {
             FormData в заголовок. НЕ body-ключ схемы → raw name, не f(). */}
         <VersionField version={annotation.version} />
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
+        {/* anchor ПЕРЕОТПРАВЛЯЕТСЯ (сохраняется): UpdateRequest — full-replace
+            с опциональным anchor; без переотправки бэк сбросил бы якорь, и правка
+            тела открепила бы аннотацию. Зеркалит create-форму. */}
+        {annotation.anchor !== undefined && (
+          <input type="hidden" name={f("anchor")} value={JSON.stringify(annotation.anchor)} />
+        )}
         <IdempotencyField result={state} />
 
         <Field name="blocks" label={t("editBodyLabel")} required>
