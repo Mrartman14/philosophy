@@ -114,7 +114,16 @@ export function DocumentAnnotationLayer({ parentId, notes, canCreate }: Props) {
         <AnnotationLayer
           astRootRef={astRootRef}
           notes={engineNotes}
-          renderNote={(n) => cardById.get(n.id) ?? null}
+          renderNote={(n, orphan) => (
+            <>
+              {orphan && (
+                <p className="text-xs text-(--color-fg-muted)">
+                  {t("marginOrphanLabel")}
+                </p>
+              )}
+              {cardById.get(n.id) ?? null}
+            </>
+          )}
           highlightEnabled={highlight}
           canCreate={canCreate}
           onCreateRequest={(d: AnchorDraft) => {
