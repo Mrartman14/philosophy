@@ -136,11 +136,13 @@ blockquote/list в оглавление не идут.)
 
 `<AstToc headings={HeadingEntry[]} label={string} maxLevel?={number} />`:
 
-- Рендерит `<nav aria-label={label}>` с видимым заголовком (тот же `label`) и
+- Рендерит `<nav aria-labelledby={id}>` с видимым заголовком `<p id>{label}` и
   списком якорных ссылок `<a href={"#" + id}>`; вложенность — отступом по
   `level` (мин. уровень в наборе = базовый отступ). Показывает **все
   присутствующие уровни** (h1–h6). `maxLevel` — опциональный потолок (по
-  умолчанию без ограничения), на будущее.
+  умолчанию без ограничения), на будущее. `aria-labelledby` (а не `aria-label` +
+  видимый текст) → один источник лейбла, без дубля для скринридера. Длинный
+  текст: `break-words` + `title={text}` (узкое поле не переполняется).
 - **`label` — проп, а не внутренний i18n-вызов.** Переведённую строку передаёт
   потребитель (страница, server-side `getT`). Так компонент остаётся **полностью
   i18n-агностичным и презентационным** — не знает ни про namespace, ни про
@@ -155,6 +157,10 @@ blockquote/list в оглавление не идут.)
   `useReducedMotion()` (`reduced → "auto"`, иначе `"smooth"`). Чтение motion в
   **обработчике** (рантайм-поведение) — санкционированная область хука; разметку
   ссылок им НЕ гейтим (иначе hydration mismatch — см. docstring хука).
+- **A11y: перенос фокуса на заголовок.** После скролла обработчик ставит
+  `tabindex="-1"` на целевой `<hN>` и `focus({preventScroll:true})`. Иначе
+  нативный якорь на не-фокусируемый заголовок фокус НЕ двигает → клавиатура и
+  скринридер «теряются» (следующий Tab — из навигации, а не из раздела).
 - **Без JS:** ссылки `<a href="#id">` уже в SSR-HTML (Next рендерит клиентские
   компоненты на сервере для initial-HTML) → нативный мгновенный переход к
   заголовку (`scroll-margin-top` глобальный). Scroll-spy и smooth — только
@@ -167,10 +173,13 @@ blockquote/list в оглавление не идут.)
 
 ### 5. Размещение в лейауте
 
-`<AstToc>` рендерит корневой `<aside>` — **прямой потомок** `.page-grid`
-(третий ребёнок фрагмента страницы документа, рядом с `<MarginNote
-side="end">`). Класс: `col-margin-start` + sticky под шапкой на ≥xl +
-**скрыт ниже xl**.
+`<AstToc>` рендерит `<nav>` (агностичен к размещению); **потребитель** оборачивает
+его в `<aside class="margin-nav margin-nav--hide-narrow">` — **прямой потомок**
+`.page-grid` (третий ребёнок фрагмента страницы документа, рядом с `<MarginNote
+side="end">`). `.margin-nav` сам даёт и `grid-column: margin-start / content-start`,
+и sticky под шапкой на ≥xl; `col-margin-start` НЕ нужен (избыточен). На <xl —
+**скрыт полностью**. На ≥xl у сайдбара свой скролл (`max-block-size` + `overflow-y`),
+поэтому длинное оглавление не обрезается.
 
 Переиспользуем sticky/placement-логику `.margin-nav`, добавив в `layout.css`
 минимальный вариант-класс «скрыть на узком экране» (вместо полосы сверху):
@@ -192,7 +201,7 @@ foundation-touch.
 ```tsx
 const headings = extractHeadings(document.blocks ?? []);
 // …в фрагменте, прямым потомком .page-grid:
-<AstToc headings={headings} label={t("tocLabel")} />
+<AstToc headings={headings} label={t("documentToc")} />
 ```
 
 `AstToc` сам вернёт `null`, если заголовков нет.
@@ -226,7 +235,7 @@ document.blocks (сервер)
 
 ## i18n
 
-Лейбл навигации (`tocLabel`: «Содержание» / «On this page» / ar / zh +
+Лейбл навигации (`documentToc`: «Содержание» / «On this page» / ar / zh +
 псевдо en-XA) добавляется в каталог **потребителя** (namespace `pages`) и
 переводится на сервере (`getT("pages")`), затем передаётся в `<AstToc>` пропом
 `label`. Сам компонент `ast-toc` строк в каталоге не заводит и i18n-фасад не
@@ -240,7 +249,8 @@ document.blocks (сервер)
   согласованность фолбэк-id с индексом, пустой ввод.
 - `block-renderer`/`ast-render` снапшот: заголовок несёт `id` (= `block.id`).
 - `ast-toc.test.tsx`: рендер ссылок и вложенности по уровню, `maxLevel`,
-  пустой `headings` → `null`, `aria-label`/`aria-current`, корректные `href`.
+  пустой `headings` → `null`, `aria-labelledby`/`aria-current`, фокус-перенос,
+  `maxLevel`, корректные `href`.
 - scroll-spy под jsdom: мок `IntersectionObserver`, проверка переключения
   активной ссылки; ветка reduced-motion (без smooth).
 - Гейт перед PR: `pnpm lint && pnpm test && pnpm build` — зелёные.
@@ -263,7 +273,7 @@ document.blocks (сервер)
 - `src/app/documents/[id]/page.tsx` — подключение `<AstToc>` + `getT` лейбла.
 - `src/styles/layout.css` — вариант-класс `.margin-nav--hide-narrow`
   (**foundation-touch**, единственное касание лейаут-CSS).
-- каталоги i18n namespace `pages` — `tocLabel` во всех локалях (ru/en/ar/zh;
+- каталоги i18n namespace `pages` — `documentToc` во всех локалях (ru/en/ar/zh;
   псевдо en-XA генерится автоматически).
 
 `globals.css` и `content.css` **не трогаем** (scroll-margin уже глобальный).
