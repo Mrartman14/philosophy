@@ -1,5 +1,5 @@
 // src/components/ast-render/__fixtures__/blocks.ts
-import type { AstBlock, AstNode } from "../types";
+import type { AstBlock } from "../types";
 
 export const PARAGRAPH_PLAIN: AstBlock = {
   id: "p1",
@@ -48,35 +48,158 @@ export const HEADING_NO_LEVEL: AstBlock = {
   content: [{ type: "text", text: "Заголовок без уровня" }],
 };
 
+// Реальная форма с бэка (sqlite document_blocks): list → list_item → paragraph → text.
+// list_item.content — блочные ноды (paragraph/list/code_block/blockquote), НЕ inline.
+// attrs у списка: { ordered: boolean }, НЕ { kind }.
 export const BULLET_LIST: AstBlock = {
   id: "ul1",
   type: "list",
-  attrs: { kind: "bullet" },
+  attrs: { ordered: false },
   content: [
     {
       type: "list_item",
       content: [
-        { type: "text", text: "Первый" },
+        { type: "paragraph", content: [{ type: "text", text: "Первый" }] },
       ],
-    } as unknown as AstNode,
+    },
     {
       type: "list_item",
       content: [
-        { type: "text", text: "Второй" },
+        { type: "paragraph", content: [{ type: "text", text: "Второй" }] },
       ],
-    } as unknown as AstNode,
+    },
   ],
 };
 
 export const ORDERED_LIST: AstBlock = {
   id: "ol1",
   type: "list",
-  attrs: { kind: "ordered" },
+  attrs: { ordered: true },
   content: [
     {
       type: "list_item",
-      content: [{ type: "text", text: "Один" }],
-    } as unknown as AstNode,
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: "Один" }] },
+      ],
+    },
+  ],
+};
+
+/** Вложенные элементы списка с inline-mark (code) внутри обёрточного параграфа. */
+export const BULLET_LIST_WITH_MARKS: AstBlock = {
+  id: "ul-marks",
+  type: "list",
+  attrs: { ordered: false },
+  content: [
+    {
+      type: "list_item",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "НЕ делать " },
+            { type: "text", text: "git stash", marks: [{ type: "code" }] },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+/** list_item с вложенным списком — проверяет блочный рекурсивный рендер. */
+export const NESTED_LIST: AstBlock = {
+  id: "ul-nested",
+  type: "list",
+  attrs: { ordered: false },
+  content: [
+    {
+      type: "list_item",
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: "Верхний" }] },
+        {
+          type: "list",
+          attrs: { ordered: false },
+          content: [
+            {
+              type: "list_item",
+              content: [
+                { type: "paragraph", content: [{ type: "text", text: "Вложенный" }] },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+// blockquote — блочный контейнер (paragraph/heading/list/code_block/вложенный blockquote).
+export const BLOCKQUOTE: AstBlock = {
+  id: "bq1",
+  type: "blockquote",
+  content: [
+    { type: "paragraph", content: [{ type: "text", text: "Цитата." }] },
+  ],
+};
+
+export const BLOCKQUOTE_MULTI: AstBlock = {
+  id: "bq2",
+  type: "blockquote",
+  content: [
+    { type: "paragraph", content: [{ type: "text", text: "Первый абзац." }] },
+    { type: "paragraph", content: [{ type: "text", text: "Второй абзац." }] },
+  ],
+};
+
+// thematic_break — leaf-нода без контента и attrs.
+export const THEMATIC_BREAK: AstBlock = {
+  id: "hr1",
+  type: "thematic_break",
+  content: [],
+};
+
+// Реальная форма с бэка: table → table_row → table_cell → inline (text+marks).
+// header — атрибут СТРОКИ (table_row.attrs.header), align — атрибут ЯЧЕЙКИ.
+export const TABLE: AstBlock = {
+  id: "tbl1",
+  type: "table",
+  content: [
+    {
+      type: "table_row",
+      attrs: { header: true },
+      content: [
+        { type: "table_cell", content: [{ type: "text", text: "Слой" }] },
+        { type: "table_cell", content: [{ type: "text", text: "Технология" }] },
+      ],
+    },
+    {
+      type: "table_row",
+      content: [
+        { type: "table_cell", content: [{ type: "text", text: "Стили" }] },
+        {
+          type: "table_cell",
+          content: [
+            { type: "text", text: "Tailwind " },
+            { type: "text", text: "v4", marks: [{ type: "bold" }] },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+/** Ячейки с align — проверяет проброс выравнивания в data-align. */
+export const TABLE_WITH_ALIGN: AstBlock = {
+  id: "tbl2",
+  type: "table",
+  content: [
+    {
+      type: "table_row",
+      content: [
+        { type: "table_cell", attrs: { align: "center" }, content: [{ type: "text", text: "C" }] },
+        { type: "table_cell", attrs: { align: "right" }, content: [{ type: "text", text: "R" }] },
+      ],
+    },
   ],
 };
 

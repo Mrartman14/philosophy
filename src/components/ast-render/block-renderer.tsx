@@ -5,7 +5,7 @@ import { log } from "@/services/observability/client";
 
 import { InlineRenderer } from "./inline-renderer";
 import { ImageNode } from "./nodes/image";
-import type { AstBlock, AstRenderContext } from "./types";
+import type { AstBlock, AstNode, AstRenderContext } from "./types";
 
 interface Props {
   block: AstBlock;
@@ -23,8 +23,9 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       return <Tag><InlineRenderer nodes={block.content} ctx={ctx} /></Tag>;
     }
     case "list": {
-      const kind = (block.attrs as { kind?: unknown } | undefined)?.kind;
-      const Tag = kind === "ordered" ? "ol" : "ul";
+      // Бэк отдаёт `attrs.ordered: boolean` (см. ast-schema/document_blocks), НЕ `kind`.
+      const ordered = (block.attrs as { ordered?: unknown } | undefined)?.ordered === true;
+      const Tag = ordered ? "ol" : "ul";
       const items = (block.content ?? []) as unknown as AstBlock[];
       return (
         <Tag>
@@ -34,8 +35,18 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
         </Tag>
       );
     }
-    case "list_item":
-      return <li><InlineRenderer nodes={block.content} ctx={ctx} /></li>;
+    case "list_item": {
+      // list_item содержит БЛОЧНЫЕ ноды (paragraph, вложенный list, code_block,
+      // blockquote) — не inline. Обёрточный <p> даёт паритет с редактором.
+      const children = (block.content ?? []) as unknown as AstBlock[];
+      return (
+        <li>
+          {children.map((child, i) => (
+            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
+          ))}
+        </li>
+      );
+    }
     case "code_block": {
       const lang = (block.attrs as { language?: unknown } | undefined)?.language;
       const langStr = typeof lang === "string" ? lang : undefined;
@@ -47,6 +58,48 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
         <pre dir="ltr" data-language={langStr}>
           <code>{text}</code>
         </pre>
+      );
+    }
+    case "blockquote": {
+      // Блочный контейнер: paragraph/heading/list/code_block/вложенный blockquote.
+      const children = (block.content ?? []) as unknown as AstBlock[];
+      return (
+        <blockquote>
+          {children.map((child, i) => (
+            <BlockRenderer key={child.id ?? i} block={child} ctx={ctx} />
+          ))}
+        </blockquote>
+      );
+    }
+    case "thematic_break":
+      return <hr />;
+    case "table": {
+      // table → table_row → table_cell → inline. `header` живёт на строке;
+      // header-строка → <th scope="col"> (семантика + .content th CSS).
+      // Строки/ячейки — AST-ноды без id, ключи по индексу.
+      const rows = block.content ?? [];
+      return (
+        <table>
+          <tbody>
+            {rows.map((row, ri) => {
+              const header = (row.attrs as { header?: unknown } | undefined)?.header === true;
+              const cells = row.content ?? [];
+              return (
+                <tr key={ri}>
+                  {cells.map((cell, ci) => {
+                    const align = readCellAlign(cell.attrs);
+                    const inner = <InlineRenderer nodes={cell.content} ctx={ctx} />;
+                    return header ? (
+                      <th key={ci} scope="col" data-align={align}>{inner}</th>
+                    ) : (
+                      <td key={ci} data-align={align}>{inner}</td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       );
     }
     case "image":
@@ -65,6 +118,11 @@ export function BlockRenderer({ block, ctx }: Props): ReactNode {
       );
     }
   }
+}
+
+function readCellAlign(attrs: AstNode["attrs"]): "left" | "center" | "right" | undefined {
+  const raw = (attrs as { align?: unknown } | undefined)?.align;
+  return raw === "left" || raw === "center" || raw === "right" ? raw : undefined;
 }
 
 function readHeadingLevel(attrs: AstBlock["attrs"]): 1 | 2 | 3 | 4 | 5 | 6 {

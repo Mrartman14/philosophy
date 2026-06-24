@@ -24,4 +24,8 @@
   .content table { width: 100%; border-collapse: collapse; }
   .content :is(th,td) { border: 1px solid var(--color-border); padding: var(--space-control-pad-y) var(--space-control-pad-x); text-align: start; }
   .content th { font-weight: 600; background: var(--color-surface-subtle); }
+  /* Явное выравнивание ячейки (table_cell.attrs.align) — авторский физический выбор. */
+  .content :is(th,td)[data-align="left"] { text-align: left; }
+  .content :is(th,td)[data-align="center"] { text-align: center; }
+  .content :is(th,td)[data-align="right"] { text-align: right; }
 }

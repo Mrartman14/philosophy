@@ -10,7 +10,14 @@ import {
   HEADING_LEVEL_3,
   HEADING_NO_LEVEL,
   BULLET_LIST,
+  BULLET_LIST_WITH_MARKS,
+  NESTED_LIST,
   ORDERED_LIST,
+  BLOCKQUOTE,
+  BLOCKQUOTE_MULTI,
+  THEMATIC_BREAK,
+  TABLE,
+  TABLE_WITH_ALIGN,
   CODE_BLOCK,
   PARAGRAPH_WITH_LINK,
   PARAGRAPH_WITH_RELATIVE_LINK,
@@ -63,17 +70,100 @@ describe("AstRender — heading", () => {
 });
 
 describe("AstRender — list", () => {
-  it("рендерит bullet-list как <ul>", () => {
+  it("рендерит bullet-list как <ul> с текстом пунктов", () => {
     const { container } = render(<AstRender blocks={[BULLET_LIST]} />);
     expect(container.querySelector("ul")).not.toBeNull();
     expect(container.querySelectorAll("ul > li")).toHaveLength(2);
     expect(container.querySelector("ul > li")?.textContent).toBe("Первый");
   });
 
+  it("оборачивает содержимое пункта в <li><p> (паритет с редактором)", () => {
+    const { container } = render(<AstRender blocks={[BULLET_LIST]} />);
+    expect(container.querySelector("ul > li > p")?.textContent).toBe("Первый");
+  });
+
+  it("не оставляет нерендеренных нод (нет data-unsupported)", () => {
+    const { container } = render(<AstRender blocks={[BULLET_LIST]} />);
+    expect(container.querySelectorAll("[data-unsupported]")).toHaveLength(0);
+  });
+
   it("рендерит ordered-list как <ol>", () => {
     const { container } = render(<AstRender blocks={[ORDERED_LIST]} />);
     expect(container.querySelector("ol")).not.toBeNull();
+    expect(container.querySelector("ul")).toBeNull();
     expect(container.querySelectorAll("ol > li")).toHaveLength(1);
+    expect(container.querySelector("ol > li > p")?.textContent).toBe("Один");
+  });
+
+  it("рендерит inline-mark (code) внутри пункта списка", () => {
+    const { container } = render(<AstRender blocks={[BULLET_LIST_WITH_MARKS]} />);
+    expect(container.querySelector("li > p > code")?.textContent).toBe("git stash");
+    expect(container.querySelectorAll("[data-unsupported]")).toHaveLength(0);
+  });
+
+  it("рендерит вложенный список рекурсивно как блок", () => {
+    const { container } = render(<AstRender blocks={[NESTED_LIST]} />);
+    expect(container.querySelector("ul > li > ul > li > p")?.textContent).toBe("Вложенный");
+    expect(container.querySelectorAll("[data-unsupported]")).toHaveLength(0);
+  });
+});
+
+describe("AstRender — blockquote", () => {
+  it("рендерит blockquote с вложенным параграфом", () => {
+    const { container } = render(<AstRender blocks={[BLOCKQUOTE]} />);
+    expect(container.querySelector("blockquote > p")?.textContent).toBe("Цитата.");
+    expect(container.querySelectorAll("[data-unsupported]")).toHaveLength(0);
+  });
+
+  it("рендерит несколько блоков внутри blockquote", () => {
+    const { container } = render(<AstRender blocks={[BLOCKQUOTE_MULTI]} />);
+    const paras = container.querySelectorAll("blockquote > p");
+    expect(paras).toHaveLength(2);
+    expect(paras[1]?.textContent).toBe("Второй абзац.");
+  });
+});
+
+describe("AstRender — thematic_break", () => {
+  it("рендерит thematic_break как <hr>", () => {
+    const { container } = render(<AstRender blocks={[THEMATIC_BREAK]} />);
+    expect(container.querySelector("hr")).not.toBeNull();
+    expect(container.querySelectorAll("[data-unsupported]")).toHaveLength(0);
+  });
+});
+
+describe("AstRender — table", () => {
+  it("рендерит <table> с header-строкой как <th scope=col>", () => {
+    const { container } = render(<AstRender blocks={[TABLE]} />);
+    expect(container.querySelector("table")).not.toBeNull();
+    const ths = container.querySelectorAll("table th");
+    expect(ths).toHaveLength(2);
+    expect(ths[0]?.textContent).toBe("Слой");
+    expect(ths[0]?.getAttribute("scope")).toBe("col");
+  });
+
+  it("body-строки → <td>, inline-mark внутри ячейки рендерится", () => {
+    const { container } = render(<AstRender blocks={[TABLE]} />);
+    const tds = container.querySelectorAll("table td");
+    expect(tds).toHaveLength(2);
+    expect(tds[0]?.textContent).toBe("Стили");
+    expect(container.querySelector("table td strong")?.textContent).toBe("v4");
+  });
+
+  it("не оставляет нерендеренных нод (нет data-unsupported)", () => {
+    const { container } = render(<AstRender blocks={[TABLE]} />);
+    expect(container.querySelectorAll("[data-unsupported]")).toHaveLength(0);
+  });
+
+  it("пробрасывает align ячейки в data-align", () => {
+    const { container } = render(<AstRender blocks={[TABLE_WITH_ALIGN]} />);
+    const tds = container.querySelectorAll("td");
+    expect(tds[0]?.getAttribute("data-align")).toBe("center");
+    expect(tds[1]?.getAttribute("data-align")).toBe("right");
+  });
+
+  it("ячейка без align не получает атрибут data-align", () => {
+    const { container } = render(<AstRender blocks={[TABLE]} />);
+    expect(container.querySelector("td")?.hasAttribute("data-align")).toBe(false);
   });
 });
 
