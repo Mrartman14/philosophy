@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import { useState } from "react";
 
-import { BookmarkIcon } from "@/assets/icons/bookmark-icon";
+import { AtIcon } from "@/assets/icons/at-icon";
 import { Popover, Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
@@ -27,7 +27,7 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
       <Popover.Trigger
         render={<Toolbar.Button aria-label={t("insertRefAriaLabel")} />}
       >
-        <BookmarkIcon />
+        <AtIcon />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
