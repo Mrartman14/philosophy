@@ -27,6 +27,19 @@ export function makeLectureCreateSchema(t: ValidationT) {
   });
 }
 
+/** Макс. документов, прикрепляемых разом при создании лекции (Вариант A). */
+export const ATTACH_DOCUMENT_IDS_MAX = 50;
+
+/**
+ * Список id готовых документов для прикрепления при создании лекции (Вариант A:
+ * FE-оркестрация create→attach, бек без изменений). Приходит из скрытого поля
+ * формы JSON-массивом; entity_id валидируем как непустую строку (как в
+ * makeLectureAttachSchema — бек 404 при чужом/несуществующем).
+ */
+export function makeAttachDocumentIdsSchema() {
+  return z.array(z.string().min(1)).max(ATTACH_DOCUMENT_IDS_MAX);
+}
+
 export function makeLectureUpdateSchema(t: ValidationT) {
   return z.object({
     id: z.uuid(t("lectures.invalidId")),

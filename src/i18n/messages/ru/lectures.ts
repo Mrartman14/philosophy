@@ -60,6 +60,11 @@ const lectures = {
   searchMediaPlaceholder: "Поиск медиа…",
   attachmentsEmpty: "Пока ничего не прикреплено.",
 
+  // --- attach docs on create (Вариант A) ---
+  attachDocsLabel: "Прикрепить документы",
+  attachDocsHint: "Необязательно. Выберите уже созданные документы — они прикрепятся к лекции после её создания.",
+  attachDocsRemove: "Убрать {label}",
+
   // --- forbidden actions (Case 3 действие в родительном падеже) ---
   coverForbiddenAction: "изменение обложки",
   visibilityForbiddenAction: "смену видимости",

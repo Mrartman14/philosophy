@@ -59,6 +59,11 @@ const lectures = {
   searchMediaPlaceholder: "搜索媒体…",
   attachmentsEmpty: "暂无关联内容。",
 
+  // --- attach docs on create (Variant A) ---
+  attachDocsLabel: "附加文档",
+  attachDocsHint: "可选。选择已有文档——讲座创建后将自动附加。",
+  attachDocsRemove: "移除 {label}",
+
   // --- forbidden actions (Case 3 — action phrase) ---
   coverForbiddenAction: "更改封面",
   visibilityForbiddenAction: "更改可见性",

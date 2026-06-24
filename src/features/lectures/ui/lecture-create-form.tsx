@@ -1,11 +1,14 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useCallback, useState } from "react";
 
+import { AttachTargetPicker } from "@/components/attachments";
 import {
   createTypedForm,
   Form,
   FormFeedback,
+  IconButton,
   IdempotencyField,
+  Inline,
   Select,
   Stack,
   SubmitButton,
@@ -16,7 +19,7 @@ import { useActionRedirect } from "@/hooks/use-action-redirect";
 import { useT } from "@/i18n/client";
 import { initialActionState } from "@/utils/action-state";
 
-import { createLecture } from "../actions";
+import { createLecture, searchDocumentsForAttach } from "../actions";
 import type { LectureCreateFormInput } from "../schemas";
 import type { Lecture } from "../types";
 
@@ -24,11 +27,39 @@ const initial = initialActionState<Lecture | null>(null);
 
 const { Field, errors } = createTypedForm<LectureCreateFormInput>();
 
-export function LectureCreateForm() {
+interface SelectedDoc {
+  id: string;
+  label: string;
+}
+
+export function LectureCreateForm({ canAttach = false }: { canAttach?: boolean }) {
   const tL = useT("lectures");
   const [state, action] = useActionState(createLecture, initial);
+  const [docs, setDocs] = useState<SelectedDoc[]>([]);
 
-  useActionRedirect(state, (data) => `/admin/lectures/${data.id}/edit`);
+  // При выборе документов ведём на страницу прикреплений (видно фактическое
+  // состояние — attach в Варианте A best-effort), иначе — на редактирование.
+  useActionRedirect(state, (data) =>
+    docs.length > 0
+      ? `/admin/lectures/${data.id}/attachments`
+      : `/admin/lectures/${data.id}/edit`,
+  );
+
+  const fetcher = useCallback(
+    async (q: string, offset: number, limit: number) => {
+      const r = await searchDocumentsForAttach({ q, offset, limit });
+      return r.success ? r.data : { data: [], total: null };
+    },
+    [],
+  );
+
+  const addDoc = useCallback((id: string, label: string) => {
+    setDocs((prev) => (prev.some((d) => d.id === id) ? prev : [...prev, { id, label }]));
+  }, []);
+
+  const removeDoc = useCallback((id: string) => {
+    setDocs((prev) => prev.filter((d) => d.id !== id));
+  }, []);
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -56,6 +87,41 @@ export function LectureCreateForm() {
             ]}
           />
         </Field>
+
+        {canAttach && (
+          <Stack>
+            <span className="text-sm font-medium">{tL("attachDocsLabel")}</span>
+            <span className="text-xs text-(--color-fg-muted)">{tL("attachDocsHint")}</span>
+            <AttachTargetPicker
+              fetcher={fetcher}
+              onSelect={addDoc}
+              placeholder={tL("searchDocumentPlaceholder")}
+            />
+            {docs.length > 0 && (
+              <Stack>
+                {docs.map((d) => (
+                  <Inline key={d.id} className="items-center justify-between">
+                    <span className="truncate text-sm">{d.label}</span>
+                    <IconButton
+                      tone="danger"
+                      compact
+                      aria-label={tL("attachDocsRemove", { label: d.label })}
+                      onClick={() => { removeDoc(d.id); }}
+                    >
+                      <span className="text-sm">✕</span>
+                    </IconButton>
+                  </Inline>
+                ))}
+              </Stack>
+            )}
+            <input
+              type="hidden"
+              name="attach_document_ids"
+              value={JSON.stringify(docs.map((d) => d.id))}
+              readOnly
+            />
+          </Stack>
+        )}
 
         <FormFeedback result={state} forbiddenAction={tL("createAction")} />
 

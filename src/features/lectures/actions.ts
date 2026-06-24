@@ -30,6 +30,7 @@ import {
   canUpdateLecture,
 } from "./permissions";
 import {
+  makeAttachDocumentIdsSchema,
   makeLectureAttachSchema,
   makeLectureCreateSchema,
   makeLectureCoverClearSchema,
@@ -64,12 +65,32 @@ async function loadLectureForGate(id: string): Promise<Lecture> {
   return lecture;
 }
 
+/**
+ * id готовых документов для прикрепления при создании лекции (Вариант A) из
+ * скрытого поля формы `attach_document_ids` (JSON-массив строк). Отсутствует/
+ * пустое/битый JSON/не прошло валидацию → [] (форма генерирует поле сама, так
+ * что мягкая деградация безопасна — реальная проверка id на шаге attach у бека).
+ */
+function parseAttachDocumentIds(formData: FormData): string[] {
+  const raw = formData.get("attach_document_ids");
+  if (typeof raw !== "string" || raw.trim() === "") return [];
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  const result = makeAttachDocumentIdsSchema().safeParse(parsed);
+  return result.success ? result.data : [];
+}
+
 export const createLecture = createFormAction(async (formData, ctx) => {
   const me = await getMe();
   // capability-only гейт — ставим ДО парсинга (отказ дешевле без траты на парсинг, §3.3).
   requireCapability(me, canCreateLecture);
   const t = await getT("validation");
   const input = parseFormData(makeLectureCreateSchema(t), formData);
+  const attachDocumentIds = parseAttachDocumentIds(formData);
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/lectures", {
     body: {
@@ -82,7 +103,24 @@ export const createLecture = createFormAction(async (formData, ctx) => {
   });
   if (error) rethrowApiError(error, ERRORS);
   revalidateEntity(Tags.LECTURES);
-  return unwrap(data);
+  const lecture = unwrap(data);
+
+  // Вариант A: best-effort прикрепление выбранных готовых документов сразу после
+  // создания (бек без изменений — две существующие ручки). Неатомарно: лекция
+  // уже создана, отдельный неудачный attach НЕ валит создание — пользователь
+  // до-прикрепит на странице прикреплений (туда форма и редиректит при выборе).
+  // Гейт attach = entity.attach ∧ ownership на свежей (owner = me) лекции.
+  if (lecture && attachDocumentIds.length > 0 && canAttachToLecture(me, lecture)) {
+    // Последовательно: стабильный sort_order и щадящая нагрузка на бек.
+    for (const [i, entityId] of attachDocumentIds.entries()) {
+      await api.POST("/api/lectures/{lectureID}/attachments", {
+        params: { path: { lectureID: lecture.id } },
+        body: { entity_id: entityId, entity_type: "document", sort_order: i },
+      });
+    }
+    revalidateEntity(Tags.LECTURES, lecture.id);
+  }
+  return lecture;
 }, "createLecture");
 
 export const updateLecture = createFormAction(async (formData, ctx) => {

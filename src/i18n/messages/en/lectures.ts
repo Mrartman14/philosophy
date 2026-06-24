@@ -59,6 +59,11 @@ const lectures = {
   searchMediaPlaceholder: "Search media…",
   attachmentsEmpty: "Nothing attached yet.",
 
+  // --- attach docs on create (Variant A) ---
+  attachDocsLabel: "Attach documents",
+  attachDocsHint: "Optional. Pick existing documents — they’ll be attached to the lecture once it’s created.",
+  attachDocsRemove: "Remove {label}",
+
   // --- forbidden actions (Case 3 — action phrase) ---
   coverForbiddenAction: "changing the cover",
   visibilityForbiddenAction: "changing visibility",

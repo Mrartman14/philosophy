@@ -59,6 +59,11 @@ const lectures = {
   searchMediaPlaceholder: "ابحث عن وسائط…",
   attachmentsEmpty: "لا شيء مُرفَق بعد.",
 
+  // --- attach docs on create (Variant A) ---
+  attachDocsLabel: "إرفاق مستندات",
+  attachDocsHint: "اختياري. اختر مستندات موجودة — ستُرفق بالمحاضرة بعد إنشائها.",
+  attachDocsRemove: "إزالة {label}",
+
   // --- forbidden actions (Case 3 — action phrase) ---
   coverForbiddenAction: "تغيير الغلاف",
   visibilityForbiddenAction: "تغيير الظهور",
