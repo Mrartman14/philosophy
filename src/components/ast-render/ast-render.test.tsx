@@ -52,6 +52,25 @@ describe("AstRender — paragraph + inline marks", () => {
   });
 });
 
+describe("AstRender — flow-контракт (.content > * прямые дети)", () => {
+  // Регрессия: ранее AstRender оборачивал блоки в <div class="ast-render">.
+  // Эта прослойка рвала прямой родитель→ребёнок между .content и блоками, из-за
+  // чего ВСЕ flow-селекторы content.css (.content > * + *, > :is(h1,h2,h3),
+  // > :is(ul,ol) > li + li) переставали матчить → пропадал вертикальный ритм.
+  // jsdom не считает CSS, поэтому стережём именно структуру: никакой обёртки,
+  // блоки — прямые дети контейнера, на который консьюмер вешает .content.
+  it("не вводит обёртку между .content и блоками", () => {
+    const { container } = render(
+      <AstRender blocks={[HEADING_LEVEL_1, PARAGRAPH_PLAIN]} />,
+    );
+    expect(container.querySelector("div.ast-render")).toBeNull();
+    const directChildren = Array.from(container.children).map((el) =>
+      el.tagName.toLowerCase(),
+    );
+    expect(directChildren).toEqual(["h1", "p"]);
+  });
+});
+
 describe("AstRender — heading", () => {
   it("рендерит heading level=1 как <h1>", () => {
     const { container } = render(<AstRender blocks={[HEADING_LEVEL_1]} />);
