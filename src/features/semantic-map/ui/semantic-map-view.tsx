@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useReducedMotion } from "@/components/appearance";
-import { SceneCanvasIsolation, readSavedMode } from "@/components/scene-3d";
+import { SceneCanvasIsolation, readSavedMode, writeViewToUrl, type ParsedView } from "@/components/scene-3d";
 import { useT } from "@/i18n/client";
 
 import { getMapPointDetails } from "../actions";
@@ -19,16 +19,32 @@ import { MapRegionLabels, type ProjectedLabel } from "./map-region-labels";
 
 const MODE_KEY = "semantic-map:mode";
 
-export default function SemanticMapView({ data, overlay }: { data: MapData; overlay?: MapOverlay }) {
+export default function SemanticMapView({
+  data,
+  overlay,
+  initialView,
+}: {
+  data: MapData;
+  overlay?: MapOverlay;
+  initialView: ParsedView;
+}) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // Тип рефа — ПОРТ MapRenderer (не конкретный ThreeMapRenderer): своп рисовалки
   // меняет только `new ThreeMapRenderer()`, не UI.
   const rendererRef = useRef<MapRenderer | null>(null);
-  const [mode, setMode] = useState<RenderMode>(() => readSavedMode(MODE_KEY));
+  const [mode, setMode] = useState<RenderMode>(() => initialView.mode ?? readSavedMode(MODE_KEY));
   // modeRef синхронизирован с mode (тот же восстановленный старт) — lifecycle-эффект
   // ([model]) применяет актуальный режим после пере-создания рендерера при смене data.
-  const modeRef = useRef<RenderMode>(readSavedMode(MODE_KEY));
+  const modeRef = useRef<RenderMode>(initialView.mode ?? readSavedMode(MODE_KEY));
+  // initialViewRef: актуальный initialView для lifecycle-эффекта [model] БЕЗ добавления
+  // его в deps (тот же escape-hatch, что matchedRef/reduceRef). Камеру восстанавливаем из
+  // ref'а, поэтому пере-маунт при смене data применит её снова.
+  const initialViewRef = useRef(initialView);
+  initialViewRef.current = initialView;
+  // modeWriteSkip: страж первого прогона mode-эффекта — не писать вид в URL на маунте
+  // (URL уже несёт стартовый режим), только по реальному тоглу 2D/3D.
+  const modeWriteSkip = useRef(true);
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
   const [selected, setSelected] = useState<MapPointDetail | null>(null);
   // documents (id→title) с контракта layout; фолбэк {} — поле optional.
@@ -84,6 +100,13 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
     r.resize(wrap.clientWidth || 1, wrap.clientHeight || 1, window.devicePixelRatio || 1);
     r.onChange(updateLabels); // ДО setModel — чтобы первый отрисованный кадр обновил подписи
 
+    // settle-write: писать вид в URL только ПОСЛЕ оседания пользовательского жеста
+    // (программные applyCamera/fitToBounds onSettle не дёргают).
+    r.onSettle(() => {
+      const v = r.getCamera();
+      if (v) writeViewToUrl(v);
+    });
+
     // Picking: клик по точке → fetch одной детали → панель. Гонку (быстрые клики)
     // гасим request-id'ом. pickSeq локален эффекту — на пере-маунте сбрасывается.
     let pickSeq = 0;
@@ -108,6 +131,11 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
     const m0 = matchedRef.current;
     if (m0) r.setOverlay({ highlightIds: m0.highlightIds, marker: m0.marker });
 
+    // restore — ПОСЛЕДНИМ камера-шагом (после setModel/fit внутри рендерера), иначе
+    // авто-фит затёр бы восстановленную камеру. Программный — onSettle не сработает.
+    const cam0 = initialViewRef.current.camera;
+    if (cam0) r.applyCamera(cam0);
+
     const ro = new ResizeObserver(() => {
       r.resize(wrap.clientWidth, wrap.clientHeight, window.devicePixelRatio || 1);
       updateLabels();
@@ -126,6 +154,12 @@ export default function SemanticMapView({ data, overlay }: { data: MapData; over
     modeRef.current = mode;
     rendererRef.current?.setMode(mode);
     window.localStorage.setItem(MODE_KEY, mode);
+    if (modeWriteSkip.current) {
+      modeWriteSkip.current = false;
+      return;
+    }
+    const v = rendererRef.current?.getCamera();
+    if (v) writeViewToUrl(v);
   }, [mode]);
 
   // Рантайм-смена настройки движения → применить к существующему рендереру.

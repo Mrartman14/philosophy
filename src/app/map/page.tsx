@@ -1,4 +1,5 @@
 // src/app/map/page.tsx
+import { parseView } from "@/components/scene-3d";
 import { FullBleed } from "@/components/ui";
 import { getSearchResults, SEARCH_RESULT_LIMIT } from "@/features/search";
 import { getMap, MapStatePanel, SemanticMap, type MapOverlay } from "@/features/semantic-map";
@@ -12,10 +13,11 @@ export async function generateMetadata() {
 export default async function MapPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; m?: string; c?: string }>;
 }) {
   const sp = await searchParams;
   const q = sp.q?.trim();
+  const initialView = parseView(sp); // sp: { q?, m?, c? } структурно ⊂ { m?, c? } (exactOptionalPropertyTypes)
 
   const result = await getMap();
   if (!result.ok) {
@@ -47,7 +49,7 @@ export default async function MapPage({
   return (
     <FullBleed>
       <div className="h-[80vh] w-full">
-        <SemanticMap data={result.map} {...(overlay !== undefined ? { overlay } : {})} />
+        <SemanticMap data={result.map} initialView={initialView} {...(overlay !== undefined ? { overlay } : {})} />
       </div>
     </FullBleed>
   );
