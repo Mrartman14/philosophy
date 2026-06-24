@@ -32,8 +32,9 @@ interface Props {
  * Форма создания аннотации. AST-тело (entityContext="annotation") + выбор
  * видимости (фиксируется навсегда). Должна быть смонтирована внутри
  * <SchemaContextProvider> родителем (AstEditor требует useSchema).
- * Якорь в MVP не задаётся из UI (текстовое выделение — отдельная фича); поле
- * anchor остаётся пустым → бек создаёт аннотацию без привязки.
+ * Форма принимает опциональный `anchor` (из selection-driven вызова —
+ * выделения текста/медиа-интервала): когда он задан, прокидывается скрытым
+ * полем; без него поле пустое → бек создаёт аннотацию без привязки.
  */
 export function AnnotationCreateForm({ parentEntityType, parentId, anchor, onSuccess }: Props) {
   const router = useRouter();
