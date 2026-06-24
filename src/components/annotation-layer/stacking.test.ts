@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { resolveStack, type StackItem } from "./stacking";
+
+import { resolveStack } from "./stacking";
 
 describe("resolveStack", () => {
   it("непересекающиеся остаются на месте", () => {

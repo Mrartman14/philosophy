@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
+
 import { anchorFromRange } from "./anchor-from-selection";
+import { must } from "./test-support";
 
 function setup(): HTMLElement {
   const root = document.createElement("div");
@@ -16,10 +18,10 @@ describe("anchorFromRange", () => {
 
   it("одно-блочное выделение", () => {
     const root = setup();
-    const strong = root.querySelector("strong")!.firstChild!;
+    const strong = must(must(root.querySelector("strong")).firstChild);
     const r = document.createRange();
     r.setStart(strong, 0); r.setEnd(strong, 4);
-    const a = anchorFromRange(r, root)!;
+    const a = must(anchorFromRange(r, root));
     expect(a.startBlockId).toBe("p1");
     expect(a.startChar).toBe(6); expect(a.endChar).toBe(10);
     expect(a.exact).toBe("bold");
@@ -28,16 +30,16 @@ describe("anchorFromRange", () => {
   it("кросс-блочное", () => {
     const root = setup();
     const r = document.createRange();
-    r.setStart(root.querySelector('[data-block-id="p1"]')!.firstChild!, 0);
-    r.setEnd(root.querySelector('[data-block-id="p2"]')!.firstChild!, 6);
-    const a = anchorFromRange(r, root)!;
+    r.setStart(must(must(root.querySelector('[data-block-id="p1"]')).firstChild), 0);
+    r.setEnd(must(must(root.querySelector('[data-block-id="p2"]')).firstChild), 6);
+    const a = must(anchorFromRange(r, root));
     expect(a.startBlockId).toBe("p1"); expect(a.endBlockId).toBe("p2");
   });
   it("collapsed → null", () => {
     const root = setup();
     const r = document.createRange();
-    r.setStart(root.querySelector('[data-block-id="p1"]')!.firstChild!, 2);
-    r.setEnd(root.querySelector('[data-block-id="p1"]')!.firstChild!, 2);
+    r.setStart(must(must(root.querySelector('[data-block-id="p1"]')).firstChild), 2);
+    r.setEnd(must(must(root.querySelector('[data-block-id="p1"]')).firstChild), 2);
     expect(anchorFromRange(r, root)).toBeNull();
   });
   it("AST-гард: одна граница ВНЕ рута → null", () => {
@@ -46,18 +48,18 @@ describe("anchorFromRange", () => {
     outside.textContent = "sidebar card";
     document.body.appendChild(outside);
     const r = document.createRange();
-    r.setStart(root.querySelector('[data-block-id="p1"]')!.firstChild!, 0);
-    r.setEnd(outside.firstChild!, 4);
+    r.setStart(must(must(root.querySelector('[data-block-id="p1"]')).firstChild), 0);
+    r.setEnd(must(outside.firstChild), 4);
     expect(anchorFromRange(r, root)).toBeNull();
   });
   it("AST-гард: текст без data-block-id → null", () => {
-    const root = setup();
+    setup();
     const noId = document.createElement("div");
     noId.setAttribute("data-ast-root", "");
     noId.innerHTML = "<p>no block id</p>";
     document.body.appendChild(noId);
     const r = document.createRange();
-    r.selectNodeContents(noId.querySelector("p")!);
+    r.selectNodeContents(must(noId.querySelector("p")));
     expect(anchorFromRange(r, noId)).toBeNull();
   });
 });
