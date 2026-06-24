@@ -3,8 +3,6 @@
 import type { Editor } from "@tiptap/core";
 import { useEffect, useMemo, useState } from "react";
 
-import { Popover } from "@/components/ui";
-
 import { caretVirtualElement } from "../caret-anchor";
 
 import {
@@ -13,7 +11,7 @@ import {
   consumeAtMarker,
   type AtSuggestionState,
 } from "./at-suggestion-plugin";
-import { RefMenu } from "./ref-menu";
+import { RefPicker } from "./ref-picker";
 
 interface Props {
   editor: Editor;
@@ -21,18 +19,18 @@ interface Props {
 }
 
 /**
- * Inline-обёртка RefMenu для @-suggestion. Требует createAtSuggestionPlugin
+ * Inline-обёртка RefPicker для @-suggestion. Требует createAtSuggestionPlugin
  * в extensions редактора (atHost в ast-editor.tsx).
  *
- * Позиционирование под каретку, портал, коллизии (flip/shift), управление фокусом
- * и Escape делегированы Base UI Popover (как у тулбарного RefPopover) — меню
- * якорится к каретке через virtual-anchor (caretVirtualElement → coordsAtPos),
- * больше не рендерится статикой в потоке под контентом.
- *
  * Источник истины — плагин-состояние {open, from}: `open` контролируем им,
- * `onOpenChange(false)` (Escape / клик вне / вставка) закрывает состояние и
- * возвращает фокус в редактор. Initial-focus в меню и Escape Base UI делает сам,
- * поэтому собственных rAF-фокуса и document-listener'ов здесь больше нет.
+ * `onOpenChange(false)` (Escape / клик вне) закрывает состояние и возвращает
+ * фокус в редактор. Позиционирование под каретку, портал, коллизии (flip/shift),
+ * управление фокусом и Escape владеет сам RefPicker (один scoped Base UI
+ * Combobox): AtMenu лишь прокидывает `open`/`anchor`/`onOpenChange`/`onWillInsert`.
+ *
+ * Якорь — virtual-anchor каретки (caretVirtualElement → coordsAtPos), поэтому
+ * пикер портализуется на body и не рендерится статикой в потоке под контентом.
+ * `onWillInsert` синхронно удаляет напечатанный "@"-маркер перед вставкой марки.
  */
 export function AtMenu({ editor, defaultLectureId }: Props) {
   const [state, setState] = useState<AtSuggestionState>({
@@ -60,7 +58,9 @@ export function AtMenu({ editor, defaultLectureId }: Props) {
   );
 
   return (
-    <Popover.Root
+    <RefPicker
+      editor={editor}
+      defaultLectureId={defaultLectureId}
       open={state.open}
       onOpenChange={(open) => {
         if (!open) {
@@ -68,19 +68,8 @@ export function AtMenu({ editor, defaultLectureId }: Props) {
           editor.commands.focus();
         }
       }}
-    >
-      <Popover.Portal>
-        <Popover.Positioner anchor={anchor} side="bottom" align="start" sideOffset={4}>
-          <Popover.Popup className="p-1 min-w-[320px] max-w-[480px]">
-            <RefMenu
-              editor={editor}
-              defaultLectureId={defaultLectureId}
-              onWillInsert={() => { consumeAtMarker(editor.view, state.from); }}
-              onClose={() => { closeAtSuggestion(editor.view); }}
-            />
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
+      anchor={anchor}
+      onWillInsert={() => { consumeAtMarker(editor.view, state.from); }}
+    />
   );
 }
