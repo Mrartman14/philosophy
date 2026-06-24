@@ -35,6 +35,8 @@ export interface SceneRenderer {
   getCamera(): CameraState | null;
   /** Применить сохранённый снимок. Игнор, если state.mode не совпал с текущим режимом. */
   applyCamera(state: CameraState): void;
+  /** Колбэк по оседанию камеры после жеста (для записи вида в URL). */
+  onSettle(cb: () => void): void;
   /** Освободить GPU-ресурсы и остановить loop. */
   destroy(): void;
 }

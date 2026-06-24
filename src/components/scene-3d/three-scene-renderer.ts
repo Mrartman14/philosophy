@@ -9,6 +9,7 @@ import type { CameraState, SceneRenderer, SceneRenderMode } from "./scene-render
 
 const PICK_THRESHOLD_PX = 10; // радиус попадания по точке
 const DRAG_SUPPRESS_PX = 5; // смещение, выше которого жест — драг, не клик
+const SETTLE_IDLE_MS = 200; // тишина после последнего change → камера осела
 
 /**
  * Базовый Three-рендерер облака точек: сцена, орто/перспектива камеры (2D/3D),
@@ -34,6 +35,9 @@ export class ThreeSceneRenderer implements SceneRenderer {
   private raf = 0;
   private disposed = false;
   private changeCb: (() => void) | null = null;
+  private settleCb: (() => void) | null = null;
+  private settleTimer: ReturnType<typeof setTimeout> | null = null;
+  private awaitingSettle = false;
   /** Неизменяемая база цвета модели (read-only для overlay-подкласса). */
   protected baseColors: Float32Array | null = null;
   /** Рабочий буфер цвета атрибута (мутируется подклассом-overlay'ем). */
@@ -130,6 +134,7 @@ export class ThreeSceneRenderer implements SceneRenderer {
   }
 
   private applyMode(): void {
+    this.clearSettle();
     if (this.controls) this.controls.dispose();
     const cam = this.activeCamera();
     if (this.renderer) {
@@ -145,6 +150,11 @@ export class ThreeSceneRenderer implements SceneRenderer {
       }
       this.controls.addEventListener("change", () => {
         this.dirty = true;
+        if (this.awaitingSettle) this.armSettle(); // ре-арм на инерции damping
+      });
+      this.controls.addEventListener("end", () => {
+        this.awaitingSettle = true;
+        this.armSettle();
       });
     }
     // Материал mode-агностичен (пиксельный размер) — пере-настраивать при смене режима не нужно.
@@ -258,6 +268,27 @@ export class ThreeSceneRenderer implements SceneRenderer {
     this.changeCb = cb;
   }
 
+  onSettle(cb: () => void): void {
+    this.settleCb = cb;
+  }
+
+  private armSettle(): void {
+    if (this.settleTimer !== null) clearTimeout(this.settleTimer);
+    this.settleTimer = setTimeout(() => {
+      this.settleTimer = null;
+      this.awaitingSettle = false;
+      this.settleCb?.();
+    }, SETTLE_IDLE_MS);
+  }
+
+  private clearSettle(): void {
+    if (this.settleTimer !== null) {
+      clearTimeout(this.settleTimer);
+      this.settleTimer = null;
+    }
+    this.awaitingSettle = false;
+  }
+
   onPick(cb: (id: string | null) => void): void {
     this.pickCb = cb;
   }
@@ -320,6 +351,7 @@ export class ThreeSceneRenderer implements SceneRenderer {
    */
   destroy(): void {
     this.disposed = true;
+    this.clearSettle();
     cancelAnimationFrame(this.raf);
     if (this.canvas) {
       this.canvas.removeEventListener("pointerdown", this.onPointerDown);

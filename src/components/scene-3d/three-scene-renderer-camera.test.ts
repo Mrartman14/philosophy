@@ -98,3 +98,82 @@ describe("getCamera/applyCamera", () => {
     r.destroy();
   });
 });
+
+describe("onSettle / settle-watch", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.stubGlobal("requestAnimationFrame", () => 0);
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  });
+  afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
+
+  interface Ctl { dispatch(type: string): void }
+  const ctl = (r: ThreeSceneRenderer): Ctl =>
+    (r as unknown as { controls: Ctl }).controls;
+
+  it("'end' → idle 200мс → settleCb один раз", () => {
+    const r = new ThreeSceneRenderer();
+    r.mount(pickCanvas());
+    r.setModel(model1());
+    const cb = vi.fn();
+    r.onSettle(cb);
+    ctl(r).dispatch("end");
+    expect(cb).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(200);
+    expect(cb).toHaveBeenCalledTimes(1);
+    r.destroy();
+  });
+
+  it("'change'-глайд ре-армит таймер (запись после оседания)", () => {
+    const r = new ThreeSceneRenderer();
+    r.mount(pickCanvas());
+    r.setModel(model1());
+    const cb = vi.fn();
+    r.onSettle(cb);
+    ctl(r).dispatch("end");
+    vi.advanceTimersByTime(150);
+    ctl(r).dispatch("change"); // ре-арм
+    vi.advanceTimersByTime(150); // 150 < 200 c последнего change
+    expect(cb).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(50);
+    expect(cb).toHaveBeenCalledTimes(1);
+    r.destroy();
+  });
+
+  it("программный 'change' без 'end' НЕ пишет", () => {
+    const r = new ThreeSceneRenderer();
+    r.mount(pickCanvas());
+    r.setModel(model1());
+    const cb = vi.fn();
+    r.onSettle(cb);
+    ctl(r).dispatch("change"); // нет awaitingSettle
+    vi.advanceTimersByTime(500);
+    expect(cb).not.toHaveBeenCalled();
+    r.destroy();
+  });
+
+  it("смена режима отменяет отложенный settle (E1)", () => {
+    const r = new ThreeSceneRenderer();
+    r.mount(pickCanvas());
+    r.setModel(model1());
+    const cb = vi.fn();
+    r.onSettle(cb);
+    ctl(r).dispatch("end");
+    r.setMode("3d"); // applyMode → clearSettle
+    vi.advanceTimersByTime(500);
+    expect(cb).not.toHaveBeenCalled();
+    r.destroy();
+  });
+
+  it("destroy отменяет отложенный settle (A1)", () => {
+    const r = new ThreeSceneRenderer();
+    r.mount(pickCanvas());
+    r.setModel(model1());
+    const cb = vi.fn();
+    r.onSettle(cb);
+    ctl(r).dispatch("end");
+    r.destroy();
+    vi.advanceTimersByTime(500);
+    expect(cb).not.toHaveBeenCalled();
+  });
+});
