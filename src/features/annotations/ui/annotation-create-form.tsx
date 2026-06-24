@@ -11,7 +11,7 @@ import { initialActionState } from "@/utils/action-state";
 
 import { createAnnotation } from "../actions";
 import type { AnnotationCreateFormInput } from "../schemas";
-import type { Annotation, ParentEntityType } from "../types";
+import type { Anchor, Annotation, ParentEntityType } from "../types";
 
 import { AnnotationVisibilityField } from "./annotation-visibility-field";
 
@@ -22,6 +22,10 @@ const { Field, f, errors } = createTypedForm<AnnotationCreateFormInput>();
 interface Props {
   parentEntityType: ParentEntityType;
   parentId: string;
+  /** Опциональный якорь (text-range/media-interval) — скрытое поле. */
+  anchor?: Anchor;
+  /** Вызывается при успешном создании (напр. закрыть модалку). */
+  onSuccess?: () => void;
 }
 
 /**
@@ -31,7 +35,7 @@ interface Props {
  * Якорь в MVP не задаётся из UI (текстовое выделение — отдельная фича); поле
  * anchor остаётся пустым → бек создаёт аннотацию без привязки.
  */
-export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
+export function AnnotationCreateForm({ parentEntityType, parentId, anchor, onSuccess }: Props) {
   const router = useRouter();
   const t = useT("annotations");
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
@@ -39,10 +43,12 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
 
   useEffect(() => {
     if (state.success && state.data?.id) {
-      // Перерисовать страницу со свежим списком.
+      // Сначала закрыть модалку (если задан колбэк), затем перерисовать
+      // страницу со свежим списком.
+      onSuccess?.();
       router.refresh();
     }
-  }, [state, router]);
+  }, [state, router, onSuccess]);
 
   return (
     <Form action={action} errors={errors(state)}>
@@ -50,6 +56,9 @@ export function AnnotationCreateForm({ parentEntityType, parentId }: Props) {
         <input type="hidden" name={f("parent_entity_type")} value={parentEntityType} />
         <input type="hidden" name={f("parent_entity_id")} value={parentId} />
         <input type="hidden" name={f("blocks")} value={JSON.stringify(blocks)} />
+        {anchor !== undefined && (
+          <input type="hidden" name={f("anchor")} value={JSON.stringify(anchor)} />
+        )}
         <IdempotencyField result={state} />
 
         <Field name="blocks" label={t("createBodyLabel")} required>
