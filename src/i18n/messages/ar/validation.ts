@@ -165,9 +165,9 @@ const validation = {
     titleRequired: "أدخل الاسم",
     titleMax: "حتى 300 حرف",
     invalidTermId: "معرّف المصطلح غير صالح",
-    blocksInvalidJson: "JSON تالف في محتوى النموذج",
-    blocksMinLength: "لا يمكن أن يكون متن المصطلح فارغًا",
-    blocksEmpty: "أضف كتلة واحدة على الأقل",
+    blocksInvalidJson: "تعذّرت معالجة متن المصطلح. حدّث الصفحة وحاول مرة أخرى.",
+    blocksMinLength: "أضف وصفًا للمصطلح.",
+    blocksEmpty: "أضف وصفًا للمصطلح.",
   },
 
   // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---

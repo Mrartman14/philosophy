@@ -168,9 +168,9 @@ const validation = {
     titleRequired: "Введите название",
     titleMax: "До 300 символов",
     invalidTermId: "Некорректный id термина",
-    blocksInvalidJson: "Битый JSON в теле формы",
-    blocksMinLength: "Тело термина не может быть пустым",
-    blocksEmpty: "Добавьте хотя бы один блок",
+    blocksInvalidJson: "Не удалось обработать тело термина. Обновите страницу и попробуйте снова.",
+    blocksMinLength: "Добавьте описание термина.",
+    blocksEmpty: "Добавьте описание термина.",
   },
 
   // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---

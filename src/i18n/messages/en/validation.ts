@@ -165,9 +165,9 @@ const validation = {
     titleRequired: "Enter a name",
     titleMax: "Up to 300 characters",
     invalidTermId: "Invalid term ID",
-    blocksInvalidJson: "Invalid JSON in the form body",
-    blocksMinLength: "Term body cannot be empty",
-    blocksEmpty: "Add at least one block",
+    blocksInvalidJson: "Couldn't process the term body. Refresh the page and try again.",
+    blocksMinLength: "Add a description for the term.",
+    blocksEmpty: "Add a description for the term.",
   },
 
   // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---

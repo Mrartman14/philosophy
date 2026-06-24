@@ -165,9 +165,9 @@ const validation = {
     titleRequired: "请输入名称",
     titleMax: "最多 300 个字符",
     invalidTermId: "术语 ID 无效",
-    blocksInvalidJson: "表单正文中的 JSON 无效",
-    blocksMinLength: "术语正文不能为空",
-    blocksEmpty: "请至少添加一个块",
+    blocksInvalidJson: "无法处理术语正文。请刷新页面后重试。",
+    blocksMinLength: "请为术语添加描述。",
+    blocksEmpty: "请为术语添加描述。",
   },
 
   // --- tags: TagCreateSchema / TagUpdateSchema / TagIdSchema / SetLectureTagsSchema ---
