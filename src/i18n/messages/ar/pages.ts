@@ -42,6 +42,7 @@ const pages = {
   meNavStats: "إحصائياتي",
   meNavSettings: "الإعدادات",
   meNavTokens: "رموز الوصول",
+  meNavAdmin: "لوحة الإدارة",
   meNavAriaLabel: "التنقل في الحساب",
 
   // ─── /me/notifications ───────────────────────────────────────────────

@@ -42,6 +42,7 @@ const pages = {
   meNavStats: "我的统计",
   meNavSettings: "设置",
   meNavTokens: "访问令牌",
+  meNavAdmin: "管理后台",
   meNavAriaLabel: "个人中心导航",
 
   // ─── /me/notifications ───────────────────────────────────────────────

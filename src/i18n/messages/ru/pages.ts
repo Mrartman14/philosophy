@@ -42,6 +42,7 @@ const pages = {
   meNavStats: "Моя статистика",
   meNavSettings: "Настройки",
   meNavTokens: "Токены доступа",
+  meNavAdmin: "Админ-панель",
   meNavAriaLabel: "Навигация личного кабинета",
 
   // ─── /me/notifications ───────────────────────────────────────────────
