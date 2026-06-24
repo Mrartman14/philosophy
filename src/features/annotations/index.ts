@@ -29,6 +29,7 @@ export {
   isValidMediaAnchor,
 } from "./anchor";
 export { AnnotationsSection } from "./ui/annotations-section";
+export { DocumentAnnotations } from "./ui/document-annotations";
 export { AnnotationCard } from "./ui/annotation-card";
 export { AnnotationList } from "./ui/annotation-list";
 export { AnnotationCreateForm } from "./ui/annotation-create-form";
