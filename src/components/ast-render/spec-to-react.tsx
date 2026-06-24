@@ -11,5 +11,9 @@ export function specToReact(spec: NeutralChild, children: ReactNode, keyHint?: s
   for (const [k, v] of Object.entries(attrs)) props[k === "class" ? "className" : k] = v;
   if (keyHint != null) props.key = keyHint;
   const renderedKids = kids.map((k, i) => specToReact(k, children, String(i)));
-  return createElement(tag, props, kids.length > 0 ? renderedKids : undefined);
+  // Дети — ПОЗИЦИОННЫМИ аргументами (spread), а не одним массивом-children:
+  // HOLE возвращает `children` без key, и массив-из-одного-такого-ребёнка даёт
+  // React key-warning ("unique key prop"). Spread → дети позиционны, key не нужен;
+  // пустой spread эквивалентен отсутствию детей. DOM не меняется.
+  return createElement(tag, props, ...renderedKids);
 }
