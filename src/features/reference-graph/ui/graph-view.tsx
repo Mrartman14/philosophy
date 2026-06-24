@@ -9,7 +9,9 @@ import {
   SceneModeToggle,
   SceneRegionLabels,
   readSavedMode,
+  writeViewToUrl,
   projectToScreen,
+  type ParsedView,
   type ProjectedLabel,
   type SceneRenderer,
   type SceneRenderMode,
@@ -25,13 +27,15 @@ import { ThreeGraphRenderer } from "./three-graph-renderer";
 const MODE_KEY = "reference-graph:mode";
 const LABEL_TOP_N = 12; // постоянные подписи только для топ-узлов по degree (ориентир в графе)
 
-export default function GraphView({ data }: { data: GraphData }) {
+export default function GraphView({ data, initialView }: { data: GraphData; initialView: ParsedView }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // Тип рефа — порт SceneRenderer (не конкретный ThreeGraphRenderer): своп рисовалки не трогает UI.
   const rendererRef = useRef<SceneRenderer | null>(null);
-  const [mode, setMode] = useState<SceneRenderMode>(() => readSavedMode(MODE_KEY));
-  const modeRef = useRef<SceneRenderMode>(readSavedMode(MODE_KEY));
+  // Режим: URL (?m=) бьёт localStorage — оба источника (useState и modeRef) стартуют с одного значения,
+  // иначе тогл UI и mode-страж applyCamera разошлись бы.
+  const [mode, setMode] = useState<SceneRenderMode>(() => initialView.mode ?? readSavedMode(MODE_KEY));
+  const modeRef = useRef<SceneRenderMode>(initialView.mode ?? readSavedMode(MODE_KEY));
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
 
   const model = useMemo(() => toGraphRenderModel(data), [data]);
@@ -68,6 +72,18 @@ export default function GraphView({ data }: { data: GraphData }) {
     reduceRef.current = reduce;
   }, [reduce]);
 
+  // initialViewRef: актуальный initialView для lifecycle-эффекта [model] БЕЗ добавления в deps.
+  // useRef(initialView) уже несёт верный старт на маунте (нужный для restore); sync — через effect,
+  // а не запись ref в рендере: тот же react-hooks/refs-нюанс, что у reduceRef выше. Этот эффект стоит
+  // ДО lifecycle-эффекта графа, поэтому ref обновляется первым на ре-рендере.
+  const initialViewRef = useRef(initialView);
+  useEffect(() => {
+    initialViewRef.current = initialView;
+  }, [initialView]);
+  // modeWriteSkip: страж первого прогона mode-эффекта — не писать вид в URL на маунте (живёт всё время
+  // жизни компонента, поэтому обычный useRef, не пере-инициализируется).
+  const modeWriteSkip = useRef(true);
+
   useEffect(() => {
     const wrap = wrapRef.current;
     const canvas = canvasRef.current;
@@ -101,6 +117,12 @@ export default function GraphView({ data }: { data: GraphData }) {
     r.resize(wrap.clientWidth || 1, wrap.clientHeight || 1, window.devicePixelRatio || 1);
     r.onChange(updateLabels); // ДО setModel — первый кадр обновит подписи
 
+    // Камера осела (пользовательский жест) → пишем вид в URL. Программный applyCamera onSettle не дёргает.
+    r.onSettle(() => {
+      const v = r.getCamera();
+      if (v) writeViewToUrl(v);
+    });
+
     // Клик по узлу → навигация на сущность. nodeHref=null (нет type / нет id / клик в пустоту) → no-op.
     r.onPick?.((id) => {
       if (!id) return;
@@ -111,6 +133,10 @@ export default function GraphView({ data }: { data: GraphData }) {
     r.setModel(model);
     r.setMode(modeRef.current);
     r.setReducedMotion(reduceRef.current);
+
+    // Восстановление камеры из URL — ПОСЛЕДНИЙ камера-шаг. Программный applyCamera onSettle не сработает.
+    const cam0 = initialViewRef.current.camera;
+    if (cam0) r.applyCamera(cam0);
 
     const ro = new ResizeObserver(() => {
       r.resize(wrap.clientWidth, wrap.clientHeight, window.devicePixelRatio || 1);
@@ -129,6 +155,13 @@ export default function GraphView({ data }: { data: GraphData }) {
     modeRef.current = mode;
     rendererRef.current?.setMode(mode);
     window.localStorage.setItem(MODE_KEY, mode);
+    // Первый прогон (маунт) — режим уже отражён в URL/init; не перезаписываем вид.
+    if (modeWriteSkip.current) {
+      modeWriteSkip.current = false;
+      return;
+    }
+    const v = rendererRef.current?.getCamera();
+    if (v) writeViewToUrl(v);
   }, [mode]);
 
   useEffect(() => {
