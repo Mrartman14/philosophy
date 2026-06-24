@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, it, expect } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, it, expect, vi } from "vitest";
 
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
 
@@ -51,7 +51,7 @@ describe("MarginNotesColumn (smoke)", () => {
   });
 
   it("на узких (нет matchMedia → wide=false) карточки в потоке, без position:absolute", () => {
-    render(
+    const { container } = render(
       <MarginNotesColumn
         notes={makeNotes()}
         getAnchorRect={noRect}
@@ -59,10 +59,56 @@ describe("MarginNotesColumn (smoke)", () => {
         recomputeKey={0}
       />,
     );
-    // Привязанные карточки получают role="button"; в потоке у них нет inline-стиля.
-    for (const card of screen.getAllByRole("button")) {
+    // Привязанные карточки помечены data-annotation-card (НЕ role="button" —
+    // nested-interactive антипаттерн); в потоке у них нет inline-стиля.
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- карточка без роли по дизайну (прецедент: semantic-map-direction.test.tsx)
+    const cards = container.querySelectorAll("[data-annotation-card]");
+    expect(cards.length).toBe(2);
+    for (const card of cards) {
       expect(card.getAttribute("style")).toBeNull();
     }
+  });
+
+  it("привязанные карточки НЕ имеют role=button/tabindex (нет nested-interactive)", () => {
+    const { container } = render(
+      <MarginNotesColumn
+        notes={makeNotes()}
+        getAnchorRect={noRect}
+        onActivate={() => undefined}
+        recomputeKey={0}
+      />,
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- карточка без роли по дизайну (прецедент: semantic-map-direction.test.tsx)
+    for (const card of container.querySelectorAll("[data-annotation-card]")) {
+      expect(card.getAttribute("role")).toBeNull();
+      expect(card.getAttribute("tabindex")).toBeNull();
+    }
+  });
+
+  it("клик по телу карточки активирует, клик по внутренней кнопке — нет (guard всплытия)", () => {
+    const onActivate = vi.fn();
+    const notes: ColumnNote[] = [
+      {
+        id: "a",
+        orphan: false,
+        node: (
+          <div>
+            <span>card-body</span>
+            <button type="button">delete</button>
+          </div>
+        ),
+      },
+    ];
+    const { container } = render(
+      <MarginNotesColumn notes={notes} getAnchorRect={noRect} onActivate={onActivate} recomputeKey={0} />,
+    );
+    fireEvent.click(screen.getByText("card-body"));
+    expect(onActivate).toHaveBeenCalledWith("a");
+    onActivate.mockClear();
+    // Клик по вложенной кнопке всплывает в onClick карточки, но guard его глушит.
+    fireEvent.click(screen.getByRole("button", { name: "delete" }));
+    expect(onActivate).not.toHaveBeenCalled();
+    expect(container).toBeTruthy();
   });
 
   it("пустой список нот не падает", () => {

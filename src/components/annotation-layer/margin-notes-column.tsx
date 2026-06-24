@@ -5,9 +5,19 @@
 // (anchorRect.top − columnRect.top), раздвигается resolveStack, под абсолют
 // ставится min-height-распорка (= totalHeight). На узких (narrow) абсолют не
 // применяется — чистый поток-список. Сироты (orphan) всегда в потоке сверху.
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+//
+// Активация карточки (скролл к якорю) — ПОЙНТЕР-ОНЛИ, без role="button"/tabIndex/
+// клавиатуры на обёртке: карточка (n.node) содержит реальные интерактивные
+// контролы (edit/delete), а role="button" поверх вложенных <button> — антипаттерн
+// доступности (nested-interactive). Клавиатурный путь — собственные контролы
+// карточки + обратное направление «клик по тексту → активная карточка». Клик,
+// исходящий из интерактивного потомка, НЕ активирует (guard всплытия).
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
 import { resolveStack, type StackItem } from "./stacking";
+
+// Селектор интерактивных потомков: клик по ним не активирует карточку.
+const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], [tabindex]';
 
 export interface ColumnNote {
   id: string;
@@ -76,11 +86,11 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, recomputeK
   const orphans = notes.filter((n) => n.orphan);
   const anchored = notes.filter((n) => !n.orphan);
 
-  const onKey = (id: string) => (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onActivate(id);
-    }
+  // Пойнтер-онли активация с guard всплытия: клик, исходящий из интерактивного
+  // потомка карточки (edit/delete и т.п.), НЕ скроллит к якорю.
+  const onCardClick = (id: string) => (e: MouseEvent<HTMLDivElement>) => {
+    if ((e.target as Element | null)?.closest(INTERACTIVE)) return;
+    onActivate(id);
   };
 
   return (
@@ -94,18 +104,21 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, recomputeK
         style={wide ? { minHeight: strut } : undefined}
       >
         {anchored.map((n) => (
+          // Пойнтер-онли активация (скролл к якорю) поверх карточки, которая САМА
+          // несёт фокусируемые контролы (edit/delete) + обратный путь «клик по
+          // тексту → активная карточка». role="button"/tabIndex здесь были бы
+          // nested-interactive антипаттерном (вложенные <button>), поэтому
+          // намеренно НЕ добавляем клавиатуру/роль на обёртку — это
+          // необязательное pointer-улучшение, не единственный путь к действию.
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- pointer-only enhancement; избегаем nested-interactive (карточка имеет свои фокус-контролы + реципрокный текст→карточка)
           <div
             key={n.id}
+            data-annotation-card={n.id}
             ref={(el) => {
               if (el) cardRefs.current.set(n.id, el);
               else cardRefs.current.delete(n.id);
             }}
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              onActivate(n.id);
-            }}
-            onKeyDown={onKey(n.id)}
+            onClick={onCardClick(n.id)}
             style={
               wide && tops.has(n.id)
                 ? { position: "absolute", top: tops.get(n.id), insetInlineStart: 0, insetInlineEnd: 0 }
