@@ -36,6 +36,8 @@ export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
           "aria-label": ariaLabel ?? t("editorAriaLabel"),
           role: "textbox",
           "aria-multiline": "true",
+          // отступ как у тулбара (p-1) + снимаем нативный focus-outline contenteditable
+          class: "p-1 outline-none",
         },
       },
       extensions: [...buildExtensions({ snapshot: schema, context: entityContext, placeholder }), ...(extraExtensions ?? [])],
