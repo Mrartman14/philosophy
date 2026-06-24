@@ -1,6 +1,4 @@
 "use client";
-import { useId } from "react";
-
 import { Button, Combobox } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
@@ -37,7 +35,6 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
   const errorCopy = props.copy?.error ?? t("comboboxError");
   const loadingCopy = props.copy?.loading ?? t("comboboxLoading");
 
-  const listId = useId();
   const { items, status, query, setQuery, loadMore, canLoadMore, reload } =
     useAsyncComboboxItems<T>(props.fetcher, pageSize);
 
@@ -64,20 +61,27 @@ export function AsyncCombobox<T>(props: AsyncComboboxProps<T>) {
           placeholder={props.placeholder}
           onKeyDown={(e) => { if (e.key === "Escape") props.onClose?.(); }}
         />
-        <Combobox.List id={listId}>
+        <Combobox.List>
           {(item: T) => (
             <Combobox.Item key={props.getKey(item)} value={item}>
               {props.renderItem(item)}
             </Combobox.Item>
           )}
         </Combobox.List>
-        {status === "empty" && <div role="presentation">{empty}</div>}
-        {status === "loading" && <div role="presentation">{loadingCopy}</div>}
+        {/*
+          Combobox.Empty/Combobox.Status (Base UI, через kit) рендерят children
+          inline даже без Popup/Positioner-предка и дают бесплатные
+          role="status" + aria-live="polite" анонсы — манипулировать видимостью
+          продолжаем через наш status (серверный поиск, filter=null), но a11y
+          live-region берём от нативных частей.
+        */}
+        {status === "empty" && <Combobox.Empty>{empty}</Combobox.Empty>}
+        {status === "loading" && <Combobox.Status>{loadingCopy}</Combobox.Status>}
         {status === "error" && (
-          <div role="presentation">
+          <Combobox.Status>
             {errorCopy}
             <Button tone="quiet" compact onClick={() => { reload(); }}>{t("comboboxRetry")}</Button>
-          </div>
+          </Combobox.Status>
         )}
         {canLoadMore && (
           <div role="presentation">
