@@ -2,7 +2,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { MarginNote, MARGIN_NOTE_SIDE } from "./margin-note";
+import { MarginNote, MARGIN_NOTE_SIDE, MARGIN_NOTE_SIDE_WIDE } from "./margin-note";
 
 afterEach(cleanup);
 
@@ -34,5 +34,24 @@ describe("MarginNote", () => {
     const aside = screen.getByRole("complementary");
     expect(aside).toHaveClass("text-sm");
     expect(aside).toHaveTextContent("payload");
+  });
+
+  it("grow растягивает поле end в смежный bleed (wide-колонка вместо обычной)", () => {
+    render(<MarginNote side="end" grow>x</MarginNote>);
+    const aside = screen.getByRole("complementary");
+    expect(aside).toHaveClass("col-margin-end-wide");
+    expect(aside).not.toHaveClass("col-margin-end");
+  });
+
+  it("grow растягивает поле start в смежный bleed (wide-колонка вместо обычной)", () => {
+    render(<MarginNote side="start" grow>x</MarginNote>);
+    const aside = screen.getByRole("complementary");
+    expect(aside).toHaveClass("col-margin-start-wide");
+    expect(aside).not.toHaveClass("col-margin-start");
+  });
+
+  it("карта wide-сторон использует растянутые колонки", () => {
+    expect(MARGIN_NOTE_SIDE_WIDE.start).toBe("col-margin-start-wide");
+    expect(MARGIN_NOTE_SIDE_WIDE.end).toBe("col-margin-end-wide");
   });
 });

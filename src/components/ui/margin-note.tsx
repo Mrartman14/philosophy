@@ -9,6 +9,12 @@ export const MARGIN_NOTE_SIDE = {
   end: "col-margin-end",
 } as const;
 
+/** Карта стороны → растянутая колонка (поле + смежный bleed, cap по ширине). */
+export const MARGIN_NOTE_SIDE_WIDE = {
+  start: "col-margin-start-wide",
+  end: "col-margin-end-wide",
+} as const;
+
 /** Карта поведения на узких экранах (< xl). */
 const COLLAPSE_CLASS = {
   inline: "margin-note--inline",
@@ -20,6 +26,12 @@ export interface MarginNoteProps {
   side: keyof typeof MARGIN_NOTE_SIDE;
   /** Поведение на < xl (1280px): inline — втекает в поток (default); hidden — скрыт. */
   collapse?: keyof typeof COLLAPSE_CLASS;
+  /**
+   * Растягивает поле в смежный bleed-трек до `--layout-margin-wide` (~32rem) на ≥xl;
+   * ниже xl — как обычно по collapse. Для широких панелей, напр. комментариев/
+   * аннотаций. opt-in, default false.
+   */
+  grow?: boolean;
   className?: string;
   children: ReactNode;
 }
@@ -30,9 +42,10 @@ export interface MarginNoteProps {
  * (страница возвращает фрагмент: контент-хребет + <MarginNote>). Server-rendered,
  * RTL — через логические грид-линии. Structural-примитив → className ОТКРЫТ.
  */
-export function MarginNote({ side, collapse = "inline", className, children }: MarginNoteProps) {
+export function MarginNote({ side, collapse = "inline", grow = false, className, children }: MarginNoteProps) {
+  const placement = grow ? MARGIN_NOTE_SIDE_WIDE[side] : MARGIN_NOTE_SIDE[side];
   return (
-    <aside className={cn(MARGIN_NOTE_SIDE[side], COLLAPSE_CLASS[collapse], className)}>
+    <aside className={cn(placement, COLLAPSE_CLASS[collapse], className)}>
       {children}
     </aside>
   );

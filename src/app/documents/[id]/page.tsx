@@ -116,7 +116,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         </aside>
       )}
 
-      <MarginNote side="end" className="p-6">
+      <MarginNote side="end" grow className="p-6">
         {document.id ? (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={document.id} />

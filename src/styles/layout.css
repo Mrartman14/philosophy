@@ -8,6 +8,7 @@
 :root {
   --layout-spine: 45rem;   /* ~720px: читаемая ширина хребта */
   --layout-margin: 0px;    /* поля скрыты по умолчанию; раскрываются на >= xl */
+  --layout-margin-wide: 32rem;  /* cap ширины растянутого поля (col-margin-*-wide) */
   --layout-gutter: 2rem;   /* зазор хребет <-> поле */
   /* top sticky-навов: ниже хедера + небольшой зазор (не примыкать вплотную). */
   --layout-sticky-top: calc(var(--header-height) + 1rem);
@@ -83,6 +84,23 @@
 .col-margin-start { grid-column: margin-start / content-start; }
 .col-margin-end   { grid-column: content-end / margin-end; }
 .col-bleed        { grid-column: bleed-start / bleed-end; }
+
+/* Растянутые поля: занимают своё поле + смежный bleed-трек, прижатые к хребту,
+   с cap по ширине (читабельный предел для широких панелей, напр. аннотаций).
+   Только на >= xl (ниже — обычный margin-note--inline collapse). justify-self
+   прижимает панель к хребту; inline-size cap не даёт растечься на ультра-широких. */
+@media (min-width: theme(--breakpoint-xl)) {
+  .col-margin-start-wide {
+    grid-column: bleed-start / content-start;
+    justify-self: end;
+    inline-size: min(100%, var(--layout-margin-wide));
+  }
+  .col-margin-end-wide {
+    grid-column: content-end / bleed-end;
+    justify-self: start;
+    inline-size: min(100%, var(--layout-margin-wide));
+  }
+}
 
 /* Поведение маргиналий на узких экранах (< xl): inline втекает в хребет под
    своим местом; hidden прячется. */
