@@ -1,5 +1,6 @@
 import Heading from "@tiptap/extension-heading";
 
+import { blockIdPmAttr } from "../block-id-attr";
 import { domSpecFromNode } from "../render-from-map";
 
 export const HeadingExt = Heading.extend({
@@ -12,12 +13,7 @@ export const HeadingExt = Heading.extend({
         renderHTML: (attrs: { id?: string | null }) =>
           attrs.id ? { "data-heading-id": attrs.id } : {},
       },
-      blockId: {
-        default: "",
-        parseHTML: (el) => el.getAttribute("data-block-id") ?? "",
-        renderHTML: (attrs: { blockId?: string }) =>
-          attrs.blockId ? { "data-block-id": attrs.blockId } : {},
-      },
+      blockId: blockIdPmAttr(),
     };
   },
 

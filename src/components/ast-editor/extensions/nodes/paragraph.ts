@@ -1,17 +1,13 @@
 import Paragraph from "@tiptap/extension-paragraph";
 
+import { blockIdPmAttr } from "../block-id-attr";
 import { domSpecFromNode } from "../render-from-map";
 
 export const ParagraphExt = Paragraph.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
-      blockId: {
-        default: "",
-        parseHTML: (el) => el.getAttribute("data-block-id") ?? "",
-        renderHTML: (attrs: { blockId?: string }) =>
-          attrs.blockId ? { "data-block-id": attrs.blockId } : {},
-      },
+      blockId: blockIdPmAttr(),
     };
   },
 

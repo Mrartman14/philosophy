@@ -1,5 +1,6 @@
 import CodeBlock from "@tiptap/extension-code-block";
 
+import { blockIdPmAttr } from "../block-id-attr";
 import { domSpecFromNode } from "../render-from-map";
 
 /**
@@ -23,12 +24,7 @@ export const CodeBlockExt = CodeBlock.extend({
         renderHTML: (attrs: { language?: string | null }) =>
           attrs.language ? { "data-language": attrs.language } : {},
       },
-      blockId: {
-        default: "",
-        parseHTML: (el) => el.getAttribute("data-block-id") ?? "",
-        renderHTML: (attrs: { blockId?: string }) =>
-          attrs.blockId ? { "data-block-id": attrs.blockId } : {},
-      },
+      blockId: blockIdPmAttr(),
     };
   },
 });

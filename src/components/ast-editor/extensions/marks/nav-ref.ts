@@ -13,9 +13,15 @@ const NAV_MARK_TYPES = [
 export type NavMarkType = (typeof NAV_MARK_TYPES)[number];
 
 /**
- * Factory creating a Tiptap Mark for one of the 6 navigation-ref types.
- * Stores all attrs as data-attr-<name> on a span for round-trip safety.
- * Specific picker UX is wired in Phase 2.
+ * Factory creating a Tiptap Mark for one of the {@link NAV_MARK_TYPES}
+ * navigation-ref types.
+ *
+ * Round-trip attrs (id, anchor fields, …) are emitted as BARE HTML attributes
+ * via Tiptap's default attribute rendering in HTMLAttributes (no `data-attr-`
+ * prefix). The structural shape — tag, `href`, `class`, `data-mark` — comes
+ * from the neutral render map: renderHTML normally emits an `<a>`, falling back
+ * to a `<span>` only when the id is empty (map returns null). Specific picker
+ * UX is wired in Phase 2.
  */
 export function createNavRefMark(type: NavMarkType) {
   return Mark.create({

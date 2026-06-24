@@ -1,17 +1,13 @@
 import Blockquote from "@tiptap/extension-blockquote";
 
+import { blockIdPmAttr } from "../block-id-attr";
 import { domSpecFromNode } from "../render-from-map";
 
 export const BlockquoteExt = Blockquote.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
-      blockId: {
-        default: "",
-        parseHTML: (el) => el.getAttribute("data-block-id") ?? "",
-        renderHTML: (attrs: { blockId?: string }) =>
-          attrs.blockId ? { "data-block-id": attrs.blockId } : {},
-      },
+      blockId: blockIdPmAttr(),
     };
   },
 

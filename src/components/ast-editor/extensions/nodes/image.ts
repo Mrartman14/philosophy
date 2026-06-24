@@ -3,6 +3,7 @@ import type { DOMOutputSpec } from "@tiptap/pm/model";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 
 import { resolveStorageUrl } from "../../upload/storage-url";
+import { blockIdPmAttr } from "../block-id-attr";
 
 import { ImageNodeView } from "./image-node-view";
 
@@ -44,12 +45,7 @@ export const ImageExt = Node.create({
         renderHTML: (attrs: { caption?: string }) =>
           attrs.caption ? { "data-caption": attrs.caption } : {},
       },
-      blockId: {
-        default: "",
-        parseHTML: (el) => el.getAttribute("data-block-id") ?? "",
-        renderHTML: (attrs: { blockId?: string }) =>
-          attrs.blockId ? { "data-block-id": attrs.blockId } : {},
-      },
+      blockId: blockIdPmAttr(),
     };
   },
 

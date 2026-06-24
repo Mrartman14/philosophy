@@ -1,5 +1,6 @@
 import { Node } from "@tiptap/core";
 
+import { blockIdPmAttr } from "../block-id-attr";
 import { domSpecFromNode } from "../render-from-map";
 
 export const ListExt = Node.create({
@@ -11,7 +12,7 @@ export const ListExt = Node.create({
     return {
       ordered: { default: false },
       start: { default: null },
-      blockId: { default: "" },
+      blockId: blockIdPmAttr(),
     };
   },
 
