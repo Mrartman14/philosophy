@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 import { AstToc, extractHeadings } from "@/components/ast-toc";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
-import { AnnotationsSection } from "@/features/annotations";
+import { DocumentAnnotations } from "@/features/annotations";
 import {
   canEditDocument,
   canDeleteDocument,
@@ -86,25 +86,15 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         </div>
       </header>
 
-      <DocumentDetail document={document} />
+      <div data-ast-root>
+        <DocumentDetail document={document} />
+      </div>
 
       {/* DocumentContainers всегда рендерит AttachmentsPanel с заголовком
           «Включён в лекции» + список или пустое-состояние — используем Skeleton. */}
       <Suspense fallback={<Skeleton className="h-24 w-full" />}>
         <DocumentContainers documentId={id} />
       </Suspense>
-
-      {/* Аннотации на документе. Композиция через страницу (не cross-feature
-          импорт): слайс annotations экспонирует AnnotationsSection из своего
-          index.ts. Видимые аннотации фетчатся внутри секции (матрица
-          видимости — на беке). */}
-      {/* AnnotationsSection всегда рендерит заголовок «Аннотации» + контент
-          (список или пустое-состояние) + форму создания — используем Skeleton. */}
-      {document.id && (
-        <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-          <AnnotationsSection parentEntityType="document" parentId={document.id} />
-        </Suspense>
-      )}
 
       {/* DocumentRevisions всегда рендерит контент (история ревизий) — Skeleton. */}
       {showRevisions && document.id && (
@@ -127,7 +117,13 @@ export default async function DocumentPage({ params, searchParams }: Props) {
       )}
 
       <MarginNote side="end" className="p-6">
-        <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>
+        {document.id ? (
+          <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+            <DocumentAnnotations parentId={document.id} />
+          </Suspense>
+        ) : (
+          <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>
+        )}
       </MarginNote>
     </>
   );
