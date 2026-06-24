@@ -25,6 +25,44 @@ const NO_NEXT_INTL_PATTERN = {
     "next-intl — только через фасад @/i18n (server) / @/i18n/client (Guardrail 5). Прямой импорт запрещён.",
 };
 
+// Guardrail 11 (AST-render boundaries): module-boundary гард для триады
+// ast-content-map → ast-render / ast-editor. Архитектура: ast-content-map —
+// framework-neutral substrate (узлы/марки/атрибуты AST), который потребляют ОБА:
+// read-рендер ast-render (React) и редактор ast-editor (Tiptap/ProseMirror).
+// Зависимости строго односторонние и не пересекаются:
+//   • ast-content-map — НЕ знает ни про React, ни про Tiptap/PM, ни про
+//     ast-render/ast-editor (нейтрален). МОЖЕТ: @/api/schema, @/utils/*.
+//   • ast-render — read-слой: МОЖЕТ react + ast-content-map; НЕ тянет
+//     Tiptap/PM (редакторное) и НЕ тянет ast-editor.
+//   • ast-editor — edit-слой: МОЖЕТ Tiptap/PM (@tiptap/*, @tiptap/pm/*,
+//     prosemirror-*) + ast-content-map; НЕ тянет ast-render (read-слой).
+// Эти паттерны — отдельные const-наборы, чтобы каждый граничный блок ниже
+// (который ПЕРЕЗАПИШЕТ Guardrail 1 для своих ast-*-путей — flat-config не мержит
+// опции no-restricted-imports) композировал НУЖНЫЙ срез вместе с общими
+// DEEP_IMPORT_PATTERN + NO_NEXT_INTL_PATTERN, ничего не теряя.
+// «react/*»/«react-dom/*» ловят и сабпути; «@tiptap/*»+«@tiptap/**» — пакет и
+// все подпути включая @tiptap/pm/model; «prosemirror-*» — все prosemirror-пакеты.
+const NO_REACT_PATTERN = {
+  group: ["react", "react/*", "react-dom", "react-dom/*"],
+  message:
+    "ast-content-map — framework-neutral substrate: импорт React запрещён. React-рендер живёт в @/components/ast-render.",
+};
+const NO_TIPTAP_PM_PATTERN = {
+  group: ["@tiptap/*", "@tiptap/**", "prosemirror-*"],
+  message:
+    "Tiptap/ProseMirror — редакторная зависимость: разрешена только в @/components/ast-editor, не в neutral-substrate/read-слое.",
+};
+const NO_AST_RENDER_PATTERN = {
+  group: ["@/components/ast-render", "@/components/ast-render/*"],
+  message:
+    "Импорт read-слоя @/components/ast-render запрещён здесь: зависимость односторонняя (ast-render → ast-content-map). Общий код — в @/components/ast-content-map.",
+};
+const NO_AST_EDITOR_PATTERN = {
+  group: ["@/components/ast-editor", "@/components/ast-editor/*"],
+  message:
+    "Импорт edit-слоя @/components/ast-editor запрещён здесь: зависимость односторонняя (ast-editor → ast-content-map). Общий код — в @/components/ast-content-map.",
+};
+
 // Guardrail 10 (RTL): запрет физических direction-токенов в строковых литералах
 // (className, аргументы cn(), вынесенные const-строки классов — всё это просто
 // Literal-узлы) и в style-объектах. RTL-вёрстка обязана опираться на ЛОГИЧЕСКИЕ
@@ -478,6 +516,67 @@ const eslintConfig = [
       "no-restricted-imports": [
         "error",
         { patterns: [DEEP_IMPORT_PATTERN, NO_NEXT_INTL_PATTERN] },
+      ],
+    },
+  },
+  // Guardrail 11 (AST-render module boundaries) — три блока ниже идут ПОСЛЕ
+  // Guardrail 1 и матчат ast-*-пути ПОСЛЕДНИМИ. flat-config НЕ мержит опции
+  // no-restricted-imports → последний матчнувший блок перезаписывает; поэтому
+  // каждый блок ПОВТОРЯЕТ общие DEEP_IMPORT_PATTERN + NO_NEXT_INTL_PATTERN
+  // (иначе G1-запреты deep-import/next-intl слетели бы с ast-*-модулей) И несёт
+  // свой срез граничных паттернов. Тесты ИСКЛЮЧЕНЫ через ignores: integration-
+  // парити-тест ast-content-map/edit-read-parity.test.ts ЛЕГИТИМНО импортирует
+  // и ast-render, и ast-editor сразу (проверка read/edit-паритета) — гард на
+  // *.test.{ts,tsx} не распространяется. Описание границ — у const-паттернов выше.
+  {
+    files: ["src/components/ast-content-map/**/*.{ts,tsx}"],
+    ignores: ["src/components/ast-content-map/**/*.test.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            DEEP_IMPORT_PATTERN,
+            NO_NEXT_INTL_PATTERN,
+            NO_REACT_PATTERN,
+            NO_TIPTAP_PM_PATTERN,
+            NO_AST_RENDER_PATTERN,
+            NO_AST_EDITOR_PATTERN,
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/components/ast-render/**/*.{ts,tsx}"],
+    ignores: ["src/components/ast-render/**/*.test.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            DEEP_IMPORT_PATTERN,
+            NO_NEXT_INTL_PATTERN,
+            NO_TIPTAP_PM_PATTERN,
+            NO_AST_EDITOR_PATTERN,
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/components/ast-editor/**/*.{ts,tsx}"],
+    ignores: ["src/components/ast-editor/**/*.test.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            DEEP_IMPORT_PATTERN,
+            NO_NEXT_INTL_PATTERN,
+            NO_AST_RENDER_PATTERN,
+          ],
+        },
       ],
     },
   },
