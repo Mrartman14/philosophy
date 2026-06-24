@@ -4828,6 +4828,182 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/banners/{id}/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список аннотаций родительской сущности
+         * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр аннотаций по блоку (block_id) */
+                    block_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Создать аннотацию для родительской сущности
+         * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["annotation.CreateRequest"];
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/banners/{id}/dismiss": {
         parameters: {
             query?: never;
@@ -5440,6 +5616,182 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/canvases/{id}/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список аннотаций родительской сущности
+         * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр аннотаций по блоку (block_id) */
+                    block_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Создать аннотацию для родительской сущности
+         * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["annotation.CreateRequest"];
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/canvases/{id}/attachments": {
         parameters: {
             query?: never;
@@ -5949,6 +6301,182 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/comments/{id}/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список аннотаций родительской сущности
+         * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр аннотаций по блоку (block_id) */
+                    block_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Создать аннотацию для родительской сущности
+         * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["annotation.CreateRequest"];
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -7496,6 +8024,182 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/documents/{id}/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список аннотаций родительской сущности
+         * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр аннотаций по блоку (block_id) */
+                    block_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Создать аннотацию для родительской сущности
+         * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["annotation.CreateRequest"];
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/documents/{id}/attachments": {
         parameters: {
             query?: never;
@@ -7831,7 +8535,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/entities/{type}/{id}/annotations": {
+    "/api/events/{id}/annotations": {
         parameters: {
             query?: never;
             header?: never;
@@ -7840,7 +8544,7 @@ export interface paths {
         };
         /**
          * Список аннотаций родительской сущности
-         * @description Универсальный GET: тип родительской сущности фиксируется в URL.
+         * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
          */
         get: {
             parameters: {
@@ -7856,8 +8560,6 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    /** @description Тип родительской сущности */
-                    type: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
                     /** @description ID родительской сущности */
                     id: string;
                 };
@@ -7908,7 +8610,7 @@ export interface paths {
         put?: never;
         /**
          * Создать аннотацию для родительской сущности
-         * @description Универсальный POST: тип родительской сущности фиксируется в URL.
+         * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
          */
         post: {
             parameters: {
@@ -7918,19 +8620,12 @@ export interface paths {
                     "Idempotency-Key"?: string;
                 };
                 path: {
-                    /** @description Тип родительской сущности */
-                    type: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
                     /** @description ID родительской сущности */
                     id: string;
                 };
                 cookie?: never;
             };
-            /** @description Параметры аннотации */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["annotation.CreateRequest"];
-                };
-            };
+            requestBody: components["requestBodies"]["annotation.CreateRequest"];
             responses: {
                 /** @description Created */
                 201: {
@@ -8923,6 +9618,182 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/glossary/{id}/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список аннотаций родительской сущности
+         * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр аннотаций по блоку (block_id) */
+                    block_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Создать аннотацию для родительской сущности
+         * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["annotation.CreateRequest"];
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -13190,6 +14061,182 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/media/{id}/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список аннотаций родительской сущности
+         * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Фильтр аннотаций по блоку (block_id) */
+                    block_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Создать аннотацию для родительской сущности
+         * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасных повторов офлайн-записей */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description ID родительской сущности */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["annotation.CreateRequest"];
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        /** @description Version as strong ETag (echo back in If-Match on next update) */
+                        ETag?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["annotation.Annotation"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description REQUEST_BODY_TOO_LARGE */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ValidationErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/media/{id}/attachments": {
         parameters: {
             query?: never;
@@ -15369,22 +16416,38 @@ export interface components {
         "access.Visibility": "private" | "public";
         "anchor.Position": {
             end_block_id?: string;
+            /**
+             * @description EndChar is the end offset within EndBlockID's text, in UTF-16 code
+             *     units (JS String.length / DOM Range semantics). Stored opaquely.
+             */
             end_char?: number;
             end_sec?: number;
             exact?: string;
             prefix?: string;
             start_block_id?: string;
+            /**
+             * @description StartChar is the start offset within StartBlockID's text, in UTF-16
+             *     code units (JS String.length / DOM Range semantics). Stored opaquely.
+             */
             start_char?: number;
             start_sec?: number;
             suffix?: string;
         };
         "annotation.Anchor": {
             end_block_id?: string;
+            /**
+             * @description EndChar is the end offset within EndBlockID's text, in UTF-16 code
+             *     units (JS String.length / DOM Range semantics). Stored opaquely.
+             */
             end_char?: number;
             end_sec?: number;
             exact?: string;
             prefix?: string;
             start_block_id?: string;
+            /**
+             * @description StartChar is the start offset within StartBlockID's text, in UTF-16
+             *     code units (JS String.length / DOM Range semantics). Stored opaquely.
+             */
             start_char?: number;
             start_sec?: number;
             suffix?: string;
@@ -15681,11 +16744,19 @@ export interface components {
         };
         "comment.Anchor": {
             end_block_id?: string;
+            /**
+             * @description EndChar is the end offset within EndBlockID's text, in UTF-16 code
+             *     units (JS String.length / DOM Range semantics). Stored opaquely.
+             */
             end_char?: number;
             end_sec?: number;
             exact?: string;
             prefix?: string;
             start_block_id?: string;
+            /**
+             * @description StartChar is the start offset within StartBlockID's text, in UTF-16
+             *     code units (JS String.length / DOM Range semantics). Stored opaquely.
+             */
             start_char?: number;
             start_sec?: number;
             suffix?: string;
@@ -16637,6 +17708,12 @@ export interface components {
         "user.RefreshRequest": {
             content: {
                 "application/json": components["schemas"]["user.RefreshRequest"];
+            };
+        };
+        /** @description Параметры аннотации */
+        "annotation.CreateRequest": {
+            content: {
+                "application/json": components["schemas"]["annotation.CreateRequest"];
             };
         };
         /** @description Username и пароль */
