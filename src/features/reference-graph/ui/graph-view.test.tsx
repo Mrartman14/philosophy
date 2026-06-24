@@ -30,9 +30,14 @@ vi.mock("@/components/scene-3d", () => ({
   ),
   SceneModeToggle: () => <div data-testid="mode-toggle" />,
   SceneRegionLabels: () => <div data-testid="region-labels" />,
-  readSavedMode: () => "2d",
   projectToScreen: () => ({ visible: false, x: 0, y: 0 }),
-  writeViewToUrl: vi.fn(),
+  // Заглушка камера-URL хука: режим "2d", wireCamera — no-op. Навигацию/pick не трогает.
+  useCameraUrlSync: () => ({
+    mode: "2d",
+    setMode: vi.fn(),
+    modeRef: { current: "2d" },
+    wireCamera: vi.fn(),
+  }),
 }));
 // Модель: два узла (тип во view берётся из data.nodes, а не из модели).
 vi.mock("../to-graph-render-model", () => ({

@@ -8,13 +8,11 @@ import {
   SceneCanvasIsolation,
   SceneModeToggle,
   SceneRegionLabels,
-  readSavedMode,
-  writeViewToUrl,
+  useCameraUrlSync,
   projectToScreen,
   type ParsedView,
   type ProjectedLabel,
   type SceneRenderer,
-  type SceneRenderMode,
 } from "@/components/scene-3d";
 import { useT } from "@/i18n/client";
 
@@ -32,10 +30,8 @@ export default function GraphView({ data, initialView }: { data: GraphData; init
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   // Тип рефа — порт SceneRenderer (не конкретный ThreeGraphRenderer): своп рисовалки не трогает UI.
   const rendererRef = useRef<SceneRenderer | null>(null);
-  // Режим: URL (?m=) бьёт localStorage — оба источника (useState и modeRef) стартуют с одного значения,
-  // иначе тогл UI и mode-страж applyCamera разошлись бы.
-  const [mode, setMode] = useState<SceneRenderMode>(() => initialView.mode ?? readSavedMode(MODE_KEY));
-  const modeRef = useRef<SceneRenderMode>(initialView.mode ?? readSavedMode(MODE_KEY));
+  // Камера-URL обвязка (режим H1, restore, settle/mode-write) — общий хук scene-3d.
+  const { mode, setMode, modeRef, wireCamera } = useCameraUrlSync(MODE_KEY, initialView, rendererRef);
   const [labels, setLabels] = useState<ProjectedLabel[]>([]);
 
   const model = useMemo(() => toGraphRenderModel(data), [data]);
@@ -72,18 +68,6 @@ export default function GraphView({ data, initialView }: { data: GraphData; init
     reduceRef.current = reduce;
   }, [reduce]);
 
-  // initialViewRef: актуальный initialView для lifecycle-эффекта [model] БЕЗ добавления в deps.
-  // useRef(initialView) уже несёт верный старт на маунте (нужный для restore); sync — через effect,
-  // а не запись ref в рендере: тот же react-hooks/refs-нюанс, что у reduceRef выше. Этот эффект стоит
-  // ДО lifecycle-эффекта графа, поэтому ref обновляется первым на ре-рендере.
-  const initialViewRef = useRef(initialView);
-  useEffect(() => {
-    initialViewRef.current = initialView;
-  }, [initialView]);
-  // modeWriteSkip: страж первого прогона mode-эффекта — не писать вид в URL на маунте (живёт всё время
-  // жизни компонента, поэтому обычный useRef, не пере-инициализируется).
-  const modeWriteSkip = useRef(true);
-
   useEffect(() => {
     const wrap = wrapRef.current;
     const canvas = canvasRef.current;
@@ -117,12 +101,6 @@ export default function GraphView({ data, initialView }: { data: GraphData; init
     r.resize(wrap.clientWidth || 1, wrap.clientHeight || 1, window.devicePixelRatio || 1);
     r.onChange(updateLabels); // ДО setModel — первый кадр обновит подписи
 
-    // Камера осела (пользовательский жест) → пишем вид в URL. Программный applyCamera onSettle не дёргает.
-    r.onSettle(() => {
-      const v = r.getCamera();
-      if (v) writeViewToUrl(v);
-    });
-
     // Клик по узлу → навигация на сущность. nodeHref=null (нет type / нет id / клик в пустоту) → no-op.
     r.onPick?.((id) => {
       if (!id) return;
@@ -134,9 +112,8 @@ export default function GraphView({ data, initialView }: { data: GraphData; init
     r.setMode(modeRef.current);
     r.setReducedMotion(reduceRef.current);
 
-    // Восстановление камеры из URL — ПОСЛЕДНИЙ камера-шаг. Программный applyCamera onSettle не сработает.
-    const cam0 = initialViewRef.current.camera;
-    if (cam0) r.applyCamera(cam0);
+    // settle-write + restore из URL (ПОСЛЕДНИЙ камера-шаг, иначе авто-фит затёр бы камеру) — общий хук.
+    wireCamera(r);
 
     const ro = new ResizeObserver(() => {
       r.resize(wrap.clientWidth, wrap.clientHeight, window.devicePixelRatio || 1);
@@ -149,20 +126,10 @@ export default function GraphView({ data, initialView }: { data: GraphData; init
       r.destroy();
       rendererRef.current = null;
     };
+    // modeRef (ref) и wireCamera (useCallback с пустыми deps) стабильны — намеренно вне deps,
+    // чтобы пере-маунт шёл только по data-зависимостям ниже (camera/режим переживают их через ref/хук).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model, labelNodes, typeById, router]);
-
-  useEffect(() => {
-    modeRef.current = mode;
-    rendererRef.current?.setMode(mode);
-    window.localStorage.setItem(MODE_KEY, mode);
-    // Первый прогон (маунт) — режим уже отражён в URL/init; не перезаписываем вид.
-    if (modeWriteSkip.current) {
-      modeWriteSkip.current = false;
-      return;
-    }
-    const v = rendererRef.current?.getCamera();
-    if (v) writeViewToUrl(v);
-  }, [mode]);
 
   useEffect(() => {
     rendererRef.current?.setReducedMotion(reduce);

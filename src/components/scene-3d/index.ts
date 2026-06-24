@@ -14,3 +14,4 @@ export { SceneStatePanel } from "./ui/scene-state-panel";
 export { SceneCanvasIsolation } from "./ui/scene-canvas-isolation";
 export { SceneModeToggle, readSavedMode } from "./ui/scene-mode-toggle";
 export { SceneRegionLabels, type ProjectedLabel } from "./ui/scene-region-labels";
+export { useCameraUrlSync, type CameraUrlSync } from "./use-camera-url-sync";
