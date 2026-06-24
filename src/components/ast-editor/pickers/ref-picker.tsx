@@ -179,13 +179,18 @@ export function RefPicker(props: RefPickerProps) {
                 <Combobox.Item key={getKey(item)} value={item}>{renderItem(item)}</Combobox.Item>
               )}
             </Combobox.List>
-            {list.status === "empty" && <div role="presentation">{t("comboboxEmpty")}</div>}
-            {list.status === "loading" && <div role="presentation">{t("comboboxLoading")}</div>}
+            {/*
+              Combobox.Empty/Combobox.Status (Base UI, через kit) дают бесплатные
+              role="status" + aria-live="polite" анонсы для SR — видимостью рулим
+              нашим status (серверный поиск, filter=null), live-region берём от частей.
+            */}
+            {list.status === "empty" && <Combobox.Empty>{t("comboboxEmpty")}</Combobox.Empty>}
+            {list.status === "loading" && <Combobox.Status>{t("comboboxLoading")}</Combobox.Status>}
             {list.status === "error" && (
-              <div role="presentation">
+              <Combobox.Status>
                 {t("comboboxError")}
                 <Button tone="quiet" compact onClick={() => { list.reload(); }}>{t("comboboxRetry")}</Button>
-              </div>
+              </Combobox.Status>
             )}
             {list.canLoadMore && (
               <div role="presentation">
