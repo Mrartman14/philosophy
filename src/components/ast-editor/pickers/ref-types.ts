@@ -91,7 +91,9 @@ const media: RefTypeDef<MediaSummary> = {
   placeholderKey: "mediaPlaceholder",
   scope: { kind: "global" },
   // Медиа-фасет (video/audio) намеренно НЕ переносим — плоский поиск по имени.
-  fetch: (q, o, l) => searchMedia(q, o, l),
+  // searchMedia с опциональным 4-м арг `type?` присваиваем как AsyncFetcher<MediaSummary>
+  // напрямую (функция с меньшим числом обязательных параметров совместима).
+  fetch: searchMedia,
   renderItem: (m) => m.filename ?? "—",
   getKey: (m) => m.id ?? "",
   getLabel: (m) => m.filename ?? m.id ?? "",

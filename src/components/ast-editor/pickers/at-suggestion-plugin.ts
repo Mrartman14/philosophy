@@ -15,7 +15,7 @@ const CLOSED: AtSuggestionState = { open: false, from: -1, query: "" };
 
 /**
  * "@"-suggestion: печать "@" в начале текста или после пробела открывает
- * AtMenu (RefMenu inline). Зеркало slash-menu-plugin (toolbar/slash-menu-plugin.ts):
+ * AtMenu (рендерит RefPicker). Зеркало slash-menu-plugin (toolbar/slash-menu-plugin.ts):
  * state {open, from, query}, mapping позиций через tr.mapping, закрытие при
  * потере "@" в начале маркера и по Esc.
  */

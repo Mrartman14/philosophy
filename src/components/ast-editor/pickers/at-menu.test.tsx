@@ -4,9 +4,9 @@ import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/re
 import { Editor, Extension } from "@tiptap/core";
 import { describe, it, expect, vi, afterEach } from "vitest";
 
-// Мок i18n/client: useT возвращает переводчик по реальному каталогу ru.
-// Ключи refCategoryAriaLabel / refLectureCrumb добавляются в Task 12 — пока их
-// нет в каталоге, и переводчик вернёт сам ключ (этого достаточно для тестов).
+// Мок i18n/client: useT возвращает переводчик по реальному каталогу ru/editor.
+// Если ключа в каталоге нет, переводчик возвращает сам ключ (этого достаточно
+// для тестов, которые не завязаны на конкретный текст перевода).
 vi.mock("@/i18n/client", async () => {
   const { default: editor } = await import("@/i18n/messages/ru/editor");
   return {
