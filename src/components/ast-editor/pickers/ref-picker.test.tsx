@@ -3,9 +3,9 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { Editor } from "@tiptap/core";
 import { describe, it, expect, vi, afterEach } from "vitest";
 
-// Мок i18n/client: useT возвращает переводчик по реальному каталогу ru.
-// Ключи refCategoryAriaLabel / refLectureCrumb добавляются в Task 12 — пока их
-// нет в каталоге, и переводчик вернёт сам ключ (этого достаточно для тестов).
+// Мок i18n/client: useT возвращает переводчик по реальному каталогу ru
+// с простой ICU-подстановкой `{arg}` (зеркалит реальный next-intl: крошка
+// `refLectureCrumb` = "Лекция: {title}" подставляет title).
 vi.mock("@/i18n/client", async () => {
   const { default: editor } = await import("@/i18n/messages/ru/editor");
   return {
@@ -16,12 +16,16 @@ vi.mock("@/i18n/client", async () => {
         let val: any = catalog;
         for (const part of key.split(".")) { val = val?.[part]; }
         /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-        if (typeof val === "string") return val;
-        // Отсутствующий ключ (напр. refLectureCrumb / refCategoryAriaLabel — их
-        // добавит Task 12): возвращаем ключ + значения аргументов, чтобы крошка
-        // несла подставленный title (как сделает реальный ICU-перевод).
-        const suffix = args ? ` ${Object.values(args).filter((v) => v !== "").join(" ")}` : "";
-        return `${key}${suffix}`.trimEnd();
+        if (typeof val !== "string") {
+          // Отсутствующий ключ: возвращаем сам ключ (для тестов достаточно).
+          return key;
+        }
+        // Подстановка ICU-аргументов `{name}` → значение из args.
+        return args
+          ? val.replace(/\{(\w+)\}/g, (m: string, name: string) =>
+              name in args ? String(args[name]) : m,
+            )
+          : val;
       };
     },
   };

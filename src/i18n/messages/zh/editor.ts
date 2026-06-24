@@ -75,6 +75,8 @@ const editor = {
   refCategoryDocument: "文档",
   refCategoryMedia: "媒体",
   refCategoryComment: "评论",
+  refCategoryAriaLabel: "引用类型",
+  refLectureCrumb: "讲座：{title}",
 
   // --- Async combobox (async-combobox) ---
   comboboxEmpty: "未找到任何内容",
@@ -96,11 +98,6 @@ const editor = {
   mediaTypeAll: "全部",
   mediaTypeVideo: "视频",
   mediaTypeAudio: "音频",
-
-  // --- Comment 2-stage picker (comment-2stage-picker) ---
-  commentPickerStep1: "第 1 步：选择讲座",
-  commentPickerStep2: "第 2 步：选择评论",
-  commentPickerChangeLecture: "更换讲座",
 
   // --- Schema server (schema-server) ---
   schemaLoadError: "无法加载 AST 编辑器架构",

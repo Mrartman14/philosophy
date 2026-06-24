@@ -3,23 +3,10 @@ import type { Editor } from "@tiptap/core";
 import { useMemo, useState } from "react";
 
 import { Button, Combobox } from "@/components/ui";
-import type { NamespaceT } from "@/i18n";
 import { useT } from "@/i18n/client";
 
 import { REF_TYPES, type RefTypeDef } from "./ref-types";
 import { useAsyncComboboxItems, type AsyncFetcher } from "./use-async-combobox-items";
-
-/** Допустимый i18n-ключ namespace `editor` (для динамических ключей из REF_TYPES). */
-type EditorKey = Parameters<NamespaceT<"editor">>[0];
-
-/**
- * REF_TYPES хранит ключи как `string` (Task 7), а `useT` типизирован литералами
- * каталога. Сужаем динамический ключ к валидному типу одним кастом-сеймом.
- * ВНИМАНИЕ: ключи `refCategoryAriaLabel` и `refLectureCrumb` добавит Task 12 —
- * до него в каталоге их нет, поэтому каст обязателен и для них (а не только для
- * динамических `labelKey`/`placeholderKey`); рантайм-перевод вернёт сам ключ.
- */
-const asKey = (k: string): EditorKey => k as EditorKey;
 
 /** Дегенеративный fetcher (стабильная ссылка): подстраховка, если у global-scope
  * категории нет `fetch` — по конструкции REF_TYPES такого не бывает. */
@@ -127,8 +114,8 @@ export function RefPicker(props: RefPickerProps) {
 
   const placeholder =
     inParentStep && active.scope.kind === "parent"
-      ? t(asKey(active.scope.parentPlaceholderKey))
-      : t(asKey(active.placeholderKey));
+      ? t(active.scope.parentPlaceholderKey)
+      : t(active.placeholderKey);
 
   const renderItem = (item: unknown): React.ReactNode =>
     inParentStep && active.scope.kind === "parent"
@@ -164,7 +151,7 @@ export function RefPicker(props: RefPickerProps) {
           sideOffset={4}
         >
           <Combobox.Popup className="ref-picker p-1 min-w-[320px] max-w-[480px]">
-            <div role="group" aria-label={t(asKey("refCategoryAriaLabel"))} className="flex gap-1 p-1">
+            <div role="group" aria-label={t("refCategoryAriaLabel")} className="flex gap-1 p-1">
               {REF_TYPES.map((r) => (
                 <Button
                   key={r.id}
@@ -173,7 +160,7 @@ export function RefPicker(props: RefPickerProps) {
                   tone={activeId === r.id ? "primary" : "neutral"}
                   onClick={() => { switchType(r.id); }}
                 >
-                  {t(asKey(r.labelKey))}
+                  {t(r.labelKey)}
                 </Button>
               ))}
             </div>
@@ -183,7 +170,7 @@ export function RefPicker(props: RefPickerProps) {
                 compact
                 onClick={() => { setParentId(undefined); setParentLabel(undefined); list.setQuery(""); }}
               >
-                {t(asKey("refLectureCrumb"), { title: parentLabel ?? "" })}
+                {t("refLectureCrumb", { title: parentLabel ?? "" })}
               </Button>
             )}
             <Combobox.Input placeholder={placeholder} />

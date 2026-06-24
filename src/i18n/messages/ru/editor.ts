@@ -75,6 +75,8 @@ const editor = {
   refCategoryDocument: "Документ",
   refCategoryMedia: "Медиа",
   refCategoryComment: "Комментарий",
+  refCategoryAriaLabel: "Тип ссылки",
+  refLectureCrumb: "Лекция: {title}",
 
   // --- Async combobox (async-combobox) ---
   comboboxEmpty: "Ничего не найдено",
@@ -96,11 +98,6 @@ const editor = {
   mediaTypeAll: "все",
   mediaTypeVideo: "видео",
   mediaTypeAudio: "аудио",
-
-  // --- Comment 2-stage picker (comment-2stage-picker) ---
-  commentPickerStep1: "Шаг 1: выберите лекцию",
-  commentPickerStep2: "Шаг 2: выберите комментарий",
-  commentPickerChangeLecture: "Сменить лекцию",
 
   // --- Schema server (schema-server) ---
   schemaLoadError: "Не удалось загрузить схему AST-редактора",

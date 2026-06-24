@@ -75,6 +75,8 @@ const editor = {
   refCategoryDocument: "مستند",
   refCategoryMedia: "وسائط",
   refCategoryComment: "تعليق",
+  refCategoryAriaLabel: "نوع المرجع",
+  refLectureCrumb: "محاضرة: {title}",
 
   // --- Async combobox (async-combobox) ---
   comboboxEmpty: "لم يُعثر على شيء",
@@ -96,11 +98,6 @@ const editor = {
   mediaTypeAll: "الكل",
   mediaTypeVideo: "فيديو",
   mediaTypeAudio: "صوت",
-
-  // --- Comment 2-stage picker (comment-2stage-picker) ---
-  commentPickerStep1: "الخطوة 1: اختر محاضرة",
-  commentPickerStep2: "الخطوة 2: اختر تعليقًا",
-  commentPickerChangeLecture: "تغيير المحاضرة",
 
   // --- Schema server (schema-server) ---
   schemaLoadError: "تعذّر تحميل مخطط محرر AST",

@@ -1,3 +1,5 @@
+import type { NamespaceT } from "@/i18n";
+
 import {
   searchGlossary,
   searchDocuments,
@@ -16,6 +18,13 @@ import type { AsyncFetcher } from "./use-async-combobox-items";
 export type RefMark = "glossary_ref" | "document_ref" | "media_ref" | "comment_ref";
 
 /**
+ * Валидный i18n-ключ namespace `editor` (зеркалит precedent admin-access.ts:
+ * `Parameters<NamespaceT<"admin">>[0]`). Типизирует динамические ключи REF_TYPES,
+ * чтобы `t(def.labelKey)` проверялся компилятором БЕЗ каста (Task 12).
+ */
+export type EditorKey = Parameters<NamespaceT<"editor">>[0];
+
+/**
  * Контекст поиска категории ссылки.
  * - `global` — плоский поиск по всей сущности.
  * - `parent` — двухступенчатый: сначала выбор родителя (лекции), затем поиск
@@ -25,7 +34,7 @@ export type RefScope =
   | { kind: "global" }
   | {
       kind: "parent";
-      parentPlaceholderKey: string;
+      parentPlaceholderKey: EditorKey;
       parentFetch: AsyncFetcher<Lecture>;
       parentRender: (l: Lecture) => React.ReactNode;
       parentKey: (l: Lecture) => string;
@@ -38,9 +47,9 @@ export interface RefTypeDef<T> {
   id: "glossary" | "document" | "media" | "comment";
   mark: RefMark;
   /** i18n-ключ ярлыка вкладки (каталог `editor`). */
-  labelKey: string;
+  labelKey: EditorKey;
   /** i18n-ключ плейсхолдера строки поиска (каталог `editor`). */
-  placeholderKey: string;
+  placeholderKey: EditorKey;
   scope: RefScope;
   /** Fetcher для `scope.kind === "global"` (для parent-scope лежит в `scope`). */
   fetch?: AsyncFetcher<T>;
