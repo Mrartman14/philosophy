@@ -21,6 +21,7 @@ export { Dialog, DialogClose } from "./dialog";
 export { DirectionProvider } from "./direction-provider";
 export { Toolbar } from "./toolbar";
 export { Popover } from "./popover";
+export { Combobox } from "./combobox";
 export { NavigationMenu } from "./navigation-menu";
 export { ConfirmDialog } from "./confirm-dialog";
 export { Table, Thead, Tbody, Tr, Th, Td } from "./table";
