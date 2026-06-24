@@ -11,6 +11,23 @@ export function blockIdAttr(node: AstNode): Record<string, string> {
   return typeof id === "string" && id.length > 0 ? { "data-block-id": id } : {};
 }
 
+export function listAttrs(node: AstNode): Record<string, string> {
+  const a = (node.attrs ?? {}) as { ordered?: unknown; start?: unknown };
+  const ordered = a.ordered === true;
+  const start = a.start;
+  const startOk = ordered && (typeof start === "number" || typeof start === "string");
+  return {
+    ...blockIdAttr(node),
+    "data-list": "",
+    ...(startOk ? { start: String(start) } : {}),
+  };
+}
+
+export function listItemAttrs(node: AstNode): Record<string, string> {
+  const checked = (node.attrs as { checked?: unknown } | undefined)?.checked;
+  return typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {};
+}
+
 export function headingTag(node: AstNode): string {
   const raw = (node.attrs as { level?: unknown } | undefined)?.level;
   const lvl = typeof raw === "number" && raw >= 1 && raw <= 6 ? raw : 2;
