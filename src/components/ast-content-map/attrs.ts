@@ -1,8 +1,13 @@
 import type { AstNode, AstMark } from "./types";
 
-/** data-block-id ТОЛЬКО для текст-блоков. node.attrs.blockId кладёт deserializer. */
+/**
+ * data-block-id ТОЛЬКО для текст-блоков. Источник id различается по потребителю:
+ * READ передаёт сырой AstBlock (id на верхнем уровне `node.id`), EDIT — PM-ноду
+ * (id в `node.attrs.blockId`, куда его кладёт deserializer). Проверяем оба.
+ */
 export function blockIdAttr(node: AstNode): Record<string, string> {
-  const id = (node.attrs as { blockId?: unknown } | undefined)?.blockId;
+  const id =
+    (node as { id?: unknown }).id ?? (node.attrs as { blockId?: unknown } | undefined)?.blockId;
   return typeof id === "string" && id.length > 0 ? { "data-block-id": id } : {};
 }
 

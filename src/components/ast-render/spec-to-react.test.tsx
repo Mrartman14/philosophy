@@ -14,6 +14,13 @@ describe("specToReact + NODE_MAP/MARK_MAP (срез спайка)", () => {
     expect(p?.textContent).toBe("текст");
   });
 
+  it("data-block-id из верхнеуровневого block.id (read-форма AstBlock)", () => {
+    // READ передаёт сырой AstBlock: id на верхнем уровне, НЕ в attrs.blockId.
+    const spec = NODE_MAP.paragraph!({ id: "p9", type: "paragraph", content: [] } as never);
+    const { container } = render(<>{specToReact(spec, "x")}</>);
+    expect(container.querySelector("p")?.getAttribute("data-block-id")).toBe("p9");
+  });
+
   it("heading level 3 → <h3 data-block-id>", () => {
     const spec = NODE_MAP.heading!({ type: "heading", attrs: { level: 3, blockId: "h1" } });
     const { container } = render(<>{specToReact(spec, "Заголовок")}</>);
