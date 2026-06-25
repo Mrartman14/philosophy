@@ -28,10 +28,22 @@ export function LectureActionsMenu({ exportUrls, share }: Props) {
         <Menu.Portal>
           <Menu.Positioner sideOffset={4} align="end" className="outline-none">
             <Menu.Popup>
-              <Menu.LinkItem href={exportUrls.md} target="_blank" rel="noopener noreferrer">
+              {/* closeOnClick: target=_blank не размонтирует меню (в отличие от
+                  in-place навигации) → закрываем явно, как пункт «Поделиться». */}
+              <Menu.LinkItem
+                href={exportUrls.md}
+                target="_blank"
+                rel="noopener noreferrer"
+                closeOnClick
+              >
                 {t("lectureDownloadMd")}
               </Menu.LinkItem>
-              <Menu.LinkItem href={exportUrls.txt} target="_blank" rel="noopener noreferrer">
+              <Menu.LinkItem
+                href={exportUrls.txt}
+                target="_blank"
+                rel="noopener noreferrer"
+                closeOnClick
+              >
                 {t("lectureDownloadTxt")}
               </Menu.LinkItem>
               {share && (
