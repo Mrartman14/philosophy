@@ -20,4 +20,17 @@ describe("resolveActiveDocId", () => {
   it("документы без id отсеиваются", () => {
     expect(resolveActiveDocId([{}, { id: "d9" }], undefined)).toBe("d9");
   });
+  it("без ?doc → основной документ (is_entry)", () => {
+    expect(
+      resolveActiveDocId([{ id: "d1" }, { id: "d2", is_entry: true }, { id: "d3" }], undefined),
+    ).toBe("d2");
+  });
+  it("валидный ?doc приоритетнее is_entry", () => {
+    expect(
+      resolveActiveDocId([{ id: "d1" }, { id: "d2", is_entry: true }], "d1"),
+    ).toBe("d1");
+  });
+  it("нет is_entry → первый по порядку (фолбэк)", () => {
+    expect(resolveActiveDocId([{ id: "d1" }, { id: "d2" }], undefined)).toBe("d1");
+  });
 });

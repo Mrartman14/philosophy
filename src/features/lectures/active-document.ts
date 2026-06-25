@@ -2,18 +2,23 @@
 
 /**
  * Активный документ лекции для URL-driven просмотра (?doc=). Возвращает docParam,
- * если он среди id документов; иначе первый документ с id; иначе null.
+ * если он среди id документов; иначе основной документ лекции (is_entry); иначе
+ * первый документ с id; иначе null.
  *
- * СТОПГАП: дефолт = первый по sort_order. Когда бэк добавит признак основного
- * документа (is_primary / primary_document_id), заменить дефолт на него.
+ * is_entry выставляется ТОЛЬКО листингом GET /api/lectures/{id}/documents
+ * («основной документ»). Когда не выставлен ни на одном — фолбэк: первый по
+ * sort_order.
  */
 export function resolveActiveDocId(
-  documents: { id?: string }[],
+  documents: { id?: string; is_entry?: boolean }[],
   docParam: string | undefined,
 ): string | null {
-  const ids = documents.map((d) => d.id).filter((id): id is string => Boolean(id));
-  const [first] = ids;
+  const withId = documents.filter(
+    (d): d is { id: string; is_entry?: boolean } => Boolean(d.id),
+  );
+  const [first] = withId;
   if (first === undefined) return null;
-  if (docParam && ids.includes(docParam)) return docParam;
-  return first;
+  if (docParam && withId.some((d) => d.id === docParam)) return docParam;
+  const entry = withId.find((d) => d.is_entry);
+  return entry ? entry.id : first.id;
 }
