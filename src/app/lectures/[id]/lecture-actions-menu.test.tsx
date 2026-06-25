@@ -10,7 +10,7 @@ vi.mock("@/i18n/client", async () =>
 // ShareDialog — контролируемый компонент с useRouter/useToast/useActionState;
 // здесь проверяется только меню, поэтому подменяем его лёгкой заглушкой (как в
 // `save-offline-button.test.tsx` для kit-зависимостей). Закрытый диалог UI не рендерит.
-vi.mock("@/features/share-links", () => ({
+vi.mock("@/features/share-links/client", () => ({
   ShareDialog: ({ open }: { open: boolean }) =>
     open ? <div data-testid="share-dialog" /> : null,
 }));
