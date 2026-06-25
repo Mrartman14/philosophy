@@ -4,9 +4,9 @@ import { M } from "@/services/observability/core/names";
 
 import { revalidateEntity } from "./revalidate";
 
-const revalidateTag = vi.fn();
+const updateTag = vi.fn();
 vi.mock("next/cache", () => ({
-  revalidateTag: (...a: unknown[]): unknown => revalidateTag(...a),
+  updateTag: (...a: unknown[]): unknown => updateTag(...a),
 }));
 
 const increment = vi.fn();
@@ -20,21 +20,24 @@ vi.mock("@/services/observability", async (importActual) => {
 
 describe("revalidateEntity", () => {
   beforeEach(() => {
-    revalidateTag.mockClear();
+    updateTag.mockClear();
     increment.mockClear();
   });
 
-  it("increments mutation.commit{entity} and revalidates list tag", () => {
+  // updateTag (а не revalidateTag(tag, profile)) — чтобы автор мутации сразу
+  // увидел свою запись: updateTag помечает текущий маршрут как ревалидированный
+  // (read-your-writes), revalidateTag с профилем даёт лишь stale-while-revalidate.
+  it("increments mutation.commit{entity} and updates list tag (read-your-writes)", () => {
     revalidateEntity("documents");
     expect(increment).toHaveBeenCalledWith(M.mutationCommit, { entity: "documents" });
-    expect(revalidateTag).toHaveBeenCalledWith("documents", "default");
-    expect(revalidateTag).toHaveBeenCalledTimes(1);
+    expect(updateTag).toHaveBeenCalledWith("documents");
+    expect(updateTag).toHaveBeenCalledTimes(1);
   });
 
-  it("also revalidates item tag when id is given (single mutation count)", () => {
+  it("also updates item tag when id is given (single mutation count)", () => {
     revalidateEntity("documents", "d1");
     expect(increment).toHaveBeenCalledTimes(1);
     expect(increment).toHaveBeenCalledWith(M.mutationCommit, { entity: "documents" });
-    expect(revalidateTag).toHaveBeenCalledWith("documents:d1", "default");
+    expect(updateTag).toHaveBeenCalledWith("documents:d1");
   });
 });
