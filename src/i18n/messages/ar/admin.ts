@@ -51,7 +51,6 @@ const admin = {
   // --- редактирование лекции ---
   editLectureTagsHeading: "الوسوم",
   editLectureAttachmentsHeading: "المرفقات",
-  editLectureAttachmentsLink: "إدارة مستندات ووسائط المحاضرة",
 
   // --- прикрепления лекции ---
   attachmentsDocumentFallback: "مستند",
@@ -60,7 +59,6 @@ const admin = {
 
   // --- بطاقة المحاضرة (/admin/lectures/[id]) ---
   cardMetaTitle: "محاضرة",
-  cardEditLink: "تعديل المحاضرة",
   cardDocumentsHeading: "المستندات",
   cardMediaHeading: "الوسائط",
   cardMediaUnavailable: "ملف الوسائط غير متاح.",

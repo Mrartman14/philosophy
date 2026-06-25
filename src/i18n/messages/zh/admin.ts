@@ -51,7 +51,6 @@ const admin = {
   // --- редактирование лекции ---
   editLectureTagsHeading: "标签",
   editLectureAttachmentsHeading: "附件",
-  editLectureAttachmentsLink: "管理讲座的文档和媒体",
 
   // --- прикрепления лекции ---
   attachmentsDocumentFallback: "文档",
@@ -60,7 +59,6 @@ const admin = {
 
   // --- 讲座卡片 (/admin/lectures/[id]) ---
   cardMetaTitle: "讲座",
-  cardEditLink: "编辑讲座",
   cardDocumentsHeading: "文档",
   cardMediaHeading: "媒体",
   cardMediaUnavailable: "媒体文件不可用。",

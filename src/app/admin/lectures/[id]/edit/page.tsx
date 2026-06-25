@@ -2,16 +2,23 @@
 import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
-import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import {
+  canAttachToLecture,
   canDeleteLecture,
+  canManageAttachments,
   canManageCover,
   canSetLectureVisibility,
   canUpdateLecture,
   getLectureById,
+  getLectureDocuments,
+  getLectureMedia,
+  LectureAttachmentsManager,
   LectureCoverForm,
   LectureEditForm,
+  searchDocumentsForAttach,
+  searchMediaForAttach,
 } from "@/features/lectures";
+import type { ManagedAttachment } from "@/features/lectures";
 import {
   canAssignTags,
   getLectureTags,
@@ -42,11 +49,43 @@ export default async function EditLecturePage({ params }: Props) {
   // кому доступно хотя бы одно из действий.
   if (!canUpdate && !canAssign) forbidden();
 
+  // Управление вложениями (attach/detach/reorder) — owner-only; списки грузим
+  // только при наличии прав, иначе секция не рендерится.
+  const canManage = canManageAttachments(me, lecture);
+
   const [allTags, lectureTags] = canAssign
     ? await Promise.all([getTags(), getLectureTags(lecture.id)])
     : [null, null];
+  const [docs, media] = canManage
+    ? await Promise.all([getLectureDocuments(id), getLectureMedia(id)])
+    : [null, null];
 
   const t = await getT("admin");
+
+  const docItems: ManagedAttachment[] = (docs ?? []).map((d, i) => ({
+    entityId: d.id ?? "",
+    entityType: "document",
+    label: d.filename ?? d.id ?? t("attachmentsDocumentFallback"),
+    sortOrder: i,
+  }));
+  const mediaItems: ManagedAttachment[] = (media ?? []).map((m, i) => ({
+    entityId: m.id,
+    entityType: "media",
+    label: m.filename,
+    sortOrder: i,
+  }));
+  const canAttach = canAttachToLecture(me, lecture);
+
+  async function docFetcher(q: string, offset: number, limit: number) {
+    "use server";
+    const r = await searchDocumentsForAttach({ q, offset, limit });
+    return r.success ? r.data : { data: [], total: null };
+  }
+  async function mediaFetcher(q: string, offset: number, limit: number) {
+    "use server";
+    const r = await searchMediaForAttach({ q, offset, limit });
+    return r.success ? r.data : { data: [], total: null };
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,7 +104,7 @@ export default async function EditLecturePage({ params }: Props) {
             lectureId={lecture.id}
             allTags={allTags.items}
             assignedTagIds={lectureTags
-              .map((t) => t.id)
+              .map((tag) => tag.id)
               .filter((tagId): tagId is number => typeof tagId === "number")}
           />
         </section>
@@ -81,16 +120,25 @@ export default async function EditLecturePage({ params }: Props) {
         </section>
       )}
 
-      {canManageCover(me, lecture) && (
-        <section className="max-w-xl border-t border-(--color-border) pt-4">
-          <h2 className="mb-2 text-lg font-semibold">{t("editLectureAttachmentsHeading")}</h2>
-          <a
-            href={`/admin/lectures/${lecture.id}`}
-            className="inline-flex items-center gap-1 text-sm underline hover:no-underline"
-          >
-            {t("editLectureAttachmentsLink")}
-            <ChevronIcon className="rtl-flip" />
-          </a>
+      {canManage && (
+        <section className="flex flex-col gap-6 border-t border-(--color-border) pt-4">
+          <h2 className="text-lg font-semibold">{t("editLectureAttachmentsHeading")}</h2>
+          <LectureAttachmentsManager
+            lectureId={id}
+            attachments={docItems}
+            canAttach={canAttach}
+            pickerEntityType="document"
+            targetFetcher={docFetcher}
+            title={t("attachmentsDocsSectionTitle")}
+          />
+          <LectureAttachmentsManager
+            lectureId={id}
+            attachments={mediaItems}
+            canAttach={canAttach}
+            pickerEntityType="media"
+            targetFetcher={mediaFetcher}
+            title={t("attachmentsMediaSectionTitle")}
+          />
         </section>
       )}
     </div>

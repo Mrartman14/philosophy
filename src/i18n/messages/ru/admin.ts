@@ -50,7 +50,6 @@ const admin = {
   // --- редактирование лекции ---
   editLectureTagsHeading: "Теги",
   editLectureAttachmentsHeading: "Прикрепления",
-  editLectureAttachmentsLink: "Управление документами и медиа лекции",
 
   // --- прикрепления лекции ---
   attachmentsDocumentFallback: "Документ",
@@ -59,7 +58,6 @@ const admin = {
 
   // --- карточка лекции (/admin/lectures/[id]) ---
   cardMetaTitle: "Лекция",
-  cardEditLink: "Редактировать лекцию",
   cardDocumentsHeading: "Документы",
   cardMediaHeading: "Медиа",
   cardMediaUnavailable: "Медиафайл недоступен.",
