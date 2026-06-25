@@ -56,7 +56,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
 
   // Медиа-плееры: url в списке опционален → добираем getMediaById только когда пуст.
   const mediaWithUrl = await Promise.all(
-    media.map(async (m) => (m.url ? m : ((await getMediaById(m.id)) ?? m))),
+    media.map(async (m) => (m.url ? m : ((await getMediaById(m.id, token)) ?? m))),
   );
 
   const canShare = canCreateShareLink(me, lecture);

@@ -51,7 +51,7 @@ export type {
   AttachmentEntityType,
 } from "./types";
 
-// lecture-enrichment (волна 3) — публичная страница: exports + секции.
+// lecture-enrichment (волна 3) — публичная страница: экспорт-ссылки.
 export { lectureExportUrls } from "./export-urls";
 export type { LectureExportUrls } from "./export-urls";
 export { LectureExportLinks } from "./ui/lecture-export-links";
