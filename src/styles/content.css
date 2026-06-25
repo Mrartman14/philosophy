@@ -26,7 +26,9 @@
      read (<input disabled>) и edit (nodeView): <li data-checked><input><div.task-content>. */
   .content li[data-checked] { list-style: none; display: flex; align-items: flex-start; gap: 0.5em; }
   .content li[data-checked] > input[type="checkbox"] { margin-block-start: 0.3em; flex: none; accent-color: var(--color-accent); }
-  .content li[data-checked] > .task-content { flex: 1 1 auto; min-inline-size: 0; }
+  /* task-content — 2-й ребёнок li после <input>, иначе ловит flow `li > * + *`
+     (margin-block-start: --flow) и текст уезжает сильно ниже чекбокса. */
+  .content li[data-checked] > .task-content { flex: 1 1 auto; min-inline-size: 0; margin-block-start: 0; }
   .content blockquote { border-inline-start: 3px solid var(--color-border-strong); padding-inline-start: 1em; color: var(--color-fg-muted); }
   .content code { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.9em; background: var(--color-surface-subtle); padding: 0.1em 0.3em; border-radius: var(--radius-sm); }
   .content pre { font-family: var(--font-geist-mono), ui-monospace, monospace; background: var(--color-surface-subtle); padding: var(--space-control-pad-x); border-radius: var(--radius-md); overflow-x: auto; }

@@ -75,21 +75,14 @@ export const ListItemExt = Node.create({
         return splitListItem(itemType, attrs)(state, dispatch);
       });
 
-    const liftAtStart = () =>
-      this.editor.commands.command(({ state, dispatch }) => {
-        const { $from, empty } = state.selection;
-        if (!empty || $from.parentOffset !== 0) return false; // обычный backspace
-        const itemDepth = $from.depth - 1;
-        if (itemDepth < 0 || $from.node(itemDepth).type !== itemType) return false;
-        if ($from.index(itemDepth) !== 0) return false; // не первый блок пункта
-        return liftListItem(itemType)(state, dispatch);
-      });
-
+    // Backspace НЕ переопределяем: дефолт ProseMirror (joinBackward) в начале
+    // пункта корректно сливает его с предыдущим, а первый пункт — выводит из
+    // списка. Кастомный обработчик ошибочно ВЫКИДЫВАЛ не-первый пункт наружу
+    // отдельным параграфом («буллет стирается и подставляется снова»).
     return {
       Enter: splitItem,
       Tab: () => this.editor.commands.command(({ state, dispatch }) => sinkListItem(itemType)(state, dispatch)),
       "Shift-Tab": () => this.editor.commands.command(({ state, dispatch }) => liftListItem(itemType)(state, dispatch)),
-      Backspace: liftAtStart,
     };
   },
 

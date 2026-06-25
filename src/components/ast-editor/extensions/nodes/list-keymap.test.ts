@@ -72,6 +72,24 @@ function items(ed: Editor): PMJson[] {
   return list?.content ?? [];
 }
 
+/** Каретка в начало текста пункта №index первого списка. */
+function caretAtStartOfItem(ed: Editor, index: number): void {
+  let target = -1;
+  let seen = -1;
+  ed.state.doc.descendants((node, pos) => {
+    if (node.type.name === "list_item") {
+      seen++;
+      if (seen === index) target = pos + 2; // +1 в li, +1 в paragraph → начало текста
+    }
+    return true;
+  });
+  ed.commands.setTextSelection(target);
+}
+
+function jsonStr(ed: Editor): string {
+  return JSON.stringify(ed.getJSON());
+}
+
 describe("Клавиатура списков", () => {
   it("Enter в конце пункта создаёт НОВЫЙ пункт (а не второй абзац внутри того же)", () => {
     const ed = makeEditor(bulletList(listItem("раз")));
@@ -155,5 +173,35 @@ describe("Клавиатура списков", () => {
     const its = items(ed);
     expect(its).toHaveLength(2);
     expect(its[1]?.attrs?.checked).toBe(false);
+  });
+
+  // Регресс: Backspace в начале НЕ-первого пункта должен СЛИВАТЬ его с предыдущим
+  // (буллет уходит, текст мёржится в список), а не ВЫКИДЫВАТЬ пункт из списка
+  // отдельным параграфом. Баг был: кастомный liftAtStart выкидывал пункт наружу.
+  it("Backspace в начале 2-го пункта сливает его в список (не выкидывает наружу)", () => {
+    const ed = makeEditor(bulletList(listItem("раз"), listItem("два")));
+    caretAtStartOfItem(ed, 1); // каретка в начале «два»
+    press(ed, "Backspace");
+
+    // «два» осталось ВНУТРИ списка (слилось), а не стало топ-уровневым параграфом.
+    const doc = ed.getJSON() as PMJson;
+    const firstList = doc.content?.find((n) => n.type === "list");
+    expect(firstList).toBeDefined();
+    expect(JSON.stringify(firstList)).toContain("два");
+    // Нет отдельного list-пункта «два», выкинутого наружу как top-level paragraph.
+    const topParas = (doc.content ?? []).filter((n) => n.type === "paragraph");
+    expect(topParas.some((p) => JSON.stringify(p).includes("два"))).toBe(false);
+  });
+
+  it("Backspace в начале первого пункта выводит его из списка (outdent)", () => {
+    const ed = makeEditor(bulletList(listItem("раз"), listItem("два")));
+    caretAtStartOfItem(ed, 0);
+    press(ed, "Backspace");
+
+    // «раз» вышел на верхний уровень как параграф; «два» остался в списке.
+    const doc = ed.getJSON() as PMJson;
+    const topParas = (doc.content ?? []).filter((n) => n.type === "paragraph");
+    expect(topParas.some((p) => JSON.stringify(p).includes("раз"))).toBe(true);
+    expect(jsonStr(ed)).toContain("два");
   });
 });
