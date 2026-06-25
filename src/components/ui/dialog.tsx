@@ -1,7 +1,12 @@
 "use client";
 // src/components/ui/dialog.tsx
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
-import { isValidElement, type ReactElement, type ReactNode } from "react";
+import {
+  isValidElement,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 
 import { cn } from "./cn";
 
@@ -14,6 +19,10 @@ interface DialogProps {
   description?: ReactNode;
   children: ReactNode;
   className?: string;
+  /** Куда вернуть фокус при закрытии (Base UI Dialog.Popup finalFocus). Нужно в
+   *  контролируемом режиме БЕЗ триггера (открытие из пункта меню) — иначе Base UI
+   *  не знает «исходный» элемент и фокус падает на body. */
+  finalFocus?: ComponentPropsWithoutRef<typeof BaseDialog.Popup>["finalFocus"];
 }
 
 /**
@@ -32,6 +41,7 @@ export function Dialog({
   description,
   children,
   className,
+  finalFocus,
 }: DialogProps) {
   const rootProps: {
     open?: boolean;
@@ -53,6 +63,7 @@ export function Dialog({
       <BaseDialog.Portal>
         <BaseDialog.Backdrop className="fixed inset-0 bg-black/40 transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
         <BaseDialog.Popup
+          finalFocus={finalFocus}
           className={cn(
             // eslint-disable-next-line no-restricted-syntax -- RTL: left-1/2 — геометрическое центрирование (пара к -translate-x-1/2), направление-нейтрально
             "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",

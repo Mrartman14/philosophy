@@ -3,7 +3,7 @@
 // Dropdown «Действия» лекции: скачать .md/.txt + (владельцу) поделиться.
 // Композиция share-links допустима на странице/острове (src/app/**), но
 // запрещена внутри слайса. ShareDialog — контролируемый, открывается из пункта.
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Button, Menu } from "@/components/ui";
 import { ShareDialog, type ShareLink } from "@/features/share-links/client";
@@ -18,11 +18,15 @@ export function LectureActionsMenu({ exportUrls, share }: Props) {
   const t = useT("pages");
   const tShare = useT("shareLinks");
   const [shareOpen, setShareOpen] = useState(false);
+  // Фокус возвращается на ⋯-триггер при закрытии share-диалога (он открыт без
+  // собственного триггера — из пункта меню; функ-форма finalFocus обходит
+  // инвариантность RefObject<HTMLButtonElement> vs RefObject<HTMLElement>).
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   return (
     <>
       <Menu.Root>
-        <Menu.Trigger render={<Button type="button" tone="quiet" compact />}>
+        <Menu.Trigger render={<Button ref={triggerRef} type="button" tone="quiet" compact />}>
           {t("lectureActionsMenuLabel")}
         </Menu.Trigger>
         <Menu.Portal>
@@ -67,6 +71,7 @@ export function LectureActionsMenu({ exportUrls, share }: Props) {
           initialLinks={share.initialLinks}
           open={shareOpen}
           onOpenChange={setShareOpen}
+          finalFocus={() => triggerRef.current}
         />
       )}
     </>

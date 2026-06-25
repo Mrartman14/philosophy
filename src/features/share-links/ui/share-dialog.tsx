@@ -3,7 +3,7 @@
 // Контролируемый Dialog «Поделиться»: форма создания ссылки + список. Извлечён
 // из ShareButton, чтобы открываться и из пункта dropdown-меню (без триггера).
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, type ReactNode } from "react";
+import { useActionState, useEffect, type ComponentProps, type ReactNode } from "react";
 
 import { createTypedForm, Button, Dialog, Form, IdempotencyField, Inline, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
@@ -24,6 +24,8 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   /** Необязательный триггер (для ShareButton); в меню-режиме не передаётся. */
   trigger?: ReactNode;
+  /** Куда вернуть фокус при закрытии (для открытия из пункта меню без триггера). */
+  finalFocus?: ComponentProps<typeof Dialog>["finalFocus"];
 }
 
 const initialState = initialActionState<ShareLink | null>(null);
@@ -36,6 +38,7 @@ export function ShareDialog({
   open,
   onOpenChange,
   trigger,
+  finalFocus,
 }: Props) {
   const router = useRouter();
   const toast = useToast();
@@ -62,6 +65,7 @@ export function ShareDialog({
       open={open}
       onOpenChange={onOpenChange}
       trigger={trigger}
+      finalFocus={finalFocus}
       title={t("shareDialogTitle", { type: t(`resourceTypes.${resourceType}`) })}
       description={t("shareDialogDesc")}
     >
