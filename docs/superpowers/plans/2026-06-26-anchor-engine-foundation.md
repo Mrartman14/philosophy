@@ -12,7 +12,7 @@
 
 - **Пакетный менеджер — pnpm.** `npm install` ломает тулчейн. Команды: `pnpm test`, `pnpm lint`, `pnpm build`, `pnpm vitest run <path>` (таргетно).
 - **Финальный гейт перед PR — зелёные `pnpm lint && pnpm test && pnpm build`.**
-- **Поведение аннотаций НЕ меняется.** Каждый рефактор-таск завершается зелёным существующим тест-сьютом движка — это контракт. Любое изменение наблюдаемого поведения = баг таска.
+- **Поведение аннотаций НЕ меняется.** ⚠️ Существующий `annotation-layer.test.tsx` — это SMOKE-тест (~62 строки): jsdom НЕ рендерит CSS Custom Highlight и даёт нули `getBoundingClientRect`, поэтому подсветка, geometry, two-way click и stacking тестами НЕ покрыты. Зелёный сьют после рефактора — необходимое, но НЕ достаточное условие. **Единственный реальный гарант сохранности поведения — ручная браузер-QA (Task 9), и она ЖЁСТКИЕ ВОРОТА перед стартом PR2.** Любое изменение наблюдаемого поведения = баг таска.
 - **Имена файлов в `src/` — kebab-case.**
 - **Не трогать `src/api/schema.ts`** (контракт не меняется).
 - **Параллельные агенты:** `git add <свои файлы по имени>`; НЕ `git add -A`/`git add .`; НЕ `git stash/reset/checkout./clean`. Передавать это субагентам. Коммит: `git add <files> && git commit --only <те же files>`.
@@ -32,7 +32,7 @@ src/components/anchor-engine/            (rename из annotation-layer/)
   anchor-from-selection.ts               (без изменений)
   anchor-to-range.ts                     (без изменений)
   dom-text.ts                            (без изменений)
-  hit-test.ts                            (без изменений)
+  hit-test.ts                            + noteAtPointInRanges (ranges-хит-тест для hover, perf)
   stacking.ts                            (без изменений)
   highlight-controller.ts                (без изменений; канал по конструктору name)
   highlight-overlay.tsx                  (без изменений)
@@ -56,6 +56,9 @@ src/features/annotations/
   anchor.ts                              делегирует @/utils/text-anchor
   schemas.ts                             делегирует @/utils/anchor-json
   ui/document-annotation-layer.tsx       импортит MarginAnchorLayer из @/components/anchor-engine
+
+src/app/
+  globals.css                            + ::highlight(comment) / ::highlight(comment-active) (foundation/shell)
 ```
 
 ---
@@ -91,9 +94,11 @@ export function useTextClick(args: {
   onPick: (id: string) => void;
 }): void;
 
+// ВНИМАНИЕ (perf, по ревью): hover хит-тестит по УЖЕ ПОСЧИТАННЫМ ranges (из
+// useAnchorRanges), а НЕ пересчитывает rangeFromAnchor на каждый кадр mousemove.
 export function useHoverReveal(args: {
   astRootRef: RefObject<HTMLElement | null>;
-  notes: AnchoredNote[];
+  ranges: Map<string, Range | null>;
   ready: boolean;
   onHover: (id: string | null) => void;
 }): void;
@@ -202,10 +207,10 @@ import {
 
 Также обновить упоминание пути в шапке-комментарии этого файла (строка 4: `@/components/annotation-layer` → `@/components/anchor-engine`).
 
-- [ ] **Step 3: Найти прочие упоминания старого пути**
+- [ ] **Step 3: Найти прочие IMPORT-упоминания старого пути**
 
-Run: `grep -rn "annotation-layer" src --include="*.ts" --include="*.tsx"`
-Expected: только внутренние относительные пути НЕ всплывают (они `./`); строки с `@/components/annotation-layer` отсутствуют. Если что-то осталось — поправить на `@/components/anchor-engine`.
+Run: `grep -rn "@/components/annotation-layer" src --include="*.ts" --include="*.tsx"`
+Expected: после Step 2 — пусто. Правим ТОЛЬКО `@/components/annotation-layer` import-строки (их ровно 2: `anchor.ts:2`, `document-annotation-layer.tsx:21`) + header-комментарий из Step 2. НЕ трогать прозу-комментарии, упоминающие слово «annotation-layer»/символ `AnnotationLayer` (напр. `ast-render/block-renderer.test.tsx`) — это не импорты, гейт они не ломают.
 
 - [ ] **Step 4: Прогнать гейт — поведение не изменилось**
 
@@ -386,22 +391,14 @@ export function toEngineAnchor(a: Anchor): TextAnchor | null {
 }
 
 export function fromEngineAnchor(a: TextAnchor): Anchor {
-  // engineAnchorToCoords даёт координатный объект; для аннотации он же —
-  // валидный annotation.Anchor (target-полей у аннотации нет). buildTextAnchor
-  // остаётся источником правил, но его поведение теперь зеркалит общий util.
-  return buildTextAnchor({
-    startBlockId: a.startBlockId,
-    endBlockId: a.endBlockId,
-    startChar: a.startChar,
-    endChar: a.endChar,
-    exact: a.exact,
-    ...(a.prefix ? { prefix: a.prefix } : {}),
-    ...(a.suffix ? { suffix: a.suffix } : {}),
-  });
+  // Координатный объект из общего util уже валиден как annotation.Anchor
+  // (target-полей у аннотации нет) — полная DRY, единый источник правил
+  // опускания пустых prefix/suffix. buildTextAnchor больше тут не нужен.
+  return engineAnchorToCoords(a);
 }
 ```
 
-(Примечание: `engineAnchorToCoords` импортируется для будущей фичи комментариев; если линтер ругается на неиспользуемый импорт — оставить только `coordsToEngineAnchor` здесь, `engineAnchorToCoords` использует PR2.)
+(Если `buildTextAnchor` после этого нигде в `anchor.ts` не используется — убрать его и относящийся к нему `TextAnchorInput`, чтобы не оставлять мёртвый код. Проверить `grep buildTextAnchor src/features/annotations`.)
 
 - [ ] **Step 6: Прогнать тесты аннотаций — зелёные**
 
@@ -932,7 +929,8 @@ const controller = controllerRef.current;
 // Публичный API движка маргиналий: политики-компоненты + типы якоря. Хуки и
 // примитивы (highlight-controller, selection-affordance, margin-notes-column,
 // use-anchor-*) — ВНУТРЕННИЕ: их зовут сами политики относительными импортами,
-// поэтому в публичный сёрфейс НЕ выносим (иначе knip пометит unused export).
+// поэтому в публичный сёрфейс НЕ выносим (гигиена минимального API; knip-скрипт
+// тоже пометил бы их unused — knip отдельный скрипт, не в гейте lint/test/build).
 export { MarginAnchorLayer, type MarginAnchorLayerProps } from "./margin-anchor-layer";
 export type { TextAnchor, AnchoredNote, AnchorDraft } from "./types";
 ```
@@ -972,16 +970,62 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 Новая способность (только для lazy-политики): throttled `mousemove` в AST-руте → hit-test → `onHover(id|null)`. Аннотаций не касается.
 
 **Files:**
+- Modify: `src/components/anchor-engine/hit-test.ts` (+ `noteAtPointInRanges`, extract `caretFromPoint`)
 - Create: `src/components/anchor-engine/use-hover-reveal.ts`
 - Create (test): `src/components/anchor-engine/use-hover-reveal.test.tsx`
-- Modify: `src/components/anchor-engine/index.ts` (экспорт)
 
 **Interfaces:**
-- Produces: `useHoverReveal({ astRootRef, notes, ready, onHover })`.
+- Produces: `noteAtPointInRanges(x, y, ranges, root)`; `useHoverReveal({ astRootRef, ranges, ready, onHover })`.
 
-- [ ] **Step 1: Написать падающий тест**
+- [ ] **Step 1: Добавить ranges-хит-тест в `hit-test.ts`** (perf: переиспользует кэш `ranges`, не строит Range на каждую ноту на каждый кадр)
 
-Create `src/components/anchor-engine/use-hover-reveal.test.tsx`:
+Извлечь резолв caret в `caretFromPoint` (из `noteAtPoint`) и добавить вариант по готовым `ranges`. `noteAtPoint(notes, ...)` остаётся для клика (редкий путь, без изменений):
+
+```ts
+// добавить в src/components/anchor-engine/hit-test.ts
+/** Резолв координат → caret (вынесено из noteAtPoint для переиспользования). */
+function caretFromPoint(x: number, y: number, root: HTMLElement): CaretPos | null {
+  const doc = root.ownerDocument;
+  const anyDoc = doc as unknown as {
+    caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+  };
+  let caret: CaretPos | null = null;
+  if (anyDoc.caretPositionFromPoint) {
+    const p = anyDoc.caretPositionFromPoint(x, y);
+    if (p) caret = { node: p.offsetNode, offset: p.offset };
+  } else if (anyDoc.caretRangeFromPoint) {
+    const r = anyDoc.caretRangeFromPoint(x, y);
+    if (r) caret = { node: r.startContainer, offset: r.startOffset };
+  }
+  if (!caret || !root.contains(caret.node)) return null;
+  return caret;
+}
+
+/**
+ * Хит-тест по УЖЕ ПОСЧИТАННЫМ ranges (порядок Map = порядок notes → first-match).
+ * Для hover (mousemove-intensive): O(1) caret-resolve + N дешёвых comparePoint,
+ * без пересчёта rangeFromAnchor. Эквивалентен noteAtPoint, т.к. ranges строятся
+ * тем же rangeFromAnchor (см. useAnchorRanges).
+ */
+export function noteAtPointInRanges(
+  x: number,
+  y: number,
+  ranges: Map<string, Range | null>,
+  root: HTMLElement,
+): string | null {
+  const caret = caretFromPoint(x, y, root);
+  if (!caret) return null;
+  for (const [id, r] of ranges) {
+    if (r && r.comparePoint(caret.node, caret.offset) === 0) return id;
+  }
+  return null;
+}
+```
+
+Рефактор `noteAtPoint`: заменить инлайн-резолв caret (строки ~23-38) вызовом `caretFromPoint`, оставив поведение идентичным. Существующий `hit-test.test.ts` остаётся зелёным.
+
+- [ ] **Step 2: Написать падающий тест `use-hover-reveal.test.tsx`**
 
 ```tsx
 import { renderHook } from "@testing-library/react";
@@ -997,7 +1041,7 @@ describe("useHoverReveal", () => {
     const ref = createRef<HTMLElement>();
     ref.current = el;
     renderHook(() =>
-      useHoverReveal({ astRootRef: ref, notes: [], ready: true, onHover: vi.fn() }),
+      useHoverReveal({ astRootRef: ref, ranges: new Map(), ready: true, onHover: vi.fn() }),
     );
     expect(add).toHaveBeenCalledWith("mousemove", expect.any(Function));
     expect(add).toHaveBeenCalledWith("mouseleave", expect.any(Function));
@@ -1009,7 +1053,7 @@ describe("useHoverReveal", () => {
     ref.current = el;
     const onHover = vi.fn();
     renderHook(() =>
-      useHoverReveal({ astRootRef: ref, notes: [], ready: true, onHover }),
+      useHoverReveal({ astRootRef: ref, ranges: new Map(), ready: true, onHover }),
     );
     el.dispatchEvent(new MouseEvent("mouseleave"));
     expect(onHover).toHaveBeenCalledWith(null);
@@ -1017,31 +1061,31 @@ describe("useHoverReveal", () => {
 });
 ```
 
-- [ ] **Step 2: Прогнать — падает**
+- [ ] **Step 3: Прогнать — падает**
 
 Run: `pnpm vitest run src/components/anchor-engine/use-hover-reveal.test.tsx`
 Expected: FAIL — модуля нет.
 
-- [ ] **Step 3: Реализовать `use-hover-reveal.ts`**
+- [ ] **Step 4: Реализовать `use-hover-reveal.ts` (по кэшированным ranges)**
 
 ```ts
 // src/components/anchor-engine/use-hover-reveal.ts
-// Lazy-подсветка: движение мыши в AST-руте → hit-test → onHover(id) подсвечивает
-// фрагмент под курсором; mouseleave → onHover(null). Throttle через rAF, чтобы
-// не хит-тестить на каждый mousemove. Только для InlineAnchorLayer (комментарии).
+// Lazy-подсветка: движение мыши в AST-руте → hit-test по КЭШИРОВАННЫМ ranges →
+// onHover(id) подсвечивает фрагмент под курсором; mouseleave → onHover(null).
+// Throttle через rAF. Только для InlineAnchorLayer (комментарии). Хит-тест по
+// готовым ranges (не пересчитывает rangeFromAnchor на каждый кадр).
 import { useEffect, type RefObject } from "react";
 
-import { noteAtPoint } from "./hit-test";
-import type { AnchoredNote } from "./types";
+import { noteAtPointInRanges } from "./hit-test";
 
 export function useHoverReveal({
   astRootRef,
-  notes,
+  ranges,
   ready,
   onHover,
 }: {
   astRootRef: RefObject<HTMLElement | null>;
-  notes: AnchoredNote[];
+  ranges: Map<string, Range | null>;
   ready: boolean;
   onHover: (id: string | null) => void;
 }) {
@@ -1059,14 +1103,12 @@ export function useHoverReveal({
     const onMove = (e: MouseEvent) => {
       if (raf) return;
       const { clientX, clientY } = e;
-      raf =
-        typeof requestAnimationFrame === "function"
-          ? requestAnimationFrame(() => {
-              raf = 0;
-              emit(noteAtPoint(clientX, clientY, notes, root));
-            })
-          : 0;
-      if (!raf) emit(noteAtPoint(clientX, clientY, notes, root));
+      const run = () => {
+        raf = 0;
+        emit(noteAtPointInRanges(clientX, clientY, ranges, root));
+      };
+      raf = typeof requestAnimationFrame === "function" ? requestAnimationFrame(run) : 0;
+      if (!raf) run();
     };
     const onLeave = () => {
       emit(null);
@@ -1078,20 +1120,20 @@ export function useHoverReveal({
       root.removeEventListener("mousemove", onMove);
       root.removeEventListener("mouseleave", onLeave);
     };
-  }, [astRootRef, notes, ready, onHover]);
+  }, [astRootRef, ranges, ready, onHover]);
 }
 ```
 
-- [ ] **Step 4: Прогнать — проходит**
+- [ ] **Step 5: Прогнать — проходит**
 
-Run: `pnpm vitest run src/components/anchor-engine/use-hover-reveal.test.tsx`
-Expected: PASS.
+Run: `pnpm vitest run src/components/anchor-engine/use-hover-reveal.test.tsx src/components/anchor-engine/hit-test.test.ts`
+Expected: PASS (включая существующий hit-test сьют — `noteAtPoint` рефактор поведение-сохранный).
 
-- [ ] **Step 5: Commit** (хук ВНУТРЕННИЙ — в `index.ts` НЕ экспортируем; его зовёт только `InlineAnchorLayer` относительным импортом)
+- [ ] **Step 6: Commit** (хук + хит-тест ВНУТРЕННИЕ — в `index.ts` НЕ экспортируем; зовёт только `InlineAnchorLayer`)
 
 ```bash
-git add src/components/anchor-engine/use-hover-reveal.ts src/components/anchor-engine/use-hover-reveal.test.tsx
-git commit --only src/components/anchor-engine/use-hover-reveal.ts src/components/anchor-engine/use-hover-reveal.test.tsx -m "feat(anchor-engine): useHoverReveal (mousemove→hit-test→onHover)
+git add src/components/anchor-engine/hit-test.ts src/components/anchor-engine/use-hover-reveal.ts src/components/anchor-engine/use-hover-reveal.test.tsx
+git commit --only src/components/anchor-engine/hit-test.ts src/components/anchor-engine/use-hover-reveal.ts src/components/anchor-engine/use-hover-reveal.test.tsx -m "feat(anchor-engine): useHoverReveal по кэшированным ranges (perf)
 
 Lazy-подсветка фрагмента под курсором для InlineAnchorLayer (комментарии).
 
@@ -1108,9 +1150,10 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Create: `src/components/anchor-engine/inline-anchor-layer.tsx`
 - Create (test): `src/components/anchor-engine/inline-anchor-layer.test.tsx`
 - Modify: `src/components/anchor-engine/index.ts` (экспорт)
+- Modify: `src/app/globals.css` (CSS-канал `::highlight(comment)` — foundation/shell)
 
 **Interfaces:**
-- Consumes: `useAnchorRanges`, `useAnchorHighlights`, `useTextClick`, `useHoverReveal`, `useSelectionCapture`, `HighlightController`, `SelectionAffordance`, `MarginNotesColumn`, `resolveStack`.
+- Consumes: `useAnchorRanges`, `useAnchorHighlights`, `useTextClick`, `useHoverReveal`, `useSelectionCapture`, `HighlightController`, `SelectionAffordance`, `MarginNotesColumn`.
 - Produces: `InlineAnchorLayer`, `InlineAnchorLayerProps` (см. блок Interfaces вверху).
 
 - [ ] **Step 1: Написать падающий тест (поведение политики; геометрию/подсветку jsdom не рендерит — проверяем lazy-инвариант и narrow-колбэк через wide-флаг матч-медиа)**
@@ -1231,7 +1274,10 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
 
-  // wide vs narrow (зеркало MarginNotesColumn). jsdom/SSR → narrow.
+  // wide vs narrow — решает «превью-карточка (wide) vs onActivateNarrow». jsdom/SSR
+  // → narrow. (MarginNotesColumn детектит wide для абсолют-позиционирования сам;
+  // здесь wide гейтит ТОЛЬКО pick/openId — транзиентный рассинхрон на границе
+  // брейкпоинта безвреден, см. clear-on-narrow ниже.)
   const [wide, setWide] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
@@ -1246,18 +1292,18 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
     };
   }, []);
 
-  useHoverReveal({ astRootRef, notes, ready, onHover: setHoveredId });
+  // На узком экране карточек нет — закрыть открытую при уходе из wide.
+  useEffect(() => {
+    if (!wide) setOpenId(null);
+  }, [wide]);
 
-  // persistentIds: при тогле — все, иначе пусто. activeId: открытая карточка
-  // важнее наведения.
+  // Hover-подсветка по КЭШИРОВАННЫМ ranges (не пересчитывает на каждый кадр).
+  useHoverReveal({ astRootRef, ranges, ready, onHover: setHoveredId });
+
+  const activeId = openId ?? hoveredId; // открытая карточка > наведение
+  // persistentIds: при тогле — все, иначе пусто (подсветка не постоянная).
   const persistentIds = showAllHighlights ? notes.map((n) => n.id) : [];
-  useAnchorHighlights({
-    controller,
-    ranges,
-    persistentIds,
-    activeId: openId ?? hoveredId,
-    enabled: true,
-  });
+  useAnchorHighlights({ controller, ranges, persistentIds, activeId, enabled: true });
 
   const pick = useCallback(
     (id: string) => {
@@ -1275,35 +1321,41 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
     }
   }, [draft, onCreateRequest, clear]);
 
-  // Превью-карточка: только открытая, как одиночный якорённый note в колонке.
-  const columnNotes =
-    wide && openId
-      ? [
-          {
-            id: openId,
-            orphan: (ranges.get(openId) ?? null) === null,
-            node: <div data-note-card={openId}>{renderCard(openId)}</div>,
-          },
-        ]
-      : [];
+  // Превью-карточка: только открытая (openId уже null на narrow). Клик по ТЕЛУ
+  // карточки её НЕ закрывает (onActivate — no-op): карточка для чтения. Закрытие —
+  // клик по другому фрагменту (переоткрывает openId) или уход в narrow.
+  const columnNotes = openId
+    ? [
+        {
+          id: openId,
+          orphan: (ranges.get(openId) ?? null) === null,
+          node: <div data-note-card={openId}>{renderCard(openId)}</div>,
+        },
+      ]
+    : [];
 
-  const overlayRanges =
-    !controller.supported && openId
-      ? [ranges.get(openId)].filter((r): r is Range => r != null)
-      : [];
+  // Оверлей-фолбэк (нет CSS Highlight API): покрывает persistent ∪ active — иначе
+  // hover/тогл в таких браузерах не подсветятся (паритет с аннотациями).
+  const overlayIds = !controller.supported
+    ? [...new Set([...persistentIds, ...(activeId ? [activeId] : [])])]
+    : [];
+  const overlayRanges = overlayIds
+    .map((id) => ranges.get(id) ?? null)
+    .filter((r): r is Range => r != null);
+  const activeRange = activeId ? (ranges.get(activeId) ?? null) : null;
 
   return (
     <>
       {draft && canCreate && (
         <SelectionAffordance rect={draft.rect} label={affordanceLabel} onCreate={create} />
       )}
-      {overlayRanges.length > 0 && <HighlightOverlay ranges={overlayRanges} activeRange={null} />}
+      {overlayRanges.length > 0 && (
+        <HighlightOverlay ranges={overlayRanges} activeRange={activeRange} />
+      )}
       <MarginNotesColumn
         notes={columnNotes}
         getAnchorRect={getAnchorRect}
-        onActivate={() => {
-          setOpenId(null);
-        }}
+        onActivate={() => undefined}
         recomputeKey={recomputeKey}
       />
     </>
@@ -1322,14 +1374,31 @@ Expected: PASS.
 export { InlineAnchorLayer, type InlineAnchorLayerProps } from "./inline-anchor-layer";
 ```
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: CSS-канал `::highlight(comment)` в `globals.css`** (foundation/shell — правится в PR1, не в фиче; рядом с существующим `::highlight(annotation)`)
+
+`InlineAnchorLayer` использует канал `"comment"` по умолчанию → нужны правила. Визуально отличаем от аннотаций пунктирным подчёркиванием:
+
+```css
+::highlight(comment) {
+  background-color: var(--color-highlight);
+  text-decoration: underline dotted;
+}
+::highlight(comment-active) {
+  background-color: var(--color-highlight-active);
+  text-decoration: underline;
+}
+```
+
+(Правила аддитивны, ссылаются на существующие токены; в PR1 канал ещё не задействован UI — активируется в PR2. Точный визуал — на браузер-QA.)
+
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/components/anchor-engine/inline-anchor-layer.tsx src/components/anchor-engine/inline-anchor-layer.test.tsx src/components/anchor-engine/index.ts
-git commit --only src/components/anchor-engine/inline-anchor-layer.tsx src/components/anchor-engine/inline-anchor-layer.test.tsx src/components/anchor-engine/index.ts -m "feat(anchor-engine): InlineAnchorLayer (lazy-политика по клику + hover)
+git add src/components/anchor-engine/inline-anchor-layer.tsx src/components/anchor-engine/inline-anchor-layer.test.tsx src/components/anchor-engine/index.ts src/app/globals.css
+git commit --only src/components/anchor-engine/inline-anchor-layer.tsx src/components/anchor-engine/inline-anchor-layer.test.tsx src/components/anchor-engine/index.ts src/app/globals.css -m "feat(anchor-engine): InlineAnchorLayer (lazy-политика по клику + hover) + ::highlight(comment)
 
 Подсветка по hover/тоглу; клик → превью-карточка (wide) или
-onActivateNarrow (narrow). Канал highlight default comment.
+onActivateNarrow (narrow). Канал highlight default comment + CSS-канал.
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
@@ -1368,3 +1437,12 @@ Expected: всё зелёное.
 - **Покрытие спеки:** rename ядра (Task 1), shared-конвертер/схема (Task 2-3), вынос хуков (Task 4-5), MarginAnchorLayer + миграция аннотаций (Task 6), useHoverReveal (Task 7), InlineAnchorLayer (Task 8), гейт+QA (Task 9) — все элементы «Архитектура/Ярус 1-2» из спеки покрыты. `side` сознательно НЕ проп движка (управляется страницей через `MarginNote`) — уточнение к спеке, согласовано: проще и честнее.
 - **Плейсхолдеров нет:** каждый код-шаг содержит реальный код; каждая команда — ожидаемый результат.
 - **Консистентность типов:** `MarginAnchorLayerProps`/`InlineAnchorLayerProps`, `useAnchorRanges`/`useAnchorHighlights`/`useTextClick`/`useHoverReveal` совпадают между блоком Interfaces и тасками. `coordsToEngineAnchor`/`engineAnchorToCoords`/`anchorJsonField` — единые имена.
+
+## Правки по адверсариальному ревью (4 субагента)
+
+- **Гарантия поведение-сохранности переформулирована:** smoke-сьют движка НЕ контракт (jsdom без highlight/geometry) → реальный гейт = браузер-QA Task 9 (жёсткие ворота).
+- **Perf hover:** `useHoverReveal` хит-тестит по КЭШИРОВАННЫМ `ranges` (`noteAtPointInRanges`), не пересчитывает `rangeFromAnchor` на каждый кадр mousemove (Task 7).
+- **InlineAnchorLayer:** клик по телу превью-карточки её НЕ закрывает (`onActivate` no-op); карточка сбрасывается при уходе в narrow (снят дубль-источник `wide`); оверлей-фолбэк покрывает persistent∪active (Task 8).
+- **DRY:** `fromEngineAnchor` полностью делегирует в `engineAnchorToCoords` (Task 2).
+- **globals.css `::highlight(comment)` перенесён в PR1** (foundation/shell правится в foundation-PR, не в фиче) — Task 8.
+- **Уточнения:** Task 1 grep только по import-строкам; knip-обоснование смягчено (knip не в гейте).

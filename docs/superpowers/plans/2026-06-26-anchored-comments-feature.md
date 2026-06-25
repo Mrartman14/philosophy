@@ -295,6 +295,7 @@ export function selectAnchoredRoots(subtrees: RootSubtree[], documentId: string)
     const root = st.root;
     const anchor = root?.anchor;
     if (!root?.id || !anchor) continue;
+    if (root.is_deleted) continue; // удалённый корень → пустое тело, не показываем превью
     if (anchor.target_entity_type !== "document" || anchor.target_entity_id !== documentId) continue;
     if (coordsToEngineAnchor(anchor) === null) continue; // не text-range / неполный
     out.push({
@@ -306,6 +307,10 @@ export function selectAnchoredRoots(subtrees: RootSubtree[], documentId: string)
   }
   return out;
 }
+// ВНИМАНИЕ (осознанный YAGNI v1): берём anchor ТОЛЬКО с корня треда. Бэк
+// допускает anchor на любом comment (descendants[].anchor) — такие заякоренные
+// ответы read-путём здесь НЕ подсвечиваются (живут только в нижнем треде). См.
+// бэк-аск в Task 12 (инвариант anchor-only-on-root).
 ```
 
 - [ ] **Step 4: Прогнать — проходит**
@@ -452,22 +457,21 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 ---
 
-### Task 4: i18n-ключи маргиналии комментов (ru/en/ar/zh)
+### Task 4: i18n-ключи (ДВА неймспейса: UI → comments, валидация → validation)
 
-Добавить ключи во ВСЕ четыре каталога одним коммитом (паритет). Псевдо `en-XA` генерируется.
+⚠️ **КРИТИЧНО (исправлено по ревью):** ключи якоря `anchorNotObject`/`anchorInvalidJson` резолвятся в схеме через `t: NamespaceT<"validation">` (Task 3: `t("comments.anchorNotObject")` → каталог **validation**, под-объект `comments:`). Поэтому они идут в `validation.ts`, НЕ в `comments.ts` — точно как у аннотаций (`src/i18n/messages/ru/validation.ts:143-144`, `annotations.anchorNotObject`). UI-строки маргиналии резолвятся через `useT("comments")`/`getT("comments")` → идут в `comments.ts`. `validation.ts` и `comments.ts` существуют во ВСЕХ 4 локалях; добавлять симметрично одним коммитом (иначе key-set parity падает). Псевдо `en-XA` генерируется.
 
 **Files:**
-- Modify: `src/i18n/messages/ru/comments.ts`
-- Modify: `src/i18n/messages/en/comments.ts`
-- Modify: `src/i18n/messages/ar/comments.ts`
-- Modify: `src/i18n/messages/zh/comments.ts`
+- Modify: `src/i18n/messages/{ru,en,ar,zh}/comments.ts` (6 UI-ключей)
+- Modify: `src/i18n/messages/{ru,en,ar,zh}/validation.ts` (2 ключа якоря в под-объект `comments:`)
 
 **Interfaces:**
-- Produces: ключи `marginCommentAdd`, `marginComposerTitle`, `marginHighlightShow`, `marginHighlightHide`, `marginOpenThread`, `marginColumnLabel`, `anchorNotObject`, `anchorInvalidJson`.
+- Produces (namespace `comments`): `marginCommentAdd`, `marginComposerTitle`, `marginHighlightShow`, `marginHighlightHide`, `marginOpenThread`, `marginColumnLabel`.
+- Produces (namespace `validation`, под `comments:`): `anchorNotObject`, `anchorInvalidJson`.
 
-- [ ] **Step 1: Добавить ключи в `ru/comments.ts`**
+- [ ] **Step 1: 6 UI-ключей в `comments.ts` каждой локали** (рядом с прочими ключами верхнего уровня)
 
-В объект каталога (рядом с прочими ключами верхнего уровня) добавить:
+`ru/comments.ts`:
 
 ```ts
   marginCommentAdd: "Комментировать",
@@ -476,11 +480,9 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
   marginHighlightHide: "Скрыть комментарии в тексте",
   marginOpenThread: "Открыть обсуждение",
   marginColumnLabel: "Комментарии к фрагментам",
-  anchorNotObject: "Якорь должен быть объектом.",
-  anchorInvalidJson: "Некорректный JSON якоря.",
 ```
 
-- [ ] **Step 2: Добавить те же ключи в `en/comments.ts`**
+`en/comments.ts`:
 
 ```ts
   marginCommentAdd: "Comment",
@@ -489,11 +491,9 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
   marginHighlightHide: "Hide comments in text",
   marginOpenThread: "Open thread",
   marginColumnLabel: "Comments on selections",
-  anchorNotObject: "Anchor must be an object.",
-  anchorInvalidJson: "Invalid anchor JSON.",
 ```
 
-- [ ] **Step 3: Добавить в `ar/comments.ts`** (RTL; машинный перевод, носитель вычитает в follow-up — паттерн как у прошлых ar-волн)
+`ar/comments.ts` (RTL; машинный перевод, вычитка носителем follow-up):
 
 ```ts
   marginCommentAdd: "تعليق",
@@ -502,11 +502,9 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
   marginHighlightHide: "إخفاء التعليقات في النص",
   marginOpenThread: "فتح المناقشة",
   marginColumnLabel: "تعليقات على المقاطع المحددة",
-  anchorNotObject: "يجب أن يكون المرساة كائنًا.",
-  anchorInvalidJson: "صيغة JSON للمرساة غير صحيحة.",
 ```
 
-- [ ] **Step 4: Добавить в `zh/comments.ts`**
+`zh/comments.ts`:
 
 ```ts
   marginCommentAdd: "评论",
@@ -515,20 +513,25 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
   marginHighlightHide: "在正文中隐藏评论",
   marginOpenThread: "打开讨论",
   marginColumnLabel: "对所选内容的评论",
-  anchorNotObject: "锚点必须是对象。",
-  anchorInvalidJson: "锚点 JSON 无效。",
 ```
 
-- [ ] **Step 5: Прогнать i18n-тесты (паритет ключей между локалями)**
+- [ ] **Step 2: 2 ключа якоря в `validation.ts` каждой локали — в под-объект `comments:`** (рядом с `invalidType`/`blocksInvalidJson`, как `annotations.anchorNotObject` в том же файле)
+
+`ru`: `anchorNotObject: "Якорь должен быть объектом",` `anchorInvalidJson: "Битый JSON в якоре",`
+`en`: `anchorNotObject: "Anchor must be an object",` `anchorInvalidJson: "Invalid anchor JSON",`
+`ar`: `anchorNotObject: "يجب أن يكون المرساة كائنًا",` `anchorInvalidJson: "صيغة JSON للمرساة غير صحيحة",`
+`zh`: `anchorNotObject: "锚点必须是对象",` `anchorInvalidJson: "锚点 JSON 无效",`
+
+- [ ] **Step 3: Прогнать i18n-тесты (паритет ключей по локалям + ICU-compile)**
 
 Run: `pnpm test`
-Expected: PASS — все локали имеют одинаковый набор ключей (parity/compile тесты зелёные).
+Expected: PASS — оба каталога симметричны по локалям. Проверь, что схема резолвит сообщение: `makeCommentCreateSchema(t).safeParse({type:"claim", blocks:"[]", anchor:"[1]"})` → ошибка с текстом `validation.comments.anchorNotObject`, не raw-ключ.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add src/i18n/messages/ru/comments.ts src/i18n/messages/en/comments.ts src/i18n/messages/ar/comments.ts src/i18n/messages/zh/comments.ts
-git commit --only src/i18n/messages/ru/comments.ts src/i18n/messages/en/comments.ts src/i18n/messages/ar/comments.ts src/i18n/messages/zh/comments.ts -m "i18n(comments): ключи маргиналии заякоренных комментов (ru/en/ar/zh)
+git add src/i18n/messages/ru/comments.ts src/i18n/messages/en/comments.ts src/i18n/messages/ar/comments.ts src/i18n/messages/zh/comments.ts src/i18n/messages/ru/validation.ts src/i18n/messages/en/validation.ts src/i18n/messages/ar/validation.ts src/i18n/messages/zh/validation.ts
+git commit --only src/i18n/messages/ru/comments.ts src/i18n/messages/en/comments.ts src/i18n/messages/ar/comments.ts src/i18n/messages/zh/comments.ts src/i18n/messages/ru/validation.ts src/i18n/messages/en/validation.ts src/i18n/messages/ar/validation.ts src/i18n/messages/zh/validation.ts -m "i18n(comments): UI-ключи маргиналии (comments) + ключи якоря (validation.comments)
 
 ar/zh — машинный перевод, вычитка носителем follow-up.
 
@@ -652,22 +655,23 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Create: `src/features/comments/ui/comment-composer-dialog.tsx`
 
 **Interfaces:**
-- Consumes: `Dialog` (`@/components/ui`), `CommentAnchorContext` (`./comment-anchor-context`), `CommentAnchoredCreateForm` (Task 5), `Anchor`/`CommentType` (`../types`).
+- Consumes: `Dialog` (`@/components/ui`), `CommentAnchoredCreateForm` (Task 5), `Anchor`/`CommentType` (`../types`).
 - Produces: `CommentComposerDialog({ lectureId, rootTypes, open, onOpenChange, anchor })`.
 
-- [ ] **Step 1: Реализовать диалог**
+> ⚠️ **Исправлено по ревью:** НЕ импортировать `CommentAnchorContext` — это `async` server-компонент (зовёт `getBlock`/`getT` из `server-only` `../api`); прямой рендер в `"use client"`-модуле НЕ собирается. Контекст-цитата здесь не нужна (пользователь только что сам выделил текст = `anchor.exact`). Используем штатный инлайн-бликвот (тот же паттерн, что `comment-node-view.tsx:93-97`).
+
+- [ ] **Step 1: Реализовать диалог (инлайн-бликвот, без async-server)**
 
 ```tsx
 "use client";
 // src/features/comments/ui/comment-composer-dialog.tsx
-// Модалка создания заякоренного комментария (selection-driven). Цитата-контекст
-// якоря над формой; форма закрывает диалог на успех.
+// Модалка создания заякоренного комментария (selection-driven). Над формой —
+// инлайн-цитата выделения (anchor.exact); форма закрывает диалог на успех.
 import { Dialog } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { Anchor, CommentType } from "../types";
 
-import { CommentAnchorContext } from "./comment-anchor-context";
 import { CommentAnchoredCreateForm } from "./comment-anchored-create-form";
 
 interface Props {
@@ -683,7 +687,11 @@ export function CommentComposerDialog({ lectureId, rootTypes, open, onOpenChange
   return (
     <Dialog open={open} onOpenChange={onOpenChange} title={t("marginComposerTitle")}>
       <div className="flex flex-col gap-4">
-        {anchor && <CommentAnchorContext anchor={anchor} />}
+        {anchor?.exact && (
+          <p className="border-s-2 border-(--color-border) ps-2 text-xs italic text-(--color-fg-muted)">
+            {anchor.exact}
+          </p>
+        )}
         {anchor && (
           <CommentAnchoredCreateForm
             lectureId={lectureId}
@@ -700,20 +708,10 @@ export function CommentComposerDialog({ lectureId, rootTypes, open, onOpenChange
 }
 ```
 
-> Примечание: `CommentAnchorContext` — async server-компонент (зовёт `getBlock`/`getT`). Он уже используется в дереве. В client-диалоге его рендер как дочернего узла допустим, если он передан как готовый ReactNode сервером; здесь он импортируется напрямую в client-модуль. Если линт/типизация запретит async-server в client-дереве — заменить превью на лёгкий инлайн-бликвот `{anchor.exact}` (тот же fallback, что в `comment-node-view.tsx:94-97`). Реализатор: сначала пробует прямой импорт; при ошибке использует fallback-бликвот:
->
-> ```tsx
-> {anchor?.exact && (
->   <p className="border-s-2 border-(--color-border) ps-2 text-xs italic text-(--color-fg-muted)">
->     {anchor.exact}
->   </p>
-> )}
-> ```
-
 - [ ] **Step 2: Проверить сборку/линт**
 
 Run: `pnpm lint && pnpm build`
-Expected: без ошибок. Если ошибка про async-server в client — применить fallback-бликвот из примечания и пересобрать.
+Expected: без ошибок.
 
 - [ ] **Step 3: Commit**
 
@@ -743,11 +741,14 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```tsx
 "use client";
 // src/features/comments/ui/open-thread-button.tsx
-// Скроллит к корневому комментарию в нижнем треде (#comment-<id>) и фокусирует
-// его. Узел треда несёт id=comment-<id> (см. comment-tree.tsx, Task 8).
+// Скроллит к корневому комментарию в нижнем треде (#comment-<id>). Узел треда
+// несёт id=comment-<id> (см. comment-tree.tsx, Task 8). Уважает ось appearance
+// motion (reduced → без анимации), как ast-toc.tsx — иначе регрессия reduced-motion.
+import { useReducedMotion } from "@/components/appearance";
 import { Button } from "@/components/ui";
 
 export function OpenThreadButton({ commentId, label }: { commentId: string; label: string }) {
+  const reduced = useReducedMotion();
   return (
     <Button
       type="button"
@@ -755,7 +756,7 @@ export function OpenThreadButton({ commentId, label }: { commentId: string; labe
       tone="quiet"
       onClick={() => {
         const el = document.getElementById(`comment-${commentId}`);
-        el?.scrollIntoView({ block: "center", behavior: "smooth" });
+        el?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
       }}
     >
       {label}
@@ -763,6 +764,8 @@ export function OpenThreadButton({ commentId, label }: { commentId: string; labe
   );
 }
 ```
+
+> Примечание: `useReducedMotion` — из `@/components/appearance` (`src/components/appearance/use-reduced-motion.ts`), тот же хук, что в `ast-toc.tsx`. Если barrel `@/components/appearance` его не реэкспортит — импортировать из `@/components/appearance/use-reduced-motion`.
 
 - [ ] **Step 2: Реализовать `comment-preview-card.tsx` (server)**
 
@@ -921,13 +924,17 @@ Expected: FAIL — модуля нет.
 // конкурирует с аннотациями), клик по фрагменту → превью-карточка слева (wide)
 // или скролл к нижнему треду (narrow). Создание из выделения: TextAnchor →
 // buildCommentTextAnchor(+target document) → модалка-композер.
+// SSR-расхождение с аннотациями (осознанно): превью-карточки НЕ в HTML — это
+// progressive enhancement (контент дублирован в нижнем CommentSection). Поэтому
+// слой монтируется client-only ({ready && ...}).
+// A11y/тач (исправлено по ревью): hover-reveal недоступен с клавиатуры/тача, а
+// CSS Custom Highlight не создаёт фокусируемых DOM-узлов. Поэтому при showAll
+// рендерим ДОСТУПНЫЙ список заякоренных корней (фокусируемые превью с
+// OpenThreadButton) — единственный клавиатурный/тач-путь к комментариям фрагментов.
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
-import {
-  InlineAnchorLayer,
-  type AnchorDraft,
-  type AnchoredNote,
-} from "@/components/anchor-engine";
+import { InlineAnchorLayer, type AnchorDraft, type AnchoredNote } from "@/components/anchor-engine";
+import { useReducedMotion } from "@/components/appearance";
 import { Button, Inline } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { coordsToEngineAnchor } from "@/utils/text-anchor";
@@ -961,6 +968,7 @@ export function DocumentCommentLayer({
   canCreate,
 }: DocumentCommentLayerProps) {
   const t = useT("comments");
+  const reduced = useReducedMotion();
   const astRootRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
   const [showAll, setShowAll] = useState(false); // default OFF (не конкурирует с аннотациями)
@@ -988,14 +996,19 @@ export function DocumentCommentLayer({
   });
   const previewById = new Map(notes.map((n) => [n.id, n.preview]));
 
-  const scrollToThread = useCallback((id: string) => {
-    document.getElementById(`comment-${id}`)?.scrollIntoView({ block: "center", behavior: "smooth" });
-  }, []);
+  const scrollToThread = useCallback(
+    (id: string) => {
+      document
+        .getElementById(`comment-${id}`)
+        ?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+    },
+    [reduced],
+  );
 
   return (
     <div className="flex flex-col gap-4" aria-label={t("marginColumnLabel")}>
       <Inline gap="tight" align="start">
-        <Button type="button" compact tone="quiet" onClick={toggle}>
+        <Button type="button" compact tone="quiet" onClick={toggle} aria-pressed={showAll}>
           {showAll ? t("marginHighlightHide") : t("marginHighlightShow")}
         </Button>
       </Inline>
@@ -1013,6 +1026,17 @@ export function DocumentCommentLayer({
           affordanceLabel={t("marginCommentAdd")}
           onActivateNarrow={scrollToThread}
         />
+      )}
+
+      {/* Доступный список (клавиатура/тач): при showAll показываем превью корней
+          потоком — фокусируемые, с OpenThreadButton. Закрывает a11y/тач-дыру,
+          т.к. hover-reveal и подсветка недостижимы без мыши. */}
+      {showAll && notes.length > 0 && (
+        <ul className="flex flex-col gap-3">
+          {notes.map((n) => (
+            <li key={n.id}>{n.preview}</li>
+          ))}
+        </ul>
       )}
 
       <CommentComposerDialog
@@ -1139,30 +1163,14 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 ---
 
-### Task 11: Разводка в странице лекции + CSS-канал подсветки
+### Task 11: Разводка в странице лекции (левое поле)
 
-Левый `MarginNote` с `DocumentComments` (как правый с аннотациями) + правила `::highlight(comment)`.
+Левый `MarginNote` с `DocumentComments` (зеркало правого с аннотациями). CSS-канал `::highlight(comment)` уже добавлен в `globals.css` в PR1 (foundation-зона — shell-файл правится в foundation-PR, не в фиче).
 
 **Files:**
 - Modify: `src/app/lectures/[id]/page.tsx`
-- Modify: `src/app/globals.css`
 
-- [ ] **Step 1: Добавить CSS-канал в `globals.css`** (рядом с `::highlight(annotation)`)
-
-```css
-::highlight(comment) {
-  background-color: var(--color-highlight);
-  text-decoration: underline dotted;
-}
-::highlight(comment-active) {
-  background-color: var(--color-highlight-active);
-  text-decoration: underline;
-}
-```
-
-(Визуальное различие с аннотациями: комментарии — пунктирное подчёркивание. Точный токен/стиль — на браузер-QA в Task 12.)
-
-- [ ] **Step 2: Импорт + левый `MarginNote` в `page.tsx`**
+- [ ] **Step 1: Импорт + левый `MarginNote` в `page.tsx`**
 
 В импортах фичи комментариев (строка 8) добавить `DocumentComments`:
 
@@ -1183,16 +1191,16 @@ import { CommentSection, DocumentComments } from "@/features/comments";
       )}
 ```
 
-- [ ] **Step 3: Проверить сборку/линт**
+- [ ] **Step 2: Проверить сборку/линт**
 
 Run: `pnpm lint && pnpm build`
 Expected: без ошибок.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
-git add src/app/lectures/[id]/page.tsx src/app/globals.css
-git commit --only src/app/lectures/[id]/page.tsx src/app/globals.css -m "feat(comments): левое поле заякоренных комментов на странице лекции + ::highlight(comment)
+git add src/app/lectures/[id]/page.tsx
+git commit --only src/app/lectures/[id]/page.tsx -m "feat(comments): левое поле заякоренных комментов на странице лекции
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
@@ -1213,17 +1221,19 @@ Expected: всё зелёное.
 Чек-лист:
 - выделить текст в документе → аффорданс «Комментировать» → композер с цитатой → создать → комментарий появился в нижнем треде;
 - навести курсор на прокомментированный фрагмент → подсветка (пунктир) проявляется;
-- тогл «Показать комментарии в тексте» → все заякоренные фрагменты подсвечены; перезагрузка хранит состояние (default OFF);
+- тогл «Показать комментарии в тексте» → все заякоренные фрагменты подсвечены + появляется доступный список превью под тоглом; перезагрузка хранит состояние (default OFF);
 - клик по подсвеченному фрагменту (≥1280px) → превью-карточка в ЛЕВОМ поле у фрагмента; «Открыть обсуждение» → скролл к узлу в нижнем треде;
 - узкий экран (<1280px) → клик по фрагменту сразу скроллит к треду;
-- аннотации справа продолжают работать (правый канал не задет); проверить наложение аннотация+комментарий на одном тексте (оба различимы);
+- **a11y/клавиатура:** включить тогл → Tab по списку превью → Enter на «Открыть обсуждение» скроллит к треду (без мыши); проверить, что reduced-motion (appearance motion=reduced ИЛИ OS prefers-reduced-motion) → скролл без анимации;
+- **тач:** на телефоне (узкий, hover нет) тогл показывает список превью — фрагменты обнаружимы без hover;
+- аннотации справа продолжают работать (правый канал не задет); наложение аннотация+комментарий на одном тексте: оба различимы визуально (комментарий — пунктир); ⚠️ известный edge: при ТОЧНОМ наложении клик сработает в ОБОИХ слоях (откроется превью слева И активируется аннотация справа со скроллом) — приемлемо для редкого наложения, зафиксировать поведение;
 - RTL (ar): поле комментов слева/справа зеркалится логическими свойствами; подсветка корректна.
 
-- [ ] **Step 3: Напомнить про открытый бэк-аск**
+- [ ] **Step 3: Напомнить про открытые бэк-аски**
 
-Перед мержем — отправить владельцу бэка вопрос про cross-lecture validation
-(`comment.Service.validateAnchor`, см. спеку `2026-06-26-anchored-comments-design.md`
-§ «Открытый бэк-аск»). Не блокер: FE всегда якорится на инлайн-документ текущей лекции.
+Перед мержем — отправить владельцу бэка (см. спеку `2026-06-26-anchored-comments-design.md` § «Открытый бэк-аск»):
+1. **cross-lecture validation** (`comment.Service.validateAnchor`) — проверяет ли бэк, что target принадлежит той же лекции. Не блокер: FE всегда якорится на инлайн-документ текущей лекции.
+2. **инвариант anchor-only-on-root** — гарантирует ли бэк, что anchor только на корне треда, или FE должен обрабатывать заякоренные ответы (descendants[].anchor)? v1 read-путь (`selectAnchoredRoots`) намеренно берёт только корни — заякоренные ответы не подсветятся.
 
 ---
 
@@ -1234,3 +1244,12 @@ Expected: всё зелёное.
 - **Плейсхолдеров нет:** код реальный; команды с ожидаемым результатом; единственная условная развилка (async-server `CommentAnchorContext` в client-диалоге, Task 6) имеет явный fallback.
 - **Консистентность типов:** `Anchor` (`comment.Anchor`), `AnchoredRoot`, `DocumentCommentNote`, `buildCommentTextAnchor`, `selectAnchoredRoots`, `DocumentCommentLayerProps` — имена совпадают между блоком Interfaces и тасками. `coordsToEngineAnchor`/`engineAnchorToCoords`/`anchorJsonField` — из PR1, имена совпадают.
 - **i18n-паритет:** Task 4 добавляет ключи во все 4 локали одним коммитом до их использования в Task 5/6/7/9.
+
+## Правки по адверсариальному ревью (4 субагента)
+
+- **[CRITICAL] i18n namespace:** ключи якоря `anchorNotObject`/`anchorInvalidJson` резолвятся через `NamespaceT<"validation">` → идут в `validation.ts` (под `comments:`), а не в `comments.ts`; UI-ключи маргиналии — в `comments.ts`. Task 4 расщеплён на два namespace (иначе missing-key в рантайме).
+- **[CRITICAL] reduced-motion:** `OpenThreadButton` (Task 7) и `scrollToThread` (Task 9) уважают ось appearance motion через `useReducedMotion()` (`behavior: reduced ? "auto" : "smooth"`) — иначе регрессия.
+- **[Task 6] async-server в client:** `CommentComposerDialog` НЕ импортирует async `CommentAnchorContext` (не собралось бы) → инлайн-бликвот `anchor.exact`.
+- **[a11y/тач] доступный список:** при `showAll` `DocumentCommentLayer` рендерит список превью (фокусируемый, с `OpenThreadButton`) — единственный клавиатурный/тач-путь, т.к. hover/подсветка недостижимы без мыши (Task 9). Тогл получил `aria-pressed`.
+- **[edge] удалённые корни** отсеиваются в `selectAnchoredRoots` (Task 2); non-root якоря — осознанный YAGNI + бэк-аск (Task 12).
+- **globals.css перенесён в PR1** (foundation) — Task 11 правит только страницу.
