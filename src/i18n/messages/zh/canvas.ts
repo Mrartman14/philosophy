@@ -51,6 +51,7 @@ const canvas: Messages["canvas"] = {
     toastSavedTitle: "已保存",
     toastSaveErrorTitle: "保存错误",
     confirmLeave: "存在未保存的更改。要不保存就离开吗？",
+    titleRequired: "请输入标题。",
   },
 
   // --- editor-toolbar ---
@@ -70,6 +71,7 @@ const canvas: Messages["canvas"] = {
     unsavedChanges: "存在未保存的更改",
     saving: "保存中…",
     save: "保存",
+    create: "创建",
   },
 
   // --- editor-inspector ---

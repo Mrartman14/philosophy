@@ -4,18 +4,18 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 import type { Point, RenderNode, Side } from "@/components/canvas-render";
-import { useToast } from "@/components/ui";
+import { FormField, Select, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
-import { updateCanvas } from "../actions";
+import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { makeEntityRefResolver } from "../entity-ref";
-import type { Canvas, CanvasRefEntityType } from "../types";
+import type { Canvas, CanvasRefEntityType, Visibility } from "../types";
 
 import { CanvasEditForm } from "./canvas-edit-form";
 import { EditorEdgeLayer } from "./editor-edge-layer";
@@ -26,8 +26,12 @@ import { EditorToolbar } from "./editor-toolbar";
 import { EntityRefDialog } from "./entity-ref-dialog";
 
 interface Props {
-  canvas: Canvas;
-  etag: string | null;
+  /** Существующий канвас (edit). В create-режиме отсутствует. */
+  canvas?: Canvas;
+  /** If-Match версия из GET (edit). В create-режиме не нужна. */
+  etag?: string | null;
+  /** "edit" (default) — PUT существующего; "create" — POST нового за один сейв. */
+  mode?: "create" | "edit";
 }
 
 /** Тип активного drag-жеста. */
@@ -44,16 +48,28 @@ const INITIAL_SAVE_STATE: ActionResult<Canvas | null> = { success: true, data: n
 /**
  * Клиентский визуальный редактор графа канваса. Тонкий interaction-слой над
  * чистым ядром (canvasReducer): pointer/keyboard → команды. Рендер через
- * переиспользуемые canvas-render примитивы. Сохранение — existing updateCanvas
- * (If-Match по etag). Тестами НЕ покрывается (конвенция ast-editor).
+ * переиспользуемые canvas-render примитивы.
+ *
+ * Два режима:
+ *  - "edit"   — сохранение через updateCanvas (PUT, If-Match по etag).
+ *  - "create" — title+visibility вводятся в шапке, первый сейв шлёт createCanvas
+ *    (POST, без etag) и редиректит в /canvases/{id}/edit. Бек принимает граф при
+ *    создании и возвращает ETag — отдельный «черновой id» не нужен.
+ *
+ * Тестами НЕ покрывается (конвенция ast-editor).
  */
-export function CanvasEditor({ canvas, etag }: Props) {
+export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
+  const isCreate = mode === "create";
   const router = useRouter();
   const toast = useToast();
   const t = useT("canvas");
   const tErrors = useT("errors");
-  const [state, rawDispatch] = useReducer(canvasReducer, canvas.data ?? { nodes: [], edges: [] }, initEditorState);
+  const [state, rawDispatch] = useReducer(canvasReducer, canvas?.data ?? { nodes: [], edges: [] }, initEditorState);
   const dispatch = useCallback((c: EditorCommand) => { rawDispatch(c); }, []);
+
+  // create-режим: title + visibility вводятся в шапке (в edit правятся через JSON-форму).
+  const [title, setTitle] = useState(canvas?.title ?? "");
+  const [visibility, setVisibility] = useState<Visibility>(canvas?.visibility ?? "private");
 
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<Drag>(null);
@@ -260,24 +276,56 @@ export function CanvasEditor({ canvas, etag }: Props) {
   };
 
   // ---- save ----
-  const onSave = async () => {
+  /** Граф структурно-валиден? Иначе тостит ошибку и подсвечивает узел. */
+  const validateBeforeSave = (): boolean => {
     setInvalidNodeId(undefined);
     const validation = validateGraph(state.data);
-    if (!validation.ok) {
-      const first = validation.errors[0];
-      if (first?.nodeId) setInvalidNodeId(first.nodeId);
-      toast.add({
-        title: t("editor.toastValidationTitle"),
-        description: first
-          ? t(`validate.${first.messageKey}`, first.params)
-          : t("editor.toastValidationFallback"),
-      });
+    if (validation.ok) return true;
+    const first = validation.errors[0];
+    if (first?.nodeId) setInvalidNodeId(first.nodeId);
+    toast.add({
+      title: t("editor.toastValidationTitle"),
+      description: first
+        ? t(`validate.${first.messageKey}`, first.params)
+        : t("editor.toastValidationFallback"),
+    });
+    return false;
+  };
+
+  /** create: POST нового канваса (граф+title+visibility) → редирект в edit. */
+  const onCreate = async () => {
+    if (!validateBeforeSave()) return;
+    if (title.trim() === "") {
+      toast.add({ title: t("editor.titleRequired") });
       return;
     }
     setSaving(true);
     const fd = new FormData();
-    fd.set("id", canvas.id ?? "");
-    fd.set("title", canvas.title ?? "");
+    fd.set("title", title.trim());
+    fd.set("visibility", visibility);
+    fd.set("data", JSON.stringify(state.data));
+    const result = await createCanvas(INITIAL_SAVE_STATE, fd);
+    setSaving(false);
+    if (result.success && result.data?.id) {
+      toast.add({ title: t("createForm.toastCreatedTitle") });
+      dispatch({ type: "markSaved", data: state.data });
+      router.push(`/canvases/${result.data.id}/edit`);
+    } else if (!result.success) {
+      const msg =
+        result.code === "forbidden"
+          ? tErrors("forbiddenAction", { action: t("createForbiddenAction") })
+          : result.error;
+      toast.add({ title: t("createForm.toastErrorTitle"), description: msg });
+    }
+  };
+
+  /** edit: PUT существующего канваса (If-Match по etag). */
+  const onUpdate = async () => {
+    if (!validateBeforeSave()) return;
+    setSaving(true);
+    const fd = new FormData();
+    fd.set("id", canvas?.id ?? "");
+    fd.set("title", canvas?.title ?? "");
     fd.set("data", JSON.stringify(state.data));
     fd.set("etag", etag ?? "");
     const result = await updateCanvas(INITIAL_SAVE_STATE, fd);
@@ -298,14 +346,21 @@ export function CanvasEditor({ canvas, etag }: Props) {
     }
   };
 
+  const onSave = isCreate ? onCreate : onUpdate;
+
   const onBack = () => {
     if (state.dirty && !window.confirm(t("editor.confirmLeave"))) return;
-    router.push(`/canvases/${canvas.id}`);
+    router.push(isCreate ? "/canvases" : `/canvases/${canvas?.id}`);
   };
 
   const editingNode = editingNodeId ? (state.data.nodes ?? []).find((n) => n.id === editingNodeId) : undefined;
 
-  if (showJson) {
+  // create: сейв активен при непустом title (граф может быть пустым — бек допускает).
+  const saveDisabled = saving || (isCreate ? title.trim() === "" : !state.dirty);
+  const saveLabel = isCreate ? t("toolbar.create") : undefined;
+
+  // raw-JSON форма — только update (PUT с id/etag), поэтому в create недоступна.
+  if (showJson && canvas) {
     return (
       <div className="flex flex-col gap-3">
         <EditorToolbar
@@ -314,6 +369,7 @@ export function CanvasEditor({ canvas, etag }: Props) {
           hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
           onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
           onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(false); }} onBack={onBack}
+          saveLabel={saveLabel} saveDisabled={saveDisabled}
         />
         <CanvasEditForm canvas={canvas} etag={etag} />
       </div>
@@ -322,12 +378,31 @@ export function CanvasEditor({ canvas, etag }: Props) {
 
   return (
     <div className="flex flex-col">
+      {isCreate && (
+        <div className="flex flex-wrap items-end gap-4 border-b border-(--color-border) p-3">
+          <FormField name="title" label={t("createForm.titleLabel")} required className="min-w-64 flex-1">
+            <TextInput value={title} onChange={(e) => { setTitle(e.target.value); }} />
+          </FormField>
+          <FormField name="visibility" label={t("createForm.visibilityLabel")} className="w-48">
+            <Select
+              value={visibility}
+              onValueChange={(v) => { setVisibility(v === "public" ? "public" : "private"); }}
+              options={[
+                { value: "private", label: t("createForm.visibilityPrivate") },
+                { value: "public", label: t("createForm.visibilityPublic") },
+              ]}
+            />
+          </FormField>
+        </div>
+      )}
+
       <EditorToolbar
         dispatch={dispatch} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
         dirty={state.dirty} gridEnabled={state.gridEnabled} saving={saving} showJson={showJson}
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
         onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(true); }} onBack={onBack}
+        saveLabel={saveLabel} saveDisabled={saveDisabled} hideJsonToggle={isCreate}
       />
 
       <div className="flex">

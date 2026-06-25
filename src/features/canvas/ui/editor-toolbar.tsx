@@ -21,12 +21,19 @@ interface Props {
   onSave: () => void;
   onToggleJson: () => void;
   onBack: () => void;
+  /** Текст save-кнопки. По умолчанию `toolbar.save`; в create-режиме — `toolbar.create`. */
+  saveLabel?: string | undefined;
+  /** Явный override disabled save-кнопки. По умолчанию `saving || !dirty`. */
+  saveDisabled?: boolean | undefined;
+  /** Скрыть тогл JSON (raw-JSON форма — только update). */
+  hideJsonToggle?: boolean | undefined;
 }
 
 /** Тулбар редактора: создание узлов, удаление, история, сетка, сохранение. */
 export function EditorToolbar({
   dispatch, canUndo, canRedo, dirty, gridEnabled, saving, showJson, hasSelection,
   onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson, onBack,
+  saveLabel, saveDisabled, hideJsonToggle,
 }: Props) {
   const t = useT("canvas");
 
@@ -54,14 +61,16 @@ export function EditorToolbar({
       <Button type="button" compact tone={gridEnabled ? "primary" : "quiet"} onClick={() => { dispatch({ type: "toggleGrid" }); }}>
         {t("toolbar.grid")}
       </Button>
-      <Button type="button" compact tone="quiet" onClick={onToggleJson}>
-        {showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")}
-      </Button>
+      {!hideJsonToggle && (
+        <Button type="button" compact tone="quiet" onClick={onToggleJson}>
+          {showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")}
+        </Button>
+      )}
 
       <span className="ms-auto flex items-center gap-2">
         {dirty && <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>}
-        <Button type="button" compact tone="primary" disabled={saving || !dirty} onClick={onSave}>
-          {saving ? t("toolbar.saving") : t("toolbar.save")}
+        <Button type="button" compact tone="primary" disabled={saveDisabled ?? (saving || !dirty)} onClick={onSave}>
+          {saving ? t("toolbar.saving") : (saveLabel ?? t("toolbar.save"))}
         </Button>
       </span>
     </div>

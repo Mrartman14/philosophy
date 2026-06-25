@@ -51,6 +51,7 @@ const canvas: Messages["canvas"] = {
     toastSavedTitle: "تم الحفظ",
     toastSaveErrorTitle: "خطأ في الحفظ",
     confirmLeave: "توجد تغييرات غير محفوظة. المغادرة دون حفظ؟",
+    titleRequired: "أدخل عنوانًا.",
   },
 
   // --- editor-toolbar ---
@@ -70,6 +71,7 @@ const canvas: Messages["canvas"] = {
     unsavedChanges: "توجد تغييرات غير محفوظة",
     saving: "جارٍ الحفظ…",
     save: "حفظ",
+    create: "إنشاء",
   },
 
   // --- editor-inspector ---

@@ -50,6 +50,7 @@ const canvas = {
     toastSavedTitle: "Сохранено",
     toastSaveErrorTitle: "Ошибка сохранения",
     confirmLeave: "Есть несохранённые изменения. Уйти без сохранения?",
+    titleRequired: "Введите название.",
   },
 
   // --- editor-toolbar ---
@@ -69,6 +70,7 @@ const canvas = {
     unsavedChanges: "Есть несохранённые изменения",
     saving: "Сохранение…",
     save: "Сохранить",
+    create: "Создать",
   },
 
   // --- editor-inspector ---

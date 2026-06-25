@@ -51,6 +51,7 @@ const canvas: Messages["canvas"] = {
     toastSavedTitle: "Saved",
     toastSaveErrorTitle: "Save error",
     confirmLeave: "There are unsaved changes. Leave without saving?",
+    titleRequired: "Enter a title.",
   },
 
   // --- editor-toolbar ---
@@ -70,6 +71,7 @@ const canvas: Messages["canvas"] = {
     unsavedChanges: "Unsaved changes",
     saving: "Saving…",
     save: "Save",
+    create: "Create",
   },
 
   // --- editor-inspector ---
