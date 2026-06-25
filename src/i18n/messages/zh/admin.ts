@@ -57,11 +57,6 @@ const admin = {
   attachmentsDocsSectionTitle: "讲座文档",
   attachmentsMediaSectionTitle: "讲座媒体",
 
-  // --- 讲座卡片 (/admin/lectures/[id]) ---
-  cardMetaTitle: "讲座",
-  cardMediaHeading: "媒体",
-  cardMediaUnavailable: "媒体文件不可用。",
-
   // --- комментарии ---
   commentsTitle: "评论审核",
   commentsLectureIdLabel: "讲座 ID",

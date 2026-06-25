@@ -20,7 +20,7 @@ export async function LectureAdminRow({ lecture, canEdit, canDelete }: Props) {
       <Td className="font-medium">
         {canEdit ? (
           <RouterLink
-            href={`/admin/lectures/${lecture.id}`}
+            href={`/lectures/${lecture.id}`}
             className="hover:underline"
           >
             {lecture.title}

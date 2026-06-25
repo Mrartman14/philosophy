@@ -57,11 +57,6 @@ const admin = {
   attachmentsDocsSectionTitle: "Lecture documents",
   attachmentsMediaSectionTitle: "Lecture media",
 
-  // --- lecture card (/admin/lectures/[id]) ---
-  cardMetaTitle: "Lecture",
-  cardMediaHeading: "Media",
-  cardMediaUnavailable: "Media file is unavailable.",
-
   // --- комментарии ---
   commentsTitle: "Comment moderation",
   commentsLectureIdLabel: "Lecture ID",
