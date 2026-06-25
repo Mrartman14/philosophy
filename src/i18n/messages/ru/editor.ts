@@ -25,6 +25,7 @@ const editor = {
   bulletList: "Маркированный список",
   orderedList: "Нумерованный список",
   checkList: "Чек-лист",
+  checkListItem: "Отметить задачу",
 
   // --- Toolbar: heading select (heading-select) ---
   blockTypeAriaLabel: "Тип блока",
@@ -66,6 +67,7 @@ const editor = {
   slashMenuCodeBlock: "Блок кода",
   slashMenuBulletList: "Маркированный список",
   slashMenuOrderedList: "Нумерованный список",
+  slashMenuCheckList: "Чек-лист",
   slashMenuThematicBreak: "Линия",
   slashMenuTable: "Таблица 3×3",
 

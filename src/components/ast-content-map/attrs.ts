@@ -1,6 +1,6 @@
 import { resolveStorageUrl } from "@/utils/storage-url";
 
-import type { AstNode, AstMark, NeutralChild } from "./types";
+import type { AstNode, AstMark, NeutralChild, NeutralSpec } from "./types";
 
 /**
  * content-address ключ файла (SHA256-hex). Локальная копия паттерна (см. также
@@ -42,6 +42,21 @@ export function listItemAttrs(node: AstNode): Record<string, string> {
   // exact/prefix/suffix — W3C TextQuoteSelector (бэк подтвердил: anchors.md). Только data-checked.
   const checked = (node.attrs as { checked?: unknown } | undefined)?.checked;
   return typeof checked === "boolean" ? { "data-checked": checked ? "true" : "false" } : {};
+}
+
+/**
+ * Ведущие дети <li>: статичный disabled-чекбокс задачи, когда `checked` булев
+ * (task-item модели GFM). Пустой массив для обычного пункта (диск/номер — CSS).
+ * Источник истины для READ (семантический <input> для a11y) и edit-`renderHTML`
+ * (SSR-фолбэк) — в живом редакторе nodeView переопределяет на интерактивный.
+ * Булевы атрибуты кодируются присутствием ключа (значение "") — см. specToReact.
+ */
+export function listItemChildren(node: AstNode): NeutralSpec[] {
+  const checked = (node.attrs as { checked?: unknown } | undefined)?.checked;
+  if (typeof checked !== "boolean") return [];
+  const inputAttrs: Record<string, string> = { type: "checkbox", disabled: "" };
+  if (checked) inputAttrs.checked = "";
+  return [["input", inputAttrs]];
 }
 
 /**

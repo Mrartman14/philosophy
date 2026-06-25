@@ -8,6 +8,7 @@ import { useT } from "@/i18n/client";
 import { caretVirtualElement } from "../caret-anchor";
 import type { SchemaSnapshot, EntityContext } from "../types";
 
+import { applyListKind } from "./buttons/list-actions";
 import { slashMenuKey, consumeSlashMarker, closeSlashMenu } from "./slash-menu-plugin";
 
 
@@ -66,6 +67,11 @@ function buildCommands(schema: SchemaSnapshot, context: EntityContext, t: Editor
       id: "ol",
       label: t("slashMenuOrderedList"),
       run: (e) => e.chain().focus().wrapIn("list", { ordered: true }).run(),
+    });
+    cmds.push({
+      id: "task",
+      label: t("slashMenuCheckList"),
+      run: (e) => { applyListKind(e, "task"); },
     });
   }
   if (allowed.has("thematic_break")) {

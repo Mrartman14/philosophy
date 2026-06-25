@@ -25,6 +25,7 @@ const editor = {
   bulletList: "قائمة نقطية",
   orderedList: "قائمة مرقمة",
   checkList: "قائمة مهام",
+  checkListItem: "تبديل المهمة",
 
   // --- Toolbar: heading select (heading-select) ---
   blockTypeAriaLabel: "نوع الكتلة",
@@ -66,6 +67,7 @@ const editor = {
   slashMenuCodeBlock: "كتلة رمز",
   slashMenuBulletList: "قائمة نقطية",
   slashMenuOrderedList: "قائمة مرقمة",
+  slashMenuCheckList: "قائمة مهام",
   slashMenuThematicBreak: "فاصل",
   slashMenuTable: "جدول 3×3",
 

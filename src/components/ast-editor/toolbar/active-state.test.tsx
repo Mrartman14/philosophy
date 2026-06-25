@@ -112,3 +112,55 @@ describe("EditorToolbar активное состояние", () => {
     expect(boldBtn).toHaveAttribute("aria-pressed", "false");
   });
 });
+
+// Регресс: чек-лист = ordered:false + checked, поэтому раньше подсвечивалась и
+// кнопка маркированного списка (оба ordered:false). Должна быть активна ТОЛЬКО
+// кнопка чек-листа.
+const checklistDoc: AstBlock[] = [
+  {
+    id: "l1",
+    type: "list",
+    attrs: { ordered: false },
+    content: [
+      {
+        type: "list_item",
+        attrs: { checked: false },
+        content: [{ type: "paragraph", content: [{ type: "text", text: "задача" }] }],
+      },
+    ],
+  } as unknown as AstBlock,
+];
+
+function ChecklistHarness({ onReady }: { onReady: (e: Editor) => void }) {
+  const editor = useAstEditor({
+    defaultValue: checklistDoc,
+    entityContext: "document" as EntityContext,
+    schema: fullSchema,
+  });
+  useEffect(() => {
+    if (editor) onReady(editor);
+  }, [editor, onReady]);
+  if (!editor) return null;
+  return <EditorToolbar editor={editor} schema={fullSchema} context="document" />;
+}
+
+describe("EditorToolbar — режимы списка различаются", () => {
+  it("в чек-листе активна ТОЛЬКО кнопка чек-листа (буллет не подсвечен)", async () => {
+    let ed: Editor | null = null;
+    render(<ChecklistHarness onReady={(e) => { ed = e; }} />);
+
+    await waitFor(() => { expect(ed).not.toBeNull(); });
+    const editor = ed as unknown as Editor;
+    act(() => { editor.commands.focus("end"); }); // каретка в пункте-задаче
+
+    const bulletBtn = await screen.findByLabelText("Маркированный список");
+    const orderedBtn = await screen.findByLabelText("Нумерованный список");
+    const taskBtn = await screen.findByLabelText("Чек-лист");
+
+    await waitFor(() => {
+      expect(taskBtn).toHaveAttribute("aria-pressed", "true");
+    });
+    expect(bulletBtn).toHaveAttribute("aria-pressed", "false");
+    expect(orderedBtn).toHaveAttribute("aria-pressed", "false");
+  });
+});

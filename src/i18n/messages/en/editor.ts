@@ -25,6 +25,7 @@ const editor = {
   bulletList: "Bulleted list",
   orderedList: "Numbered list",
   checkList: "Checklist",
+  checkListItem: "Toggle task",
 
   // --- Toolbar: heading select (heading-select) ---
   blockTypeAriaLabel: "Block type",
@@ -66,6 +67,7 @@ const editor = {
   slashMenuCodeBlock: "Code block",
   slashMenuBulletList: "Bulleted list",
   slashMenuOrderedList: "Numbered list",
+  slashMenuCheckList: "Checklist",
   slashMenuThematicBreak: "Divider",
   slashMenuTable: "Table 3×3",
 

@@ -6,7 +6,9 @@
      уровень + прямые дети вложенных блок-контейнеров (li/blockquote): `>`-flow
      не рекурсивен, иначе многоблочные пункты/цитаты остаются без отступов. */
   .content > * + * { margin-block-start: var(--flow); }
-  .content :is(li,blockquote) > * + * { margin-block-start: var(--flow); }
+  /* .task-content/.list-item-content — обёртки контента пункта в живом редакторе
+     (nodeView): держим в потоке flow наравне с прямыми детьми li/blockquote. */
+  .content :is(li,blockquote,.task-content,.list-item-content) > * + * { margin-block-start: var(--flow); }
   .content > :is(h1,h2,h3) { --flow: calc(var(--space-stack) * 1.75); }
   .content > :is(h4,h5,h6) { --flow: calc(var(--space-stack) * 1.25); }
   .content :is(h1,h2,h3,h4,h5,h6) { font-weight: 600; line-height: 1.2; }
@@ -19,6 +21,12 @@
   .content :is(ul,ol) { padding-inline-start: 1.5em; } .content ul { list-style: disc; } .content ol { list-style: decimal; }
   /* Без верхнеуровневого `>` — интервалы пунктов работают и во вложенных списках. */
   .content :is(ul,ol) > li + li { margin-block-start: calc(var(--space-stack) * 0.4); }
+  /* Чек-лист: пункт-задача (li[data-checked]) — без маркера, чекбокс слева от
+     контента. Логический flex-row → корректно и в RTL. Структура одинакова в
+     read (<input disabled>) и edit (nodeView): <li data-checked><input><div.task-content>. */
+  .content li[data-checked] { list-style: none; display: flex; align-items: flex-start; gap: 0.5em; }
+  .content li[data-checked] > input[type="checkbox"] { margin-block-start: 0.3em; flex: none; accent-color: var(--color-accent); }
+  .content li[data-checked] > .task-content { flex: 1 1 auto; min-inline-size: 0; }
   .content blockquote { border-inline-start: 3px solid var(--color-border-strong); padding-inline-start: 1em; color: var(--color-fg-muted); }
   .content code { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.9em; background: var(--color-surface-subtle); padding: 0.1em 0.3em; border-radius: var(--radius-sm); }
   .content pre { font-family: var(--font-geist-mono), ui-monospace, monospace; background: var(--color-surface-subtle); padding: var(--space-control-pad-x); border-radius: var(--radius-md); overflow-x: auto; }

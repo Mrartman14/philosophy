@@ -25,6 +25,7 @@ const editor = {
   bulletList: "无序列表",
   orderedList: "有序列表",
   checkList: "清单",
+  checkListItem: "切换任务",
 
   // --- Toolbar: heading select (heading-select) ---
   blockTypeAriaLabel: "块类型",
@@ -66,6 +67,7 @@ const editor = {
   slashMenuCodeBlock: "代码块",
   slashMenuBulletList: "无序列表",
   slashMenuOrderedList: "有序列表",
+  slashMenuCheckList: "清单",
   slashMenuThematicBreak: "分隔线",
   slashMenuTable: "表格 3×3",
 

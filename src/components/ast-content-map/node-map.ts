@@ -7,6 +7,7 @@ import {
   isOrdered,
   listAttrs,
   listItemAttrs,
+  listItemChildren,
 } from "./attrs";
 import { HOLE, type AstNodeType, type NodeRenderer } from "./types";
 
@@ -16,7 +17,15 @@ export const NODE_MAP: Partial<Record<AstNodeType, NodeRenderer>> = {
   blockquote: (node) => ["blockquote", blockIdAttr(node), HOLE],
   thematic_break: (node) => ["hr", blockIdAttr(node)],
   list: (node) => [isOrdered(node) ? "ol" : "ul", listAttrs(node), HOLE],
-  list_item: (node) => ["li", listItemAttrs(node), HOLE],
+  // list_item: задача (checked != null) несёт disabled-чекбокс + обёртку контента
+  // <div class="task-content"> (PM требует content-hole единственным ребёнком, см.
+  // node-map.test). Обычный пункт — только HOLE (диск/номер из CSS).
+  list_item: (node) => {
+    const checkbox = listItemChildren(node)[0];
+    return checkbox === undefined
+      ? ["li", listItemAttrs(node), HOLE]
+      : ["li", listItemAttrs(node), checkbox, ["div", { class: "task-content" }, HOLE]];
+  },
   code_block: (node) => ["pre", codeBlockAttrs(node), ["code", {}, HOLE]],
   // image: НЕ несёт data-block-id (контракт аннотаций). Лист с вычисленными детьми.
   image: (node) => ["figure", {}, ...imageChildren(node)],

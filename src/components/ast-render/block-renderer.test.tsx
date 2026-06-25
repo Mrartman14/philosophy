@@ -152,3 +152,54 @@ describe("BlockRenderer — data-block-id (DOM-контракт движка)", 
     ).not.toContain("data-block-id");
   });
 });
+
+// READ-рендер чек-листа (опубликованный документ). Чекбоксы СТАТИЧНЫ (disabled):
+// состояние — часть контента, меняется только в редакторе. Семантический <input>
+// (а не CSS-псевдоэлемент) — ради a11y, как у GitHub.
+describe("BlockRenderer — чек-лист (read, статичные disabled-чекбоксы)", () => {
+  const taskList = (checked: boolean): AstBlock =>
+    ({
+      id: "tl",
+      type: "list",
+      attrs: { ordered: false },
+      content: [
+        {
+          type: "list_item",
+          attrs: { checked },
+          content: [{ type: "paragraph", content: [{ type: "text", text: "пункт" }] }],
+        },
+      ],
+    }) as unknown as AstBlock;
+
+  it("задача checked=true → отмеченный disabled-чекбокс + data-checked", () => {
+    const block = taskList(true);
+    expect(markupFor(block)).toMatch(/<input[^>]*type="checkbox"/);
+    expect(markupFor(block)).toMatch(/<input[^>]*checked/);
+    expect(markupFor(block)).toMatch(/<input[^>]*disabled/);
+    expect(markupFor(block)).toContain('data-checked="true"');
+  });
+
+  it("задача checked=false → снятый disabled-чекбокс", () => {
+    const block = taskList(false);
+    expect(markupFor(block)).toMatch(/<input[^>]*type="checkbox"/);
+    expect(markupFor(block)).toMatch(/<input[^>]*disabled/);
+    expect(markupFor(block)).not.toMatch(/<input[^>]*checked/);
+    expect(markupFor(block)).toContain('data-checked="false"');
+  });
+
+  it("обычный пункт (без checked) → без чекбокса", () => {
+    const block = {
+      id: "ul",
+      type: "list",
+      attrs: { ordered: false },
+      content: [
+        {
+          type: "list_item",
+          content: [{ type: "paragraph", content: [{ type: "text", text: "пункт" }] }],
+        },
+      ],
+    } as unknown as AstBlock;
+    expect(markupFor(block)).not.toContain("checkbox");
+    expect(markupFor(block)).not.toContain("data-checked");
+  });
+});

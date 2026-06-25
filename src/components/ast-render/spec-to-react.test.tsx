@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 
-import { NODE_MAP, MARK_MAP } from "@/components/ast-content-map";
+import { NODE_MAP, MARK_MAP, type NeutralSpec } from "@/components/ast-content-map";
 import { must } from "@/components/ast-content-map/test-support";
 
 import { specToReact } from "./spec-to-react";
@@ -51,5 +51,32 @@ describe("specToReact + NODE_MAP/MARK_MAP (срез спайка)", () => {
     const m = must(must(MARK_MAP.bold)({ type: "bold" }));
     const { container } = render(<>{specToReact([...m, "жирный"], null)}</>);
     expect(container.querySelector("strong")?.textContent).toBe("жирный");
+  });
+
+  // Булевы HTML-атрибуты (checked/disabled/readonly) в нейтральной карте
+  // представлены ПРИСУТСТВИЕМ ключа (значение ""). React ждёт boolean-проп, а не
+  // строку: строка "" — falsy → атрибут бы потерялся. Нужно для read-чекбокса
+  // задачи (disabled), который рендерится из общей карты.
+  it("булев атрибут (checked+disabled) → boolean-проп, чекбокс отмечен и заблокирован", () => {
+    const spec: NeutralSpec = ["input", { type: "checkbox", checked: "", disabled: "" }];
+    const { container } = render(<>{specToReact(spec, null)}</>);
+    const input = container.querySelector("input");
+    expect(input?.getAttribute("type")).toBe("checkbox");
+    expect(input?.checked).toBe(true);
+    expect(input?.disabled).toBe(true);
+  });
+
+  it("отсутствующий булев атрибут → false (чекбокс снят, но заблокирован)", () => {
+    const spec: NeutralSpec = ["input", { type: "checkbox", disabled: "" }];
+    const { container } = render(<>{specToReact(spec, null)}</>);
+    const input = container.querySelector("input");
+    expect(input?.checked).toBe(false);
+    expect(input?.disabled).toBe(true);
+  });
+
+  it("readonly в карте → React readOnly-проп", () => {
+    const spec: NeutralSpec = ["input", { type: "text", readonly: "" }];
+    const { container } = render(<>{specToReact(spec, null)}</>);
+    expect(container.querySelector("input")?.readOnly).toBe(true);
   });
 });

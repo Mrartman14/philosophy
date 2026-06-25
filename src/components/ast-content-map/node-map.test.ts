@@ -40,12 +40,27 @@ describe("NODE_MAP — простые блоки", () => {
       HOLE,
     ]);
   });
-  it("list_item с checked → data-checked", () => {
+  // PM-инвариант: content-hole должен быть ЕДИНСТВЕННЫМ ребёнком родителя →
+  // контент задачи оборачивается в <div class="task-content"> (HOLE там один),
+  // а чекбокс — брат этой обёртки. Структура совпадает с Tiptap TaskItem.
+  it("list_item checked=true → чекбокс + обёртка контента с HOLE", () => {
     expect(node("list_item", { checked: true })).toEqual([
       "li",
       { "data-checked": "true" },
-      HOLE,
+      ["input", { type: "checkbox", checked: "", disabled: "" }],
+      ["div", { class: "task-content" }, HOLE],
     ]);
+  });
+  it("list_item checked=false → снятый disabled-чекбокс + обёртка контента", () => {
+    expect(node("list_item", { checked: false })).toEqual([
+      "li",
+      { "data-checked": "false" },
+      ["input", { type: "checkbox", disabled: "" }],
+      ["div", { class: "task-content" }, HOLE],
+    ]);
+  });
+  it("list_item без checked → обычный пункт, БЕЗ чекбокса (диск/номер из CSS)", () => {
+    expect(node("list_item", {})).toEqual(["li", {}, HOLE]);
   });
   it("list_item НЕ несёт data-block-id (якорится через объемлющий list-блок)", () => {
     // ast.Node без id; data-block-id живёт на list-блоке, не на пункте (anchors.md).

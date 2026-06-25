@@ -97,6 +97,21 @@ describe("SlashMenu UI", () => {
     editor.destroy();
   });
 
+  it("вставляет чек-лист по клику (list_item с checked=false)", async () => {
+    const editor = makeEditor();
+    render(<SlashMenu editor={editor} schema={SchemaSnap} context="document" />);
+    const pos = editor.view.state.selection.from;
+    editor.view.dispatch(
+      editor.view.state.tr
+        .insertText("/", pos)
+        .setMeta(slashMenuKey, { open: true, from: pos, query: "" }),
+    );
+    await screen.findByRole("listbox");
+    fireEvent.mouseDown(screen.getByText(/^Чек-лист$/));
+    expect(JSON.stringify(editor.getJSON())).toContain('"checked":false');
+    editor.destroy();
+  });
+
   it("якорится под каретку через Base UI Positioner (coordsAtPos)", async () => {
     const editor = makeEditor();
     // Позиционирование делегировано Base UI Popover.Positioner: якорь — virtual
