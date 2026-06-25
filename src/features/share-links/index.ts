@@ -18,5 +18,6 @@ export {
 } from "./types";
 export { ShareLinkLookupSchema, type ShareLinkLookupInput } from "./schemas";
 export { ShareButton } from "./ui/share-button";
+export { ShareDialog } from "./ui/share-dialog";
 export { ShareLinkList } from "./ui/share-link-list";
 export { ShareLookupForm } from "./ui/share-lookup-form";
