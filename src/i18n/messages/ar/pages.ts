@@ -100,6 +100,11 @@ const pages = {
 
   // ─── /lectures/[id] ──────────────────────────────────────────────────
   lectureDefaultTitle: "محاضرة",
+  lectureEditLink: "تعديل المحاضرة",
+  lectureDocumentsNavLabel: "مستندات المحاضرة",
+  lectureDocumentUnavailable: "المستند غير متاح.",
+  lectureMediaHeading: "وسائط المحاضرة",
+  lectureMediaUnavailable: "ملف الوسائط غير متاح.",
 
   // ─── /lectures/[id]/annotations ──────────────────────────────────────
   lectureAnnotationsTitle: "التعليقات التوضيحية للمحاضرة",

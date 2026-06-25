@@ -100,6 +100,11 @@ const pages = {
 
   // ─── /lectures/[id] ──────────────────────────────────────────────────
   lectureDefaultTitle: "Lecture",
+  lectureEditLink: "Edit lecture",
+  lectureDocumentsNavLabel: "Lecture documents",
+  lectureDocumentUnavailable: "Document is unavailable.",
+  lectureMediaHeading: "Lecture media",
+  lectureMediaUnavailable: "Media file is unavailable.",
 
   // ─── /lectures/[id]/annotations ──────────────────────────────────────
   lectureAnnotationsTitle: "Lecture annotations",

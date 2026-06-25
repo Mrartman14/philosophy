@@ -100,6 +100,11 @@ const pages = {
 
   // ─── /lectures/[id] ──────────────────────────────────────────────────
   lectureDefaultTitle: "讲座",
+  lectureEditLink: "编辑讲座",
+  lectureDocumentsNavLabel: "讲座文档",
+  lectureDocumentUnavailable: "文档不可用。",
+  lectureMediaHeading: "讲座媒体",
+  lectureMediaUnavailable: "媒体文件不可用。",
 
   // ─── /lectures/[id]/annotations ──────────────────────────────────────
   lectureAnnotationsTitle: "讲座批注",
