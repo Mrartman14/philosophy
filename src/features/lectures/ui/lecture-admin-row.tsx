@@ -17,7 +17,18 @@ export async function LectureAdminRow({ lecture, canEdit, canDelete }: Props) {
 
   return (
     <Tr>
-      <Td className="font-medium">{lecture.title}</Td>
+      <Td className="font-medium">
+        {canEdit ? (
+          <RouterLink
+            href={`/admin/lectures/${lecture.id}`}
+            className="hover:underline"
+          >
+            {lecture.title}
+          </RouterLink>
+        ) : (
+          lecture.title
+        )}
+      </Td>
       <Td className="text-(--color-fg-muted)">{lecture.date}</Td>
       <Td>{lecture.visibility === "public" ? tL("visibilityPublic") : tL("visibilityPrivate")}</Td>
       <Td>

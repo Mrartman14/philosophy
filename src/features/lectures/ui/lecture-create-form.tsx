@@ -37,11 +37,11 @@ export function LectureCreateForm({ canAttach = false }: { canAttach?: boolean }
   const [state, action] = useActionState(createLecture, initial);
   const [docs, setDocs] = useState<SelectedDoc[]>([]);
 
-  // При выборе документов ведём на страницу прикреплений (видно фактическое
-  // состояние — attach в Варианте A best-effort), иначе — на редактирование.
+  // При выборе документов ведём на карточку лекции (там и управление вложениями,
+  // и рендер), иначе — на редактирование.
   useActionRedirect(state, (data) =>
     docs.length > 0
-      ? `/admin/lectures/${data.id}/attachments`
+      ? `/admin/lectures/${data.id}`
       : `/admin/lectures/${data.id}/edit`,
   );
 

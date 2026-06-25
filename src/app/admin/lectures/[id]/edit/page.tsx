@@ -85,7 +85,7 @@ export default async function EditLecturePage({ params }: Props) {
         <section className="max-w-xl border-t border-(--color-border) pt-4">
           <h2 className="mb-2 text-lg font-semibold">{t("editLectureAttachmentsHeading")}</h2>
           <a
-            href={`/admin/lectures/${lecture.id}/attachments`}
+            href={`/admin/lectures/${lecture.id}`}
             className="inline-flex items-center gap-1 text-sm underline hover:no-underline"
           >
             {t("editLectureAttachmentsLink")}
