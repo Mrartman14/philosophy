@@ -41,6 +41,8 @@ export {
 export { canManageAttachments, canAttachToLecture } from "./permissions";
 export { LectureAttachmentsManager } from "./ui/lecture-attachments-manager";
 export type { ManagedAttachment } from "./ui/lecture-attachments-manager";
+export { LectureDocumentTabs } from "./ui/lecture-document-tabs";
+export type { DocTabMeta } from "./ui/lecture-document-tabs";
 export type {
   LectureDocument,
   LectureMediaItem,
