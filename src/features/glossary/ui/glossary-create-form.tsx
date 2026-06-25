@@ -46,6 +46,7 @@ export function GlossaryCreateForm() {
           <LazyAstEditor
             defaultValue={[]}
             entityContext="glossary"
+            ariaLabel={t("blocksLabel")}
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
           />
         </Field>

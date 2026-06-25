@@ -7,6 +7,19 @@ import { blocksJsonField } from "@/utils/blocks-json";
 
 type ValidationT = NamespaceT<"validation">;
 
+/** Поле тела термина (JSON-блоки). allowEmpty: создание требует тело, правка — нет. */
+function makeTermBlocksField(t: ValidationT, allowEmpty: boolean) {
+  return blocksJsonField({
+    allowEmpty,
+    messages: {
+      minLength: t("glossary.blocksMinLength"),
+      invalidJson: t("glossary.blocksInvalidJson"),
+      notArray: t("common.blocksNotArray"),
+      empty: t("glossary.blocksEmpty"),
+    },
+  });
+}
+
 export function makeTermCreateSchema(t: ValidationT) {
   return z.object({
     title: z
@@ -16,28 +29,14 @@ export function makeTermCreateSchema(t: ValidationT) {
       .max(300, t("glossary.titleMax")),
     // Создание термина — единый шаг: title + тело сразу (один POST). Тело
     // обязательно (allowEmpty: false) — пустой массив бэк отклонит BLOCKS_EMPTY.
-    blocks: blocksJsonField({
-      allowEmpty: false,
-      messages: {
-        minLength: t("glossary.blocksMinLength"),
-        invalidJson: t("glossary.blocksInvalidJson"),
-        notArray: t("common.blocksNotArray"),
-        empty: t("glossary.blocksEmpty"),
-      },
-    }),
+    blocks: makeTermBlocksField(t, false),
   });
 }
 
 export function makeTermBlocksUpdateSchema(t: ValidationT) {
   return z.object({
     id: z.uuid(t("glossary.invalidTermId")),
-    blocks: blocksJsonField({
-      allowEmpty: true,
-      messages: {
-        invalidJson: t("glossary.blocksInvalidJson"),
-        notArray: t("common.blocksNotArray"),
-      },
-    }),
+    blocks: makeTermBlocksField(t, true),
   });
 }
 

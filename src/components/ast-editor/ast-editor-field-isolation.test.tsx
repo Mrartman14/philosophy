@@ -11,6 +11,8 @@ import type { SchemaSnapshot } from "@/components/ast-editor";
 // Падает, если изоляция (FieldNameBoundary внутри редактора) сломается / уедет
 // в будущем апгрейде Base UI.
 
+// blockLevels.full ОБЯЗАН содержать "heading": иначе HeadingSelect (источник
+// утечки name) не смонтируется и тест выродится в тавтологию.
 const snapshot: SchemaSnapshot = {
   blockLevels: { full: ["paragraph", "heading"] },
   entityBlockLimits: { full: 100 },

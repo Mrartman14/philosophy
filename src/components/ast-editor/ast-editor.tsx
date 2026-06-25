@@ -4,7 +4,7 @@ import { Extension } from "@tiptap/core";
 import { EditorContent } from "@tiptap/react";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 
-import { FieldNameBoundary } from "@/components/ui/field-name-boundary";
+import { FieldNameBoundary } from "@/components/ui";
 
 import { useDriftWarn } from "./drift-warn";
 import { AtMenu } from "./pickers/at-menu";
