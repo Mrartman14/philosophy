@@ -113,6 +113,8 @@ export const AUDIT_ACTIONS = enumValues<S["audit.Action"]>()(
   "annotation.update",
   "attachment.create",
   "attachment.delete",
+  "attachment.entry_clear",
+  "attachment.entry_set",
   "attachment.reorder",
   "banner.create",
   "banner.delete",

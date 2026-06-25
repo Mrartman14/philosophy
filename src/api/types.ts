@@ -61,3 +61,11 @@ export type PushSubscribeRequest = Schemas["push.SubscribeRequest"];
 export type PushUnsubscribeRequest = Schemas["push.UnsubscribeRequest"];
 export type PushSendRequest = Schemas["push.SendRequest"];
 export type PushSubscribeKeys = Schemas["push.SubscribeKeys"];
+
+// --- Uploads ---
+/** Тело 201 POST /api/uploads/images: { upload_id, storage_key }. */
+export type UploadImageResponse = Schemas["image.UploadImageResponse"];
+
+// --- Documents / Media (списочные проекции для пикеров) ---
+export type DocumentSummary = Schemas["document.DocumentSummary"];
+export type MediaSummary = Schemas["media.MediaSummary"];

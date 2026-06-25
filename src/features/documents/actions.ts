@@ -13,7 +13,7 @@ import {
   type ApiError,
   type ApiErrorMessageKeys,
 } from "@/utils/api-error";
-import { unwrap } from "@/utils/api-unwrap";
+import { parseEnvelope, unwrap } from "@/utils/api-unwrap";
 import {
   createAction,
   createFormAction,
@@ -122,9 +122,9 @@ export const uploadDocument = createFormAction(async (formData) => {
       ERRORS,
     );
   }
-  const json = (await res.json()) as { data?: Document };
+  const doc = await parseEnvelope<Document>(res);
   revalidateEntity(Tags.DOCUMENTS);
-  return json.data ?? null;
+  return doc;
 }, "uploadDocument");
 
 /** PATCH /api/documents/{id} (метаданные — title). Owner-only enforce'ит бек. */

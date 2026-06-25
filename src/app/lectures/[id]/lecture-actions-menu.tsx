@@ -6,7 +6,7 @@
 import { useState } from "react";
 
 import { Button, Menu } from "@/components/ui";
-import { ShareDialog, type ShareLink } from "@/features/share-links";
+import { ShareDialog, type ShareLink } from "@/features/share-links/client";
 import { useT } from "@/i18n/client";
 
 interface Props {

@@ -1,7 +1,14 @@
 // src/utils/api-unwrap.test.ts
 import { describe, expect, it } from "vitest";
 
-import { unwrap, unwrapList } from "./api-unwrap";
+import { parseEnvelope, unwrap, unwrapList } from "./api-unwrap";
+
+function jsonResponse(body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
+}
 
 describe("unwrapList", () => {
   it("returns items from resp.data and pagination fields", () => {
@@ -53,5 +60,31 @@ describe("unwrap", () => {
 
   it("returns null when data is undefined", () => {
     expect(unwrap({})).toBeNull();
+  });
+});
+
+describe("parseEnvelope", () => {
+  it("unwraps the {data:...} envelope from a raw fetch Response", async () => {
+    const res = jsonResponse({ data: { upload_id: "u-1", storage_key: "abc" } });
+    await expect(parseEnvelope<{ upload_id: string; storage_key: string }>(res)).resolves.toEqual({
+      upload_id: "u-1",
+      storage_key: "abc",
+    });
+  });
+
+  it("returns null when the envelope has no data", async () => {
+    await expect(parseEnvelope(jsonResponse({}))).resolves.toBeNull();
+  });
+
+  it("returns null when data is null", async () => {
+    await expect(parseEnvelope(jsonResponse({ data: null }))).resolves.toBeNull();
+  });
+
+  it("returns null on a non-JSON body instead of throwing", async () => {
+    const res = new Response("<html>boom</html>", {
+      status: 200,
+      headers: { "content-type": "text/html" },
+    });
+    await expect(parseEnvelope(res)).resolves.toBeNull();
   });
 });

@@ -42,7 +42,10 @@ describe("uploadImage server action", () => {
       expect(init.body).toBeInstanceOf(FormData);
       const fd = init.body as FormData;
       expect(fd.get("file")).toBeInstanceOf(File);
-      return Promise.resolve(jsonResponse({ upload_id: "u-1", storage_key: "abc123" }, 201));
+      // Бэк (httputil.WriteJSON) ВСЕГДА оборачивает успешное тело в {"data": ...}.
+      return Promise.resolve(
+        jsonResponse({ data: { upload_id: "u-1", storage_key: "abc123" } }, 201),
+      );
     });
 
     const fd = new FormData();
@@ -53,6 +56,15 @@ describe("uploadImage server action", () => {
       success: true,
       data: { storage_key: "abc123", upload_id: "u-1" },
     });
+  });
+
+  it("201 with empty/missing data envelope → failure (no undefined upload_id)", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ data: {} }, 201));
+
+    const fd = new FormData();
+    fd.set("file", makePngFile());
+    const res = await uploadImage(fd);
+    expect(res.success).toBe(false);
   });
 
   it("413 IMAGE_TOO_LARGE → code: image_too_large", async () => {

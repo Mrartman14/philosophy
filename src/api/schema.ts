@@ -11854,7 +11854,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Reorder an attachment within a lecture */
+        /** Update an attachment (reorder and/or set as lecture entry) */
         patch: {
             parameters: {
                 query?: never;
@@ -16485,7 +16485,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY" | "GRAPH_NOT_READY";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "ENTRY_NOT_VISIBLE_ENOUGH" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY" | "GRAPH_NOT_READY";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -16591,10 +16591,19 @@ export interface components {
         /** @enum {string} */
         "attachment.EntityType": "document" | "media" | "canvas";
         "attachment.UpdateAttachmentRequest": {
+            /**
+             * @description IsEntry, when present, sets (true) or clears (false) this attachment as the
+             *     container's entry point — the entity loaded first when the lecture is
+             *     opened («основной документ»). Setting is exclusive: it atomically clears
+             *     any other entry in the container. Setting true requires the entity to be
+             *     at least as visible as the lecture (else 422 ENTRY_NOT_VISIBLE_ENOUGH).
+             */
+            is_entry?: boolean;
+            /** @description SortOrder, when present, moves the attachment within its lecture bucket. */
             sort_order?: number;
         };
         /** @enum {string} */
-        "audit.Action": "annotation.admin_delete" | "annotation.create" | "annotation.delete" | "annotation.update" | "attachment.create" | "attachment.delete" | "attachment.reorder" | "banner.create" | "banner.delete" | "banner.update" | "canvas.create" | "canvas.delete" | "canvas.update" | "canvas.visibility_change" | "comment.admin_delete" | "comment.create" | "comment.delete" | "comment.update" | "document.create" | "document.delete" | "document.update" | "document.upload" | "document.visibility_change" | "event.create" | "event.delete" | "event.update" | "form.admin_delete" | "form.create" | "form.delete" | "form.publish" | "glossary.create" | "glossary.delete" | "glossary.update" | "lecture.cover.clear" | "lecture.cover.set" | "lecture.create" | "lecture.delete" | "lecture.update" | "lecture.visibility_change" | "map.rebuild" | "media.create" | "media.delete" | "media.upload" | "media.visibility_change" | "push.broadcast" | "share_link.admin_revoke" | "share_link.create" | "share_link.revoke" | "tag.create" | "tag.delete" | "tag.set_lecture_tags" | "tag.update" | "trail.create" | "trail.delete" | "trail.set_items" | "trail.update" | "trail.visibility_change" | "user.role_change" | "user.status_change";
+        "audit.Action": "annotation.admin_delete" | "annotation.create" | "annotation.delete" | "annotation.update" | "attachment.create" | "attachment.delete" | "attachment.entry_clear" | "attachment.entry_set" | "attachment.reorder" | "banner.create" | "banner.delete" | "banner.update" | "canvas.create" | "canvas.delete" | "canvas.update" | "canvas.visibility_change" | "comment.admin_delete" | "comment.create" | "comment.delete" | "comment.update" | "document.create" | "document.delete" | "document.update" | "document.upload" | "document.visibility_change" | "event.create" | "event.delete" | "event.update" | "form.admin_delete" | "form.create" | "form.delete" | "form.publish" | "glossary.create" | "glossary.delete" | "glossary.update" | "lecture.cover.clear" | "lecture.cover.set" | "lecture.create" | "lecture.delete" | "lecture.update" | "lecture.visibility_change" | "map.rebuild" | "media.create" | "media.delete" | "media.upload" | "media.visibility_change" | "push.broadcast" | "share_link.admin_revoke" | "share_link.create" | "share_link.revoke" | "tag.create" | "tag.delete" | "tag.set_lecture_tags" | "tag.update" | "trail.create" | "trail.delete" | "trail.set_items" | "trail.update" | "trail.visibility_change" | "user.role_change" | "user.status_change";
         "audit.Record": {
             action?: components["schemas"]["audit.Action"];
             actor_user_id?: string;
@@ -16878,6 +16887,14 @@ export interface components {
             created_at?: string;
             filename?: string;
             id?: string;
+            /**
+             * @description IsEntry is populated ONLY by the by-lecture listing
+             *     (GET /api/lectures/{id}/documents): true marks this document as that
+             *     lecture's entry point («основной документ»). It is a property of the
+             *     attachments edge, not the document, so it is context-dependent and omitted
+             *     (false) in standalone document responses (GET /api/documents/{id}).
+             */
+            is_entry?: boolean;
             owner_id?: string;
             updated_at?: string;
             /**
@@ -17260,6 +17277,13 @@ export interface components {
             created_at: string;
             filename: string;
             id: string;
+            /**
+             * @description IsEntry is populated ONLY by the by-lecture listing
+             *     (GET /api/lectures/{id}/media): true marks this media as that lecture's
+             *     entry point. Context-dependent (attachments-edge property), omitted in
+             *     standalone media responses.
+             */
+            is_entry?: boolean;
             owner_id: string;
             owner_username?: string;
             type: components["schemas"]["media.FileType"];
@@ -17272,6 +17296,13 @@ export interface components {
             created_at: string;
             filename: string;
             id: string;
+            /**
+             * @description IsEntry is populated ONLY by the by-lecture listing
+             *     (GET /api/lectures/{id}/media): true marks this media as that lecture's
+             *     entry point. Context-dependent (attachments-edge property), omitted in
+             *     standalone media responses.
+             */
+            is_entry?: boolean;
             owner_id: string;
             type: components["schemas"]["media.FileType"];
             url?: string;

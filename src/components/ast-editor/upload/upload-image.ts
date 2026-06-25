@@ -3,8 +3,10 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { API_URL } from "@/api/base-url";
+import type { UploadImageResponse } from "@/api/types";
 import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
+import { parseEnvelope } from "@/utils/api-unwrap";
 
 export type UploadImageResult =
   | { success: true; data: { storage_key: string; upload_id: string } }
@@ -44,8 +46,13 @@ export async function uploadImage(formData: FormData): Promise<UploadImageResult
   }
 
   if (res.status === 201) {
-    const body = (await res.json()) as { storage_key: string; upload_id: string };
-    return { success: true, data: body };
+    // Бэк (httputil.WriteJSON) оборачивает успешное тело в {"data": ...};
+    // тип payload — из схемы (UploadImageResponse), не рукописный литерал.
+    const data = await parseEnvelope<UploadImageResponse>(res);
+    if (!data?.storage_key || !data.upload_id) {
+      return { success: false, error: t("imageUploadFailed", { status: res.status }) };
+    }
+    return { success: true, data: { storage_key: data.storage_key, upload_id: data.upload_id } };
   }
 
   let body: ApiError = {};

@@ -35,3 +35,24 @@ export function unwrapList<T>(
 export function unwrap<T>(resp: { data?: T | null }): T | null {
   return resp.data ?? null;
 }
+
+/**
+ * Снять конверт {"data": ...} (httputil.WriteJSON) с СЫРОГО fetch-`Response` и
+ * вернуть payload, типизированный `T`. Только для путей в обход openapi-fetch
+ * клиента (multipart-загрузки, auth): там `res.json()` это `any`, поэтому
+ * единственная защита от дрейфа со спекой — указать `T` компонентом из схемы
+ * (через `@/api/types` / `components["schemas"][...]`), а НЕ рукописным литералом.
+ * На типизированном клиенте используй `unwrap`/`unwrapList`.
+ *
+ * Возвращает `null` на не-JSON теле / пустом конверте — вызывающий решает,
+ * как это показать (ошибка загрузки, повтор и т.п.).
+ */
+export async function parseEnvelope<T>(res: Response): Promise<T | null> {
+  let body: { data?: T | null };
+  try {
+    body = (await res.json()) as { data?: T | null };
+  } catch {
+    return null;
+  }
+  return body.data ?? null;
+}

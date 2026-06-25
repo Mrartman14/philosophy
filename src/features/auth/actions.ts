@@ -4,9 +4,16 @@ import "server-only";
 import { redirect } from "next/navigation";
 
 import { API_URL } from "@/api/base-url";
+import type { paths } from "@/api/schema";
 import { getT } from "@/i18n";
 import { instrumentedFetch } from "@/services/observability/server-fetch";
+import { parseEnvelope } from "@/utils/api-unwrap";
 import { createFormAction, parseFormData } from "@/utils/create-action";
+
+/** Тело 200 POST /api/auth/login — инлайн-форма в спеке (нет именованного компонента). */
+type LoginData = NonNullable<
+  paths["/api/auth/login"]["post"]["responses"][200]["content"]["application/json"]["data"]
+>;
 
 import { setAuthCookies, clearAuthCookies, getAuthToken, getRefreshToken } from "./cookie";
 import { safeNextPath } from "./safe-next";
@@ -51,17 +58,10 @@ export const loginAction = createFormAction<undefined>(async (formData) => {
   let access: string | undefined;
   let refresh: string | undefined;
   let expiresIn: number | undefined;
-  try {
-    const json = (await res.json()) as {
-      data?: { access_token?: unknown; refresh_token?: unknown; expires_in?: unknown };
-    };
-    const d = json.data ?? {};
-    if (typeof d.access_token === "string") access = d.access_token;
-    if (typeof d.refresh_token === "string") refresh = d.refresh_token;
-    if (typeof d.expires_in === "number") expiresIn = d.expires_in;
-  } catch {
-    throw new AuthError("service_unavailable");
-  }
+  const d: LoginData = (await parseEnvelope<LoginData>(res)) ?? {};
+  if (typeof d.access_token === "string") access = d.access_token;
+  if (typeof d.refresh_token === "string") refresh = d.refresh_token;
+  if (typeof d.expires_in === "number") expiresIn = d.expires_in;
   if (!access || !refresh) throw new AuthError("service_unavailable");
 
   await setAuthCookies({ access, refresh, ...(expiresIn !== undefined && { expiresIn }) });

@@ -2,6 +2,7 @@
 import "server-only";
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
+import type { DocumentSummary, MediaSummary } from "@/api/types";
 import { getT } from "@/i18n";
 import {
   rethrowApiError,
@@ -328,10 +329,10 @@ export const searchDocumentsForAttach = createAction(
       },
     });
     if (error) rethrowApiError(error, ERRORS);
-    const items = (data.data ?? []) as { id?: string; filename?: string }[];
+    // data.data уже типизирован схемой как DocumentSummary[] — каст не нужен.
     return {
-      data: items
-        .filter((d): d is { id: string; filename?: string } => Boolean(d.id))
+      data: (data.data ?? [])
+        .filter((d): d is DocumentSummary & { id: string } => Boolean(d.id))
         .map((d) => ({ id: d.id, label: d.filename ?? d.id })),
       total: data.pagination?.total ?? null,
     };
@@ -353,10 +354,10 @@ export const searchMediaForAttach = createAction(
       },
     });
     if (error) rethrowApiError(error, ERRORS);
-    const items = (data.data ?? []) as { id?: string; filename?: string }[];
+    // data.data уже типизирован схемой как MediaSummary[] — каст не нужен.
     return {
-      data: items
-        .filter((m): m is { id: string; filename?: string } => Boolean(m.id))
+      data: (data.data ?? [])
+        .filter((m): m is MediaSummary & { id: string } => Boolean(m.id))
         .map((m) => ({ id: m.id, label: m.filename ?? m.id })),
       total: data.pagination?.total ?? null,
     };
