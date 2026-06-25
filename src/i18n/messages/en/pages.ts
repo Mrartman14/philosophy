@@ -105,6 +105,9 @@ const pages = {
   lectureDocumentUnavailable: "Document is unavailable.",
   lectureMediaHeading: "Lecture media",
   lectureMediaUnavailable: "Media file is unavailable.",
+  lectureActionsMenuLabel: "Actions",
+  lectureDownloadMd: "Download .md",
+  lectureDownloadTxt: "Download .txt",
 
   // ─── /lectures/[id]/annotations ──────────────────────────────────────
   lectureAnnotationsTitle: "Lecture annotations",

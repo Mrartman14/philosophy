@@ -105,6 +105,9 @@ const pages = {
   lectureDocumentUnavailable: "Документ недоступен.",
   lectureMediaHeading: "Медиа лекции",
   lectureMediaUnavailable: "Медиафайл недоступен.",
+  lectureActionsMenuLabel: "Действия",
+  lectureDownloadMd: "Скачать .md",
+  lectureDownloadTxt: "Скачать .txt",
 
   // ─── /lectures/[id]/annotations ──────────────────────────────────────
   lectureAnnotationsTitle: "Аннотации лекции",

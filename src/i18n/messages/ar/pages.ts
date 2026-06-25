@@ -105,6 +105,9 @@ const pages = {
   lectureDocumentUnavailable: "المستند غير متاح.",
   lectureMediaHeading: "وسائط المحاضرة",
   lectureMediaUnavailable: "ملف الوسائط غير متاح.",
+  lectureActionsMenuLabel: "إجراءات",
+  lectureDownloadMd: "تنزيل ‎.md",
+  lectureDownloadTxt: "تنزيل ‎.txt",
 
   // ─── /lectures/[id]/annotations ──────────────────────────────────────
   lectureAnnotationsTitle: "التعليقات التوضيحية للمحاضرة",

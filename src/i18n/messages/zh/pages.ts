@@ -105,6 +105,9 @@ const pages = {
   lectureDocumentUnavailable: "文档不可用。",
   lectureMediaHeading: "讲座媒体",
   lectureMediaUnavailable: "媒体文件不可用。",
+  lectureActionsMenuLabel: "操作",
+  lectureDownloadMd: "下载 .md",
+  lectureDownloadTxt: "下载 .txt",
 
   // ─── /lectures/[id]/annotations ──────────────────────────────────────
   lectureAnnotationsTitle: "讲座批注",
