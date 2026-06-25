@@ -12,7 +12,8 @@ export function resolveActiveDocId(
   docParam: string | undefined,
 ): string | null {
   const ids = documents.map((d) => d.id).filter((id): id is string => Boolean(id));
-  if (ids.length === 0) return null;
+  const [first] = ids;
+  if (first === undefined) return null;
   if (docParam && ids.includes(docParam)) return docParam;
-  return ids[0];
+  return first;
 }

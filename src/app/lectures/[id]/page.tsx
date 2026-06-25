@@ -3,16 +3,22 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { SaveOfflineButton } from "@/app/_offline/save-offline-button";
-import { Skeleton } from "@/components/ui";
+import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
+import { DocumentAnnotations } from "@/features/annotations";
 import { CommentSection } from "@/features/comments";
+import { DocumentDetail, getDocumentById } from "@/features/documents";
 import {
+  canUpdateLecture,
   getLectureById,
+  getLectureDocuments,
+  getLectureMedia,
   lectureCoverUrl,
   LectureDetail,
-  LectureDocumentsSection,
+  LectureDocumentSelector,
   LectureExportLinks,
-  LectureMediaSection,
+  resolveActiveDocId,
 } from "@/features/lectures";
+import { getMediaById, MediaPlayer } from "@/features/media";
 import {
   getLectureSubscription,
   LectureSubscribeButton,
@@ -29,64 +35,127 @@ import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ cq?: string; token?: string }>;
+  searchParams: Promise<{ cq?: string; token?: string; doc?: string }>;
 }
 
 export default async function LecturePage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { cq, token } = await searchParams;
-  const [me, lecture, tags] = await Promise.all([
+  const { cq, token, doc } = await searchParams;
+  const [me, lecture, tags, documents, media] = await Promise.all([
     getMe(),
     getLectureById(id, token),
     getLectureTags(id),
+    getLectureDocuments(id, token),
+    getLectureMedia(id, token),
   ]);
   if (!lecture) notFound();
 
+  // URL-driven активный документ (?doc=); тело — только активного (ленивость).
+  const activeId = resolveActiveDocId(documents, doc);
+  const activeDoc = activeId ? await getDocumentById(activeId, token) : null;
+
+  // Медиа-плееры: url в списке опционален → добираем getMediaById только когда пуст.
+  const mediaWithUrl = await Promise.all(
+    media.map(async (m) => (m.url ? m : ((await getMediaById(m.id)) ?? m))),
+  );
+
   const canShare = canCreateShareLink(me, lecture);
-  const [subscribed, shareLinks] = await Promise.all([
+  const canEdit = canUpdateLecture(me, lecture);
+  const [subscribed, shareLinks, t] = await Promise.all([
     me && lecture.id ? getLectureSubscription(lecture.id) : Promise.resolve(false),
     canShare ? getShareLinksFor("lecture", lecture.id) : Promise.resolve([]),
+    getT("pages"),
   ]);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
-      <LectureDetail lecture={lecture} tags={tags} />
-      <LectureExportLinks id={id} />
-      {/* Секции документов/медиа лекции (lecture-enrichment, волна 3).
-          Каждая сама возвращает null, если список пуст — fallback={null},
-          чтобы не было скелетона, который пропадает в пустом случае (CLS). */}
-      <Suspense fallback={null}>
-        <LectureDocumentsSection lectureId={id} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <LectureMediaSection lectureId={id} />
-      </Suspense>
-      <div className="flex justify-end">
-        <SaveOfflineButton entity="lectures" id={id} />
+    <>
+      <div className="flex flex-col gap-8 p-4">
+        {/* Admin-affordance: правка лекции (по canUpdateLecture). */}
+        {canEdit && (
+          <div className="flex justify-end">
+            <RouterLink
+              href={`/admin/lectures/${id}/edit`}
+              className="text-sm text-(--color-link)"
+            >
+              {t("lectureEditLink")}
+            </RouterLink>
+          </div>
+        )}
+
+        <LectureDetail lecture={lecture} tags={tags} />
+        <LectureExportLinks id={id} />
+
+        {/* Документы — инлайн активный (URL-driven ?doc=); один data-ast-root. */}
+        {activeId && (
+          <section className="flex flex-col gap-3">
+            <LectureDocumentSelector
+              documents={documents}
+              activeId={activeId}
+              token={token}
+              navLabel={t("lectureDocumentsNavLabel")}
+            />
+            <div data-ast-root>
+              {activeDoc ? (
+                <DocumentDetail document={activeDoc} />
+              ) : (
+                <p className="text-sm text-(--color-fg-muted)">
+                  {t("lectureDocumentUnavailable")}
+                </p>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Медиа — плееры (audio/video). */}
+        {mediaWithUrl.length > 0 && (
+          <section className="flex flex-col gap-3" aria-label={t("lectureMediaHeading")}>
+            <h2 className="text-lg font-semibold">{t("lectureMediaHeading")}</h2>
+            <ul className="flex flex-col gap-6">
+              {mediaWithUrl.map((m) => (
+                <li key={m.id}>
+                  {m.url ? (
+                    <MediaPlayer url={m.url} type={m.type} filename={m.filename} mediaId={m.id} />
+                  ) : (
+                    <p className="text-sm text-(--color-fg-muted)">{t("lectureMediaUnavailable")}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <div className="flex justify-end">
+          <SaveOfflineButton entity="lectures" id={id} />
+        </div>
+        {me && lecture.id && (
+          <div className="flex justify-end">
+            <LectureSubscribeButton lectureId={lecture.id} initialSubscribed={subscribed} />
+          </div>
+        )}
+        {canShare && (
+          <div className="flex justify-end">
+            <ShareButton
+              resourceType="lecture"
+              resourceId={lecture.id}
+              canCreate={canShare}
+              initialLinks={shareLinks}
+            />
+          </div>
+        )}
+        <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+          <CommentSection lectureId={id} query={cq} />
+        </Suspense>
       </div>
-      {/* === slot: подписка на лекцию (notifications) === */}
-      {me && lecture.id && (
-        <div className="flex justify-end">
-          <LectureSubscribeButton lectureId={lecture.id} initialSubscribed={subscribed} />
-        </div>
+
+      {/* Аннотации активного документа — правое поле грида (как /documents/[id]). */}
+      {activeDoc && activeId && (
+        <MarginNote side="end" grow className="p-4 xl:ps-0">
+          <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+            <DocumentAnnotations parentId={activeId} />
+          </Suspense>
+        </MarginNote>
       )}
-      {/* === slot: share-кнопка (share-links, волна 3) === */}
-      {canShare && (
-        <div className="flex justify-end">
-          <ShareButton
-            resourceType="lecture"
-            resourceId={lecture.id}
-            canCreate={canShare}
-            initialLinks={shareLinks}
-          />
-        </div>
-      )}
-      {/* CommentSection всегда рендерит контент (заголовок «Обсуждение» +
-          форму/дерево) — используем Skeleton как fallback. */}
-      <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-        <CommentSection lectureId={id} query={cq} />
-      </Suspense>
-    </div>
+    </>
   );
 }
 

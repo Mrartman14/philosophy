@@ -45,12 +45,6 @@ const lectures = {
   // --- edit form status ---
   savedMessage: "Saved.",
 
-  // --- sections ---
-  documentsSectionLabel: "Lecture documents",
-  documentsSectionHeading: "Lecture documents",
-  mediaSectionLabel: "Lecture media",
-  mediaSectionHeading: "Lecture media",
-
   // --- document tabs (lecture card) ---
   documentTabsAriaLabel: "Lecture documents",
   docTabLoading: "Loading document…",

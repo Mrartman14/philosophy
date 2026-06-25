@@ -45,12 +45,6 @@ const lectures = {
   // --- edit form status ---
   savedMessage: "تم الحفظ.",
 
-  // --- sections ---
-  documentsSectionLabel: "مستندات المحاضرة",
-  documentsSectionHeading: "مستندات المحاضرة",
-  mediaSectionLabel: "وسائط المحاضرة",
-  mediaSectionHeading: "وسائط المحاضرة",
-
   // --- document tabs (lecture card) ---
   documentTabsAriaLabel: "مستندات المحاضرة",
   docTabLoading: "جارٍ تحميل المستند…",

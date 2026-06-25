@@ -55,8 +55,6 @@ export type {
 export { lectureExportUrls } from "./export-urls";
 export type { LectureExportUrls } from "./export-urls";
 export { LectureExportLinks } from "./ui/lecture-export-links";
-export { LectureDocumentsSection } from "./ui/lecture-documents-section";
-export { LectureMediaSection } from "./ui/lecture-media-section";
 export { LectureDocumentSelector } from "./ui/lecture-document-selector";
 
 // lecture-enrichment (волна 3) — glossary suggest (nice-to-have).

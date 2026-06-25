@@ -46,12 +46,6 @@ const lectures = {
   // --- edit form status ---
   savedMessage: "Сохранено.",
 
-  // --- sections ---
-  documentsSectionLabel: "Документы лекции",
-  documentsSectionHeading: "Документы лекции",
-  mediaSectionLabel: "Медиа лекции",
-  mediaSectionHeading: "Медиа лекции",
-
   // --- document tabs (карточка лекции) ---
   documentTabsAriaLabel: "Документы лекции",
   docTabLoading: "Загрузка документа…",

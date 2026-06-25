@@ -45,12 +45,6 @@ const lectures = {
   // --- edit form status ---
   savedMessage: "已保存。",
 
-  // --- sections ---
-  documentsSectionLabel: "讲座文档",
-  documentsSectionHeading: "讲座文档",
-  mediaSectionLabel: "讲座媒体",
-  mediaSectionHeading: "讲座媒体",
-
   // --- document tabs (lecture card) ---
   documentTabsAriaLabel: "讲座文档",
   docTabLoading: "正在加载文档…",

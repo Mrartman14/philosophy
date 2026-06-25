@@ -6,7 +6,7 @@ import type { LectureDocument } from "../types";
 interface Props {
   documents: Pick<LectureDocument, "id" | "filename">[];
   activeId: string;
-  token?: string;
+  token?: string | undefined;
   navLabel: string;
 }
 
