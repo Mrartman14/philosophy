@@ -1,0 +1,56 @@
+"use client";
+// src/components/ui/menu.tsx
+// Compound-обёртка над Base UI Menu (dropdown-меню действий). Зеркало popover.tsx:
+// Root/Trigger/Portal/Positioner — passthrough; Popup несёт общий surface-стиль;
+// Item/LinkItem — стиль пункта (LinkItem рендерит <a> для ссылок-действий).
+// className — наивный cn-join (как в ките), на call-site без дублей surface.
+import { Menu as BaseMenu } from "@base-ui/react/menu";
+import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "react";
+
+import { cn } from "./cn";
+
+const Popup = forwardRef<
+  ComponentRef<typeof BaseMenu.Popup>,
+  ComponentPropsWithoutRef<typeof BaseMenu.Popup>
+>(function MenuPopup({ className, ...rest }, ref) {
+  return (
+    <BaseMenu.Popup
+      ref={ref}
+      className={cn(
+        "min-w-44 rounded border border-(--color-border) bg-(--color-surface) p-1 shadow-lg outline-none",
+        className as string,
+      )}
+      {...rest}
+    />
+  );
+});
+
+const ITEM_CLASS =
+  "flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-(--color-surface-subtle) data-[disabled]:opacity-50";
+
+const Item = forwardRef<
+  ComponentRef<typeof BaseMenu.Item>,
+  ComponentPropsWithoutRef<typeof BaseMenu.Item>
+>(function MenuItem({ className, ...rest }, ref) {
+  return <BaseMenu.Item ref={ref} className={cn(ITEM_CLASS, className as string)} {...rest} />;
+});
+
+const LinkItem = forwardRef<
+  ComponentRef<typeof BaseMenu.LinkItem>,
+  ComponentPropsWithoutRef<typeof BaseMenu.LinkItem>
+>(function MenuLinkItem({ className, ...rest }, ref) {
+  return (
+    <BaseMenu.LinkItem ref={ref} className={cn(ITEM_CLASS, "no-underline", className as string)} {...rest} />
+  );
+});
+
+export const Menu = {
+  Root: BaseMenu.Root,
+  Trigger: BaseMenu.Trigger,
+  Portal: BaseMenu.Portal,
+  Positioner: BaseMenu.Positioner,
+  Popup,
+  Item,
+  LinkItem,
+  Separator: BaseMenu.Separator,
+};
