@@ -31,6 +31,7 @@ export { setLectureCover, clearLectureCover } from "./actions";
 
 // lecture-enrichment (волна 3) — attachments.
 export { getLectureDocuments, getLectureMedia } from "./api";
+export { resolveActiveDocId } from "./active-document";
 export {
   attachToLecture,
   detachFromLecture,
