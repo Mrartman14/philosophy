@@ -59,6 +59,13 @@ const admin = {
   attachmentsDocsSectionTitle: "مستندات المحاضرة",
   attachmentsMediaSectionTitle: "وسائط المحاضرة",
 
+  // --- بطاقة المحاضرة (/admin/lectures/[id]) ---
+  cardMetaTitle: "محاضرة",
+  cardEditLink: "تعديل المحاضرة",
+  cardDocumentsHeading: "المستندات",
+  cardMediaHeading: "الوسائط",
+  cardMediaUnavailable: "ملف الوسائط غير متاح.",
+
   // --- комментарии ---
   commentsTitle: "إشراف التعليقات",
   commentsLectureIdLabel: "معرّف المحاضرة",

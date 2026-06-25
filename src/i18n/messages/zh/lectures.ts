@@ -51,6 +51,12 @@ const lectures = {
   mediaSectionLabel: "讲座媒体",
   mediaSectionHeading: "讲座媒体",
 
+  // --- document tabs (lecture card) ---
+  documentTabsAriaLabel: "讲座文档",
+  docTabLoading: "正在加载文档…",
+  docTabError: "无法加载文档。",
+  docTabEmpty: "空文档。",
+
   // --- attachments manager ---
   detachForbidden: "您没有取消关联的权限。",
   reorderForbidden: "您没有调整顺序的权限。",

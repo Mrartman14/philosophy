@@ -51,6 +51,12 @@ const lectures = {
   mediaSectionLabel: "وسائط المحاضرة",
   mediaSectionHeading: "وسائط المحاضرة",
 
+  // --- document tabs (lecture card) ---
+  documentTabsAriaLabel: "مستندات المحاضرة",
+  docTabLoading: "جارٍ تحميل المستند…",
+  docTabError: "تعذّر تحميل المستند.",
+  docTabEmpty: "مستند فارغ.",
+
   // --- attachments manager ---
   detachForbidden: "ليست لديك صلاحية إلغاء الإرفاق.",
   reorderForbidden: "ليست لديك صلاحية إعادة الترتيب.",

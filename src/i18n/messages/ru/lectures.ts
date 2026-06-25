@@ -52,6 +52,12 @@ const lectures = {
   mediaSectionLabel: "Медиа лекции",
   mediaSectionHeading: "Медиа лекции",
 
+  // --- document tabs (карточка лекции) ---
+  documentTabsAriaLabel: "Документы лекции",
+  docTabLoading: "Загрузка документа…",
+  docTabError: "Не удалось загрузить документ.",
+  docTabEmpty: "Пустой документ.",
+
   // --- attachments manager ---
   detachForbidden: "У вас нет прав на открепление.",
   reorderForbidden: "У вас нет прав на изменение порядка.",

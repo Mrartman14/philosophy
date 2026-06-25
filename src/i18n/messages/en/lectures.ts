@@ -51,6 +51,12 @@ const lectures = {
   mediaSectionLabel: "Lecture media",
   mediaSectionHeading: "Lecture media",
 
+  // --- document tabs (lecture card) ---
+  documentTabsAriaLabel: "Lecture documents",
+  docTabLoading: "Loading document…",
+  docTabError: "Failed to load the document.",
+  docTabEmpty: "Empty document.",
+
   // --- attachments manager ---
   detachForbidden: "You don't have permission to detach.",
   reorderForbidden: "You don't have permission to reorder.",
