@@ -54,7 +54,6 @@ export type {
 // lecture-enrichment (волна 3) — публичная страница: экспорт-ссылки.
 export { lectureExportUrls } from "./export-urls";
 export type { LectureExportUrls } from "./export-urls";
-export { LectureExportLinks } from "./ui/lecture-export-links";
 export { LectureDocumentSelector } from "./ui/lecture-document-selector";
 
 // lecture-enrichment (волна 3) — glossary suggest (nice-to-have).

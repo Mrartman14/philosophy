@@ -15,7 +15,7 @@ import {
   lectureCoverUrl,
   LectureDetail,
   LectureDocumentSelector,
-  LectureExportLinks,
+  lectureExportUrls,
   resolveActiveDocId,
 } from "@/features/lectures";
 import { getMediaById, MediaPlayer } from "@/features/media";
@@ -24,7 +24,6 @@ import {
   LectureSubscribeButton,
 } from "@/features/notifications";
 import {
-  ShareButton,
   canCreateShareLink,
   getShareLinksFor,
 } from "@/features/share-links";
@@ -32,6 +31,8 @@ import { getLectureTags } from "@/features/tags";
 import { getLocale, getT } from "@/i18n";
 import { buildPageMetadata, ogLocale } from "@/seo/page-metadata";
 import { getMe } from "@/utils/me";
+
+import { LectureActionsMenu } from "./lecture-actions-menu";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -70,20 +71,27 @@ export default async function LecturePage({ params, searchParams }: Props) {
   return (
     <>
       <div className="flex flex-col gap-8 p-4">
-        {/* Admin-affordance: правка лекции (по canUpdateLecture). */}
-        {canEdit && (
-          <div className="flex justify-end">
-            <RouterLink
-              href={`/admin/lectures/${id}/edit`}
-              className="text-sm text-(--color-link)"
-            >
+        {/* Тулбар действий: владелец — правка; залогинен — подписка; офлайн;
+            ⋯-меню (скачать .md/.txt + поделиться). */}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {canEdit && (
+            <RouterLink href={`/admin/lectures/${id}/edit`} className="text-sm text-(--color-link)">
               {t("lectureEditLink")}
             </RouterLink>
-          </div>
-        )}
+          )}
+          {me && lecture.id && (
+            <LectureSubscribeButton lectureId={lecture.id} initialSubscribed={subscribed} />
+          )}
+          <SaveOfflineButton entity="lectures" id={id} />
+          <LectureActionsMenu
+            exportUrls={lectureExportUrls(id)}
+            share={
+              canShare && lecture.id ? { resourceId: lecture.id, initialLinks: shareLinks } : null
+            }
+          />
+        </div>
 
         <LectureDetail lecture={lecture} tags={tags} />
-        <LectureExportLinks id={id} />
 
         {/* Документы — инлайн активный (URL-driven ?doc=); один data-ast-root. */}
         {activeId && (
@@ -124,24 +132,6 @@ export default async function LecturePage({ params, searchParams }: Props) {
           </section>
         )}
 
-        <div className="flex justify-end">
-          <SaveOfflineButton entity="lectures" id={id} />
-        </div>
-        {me && lecture.id && (
-          <div className="flex justify-end">
-            <LectureSubscribeButton lectureId={lecture.id} initialSubscribed={subscribed} />
-          </div>
-        )}
-        {canShare && (
-          <div className="flex justify-end">
-            <ShareButton
-              resourceType="lecture"
-              resourceId={lecture.id}
-              canCreate={canShare}
-              initialLinks={shareLinks}
-            />
-          </div>
-        )}
         <Suspense fallback={<Skeleton className="h-48 w-full" />}>
           <CommentSection lectureId={id} query={cq} />
         </Suspense>
