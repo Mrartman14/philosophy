@@ -37,3 +37,4 @@ export { Inline, INLINE_CLASS, type InlineProps } from "./inline";
 export { MarginNote, MARGIN_NOTE_SIDE, type MarginNoteProps } from "./margin-note";
 export { FullBleed, FULL_BLEED_CLASS, type FullBleedProps } from "./full-bleed";
 export { FormFeedback } from "./form-feedback";
+export { FieldNameBoundary, type FieldNameBoundaryProps } from "./field-name-boundary";

@@ -4,6 +4,8 @@ import { Extension } from "@tiptap/core";
 import { EditorContent } from "@tiptap/react";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 
+import { FieldNameBoundary } from "@/components/ui/field-name-boundary";
+
 import { useDriftWarn } from "./drift-warn";
 import { AtMenu } from "./pickers/at-menu";
 import { createAtSuggestionPlugin } from "./pickers/at-suggestion-plugin";
@@ -95,7 +97,14 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
   if (!editor) return null;
 
   return (
-    <div
+    // ГРАНИЦА ИМЕНИ поля: когда форма оборачивает редактор в <Field name="blocks">,
+    // Base UI раздаёт name="blocks" всем вложенным Field.Control (kit-контролы
+    // тулбара: HeadingSelect и пр.) — и они утекают в FormData дублями поля.
+    // FieldNameBoundary (безымянный Field.Root) шадовит внешнее имя → тулбарные
+    // контролы становятся nameless и не сабмитятся. Значение несёт сырой
+    // сиблинг-<input name="blocks"> формы и собственный {props.name}-input ниже —
+    // оба сырые input, иммунны. См. память ast-editor-formfield-name-pollution.
+    <FieldNameBoundary
       className={`ast-editor border border-(--color-border) rounded-lg overflow-hidden
         ${props.editable === false ? "opacity-50 pointer-events-none" : ""}`}
     >
@@ -122,6 +131,6 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
           defaultValue={JSON.stringify(props.defaultValue ?? [])}
         />
       ) : null}
-    </div>
+    </FieldNameBoundary>
   );
 });
