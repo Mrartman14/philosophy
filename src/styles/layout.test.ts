@@ -10,7 +10,7 @@ describe("layout.css", () => {
   it("определяет токены ширины хребта/полей/зазора", () => {
     expect(css).toContain("--layout-spine: 45rem");
     expect(css).toContain("--layout-margin: 0px");
-    expect(css).toContain("--layout-gutter: 2rem");
+    expect(css).toContain("--layout-gutter: 1rem");
   });
 
   it("раскрывает поля только на >= xl (брейкпоинт из токена, не магическое число)", () => {
