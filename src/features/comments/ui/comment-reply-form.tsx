@@ -30,6 +30,19 @@ export function CommentReplyForm({ lectureId, parentId, childTypes }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
 
+  // Успешный ответ — убираем форму целиком (назад к кнопке «Ответить») и чистим
+  // тело, чтобы повторное раскрытие стартовало с пустого редактора. Паттерн
+  // «adjust state during render» (НЕ useEffect: правило react-hooks/
+  // set-state-in-effect — error), как в comment-create-form / tags/tag-admin-row.
+  const [prevState, setPrevState] = useState(state);
+  if (state !== prevState) {
+    setPrevState(state);
+    if (state.success && state.data) {
+      setBlocks([]);
+      setOpen(false);
+    }
+  }
+
   if (childTypes.length === 0) return null;
   if (!open) {
     return (

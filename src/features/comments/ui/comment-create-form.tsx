@@ -28,6 +28,21 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
   const [blocks, setBlocks] = useState<AstBlock[]>([]);
   const [state, action] = useActionState(createComment, initial);
 
+  // Сброс формы после успешного создания: коммент уже виден в списке, поэтому
+  // поле ввода надо очистить. AstEditor uncontrolled (TipTap владеет контентом) →
+  // сбрасываем ремоунтом по editorKey, blocks/hidden-поле обнуляем. Паттерн
+  // «adjust state during render» (НЕ useEffect: правило react-hooks/
+  // set-state-in-effect — error), как в IdempotencyField / tags/tag-admin-row.
+  const [editorKey, setEditorKey] = useState(0);
+  const [prevState, setPrevState] = useState(state);
+  if (state !== prevState) {
+    setPrevState(state);
+    if (state.success && state.data) {
+      setBlocks([]);
+      setEditorKey((k) => k + 1);
+    }
+  }
+
   const options = rootTypes.map((type) => ({ value: type, label: t(`type.${type}`) }));
 
   return (
@@ -46,6 +61,7 @@ export function CommentCreateForm({ lectureId, rootTypes }: Props) {
 
         <Field name="blocks" label={t("createBodyLabel")} required>
           <LazyAstEditor
+            key={editorKey}
             entityContext="comment"
             defaultLectureId={lectureId}
             onChange={(next: AstBlock[]) => { setBlocks(next); }}
