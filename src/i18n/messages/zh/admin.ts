@@ -54,7 +54,6 @@ const admin = {
   editLectureAttachmentsLink: "管理讲座的文档和媒体",
 
   // --- прикрепления лекции ---
-  attachmentsPageTitle: "{lectureTitle}：附件",
   attachmentsDocumentFallback: "文档",
   attachmentsDocsSectionTitle: "讲座文档",
   attachmentsMediaSectionTitle: "讲座媒体",
@@ -159,7 +158,6 @@ const admin = {
   lecturesMetaTitle: "讲座 — 管理",
   newLectureMetaTitle: "新建讲座",
   editLectureMetaTitle: "编辑讲座",
-  attachmentsMetaTitle: "讲座附件",
   eventsMetaTitle: "活动 — 管理",
   eventEditMetaTitle: "活动 — 编辑",
 };

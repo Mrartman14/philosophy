@@ -54,7 +54,6 @@ const admin = {
   editLectureAttachmentsLink: "إدارة مستندات ووسائط المحاضرة",
 
   // --- прикрепления лекции ---
-  attachmentsPageTitle: "{lectureTitle}: المرفقات",
   attachmentsDocumentFallback: "مستند",
   attachmentsDocsSectionTitle: "مستندات المحاضرة",
   attachmentsMediaSectionTitle: "وسائط المحاضرة",
@@ -159,7 +158,6 @@ const admin = {
   lecturesMetaTitle: "المحاضرات — الإدارة",
   newLectureMetaTitle: "محاضرة جديدة",
   editLectureMetaTitle: "تحرير المحاضرة",
-  attachmentsMetaTitle: "مرفقات المحاضرة",
   eventsMetaTitle: "الفعاليات — الإدارة",
   eventEditMetaTitle: "الفعاليات — تحرير",
 };

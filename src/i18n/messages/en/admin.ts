@@ -54,7 +54,6 @@ const admin = {
   editLectureAttachmentsLink: "Manage lecture documents and media",
 
   // --- прикрепления лекции ---
-  attachmentsPageTitle: "{lectureTitle}: attachments",
   attachmentsDocumentFallback: "Document",
   attachmentsDocsSectionTitle: "Lecture documents",
   attachmentsMediaSectionTitle: "Lecture media",
@@ -159,7 +158,6 @@ const admin = {
   lecturesMetaTitle: "Lectures — admin",
   newLectureMetaTitle: "New lecture",
   editLectureMetaTitle: "Edit lecture",
-  attachmentsMetaTitle: "Lecture attachments",
   eventsMetaTitle: "Events — admin",
   eventEditMetaTitle: "Events — edit",
 };
