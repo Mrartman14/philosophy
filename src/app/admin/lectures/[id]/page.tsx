@@ -78,7 +78,6 @@ export default async function LectureCardPage({ params }: Props) {
       {/* Рендер документов */}
       {primaryDoc && primaryId && (
         <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">{t("cardDocumentsHeading")}</h2>
           {tabDocs.length <= 1 ? (
             <DocumentDetail document={primaryDoc} />
           ) : (

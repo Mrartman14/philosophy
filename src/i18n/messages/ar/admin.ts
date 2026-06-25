@@ -59,7 +59,6 @@ const admin = {
 
   // --- بطاقة المحاضرة (/admin/lectures/[id]) ---
   cardMetaTitle: "محاضرة",
-  cardDocumentsHeading: "المستندات",
   cardMediaHeading: "الوسائط",
   cardMediaUnavailable: "ملف الوسائط غير متاح.",
 

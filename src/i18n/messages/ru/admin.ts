@@ -58,7 +58,6 @@ const admin = {
 
   // --- карточка лекции (/admin/lectures/[id]) ---
   cardMetaTitle: "Лекция",
-  cardDocumentsHeading: "Документы",
   cardMediaHeading: "Медиа",
   cardMediaUnavailable: "Медиафайл недоступен.",
 

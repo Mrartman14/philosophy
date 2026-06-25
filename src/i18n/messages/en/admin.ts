@@ -59,7 +59,6 @@ const admin = {
 
   // --- lecture card (/admin/lectures/[id]) ---
   cardMetaTitle: "Lecture",
-  cardDocumentsHeading: "Documents",
   cardMediaHeading: "Media",
   cardMediaUnavailable: "Media file is unavailable.",
 

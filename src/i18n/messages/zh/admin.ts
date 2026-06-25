@@ -59,7 +59,6 @@ const admin = {
 
   // --- 讲座卡片 (/admin/lectures/[id]) ---
   cardMetaTitle: "讲座",
-  cardDocumentsHeading: "文档",
   cardMediaHeading: "媒体",
   cardMediaUnavailable: "媒体文件不可用。",
 

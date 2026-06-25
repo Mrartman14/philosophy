@@ -58,7 +58,8 @@ function Tab({ value, children, title }: TabProps) {
         "-mb-px max-w-[14rem] cursor-pointer truncate rounded-t border-b-2 border-transparent px-3 py-1.5 text-sm",
         "text-(--color-fg-muted) outline-none transition-colors",
         "hover:text-(--color-fg)",
-        "data-[selected]:border-(--color-fg) data-[selected]:font-semibold data-[selected]:text-(--color-fg)",
+        // активный таб: акцентное подчёркивание + лёгкая заливка + полужирный.
+        "data-[selected]:border-(--color-accent) data-[selected]:bg-(--color-surface-subtle) data-[selected]:font-semibold data-[selected]:text-(--color-fg)",
         FOCUS_RING_CONTROL,
       )}
     >
