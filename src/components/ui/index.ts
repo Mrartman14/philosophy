@@ -38,3 +38,4 @@ export { MarginNote, MARGIN_NOTE_SIDE, type MarginNoteProps } from "./margin-not
 export { FullBleed, FULL_BLEED_CLASS, type FullBleedProps } from "./full-bleed";
 export { FormFeedback } from "./form-feedback";
 export { FieldNameBoundary, type FieldNameBoundaryProps } from "./field-name-boundary";
+export { Tabs } from "./tabs";
