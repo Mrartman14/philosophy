@@ -73,20 +73,24 @@
   готовый узел передаётся в client-компонент вкладок пропом (`primaryPanel`).
 - **Прочие** вкладки: client-компонент `LectureDocumentTabs` рендерит для них
   `LazyDocPanel`, который при **первой активации** вкладки зовёт server action
-  `loadLectureDocumentBlocks(docId)` → получает `blocks` → рендерит `AstRender`
+  `loadDocBlocks(docId)` → получает `blocks` → рендерит `AstRender`
   на клиенте (`AstRender` — чистый компонент без `server-only`, работает на
   клиенте). Результат кэшируется в состоянии (`Map<docId, blocks>`), повторное
   открытие вкладки не делает повторный запрос.
-- **Server action** `loadLectureDocumentBlocks` живёт в
-  `src/features/lectures/actions.ts`, внутри зовёт `getDocumentById` из
-  `@/features/documents` (публичный API через `index.ts` — cross-feature импорт
-  разрешён, не deep-import). Возвращает `{ success, data: blocks }`/ошибку.
+- **Server action** для ленивой загрузки объявляется **inline в `page.tsx`**
+  (`loadDocBlocks`, директива `"use server"`), внутри зовёт `getDocumentById` из
+  `@/features/documents`. Важно: cross-feature импорт `@/features/*` ЗАПРЕЩЁН
+  ESLint'ом ВНУТРИ слайса (`src/features/*/**`), но РАЗРЕШЁН на странице
+  (`src/app/**`) — поэтому экшен живёт на странице, а НЕ в
+  `features/lectures/actions.ts`. Возвращает `{ success, data: blocks }`/ошибку
+  (контракт `ActionResult`).
 
 ### Новый примитив ui-kit: `src/components/ui/tabs.tsx`
 
-- Обёртка над **Base UI Tabs** (`@base-ui-components/react/tabs`), по конвенциям
-  кита: закрытый `className` на leaf-частях, токены (`--color-*`), `compact`-режим,
-  Guardrail 7 (kit-only, без нативных интерактивных тегов вне kit) и Guardrail 8.
+- Обёртка над **Base UI Tabs** (`@base-ui/react/tabs`), по конвенциям кита:
+  закрытый `className` на leaf-частях, токены (`--color-*`), Guardrail 7
+  (kit-only, без нативных интерактивных тегов вне kit) и Guardrail 8.
+  (`compact`-режим вкладкам не нужен — у Tabs нет density-вариаций.)
 - Минимальный API: `Tabs.Root / Tabs.List / Tabs.Tab / Tabs.Panel` (ре-экспорт
   частей Base UI в стилизованных обёртках), значение вкладки = `value` (id документа).
 - Экспорт из [src/components/ui/index.ts](../../../src/components/ui/index.ts).
@@ -106,11 +110,11 @@ page.tsx (server)
   ├─ <LectureDocumentTabs                (рендер; client)
   │      docs={meta} primaryId
   │      primaryPanel={<AstRender server/>}
-  │      loadBlocks={loadLectureDocumentBlocks} />
+  │      loadBlocks={loadDocBlocks} />
   └─ media.map(<MediaPlayer/>)           (рендер превью)
 
 LectureDocumentTabs (client)
-  └─ активация неосновной вкладки → loadLectureDocumentBlocks(docId)
+  └─ активация неосновной вкладки → loadDocBlocks(docId)
        → AstRender(blocks) на клиенте, кэш в Map
 ```
 
@@ -135,7 +139,7 @@ LectureDocumentTabs (client)
 ## Тестирование
 
 - **Tabs-примитив** (`tabs.test.tsx`): рендер, переключение `value`, a11y-роли
-  (`tablist`/`tab`/`tabpanel`), `compact`.
+  (`tablist`/`tab`/`tabpanel`).
 - **Ленивость** (`lecture-document-tabs.test.tsx`): на старте отрендерён только
   основной; активация второй вкладки вызывает `loadBlocks` ровно один раз; повторное
   открытие — без повторного вызова (кэш).
