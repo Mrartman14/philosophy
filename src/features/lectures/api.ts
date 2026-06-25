@@ -69,12 +69,13 @@ export const getLectureById = cache(
   },
 );
 
-/** GET /api/lectures/{id}/documents — документы лекции (по sort_order). 404 → []. */
+/** GET /api/lectures/{id}/documents — документы лекции (по sort_order). 404 → [].
+ *  token (?token=) для приватных лекций через share-link. */
 export const getLectureDocuments = cache(
-  async (id: string): Promise<LectureDocument[]> => {
+  async (id: string, token?: string): Promise<LectureDocument[]> => {
     const api = await createApiClient();
     const { data, error, response } = await api.GET("/api/lectures/{id}/documents", {
-      params: { path: { id } },
+      params: { path: { id }, ...(token ? { query: { token } } : {}) },
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadDocumentsFailed"));
@@ -82,12 +83,13 @@ export const getLectureDocuments = cache(
   },
 );
 
-/** GET /api/lectures/{id}/media — медиа лекции (по sort_order). 404 → []. */
+/** GET /api/lectures/{id}/media — медиа лекции (по sort_order). 404 → [].
+ *  token (?token=) для приватных лекций через share-link. */
 export const getLectureMedia = cache(
-  async (id: string): Promise<LectureMediaItem[]> => {
+  async (id: string, token?: string): Promise<LectureMediaItem[]> => {
     const api = await createApiClient();
     const { data, error, response } = await api.GET("/api/lectures/{id}/media", {
-      params: { path: { id } },
+      params: { path: { id }, ...(token ? { query: { token } } : {}) },
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadMediaFailed"));
