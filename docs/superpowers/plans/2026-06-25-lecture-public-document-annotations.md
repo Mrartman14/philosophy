@@ -1,41 +1,41 @@
-# Аннотации документов на публичной странице лекции — Implementation Plan
+# Унификация страницы лекции (документы+аннотации+медиа, edit-affordance) — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** На публичной `/lectures/[id]` рендерить документы лекции инлайн (URL-driven выбор `?doc=`, ленивость) в общем `.page-grid`-лейауте и подключить аннотации активного документа в правом поле — переиспользуя `DocumentAnnotations` как на `/documents/[id]`.
+**Goal:** Сделать `/lectures/[id]` единственной страницей лекции: общий `.page-grid`-лейаут, инлайн-документы (URL-driven `?doc=`, ленивость) с аннотациями активного документа в правом поле, медиа-плееры, ссылка «Редактировать» по capability; удалить admin-карточку `/admin/lectures/[id]` и перенаправить ссылки на неё.
 
-**Architecture:** Страница (app) — единственное место кросс-фичевой композиции (ESLint запрещает `@/features/*` внутри слайса): она резолвит активный документ (`resolveActiveDocId`), фетчит его тело (`getDocumentById`) в хребет в `<div data-ast-root>`, и монтирует `DocumentAnnotations` в `MarginNote` (правое поле). Слайс `lectures` даёт чистый хелпер выбора + презентационный селектор-ссылки. Активен ровно один документ → ровно один `data-ast-root` → инвариант движка маргиналий соблюдён.
+**Architecture:** Страница (app) — единственное место кросс-фичевой композиции (ESLint запрещает `@/features/*` внутри слайса): резолвит активный документ (`resolveActiveDocId`), фетчит его тело (`getDocumentById`) в хребет в `<div data-ast-root>`, монтирует `DocumentAnnotations` в `MarginNote`, рендерит медиа `MediaPlayer`. Слайс `lectures` даёт чистый хелпер выбора + презентационный селектор. Активен ровно один документ → ровно один `data-ast-root` → инвариант движка маргиналий соблюдён.
 
-**Tech Stack:** Next.js App Router (RSC, searchParams-driven), маргиналии-грид (`.page-grid`/`MarginNote`), движок аннотаций (`@/components/annotation-layer` + `DocumentAnnotations`), next-intl, Vitest + Testing Library.
+**Tech Stack:** Next.js App Router (RSC, searchParams-driven), маргиналии-грид (`MarginNote`), движок аннотаций (`DocumentAnnotations`), `MediaPlayer`, next-intl, Vitest + Testing Library.
 
 ## Global Constraints
 
 - pnpm-тулчейн (НЕ npm). Гейт: `pnpm lint && pnpm test && pnpm build` зелёные.
-- Имена файлов в `src/` — kebab-case. Общение/комментарии — на русском.
-- Параллельные агенты: НЕ `git stash/reset/checkout .`/`clean`; НЕ `git add -A`/`.` — добавлять только свои файлы по имени; общие hot-файлы (`src/features/lectures/index.ts`, `src/i18n/messages/*/*.ts`, страница) — `git commit --only <свои файлы>`.
-- ESLint cross-feature: внутри `src/features/*/**` ЗАПРЕЩЁН импорт `@/features/*`. Поэтому фетч тела документа + `DocumentDetail` + `DocumentAnnotations` — ТОЛЬКО на странице `src/app/**` (там разрешено), не в слайсе.
-- Аннотации привязаны к ДОКУМЕНТУ (`getAnnotationsFor("document", id)`) — общие с `/documents/[id]`. `DocumentAnnotations` переиспользуется БЕЗ изменений.
-- Дефолт активного документа — СТОПГАП «первый по sort_order»; станет мейн-документом, когда бэк добавит `is_primary` (одна строка в `resolveActiveDocId`).
-- Коммит-сообщения заканчивать строкой: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
+- Имена файлов — kebab-case. Комментарии — на русском.
+- Параллельные агенты: НЕ `git stash/reset/checkout .`/`clean`; НЕ `git add -A`/`.` — только свои файлы по имени; hot-файлы (`src/features/lectures/index.ts`, `src/i18n/messages/*/*.ts`, страницы) — `git commit --only <свои файлы>`.
+- ESLint cross-feature: внутри `src/features/*/**` импорт `@/features/*` ЗАПРЕЩЁН → фетч тела документа/медиа + `DocumentDetail`/`DocumentAnnotations`/`MediaPlayer` ТОЛЬКО на странице (`src/app/**`).
+- Аннотации привязаны к ДОКУМЕНТУ → общие с `/documents/[id]`. `DocumentAnnotations`/`MediaPlayer` переиспользуются БЕЗ изменений.
+- Дефолт активного документа — СТОПГАП «первый по sort_order»; → мейн-документ, когда бэк добавит `is_primary`.
+- Коммит-сообщения заканчивать: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
 - Спека: [docs/superpowers/specs/2026-06-25-lecture-public-document-annotations-design.md](../specs/2026-06-25-lecture-public-document-annotations-design.md).
 
 ---
 
-### Task 1: `getLectureDocuments` — проброс share-token
+### Task 1: проброс share-token в `getLectureDocuments` и `getLectureMedia`
 
 **Files:**
-- Modify: `src/features/lectures/api.ts` (функция `getLectureDocuments`)
+- Modify: `src/features/lectures/api.ts`
 
 **Interfaces:**
-- Produces: `getLectureDocuments(id: string, token?: string): Promise<LectureDocument[]>` — при `token` добавляет `query: { token }` (эндпойнт `/api/lectures/{id}/documents` его поддерживает в схеме). Сигнатура `getLectureMedia` НЕ меняется.
+- Produces: `getLectureDocuments(id, token?)`, `getLectureMedia(id, token?)` — при `token` добавляют `query: { token }` (оба эндпойнта поддерживают `token` в схеме).
 
-> Эти cache()-обёрнутые api-функции в проекте юнит-тестами не покрываются (нет `lectures/api.test.ts`); проброс query типобезопасен (схема объявляет `query.token`). Верификация — `pnpm lint && pnpm build` (typecheck) + потребитель (Task 5).
+> cache()-обёрнутые api-функции в проекте юнит-тестами не покрыты; проброс query типобезопасен. Верификация — `pnpm lint && pnpm build` + потребитель (Task 5).
 
-- [ ] **Step 1: Реализация** — в `src/features/lectures/api.ts` заменить тело `getLectureDocuments`:
+- [ ] **Step 1: Реализация** — в `src/features/lectures/api.ts` заменить тела:
 
 ```ts
 /** GET /api/lectures/{id}/documents — документы лекции (по sort_order). 404 → [].
- *  token (?token=) пробрасывается для приватных лекций через share-link. */
+ *  token (?token=) для приватных лекций через share-link. */
 export const getLectureDocuments = cache(
   async (id: string, token?: string): Promise<LectureDocument[]> => {
     const api = await createApiClient();
@@ -47,18 +47,32 @@ export const getLectureDocuments = cache(
     return unwrap(data) ?? [];
   },
 );
+
+/** GET /api/lectures/{id}/media — медиа лекции (по sort_order). 404 → [].
+ *  token (?token=) для приватных лекций через share-link. */
+export const getLectureMedia = cache(
+  async (id: string, token?: string): Promise<LectureMediaItem[]> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/lectures/{id}/media", {
+      params: { path: { id }, ...(token ? { query: { token } } : {}) },
+    });
+    if (response.status === 404) return [];
+    if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadMediaFailed"));
+    return unwrap(data) ?? [];
+  },
+);
 ```
 
 - [ ] **Step 2: Линт + сборка**
 
 Run: `pnpm lint && pnpm build`
-Expected: PASS (тип `query.token` совпадает со схемой; каста не требуется).
+Expected: PASS.
 
 - [ ] **Step 3: Коммит**
 
 ```bash
 git add src/features/lectures/api.ts
-git commit -m "feat(lectures): проброс share-token в getLectureDocuments"
+git commit -m "feat(lectures): проброс share-token в getLectureDocuments/getLectureMedia"
 ```
 
 ---
@@ -71,7 +85,7 @@ git commit -m "feat(lectures): проброс share-token в getLectureDocuments
 - Modify: `src/features/lectures/index.ts` (экспорт)
 
 **Interfaces:**
-- Produces: `resolveActiveDocId(documents: { id?: string }[], docParam: string | undefined): string | null` — возвращает `docParam`, если он среди id документов; иначе первый документ с id (СТОПГАП sort_order); иначе `null` (нет документов).
+- Produces: `resolveActiveDocId(documents: { id?: string }[], docParam: string | undefined): string | null`.
 
 - [ ] **Step 1: Failing-тест** — `src/features/lectures/active-document.test.ts`
 
@@ -80,7 +94,7 @@ import { describe, expect, it } from "vitest";
 
 import { resolveActiveDocId } from "./active-document";
 
-const DOCS = [{ id: "d1" }, { id: "d2" }, {}]; // третий без id — отсеивается
+const DOCS = [{ id: "d1" }, { id: "d2" }, {}];
 
 describe("resolveActiveDocId", () => {
   it("валидный ?doc выбирается", () => {
@@ -101,7 +115,7 @@ describe("resolveActiveDocId", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить — упадёт (нет модуля)**
+- [ ] **Step 2: Запустить — упадёт**
 
 Run: `pnpm test src/features/lectures/active-document.test.ts`
 Expected: FAIL — `Cannot find module './active-document'`.
@@ -122,16 +136,14 @@ export function resolveActiveDocId(
   documents: { id?: string }[],
   docParam: string | undefined,
 ): string | null {
-  const ids = documents
-    .map((d) => d.id)
-    .filter((id): id is string => Boolean(id));
+  const ids = documents.map((d) => d.id).filter((id): id is string => Boolean(id));
   if (ids.length === 0) return null;
   if (docParam && ids.includes(docParam)) return docParam;
   return ids[0];
 }
 ```
 
-- [ ] **Step 4: Экспорт** — добавить в `src/features/lectures/index.ts` (рядом с `getLectureDocuments`):
+- [ ] **Step 4: Экспорт** — в `src/features/lectures/index.ts` (рядом с `getLectureDocuments`):
 
 ```ts
 export { resolveActiveDocId } from "./active-document";
@@ -142,58 +154,70 @@ export { resolveActiveDocId } from "./active-document";
 Run: `pnpm test src/features/lectures/active-document.test.ts`
 Expected: PASS (5 кейсов).
 
-- [ ] **Step 6: Коммит** (`index.ts` — hot-файл → `--only`)
+- [ ] **Step 6: Коммит** (`index.ts` — hot → `--only`)
 
 ```bash
 git add src/features/lectures/active-document.ts src/features/lectures/active-document.test.ts src/features/lectures/index.ts
-git commit --only src/features/lectures/active-document.ts src/features/lectures/active-document.test.ts src/features/lectures/index.ts -m "feat(lectures): resolveActiveDocId — выбор активного документа лекции по ?doc"
+git commit --only src/features/lectures/active-document.ts src/features/lectures/active-document.test.ts src/features/lectures/index.ts -m "feat(lectures): resolveActiveDocId — выбор активного документа по ?doc"
 ```
 
 ---
 
-### Task 3: i18n-ключи селектора/фолбэка (namespace `pages`)
+### Task 3: i18n-ключи страницы (namespace `pages`)
 
 **Files:**
-- Modify: `src/i18n/messages/ru/pages.ts`, `src/i18n/messages/en/pages.ts`, `src/i18n/messages/ar/pages.ts`, `src/i18n/messages/zh/pages.ts`
+- Modify: `src/i18n/messages/{ru,en,ar,zh}/pages.ts`
 
 **Interfaces:**
-- Produces (namespace `pages`): `lectureDocumentsNavLabel` (aria-label строки-селектора), `lectureDocumentUnavailable` (фолбэк, когда тело активного документа недоступно).
+- Produces (namespace `pages`): `lectureEditLink`, `lectureDocumentsNavLabel`, `lectureDocumentUnavailable`, `lectureMediaHeading`, `lectureMediaUnavailable`.
 
-> Только добавление (паритет ru↔en↔ar↔zh). Мёртвые ключи старой секции удаляются в Task 5 (вместе с компонентом, который их ещё использует), не здесь.
+> Только добавление (паритет). Мёртвые ключи удаляются в Task 5/6 (вместе с компонентами/карточкой).
 
 - [ ] **Step 1: Добавить ключи** — в каждый `…/pages.ts` рядом с `lectureDefaultTitle`:
 
 `ru/pages.ts`:
 ```ts
+  lectureEditLink: "Редактировать лекцию",
   lectureDocumentsNavLabel: "Документы лекции",
   lectureDocumentUnavailable: "Документ недоступен.",
+  lectureMediaHeading: "Медиа лекции",
+  lectureMediaUnavailable: "Медиафайл недоступен.",
 ```
 `en/pages.ts`:
 ```ts
+  lectureEditLink: "Edit lecture",
   lectureDocumentsNavLabel: "Lecture documents",
   lectureDocumentUnavailable: "Document is unavailable.",
+  lectureMediaHeading: "Lecture media",
+  lectureMediaUnavailable: "Media file is unavailable.",
 ```
 `ar/pages.ts`:
 ```ts
+  lectureEditLink: "تعديل المحاضرة",
   lectureDocumentsNavLabel: "مستندات المحاضرة",
   lectureDocumentUnavailable: "المستند غير متاح.",
+  lectureMediaHeading: "وسائط المحاضرة",
+  lectureMediaUnavailable: "ملف الوسائط غير متاح.",
 ```
 `zh/pages.ts`:
 ```ts
+  lectureEditLink: "编辑讲座",
   lectureDocumentsNavLabel: "讲座文档",
   lectureDocumentUnavailable: "文档不可用。",
+  lectureMediaHeading: "讲座媒体",
+  lectureMediaUnavailable: "媒体文件不可用。",
 ```
 
-- [ ] **Step 2: Паритет + типы**
+- [ ] **Step 2: Паритет**
 
 Run: `pnpm test src/i18n`
-Expected: PASS (одинаковый набор ключей во всех 4 локалях).
+Expected: PASS.
 
-- [ ] **Step 3: Коммит** (i18n-каталоги — hot → `--only`)
+- [ ] **Step 3: Коммит** (i18n hot → `--only`)
 
 ```bash
 git add src/i18n/messages/ru/pages.ts src/i18n/messages/en/pages.ts src/i18n/messages/ar/pages.ts src/i18n/messages/zh/pages.ts
-git commit --only src/i18n/messages/ru/pages.ts src/i18n/messages/en/pages.ts src/i18n/messages/ar/pages.ts src/i18n/messages/zh/pages.ts -m "i18n(pages): ключи селектора документов лекции (ru/en/ar/zh)"
+git commit --only src/i18n/messages/ru/pages.ts src/i18n/messages/en/pages.ts src/i18n/messages/ar/pages.ts src/i18n/messages/zh/pages.ts -m "i18n(pages): ключи единой страницы лекции (edit/документы/медиа, ru/en/ar/zh)"
 ```
 
 ---
@@ -207,7 +231,7 @@ git commit --only src/i18n/messages/ru/pages.ts src/i18n/messages/en/pages.ts sr
 
 **Interfaces:**
 - Consumes: `RouterLink` из `@/components/ui`; `LectureDocument` из `../types`.
-- Produces: `LectureDocumentSelector({ documents, activeId, token?, navLabel })` — строка ссылок `?doc=<id>` (с токеном, если задан); активная несёт `aria-current="page"` + акцентный стиль; ≤1 документа → `null`. `navLabel` (string) локализует вызывающий — компонент презентационный (без `getT`).
+- Produces: `LectureDocumentSelector({ documents, activeId, token?, navLabel })` — ссылки `?doc=<id>` (+token); активная `aria-current="page"` + акцентный стиль; ≤1 документа → `null`.
 
 - [ ] **Step 1: Failing-тест** — `src/features/lectures/ui/lecture-document-selector.test.tsx`
 
@@ -243,7 +267,7 @@ describe("LectureDocumentSelector", () => {
     expect(second.getAttribute("href")).toContain("doc=d2");
   });
 
-  it("один документ → null (селектор не нужен)", () => {
+  it("один документ → null", () => {
     const { container } = render(
       <LectureDocumentSelector
         documents={[{ id: "d1", filename: "Один" }]}
@@ -256,7 +280,7 @@ describe("LectureDocumentSelector", () => {
 });
 ```
 
-- [ ] **Step 2: Запустить — упадёт (нет модуля)**
+- [ ] **Step 2: Запустить — упадёт**
 
 Run: `pnpm test src/features/lectures/ui/lecture-document-selector.test.tsx`
 Expected: FAIL — `Cannot find module './lecture-document-selector'`.
@@ -270,13 +294,9 @@ import { RouterLink } from "@/components/ui";
 import type { LectureDocument } from "../types";
 
 interface Props {
-  /** Документы лекции (нужны только id + filename). */
   documents: Pick<LectureDocument, "id" | "filename">[];
-  /** id активного документа (резолвится вызывающим). */
   activeId: string;
-  /** Share-token — сохраняем в ссылках переключения, если задан. */
   token?: string;
-  /** aria-label навигации (локализован вызывающим). */
   navLabel: string;
 }
 
@@ -288,9 +308,9 @@ const INACTIVE =
   "border-transparent text-(--color-fg-muted) hover:text-(--color-fg)";
 
 /**
- * Строка-селектор документов лекции для URL-driven просмотра. Каждый документ —
- * ссылка `?doc=<id>` (навигация, не ARIA-tablist: у каждого свой URL). Активная
- * подсвечена и несёт aria-current. ≤1 документа → не рендерится.
+ * Строка-селектор документов лекции (URL-driven просмотр). Каждый документ —
+ * ссылка `?doc=<id>` (навигация, не ARIA-tablist). Активная подсвечена + несёт
+ * aria-current. ≤1 документа → не рендерится.
  */
 export function LectureDocumentSelector({ documents, activeId, token, navLabel }: Props) {
   const docs = documents.filter(
@@ -298,10 +318,7 @@ export function LectureDocumentSelector({ documents, activeId, token, navLabel }
   );
   if (docs.length <= 1) return null;
   return (
-    <nav
-      aria-label={navLabel}
-      className="flex flex-wrap gap-1 border-b border-(--color-border)"
-    >
+    <nav aria-label={navLabel} className="flex flex-wrap gap-1 border-b border-(--color-border)">
       {docs.map((d) => {
         const active = d.id === activeId;
         const href = token
@@ -324,7 +341,7 @@ export function LectureDocumentSelector({ documents, activeId, token, navLabel }
 }
 ```
 
-- [ ] **Step 4: Экспорт** — добавить в `src/features/lectures/index.ts` (рядом с `LectureMediaSection`):
+- [ ] **Step 4: Экспорт** — в `src/features/lectures/index.ts` (рядом с `LectureMediaSection`):
 
 ```ts
 export { LectureDocumentSelector } from "./ui/lecture-document-selector";
@@ -335,7 +352,7 @@ export { LectureDocumentSelector } from "./ui/lecture-document-selector";
 Run: `pnpm test src/features/lectures/ui/lecture-document-selector.test.tsx`
 Expected: PASS (2 кейса).
 
-- [ ] **Step 6: Коммит** (`index.ts` — hot → `--only`)
+- [ ] **Step 6: Коммит** (`index.ts` hot → `--only`)
 
 ```bash
 git add src/features/lectures/ui/lecture-document-selector.tsx src/features/lectures/ui/lecture-document-selector.test.tsx src/features/lectures/index.ts
@@ -344,18 +361,18 @@ git commit --only src/features/lectures/ui/lecture-document-selector.tsx src/fea
 
 ---
 
-### Task 5: страница лекции — общий грид + инлайн-документ + аннотации
+### Task 5: единая страница лекции (грид + edit-link + документы+аннотации + медиа-плееры)
 
 **Files:**
-- Modify: `src/app/lectures/[id]/page.tsx` (грид-рестрактур + документ-секция + аннотации в поле + token)
-- Delete: `src/features/lectures/ui/lecture-documents-section.tsx`
-- Modify: `src/features/lectures/index.ts` (убрать экспорт `LectureDocumentsSection`)
-- Modify: `src/i18n/messages/{ru,en,ar,zh}/lectures.ts` (удалить мёртвые `documentsSectionLabel`, `documentsSectionHeading`)
+- Modify: `src/app/lectures/[id]/page.tsx`
+- Delete: `src/features/lectures/ui/lecture-documents-section.tsx`, `src/features/lectures/ui/lecture-media-section.tsx`
+- Modify: `src/features/lectures/index.ts` (убрать экспорты `LectureDocumentsSection`, `LectureMediaSection`)
+- Modify: `src/i18n/messages/{ru,en,ar,zh}/lectures.ts` (удалить мёртвые `documentsSectionLabel`, `documentsSectionHeading`, `mediaSectionLabel`, `mediaSectionHeading`)
 
 **Interfaces:**
-- Consumes: `resolveActiveDocId`, `LectureDocumentSelector`, `getLectureDocuments`, `getLectureById`, `LectureDetail`, `LectureExportLinks`, `LectureMediaSection`, `lectureCoverUrl` из `@/features/lectures`; `getDocumentById`, `DocumentDetail` из `@/features/documents`; `DocumentAnnotations` из `@/features/annotations`; `MarginNote`, `Skeleton` из `@/components/ui`; i18n `pages` (`lectureDocumentsNavLabel`, `lectureDocumentUnavailable`).
+- Consumes: `resolveActiveDocId`, `LectureDocumentSelector`, `canUpdateLecture`, `getLectureById`, `getLectureDocuments`, `getLectureMedia`, `LectureDetail`, `LectureExportLinks`, `lectureCoverUrl` из `@/features/lectures`; `getDocumentById`, `DocumentDetail` из `@/features/documents`; `DocumentAnnotations` из `@/features/annotations`; `getMediaById`, `MediaPlayer` из `@/features/media`; `MarginNote`, `RouterLink`, `Skeleton` из `@/components/ui`; i18n `pages`.
 
-> Страница юнит-тестами не покрывается (норма проекта; `LectureDocumentsSection` теста не имеет). Верификация — `pnpm lint && pnpm test && pnpm build` + ручной приём.
+> Страница юнит-тестами не покрывается. Верификация — `pnpm lint && pnpm test && pnpm build` + ручной приём.
 
 - [ ] **Step 1: Переписать страницу** — `src/app/lectures/[id]/page.tsx`:
 
@@ -365,20 +382,22 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { SaveOfflineButton } from "@/app/_offline/save-offline-button";
-import { MarginNote, Skeleton } from "@/components/ui";
+import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { DocumentAnnotations } from "@/features/annotations";
 import { CommentSection } from "@/features/comments";
 import { DocumentDetail, getDocumentById } from "@/features/documents";
 import {
+  canUpdateLecture,
   getLectureById,
   getLectureDocuments,
+  getLectureMedia,
   lectureCoverUrl,
   LectureDetail,
   LectureDocumentSelector,
   LectureExportLinks,
-  LectureMediaSection,
   resolveActiveDocId,
 } from "@/features/lectures";
+import { getMediaById, MediaPlayer } from "@/features/media";
 import {
   getLectureSubscription,
   LectureSubscribeButton,
@@ -401,11 +420,12 @@ interface Props {
 export default async function LecturePage({ params, searchParams }: Props) {
   const { id } = await params;
   const { cq, token, doc } = await searchParams;
-  const [me, lecture, tags, documents] = await Promise.all([
+  const [me, lecture, tags, documents, media] = await Promise.all([
     getMe(),
     getLectureById(id, token),
     getLectureTags(id),
     getLectureDocuments(id, token),
+    getLectureMedia(id, token),
   ]);
   if (!lecture) notFound();
 
@@ -413,7 +433,13 @@ export default async function LecturePage({ params, searchParams }: Props) {
   const activeId = resolveActiveDocId(documents, doc);
   const activeDoc = activeId ? await getDocumentById(activeId, token) : null;
 
+  // Медиа-плееры: url в списке опционален → добираем getMediaById только когда пуст.
+  const mediaWithUrl = await Promise.all(
+    media.map(async (m) => (m.url ? m : ((await getMediaById(m.id)) ?? m))),
+  );
+
   const canShare = canCreateShareLink(me, lecture);
+  const canEdit = canUpdateLecture(me, lecture);
   const [subscribed, shareLinks, t] = await Promise.all([
     me && lecture.id ? getLectureSubscription(lecture.id) : Promise.resolve(false),
     canShare ? getShareLinksFor("lecture", lecture.id) : Promise.resolve([]),
@@ -423,11 +449,22 @@ export default async function LecturePage({ params, searchParams }: Props) {
   return (
     <>
       <div className="flex flex-col gap-8 p-4">
+        {/* Admin-affordance: правка лекции (по canUpdateLecture). */}
+        {canEdit && (
+          <div className="flex justify-end">
+            <RouterLink
+              href={`/admin/lectures/${id}/edit`}
+              className="text-sm text-(--color-link)"
+            >
+              {t("lectureEditLink")}
+            </RouterLink>
+          </div>
+        )}
+
         <LectureDetail lecture={lecture} tags={tags} />
         <LectureExportLinks id={id} />
 
-        {/* Документы лекции — инлайн-рендер активного документа (URL-driven ?doc=).
-            В DOM ровно один data-ast-root → инвариант движка аннотаций. */}
+        {/* Документы — инлайн активный (URL-driven ?doc=); один data-ast-root. */}
         {activeId && (
           <section className="flex flex-col gap-3">
             <LectureDocumentSelector
@@ -448,9 +485,24 @@ export default async function LecturePage({ params, searchParams }: Props) {
           </section>
         )}
 
-        <Suspense fallback={null}>
-          <LectureMediaSection lectureId={id} />
-        </Suspense>
+        {/* Медиа — плееры (audio/video). */}
+        {mediaWithUrl.length > 0 && (
+          <section className="flex flex-col gap-3" aria-label={t("lectureMediaHeading")}>
+            <h2 className="text-lg font-semibold">{t("lectureMediaHeading")}</h2>
+            <ul className="flex flex-col gap-6">
+              {mediaWithUrl.map((m) => (
+                <li key={m.id}>
+                  {m.url ? (
+                    <MediaPlayer url={m.url} type={m.type} filename={m.filename} mediaId={m.id} />
+                  ) : (
+                    <p className="text-sm text-(--color-fg-muted)">{t("lectureMediaUnavailable")}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <div className="flex justify-end">
           <SaveOfflineButton entity="lectures" id={id} />
         </div>
@@ -474,8 +526,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
         </Suspense>
       </div>
 
-      {/* Аннотации активного документа — правое поле грида (как /documents/[id]).
-          Привязка к документу → те же, что на /documents/[id]. */}
+      {/* Аннотации активного документа — правое поле грида (как /documents/[id]). */}
       {activeDoc && activeId && (
         <MarginNote side="end" grow className="p-4 xl:ps-0">
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
@@ -508,48 +559,108 @@ export async function generateMetadata({ params }: Props) {
 }
 ```
 
-(Изменения против прежней версии: убрана обёртка `mx-auto max-w-3xl` → фрагмент с хребет-контентом + `MarginNote`; убран импорт/использование `LectureDocumentsSection`; добавлены `getLectureDocuments(id, token)`, `resolveActiveDocId`, `getDocumentById`, `DocumentDetail`, `LectureDocumentSelector`, `DocumentAnnotations`, `MarginNote`; `searchParams` получил `doc`.)
+(Против прежней версии: убрана `mx-auto max-w-3xl` обёртка → фрагмент + `MarginNote`; убраны `LectureDocumentsSection`/`LectureMediaSection`; добавлены edit-link, селектор+активный документ, медиа-плееры, аннотации; `searchParams` получил `doc`.)
 
-- [ ] **Step 2: Удалить старую секцию-ссылки**
+- [ ] **Step 2: Удалить заменённые секции-ссылки**
 
 ```bash
-git rm src/features/lectures/ui/lecture-documents-section.tsx
+git rm src/features/lectures/ui/lecture-documents-section.tsx src/features/lectures/ui/lecture-media-section.tsx
 ```
-И убрать её экспорт из `src/features/lectures/index.ts` (строку `export { LectureDocumentsSection } from "./ui/lecture-documents-section";`).
+И убрать их экспорты из `src/features/lectures/index.ts` (строки `export { LectureDocumentsSection } …` и `export { LectureMediaSection } …`).
 
-- [ ] **Step 3: Удалить мёртвые i18n-ключи** — из ВСЕХ четырёх `…/lectures.ts` удалить `documentsSectionLabel` и `documentsSectionHeading` (использовались только удалённой секцией; вне неё в `src/` не встречаются).
+- [ ] **Step 3: Удалить мёртвые i18n-ключи** — из ВСЕХ четырёх `…/lectures.ts` удалить `documentsSectionLabel`, `documentsSectionHeading`, `mediaSectionLabel`, `mediaSectionHeading` (использовались только удалёнными секциями; вне них в `src/` не встречаются — проверить grep'ом).
 
 - [ ] **Step 4: Гейт**
 
 Run: `pnpm lint && pnpm test && pnpm build`
-Expected: PASS. Линт: страница в `src/app/**` вправе импортировать `@/features/{documents,annotations,lectures}`. i18n-паритет цел (удалили 2 ключа во всех 4 локалях). Сборка: маршрут `/lectures/[id]` собирается.
+Expected: PASS. Линт: страница (`src/app/**`) вправе импортировать `@/features/*`. i18n-паритет цел. Маршрут `/lectures/[id]` собирается.
 
 - [ ] **Step 5: Ручной приём (желательно)**
 
-Стенд: бэк `:8090` (make run-local), фронт `pnpm dev` `:3001`. Открыть лекцию с ≥2 документами `http://localhost:3001/lectures/<id>`:
-- видна строка-селектор + активный документ инлайн;
-- клик по другому документу → `?doc=<id>`, грузится только он;
-- выделение текста в документе → создание аннотации (если залогинен с правами);
-- аннотации совпадают с `/documents/<id>`;
-- общий грид-лейаут, аннотации в правом поле.
+Стенд `:3001`. Лекция с ≥2 документами `http://localhost:3001/lectures/<id>`: селектор + инлайн-документ; клик → `?doc=` грузит один; выделение → создание аннотации (если есть права); аннотации = `/documents/<id>`; медиа-плееры; залогиненный owner видит «Редактировать»; общий грид.
 
-- [ ] **Step 6: Коммит** (страница + `index.ts` + i18n — hot → `--only`; удаление секции уже застейджено `git rm`)
+- [ ] **Step 6: Коммит** (страница + `index.ts` + i18n — hot → `--only`; удаления застейджены `git rm`)
 
 ```bash
 git add "src/app/lectures/[id]/page.tsx" src/features/lectures/index.ts src/i18n/messages/ru/lectures.ts src/i18n/messages/en/lectures.ts src/i18n/messages/ar/lectures.ts src/i18n/messages/zh/lectures.ts
-git commit --only "src/app/lectures/[id]/page.tsx" "src/features/lectures/ui/lecture-documents-section.tsx" src/features/lectures/index.ts src/i18n/messages/ru/lectures.ts src/i18n/messages/en/lectures.ts src/i18n/messages/ar/lectures.ts src/i18n/messages/zh/lectures.ts -m "feat(lectures): инлайн-рендер документов лекции + аннотации на публичной странице (общий грид, URL-driven ?doc)"
+git commit --only "src/app/lectures/[id]/page.tsx" src/features/lectures/ui/lecture-documents-section.tsx src/features/lectures/ui/lecture-media-section.tsx src/features/lectures/index.ts src/i18n/messages/ru/lectures.ts src/i18n/messages/en/lectures.ts src/i18n/messages/ar/lectures.ts src/i18n/messages/zh/lectures.ts -m "feat(lectures): единая страница лекции — документы+аннотации+медиа+edit-link (общий грид, URL-driven ?doc)"
+```
+
+---
+
+### Task 6: удалить admin-карточку + перенаправить ссылки
+
+**Files:**
+- Delete: `src/app/admin/lectures/[id]/page.tsx`
+- Modify: `src/features/lectures/ui/lecture-admin-row.tsx` (заголовок → `/lectures/[id]`)
+- Modify: `src/features/lectures/ui/lecture-create-form.tsx` (редирект → `/lectures/[id]`)
+- Modify: `src/i18n/messages/{ru,en,ar,zh}/admin.ts` (удалить мёртвые `cardMetaTitle`, `cardMediaHeading`, `cardMediaUnavailable`)
+
+**Interfaces:** —
+
+- [ ] **Step 1: Удалить admin-карточку**
+
+```bash
+git rm "src/app/admin/lectures/[id]/page.tsx"
+```
+
+- [ ] **Step 2: admin-строка → общая страница** — в `src/features/lectures/ui/lecture-admin-row.tsx` заменить href заголовка `/admin/lectures/${lecture.id}` → `/lectures/${lecture.id}`:
+
+```tsx
+      <Td className="font-medium">
+        {canEdit ? (
+          <RouterLink href={`/lectures/${lecture.id}`} className="hover:underline">
+            {lecture.title}
+          </RouterLink>
+        ) : (
+          lecture.title
+        )}
+      </Td>
+```
+(Ссылка «Редактировать» в той же строке — `/admin/lectures/${lecture.id}/edit` — НЕ трогаем.)
+
+- [ ] **Step 3: редирект формы создания → общая страница** — в `src/features/lectures/ui/lecture-create-form.tsx` (~стр. 42-46) ветку при выбранных документах:
+
+```tsx
+  // При выборе документов ведём на страницу лекции (там документы + edit-link),
+  // иначе — на редактирование.
+  useActionRedirect(state, (data) =>
+    docs.length > 0
+      ? `/lectures/${data.id}`
+      : `/admin/lectures/${data.id}/edit`,
+  );
+```
+(было `…/admin/lectures/${data.id}` — удалённая карточка.)
+
+- [ ] **Step 4: Удалить мёртвые admin-ключи** — из ВСЕХ четырёх `…/admin.ts` удалить `cardMetaTitle`, `cardMediaHeading`, `cardMediaUnavailable` (использовались только удалённой карточкой; вне неё в `src/` не встречаются — проверить grep'ом).
+
+- [ ] **Step 5: Проверка отсутствия висящих ссылок + гейт**
+
+Run:
+```bash
+grep -rn "admin/lectures/\${[^}]*}\`" src/ | grep -v "/edit\|/new"
+```
+Expected: пусто (роут-ссылок на удалённую карточку не осталось).
+Run: `pnpm lint && pnpm test && pnpm build`
+Expected: PASS.
+
+- [ ] **Step 6: Коммит** (admin-row/create-form/index — hot → `--only`; удаление застейджено `git rm`)
+
+```bash
+git add src/features/lectures/ui/lecture-admin-row.tsx src/features/lectures/ui/lecture-create-form.tsx src/i18n/messages/ru/admin.ts src/i18n/messages/en/admin.ts src/i18n/messages/ar/admin.ts src/i18n/messages/zh/admin.ts
+git commit --only "src/app/admin/lectures/[id]/page.tsx" src/features/lectures/ui/lecture-admin-row.tsx src/features/lectures/ui/lecture-create-form.tsx src/i18n/messages/ru/admin.ts src/i18n/messages/en/admin.ts src/i18n/messages/ar/admin.ts src/i18n/messages/zh/admin.ts -m "refactor(lectures): удалить admin-карточку — ссылки ведут на единую /lectures/[id]"
 ```
 
 ---
 
 ## Финальная проверка готовности
 
-- [ ] `pnpm lint && pnpm test && pnpm build` — всё зелёное.
-- [ ] Ручной браузер-приём (Task 5 Step 5): селектор + инлайн-документ + ленивое переключение `?doc` + создание/просмотр аннотаций в правом поле; общий грид-лейаут; приватные документы не видны анониму.
+- [ ] `pnpm lint && pnpm test && pnpm build` — зелёное.
+- [ ] Ручной приём: `/lectures/[id]` — селектор + инлайн-документ + ленивое `?doc` + аннотации в поле + медиа-плееры; owner видит «Редактировать» → `/edit`; `/admin/lectures/[id]` → 404; admin-строка и редирект формы создания ведут на `/lectures/[id]`.
 
 ## Открытые вопросы / флаги бэку
 
-- **Видимость документов лекции (КРИТИЧНО):** подтвердить, что `GET /api/lectures/{id}/documents` и `GET /api/documents/{id}` гейтят по видимости для зрителя (аноним/не-владелец) — приватные документы НЕ должны утечь на публичную страницу. FE прячет `getDocumentById → null`, но источник истины — бэк.
-- **Мейн-документ (`is_primary`)** — когда бэк добавит, заменить дефолт в `resolveActiveDocId` (первый по sort_order → мейн-док). Тот же аск, что у admin-карточки.
-- **Токен и аннотации:** `DocumentAnnotations` не получает share-token (как и на `/documents/[id]`) — для приватной-через-токен лекции аннотации могут не грузиться; поведение совпадает со страницей документа. При необходимости — отдельная итерация.
-- **ar/zh вычитка** новых строк носителем (сквозной долг).
+- **Видимость документов/медиа лекции (КРИТИЧНО):** подтвердить фильтрацию по видимости для зрителя на `/api/lectures/{id}/documents`, `/media`, `/api/documents/{id}` — приватные не должны утечь на публичную страницу.
+- **Мейн-документ (`is_primary`):** заменить дефолт в `resolveActiveDocId` (первый по sort_order → мейн-док), когда бэк добавит.
+- **Токен и аннотации/медиа:** `DocumentAnnotations` без share-token (как на `/documents/[id]`).
+- **ar/zh вычитка** новых строк.
