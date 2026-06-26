@@ -76,9 +76,9 @@ export const createComment = createFormAction(async (formData, ctx) => {
       type: input.type,
       blocks: input.blocks,
       ...(input.parent_id ? { parent_id: input.parent_id } : {}),
-      // anchor приходит из формы как распарсенный объект; бек валидирует
-      // (422 ANCHOR_*). Каст на границе form-JSON → типизированное тело —
-      // тот же паттерн, что у аннотаций (createAnnotation).
+      // Каст на границе form-JSON → типизированное тело: anchorJsonField даёт
+      // Record<string, unknown> (распарсенный из формы объект), здесь сужаем до
+      // Anchor для тела запроса. Валидацию структуры делает бек (422 ANCHOR_*).
       ...(input.anchor !== undefined ? { anchor: input.anchor as Anchor } : {}),
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),

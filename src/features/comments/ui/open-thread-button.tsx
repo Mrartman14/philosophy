@@ -1,21 +1,21 @@
 "use client";
 // src/features/comments/ui/open-thread-button.tsx
 // Скроллит к корневому комментарию в нижнем треде (#comment-<id>). Узел треда
-// несёт id=comment-<id> (см. comment-tree.tsx, Task 8). Уважает ось appearance
-// motion (reduced → без анимации), как ast-toc.tsx — иначе регрессия reduced-motion.
-import { useReducedMotion } from "@/components/appearance";
+// несёт id=comment-<id> (см. comment-tree.tsx). Скролл + reduced-motion
+// инкапсулированы в общем хуке useScrollToCommentThread (thread-scroll.ts).
 import { Button } from "@/components/ui";
 
+import { useScrollToCommentThread } from "../thread-scroll";
+
 export function OpenThreadButton({ commentId, label }: { commentId: string; label: string }) {
-  const reduced = useReducedMotion();
+  const scroll = useScrollToCommentThread();
   return (
     <Button
       type="button"
       compact
       tone="quiet"
       onClick={() => {
-        const el = document.getElementById(`comment-${commentId}`);
-        el?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+        scroll(commentId);
       }}
     >
       {label}

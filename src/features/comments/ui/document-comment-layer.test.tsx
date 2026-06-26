@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DocumentCommentLayer } from "./document-comment-layer";
@@ -40,7 +40,7 @@ function noopMatchMedia(matches: boolean) {
 }
 
 describe("DocumentCommentLayer", () => {
-  it("рендерит тогл подсветки и НЕ показывает превью без клика", () => {
+  it("рендерит тогл подсветки и доступный список превью (a11y) даже без клика", () => {
     noopMatchMedia(false);
     render(
       <DocumentCommentLayer
@@ -53,7 +53,13 @@ describe("DocumentCommentLayer", () => {
     );
     // тогл присутствует (по дефолту OFF → лейбл "показать")
     expect(screen.getByText("marginHighlightShow")).toBeInTheDocument();
-    // превью не отрендерено до клика
-    expect(screen.queryByText("preview-c1")).toBeNull();
+    // a11y/тач-путь: доступный список превью корней рендерится ВСЕГДА (notes>0),
+    // независимо от тогла подсветки → превью присутствует в DOM (внутри списка).
+    const items = within(screen.getByRole("list")).getAllByText("preview-c1");
+    expect(items).toHaveLength(1);
+    // ...но это превью из ДОСТУПНОГО СПИСКА, а НЕ из карточки-по-клику
+    // (renderCard в InlineAnchorLayer). Без клика по фрагменту карточка не
+    // открыта — превью встречается во всём DOM ровно один раз (только в списке).
+    expect(screen.getAllByText("preview-c1")).toHaveLength(1);
   });
 });

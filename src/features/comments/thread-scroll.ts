@@ -1,0 +1,28 @@
+// src/features/comments/thread-scroll.ts
+// DRY-точка для скролла к корневому комментарию в нижнем треде. Узел треда несёт
+// id=comment-<id> (см. comment-tree.tsx). `commentNodeId` — ЧИСТАЯ (без
+// "use client"): её зовёт и серверный comment-tree.tsx (присвоение id), и хук.
+// `useScrollToCommentThread` — клиентский хук: уважает ось appearance motion
+// (reduced → behavior:auto), иначе регрессия reduced-motion.
+import { useCallback } from "react";
+
+import { useReducedMotion } from "@/components/appearance";
+
+/** DOM-id узла корневого комментария в нижнем треде (стабильный контракт). */
+export const commentNodeId = (id: string): string => `comment-${id}`;
+
+/**
+ * Хук-фабрика скролла к треду комментария по id. Возвращает стабильный коллбэк
+ * (мемоизирован по reduced). reduced-motion → behavior:"auto" (без анимации).
+ */
+export function useScrollToCommentThread(): (id: string) => void {
+  const reduced = useReducedMotion();
+  return useCallback(
+    (id: string) => {
+      document
+        .getElementById(commentNodeId(id))
+        ?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+    },
+    [reduced],
+  );
+}

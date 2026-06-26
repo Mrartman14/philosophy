@@ -9,18 +9,20 @@
 // progressive enhancement (контент дублирован в нижнем CommentSection). Поэтому
 // слой монтируется client-only ({ready && ...}).
 // A11y/тач (исправлено по ревью): hover-reveal недоступен с клавиатуры/тача, а
-// CSS Custom Highlight не создаёт фокусируемых DOM-узлов. Поэтому при showAll
-// рендерим ДОСТУПНЫЙ список заякоренных корней (фокусируемые превью с
-// OpenThreadButton) — единственный клавиатурный/тач-путь к комментариям фрагментов.
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+// CSS Custom Highlight не создаёт фокусируемых DOM-узлов. Поэтому ДОСТУПНЫЙ
+// список заякоренных корней (фокусируемые превью с OpenThreadButton) рендерим
+// ВСЕГДА (notes.length>0), независимо от тогла подсветки — единственный
+// клавиатурный/тач-путь к комментариям фрагментов. Тогл showAll управляет
+// ТОЛЬКО in-text подсветкой (showAllHighlights).
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { InlineAnchorLayer, type AnchorDraft, type AnchoredNote } from "@/components/anchor-engine";
-import { useReducedMotion } from "@/components/appearance";
 import { Button, Inline } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { coordsToEngineAnchor } from "@/utils/text-anchor";
 
 import { buildCommentTextAnchor } from "../anchor";
+import { useScrollToCommentThread } from "../thread-scroll";
 import type { Anchor, CommentType } from "../types";
 
 import { CommentComposerDialog } from "./comment-composer-dialog";
@@ -49,7 +51,6 @@ export function DocumentCommentLayer({
   canCreate,
 }: DocumentCommentLayerProps) {
   const t = useT("comments");
-  const reduced = useReducedMotion();
   const astRootRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
   const [showAll, setShowAll] = useState(false); // default OFF (не конкурирует с аннотациями)
@@ -71,20 +72,20 @@ export function DocumentCommentLayer({
   };
 
   // Доменные ноты → движковые: только валидный text-range (coordsToEngineAnchor != null).
-  const engineNotes: AnchoredNote[] = notes.flatMap((n) => {
-    const engine = coordsToEngineAnchor(n.anchor);
-    return engine ? [{ id: n.id, anchor: engine }] : [];
-  });
-  const previewById = new Map(notes.map((n) => [n.id, n.preview]));
-
-  const scrollToThread = useCallback(
-    (id: string) => {
-      document
-        .getElementById(`comment-${id}`)
-        ?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
-    },
-    [reduced],
+  // Мемоизация по notes: InlineAnchorLayer держит notes в deps useAnchorRanges,
+  // нестабильная ссылка пересчитывала бы ranges при каждом тогле/композере.
+  const engineNotes: AnchoredNote[] = useMemo(
+    () =>
+      notes.flatMap((n) => {
+        const engine = coordsToEngineAnchor(n.anchor);
+        return engine ? [{ id: n.id, anchor: engine }] : [];
+      }),
+    [notes],
   );
+  const previewById = useMemo(() => new Map(notes.map((n) => [n.id, n.preview])), [notes]);
+  const renderCard = useCallback((id: string) => previewById.get(id) ?? null, [previewById]);
+
+  const scrollToThread = useScrollToCommentThread();
 
   return (
     <div className="flex flex-col gap-4" aria-label={t("marginColumnLabel")}>
@@ -98,7 +99,7 @@ export function DocumentCommentLayer({
         <InlineAnchorLayer
           astRootRef={astRootRef}
           notes={engineNotes}
-          renderCard={(id) => previewById.get(id) ?? null}
+          renderCard={renderCard}
           showAllHighlights={showAll}
           canCreate={canCreate}
           onCreateRequest={(d: AnchorDraft) => {
@@ -109,10 +110,11 @@ export function DocumentCommentLayer({
         />
       )}
 
-      {/* Доступный список (клавиатура/тач): при showAll показываем превью корней
-          потоком — фокусируемые, с OpenThreadButton. Закрывает a11y/тач-дыру,
-          т.к. hover-reveal и подсветка недостижимы без мыши. */}
-      {showAll && notes.length > 0 && (
+      {/* Доступный список (клавиатура/тач): ВСЕГДА (notes>0) показываем превью
+          корней потоком — фокусируемые, с OpenThreadButton. Закрывает a11y/тач-
+          дыру, т.к. hover-reveal и подсветка недостижимы без мыши. Развязан от
+          тогла showAll (тот управляет только in-text подсветкой). */}
+      {notes.length > 0 && (
         <ul className="flex flex-col gap-3">
           {notes.map((n) => (
             <li key={n.id}>{n.preview}</li>
