@@ -481,6 +481,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         >
           <svg
             ref={svgRef}
+            // select-none: при перетаскивании узлов/рёбер/ресайзе браузер не выделяет
+            // SVG-текст. Текст-оверлей редактирования — сосед svg, не потомок → не задет.
+            className="select-none"
             width="100%" height="100%"
             viewBox={viewBox}
             style={{ touchAction: "none", background: "var(--color-surface)", display: "block" }}
