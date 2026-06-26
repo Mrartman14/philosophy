@@ -73,7 +73,7 @@ export type EditorCommand =
   | { type: "selectMany"; nodeIds: string[]; edgeIds: string[] }
   | { type: "clearSelection" }
   // --- node mutations ---
-  | { type: "addTextNode"; x: number; y: number }
+  | { type: "addTextNode"; x: number; y: number; id?: string }
   | { type: "addShapeNode"; shapeKind: "rect" | "ellipse" | "diamond"; x: number; y: number }
   | { type: "addEntityRefNode"; entityType: CanvasRefEntityType; entityId: string; x: number; y: number }
   | { type: "moveSelection"; dx: number; dy: number }
@@ -92,5 +92,6 @@ export type EditorCommand =
   // --- history / meta ---
   | { type: "undo" }
   | { type: "redo" }
+  | { type: "reset" }
   | { type: "toggleGrid" }
   | { type: "markSaved"; data: CanvasData };

@@ -109,7 +109,9 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
 
     // ---------------- add nodes ----------------
     case "addTextNode": {
-      const id = newId();
+      // id может прийти из interaction-слоя (детерминированный — чтобы сразу
+      // открыть текст-оверлей нового узла), иначе генерируем.
+      const id = command.id ?? newId();
       const node: CanvasNode = {
         id, type: "text",
         x: snapToGrid(command.x, state.gridEnabled), y: snapToGrid(command.y, state.gridEnabled),
@@ -258,6 +260,13 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
     }
 
     // ---------------- meta ----------------
+    case "reset": {
+      // Откат несохранённых изменений к baseline (последнему сохранённому графу).
+      // Undoable: текущий граф уходит в past через commit, future чистится,
+      // dirty станет false (data == baseline), выделение сбрасывается.
+      if (dataEquals(state.data, state.baseline)) return state;
+      return commit(state, cloneData(state.baseline), { nodeIds: [], edgeIds: [] });
+    }
     case "markSaved":
       return { ...state, baseline: cloneData(command.data), dirty: false };
 

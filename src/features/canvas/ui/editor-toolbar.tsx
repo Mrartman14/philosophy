@@ -21,6 +21,11 @@ interface Props {
   onSave: () => void;
   onToggleJson: () => void;
   onBack: () => void;
+  /** Экспорт графа в SVG/PNG. Если не переданы — кнопки экспорта скрыты (напр. в JSON-режиме). */
+  onExportSvg?: (() => void) | undefined;
+  onExportPng?: (() => void) | undefined;
+  /** Есть что экспортировать (граф непустой). */
+  canExport?: boolean | undefined;
   /** Текст save-кнопки. По умолчанию `toolbar.save`; в create-режиме — `toolbar.create`. */
   saveLabel?: string | undefined;
   /** Явный override disabled save-кнопки. По умолчанию `saving || !dirty`. */
@@ -34,6 +39,7 @@ export function EditorToolbar({
   dispatch, canUndo, canRedo, dirty, gridEnabled, saving, showJson, hasSelection,
   onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson, onBack,
   saveLabel, saveDisabled, hideJsonToggle,
+  onExportSvg, onExportPng, canExport,
 }: Props) {
   const t = useT("canvas");
 
@@ -56,6 +62,7 @@ export function EditorToolbar({
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
       <Button type="button" compact tone="quiet" disabled={!canUndo} onClick={() => { dispatch({ type: "undo" }); }} aria-label={t("toolbar.undoAriaLabel")}>↶</Button>
       <Button type="button" compact tone="quiet" disabled={!canRedo} onClick={() => { dispatch({ type: "redo" }); }} aria-label={t("toolbar.redoAriaLabel")}>↷</Button>
+      <Button type="button" compact tone="quiet" disabled={!dirty} onClick={() => { dispatch({ type: "reset" }); }}>{t("toolbar.reset")}</Button>
 
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
       <Button type="button" compact tone={gridEnabled ? "primary" : "quiet"} onClick={() => { dispatch({ type: "toggleGrid" }); }}>
@@ -65,6 +72,16 @@ export function EditorToolbar({
         <Button type="button" compact tone="quiet" onClick={onToggleJson}>
           {showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")}
         </Button>
+      )}
+
+      {onExportSvg && (
+        <>
+          <span className="mx-1 h-5 w-px bg-(--color-border)" />
+          <Button type="button" compact tone="quiet" disabled={!canExport} onClick={onExportSvg}>{t("toolbar.exportSvg")}</Button>
+          {onExportPng && (
+            <Button type="button" compact tone="quiet" disabled={!canExport} onClick={onExportPng}>{t("toolbar.exportPng")}</Button>
+          )}
+        </>
       )}
 
       <span className="ms-auto flex items-center gap-2">

@@ -11,13 +11,14 @@ import type { ActionResult } from "@/utils/create-action";
 import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
-  screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits,
+  screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits, newId,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { makeEntityRefResolver } from "../entity-ref";
 import type { Canvas, CanvasRefEntityType, Visibility } from "../types";
 
 import { CanvasEditForm } from "./canvas-edit-form";
+import { downloadCanvasSvg, downloadCanvasPng } from "./canvas-export";
 import { EditorEdgeLayer } from "./editor-edge-layer";
 import { EditorInspector } from "./editor-inspector";
 import { EditorNodeLayer } from "./editor-node-layer";
@@ -74,6 +75,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const dragRef = useRef<Drag>(null);
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+  // id узла, который только что создан кнопкой «Текст» и ещё не подтверждён
+  // непустым текстом: если останется пустым (Enter/blur/Esc) — узел удаляем.
+  const [newNodeId, setNewNodeId] = useState<string | null>(null);
   const [refDialogOpen, setRefDialogOpen] = useState(false);
   const [showJson, setShowJson] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -158,7 +162,12 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       dispatch({ type: "selectNode", nodeId, additive: true });
     }
     dragRef.current = { kind: "move", lastWorld: eventWorld(e) };
-    svgRef.current?.setPointerCapture(e.pointerId);
+    // Захват ставим на сам <g> узла, а НЕ на корневой <svg>: по спеке Pointer
+    // Events синтетический click/dblclick уводится в элемент с захватом. Захват
+    // на <svg> ретаргетил dblclick на корень → onDoubleClick на <g> не срабатывал
+    // (даблклик «не открывал» редактирование текста). Drag сохраняется: события
+    // всплывают с <g> к <svg>, где висят onPointerMove/onPointerUp.
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
   const onResizeHandleDown = (nodeId: string, handle: ResizeHandle, e: React.PointerEvent) => {
@@ -258,6 +267,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     const node = (state.data.nodes ?? []).find((n) => n.id === nodeId);
     if (node && (node.type === "text" || node.type === "shape")) {
       dispatch({ type: "selectNode", nodeId, additive: false });
+      setNewNodeId(null); // правим существующий узел — очистка текста его НЕ удаляет
       setEditingNodeId(nodeId);
     }
   };
@@ -267,12 +277,34 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     return snapPoint(screenToWorld({ x: size.width / 2, y: size.height / 2 }, vp), state.gridEnabled);
   }, [size, vp, state.gridEnabled]);
 
-  const onAddText = () => { const c = viewportCenterWorld(); dispatch({ type: "addTextNode", x: c.x, y: c.y }); };
+  const onAddText = () => {
+    // Детерминированный id → сразу открываем текст-оверлей нового узла.
+    const c = viewportCenterWorld();
+    const id = newId();
+    dispatch({ type: "addTextNode", x: c.x, y: c.y, id });
+    setNewNodeId(id);
+    setEditingNodeId(id);
+  };
+  /** Удаляет узел по id (через выделение — отдельной команды deleteNode нет). */
+  const deleteNodeById = (id: string) => {
+    dispatch({ type: "selectNode", nodeId: id, additive: false });
+    dispatch({ type: "deleteSelection" });
+  };
   const onAddShape = (kind: "rect" | "ellipse" | "diamond") => { const c = viewportCenterWorld(); dispatch({ type: "addShapeNode", shapeKind: kind, x: c.x, y: c.y }); };
   const onAddEntityRefConfirm = (entityType: CanvasRefEntityType, entityId: string) => {
     const c = viewportCenterWorld();
     dispatch({ type: "addEntityRefNode", entityType, entityId, x: c.x, y: c.y });
     setRefDialogOpen(false);
+  };
+
+  // ---- export (svg/png) ----
+  // rootEl = живой svg редактора: из него getComputedStyle берёт реальные цвета темы.
+  const exportTitle = isCreate ? title : (canvas?.title ?? "");
+  const onExportSvg = () => {
+    downloadCanvasSvg(renderData, resolveEntityRef, exportTitle, svgRef.current ?? document.documentElement);
+  };
+  const onExportPng = () => {
+    void downloadCanvasPng(renderData, resolveEntityRef, exportTitle, svgRef.current ?? document.documentElement);
   };
 
   // ---- save ----
@@ -403,6 +435,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
         onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(true); }} onBack={onBack}
         saveLabel={saveLabel} saveDisabled={saveDisabled} hideJsonToggle={isCreate}
+        onExportSvg={onExportSvg} onExportPng={onExportPng} canExport={renderData.nodes.length > 0}
       />
 
       <div className="flex">
@@ -482,8 +515,24 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
             <EditorTextOverlay
               node={editingNode}
               viewport={vp}
-              onCommit={(text) => { if (!editingNode.id) return; dispatch({ type: "setNodeText", nodeId: editingNode.id, text }); setEditingNodeId(null); }}
-              onCancel={() => { setEditingNodeId(null); }}
+              onCommit={(text) => {
+                const id = editingNode.id;
+                if (id) {
+                  if (id === newNodeId && text.trim() === "") {
+                    deleteNodeById(id); // только что созданный узел оставили пустым → удаляем
+                  } else {
+                    dispatch({ type: "setNodeText", nodeId: id, text });
+                  }
+                }
+                setEditingNodeId(null);
+                setNewNodeId(null);
+              }}
+              onCancel={() => {
+                const id = editingNode.id;
+                if (id && id === newNodeId) deleteNodeById(id); // Esc на новом узле → отменяем создание
+                setEditingNodeId(null);
+                setNewNodeId(null);
+              }}
             />
           )}
         </div>

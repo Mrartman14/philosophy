@@ -33,9 +33,11 @@ function NodeText({ node }: { node: RenderNode }) {
   const lines = wrapLines(node.text ?? "", node.width);
   return (
     <g>
+      {/* fill="transparent" (а не "none"): без видимого фона, но тело узла
+          остаётся кликабельным в редакторе (none убирает hit-area заливки). */}
       <rect
         x={node.x} y={node.y} width={node.width} height={node.height}
-        rx={4} fill="var(--color-surface-subtle)" stroke="var(--color-border)"
+        rx={4} fill="transparent" stroke="var(--color-border)"
       />
       <text x={node.x + PADDING} y={node.y + 18} fontSize={12} fill="var(--color-fg)">
         {lines.map((ln, i) => (

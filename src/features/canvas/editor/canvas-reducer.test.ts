@@ -99,6 +99,17 @@ describe("add-команды", () => {
     expect(s.past).toHaveLength(1);
     expect(s.selection.nodeIds).toEqual(["gen-1"]);
   });
+  it("addTextNode принимает явный id (для авто-редактирования только что созданного узла)", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0, id: "fixed-1" });
+    expect(s.data.nodes?.[2]?.id).toBe("fixed-1");
+    expect(s.selection.nodeIds).toEqual(["fixed-1"]);
+  });
+  it("addTextNode без id генерирует id через newId", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    expect(s.data.nodes?.[2]?.id).toBe("gen-1");
+  });
   it("addShapeNode задаёт shape_kind", () => {
     let s = initEditorState(baseData);
     s = canvasReducer(s, { type: "addShapeNode", shapeKind: "ellipse", x: 0, y: 0 });
@@ -246,5 +257,46 @@ describe("undo / redo / dirty", () => {
     // дальнейший undo вернёт к графу с 2 узлами, который теперь != baseline → dirty
     s = canvasReducer(s, { type: "undo" });
     expect(s.dirty).toBe(true);
+  });
+});
+
+describe("reset", () => {
+  it("восстанавливает data из baseline и сбрасывает dirty и выделение", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    s = canvasReducer(s, { type: "moveSelection", dx: 10, dy: 10 });
+    expect(s.dirty).toBe(true);
+    s = canvasReducer(s, { type: "reset" });
+    expect(s.data).toEqual(baseData);
+    expect(s.dirty).toBe(false);
+    expect(s.selection).toEqual({ nodeIds: [], edgeIds: [] });
+  });
+
+  it("undoable: текущий граф уходит в past, undo возвращает изменения", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    const dirtyData = s.data;
+    s = canvasReducer(s, { type: "reset" });
+    expect(s.data.nodes).toHaveLength(2);
+    s = canvasReducer(s, { type: "undo" });
+    expect(s.data).toEqual(dirtyData);
+    expect(s.dirty).toBe(true);
+  });
+
+  it("на чистом графе (нет изменений) — no-op", () => {
+    const s0 = initEditorState(baseData);
+    expect(canvasReducer(s0, { type: "reset" })).toBe(s0);
+  });
+
+  it("откатывает к baseline после markSaved (последнему сохранённому), не к исходному", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "addTextNode", x: 0, y: 0 });
+    s = canvasReducer(s, { type: "markSaved", data: s.data });
+    const savedData = s.data;
+    s = canvasReducer(s, { type: "addShapeNode", shapeKind: "rect", x: 0, y: 0 });
+    expect(s.dirty).toBe(true);
+    s = canvasReducer(s, { type: "reset" });
+    expect(s.data).toEqual(savedData);
+    expect(s.dirty).toBe(false);
   });
 });
