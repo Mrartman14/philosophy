@@ -42,6 +42,7 @@ export function initEditorState(data: CanvasData): EditorState {
     baseline: cloneData(normalized),
     dirty: false,
     gridEnabled: true,
+    tool: "select",
   };
 }
 
@@ -74,6 +75,10 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
       return { ...state, viewport: command.viewport };
     case "toggleGrid":
       return { ...state, gridEnabled: !state.gridEnabled };
+
+    // ---------------- tool ----------------
+    case "setTool":
+      return { ...state, tool: command.tool };
 
     // ---------------- selection ----------------
     case "selectNode":

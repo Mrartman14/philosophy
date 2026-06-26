@@ -13,6 +13,9 @@ export interface Selection {
   edgeIds: string[];
 }
 
+/** Активный инструмент взаимодействия. */
+export type CanvasTool = "select" | "hand";
+
 /** Состояние вьюпорта (pan/zoom) в мировых координатах. */
 export interface Viewport {
   /** Смещение мира относительно экрана (мировые координаты левого-верхнего угла). */
@@ -49,6 +52,8 @@ export interface EditorState {
   baseline: CanvasData;
   dirty: boolean;
   gridEnabled: boolean;
+  /** Активный инструмент (UI-состояние, НЕ в undo). */
+  tool: CanvasTool;
 }
 
 /** Глубина undo-стека. */
@@ -70,6 +75,8 @@ export type EditorCommand =
   | { type: "selectEdge"; edgeId: string; additive: boolean }
   | { type: "selectMany"; nodeIds: string[]; edgeIds: string[] }
   | { type: "clearSelection" }
+  // --- tool ---
+  | { type: "setTool"; tool: CanvasTool }
   // --- node mutations ---
   | { type: "addTextNode"; x: number; y: number; id?: string }
   | { type: "addShapeNode"; shapeKind: "rect" | "ellipse" | "diamond"; x: number; y: number }

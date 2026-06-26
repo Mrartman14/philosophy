@@ -78,6 +78,17 @@ describe("viewport команды", () => {
   });
 });
 
+describe("tool команды", () => {
+  it("setTool переключает инструмент, не трогая data/undo", () => {
+    const s = initEditorState({ nodes: [], edges: [] });
+    expect(s.tool).toBe("select");
+    const next = canvasReducer(s, { type: "setTool", tool: "hand" });
+    expect(next.tool).toBe("hand");
+    expect(next.past).toHaveLength(0);
+    expect(next.data).toBe(s.data);
+  });
+});
+
 describe("add-команды", () => {
   it("addTextNode добавляет text-узел с новым id и делает dirty", () => {
     let s = initEditorState(baseData);

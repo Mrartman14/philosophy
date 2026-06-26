@@ -23,5 +23,6 @@ export type {
   ResizeHandle,
   EntityRefDraft,
   Side,
+  CanvasTool,
 } from "./editor-types";
 export { GRID_SIZE, UNDO_LIMIT } from "./editor-types";
