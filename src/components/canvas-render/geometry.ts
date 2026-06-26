@@ -63,8 +63,23 @@ export interface EdgeGeometry {
 }
 
 /**
- * Геометрия ребра между двумя узлами. Если сторона задана — точка на ней;
- * иначе — пересечение границы бокса с лучом к центру другого узла.
+ * Геометрические точки отрезка ребра (без SVG-форматирования). Если сторона
+ * задана — точка на ней; иначе — пересечение границы бокса с лучом к центру
+ * другого узла. Делится между рендером (edgePath) и хит-тестом (hitTestEdge).
+ */
+export function edgeSegment(
+  from: RenderNode,
+  to: RenderNode,
+  fromSide: Side | undefined,
+  toSide: Side | undefined,
+): { start: Point; end: Point } {
+  const start = fromSide ? sidePoint(from, fromSide) : boxBorderIntersection(from, center(to));
+  const end = toSide ? sidePoint(to, toSide) : boxBorderIntersection(to, center(from));
+  return { start, end };
+}
+
+/**
+ * Геометрия ребра между двумя узлами для SVG: путь `d`, середина (label) и конец.
  */
 export function edgePath(
   from: RenderNode,
@@ -72,13 +87,12 @@ export function edgePath(
   fromSide: Side | undefined,
   toSide: Side | undefined,
 ): EdgeGeometry {
-  const start = fromSide ? sidePoint(from, fromSide) : boxBorderIntersection(from, center(to));
-  const finish = toSide ? sidePoint(to, toSide) : boxBorderIntersection(to, center(from));
-  const d = `M ${round(start.x)} ${round(start.y)} L ${round(finish.x)} ${round(finish.y)}`;
+  const { start, end } = edgeSegment(from, to, fromSide, toSide);
+  const d = `M ${round(start.x)} ${round(start.y)} L ${round(end.x)} ${round(end.y)}`;
   return {
     d,
-    mid: { x: (start.x + finish.x) / 2, y: (start.y + finish.y) / 2 },
-    end: finish,
+    mid: { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 },
+    end,
   };
 }
 

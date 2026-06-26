@@ -16,6 +16,7 @@ export {
   boundingBox,
   sidePoint,
   edgePath,
+  edgeSegment,
   center,
   boxBorderIntersection,
 } from "./geometry";

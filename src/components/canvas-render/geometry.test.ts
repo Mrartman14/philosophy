@@ -1,7 +1,7 @@
 // src/components/canvas-render/geometry.test.ts
 import { describe, it, expect } from "vitest";
 
-import { boundingBox, sidePoint, boxBorderIntersection, edgePath } from "./geometry";
+import { boundingBox, sidePoint, boxBorderIntersection, edgePath, edgeSegment } from "./geometry";
 import type { RenderNode } from "./types";
 
 const node = (over: Partial<RenderNode> = {}): RenderNode => ({
@@ -67,5 +67,29 @@ describe("edgePath", () => {
     const { d, mid } = edgePath(a, b, undefined, undefined);
     expect(d.startsWith("M ")).toBe(true);
     expect(Number.isNaN(mid.x)).toBe(false);
+  });
+});
+
+describe("edgeSegment", () => {
+  const a: RenderNode = { id: "a", type: "shape", x: 0, y: 0, width: 100, height: 100 };
+  const b: RenderNode = { id: "b", type: "shape", x: 300, y: 0, width: 100, height: 100 };
+
+  it("по заданным сторонам — точки на серединах сторон", () => {
+    const { start, end } = edgeSegment(a, b, "right", "left");
+    expect(start).toEqual({ x: 100, y: 50 });
+    expect(end).toEqual({ x: 300, y: 50 });
+  });
+
+  it("без сторон — пересечение границ по лучу между центрами", () => {
+    const { start, end } = edgeSegment(a, b, undefined, undefined);
+    expect(start).toEqual({ x: 100, y: 50 });
+    expect(end).toEqual({ x: 300, y: 50 });
+  });
+
+  it("edgePath строит d/mid/end из тех же точек", () => {
+    const geo = edgePath(a, b, "right", "left");
+    expect(geo.d).toBe("M 100 50 L 300 50");
+    expect(geo.mid).toEqual({ x: 200, y: 50 });
+    expect(geo.end).toEqual({ x: 300, y: 50 });
   });
 });
