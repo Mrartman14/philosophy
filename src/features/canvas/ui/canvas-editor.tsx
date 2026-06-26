@@ -12,7 +12,7 @@ import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits, newId,
-  resolveBackgroundGesture, resolveNodeGesture, resolveWheel,
+  resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { makeEntityRefResolver } from "../entity-ref";
@@ -286,7 +286,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     if (editingNodeId) return; // текст-оверлей перехватывает ввод
 
     if (e.code === "Space") {
-      e.preventDefault();              // не скроллить / не «жать» фокус (на каждом repeat)
+      e.preventDefault();
       if (!spaceHeld) setSpaceHeld(true);
       return;
     }
@@ -304,7 +304,32 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       dispatch(e.shiftKey ? { type: "redo" } : { type: "undo" });
       return;
     }
-    // ветки V/H + z-order + nudge дописываются в Task 6 (тут пока всё).
+    // z-order: Cmd/Ctrl + ] / [  (на одиночном и групповом выделении)
+    if ((e.ctrlKey || e.metaKey) && e.key === "]") {
+      e.preventDefault();
+      if (state.selection.nodeIds.length > 0) dispatch({ type: "bringToFront", nodeIds: state.selection.nodeIds });
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === "[") {
+      e.preventDefault();
+      if (state.selection.nodeIds.length > 0) dispatch({ type: "sendToBack", nodeIds: state.selection.nodeIds });
+      return;
+    }
+    // инструмент V/H — ТОЛЬКО без ctrl/meta (не перехватывать Cmd+V / Cmd+H)
+    if (!e.ctrlKey && !e.metaKey && (e.key === "v" || e.key === "V")) {
+      dispatch({ type: "setTool", tool: "select" });
+      return;
+    }
+    if (!e.ctrlKey && !e.metaKey && (e.key === "h" || e.key === "H")) {
+      dispatch({ type: "setTool", tool: "hand" });
+      return;
+    }
+    // nudge стрелками (без ctrl/meta); двигаем выделение, гасим скролл страницы
+    const nudge = !(e.ctrlKey || e.metaKey) ? resolveNudge(e.key, e.shiftKey) : null;
+    if (nudge && state.selection.nodeIds.length > 0) {
+      e.preventDefault();
+      dispatch({ type: "moveSelection", dx: nudge.dx, dy: nudge.dy });
+    }
   };
 
   const onKeyUp = (e: React.KeyboardEvent) => {
@@ -506,16 +531,19 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           no-noninteractive-* считают её неинтерактивной — ложное срабатывание
           именно для этого паттерна.
 
-          Текущая клавиатурная модель (tabIndex + onKeyDown):
+          Текущая клавиатурная модель (tabIndex + onKeyDown/onKeyUp):
             Delete/Backspace — удалить выбранный элемент;
             Escape          — снять выделение;
-            Ctrl+Z / Ctrl+Shift+Z — Undo/Redo истории холста.
-          Колесо мыши управляет зумом.
+            Ctrl+Z / Ctrl+Shift+Z — Undo/Redo;
+            V / H           — инструмент Select / Hand;
+            Space (зажат)   — временный пан (Hand);
+            Стрелки         — сдвиг выделения (Shift = 10px);
+            Ctrl/Cmd+] / [  — на передний / задний план.
+          Колесо: ctrl/meta — зум к курсору, иначе — пан (Figma-конвенция).
 
-          KNOWN A11Y LIMITATION: навигация между узлами, перемещение узлов
-          клавишами-стрелками, создание рёбер без указателя — не реализованы.
-          Полная клавиатурная авторизация отложена до основной работы над canvas
-          (деferred scope).
+          KNOWN A11Y LIMITATION: навигация между узлами и создание рёбер без
+          указателя — не реализованы. Полная клавиатурная авторизация отложена
+          до основной работы над canvas (деferred scope).
         */}
         {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
         <div
