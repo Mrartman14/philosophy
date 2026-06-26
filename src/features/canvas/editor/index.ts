@@ -37,3 +37,5 @@ export type {
   CanvasTool,
 } from "./editor-types";
 export { GRID_SIZE, UNDO_LIMIT } from "./editor-types";
+export { runShortcuts, hasMod } from "./shortcuts";
+export type { Shortcut, KeyLike } from "./shortcuts";

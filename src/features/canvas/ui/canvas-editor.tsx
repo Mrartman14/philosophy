@@ -12,7 +12,7 @@ import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, NODE_DEFAULT_SIZE, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, fitViewport, centerViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
-  resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
+  resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge, runShortcuts, hasMod,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { downloadCanvasJson, painter } from "../engine";
@@ -386,66 +386,26 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // ---- keyboard ----
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (editingNodeId) return; // текст-оверлей перехватывает ввод
-
-    if (e.code === "Space") {
-      e.preventDefault();
-      if (!spaceHeld) setSpaceHeld(true);
-      return;
-    }
-    // Shift+1 — показать всё (Figma-конвенция zoom-to-fit). e.code, чтобы не зависеть
-    // от раскладки (Shift+1 на US-раскладке даёт "!").
-    if (e.shiftKey && e.code === "Digit1") {
-      e.preventDefault();
-      fitToContent();
-      return;
-    }
-    // Shift+R — тогл координатных линеек (Figma-конвенция); без ctrl/meta (не R перезагрузки).
-    if (e.shiftKey && !e.ctrlKey && !e.metaKey && e.code === "KeyR") {
-      e.preventDefault();
-      setShowGrid((v) => !v);
-      return;
-    }
-    if (e.key === "Delete" || e.key === "Backspace") {
-      e.preventDefault();
-      dispatch({ type: "deleteSelection" });
-      return;
-    }
-    if (e.key === "Escape") {
-      dispatch({ type: "clearSelection" });
-      return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
-      e.preventDefault();
-      dispatch(e.shiftKey ? { type: "redo" } : { type: "undo" });
-      return;
-    }
-    // z-order: Cmd/Ctrl + ] / [  (на одиночном и групповом выделении)
-    if ((e.ctrlKey || e.metaKey) && e.key === "]") {
-      e.preventDefault();
-      if (hasNodeSelection) dispatch({ type: "bringToFront", nodeIds: state.selection.nodeIds });
-      return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === "[") {
-      e.preventDefault();
-      if (hasNodeSelection) dispatch({ type: "sendToBack", nodeIds: state.selection.nodeIds });
-      return;
-    }
-    // инструмент V/H — ТОЛЬКО без ctrl/meta (не перехватывать Cmd+V / Cmd+H)
-    if (!e.ctrlKey && !e.metaKey && (e.key === "v" || e.key === "V")) {
-      dispatch({ type: "setTool", tool: "select" });
-      return;
-    }
-    if (!e.ctrlKey && !e.metaKey && (e.key === "h" || e.key === "H")) {
-      dispatch({ type: "setTool", tool: "hand" });
-      return;
-    }
-    // nudge стрелками (без ctrl/meta); гасим скролл страницы для ЛЮБОЙ распознанной
-    // стрелки (даже без выделения), а двигаем — только когда есть выбранные узлы.
-    const nudge = !(e.ctrlKey || e.metaKey) ? resolveNudge(e.key, e.shiftKey) : null;
-    if (nudge) {
-      e.preventDefault();
-      if (hasNodeSelection) dispatch({ type: "moveSelection", dx: nudge.dx, dy: nudge.dy });
-    }
+    // Декларативный реестр шорткатов (editor/shortcuts). Порядок = приоритет.
+    runShortcuts([
+      // Space (зажат) — временный пан; keyup/blur ловятся на window отдельно.
+      { id: "pan-hold", combo: "Space", run: () => { if (!spaceHeld) setSpaceHeld(true); } },
+      { id: "fit", combo: "Shift+1", run: () => { fitToContent(); } },
+      { id: "rulers", combo: "Shift+r", run: () => { setShowGrid((v) => !v); } },
+      { id: "delete", combo: "Delete", run: () => { dispatch({ type: "deleteSelection" }); } },
+      { id: "delete-bs", combo: "Backspace", run: () => { dispatch({ type: "deleteSelection" }); } },
+      { id: "clear-selection", combo: "Escape", preventDefault: false, run: () => { dispatch({ type: "clearSelection" }); } },
+      { id: "redo", combo: "Mod+Shift+z", run: () => { dispatch({ type: "redo" }); } },
+      { id: "undo", combo: "Mod+z", run: () => { dispatch({ type: "undo" }); } },
+      { id: "bring-to-front", combo: "Mod+]", run: () => { if (hasNodeSelection) dispatch({ type: "bringToFront", nodeIds: state.selection.nodeIds }); } },
+      { id: "send-to-back", combo: "Mod+[", run: () => { if (hasNodeSelection) dispatch({ type: "sendToBack", nodeIds: state.selection.nodeIds }); } },
+      // V/H — выбор инструмента; без ctrl/meta, регистр клавиши не важен.
+      { id: "tool-select", preventDefault: false, when: (ke) => !hasMod(ke) && ke.key.toLowerCase() === "v", run: () => { dispatch({ type: "setTool", tool: "select" }); } },
+      { id: "tool-hand", preventDefault: false, when: (ke) => !hasMod(ke) && ke.key.toLowerCase() === "h", run: () => { dispatch({ type: "setTool", tool: "hand" }); } },
+      // Нудж стрелками (без ctrl/meta): гасим скролл для ЛЮБОЙ стрелки, двигаем —
+      // только при выделении; shift = большой шаг (передаём в resolveNudge).
+      { id: "nudge", when: (ke) => !hasMod(ke) && resolveNudge(ke.key, false) !== null, run: (ke) => { const n = resolveNudge(ke.key, ke.shiftKey); if (n && hasNodeSelection) dispatch({ type: "moveSelection", dx: n.dx, dy: n.dy }); } },
+    ], e);
   };
 
   // Анти-залипание Space: div-level onKeyUp пропускал keyup, если фокус ушёл с
