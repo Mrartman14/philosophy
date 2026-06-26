@@ -148,6 +148,12 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   }, [nodesById]);
 
   // ---- pointer handlers ----
+  /** Старт пана: записываем drag-стейт и захватываем указатель. */
+  const startPan = (e: React.PointerEvent) => {
+    dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
+  };
+
   const onBackgroundPointerDown = (e: React.PointerEvent) => {
     if (e.target !== e.currentTarget) return; // клик именно по фону
     const gesture = resolveBackgroundGesture({
@@ -155,13 +161,15 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     });
     const world = eventWorld(e);
     if (gesture === "marquee") {
-      // shift → аддитивный marquee (к текущему выделению)
+      // НЕ-аддитивный marquee сразу гасит выделение, чтобы старая подсветка не
+      // «висела» во время протягивания рамки; shift → аддитивный (к текущему).
+      if (!e.shiftKey) dispatch({ type: "clearSelection" });
       dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive: e.shiftKey };
+      (e.currentTarget as Element).setPointerCapture(e.pointerId);
     } else {
       dispatch({ type: "clearSelection" });
-      dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
+      startPan(e);
     }
-    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
   const onNodePointerDown = (nodeId: string, e: React.PointerEvent) => {
@@ -171,8 +179,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     });
     if (gesture === "pan") {
       // hand/Space/средняя кнопка поверх узла → пан, а не select/move
-      dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
-      (e.currentTarget as Element).setPointerCapture(e.pointerId);
+      startPan(e);
       return;
     }
     if (!selectedNodeIds.has(nodeId)) {
@@ -267,19 +274,40 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   };
 
   // ---- wheel (Figma: ctrl/meta → зум у курсора, иначе → пан) ----
-  const onWheel = (e: React.WheelEvent) => {
-    const action = resolveWheel({
-      deltaX: e.deltaX, deltaY: e.deltaY, ctrlKey: e.ctrlKey, metaKey: e.metaKey, shiftKey: e.shiftKey,
-    });
-    if (action.kind === "zoom") {
-      const rect = svgRef.current?.getBoundingClientRect();
-      const sx = e.clientX - (rect?.left ?? 0);
-      const sy = e.clientY - (rect?.top ?? 0);
-      dispatch({ type: "setViewport", viewport: applyZoomAtPoint(vp, action.factor, sx, sy) });
-    } else {
-      dispatch({ type: "setViewport", viewport: { ...vp, x: vp.x + action.dx / vp.zoom, y: vp.y + action.dy / vp.zoom } });
-    }
-  };
+  // React onWheel ПАССИВНЫЙ → e.preventDefault() в JSX-хендлере игнорируется и
+  // страница скроллится/зумится вместе с холстом. Поэтому вешаем НЕпассивный
+  // нативный listener на svgRef (он заполняет холст, ref-мердж Trigger'а не задет).
+  // Логику держим в ref и обновляем в effect'е каждый рендер (не во время рендера —
+  // react-hooks/refs запрещает писать ref.current в фазе рендера), чтобы listener
+  // не переподписывался и не ловил stale closure (vp/state читаются из current).
+  const onWheelRef = useRef<((e: WheelEvent) => void) | null>(null);
+  useEffect(() => {
+    onWheelRef.current = (e: WheelEvent) => {
+      e.preventDefault();
+      const action = resolveWheel({
+        deltaX: e.deltaX, deltaY: e.deltaY, ctrlKey: e.ctrlKey, metaKey: e.metaKey, shiftKey: e.shiftKey,
+      });
+      if (action.kind === "zoom") {
+        const rect = svgRef.current?.getBoundingClientRect();
+        const sx = e.clientX - (rect?.left ?? 0);
+        const sy = e.clientY - (rect?.top ?? 0);
+        dispatch({ type: "setViewport", viewport: applyZoomAtPoint(vp, action.factor, sx, sy) });
+      } else {
+        dispatch({ type: "setViewport", viewport: { ...vp, x: vp.x + action.dx / vp.zoom, y: vp.y + action.dy / vp.zoom } });
+      }
+    };
+  });
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const h = (e: WheelEvent) => { onWheelRef.current?.(e); };
+    el.addEventListener("wheel", h, { passive: false });
+    return () => { el.removeEventListener("wheel", h); };
+  }, []);
+
+  // Выделены ли узлы. Один источник истины для: z-order хоткеев, nudge-гарда и
+  // disabled пунктов контекстного меню (НЕ путать с toolbar.hasSelection = node+edge).
+  const hasNodeSelection = state.selection.nodeIds.length > 0;
 
   // ---- keyboard ----
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -307,12 +335,12 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     // z-order: Cmd/Ctrl + ] / [  (на одиночном и групповом выделении)
     if ((e.ctrlKey || e.metaKey) && e.key === "]") {
       e.preventDefault();
-      if (state.selection.nodeIds.length > 0) dispatch({ type: "bringToFront", nodeIds: state.selection.nodeIds });
+      if (hasNodeSelection) dispatch({ type: "bringToFront", nodeIds: state.selection.nodeIds });
       return;
     }
     if ((e.ctrlKey || e.metaKey) && e.key === "[") {
       e.preventDefault();
-      if (state.selection.nodeIds.length > 0) dispatch({ type: "sendToBack", nodeIds: state.selection.nodeIds });
+      if (hasNodeSelection) dispatch({ type: "sendToBack", nodeIds: state.selection.nodeIds });
       return;
     }
     // инструмент V/H — ТОЛЬКО без ctrl/meta (не перехватывать Cmd+V / Cmd+H)
@@ -324,17 +352,25 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       dispatch({ type: "setTool", tool: "hand" });
       return;
     }
-    // nudge стрелками (без ctrl/meta); двигаем выделение, гасим скролл страницы
+    // nudge стрелками (без ctrl/meta); гасим скролл страницы для ЛЮБОЙ распознанной
+    // стрелки (даже без выделения), а двигаем — только когда есть выбранные узлы.
     const nudge = !(e.ctrlKey || e.metaKey) ? resolveNudge(e.key, e.shiftKey) : null;
-    if (nudge && state.selection.nodeIds.length > 0) {
+    if (nudge) {
       e.preventDefault();
-      dispatch({ type: "moveSelection", dx: nudge.dx, dy: nudge.dy });
+      if (hasNodeSelection) dispatch({ type: "moveSelection", dx: nudge.dx, dy: nudge.dy });
     }
   };
 
-  const onKeyUp = (e: React.KeyboardEvent) => {
-    if (e.code === "Space") setSpaceHeld(false);
-  };
+  // Анти-залипание Space: div-level onKeyUp пропускал keyup, если фокус ушёл с
+  // холста между Space down/up (Alt+Tab, клик в инспектор, диалог). Слушаем keyup
+  // и blur на window, чтобы временный pan-режим всегда сбрасывался.
+  useEffect(() => {
+    const onUp = (e: KeyboardEvent) => { if (e.code === "Space") setSpaceHeld(false); };
+    const onBlur = () => { setSpaceHeld(false); };
+    window.addEventListener("keyup", onUp);
+    window.addEventListener("blur", onBlur);
+    return () => { window.removeEventListener("keyup", onUp); window.removeEventListener("blur", onBlur); };
+  }, []);
 
   // правый клик: нацелить меню на узел под курсором; по пустому фону — НЕ показывать.
   // КРИТИЧНО (ревью): Base UI ContextMenu открывается своим обработчиком contextmenu,
@@ -488,9 +524,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // Отдельный useState под активный drag-kind — follow-up (brief, Step 7).
   const canvasCursor = (state.tool === "hand" || spaceHeld) ? "grab" : "default";
 
-  // z-order + удаление в контекстном меню активны только при выделении узла(ов).
-  const hasNodeSelection = state.selection.nodeIds.length > 0;
-
   // create: сейв активен при непустом title (граф может быть пустым — бек допускает).
   const saveDisabled = saving || (isCreate ? title.trim() === "" : !state.dirty);
   const saveLabel = isCreate ? t("toolbar.create") : undefined;
@@ -554,7 +587,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           no-noninteractive-* считают её неинтерактивной — ложное срабатывание
           именно для этого паттерна.
 
-          Текущая клавиатурная модель (tabIndex + onKeyDown/onKeyUp):
+          Текущая клавиатурная модель (tabIndex + onKeyDown; keyup/blur Space — на window):
             Delete/Backspace — удалить выбранный элемент;
             Escape          — снять выделение;
             Ctrl+Z / Ctrl+Shift+Z — Undo/Redo;
@@ -580,8 +613,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={0}
                 onKeyDown={onKeyDown}
-                onKeyUp={onKeyUp}
-                onWheel={onWheel}
                 onContextMenu={onCanvasContextMenu}
               />
             }

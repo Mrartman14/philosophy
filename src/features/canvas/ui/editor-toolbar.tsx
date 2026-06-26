@@ -49,10 +49,10 @@ export function EditorToolbar({
       <Button type="button" compact tone="quiet" onClick={onBack}><ChevronIcon className="rtl-flip rotate-180" />{t("toolbar.back")}</Button>
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
 
-      <Button type="button" compact tone={tool === "select" ? "primary" : "quiet"} onClick={() => { dispatch({ type: "setTool", tool: "select" }); }}>
+      <Button type="button" compact aria-pressed={tool === "select"} tone={tool === "select" ? "primary" : "quiet"} onClick={() => { dispatch({ type: "setTool", tool: "select" }); }}>
         {t("toolbar.toolSelect")}
       </Button>
-      <Button type="button" compact tone={tool === "hand" ? "primary" : "quiet"} onClick={() => { dispatch({ type: "setTool", tool: "hand" }); }}>
+      <Button type="button" compact aria-pressed={tool === "hand"} tone={tool === "hand" ? "primary" : "quiet"} onClick={() => { dispatch({ type: "setTool", tool: "hand" }); }}>
         {t("toolbar.toolHand")}
       </Button>
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
