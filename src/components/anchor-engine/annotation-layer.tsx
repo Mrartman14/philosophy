@@ -9,7 +9,6 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -19,7 +18,6 @@ import {
 import type { Motion } from "@/styles/tokens/enums";
 import { isReducedMotion } from "@/utils/is-reduced-motion";
 
-import { rangeFromAnchor } from "./anchor-to-range";
 import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
@@ -27,6 +25,7 @@ import { noteAtPoint } from "./hit-test";
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
 import { SelectionAffordance } from "./selection-affordance";
 import type { AnchorDraft, AnchoredNote } from "./types";
+import { useAnchorRanges } from "./use-anchor-ranges";
 import { useSelectionCapture } from "./use-selection-capture";
 
 export interface AnnotationLayerProps {
@@ -73,49 +72,11 @@ export function AnnotationLayer(props: AnnotationLayerProps) {
   controllerRef.current ??= new HighlightController();
   const controller = controllerRef.current;
 
+  // Геометрия движка (Range/ready/пересчёт/getAnchorRect) — вынесена в общий хук,
+  // переиспользуемый eager/lazy-политиками. Поведение идентично прежней инлайн-логике.
+  const { ranges, getAnchorRect, recomputeKey, ready } = useAnchorRanges({ astRootRef, notes });
   const { draft, clear } = useSelectionCapture({ rootRef: astRootRef, enabled: canCreate });
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [recomputeKey, setRecomputeKey] = useState(0);
-  const [ready, setReady] = useState(false);
-
-  // Готовность рута (ref заполнен после первого коммита) → форсим первый расчёт
-  // ranges/подсветки. Без этого useMemo по стабильному astRootRef не пересчитался
-  // бы, когда .current переходит null → element (ref-идентичность не меняется).
-  useEffect(() => {
-    setReady(astRootRef.current !== null);
-  }, [astRootRef]);
-
-  // Пересчёт геометрии: resize / загрузка шрифтов / смена notes / готовность рута.
-  useEffect(() => {
-    const bump = () => {
-      setRecomputeKey((k) => k + 1);
-    };
-    bump();
-    window.addEventListener("resize", bump);
-    const root = astRootRef.current;
-    const ro = typeof ResizeObserver !== "undefined" && root ? new ResizeObserver(bump) : null;
-    if (ro && root) ro.observe(root);
-    // fonts может отсутствовать (старые движки / jsdom) → каст с опциональным
-    // полем (без интерсекции с Document, где fonts non-optional → ?. был бы лишним).
-    const fonts = (document as unknown as { fonts?: { ready: Promise<unknown> } }).fonts;
-    fonts?.ready.then(bump).catch(() => undefined);
-    return () => {
-      window.removeEventListener("resize", bump);
-      ro?.disconnect();
-    };
-  }, [astRootRef, notes, ready]);
-
-  // Range по каждому note (для подсветки / позиций / хит-теста). recomputeKey и
-  // ready в deps: пересчитывается после готовности рута и при смене геометрии.
-  const ranges = useMemo(() => {
-    const root = astRootRef.current;
-    const m = new Map<string, Range | null>();
-    if (root) for (const n of notes) m.set(n.id, rangeFromAnchor(n.anchor, root));
-    return m;
-    // ready/recomputeKey намеренно в deps — форсят перестроение карты, хотя
-    // astRootRef стабилен по идентичности (см. комментарии к эффектам выше).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [notes, astRootRef, ready, recomputeKey]);
 
   // Подсветка (основной путь — CSS Custom Highlight API). Оверлей-фолбэк — ниже
   // через controller.supported.
@@ -131,14 +92,6 @@ export function AnnotationLayer(props: AnnotationLayerProps) {
       controller.clear();
     };
   }, [ranges, highlightEnabled, activeId, controller]);
-
-  const getAnchorRect = useCallback(
-    (id: string) => {
-      const r = ranges.get(id);
-      return r ? r.getBoundingClientRect() : null;
-    },
-    [ranges],
-  );
 
   // Двусторонний клик (текст → карточка): клик в AST-руте → note под caret →
   // активировать + скролл к карточке.
