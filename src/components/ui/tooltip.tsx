@@ -34,7 +34,13 @@ function TooltipBase({ content, children, side = "top" }: TooltipProps): ReactEl
     <BaseTooltip.Root>
       <BaseTooltip.Trigger render={children} />
       <BaseTooltip.Portal>
-        <BaseTooltip.Positioner side={side} sideOffset={6}>
+        {/* z-index на Positioner (это и есть позиционируемый fixed-элемент).
+            Портал монтируется в конец <body> — ПОСЛЕ sticky-хедера, который сидит
+            на литеральном z-50 (= слой `--z-toast`). На равном z-index порядок
+            рисовки решает DOM-порядок, поэтому портал ложится ПОВЕРХ хедера — тем
+            же механизмом, что и тостер (toaster.tsx, тоже z-50 над тем же хедером).
+            Без явного z-index Positioner наследовал бы auto(0) и прятался под хедер. */}
+        <BaseTooltip.Positioner side={side} sideOffset={6} className="z-[var(--z-toast)]">
           <BaseTooltip.Popup
             className={cn(
               "select-none rounded bg-(--color-fg) px-2 py-1 text-xs font-medium text-(--color-surface) shadow-md",
