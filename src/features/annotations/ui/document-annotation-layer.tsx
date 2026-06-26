@@ -4,7 +4,7 @@
 // маргиналий (@/components/anchor-engine) с доменом аннотаций. КРИТИЧНЫЙ
 // SSR-инвариант: якорённые карточки рендерятся обычным списком при ready=false
 // (server-проход / no-JS) — они ЕСТЬ в HTML (SEO/доступность). После mount
-// (ready=true) те же ноды отдаются в AnnotationLayer, который ПОЗИЦИОНИРУЕТ их
+// (ready=true) те же ноды отдаются в MarginAnchorLayer, который ПОЗИЦИОНИРУЕТ их
 // у фрагмента и включает подсветку — это улучшение, а не создание контента.
 // Hydration-безопасность: первый client-рендер тоже ready=false (совпадает с
 // SSR), ready=true приходит следующим тиком из эффекта — без mismatch.
@@ -15,7 +15,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import {
-  AnnotationLayer,
+  MarginAnchorLayer,
   type AnchorDraft,
   type AnchoredNote,
 } from "@/components/anchor-engine";
@@ -106,12 +106,12 @@ export function DocumentAnnotationLayer({ parentId, notes, canCreate }: Props) {
       ))}
 
       {/* Якорённые: на сервере / до mount — простой список (есть в HTML); после
-          ready тот же набор отдаём в AnnotationLayer, который их позиционирует
+          ready тот же набор отдаём в MarginAnchorLayer, который их позиционирует
           у фрагмента и подсвечивает. Контент НЕ прячется за mounted-флагом. */}
       {!ready ? (
         engineNotes.map((n) => <div key={n.id}>{cardById.get(n.id)}</div>)
       ) : (
-        <AnnotationLayer
+        <MarginAnchorLayer
           astRootRef={astRootRef}
           notes={engineNotes}
           renderNote={(n, orphan) => (

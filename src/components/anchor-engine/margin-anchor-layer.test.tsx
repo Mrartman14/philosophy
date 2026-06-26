@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { useRef } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { AnnotationLayer } from "./annotation-layer";
+import { MarginAnchorLayer } from "./margin-anchor-layer";
 import type { AnchoredNote } from "./types";
 
 // jsdom-дым: getBoundingClientRect → нули, нет CSS Custom Highlight API, нет
@@ -17,7 +17,7 @@ function Harness({ notes }: { notes: AnchoredNote[] }) {
       <div ref={ref} data-ast-root>
         <p data-block-id="p1">present</p>
       </div>
-      <AnnotationLayer
+      <MarginAnchorLayer
         astRootRef={ref}
         notes={notes}
         highlightEnabled
@@ -40,7 +40,7 @@ const orphanNote: AnchoredNote = {
   anchor: { startBlockId: "x", endBlockId: "x", startChar: 0, endChar: 4, exact: "zzzz" },
 };
 
-describe("AnnotationLayer (smoke)", () => {
+describe("MarginAnchorLayer (smoke)", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });

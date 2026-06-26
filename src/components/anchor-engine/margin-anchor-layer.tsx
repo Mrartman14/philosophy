@@ -1,6 +1,6 @@
 "use client";
-// src/components/anchor-engine/annotation-layer.tsx
-// Оркестратор React-слоя движка маргиналий. Собирает: захват выделения →
+// src/components/anchor-engine/margin-anchor-layer.tsx
+// Оркестратор React-слоя движка маргиналий (eager-политика). Собирает: захват выделения →
 // аффорданс создания; подсветку через CSS Custom Highlight API (HighlightController),
 // с оверлей-фолбэком (HighlightOverlay) когда API нет; позиции карточек на полях
 // (MarginNotesColumn по getAnchorRect); двусторонний клик (клик по тексту → активная
@@ -28,7 +28,7 @@ import { useAnchorRanges } from "./use-anchor-ranges";
 import { useSelectionCapture } from "./use-selection-capture";
 import { useTextClick } from "./use-text-click";
 
-export interface AnnotationLayerProps {
+export interface MarginAnchorLayerProps {
   astRootRef: RefObject<HTMLElement | null>;
   notes: AnchoredNote[];
   renderNote: (note: AnchoredNote, orphan: boolean) => ReactNode;
@@ -36,6 +36,9 @@ export interface AnnotationLayerProps {
   canCreate: boolean;
   onCreateRequest: (draft: AnchorDraft) => void;
   affordanceLabel: string;
+  // Канал CSS Custom Highlight API (HighlightController). Доменно-агностичный:
+  // аннотации не передают → дефолт "annotation". Иные потребители задают свой.
+  highlightName?: string;
 }
 
 // Поведение скролла под осью motion. ЗЕРКАЛО `reducedNow` из view-transition.ts:
@@ -57,7 +60,7 @@ function scrollBehavior(): ScrollBehavior {
 // Компенсация sticky-хедера при скролле к фрагменту (ср. --layout-sticky-top).
 const ACTIVATE_SCROLL_OFFSET_PX = 100;
 
-export function AnnotationLayer(props: AnnotationLayerProps) {
+export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   const {
     astRootRef,
     notes,
@@ -69,7 +72,7 @@ export function AnnotationLayer(props: AnnotationLayerProps) {
   } = props;
 
   const controllerRef = useRef<HighlightController | null>(null);
-  controllerRef.current ??= new HighlightController();
+  controllerRef.current ??= new HighlightController(props.highlightName ?? "annotation");
   const controller = controllerRef.current;
 
   // Геометрия движка (Range/ready/пересчёт/getAnchorRect) — вынесена в общий хук,
