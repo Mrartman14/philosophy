@@ -31,7 +31,7 @@ describe("BlockRenderer наблюдаемость", () => {
   });
 });
 
-// DOM-контракт движка маргиналий (annotation-layer): block-блоки несут
+// DOM-контракт движка маргиналий (anchor-engine): block-блоки несут
 // data-block-id={block.id} как scope-хинт для anchor-to-range/anchor-from-selection
 // (querySelector('[data-block-id]') внутри AST-рута). НЕ несут: table, image и
 // вложенные ast.Node (list_item, строки/ячейки) — у них нет id; текст внутри

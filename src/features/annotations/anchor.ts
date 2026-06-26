@@ -11,28 +11,14 @@ import type { Anchor } from "./types";
  * бек (422 ANCHOR_INVALID).
  */
 
-interface TextAnchorInput {
-  startBlockId: string;
-  endBlockId: string;
-  startChar: number;
-  endChar: number;
-  exact: string;
-  prefix?: string;
-  suffix?: string;
-}
-
-/** Строит text-range якорь (document / glossary / comment). */
-export function buildTextAnchor(input: TextAnchorInput): Anchor {
-  const anchor: Anchor = {
-    start_block_id: input.startBlockId,
-    end_block_id: input.endBlockId,
-    start_char: input.startChar,
-    end_char: input.endChar,
-    exact: input.exact,
-  };
-  if (input.prefix) anchor.prefix = input.prefix;
-  if (input.suffix) anchor.suffix = input.suffix;
-  return anchor;
+/**
+ * Строит text-range якорь (document / glossary / comment) из движкового
+ * `TextAnchor`. Делегирует общему `@/utils/text-anchor` — ЕДИНЫЙ источник правила
+ * опускания пустых prefix/suffix (тот же, что `fromEngineAnchor`); координатный
+ * объект уже валиден как `annotation.Anchor` (target-полей у аннотации нет).
+ */
+export function buildTextAnchor(a: TextAnchor): Anchor {
+  return engineAnchorToCoords(a);
 }
 
 /** Строит media-interval якорь (media). endSec опционален (точечный якорь). */
