@@ -48,6 +48,7 @@ export function initEditorState(data: CanvasData): EditorState {
     viewport: { ...DEFAULT_VIEWPORT },
     past: [],
     future: [],
+    coalesceKey: null,
     baseline: cloneData(normalized),
     dirty: false,
     tool: "select",
@@ -59,15 +60,29 @@ export function initEditorState(data: CanvasData): EditorState {
  * future, ставит новый data, пересчитывает dirty относительно baseline.
  * `nextData` — уже изменённый граф. `selection` — опц. новое выделение.
  */
-function commit(state: EditorState, nextData: CanvasData, selection?: EditorState["selection"]): EditorState {
-  const past = [...state.past, cloneData(state.data)];
-  if (past.length > UNDO_LIMIT) past.shift();
+function commit(
+  state: EditorState,
+  nextData: CanvasData,
+  selection?: EditorState["selection"],
+  coalesce?: string,
+): EditorState {
+  // Коалесцирование undo: непрерывный жест (drag-resize/move) шлёт команду на
+  // каждый pointermove. Если ключ совпал с прошлым коммитом — НЕ пушим новую
+  // запись (снапшот «до жеста» уже в past), только обновляем present. Жест рвут
+  // sealHistory (на pointerup) и любая не-коалесцируемая команда (coalesce=undefined).
+  const coalescing = coalesce != null && coalesce === state.coalesceKey;
+  let past = state.past;
+  if (!coalescing) {
+    past = [...state.past, cloneData(state.data)];
+    if (past.length > UNDO_LIMIT) past.shift();
+  }
   return {
     ...state,
     data: nextData,
     past,
     future: [],
     dirty: !dataEquals(nextData, state.baseline),
+    coalesceKey: coalesce ?? null,
     ...(selection ? { selection } : {}),
   };
 }
@@ -160,7 +175,7 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
       const nodes = (state.data.nodes ?? []).map((n) =>
         n.id && ids.has(n.id) ? { ...n, x: (n.x ?? 0) + dx, y: (n.y ?? 0) + dy } : n,
       );
-      return commit(state, { ...state.data, nodes });
+      return commit(state, { ...state.data, nodes }, undefined, command.coalesce);
     }
     case "resizeNode": {
       const nodes = (state.data.nodes ?? []).map((n) => {
@@ -170,7 +185,7 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
         const r = applyResize(render, command.handle, command.dx, command.dy);
         return { ...n, x: Math.round(r.x), y: Math.round(r.y), width: Math.round(r.width), height: Math.round(r.height) };
       });
-      return commit(state, { ...state.data, nodes });
+      return commit(state, { ...state.data, nodes }, undefined, "resize:" + command.nodeId);
     }
     case "setNodeSize": {
       const nodes = (state.data.nodes ?? []).map((n) =>
@@ -267,6 +282,7 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
         future: [cloneData(state.data), ...state.future],
         dirty: !dataEquals(previous, state.baseline),
         selection: { nodeIds: [], edgeIds: [] },
+        coalesceKey: null,
       };
     }
     case "redo": {
@@ -280,10 +296,14 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
         future: state.future.slice(1),
         dirty: !dataEquals(next, state.baseline),
         selection: { nodeIds: [], edgeIds: [] },
+        coalesceKey: null,
       };
     }
 
     // ---------------- meta ----------------
+    case "sealHistory":
+      // «Запечатать» жест — следующий drag станет отдельной записью undo.
+      return state.coalesceKey === null ? state : { ...state, coalesceKey: null };
     case "reset": {
       // Откат несохранённых изменений к baseline (последнему сохранённому графу).
       // Undoable: текущий граф уходит в past через commit, future чистится,

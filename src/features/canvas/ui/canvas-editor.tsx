@@ -280,7 +280,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         break;
       }
       case "move": {
-        dispatch({ type: "moveSelection", dx: world.x - drag.lastWorld.x, dy: world.y - drag.lastWorld.y });
+        dispatch({ type: "moveSelection", dx: world.x - drag.lastWorld.x, dy: world.y - drag.lastWorld.y, coalesce: "move" });
         drag.lastWorld = world;
         break;
       }
@@ -308,6 +308,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     const drag = dragRef.current;
     dragRef.current = null;
     if (!drag) return;
+    // конец drag-жеста resize/move → запечатать коалесцирование (следующий жест =
+    // отдельная запись undo). Pan/marquee/edge историю не копят.
+    if (drag.kind === "move" || drag.kind === "resize") dispatch({ type: "sealHistory" });
     if (drag.kind === "marquee") {
       const world = eventWorld(e);
       const rect = { x: Math.min(drag.startWorld.x, world.x), y: Math.min(drag.startWorld.y, world.y), width: Math.abs(world.x - drag.startWorld.x), height: Math.abs(world.y - drag.startWorld.y) };

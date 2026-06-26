@@ -151,6 +151,40 @@ describe("move / resize", () => {
   });
 });
 
+describe("коалесцирование undo (склейка жеста)", () => {
+  it("resizeNode подряд → одна запись undo, undo откатывает весь жест", () => {
+    let s = initEditorState(baseData);
+    const w0 = s.data.nodes?.[1]?.width;
+    s = canvasReducer(s, { type: "resizeNode", nodeId: "n2", handle: "se", dx: 10, dy: 0 });
+    expect(s.past).toHaveLength(1);
+    s = canvasReducer(s, { type: "resizeNode", nodeId: "n2", handle: "se", dx: 10, dy: 0 });
+    s = canvasReducer(s, { type: "resizeNode", nodeId: "n2", handle: "se", dx: 10, dy: 0 });
+    expect(s.past).toHaveLength(1); // три коммита — одна запись истории
+    expect(s.data.nodes?.[1]?.width).toBe(110); // 80 + 30
+    s = canvasReducer(s, { type: "undo" });
+    expect(s.data.nodes?.[1]?.width).toBe(w0); // откат на «до жеста»
+  });
+  it("sealHistory разрывает жест — следующий resize отдельной записью", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "resizeNode", nodeId: "n2", handle: "se", dx: 10, dy: 0 });
+    s = canvasReducer(s, { type: "resizeNode", nodeId: "n2", handle: "se", dx: 10, dy: 0 });
+    expect(s.past).toHaveLength(1);
+    s = canvasReducer(s, { type: "sealHistory" });
+    s = canvasReducer(s, { type: "resizeNode", nodeId: "n2", handle: "se", dx: 10, dy: 0 });
+    expect(s.past).toHaveLength(2);
+  });
+  it("moveSelection: coalesce склеивает drag, без ключа (нудж) — отдельные записи", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "selectNode", nodeId: "n1", additive: false });
+    s = canvasReducer(s, { type: "moveSelection", dx: 5, dy: 0, coalesce: "move" });
+    s = canvasReducer(s, { type: "moveSelection", dx: 5, dy: 0, coalesce: "move" });
+    expect(s.past).toHaveLength(1);
+    s = canvasReducer(s, { type: "moveSelection", dx: 1, dy: 0 });
+    s = canvasReducer(s, { type: "moveSelection", dx: 1, dy: 0 });
+    expect(s.past).toHaveLength(3);
+  });
+});
+
 describe("z-order (bringToFront / sendToBack)", () => {
   function fourNodeState() {
     const data = {

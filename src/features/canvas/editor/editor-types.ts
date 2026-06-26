@@ -49,6 +49,9 @@ export interface EditorState {
   viewport: Viewport;
   past: CanvasData[];
   future: CanvasData[];
+  /** Транзиентный ключ коалесцирования undo (склейка непрерывного жеста в одну
+   *  запись истории). НЕ часть графа. */
+  coalesceKey: string | null;
   baseline: CanvasData;
   dirty: boolean;
   /** Активный инструмент (UI-состояние, НЕ в undo). */
@@ -80,7 +83,7 @@ export type EditorCommand =
   | { type: "addTextNode"; x: number; y: number; id?: string }
   | { type: "addShapeNode"; shapeKind: "rect" | "ellipse" | "diamond"; x: number; y: number }
   | { type: "addEntityRefNode"; entityType: CanvasRefEntityType; entityId: string; x: number; y: number }
-  | { type: "moveSelection"; dx: number; dy: number }
+  | { type: "moveSelection"; dx: number; dy: number; coalesce?: string }
   | { type: "resizeNode"; nodeId: string; handle: ResizeHandle; dx: number; dy: number }
   | { type: "setNodeText"; nodeId: string; text: string }
   | { type: "setShapeKind"; nodeId: string; shapeKind: "rect" | "ellipse" | "diamond" }
@@ -100,5 +103,8 @@ export type EditorCommand =
   // --- history / meta ---
   | { type: "undo" }
   | { type: "redo" }
+  // sealHistory — «запечатать» жест: сбросить coalesce-ключ, чтобы следующий
+  // drag стал отдельной записью undo (редактор шлёт на pointerup).
+  | { type: "sealHistory" }
   | { type: "reset" }
   | { type: "markSaved"; data: CanvasData };
