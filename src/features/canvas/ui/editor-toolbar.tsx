@@ -2,7 +2,6 @@
 // src/features/canvas/ui/editor-toolbar.tsx
 import type { ReactNode } from "react";
 
-import { BracesIcon } from "@/assets/icons/braces-icon";
 import { CursorIcon } from "@/assets/icons/cursor-icon";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HandIcon } from "@/assets/icons/hand-icon";
@@ -15,7 +14,7 @@ import { ShapeRectIcon } from "@/assets/icons/shape-rect-icon";
 import { TextIcon } from "@/assets/icons/text-icon";
 import { TrashIcon } from "@/assets/icons/trash-icon";
 import { UndoIcon } from "@/assets/icons/undo-icon";
-import { Button, IconButton, type IconButtonTone, Tooltip } from "@/components/ui";
+import { IconButton, type IconButtonTone, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { CanvasTool, EditorCommand } from "../editor";
@@ -30,27 +29,17 @@ interface Props {
   canUndo: boolean;
   canRedo: boolean;
   dirty: boolean;
-  saving: boolean;
-  showJson: boolean;
   hasSelection: boolean;
   onAddText: () => void;
   onAddShape: (kind: "rect" | "ellipse" | "diamond") => void;
   onAddEntityRef: () => void;
-  onSave: () => void;
-  onToggleJson: () => void;
   /** Раскладка. По умолчанию горизонтальная полоса; vertical — столбец в поле. */
   orientation?: Orientation;
-  /** Экспорт графа в SVG/PNG. Если не переданы — кнопки экспорта скрыты (напр. в JSON-режиме). */
+  /** Экспорт графа в SVG/PNG. Если не переданы — кнопки экспорта скрыты. */
   onExportSvg?: (() => void) | undefined;
   onExportPng?: (() => void) | undefined;
   /** Есть что экспортировать (граф непустой). */
   canExport?: boolean | undefined;
-  /** Текст save-кнопки. По умолчанию `toolbar.save`; в create-режиме — `toolbar.create`. */
-  saveLabel?: string | undefined;
-  /** Явный override disabled save-кнопки. По умолчанию `saving || !dirty`. */
-  saveDisabled?: boolean | undefined;
-  /** Скрыть тогл JSON (raw-JSON форма — только update). */
-  hideJsonToggle?: boolean | undefined;
 }
 
 /** Разделитель между группами. vertical: ниже xl — вертикальная чёрточка (полоса),
@@ -101,11 +90,12 @@ function TbButton({ label, onClick, children, tone = "neutral", disabled, presse
   );
 }
 
-/** Тулбар редактора: создание узлов, удаление, история, сохранение. */
+/** Тулбар редактора: инструменты, создание узлов, удаление, история, экспорт.
+ *  Save и приватность живут в панели-шапке редактора, не здесь. */
 export function EditorToolbar({
-  dispatch, tool, canUndo, canRedo, dirty, saving, showJson, hasSelection,
-  onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson,
-  orientation = "horizontal", saveLabel, saveDisabled, hideJsonToggle,
+  dispatch, tool, canUndo, canRedo, dirty, hasSelection,
+  onAddText, onAddShape, onAddEntityRef,
+  orientation = "horizontal",
   onExportSvg, onExportPng, canExport,
 }: Props) {
   const t = useT("canvas");
@@ -114,19 +104,10 @@ export function EditorToolbar({
 
   // vertical = адаптивный: ниже xl поле схлопнуто → тулбар горизонтальной полосой
   // над холстом; на xl+ → сетка 2×N иконок в левом поле, прижатая к холсту (ms-auto),
-  // разделители и Save — на всю ширину обеих колонок.
+  // разделители — на всю ширину обеих колонок.
   const containerClass = vertical
     ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 xl:ms-auto xl:grid xl:w-fit xl:grid-cols-2 xl:items-start xl:justify-items-center xl:border-b-0"
     : "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2";
-
-  const saveCluster = (
-    <Button type="button" compact tone="primary" disabled={saveDisabled ?? (saving || !dirty)} onClick={onSave}>
-      {saving ? t("toolbar.saving") : (saveLabel ?? t("toolbar.save"))}
-    </Button>
-  );
-  const unsaved = dirty
-    ? <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>
-    : null;
 
   return (
     <Tooltip.Provider delay={400}>
@@ -183,19 +164,6 @@ export function EditorToolbar({
           <ResetIcon />
         </TbButton>
 
-        {!hideJsonToggle && (
-          <>
-            <Sep vertical={vertical} />
-            <TbButton
-              label={showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")} tipSide={tip}
-              pressed={showJson} tone={showJson ? "primary" : "neutral"}
-              onClick={onToggleJson}
-            >
-              <BracesIcon />
-            </TbButton>
-          </>
-        )}
-
         {onExportSvg && (
           <>
             <Sep vertical={vertical} />
@@ -210,14 +178,6 @@ export function EditorToolbar({
           </>
         )}
 
-        {/* Save-кластер отжат вправо (ms-auto). В vertical на xl+ переезжает вниз
-            столбцом: индикатор «не сохранено» над кнопкой. */}
-        <span className={vertical
-          ? "ms-auto flex items-center gap-2 xl:col-span-2 xl:ms-0 xl:mt-2 xl:w-full xl:flex-col xl:items-start"
-          : "ms-auto flex items-center gap-2"}>
-          {unsaved}
-          {saveCluster}
-        </span>
       </div>
     </Tooltip.Provider>
   );

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 import { sidePoint, type Point, type RenderNode, type Side } from "@/components/canvas-render";
-import { ContextMenu, FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
+import { Button, ContextMenu, FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -20,7 +20,6 @@ import type { Scene } from "../engine";
 import { makeEntityRefResolver } from "../entity-ref";
 import type { Canvas, CanvasRefEntityType, Visibility } from "../types";
 
-import { CanvasEditForm } from "./canvas-edit-form";
 import { EditorInspector } from "./editor-inspector";
 import { EditorTextOverlay } from "./editor-text-overlay";
 import { EditorToolbar } from "./editor-toolbar";
@@ -68,7 +67,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const [state, rawDispatch] = useReducer(canvasReducer, canvas?.data ?? { nodes: [], edges: [] }, initEditorState);
   const dispatch = useCallback((c: EditorCommand) => { rawDispatch(c); }, []);
 
-  // create-режим: title + visibility вводятся в шапке (в edit правятся через JSON-форму).
+  // title + visibility — в панели-шапке (оба режима); в edit visibility только показ.
   const [title, setTitle] = useState(canvas?.title ?? "");
   const [visibility, setVisibility] = useState<Visibility>(canvas?.visibility ?? "private");
 
@@ -84,7 +83,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // непустым текстом: если останется пустым (Enter/blur/Esc) — узел удаляем.
   const [newNodeId, setNewNodeId] = useState<string | null>(null);
   const [refDialogOpen, setRefDialogOpen] = useState(false);
-  const [showJson, setShowJson] = useState(false);
   const [saving, setSaving] = useState(false);
   const [invalidNodeId, setInvalidNodeId] = useState<string | undefined>(undefined);
   const [size, setSize] = useState({ width: 800, height: 600 });
@@ -96,10 +94,15 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // замыкания рендера — поэтому их НЕ оборачивать в useCallback (stale closure).
   const [spaceHeld, setSpaceHeld] = useState(false);
 
+  // «Грязно»: правки графа ИЛИ переименование (edit). Единый источник для
+  // beforeunload-гарда, индикатора «не сохранено» в панели и доступности Save.
+  const titleChanged = !isCreate && title.trim() !== (canvas?.title ?? "");
+  const isDirty = state.dirty || titleChanged;
+
   // dirty-guard: beforeunload при несохранённых изменениях
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
-      if (state.dirty) {
+      if (isDirty) {
         e.preventDefault();
         // eslint-disable-next-line @typescript-eslint/no-deprecated -- TODO(foundation/eslint-strict): e.returnValue kept for Chrome <119 compat; remove when baseline supports only e.preventDefault()
         e.returnValue = "";
@@ -107,16 +110,11 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     };
     window.addEventListener("beforeunload", handler);
     return () => { window.removeEventListener("beforeunload", handler); };
-  }, [state.dirty]);
+  }, [isDirty]);
 
   // измеряем контейнер поверхности → size для painter.Surface (он считает viewBox).
-  // ЗАВИСИМОСТЬ [showJson] критична: при переключении в JSON-режим (ранний return
-  // ниже) surface-div АНМАУНТИТСЯ, при возврате — МАУНТИТСЯ заново (новый узел).
-  // С пустыми deps наблюдатель остался бы на старом (удалённом) div, новый никто
-  // не мерит → size застывает на 0 (Chromium шлёт 0×0 при дисконнекте элемента) →
-  // viewBox "x y 0 0" → SVG не рендерится (нулевой viewBox по спеке отключает
-  // отрисовку), хотя курсор меняется (hit-test идёт по world-координатам). Гард
-  // ширина/высота>0 не даёт переходному 0 при тиردауне отравить size.
+  // Гард ширина/высота>0 защищает от переходного 0: нулевой viewBox по спеке
+  // отключил бы отрисовку SVG. Поверхность не пересоздаётся → пустых deps хватает.
   useEffect(() => {
     const el = surfaceRef.current;
     if (!el) return;
@@ -126,7 +124,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     });
     ro.observe(el);
     return () => { ro.disconnect(); };
-  }, [showJson]);
+  }, []);
 
   const renderData = useMemo(() => canvasDataToRenderData(state.data), [state.data]);
   const resolveEntityRef = useMemo(() => makeEntityRefResolver(t), [t]);
@@ -332,16 +330,14 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       }
     };
   });
-  // [showJson]: тот же remount-инвариант, что и у ResizeObserver — surface-div при
-  // JSON-тогле пересоздаётся, без переподписки колесо (зум/пан) повисло бы на старом
-  // удалённом узле, а новый остался бы без нативного non-passive listener'а.
+  // Нативный non-passive wheel-listener (React onWheel пассивный).
   useEffect(() => {
     const el = surfaceRef.current;
     if (!el) return;
     const h = (e: WheelEvent) => { onWheelRef.current?.(e); };
     el.addEventListener("wheel", h, { passive: false });
     return () => { el.removeEventListener("wheel", h); };
-  }, [showJson]);
+  }, []);
 
   // Выделены ли узлы. Один источник истины для: z-order хоткеев, nudge-гарда и
   // disabled пунктов контекстного меню (НЕ путать с toolbar.hasSelection = node+edge).
@@ -515,10 +511,14 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   /** edit: PUT существующего канваса (If-Match по etag). */
   const onUpdate = async () => {
     if (!validateBeforeSave()) return;
+    if (title.trim() === "") {
+      toast.add({ title: t("editor.titleRequired") });
+      return;
+    }
     setSaving(true);
     const fd = new FormData();
     fd.set("id", canvas?.id ?? "");
-    fd.set("title", canvas?.title ?? "");
+    fd.set("title", title.trim());
     fd.set("data", JSON.stringify(state.data));
     fd.set("etag", etag ?? "");
     const result = await updateCanvas(INITIAL_SAVE_STATE, fd);
@@ -563,26 +563,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // Отдельный useState под активный drag-kind — follow-up (brief, Step 7).
   const canvasCursor = (state.tool === "hand" || spaceHeld) ? "grab" : "default";
 
-  // create: сейв активен при непустом title (граф может быть пустым — бек допускает).
-  const saveDisabled = saving || (isCreate ? title.trim() === "" : !state.dirty);
+  // Сейв активен при непустом title; в edit ещё нужна «грязнота» (граф или title).
+  const saveDisabled = saving || (isCreate ? title.trim() === "" : !isDirty);
   const saveLabel = isCreate ? t("toolbar.create") : undefined;
-
-  // raw-JSON форма — только update (PUT с id/etag), поэтому в create недоступна.
-  if (showJson && canvas) {
-    return (
-      <div className="flex flex-col gap-3">
-        <EditorToolbar
-          dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
-          dirty={state.dirty} saving={saving} showJson={showJson}
-          hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
-          onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-          onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(false); }}
-          saveLabel={saveLabel} saveDisabled={saveDisabled}
-        />
-        <CanvasEditForm canvas={canvas} etag={etag} />
-      </div>
-    );
-  }
 
   return (
     // Фрагмент — прямые потомки .page-grid (страница рендерит CanvasEditor без
@@ -593,34 +576,40 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     <MarginNote side="start" className="p-2 xl:pe-0 xl:self-start xl:sticky xl:top-(--layout-sticky-top)">
       <EditorToolbar
         dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
-        dirty={state.dirty} saving={saving} showJson={showJson} orientation="vertical"
+        dirty={state.dirty} orientation="vertical"
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-        onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(true); }}
-        saveLabel={saveLabel} saveDisabled={saveDisabled} hideJsonToggle={isCreate}
         onExportSvg={onExportSvg} onExportPng={onExportPng} canExport={renderData.nodes.length > 0}
       />
     </MarginNote>
-    <div className="flex flex-col">
-      {isCreate && (
-        <div className="flex flex-wrap items-end gap-4 border-b border-(--color-border) p-3">
-          <FormField name="title" label={t("createForm.titleLabel")} required className="min-w-64 flex-1">
-            <TextInput value={title} onChange={(e) => { setTitle(e.target.value); }} />
-          </FormField>
-          <FormField name="visibility" label={t("createForm.visibilityLabel")} className="w-48">
-            <Select
-              value={visibility}
-              onValueChange={(v) => { setVisibility(v === "public" ? "public" : "private"); }}
-              options={[
-                { value: "private", label: t("createForm.visibilityPrivate") },
-                { value: "public", label: t("createForm.visibilityPublic") },
-              ]}
-            />
-          </FormField>
+    <div className="flex flex-col" style={{ height: "calc(100vh - var(--header-height))" }}>
+      {/* Панель шапки — единая для создания и редактирования (внешняя идентичность):
+          имя + уровень приватности (в edit здесь не меняется → disabled), справа
+          Save и индикатор несохранённых изменений (только edit). */}
+      <div className="flex flex-wrap items-end gap-4 border-b border-(--color-border) p-3">
+        <FormField name="title" label={t("createForm.titleLabel")} required className="min-w-64 flex-1">
+          <TextInput value={title} onChange={(e) => { setTitle(e.target.value); }} />
+        </FormField>
+        <FormField name="visibility" label={t("createForm.visibilityLabel")} className="w-48">
+          <Select
+            value={visibility}
+            disabled={!isCreate}
+            onValueChange={(v) => { setVisibility(v === "public" ? "public" : "private"); }}
+            options={[
+              { value: "private", label: t("createForm.visibilityPrivate") },
+              { value: "public", label: t("createForm.visibilityPublic") },
+            ]}
+          />
+        </FormField>
+        <div className="ms-auto flex items-center gap-2">
+          {!isCreate && isDirty && <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>}
+          <Button type="button" tone="primary" disabled={saveDisabled} onClick={() => { void onSave(); }}>
+            {saving ? t("toolbar.saving") : (saveLabel ?? t("toolbar.save"))}
+          </Button>
         </div>
-      )}
+      </div>
 
-      <div className="flex">
+      <div className="flex flex-1 min-h-0">
         {/* холст */}
         {/*
           role="application" — корректная WAI-ARIA роль для самодостаточного
@@ -651,8 +640,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
                 ref={surfaceRef}
                 role="application"
                 aria-label={t("editor.ariaLabel")}
-                className="relative flex-1 select-none"
-                style={{ height: "calc(100vh - var(--header-height))", cursor: canvasCursor, touchAction: "none" }}
+                className="relative h-full flex-1 select-none"
+                style={{ cursor: canvasCursor, touchAction: "none" }}
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={0}
                 onKeyDown={onKeyDown}
