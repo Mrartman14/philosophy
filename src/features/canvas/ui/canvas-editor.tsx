@@ -181,6 +181,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   /** Единый pointerdown по поверхности: JS hit-test решает жест. */
   const onSurfacePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Накопительное выделение: Shift ИЛИ Cmd/Ctrl добавляют к выделению (Cmd на mac,
+    // Ctrl на Win/Linux). Резолверы жестов shift игнорируют — на пан это не влияет.
+    const additive = e.shiftKey || e.metaKey || e.ctrlKey;
     const world = eventWorld(e);
     const hit = hitTest(world, {
       nodes: renderData.nodes,
@@ -204,8 +207,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         });
         if (gesture === "pan") { startPan(e); return; }
         if (!selectedNodeIds.has(hit.nodeId)) {
-          dispatch({ type: "selectNode", nodeId: hit.nodeId, additive: e.shiftKey });
-        } else if (e.shiftKey) {
+          dispatch({ type: "selectNode", nodeId: hit.nodeId, additive });
+        } else if (additive) {
           dispatch({ type: "selectNode", nodeId: hit.nodeId, additive: true });
         }
         dragRef.current = { kind: "move", lastWorld: world };
@@ -213,15 +216,15 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         return;
       }
       case "edge":
-        dispatch({ type: "selectEdge", edgeId: hit.edgeId, additive: e.shiftKey });
+        dispatch({ type: "selectEdge", edgeId: hit.edgeId, additive });
         return;
       case "background": {
         const gesture = resolveBackgroundGesture({
           tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
         });
         if (gesture === "marquee") {
-          if (!e.shiftKey) dispatch({ type: "clearSelection" });
-          dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive: e.shiftKey };
+          if (!additive) dispatch({ type: "clearSelection" });
+          dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive };
           capture();
         } else {
           dispatch({ type: "clearSelection" });
