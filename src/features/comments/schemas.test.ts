@@ -66,6 +66,22 @@ describe("CommentCreateSchema", () => {
     });
     expect(r.success).toBe(false);
   });
+  it("парсит anchor JSON в объект и кладёт в выход", () => {
+    const r = CommentCreateSchema.parse({
+      type: "claim",
+      blocks: blocksJson,
+      anchor: JSON.stringify({
+        target_entity_type: "document",
+        target_entity_id: "d1",
+        start_block_id: "b1",
+      }),
+    });
+    expect(r.anchor).toMatchObject({ target_entity_id: "d1" });
+  });
+  it("без anchor — поле отсутствует в выходе", () => {
+    const r = CommentCreateSchema.parse({ type: "claim", blocks: blocksJson });
+    expect("anchor" in r).toBe(false);
+  });
 });
 
 describe("CommentBlocksUpdateSchema", () => {

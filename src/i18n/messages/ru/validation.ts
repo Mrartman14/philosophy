@@ -70,6 +70,8 @@ const validation = {
     blocksInvalidJson: "Битый JSON в теле",
     blocksNotArray: "Комментарий не может быть пустым",
     blocksEmpty: "Комментарий не может быть пустым",
+    anchorNotObject: "Якорь должен быть объектом",
+    anchorInvalidJson: "Битый JSON в якоре",
   },
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---

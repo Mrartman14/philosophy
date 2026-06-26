@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { COMMENT_TYPES, REACTION_AXES as AXES } from "@/api/enums";
 import type { NamespaceT } from "@/i18n";
+import { anchorJsonField } from "@/utils/anchor-json";
 import { blocksJsonField } from "@/utils/blocks-json";
 
 /**
@@ -33,11 +34,18 @@ export function makeCommentCreateSchema(t: NamespaceT<"validation">) {
       blocks: makeBlocksJsonSchema(t),
       // parent_id есть только в форме ответа; в корневой форме отсутствует.
       parent_id: z.uuid(t("comments.invalidParentId")).optional(),
+      // anchor: hidden-input формы несёт JSON-строку якоря (или отсутствует
+      // в незаякоренной форме). Структуру под сущность валидирует бек.
+      anchor: anchorJsonField({
+        notObject: t("comments.anchorNotObject"),
+        invalidJson: t("comments.anchorInvalidJson"),
+      }),
     })
     .transform((raw) => ({
       type: raw.type,
       blocks: raw.blocks,
       ...(raw.parent_id ? { parent_id: raw.parent_id } : {}),
+      ...(raw.anchor !== undefined ? { anchor: raw.anchor } : {}),
     }));
 }
 

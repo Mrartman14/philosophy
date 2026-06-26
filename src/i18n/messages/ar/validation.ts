@@ -67,6 +67,8 @@ const validation = {
     blocksInvalidJson: "JSON تالف في المحتوى",
     blocksNotArray: "لا يمكن أن يكون التعليق فارغًا",
     blocksEmpty: "لا يمكن أن يكون التعليق فارغًا",
+    anchorNotObject: "يجب أن يكون المرساة كائنًا",
+    anchorInvalidJson: "JSON تالف في المرساة",
   },
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---

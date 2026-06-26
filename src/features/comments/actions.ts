@@ -28,7 +28,7 @@ import {
   makeCommentBlocksUpdateSchema,
   makeCommentCreateSchema,
 } from "./schemas";
-import type { ReactionAxis } from "./types";
+import type { Anchor, ReactionAxis } from "./types";
 
 /** Доменные коды бека → ключи каталога errors (i18n-канал). role-403/SUSPENDED/BANNED
  * и дефолтный REF_NOT_FOUND обрабатывает централизованный rethrowApiError.
@@ -76,6 +76,10 @@ export const createComment = createFormAction(async (formData, ctx) => {
       type: input.type,
       blocks: input.blocks,
       ...(input.parent_id ? { parent_id: input.parent_id } : {}),
+      // anchor приходит из формы как распарсенный объект; бек валидирует
+      // (422 ANCHOR_*). Каст на границе form-JSON → типизированное тело —
+      // тот же паттерн, что у аннотаций (createAnnotation).
+      ...(input.anchor !== undefined ? { anchor: input.anchor as Anchor } : {}),
     },
     headers: idempotencyHeaders(ctx.idempotencyKey),
   });

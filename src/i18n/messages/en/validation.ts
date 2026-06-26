@@ -67,6 +67,8 @@ const validation = {
     blocksInvalidJson: "Invalid JSON in body",
     blocksNotArray: "Comment cannot be empty",
     blocksEmpty: "Comment cannot be empty",
+    anchorNotObject: "Anchor must be an object",
+    anchorInvalidJson: "Invalid JSON in anchor",
   },
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---

@@ -67,6 +67,8 @@ const validation = {
     blocksInvalidJson: "正文中的 JSON 无效",
     blocksNotArray: "评论不能为空",
     blocksEmpty: "评论不能为空",
+    anchorNotObject: "锚点必须是对象",
+    anchorInvalidJson: "锚点中的 JSON 无效",
   },
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
