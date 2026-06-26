@@ -16,7 +16,7 @@ interface BranchProps {
 function Branch({ node, childrenMap, lectureId, schema }: BranchProps) {
   const kids = childrenMap.get(node.id) ?? [];
   return (
-    <li className="flex flex-col gap-2">
+    <li id={`comment-${node.id}`} className="flex flex-col gap-2">
       <CommentNode comment={node} lectureId={lectureId} schema={schema} />
       {kids.length > 0 && (
         <ul className="ms-4 flex flex-col gap-2 border-s border-(--color-border) ps-3">
