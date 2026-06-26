@@ -8,7 +8,6 @@
 // геометрии при resize / загрузке шрифтов / смене нот.
 import {
   useCallback,
-  useEffect,
   useRef,
   useState,
   type ReactNode,
@@ -21,12 +20,13 @@ import { isReducedMotion } from "@/utils/is-reduced-motion";
 import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
-import { noteAtPoint } from "./hit-test";
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
 import { SelectionAffordance } from "./selection-affordance";
 import type { AnchorDraft, AnchoredNote } from "./types";
+import { useAnchorHighlights } from "./use-anchor-highlights";
 import { useAnchorRanges } from "./use-anchor-ranges";
 import { useSelectionCapture } from "./use-selection-capture";
+import { useTextClick } from "./use-text-click";
 
 export interface AnnotationLayerProps {
   astRootRef: RefObject<HTMLElement | null>;
@@ -79,40 +79,26 @@ export function AnnotationLayer(props: AnnotationLayerProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // Подсветка (основной путь — CSS Custom Highlight API). Оверлей-фолбэк — ниже
-  // через controller.supported.
-  useEffect(() => {
-    if (!highlightEnabled) {
-      controller.clear();
-      return;
-    }
-    const valid = [...ranges.values()].filter((r): r is Range => r !== null);
-    controller.apply(valid);
-    controller.setActive(activeId ? (ranges.get(activeId) ?? null) : null);
-    return () => {
-      controller.clear();
-    };
-  }, [ranges, highlightEnabled, activeId, controller]);
+  // через controller.supported. Eager-политика: держим подсветку ВСЕХ нот
+  // (persistentIds = все id), activeId — отдельный канал.
+  const allIds = notes.map((n) => n.id);
+  useAnchorHighlights({
+    controller,
+    ranges,
+    persistentIds: allIds,
+    activeId,
+    enabled: highlightEnabled,
+  });
 
   // Двусторонний клик (текст → карточка): клик в AST-руте → note под caret →
   // активировать + скролл к карточке.
-  useEffect(() => {
-    const root = astRootRef.current;
-    if (!root) return;
-    const onClick = (e: MouseEvent) => {
-      const id = noteAtPoint(e.clientX, e.clientY, notes, root);
-      if (id) {
-        setActiveId(id);
-        document
-          .querySelector(`[data-note-card="${cssEscape(id)}"]`)
-          ?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
-      }
-    };
-    root.addEventListener("click", onClick);
-    return () => {
-      root.removeEventListener("click", onClick);
-    };
-    // ready в deps: переподписка после готовности рута (root меняется null→element).
-  }, [notes, astRootRef, ready]);
+  const pickFromText = useCallback((id: string) => {
+    setActiveId(id);
+    document
+      .querySelector(`[data-note-card="${cssEscape(id)}"]`)
+      ?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
+  }, []);
+  useTextClick({ astRootRef, notes, ready, onPick: pickFromText });
 
   // Двусторонний клик (карточка → текст): активация карточки → скролл к фрагменту.
   const onActivate = useCallback(
