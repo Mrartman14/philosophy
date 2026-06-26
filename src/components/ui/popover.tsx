@@ -3,7 +3,7 @@
 import { Popover as BasePopover } from "@base-ui/react/popover";
 import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "react";
 
-import { cn } from "./cn";
+import { cn, OVERLAY_LAYER } from "./cn";
 
 /**
  * Compound-обёртка над Base UI Popover. Root/Trigger/Portal/Positioner — прямой
@@ -27,6 +27,15 @@ const Popup = forwardRef<
   );
 });
 
+// Positioner — позиционируемый fixed-элемент; несёт OVERLAY_LAYER (z-index над
+// sticky-хедером, см. cn.ts), иначе passthrough наследовал бы z:auto и прятался.
+const Positioner = forwardRef<
+  ComponentRef<typeof BasePopover.Positioner>,
+  ComponentPropsWithoutRef<typeof BasePopover.Positioner>
+>(function PopoverPositioner({ className, ...rest }, ref) {
+  return <BasePopover.Positioner ref={ref} className={cn(OVERLAY_LAYER, className as string)} {...rest} />;
+});
+
 const Arrow = forwardRef<
   ComponentRef<typeof BasePopover.Arrow>,
   ComponentPropsWithoutRef<typeof BasePopover.Arrow>
@@ -44,7 +53,7 @@ export const Popover = {
   Root: BasePopover.Root,
   Trigger: BasePopover.Trigger,
   Portal: BasePopover.Portal,
-  Positioner: BasePopover.Positioner,
+  Positioner,
   Popup,
   Arrow,
   Close: BasePopover.Close,

@@ -3,7 +3,7 @@
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import { type ReactElement, type ReactNode } from "react";
 
-import { cn } from "./cn";
+import { cn, OVERLAY_LAYER } from "./cn";
 
 export interface TooltipProps {
   /** Контент подсказки. Если пусто/нет — триггер рендерится без тултипа. */
@@ -34,13 +34,9 @@ function TooltipBase({ content, children, side = "top" }: TooltipProps): ReactEl
     <BaseTooltip.Root>
       <BaseTooltip.Trigger render={children} />
       <BaseTooltip.Portal>
-        {/* z-index на Positioner (это и есть позиционируемый fixed-элемент).
-            Портал монтируется в конец <body> — ПОСЛЕ sticky-хедера, который сидит
-            на литеральном z-50 (= слой `--z-toast`). На равном z-index порядок
-            рисовки решает DOM-порядок, поэтому портал ложится ПОВЕРХ хедера — тем
-            же механизмом, что и тостер (toaster.tsx, тоже z-50 над тем же хедером).
-            Без явного z-index Positioner наследовал бы auto(0) и прятался под хедер. */}
-        <BaseTooltip.Positioner side={side} sideOffset={6} className="z-[var(--z-toast)]">
+        {/* OVERLAY_LAYER — z-index на Positioner, чтобы оверлей был над sticky-
+            хедером (см. подробности в cn.ts). Без него Positioner = auto(0). */}
+        <BaseTooltip.Positioner side={side} sideOffset={6} className={OVERLAY_LAYER}>
           <BaseTooltip.Popup
             className={cn(
               "select-none rounded bg-(--color-fg) px-2 py-1 text-xs font-medium text-(--color-surface) shadow-md",

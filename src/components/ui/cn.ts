@@ -44,3 +44,22 @@ export const SHELL_BASE = "rounded border border-(--color-border) bg-(--color-su
  * (Toolbar.Button раньше нёс литерал `h-9`, мимо density-aware токенов).
  */
 export const CONTROL_BOX = "inline-flex items-center justify-center rounded transition";
+
+/**
+ * Слой портальных оверлеев (tooltip / menu / popover / context-menu / select /
+ * combobox; для Dialog — backdrop+popup). Единая точка истины: ставится на
+ * Positioner (это и есть позиционируемый fixed-элемент), у Dialog — прямо на
+ * backdrop и popup.
+ *
+ * ПОЧЕМУ именно `--z-toast` (=50), а не семантический `--z-overlay`(30): sticky
+ * AppHeader хардкодит литеральный верх `z-50` и схлопывает лестницу `--z-*`
+ * (sticky=20…toast=50 фактически не используется), поэтому всё ниже 50 пряталось
+ * бы ПОД хедером. Base UI монтирует портал в конец <body> — ПОСЛЕ хедера, и на
+ * равном z-index порядок рисовки решает DOM-порядок → оверлей ложится поверх.
+ * Тот же механизм уже работает у тостера (toaster.tsx, тоже z-50 над хедером).
+ *
+ * Корневой foundation-долг (отдельный согласованный PR, не здесь): хедер сидит на
+ * заморожённом `src/components/app/*` и должен бы переехать на `--z-sticky`(20),
+ * освободив верхние полосы под overlay/modal/toast по семантике.
+ */
+export const OVERLAY_LAYER = "z-[var(--z-toast)]";

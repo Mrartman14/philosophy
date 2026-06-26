@@ -8,8 +8,17 @@
 import { ContextMenu as BaseContextMenu } from "@base-ui/react/context-menu";
 import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "react";
 
-import { cn } from "./cn";
+import { cn, OVERLAY_LAYER } from "./cn";
 import { MENU_POPUP_CLASS, MENU_ITEM_CLASS } from "./menu";
+
+// Positioner несёт OVERLAY_LAYER (z-index над sticky-хедером, см. cn.ts), иначе
+// passthrough наследовал бы z:auto и меню пряталось бы под хедер.
+const Positioner = forwardRef<
+  ComponentRef<typeof BaseContextMenu.Positioner>,
+  ComponentPropsWithoutRef<typeof BaseContextMenu.Positioner>
+>(function ContextMenuPositioner({ className, ...rest }, ref) {
+  return <BaseContextMenu.Positioner ref={ref} className={cn(OVERLAY_LAYER, className as string)} {...rest} />;
+});
 
 const Popup = forwardRef<
   ComponentRef<typeof BaseContextMenu.Popup>,
@@ -36,7 +45,7 @@ export const ContextMenu = {
   Root: BaseContextMenu.Root,
   Trigger: BaseContextMenu.Trigger,
   Portal: BaseContextMenu.Portal,
-  Positioner: BaseContextMenu.Positioner,
+  Positioner,
   Popup,
   Item,
   Separator,

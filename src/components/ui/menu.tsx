@@ -7,7 +7,7 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "react";
 
-import { cn } from "./cn";
+import { cn, OVERLAY_LAYER } from "./cn";
 
 // Общие классы стиля поверхности/пункта меню — переиспользуются в context-menu.tsx
 // (ContextMenu.Popup/.Item оборачивают ТЕ ЖЕ Base UI menu-части), чтобы строки не
@@ -16,6 +16,15 @@ export const MENU_POPUP_CLASS =
   "min-w-44 rounded border border-(--color-border) bg-(--color-surface) p-1 shadow-lg outline-none";
 export const MENU_ITEM_CLASS =
   "flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-(--color-surface-subtle) data-[disabled]:opacity-50";
+
+// Positioner несёт OVERLAY_LAYER (z-index над sticky-хедером, см. cn.ts), иначе
+// passthrough наследовал бы z:auto и меню пряталось бы под хедер.
+const Positioner = forwardRef<
+  ComponentRef<typeof BaseMenu.Positioner>,
+  ComponentPropsWithoutRef<typeof BaseMenu.Positioner>
+>(function MenuPositioner({ className, ...rest }, ref) {
+  return <BaseMenu.Positioner ref={ref} className={cn(OVERLAY_LAYER, className as string)} {...rest} />;
+});
 
 const Popup = forwardRef<
   ComponentRef<typeof BaseMenu.Popup>,
@@ -44,7 +53,7 @@ export const Menu = {
   Root: BaseMenu.Root,
   Trigger: BaseMenu.Trigger,
   Portal: BaseMenu.Portal,
-  Positioner: BaseMenu.Positioner,
+  Positioner,
   Popup,
   Item,
   LinkItem,

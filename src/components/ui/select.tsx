@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 
 import { useT } from "@/i18n/client";
 
-import { cn, FOCUS_RING_INPUT, SHELL_BASE } from "./cn";
+import { cn, FOCUS_RING_INPUT, OVERLAY_LAYER, SHELL_BASE } from "./cn";
 
 interface SelectOption {
   value: string;
@@ -73,7 +73,7 @@ export function Select({
         <BaseSelect.Icon>▾</BaseSelect.Icon>
       </BaseSelect.Trigger>
       <BaseSelect.Portal>
-        <BaseSelect.Positioner sideOffset={4} className="outline-none">
+        <BaseSelect.Positioner sideOffset={4} className={cn(OVERLAY_LAYER, "outline-none")}>
           <BaseSelect.Popup className={cn(SHELL_BASE, "min-w-(--anchor-width) p-1 shadow-lg")}>
             {options.map((opt) => (
               <BaseSelect.Item
