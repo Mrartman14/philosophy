@@ -11,7 +11,7 @@ import type { ActionResult } from "@/utils/create-action";
 import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
-  screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits, newId,
+  screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits, newId, GRID_SIZE,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { makeEntityRefResolver } from "../entity-ref";
@@ -499,7 +499,20 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
               <marker id="cv-arrow-selected" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="10.5" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-accent)" />
               </marker>
+              {/* видимая сетка: точки с шагом GRID_SIZE в мировых координатах */}
+              <pattern id="cv-grid" width={GRID_SIZE} height={GRID_SIZE} patternUnits="userSpaceOnUse">
+                <circle cx={GRID_SIZE / 2} cy={GRID_SIZE / 2} r={0.5} fill="var(--color-border)" />
+              </pattern>
             </defs>
+
+            {/* фон-сетка на видимую область; pointerEvents=none — чтобы НЕ перехватывать
+                клики фона (пан/снятие выделения), которые ловит сам <svg> */}
+            {state.gridEnabled && (
+              <rect
+                x={vp.x} y={vp.y} width={size.width / vp.zoom} height={size.height / vp.zoom}
+                fill="url(#cv-grid)" pointerEvents="none"
+              />
+            )}
 
             <EditorEdgeLayer
               edges={renderData.edges}
