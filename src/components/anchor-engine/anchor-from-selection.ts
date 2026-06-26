@@ -1,4 +1,4 @@
-// src/components/annotation-layer/anchor-from-selection.ts
+// src/components/anchor-engine/anchor-from-selection.ts
 import { blockPlainText, offsetWithinBlock } from "./dom-text";
 import type { TextAnchor } from "./types";
 

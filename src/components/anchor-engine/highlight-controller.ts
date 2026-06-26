@@ -1,4 +1,4 @@
-// src/components/annotation-layer/highlight-controller.ts
+// src/components/anchor-engine/highlight-controller.ts
 // Подсветка через CSS Custom Highlight API (ноль мутаций DOM). Active — отдельный
 // слой annotation-active, отличается ВТОРЫМ визуальным каналом (underline в CSS,
 // см. globals.css), не только альфой. Нет API → no-op (оверлей-фолбэк отдельно — Task 10).

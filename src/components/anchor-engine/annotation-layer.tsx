@@ -1,5 +1,5 @@
 "use client";
-// src/components/annotation-layer/annotation-layer.tsx
+// src/components/anchor-engine/annotation-layer.tsx
 // Оркестратор React-слоя движка маргиналий. Собирает: захват выделения →
 // аффорданс создания; подсветку через CSS Custom Highlight API (HighlightController),
 // с оверлей-фолбэком (HighlightOverlay) когда API нет; позиции карточек на полях

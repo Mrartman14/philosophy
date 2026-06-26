@@ -1,4 +1,4 @@
-// src/components/annotation-layer/dom-text.ts
+// src/components/anchor-engine/dom-text.ts
 // Plaintext-офсеты внутри блока в UTF-16 code units (совпадает с контрактом бэка
 // и DOM Range). <br> (hard_break) считается одним символом "\n".
 

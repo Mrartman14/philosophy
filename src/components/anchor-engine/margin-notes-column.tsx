@@ -1,5 +1,5 @@
 "use client";
-// src/components/annotation-layer/margin-notes-column.tsx
+// src/components/anchor-engine/margin-notes-column.tsx
 // Колонка карточек-заметок на полях. Привязанные карточки позиционируются
 // абсолютно по якорю — top измеряется ОТНОСИТЕЛЬНО контейнера колонки
 // (anchorRect.top − columnRect.top), раздвигается resolveStack, под абсолют

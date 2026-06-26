@@ -1,4 +1,4 @@
-// src/components/annotation-layer/stacking.ts
+// src/components/anchor-engine/stacking.ts
 // Чистая раздвижка карточек по вертикали («магия Word»). Без React/DOM.
 export interface StackItem {
   id: string;

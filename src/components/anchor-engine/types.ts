@@ -1,4 +1,4 @@
-// src/components/annotation-layer/types.ts
+// src/components/anchor-engine/types.ts
 // Доменно-агностичные, но AST-субстрат-специфичные типы движка. НЕ импортируют
 // схему аннотаций; обвязка маппит annotation.Anchor ↔ TextAnchor (поля и единицы
 // идентичны — UTF-16 code units).

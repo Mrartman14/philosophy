@@ -1,4 +1,4 @@
-// src/components/annotation-layer/anchor-to-range.ts
+// src/components/anchor-engine/anchor-to-range.ts
 import { cssEscape } from "./css-escape";
 import { locateOffset } from "./dom-text";
 import type { TextAnchor } from "./types";

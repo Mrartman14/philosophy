@@ -1,5 +1,5 @@
 "use client";
-// src/components/annotation-layer/use-selection-capture.ts
+// src/components/anchor-engine/use-selection-capture.ts
 import { useEffect, useRef, useState, type RefObject } from "react";
 
 import { anchorFromSelection } from "./anchor-from-selection";

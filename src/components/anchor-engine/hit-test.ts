@@ -1,4 +1,4 @@
-// src/components/annotation-layer/hit-test.ts
+// src/components/anchor-engine/hit-test.ts
 import { rangeFromAnchor } from "./anchor-to-range";
 import type { AnchoredNote } from "./types";
 

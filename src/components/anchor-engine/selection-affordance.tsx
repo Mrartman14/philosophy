@@ -1,5 +1,5 @@
 "use client";
-// src/components/annotation-layer/selection-affordance.tsx
+// src/components/anchor-engine/selection-affordance.tsx
 import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui";

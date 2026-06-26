@@ -1,5 +1,5 @@
 "use client";
-// src/components/annotation-layer/highlight-overlay.tsx
+// src/components/anchor-engine/highlight-overlay.tsx
 // Фолбэк подсветки для браузеров без CSS Custom Highlight API: прямоугольники
 // из range.getClientRects() в абсолютном слое. Ноль мутаций текстового DOM.
 import { useLayoutEffect, useState } from "react";
