@@ -646,7 +646,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
                 ref={surfaceRef}
                 role="application"
                 aria-label={t("editor.ariaLabel")}
-                className="relative h-full flex-1 select-none"
+                className="relative h-full flex-1 select-none outline-none"
                 style={{ cursor: canvasCursor, touchAction: "none" }}
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={0}
