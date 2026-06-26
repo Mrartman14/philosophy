@@ -61,17 +61,18 @@ CanvasEditor  (стейт + ВЕСЬ ввод)  ── движок-нейтра
         │ Scene (данные внутрь)        CanvasPainter (контракт)
         ▼                                       ▲
 engine/painter.ts  — контракт
-  type Scene { data, viewport, selection, hover, edgeDraft, marquee,
-               invalidNodeIds, handlesForNodeId, resolveEntityRef, tool }
+  type Scene { data, viewport, resolveEntityRef,
+               selectedNodeIds, selectedEdgeIds, handlesForNodeId,
+               edgeTargetId, invalidNodeId, edgeDraft, marquee }
   interface CanvasPainter {
     Surface: ComponentType<{ scene; size }>   // рисует картинку, pointer-events:none
-    exportImage(scene, opts): download .svg/.png
+    exportSvg(data, resolve, title, rootEl) / exportPng(...)  // скачать .svg/.png
   }
         ▼ реализуется
 engine/svg/  — ЕДИНСТВЕННЫЙ painter сегодня
   svg-painter.tsx  (<svg viewBox> + слои + arrow defs + marquee)
   svg-nodes.tsx / svg-edges.tsx / svg-overlays.tsx (рамка выделения,
-    ручки ресайза, порты, превью создаваемого ребра) / svg-export.ts
+    ручки ресайза, порты, превью создаваемого ребра) / svg-export.tsx
   → переиспользует NodeShapeRender из canvas-render (без дублирования)
 ```
 
@@ -131,8 +132,9 @@ engine/svg/  — ЕДИНСТВЕННЫЙ painter сегодня
 - Редактор собирает мемоизированный `Scene` и рендерит
   `<painter.Surface scene size />` внутри `<div>`. Рамки выделения, ручки, порты,
   marquee и превью ребра — больше НЕ JSX редактора: их рисует painter из `Scene`.
-- Экспорт зовёт `painter.exportImage(...)`, передавая живой `<div>` для
-  разрешения цветов темы через `getComputedStyle` (работает и на `<div>`).
+- Экспорт зовёт `painter.exportSvg(...)` / `painter.exportPng(...)`, передавая
+  живой `<div>` для разрешения цветов темы через `getComputedStyle` (работает и
+  на `<div>`).
 
 ### Маппинг текущего состояния редактора → поля `Scene`
 
@@ -140,14 +142,17 @@ engine/svg/  — ЕДИНСТВЕННЫЙ painter сегодня
 |---|---|
 | `renderData` (`canvasDataToRenderData(state.data)`) | `data` |
 | `state.viewport` | `viewport` |
-| `state.selection` (node/edge ids) | `selection` |
-| `edgeTargetId` (узел-кандидат под курсором) | `hover` |
+| `state.selection.nodeIds` → `Set` | `selectedNodeIds` (ReadonlySet) |
+| `state.selection.edgeIds` → `Set` | `selectedEdgeIds` (ReadonlySet) |
+| `edgeTargetId` (узел-кандидат под курсором) | `edgeTargetId` |
 | `edgePreview` ({from,to}) | `edgeDraft` |
 | `marquee` ({x,y,w,h}) | `marquee` |
-| `invalidNodeId` | `invalidNodeIds` |
-| одиночное выделение (`singleSelected`) | `handlesForNodeId` |
+| `invalidNodeId` | `invalidNodeId` |
+| `singleSelectedNodeId` (одиночное выделение) | `handlesForNodeId` |
 | `resolveEntityRef` | `resolveEntityRef` |
-| `state.tool` | `tool` |
+
+> `state.tool` в `Scene` НЕ входит: painter курсор не рисует — курсор ведёт сам
+> редактор (`canvasCursor` + hover-hit-test на нейтральном `<div>`).
 
 ## Что осознанно остаётся на месте (узкий объём)
 
@@ -168,7 +173,7 @@ engine/svg/  — ЕДИНСТВЕННЫЙ painter сегодня
 |---|---|
 | `ui/editor-node-layer.tsx` | `engine/svg/svg-nodes.tsx` (+ chrome выделения/ручек/портов в `svg-overlays.tsx`) |
 | `ui/editor-edge-layer.tsx` | `engine/svg/svg-edges.tsx` |
-| `ui/canvas-export.tsx` | `engine/svg/svg-export.ts` |
+| `ui/canvas-export.tsx` | `engine/svg/svg-export.tsx` (с JSX → `.tsx`) |
 | markers/marquee (инлайн в canvas-editor) | `engine/svg/svg-painter.tsx` |
 | — (новое) | `engine/painter.ts` (контракт + тип `Scene`) |
 | — (новое) | `engine/svg/svg-painter.tsx` (реализует контракт) |
