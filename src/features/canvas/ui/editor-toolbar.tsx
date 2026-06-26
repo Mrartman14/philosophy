@@ -58,7 +58,7 @@ interface Props {
 function Sep({ vertical }: { vertical: boolean }) {
   return (
     <span className={vertical
-      ? "mx-1 h-5 w-px bg-(--color-border) xl:mx-0 xl:my-1 xl:h-px xl:w-7"
+      ? "mx-1 h-5 w-px bg-(--color-border) xl:col-span-2 xl:mx-0 xl:my-1 xl:h-px xl:w-full"
       : "mx-1 h-5 w-px bg-(--color-border)"} />
   );
 }
@@ -113,9 +113,10 @@ export function EditorToolbar({
   const tip = vertical ? "right" : "top";
 
   // vertical = адаптивный: ниже xl поле схлопнуто → тулбар горизонтальной полосой
-  // над холстом; на xl+ → столбец в левом поле.
+  // над холстом; на xl+ → сетка 2×N иконок в левом поле, прижатая к холсту (ms-auto),
+  // разделители и Save — на всю ширину обеих колонок.
   const containerClass = vertical
-    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 xl:flex-col xl:flex-nowrap xl:items-start xl:border-b-0"
+    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 xl:ms-auto xl:grid xl:w-fit xl:grid-cols-2 xl:items-start xl:justify-items-center xl:border-b-0"
     : "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2";
 
   const saveCluster = (
@@ -212,7 +213,7 @@ export function EditorToolbar({
         {/* Save-кластер отжат вправо (ms-auto). В vertical на xl+ переезжает вниз
             столбцом: индикатор «не сохранено» над кнопкой. */}
         <span className={vertical
-          ? "ms-auto flex items-center gap-2 xl:ms-0 xl:mt-2 xl:w-full xl:flex-col xl:items-start"
+          ? "ms-auto flex items-center gap-2 xl:col-span-2 xl:ms-0 xl:mt-2 xl:w-full xl:flex-col xl:items-start"
           : "ms-auto flex items-center gap-2"}>
           {unsaved}
           {saveCluster}
