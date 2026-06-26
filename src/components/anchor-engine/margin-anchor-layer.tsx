@@ -8,7 +8,6 @@
 // геометрии при resize / загрузке шрифтов / смене нот.
 import {
   useCallback,
-  useEffect,
   useRef,
   useState,
   type ReactNode,
@@ -18,7 +17,7 @@ import {
 import type { Motion } from "@/styles/tokens/enums";
 import { isReducedMotion } from "@/utils/is-reduced-motion";
 
-import { useRegisterAnchorAction } from "./anchor-actions";
+import { useStableAnchorAction } from "./anchor-actions";
 import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
@@ -69,10 +68,11 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
     canCreate,
     onCreateRequest,
     affordanceLabel,
+    highlightName = "annotation",
   } = props;
 
   const controllerRef = useRef<HighlightController | null>(null);
-  controllerRef.current ??= new HighlightController(props.highlightName ?? "annotation");
+  controllerRef.current ??= new HighlightController(highlightName);
   const controller = controllerRef.current;
 
   // Геометрия движка (Range/ready/пересчёт/getAnchorRect) — вынесена в общий хук,
@@ -81,19 +81,12 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // Захват выделения + аффорданс делегированы общему хосту (SelectionAffordanceHost):
-  // слой лишь РЕГИСТРИРУЕТ своё действие. onCreate стабилизируем через ref, чтобы
-  // меняющийся onCreateRequest не вызывал re-register loop (см. useRegisterAnchorAction).
-  const onCreateRef = useRef(onCreateRequest);
-  useEffect(() => {
-    onCreateRef.current = onCreateRequest;
-  });
-  const registerOnCreate = useCallback((draft: AnchorDraft) => {
-    onCreateRef.current(draft);
-  }, []);
-  useRegisterAnchorAction({
-    id: props.highlightName ?? "annotation",
+  // слой лишь РЕГИСТРИРУЕТ своё действие (useStableAnchorAction стабилизирует
+  // onCreate через ref, чтобы меняющийся onCreateRequest не дёргал re-register loop).
+  useStableAnchorAction({
+    id: highlightName,
     label: affordanceLabel,
-    onCreate: registerOnCreate,
+    onCreate: onCreateRequest,
     enabled: canCreate,
   });
 
@@ -117,7 +110,7 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
       .querySelector(`[data-note-card="${cssEscape(id)}"]`)
       ?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
   }, []);
-  useTextClick({ astRootRef, notes, ready, onPick: pickFromText });
+  useTextClick({ astRootRef, ranges, ready, onPick: pickFromText });
 
   // Двусторонний клик (карточка → текст): активация карточки → скролл к фрагменту.
   const onActivate = useCallback(

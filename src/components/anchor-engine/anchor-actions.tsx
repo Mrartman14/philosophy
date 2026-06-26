@@ -27,7 +27,7 @@ import { Button, Inline } from "@/components/ui";
 import type { AnchorDraft } from "./types";
 import { useSelectionCapture } from "./use-selection-capture";
 
-// Подъём аффорданса над выделением (зеркалит selection-affordance.tsx).
+// Подъём аффорданса над выделением.
 const AFFORDANCE_OFFSET_PX = 40;
 
 export interface AnchorAction {
@@ -101,6 +101,33 @@ export function useRegisterAnchorAction({
       unregister(id);
     };
   }, [id, label, onCreate, enabled, register, unregister]);
+}
+
+/**
+ * Слой-фасад над useRegisterAnchorAction: инкапсулирует ref-стабилизацию
+ * onCreate (чтобы меняющийся колбэк не дёргал re-register loop в эффекте
+ * регистрации) + саму регистрацию. ВНУТРЕННИЙ — слои зовут относительным
+ * импортом, из index НЕ выносим.
+ */
+export function useStableAnchorAction({
+  id,
+  label,
+  onCreate,
+  enabled,
+}: {
+  id: string;
+  label: string;
+  onCreate: (draft: AnchorDraft) => void;
+  enabled: boolean;
+}): void {
+  const ref = useRef(onCreate);
+  useEffect(() => {
+    ref.current = onCreate;
+  });
+  const stable = useCallback((draft: AnchorDraft) => {
+    ref.current(draft);
+  }, []);
+  useRegisterAnchorAction({ id, label, onCreate: stable, enabled });
 }
 
 /**

@@ -7,7 +7,7 @@
 // как в eager-политике. Side колонки задаёт страница через MarginNote.
 import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
-import { useRegisterAnchorAction } from "./anchor-actions";
+import { useStableAnchorAction } from "./anchor-actions";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
 import { MarginNotesColumn } from "./margin-notes-column";
@@ -51,20 +51,13 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
   const { ranges, getAnchorRect, recomputeKey, ready } = useAnchorRanges({ astRootRef, notes });
 
   // Захват выделения + аффорданс делегированы общему хосту (SelectionAffordanceHost):
-  // слой лишь РЕГИСТРИРУЕТ своё действие. onCreate стабилизируем через ref, чтобы
-  // меняющийся onCreateRequest не вызывал re-register loop (см. useRegisterAnchorAction).
-  const onCreateRef = useRef(onCreateRequest);
-  useEffect(() => {
-    onCreateRef.current = onCreateRequest;
-  });
-  const registerOnCreate = useCallback((draft: AnchorDraft) => {
-    onCreateRef.current(draft);
-  }, []);
-  useRegisterAnchorAction({
-    // highlightName уже имеет дефолт "comment" в деструктуризации пропсов выше.
+  // слой лишь РЕГИСТРИРУЕТ своё действие (useStableAnchorAction стабилизирует
+  // onCreate через ref, чтобы меняющийся onCreateRequest не дёргал re-register loop).
+  // highlightName уже имеет дефолт "comment" в деструктуризации пропсов выше.
+  useStableAnchorAction({
     id: highlightName,
     label: affordanceLabel,
-    onCreate: registerOnCreate,
+    onCreate: onCreateRequest,
     enabled: canCreate,
   });
 
@@ -109,7 +102,7 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
     },
     [wide, onActivateNarrow],
   );
-  useTextClick({ astRootRef, notes, ready, onPick: pick });
+  useTextClick({ astRootRef, ranges, ready, onPick: pick });
 
   // Превью-карточка: только открытая (openId уже null на narrow). Клик по ТЕЛУ
   // карточки её НЕ закрывает (onActivate — no-op): карточка для чтения. Закрытие —

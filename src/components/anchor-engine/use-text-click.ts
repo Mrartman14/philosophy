@@ -1,19 +1,21 @@
 // src/components/anchor-engine/use-text-click.ts
 // Клик в AST-руте → hit-test (какой note под caret) → onPick(id). Политика
-// решает, что делать с id (активировать карточку / скроллить к треду).
+// решает, что делать с id (активировать карточку / скроллить к треду). Хит-тест
+// по УЖЕ ПОСЧИТАННЫМ ranges (как useHoverReveal) — без пересчёта rangeFromAnchor
+// на каждый клик; эквивалентно noteAtPoint, т.к. ranges строятся тем же
+// rangeFromAnchor (см. useAnchorRanges / коммент в hit-test).
 import { useEffect, type RefObject } from "react";
 
-import { noteAtPoint } from "./hit-test";
-import type { AnchoredNote } from "./types";
+import { noteAtPointInRanges } from "./hit-test";
 
 export function useTextClick({
   astRootRef,
-  notes,
+  ranges,
   ready,
   onPick,
 }: {
   astRootRef: RefObject<HTMLElement | null>;
-  notes: AnchoredNote[];
+  ranges: Map<string, Range | null>;
   ready: boolean;
   onPick: (id: string) => void;
 }) {
@@ -21,7 +23,7 @@ export function useTextClick({
     const root = astRootRef.current;
     if (!root) return;
     const onClick = (e: MouseEvent) => {
-      const id = noteAtPoint(e.clientX, e.clientY, notes, root);
+      const id = noteAtPointInRanges(e.clientX, e.clientY, ranges, root);
       if (id) onPick(id);
     };
     root.addEventListener("click", onClick);
@@ -29,5 +31,5 @@ export function useTextClick({
       root.removeEventListener("click", onClick);
     };
     // ready в deps: переподписка после готовности рута (root null→element).
-  }, [astRootRef, notes, ready, onPick]);
+  }, [astRootRef, ranges, ready, onPick]);
 }
