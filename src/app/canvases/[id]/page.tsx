@@ -40,7 +40,7 @@ export default async function CanvasPage({ params, searchParams }: Props) {
   const t = await getT("pages");
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
+    <div className="flex flex-col gap-8 p-4">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{canvas.title ?? t("canvasDefaultTitle")}</h1>
         {canvas.id && (
