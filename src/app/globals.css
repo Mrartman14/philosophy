@@ -64,6 +64,21 @@ body:has(dialog[open]) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   COMMENTS — канал подсветки прокомментированных фрагментов (lazy-политика
+   InlineAnchorLayer, канал "comment"). Визуально отделяем от аннотаций
+   пунктирным подчёркиванием; active-слой переходит на сплошное. Те же токены
+   --color-highlight(-active) (APCA-гард). В PR1 канал ещё не задействован UI —
+   активируется в PR2; точный визуал — на браузер-QA. */
+::highlight(comment) {
+  background-color: var(--color-highlight);
+  text-decoration: underline dotted;
+}
+::highlight(comment-active) {
+  background-color: var(--color-highlight-active);
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    CUSTOM COMPONENTS
    ═══════════════════════════════════════════════════════════════ */
 

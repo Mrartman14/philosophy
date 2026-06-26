@@ -5,4 +5,5 @@
 // поэтому в публичный сёрфейс НЕ выносим (гигиена минимального API; knip-скрипт
 // тоже пометил бы их unused — knip отдельный скрипт, не в гейте lint/test/build).
 export { MarginAnchorLayer, type MarginAnchorLayerProps } from "./margin-anchor-layer";
+export { InlineAnchorLayer, type InlineAnchorLayerProps } from "./inline-anchor-layer";
 export type { TextAnchor, AnchoredNote, AnchorDraft } from "./types";
