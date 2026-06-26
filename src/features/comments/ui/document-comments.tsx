@@ -1,8 +1,8 @@
 // src/features/comments/ui/document-comments.tsx
 // Server-сборщик левого поля: заякоренные на текущий документ комментарии →
-// превью-карточки → client-коннектор (InlineAnchorLayer). Под SchemaContextProvider,
-// т.к. композер монтирует AstEditor. Заякоренные комменты ВИДНЫ и в нижнем треде —
-// это поле лишь подсветка+быстрый доступ (progressive enhancement).
+// превью-карточки → client-коннектор (DocumentCommentLayer → eager MarginAnchorLayer).
+// Под SchemaContextProvider, т.к. композер монтирует AstEditor. Заякоренные комменты
+// ВИДНЫ и в нижнем треде — это поле подсветка+позиционирование+выноски (доп. доступ).
 import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
 import { getMe } from "@/utils/me";

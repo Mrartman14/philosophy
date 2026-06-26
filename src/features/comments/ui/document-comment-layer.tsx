@@ -1,28 +1,21 @@
 "use client";
 // src/features/comments/ui/document-comment-layer.tsx
-// Коннектор движок↔домен (client) для заякоренных комментариев. Ставит lazy-
-// политику InlineAnchorLayer: подсветка по hover/тоглу (default OFF — не
-// конкурирует с аннотациями), клик по фрагменту → превью-карточка слева (wide)
-// или скролл к нижнему треду (narrow). Создание из выделения: TextAnchor →
-// buildCommentTextAnchor(+target document) → модалка-композер.
-// SSR-расхождение с аннотациями (осознанно): превью-карточки НЕ в HTML — это
-// progressive enhancement (контент дублирован в нижнем CommentSection). Поэтому
-// слой монтируется client-only ({ready && ...}).
-// A11y/тач (исправлено по ревью): hover-reveal недоступен с клавиатуры/тача, а
-// CSS Custom Highlight не создаёт фокусируемых DOM-узлов. Поэтому ДОСТУПНЫЙ
-// список заякоренных корней (фокусируемые превью с OpenThreadButton) рендерим
-// ВСЕГДА (notes.length>0), независимо от тогла подсветки — единственный
-// клавиатурный/тач-путь к комментариям фрагментов. Тогл showAll управляет
-// ТОЛЬКО in-text подсветкой (showAllHighlights).
+// Коннектор движок↔домен (client) для заякоренных комментариев. EAGER-политика
+// (как аннотации): постоянная подсветка + позиционированные превью у фрагмента +
+// выноски-связи. Зеркалит SSR-инвариант document-annotation-layer: до mount
+// (ready=false) превью — простым списком (есть в HTML, no-JS/a11y), после mount
+// те же ноды позиционирует MarginAnchorLayer (на narrow — поток, на wide — у
+// фрагмента + выноски). Создание из выделения: TextAnchor → buildCommentTextAnchor
+// (+target document) → модалка-композер.
+// Guardrail 4: импортит только pure-фасады (../anchor, ../types), движок, i18n/client
+// и composer-диалог. НЕ тянет server-only api/actions/permissions/schemas.
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { InlineAnchorLayer, type AnchorDraft, type AnchoredNote } from "@/components/anchor-engine";
-import { Button, Inline } from "@/components/ui";
+import { MarginAnchorLayer, type AnchorDraft, type AnchoredNote } from "@/components/anchor-engine";
 import { useT } from "@/i18n/client";
 import { coordsToEngineAnchor } from "@/utils/text-anchor";
 
 import { buildCommentTextAnchor } from "../anchor";
-import { useScrollToCommentThread } from "../thread-scroll";
 import type { Anchor, CommentType } from "../types";
 
 import { CommentComposerDialog } from "./comment-composer-dialog";
@@ -41,8 +34,6 @@ export interface DocumentCommentLayerProps {
   canCreate: boolean;
 }
 
-const KEY = "comment-highlights";
-
 export function DocumentCommentLayer({
   lectureId,
   documentId,
@@ -53,27 +44,19 @@ export function DocumentCommentLayer({
   const t = useT("comments");
   const astRootRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
-  const [showAll, setShowAll] = useState(false); // default OFF (не конкурирует с аннотациями)
   const [composer, setComposer] = useState<{ open: boolean; anchor?: Anchor }>({ open: false });
 
+  // Discover AST-рут после первого коммита → SSR/первый client-рендер видят
+  // ready=false (no hydration mismatch), позиционирование включается следующим
+  // тиком. Зеркалит document-annotation-layer.
   useEffect(() => {
     astRootRef.current = document.querySelector<HTMLElement>("[data-ast-root]");
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time post-mount read of localStorage pref; SSR/no-JS default off
-    if (window.localStorage.getItem(KEY) === "on") setShowAll(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time post-mount flip to enable positioning; SSR/no-JS render at ready=false
     setReady(true);
   }, []);
 
-  const toggle = () => {
-    setShowAll((s) => {
-      const next = !s;
-      window.localStorage.setItem(KEY, next ? "on" : "off");
-      return next;
-    });
-  };
-
   // Доменные ноты → движковые: только валидный text-range (coordsToEngineAnchor != null).
-  // Мемоизация по notes: InlineAnchorLayer держит notes в deps useAnchorRanges,
-  // нестабильная ссылка пересчитывала бы ranges при каждом тогле/композере.
+  // Мемоизация по notes: MarginAnchorLayer держит notes в deps useAnchorRanges.
   const engineNotes: AnchoredNote[] = useMemo(
     () =>
       notes.flatMap((n) => {
@@ -83,43 +66,36 @@ export function DocumentCommentLayer({
     [notes],
   );
   const previewById = useMemo(() => new Map(notes.map((n) => [n.id, n.preview])), [notes]);
-  const renderCard = useCallback((id: string) => previewById.get(id) ?? null, [previewById]);
+  const renderNote = useCallback(
+    (n: AnchoredNote) => previewById.get(n.id) ?? null,
+    [previewById],
+  );
 
-  const scrollToThread = useScrollToCommentThread();
+  const engineIds = new Set(engineNotes.map((n) => n.id));
+  const ssrOnly = notes.filter((n) => !engineIds.has(n.id)); // без валидного якоря — всегда списком
 
   return (
     <div className="flex flex-col gap-4" aria-label={t("marginColumnLabel")}>
-      <Inline gap="tight" align="start">
-        <Button type="button" compact tone="quiet" onClick={toggle} aria-pressed={showAll}>
-          {showAll ? t("marginHighlightHide") : t("marginHighlightShow")}
-        </Button>
-      </Inline>
+      {ssrOnly.map((n) => (
+        <div key={n.id}>{n.preview}</div>
+      ))}
 
-      {ready && (
-        <InlineAnchorLayer
+      {!ready ? (
+        engineNotes.map((n) => <div key={n.id}>{previewById.get(n.id)}</div>)
+      ) : (
+        <MarginAnchorLayer
           astRootRef={astRootRef}
           notes={engineNotes}
-          renderCard={renderCard}
-          showAllHighlights={showAll}
+          renderNote={renderNote}
+          highlightEnabled
           canCreate={canCreate}
           onCreateRequest={(d: AnchorDraft) => {
             setComposer({ open: true, anchor: buildCommentTextAnchor(d.anchor, documentId) });
           }}
           affordanceLabel={t("marginCommentAdd")}
-          onActivateNarrow={scrollToThread}
+          highlightName="comment"
+          tone="comment"
         />
-      )}
-
-      {/* Доступный список (клавиатура/тач): ВСЕГДА (notes>0) показываем превью
-          корней потоком — фокусируемые, с OpenThreadButton. Закрывает a11y/тач-
-          дыру, т.к. hover-reveal и подсветка недостижимы без мыши. Развязан от
-          тогла showAll (тот управляет только in-text подсветкой). */}
-      {notes.length > 0 && (
-        <ul className="flex flex-col gap-3">
-          {notes.map((n) => (
-            <li key={n.id}>{n.preview}</li>
-          ))}
-        </ul>
       )}
 
       <CommentComposerDialog
