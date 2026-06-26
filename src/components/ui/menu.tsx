@@ -9,30 +9,26 @@ import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "re
 
 import { cn } from "./cn";
 
+// Общие классы стиля поверхности/пункта меню — переиспользуются в context-menu.tsx
+// (ContextMenu.Popup/.Item оборачивают ТЕ ЖЕ Base UI menu-части), чтобы строки не
+// дублировались байт-в-байт. Не менять без синхронизации обоих китов.
+export const MENU_POPUP_CLASS =
+  "min-w-44 rounded border border-(--color-border) bg-(--color-surface) p-1 shadow-lg outline-none";
+export const MENU_ITEM_CLASS =
+  "flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-(--color-surface-subtle) data-[disabled]:opacity-50";
+
 const Popup = forwardRef<
   ComponentRef<typeof BaseMenu.Popup>,
   ComponentPropsWithoutRef<typeof BaseMenu.Popup>
 >(function MenuPopup({ className, ...rest }, ref) {
-  return (
-    <BaseMenu.Popup
-      ref={ref}
-      className={cn(
-        "min-w-44 rounded border border-(--color-border) bg-(--color-surface) p-1 shadow-lg outline-none",
-        className as string,
-      )}
-      {...rest}
-    />
-  );
+  return <BaseMenu.Popup ref={ref} className={cn(MENU_POPUP_CLASS, className as string)} {...rest} />;
 });
-
-const ITEM_CLASS =
-  "flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-(--color-surface-subtle) data-[disabled]:opacity-50";
 
 const Item = forwardRef<
   ComponentRef<typeof BaseMenu.Item>,
   ComponentPropsWithoutRef<typeof BaseMenu.Item>
 >(function MenuItem({ className, ...rest }, ref) {
-  return <BaseMenu.Item ref={ref} className={cn(ITEM_CLASS, className as string)} {...rest} />;
+  return <BaseMenu.Item ref={ref} className={cn(MENU_ITEM_CLASS, className as string)} {...rest} />;
 });
 
 const LinkItem = forwardRef<
@@ -40,7 +36,7 @@ const LinkItem = forwardRef<
   ComponentPropsWithoutRef<typeof BaseMenu.LinkItem>
 >(function MenuLinkItem({ className, ...rest }, ref) {
   return (
-    <BaseMenu.LinkItem ref={ref} className={cn(ITEM_CLASS, "no-underline", className as string)} {...rest} />
+    <BaseMenu.LinkItem ref={ref} className={cn(MENU_ITEM_CLASS, "no-underline", className as string)} {...rest} />
   );
 });
 

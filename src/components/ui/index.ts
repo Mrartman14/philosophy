@@ -22,6 +22,7 @@ export { DirectionProvider } from "./direction-provider";
 export { Toolbar } from "./toolbar";
 export { Popover } from "./popover";
 export { Menu } from "./menu";
+export { ContextMenu } from "./context-menu";
 export { Combobox } from "./combobox";
 export { NavigationMenu } from "./navigation-menu";
 export { ConfirmDialog } from "./confirm-dialog";
