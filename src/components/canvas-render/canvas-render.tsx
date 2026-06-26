@@ -1,7 +1,8 @@
 // src/components/canvas-render/canvas-render.tsx
 import { getT } from "@/i18n";
 
-import { boundingBox, edgePath } from "./geometry";
+import { EdgeShapeRender, ArrowMarkerDefs } from "./edge-shape";
+import { boundingBox } from "./geometry";
 import { NodeShapeRender } from "./node-shapes";
 import type { CanvasRenderProps, RenderNode } from "./types";
 
@@ -39,36 +40,11 @@ export async function CanvasRender({ data, resolveEntityRef, emptyText, classNam
         aria-label={t("canvasRender.graphAriaLabel")}
         style={{ maxWidth: "100%", height: "auto" }}
       >
-        <defs>
-          <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-fg-muted)" />
-          </marker>
-        </defs>
+        <ArrowMarkerDefs />
 
-        {data.edges.map((e) => {
-          const from = byId.get(e.fromNode);
-          const to = byId.get(e.toNode);
-          if (!from || !to) return null; // битая ссылка — не рисуем (бек её не пропустит, но рендер не падает)
-          const geo = edgePath(from, to, e.fromSide, e.toSide);
-          const arrow = (e.end ?? "arrow") === "arrow";
-          return (
-            <g key={e.id}>
-              <path
-                d={geo.d}
-                fill="none"
-                stroke="var(--color-fg-muted)"
-                strokeWidth={1.5}
-                strokeDasharray={e.style === "dashed" ? "6 4" : undefined}
-                markerEnd={arrow ? "url(#cv-arrow)" : undefined}
-              />
-              {e.label && (
-                <text x={geo.mid.x} y={geo.mid.y - 4} fontSize={11} textAnchor="middle" fill="var(--color-fg-muted)">
-                  {e.label.length > 40 ? e.label.slice(0, 39) + "…" : e.label}
-                </text>
-              )}
-            </g>
-          );
-        })}
+        {data.edges.map((e) => (
+          <EdgeShapeRender key={e.id} edge={e} nodesById={byId} />
+        ))}
 
         {data.nodes.map((n) => (
           <NodeShapeRender key={n.id} node={n} resolve={resolveEntityRef} />

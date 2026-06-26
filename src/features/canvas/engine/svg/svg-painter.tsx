@@ -2,6 +2,7 @@
 // src/features/canvas/engine/svg/svg-painter.tsx
 import { useMemo } from "react";
 
+import { ArrowMarkerDefs } from "@/components/canvas-render";
 import type { RenderNode } from "@/components/canvas-render";
 
 import type { CanvasPainter, Scene, SurfaceSize } from "../painter";
@@ -26,16 +27,7 @@ function SvgSurface({ scene, size }: { scene: Scene; size: SurfaceSize }) {
       viewBox={viewBox}
       style={{ pointerEvents: "none", background: "var(--color-surface)", display: "block" }}
     >
-      <defs>
-        {/* markerUnits=userSpaceOnUse: размер стрелки не зависит от strokeWidth.
-            Два маркера = два цвета: стрелка перекрашивается под цвет своего ребра. */}
-        <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="10.5" orient="auto-start-reverse">
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-fg-muted)" />
-        </marker>
-        <marker id="cv-arrow-selected" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="10.5" orient="auto-start-reverse">
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-accent)" />
-        </marker>
-      </defs>
+      <ArrowMarkerDefs withSelected />
 
       <SvgEdges
         edges={scene.data.edges}

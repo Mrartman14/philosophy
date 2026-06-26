@@ -2,7 +2,7 @@
 // src/features/canvas/engine/svg/svg-export.tsx
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { boundingBox, edgePath, NodeShapeRender } from "@/components/canvas-render";
+import { ArrowMarkerDefs, boundingBox, EdgeShapeRender, NodeShapeRender } from "@/components/canvas-render";
 import type { EntityRefResolver, RenderData, RenderNode } from "@/components/canvas-render";
 
 const MARGIN = 24;
@@ -23,37 +23,12 @@ function CanvasExportSvg({ data, resolveEntityRef }: { data: RenderData; resolve
   const byId = new Map<string, RenderNode>(data.nodes.map((n) => [n.id, n]));
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox={`${vbX} ${vbY} ${vbW} ${vbH}`} width={vbW} height={vbH}>
-      <defs>
-        <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-fg-muted)" />
-        </marker>
-      </defs>
+      <ArrowMarkerDefs />
       {/* Фон — чтобы текст (--color-fg) был читаем и в SVG, и в PNG (иначе прозрачный). */}
       <rect x={vbX} y={vbY} width={vbW} height={vbH} fill="var(--color-surface)" />
-      {data.edges.map((e) => {
-        const from = byId.get(e.fromNode);
-        const to = byId.get(e.toNode);
-        if (!from || !to) return null;
-        const geo = edgePath(from, to, e.fromSide, e.toSide);
-        const arrow = (e.end ?? "arrow") === "arrow";
-        return (
-          <g key={e.id}>
-            <path
-              d={geo.d}
-              fill="none"
-              stroke="var(--color-fg-muted)"
-              strokeWidth={1.5}
-              strokeDasharray={e.style === "dashed" ? "6 4" : undefined}
-              markerEnd={arrow ? "url(#cv-arrow)" : undefined}
-            />
-            {e.label && (
-              <text x={geo.mid.x} y={geo.mid.y - 4} fontSize={11} textAnchor="middle" fill="var(--color-fg-muted)">
-                {e.label.length > 40 ? e.label.slice(0, 39) + "…" : e.label}
-              </text>
-            )}
-          </g>
-        );
-      })}
+      {data.edges.map((e) => (
+        <EdgeShapeRender key={e.id} edge={e} nodesById={byId} />
+      ))}
       {data.nodes.map((n) => (
         <NodeShapeRender key={n.id} node={n} resolve={resolveEntityRef} />
       ))}
