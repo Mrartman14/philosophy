@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { SaveOfflineButton } from "@/app/_offline/save-offline-button";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { DocumentAnnotations } from "@/features/annotations";
-import { CommentSection } from "@/features/comments";
+import { CommentSection, DocumentComments } from "@/features/comments";
 import { DocumentDetail, getDocumentById } from "@/features/documents";
 import {
   canUpdateLecture,
@@ -154,6 +154,15 @@ export default async function LecturePage({ params, searchParams }: Props) {
         <MarginNote side="end" grow className="p-4 xl:ps-0">
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={activeId} />
+          </Suspense>
+        </MarginNote>
+      )}
+
+      {/* Заякоренные комментарии активного документа — ЛЕВОЕ поле грида. */}
+      {activeDoc && activeId && (
+        <MarginNote side="start" grow className="p-4 xl:pe-0">
+          <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+            <DocumentComments lectureId={id} documentId={activeId} />
           </Suspense>
         </MarginNote>
       )}
