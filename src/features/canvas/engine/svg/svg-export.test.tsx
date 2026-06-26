@@ -1,9 +1,9 @@
-// src/features/canvas/ui/canvas-export.test.tsx
+// src/features/canvas/engine/svg/svg-export.test.tsx
 import { describe, it, expect } from "vitest";
 
 import type { EntityRefResolver, RenderData } from "@/components/canvas-render";
 
-import { buildExportSvg } from "./canvas-export";
+import { buildExportSvg } from "./svg-export";
 
 const resolve: EntityRefResolver = (type) => ({ href: null, typeLabel: type });
 
