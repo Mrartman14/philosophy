@@ -68,6 +68,12 @@ export function fitViewport(bbox: BBox, size: { width: number; height: number },
   return { zoom, x: cx - size.width / 2 / zoom, y: cy - size.height / 2 / zoom };
 }
 
+/** Вьюпорт, центрирующий мировую точку `center` в середине поверхности `size`
+ *  при текущем зуме (только пан, зум не трогаем). */
+export function centerViewport(center: Point, size: { width: number; height: number }, zoom: number): Viewport {
+  return { zoom, x: center.x - size.width / 2 / zoom, y: center.y - size.height / 2 / zoom };
+}
+
 /** Округляет к ближайшему GRID_SIZE при enabled, иначе к ближайшему int. */
 export function snapToGrid(value: number, enabled: boolean): number {
   // `+ 0` нормализует -0 в +0 (Math.round(-0.375) даёт -0, ломает toBe(0)).

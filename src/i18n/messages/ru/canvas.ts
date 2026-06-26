@@ -85,6 +85,7 @@ const canvas = {
 
   // --- editor context menu (right-click) ---
   contextMenu: {
+    center: "Центрировать",
     bringToFront: "На передний план",
     sendToBack: "На задний план",
     delete: "Удалить",

@@ -86,6 +86,7 @@ const canvas: Messages["canvas"] = {
 
   // --- editor context menu (right-click) ---
   contextMenu: {
+    center: "居中显示",
     bringToFront: "置于顶层",
     sendToBack: "置于底层",
     delete: "删除",

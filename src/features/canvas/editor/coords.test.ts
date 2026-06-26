@@ -1,7 +1,7 @@
 // src/features/canvas/editor/coords.test.ts
 import { describe, it, expect } from "vitest";
 
-import { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, snapToGrid, snapPoint } from "./coords";
+import { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, snapToGrid, snapPoint } from "./coords";
 import type { Viewport } from "./editor-types";
 
 const vp = (over: Partial<Viewport> = {}): Viewport => ({ x: 0, y: 0, zoom: 1, ...over });
@@ -89,5 +89,13 @@ describe("fitViewport", () => {
   it("вырожденный bbox или нулевой размер → дефолтный вьюпорт", () => {
     expect(fitViewport({ minX: 0, minY: 0, maxX: 0, maxY: 0 }, { width: 200, height: 200 })).toEqual({ x: 0, y: 0, zoom: 1 });
     expect(fitViewport({ minX: 0, minY: 0, maxX: 100, maxY: 100 }, { width: 0, height: 0 })).toEqual({ x: 0, y: 0, zoom: 1 });
+  });
+});
+
+describe("centerViewport", () => {
+  it("ставит мировую точку в центр поверхности, зум не меняет", () => {
+    const v = centerViewport({ x: 100, y: 50 }, { width: 200, height: 200 }, 2);
+    expect(v.zoom).toBe(2);
+    expect(worldToScreen({ x: 100, y: 50 }, v)).toEqual({ x: 100, y: 100 });
   });
 });

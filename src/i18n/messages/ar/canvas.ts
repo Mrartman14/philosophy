@@ -86,6 +86,7 @@ const canvas: Messages["canvas"] = {
 
   // --- editor context menu (right-click) ---
   contextMenu: {
+    center: "توسيط في العرض",
     bringToFront: "إحضار إلى الأمام",
     sendToBack: "إرسال إلى الخلف",
     delete: "حذف",

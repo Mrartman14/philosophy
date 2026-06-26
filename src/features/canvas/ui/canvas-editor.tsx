@@ -11,7 +11,7 @@ import type { ActionResult } from "@/utils/create-action";
 import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
-  screenToWorld, applyZoomAtPoint, fitViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
+  screenToWorld, applyZoomAtPoint, fitViewport, centerViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
   resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
@@ -93,6 +93,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // Space зажат → временный режим пана (Figma). Читается inline-хендлерами из
   // замыкания рендера — поэтому их НЕ оборачивать в useCallback (stale closure).
   const [spaceHeld, setSpaceHeld] = useState(false);
+  // id узла под правым кликом — цель пункта «Центрировать» контекст-меню.
+  const [contextNodeId, setContextNodeId] = useState<string | null>(null);
 
   // «Грязно»: правки графа ИЛИ переименование (edit). Единый источник для
   // beforeunload-гарда, индикатора «не сохранено» в панели и доступности Save.
@@ -348,6 +350,12 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     if (renderData.nodes.length === 0) return;
     dispatch({ type: "setViewport", viewport: fitViewport(boundingBox(renderData.nodes), size) });
   };
+  // Центрировать узел в середине вьюпорта (текущий зум) — пункт контекст-меню.
+  const centerOnNode = (id: string) => {
+    const n = nodesById.get(id);
+    if (!n) return;
+    dispatch({ type: "setViewport", viewport: centerViewport({ x: n.x + n.width / 2, y: n.y + n.height / 2 }, size, vp.zoom) });
+  };
 
   // ---- keyboard ----
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -436,6 +444,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       e.preventBaseUIHandler?.();  // и Base UI не открывает popup по пустому фону
       return;
     }
+    setContextNodeId(hit.id);      // цель пункта «Центрировать»
     if (!selectedNodeIds.has(hit.id)) {
       dispatch({ type: "selectNode", nodeId: hit.id, additive: false });
     }
@@ -704,6 +713,10 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           <ContextMenu.Portal>
             <ContextMenu.Positioner>
               <ContextMenu.Popup>
+                <ContextMenu.Item disabled={contextNodeId === null} onClick={() => { if (contextNodeId) centerOnNode(contextNodeId); }}>
+                  {t("contextMenu.center")}
+                </ContextMenu.Item>
+                <ContextMenu.Separator />
                 <ContextMenu.Item disabled={!hasNodeSelection} onClick={() => { dispatch({ type: "bringToFront", nodeIds: state.selection.nodeIds }); }}>
                   {t("contextMenu.bringToFront")}
                 </ContextMenu.Item>
