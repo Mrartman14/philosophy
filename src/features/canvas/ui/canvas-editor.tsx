@@ -74,6 +74,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   const surfaceRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<Drag>(null);
+  // автозум «показать всё» при открытии: однократный, после первого замера поверхности.
+  const measuredRef = useRef(false);
+  const initialFitRef = useRef(false);
   // hover-курсор коалесим в один rAF на кадр: hit-test — O(N+E), а pointermove без
   // drag сыплется десятками/кадр на больших графах → джанк. Последние мировые
   // координаты держим в ref, планируем один rAF.
@@ -125,7 +128,10 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
       const r = entries[0]?.contentRect;
-      if (r && r.width > 0 && r.height > 0) setSize({ width: r.width, height: r.height });
+      if (r && r.width > 0 && r.height > 0) {
+        measuredRef.current = true;
+        setSize({ width: r.width, height: r.height });
+      }
     });
     ro.observe(el);
     return () => { ro.disconnect(); };
@@ -140,6 +146,17 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const singleSelectedNodeId = state.selection.nodeIds.length === 1 ? (state.selection.nodeIds[0] ?? null) : null;
 
   const vp = state.viewport;
+
+  // Автозум «показать всё» при открытии редактора: один раз, после первого
+  // реального замера поверхности и при непустом графе. Пустой граф (create) —
+  // просто помечаем «сделано», чтобы добавление первого узла не дёргало зум.
+  useEffect(() => {
+    if (initialFitRef.current || !measuredRef.current) return;
+    initialFitRef.current = true;
+    if (renderData.nodes.length > 0) {
+      dispatch({ type: "setViewport", viewport: fitViewport(boundingBox(renderData.nodes), size) });
+    }
+  }, [size, renderData.nodes, dispatch]);
 
   /** Экранные координаты события (относительно поверхности-div) → мировые. */
   const eventWorld = useCallback((e: { clientX: number; clientY: number }): Point => {
