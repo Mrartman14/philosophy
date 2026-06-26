@@ -70,6 +70,7 @@ const canvas: Messages["canvas"] = {
     reset: "إرجاع",
     toolSelect: "تحديد",
     toolHand: "يد",
+    fit: "ملاءمة المحتوى",
     showCanvas: "اللوحة",
     showJson: "JSON",
     export: "تنزيل",

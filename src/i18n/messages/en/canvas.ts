@@ -70,6 +70,7 @@ const canvas: Messages["canvas"] = {
     reset: "Revert",
     toolSelect: "Select",
     toolHand: "Hand",
+    fit: "Fit to content",
     showCanvas: "Canvas",
     showJson: "JSON",
     export: "Download",

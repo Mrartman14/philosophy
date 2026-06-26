@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { CursorIcon } from "@/assets/icons/cursor-icon";
 import { DownloadIcon } from "@/assets/icons/download-icon";
+import { FitIcon } from "@/assets/icons/fit-icon";
 import { HandIcon } from "@/assets/icons/hand-icon";
 import { LinkIcon } from "@/assets/icons/link-icon";
 import { RedoIcon } from "@/assets/icons/redo-icon";
@@ -33,6 +34,10 @@ interface Props {
   onAddText: () => void;
   onAddShape: (kind: "rect" | "ellipse" | "diamond") => void;
   onAddEntityRef: () => void;
+  /** Подогнать вьюпорт под все узлы (zoom-to-fit). Без него кнопка скрыта. */
+  onFit?: (() => void) | undefined;
+  /** Граф непустой — для disabled кнопки «показать всё». */
+  canFit?: boolean | undefined;
   /** Раскладка. По умолчанию горизонтальная полоса; vertical — столбец в поле. */
   orientation?: Orientation;
   /** Экспорт графа. Без `onExportSvg` кнопка скачивания (дропдаун форматов) скрыта. */
@@ -97,7 +102,7 @@ function TbButton({ label, onClick, children, tone = "neutral", disabled, presse
  *  Save и приватность живут в панели-шапке редактора, не здесь. */
 export function EditorToolbar({
   dispatch, tool, canUndo, canRedo, dirty, hasSelection,
-  onAddText, onAddShape, onAddEntityRef,
+  onAddText, onAddShape, onAddEntityRef, onFit, canFit,
   orientation = "horizontal",
   onExportSvg, onExportPng, onExportJson, onCopyJson, canExport,
 }: Props) {
@@ -129,6 +134,11 @@ export function EditorToolbar({
         >
           <HandIcon />
         </TbButton>
+        {onFit && (
+          <TbButton label={t("toolbar.fit")} tipSide={tip} disabled={!canFit} onClick={onFit}>
+            <FitIcon />
+          </TbButton>
+        )}
         <Sep vertical={vertical} />
 
         <TbButton label={t("toolbar.addText")} tipSide={tip} onClick={onAddText}>

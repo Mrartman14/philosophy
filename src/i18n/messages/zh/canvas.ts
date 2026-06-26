@@ -70,6 +70,7 @@ const canvas: Messages["canvas"] = {
     reset: "还原",
     toolSelect: "选择",
     toolHand: "抓手",
+    fit: "适应内容",
     showCanvas: "画布",
     showJson: "JSON",
     export: "下载",

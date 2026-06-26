@@ -1,7 +1,7 @@
 // src/features/canvas/editor/coords.test.ts
 import { describe, it, expect } from "vitest";
 
-import { screenToWorld, worldToScreen, applyZoomAtPoint, snapToGrid, snapPoint } from "./coords";
+import { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, snapToGrid, snapPoint } from "./coords";
 import type { Viewport } from "./editor-types";
 
 const vp = (over: Partial<Viewport> = {}): Viewport => ({ x: 0, y: 0, zoom: 1, ...over });
@@ -61,5 +61,33 @@ describe("snapToGrid / snapPoint", () => {
   });
   it("snapPoint снапит обе координаты", () => {
     expect(snapPoint({ x: 11, y: 13 }, true)).toEqual({ x: 8, y: 16 });
+  });
+});
+
+describe("fitViewport", () => {
+  it("квадратный bbox без отступа точно заполняет поверхность по центру", () => {
+    const v = fitViewport({ minX: 0, minY: 0, maxX: 100, maxY: 100 }, { width: 200, height: 200 }, 1);
+    expect(v).toEqual({ x: 0, y: 0, zoom: 2 });
+    // углы bbox ложатся в углы поверхности
+    expect(worldToScreen({ x: 0, y: 0 }, v)).toEqual({ x: 0, y: 0 });
+    expect(worldToScreen({ x: 100, y: 100 }, v)).toEqual({ x: 200, y: 200 });
+  });
+  it("узкий bbox центрируется по короткой оси (зум по лимитирующей стороне)", () => {
+    const v = fitViewport({ minX: 0, minY: 0, maxX: 200, maxY: 100 }, { width: 200, height: 200 }, 1);
+    expect(v.zoom).toBeCloseTo(1);
+    // центр bbox (100,50) → центр поверхности (100,100)
+    expect(worldToScreen({ x: 100, y: 50 }, v)).toEqual({ x: 100, y: 100 });
+  });
+  it("отступ pad<1 оставляет поля", () => {
+    const v = fitViewport({ minX: 0, minY: 0, maxX: 100, maxY: 100 }, { width: 200, height: 200 }, 0.8);
+    expect(v.zoom).toBeCloseTo(1.6);
+  });
+  it("зум зажат в [0.1, 8]", () => {
+    expect(fitViewport({ minX: 0, minY: 0, maxX: 100000, maxY: 100000 }, { width: 200, height: 200 }).zoom).toBeGreaterThanOrEqual(0.1);
+    expect(fitViewport({ minX: 0, minY: 0, maxX: 1, maxY: 1 }, { width: 2000, height: 2000 }).zoom).toBeLessThanOrEqual(8);
+  });
+  it("вырожденный bbox или нулевой размер → дефолтный вьюпорт", () => {
+    expect(fitViewport({ minX: 0, minY: 0, maxX: 0, maxY: 0 }, { width: 200, height: 200 })).toEqual({ x: 0, y: 0, zoom: 1 });
+    expect(fitViewport({ minX: 0, minY: 0, maxX: 100, maxY: 100 }, { width: 0, height: 0 })).toEqual({ x: 0, y: 0, zoom: 1 });
   });
 });

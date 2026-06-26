@@ -1,5 +1,5 @@
 // src/features/canvas/editor/coords.ts
-import type { Point } from "@/components/canvas-render";
+import type { BBox, Point } from "@/components/canvas-render";
 
 import type { Viewport } from "./editor-types";
 import { GRID_SIZE } from "./editor-types";
@@ -49,6 +49,23 @@ export function applyZoomAtPoint(vp: Viewport, factor: number, screenX: number, 
     x: worldX - screenX / newZoom,
     y: worldY - screenY / newZoom,
   };
+}
+
+/**
+ * Вьюпорт, при котором весь bbox влезает в поверхность `size` и центрируется
+ * (с отступом `pad` — доля занимаемого экрана, 0.9 ≈ 10% полей). Зум зажат в
+ * [MIN_ZOOM, MAX_ZOOM]. Пустой/вырожденный bbox или нулевой размер → дефолт
+ * {x:0,y:0,zoom:1} (звать имеет смысл только при непустом графе).
+ */
+export function fitViewport(bbox: BBox, size: { width: number; height: number }, pad = 0.9): Viewport {
+  const bw = bbox.maxX - bbox.minX;
+  const bh = bbox.maxY - bbox.minY;
+  if (bw <= 0 || bh <= 0 || size.width <= 0 || size.height <= 0) return { x: 0, y: 0, zoom: 1 };
+  const zoom = clampZoom(Math.min(size.width / bw, size.height / bh) * pad);
+  const cx = (bbox.minX + bbox.maxX) / 2;
+  const cy = (bbox.minY + bbox.maxY) / 2;
+  // центр bbox → центр поверхности: worldToScreen(center) === size/2.
+  return { zoom, x: cx - size.width / 2 / zoom, y: cy - size.height / 2 / zoom };
 }
 
 /** Округляет к ближайшему GRID_SIZE при enabled, иначе к ближайшему int. */

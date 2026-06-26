@@ -69,6 +69,7 @@ const canvas = {
     reset: "Откатить",
     toolSelect: "Выделение",
     toolHand: "Рука",
+    fit: "Показать всё",
     showCanvas: "Холст",
     showJson: "JSON",
     export: "Скачать",

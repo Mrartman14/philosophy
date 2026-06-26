@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
-import { sidePoint, type Point, type RenderNode, type Side } from "@/components/canvas-render";
+import { boundingBox, sidePoint, type Point, type RenderNode, type Side } from "@/components/canvas-render";
 import { Button, ContextMenu, FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
@@ -11,7 +11,7 @@ import type { ActionResult } from "@/utils/create-action";
 import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
-  screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
+  screenToWorld, applyZoomAtPoint, fitViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
   resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
@@ -343,6 +343,12 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // disabled пунктов контекстного меню (НЕ путать с toolbar.hasSelection = node+edge).
   const hasNodeSelection = state.selection.nodeIds.length > 0;
 
+  // Подгонка вьюпорта под все узлы (zoom-to-fit) — кнопка тулбара + Shift+1.
+  const fitToContent = () => {
+    if (renderData.nodes.length === 0) return;
+    dispatch({ type: "setViewport", viewport: fitViewport(boundingBox(renderData.nodes), size) });
+  };
+
   // ---- keyboard ----
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (editingNodeId) return; // текст-оверлей перехватывает ввод
@@ -350,6 +356,13 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     if (e.code === "Space") {
       e.preventDefault();
       if (!spaceHeld) setSpaceHeld(true);
+      return;
+    }
+    // Shift+1 — показать всё (Figma-конвенция zoom-to-fit). e.code, чтобы не зависеть
+    // от раскладки (Shift+1 на US-раскладке даёт "!").
+    if (e.shiftKey && e.code === "Digit1") {
+      e.preventDefault();
+      fitToContent();
       return;
     }
     if (e.key === "Delete" || e.key === "Backspace") {
@@ -586,6 +599,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         dirty={state.dirty} orientation="vertical"
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
+        onFit={fitToContent} canFit={renderData.nodes.length > 0}
         onExportSvg={onExportSvg} onExportPng={onExportPng} onExportJson={onExportJson} onCopyJson={onCopyJson} canExport={renderData.nodes.length > 0}
       />
     </MarginNote>
