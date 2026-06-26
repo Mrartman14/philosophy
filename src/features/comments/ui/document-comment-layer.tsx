@@ -66,9 +66,17 @@ export function DocumentCommentLayer({
     [notes],
   );
   const previewById = useMemo(() => new Map(notes.map((n) => [n.id, n.preview])), [notes]);
+  // Паритет с аннотациями: для нерезолвящегося якоря (дрейф/удалённый фрагмент)
+  // показываем «Фрагмент не найден» над превью — иначе коммент молча всплывал бы
+  // вверху колонки без подсказки.
   const renderNote = useCallback(
-    (n: AnchoredNote) => previewById.get(n.id) ?? null,
-    [previewById],
+    (n: AnchoredNote, orphan: boolean) => (
+      <>
+        {orphan && <p className="text-xs text-(--color-fg-muted)">{t("marginOrphanLabel")}</p>}
+        {previewById.get(n.id) ?? null}
+      </>
+    ),
+    [previewById, t],
   );
 
   const engineIds = new Set(engineNotes.map((n) => n.id));

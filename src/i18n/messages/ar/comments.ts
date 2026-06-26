@@ -94,10 +94,9 @@ const comments = {
   // --- margin comments (selection marginalia UI) ---
   marginCommentAdd: "تعليق",
   marginComposerTitle: "تعليق على المقطع المحدد",
-  marginHighlightShow: "إظهار التعليقات في النص",
-  marginHighlightHide: "إخفاء التعليقات في النص",
   marginOpenThread: "فتح المناقشة",
   marginColumnLabel: "تعليقات على المقاطع المحددة",
+  marginOrphanLabel: "لم يتم العثور على المقطع",
 
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {

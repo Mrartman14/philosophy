@@ -94,10 +94,9 @@ const comments = {
   // --- margin comments (selection marginalia UI) ---
   marginCommentAdd: "评论",
   marginComposerTitle: "对所选内容的评论",
-  marginHighlightShow: "在正文中显示评论",
-  marginHighlightHide: "在正文中隐藏评论",
   marginOpenThread: "打开讨论",
   marginColumnLabel: "对所选内容的评论",
+  marginOrphanLabel: "未找到片段",
 
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {

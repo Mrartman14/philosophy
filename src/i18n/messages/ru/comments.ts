@@ -96,10 +96,9 @@ const comments = {
   // --- margin comments (selection marginalia UI) ---
   marginCommentAdd: "Комментировать",
   marginComposerTitle: "Комментарий к фрагменту",
-  marginHighlightShow: "Показать комментарии в тексте",
-  marginHighlightHide: "Скрыть комментарии в тексте",
   marginOpenThread: "Открыть обсуждение",
   marginColumnLabel: "Комментарии к фрагментам",
+  marginOrphanLabel: "Фрагмент не найден",
 
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {
