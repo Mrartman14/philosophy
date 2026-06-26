@@ -68,6 +68,19 @@ function toggleId(list: string[], id: string): string[] {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
 }
 
+/** Переставляет выбранные узлы в начало/конец массива, сохраняя их относительный
+ *  порядок. Через commit → undoable. No-op при пустом/несуществующем наборе. */
+function reorderNodes(state: EditorState, nodeIds: string[], edge: "front" | "back"): EditorState {
+  const ids = new Set(nodeIds);
+  if (ids.size === 0) return state;
+  const nodes = state.data.nodes ?? [];
+  const moved = nodes.filter((n) => ids.has(n.id)); // filter сохраняет порядок
+  if (moved.length === 0) return state;
+  const rest = nodes.filter((n) => !ids.has(n.id));
+  const next = edge === "front" ? [...rest, ...moved] : [...moved, ...rest];
+  return commit(state, { ...state.data, nodes: next });
+}
+
 export function canvasReducer(state: EditorState, command: EditorCommand): EditorState {
   switch (command.type) {
     // ---------------- viewport ----------------
@@ -159,6 +172,12 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
       );
       return commit(state, { ...state.data, nodes });
     }
+
+    // ---------------- z-order ----------------
+    case "bringToFront":
+      return reorderNodes(state, command.nodeIds, "front");
+    case "sendToBack":
+      return reorderNodes(state, command.nodeIds, "back");
 
     // ---------------- edit node ----------------
     case "setNodeText": {

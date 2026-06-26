@@ -161,6 +161,43 @@ describe("move / resize", () => {
   });
 });
 
+describe("z-order (bringToFront / sendToBack)", () => {
+  function fourNodeState() {
+    const data = {
+      nodes: [
+        { id: "a", type: "shape", x: 0, y: 0, width: 20, height: 20, shape_kind: "rect" },
+        { id: "b", type: "shape", x: 0, y: 0, width: 20, height: 20, shape_kind: "rect" },
+        { id: "c", type: "shape", x: 0, y: 0, width: 20, height: 20, shape_kind: "rect" },
+        { id: "d", type: "shape", x: 0, y: 0, width: 20, height: 20, shape_kind: "rect" },
+      ],
+      edges: [],
+    } as unknown as Parameters<typeof initEditorState>[0];
+    return initEditorState(data);
+  }
+  const ids = (s: ReturnType<typeof initEditorState>) => (s.data.nodes ?? []).map((n) => n.id);
+
+  it("bringToFront перемещает выбранные в конец, сохраняя их относительный порядок", () => {
+    const s = fourNodeState();
+    const next = canvasReducer(s, { type: "bringToFront", nodeIds: ["b", "a"] });
+    // a,b уходят в конец в их ИСХОДНОМ относительном порядке (a перед b)
+    expect(ids(next)).toEqual(["c", "d", "a", "b"]);
+    expect(next.past).toHaveLength(1); // undoable
+    expect(next.dirty).toBe(true);
+  });
+
+  it("sendToBack перемещает выбранные в начало, сохраняя относительный порядок", () => {
+    const s = fourNodeState();
+    const next = canvasReducer(s, { type: "sendToBack", nodeIds: ["d", "c"] });
+    expect(ids(next)).toEqual(["c", "d", "a", "b"]);
+  });
+
+  it("bringToFront — no-op на пустом наборе и несуществующих id", () => {
+    const s = fourNodeState();
+    expect(canvasReducer(s, { type: "bringToFront", nodeIds: [] })).toBe(s);
+    expect(canvasReducer(s, { type: "bringToFront", nodeIds: ["zzz"] })).toBe(s);
+  });
+});
+
 describe("edit node", () => {
   it("setNodeText меняет текст text-узла", () => {
     let s = initEditorState(baseData);
