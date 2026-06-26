@@ -25,7 +25,8 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 
 * {
   scroll-margin-top: var(--spacing-header);
-  scrollbar-color: var(--color-border) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
 
   &::target-text {
     background-color: var(--color-accent);
