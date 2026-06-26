@@ -465,6 +465,11 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   };
   // JSON — данные канваса (не рендер), мимо painter-контракта.
   const onExportJson = () => { downloadCanvasJson(state.data, exportTitle); };
+  const onCopyJson = () => {
+    void navigator.clipboard.writeText(JSON.stringify(state.data, null, 2))
+      .then(() => { toast.add({ title: t("editor.toastCopiedTitle") }); })
+      .catch(() => { toast.add({ title: t("editor.toastCopyErrorTitle") }); });
+  };
 
   // ---- save ----
   /** Граф структурно-валиден? Иначе тостит ошибку и подсвечивает узел. */
@@ -581,7 +586,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         dirty={state.dirty} orientation="vertical"
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-        onExportSvg={onExportSvg} onExportPng={onExportPng} onExportJson={onExportJson} canExport={renderData.nodes.length > 0}
+        onExportSvg={onExportSvg} onExportPng={onExportPng} onExportJson={onExportJson} onCopyJson={onCopyJson} canExport={renderData.nodes.length > 0}
       />
     </MarginNote>
     <div className="flex flex-col" style={{ height: "calc(100vh - var(--header-height))" }}>

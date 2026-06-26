@@ -39,6 +39,8 @@ interface Props {
   onExportSvg?: (() => void) | undefined;
   onExportPng?: (() => void) | undefined;
   onExportJson?: (() => void) | undefined;
+  /** Скопировать граф как JSON в буфер обмена. */
+  onCopyJson?: (() => void) | undefined;
   /** Есть что экспортировать (граф непустой). */
   canExport?: boolean | undefined;
 }
@@ -97,7 +99,7 @@ export function EditorToolbar({
   dispatch, tool, canUndo, canRedo, dirty, hasSelection,
   onAddText, onAddShape, onAddEntityRef,
   orientation = "horizontal",
-  onExportSvg, onExportPng, onExportJson, canExport,
+  onExportSvg, onExportPng, onExportJson, onCopyJson, canExport,
 }: Props) {
   const t = useT("canvas");
   const vertical = orientation === "vertical";
@@ -183,6 +185,12 @@ export function EditorToolbar({
                     <Menu.Item onClick={onExportSvg}>{t("toolbar.exportSvg")}</Menu.Item>
                     {onExportPng && <Menu.Item onClick={onExportPng}>{t("toolbar.exportPng")}</Menu.Item>}
                     {onExportJson && <Menu.Item onClick={onExportJson}>{t("toolbar.exportJson")}</Menu.Item>}
+                    {onCopyJson && (
+                      <>
+                        <Menu.Separator />
+                        <Menu.Item onClick={onCopyJson}>{t("toolbar.copyJson")}</Menu.Item>
+                      </>
+                    )}
                   </Menu.Popup>
                 </Menu.Positioner>
               </Menu.Portal>
