@@ -11,7 +11,6 @@ interface Props {
   canUndo: boolean;
   canRedo: boolean;
   dirty: boolean;
-  gridEnabled: boolean;
   saving: boolean;
   showJson: boolean;
   hasSelection: boolean;
@@ -34,9 +33,9 @@ interface Props {
   hideJsonToggle?: boolean | undefined;
 }
 
-/** Тулбар редактора: создание узлов, удаление, история, сетка, сохранение. */
+/** Тулбар редактора: создание узлов, удаление, история, сохранение. */
 export function EditorToolbar({
-  dispatch, canUndo, canRedo, dirty, gridEnabled, saving, showJson, hasSelection,
+  dispatch, canUndo, canRedo, dirty, saving, showJson, hasSelection,
   onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson, onBack,
   saveLabel, saveDisabled, hideJsonToggle,
   onExportSvg, onExportPng, canExport,
@@ -65,9 +64,6 @@ export function EditorToolbar({
       <Button type="button" compact tone="quiet" disabled={!dirty} onClick={() => { dispatch({ type: "reset" }); }}>{t("toolbar.reset")}</Button>
 
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
-      <Button type="button" compact tone={gridEnabled ? "primary" : "quiet"} onClick={() => { dispatch({ type: "toggleGrid" }); }}>
-        {t("toolbar.grid")}
-      </Button>
       {!hideJsonToggle && (
         <Button type="button" compact tone="quiet" onClick={onToggleJson}>
           {showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")}
