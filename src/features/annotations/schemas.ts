@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { VISIBILITY } from "@/api/enums";
 import type { NamespaceT } from "@/i18n";
+import { anchorJsonField } from "@/utils/anchor-json";
 import { blocksJsonField } from "@/utils/blocks-json";
 
 import { PARENT_ENTITY_TYPES } from "./types";
@@ -36,36 +37,14 @@ const VisibilitySchema = z.enum(VISIBILITY);
 /**
  * Опциональный JSON-якорь (hidden-input). Парсится в объект; структурную
  * валидность под parent-тип проверяет бек (422 ANCHOR_INVALID) + наши
- * anchor.ts-предикаты на клиенте до сабмита.
+ * anchor.ts-предикаты на клиенте до сабмита. Делегирует общему util
+ * @/utils/anchor-json (делится с комментариями), подставляя свой namespace.
  */
 function makeAnchorJsonSchema(t: ValidationT) {
-  return z
-    .string()
-    .optional()
-    .transform((s, ctx) => {
-      if (!s || s.trim() === "") return undefined;
-      try {
-        const parsed: unknown = JSON.parse(s);
-        if (
-          typeof parsed !== "object" ||
-          parsed === null ||
-          Array.isArray(parsed)
-        ) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("annotations.anchorNotObject"),
-          });
-          return z.NEVER;
-        }
-        return parsed as Record<string, unknown>;
-      } catch {
-        ctx.addIssue({
-          code: "custom",
-          message: t("annotations.anchorInvalidJson"),
-        });
-        return z.NEVER;
-      }
-    });
+  return anchorJsonField({
+    notObject: t("annotations.anchorNotObject"),
+    invalidJson: t("annotations.anchorInvalidJson"),
+  });
 }
 
 export function makeAnnotationCreateSchema(t: ValidationT) {
