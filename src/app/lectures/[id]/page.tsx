@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { SaveOfflineButton } from "@/app/_offline/save-offline-button";
+import { AnchorActionsProvider, SelectionAffordanceHost } from "@/components/anchor-engine";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { DocumentAnnotations } from "@/features/annotations";
 import { CommentSection, DocumentComments } from "@/features/comments";
@@ -72,7 +73,11 @@ export default async function LecturePage({ params, searchParams }: Props) {
   ]);
 
   return (
-    <>
+    <AnchorActionsProvider>
+      {/* Единый хост захвата выделения + аффорданса (PR3 dual-affordance fix):
+          охватывает контент с data-ast-root И оба MarginNote (annotations +
+          comments), чтобы их useRegisterAnchorAction достигли провайдера. */}
+      <SelectionAffordanceHost />
       <div className="flex flex-col gap-8 p-4">
         {/* Тулбар действий: владелец — правка; залогинен — подписка; офлайн;
             ⋯-меню (скачать .md/.txt + поделиться). */}
@@ -166,7 +171,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
           </Suspense>
         </MarginNote>
       )}
-    </>
+    </AnchorActionsProvider>
   );
 }
 

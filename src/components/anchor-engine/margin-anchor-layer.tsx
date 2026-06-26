@@ -8,6 +8,7 @@
 // геометрии при resize / загрузке шрифтов / смене нот.
 import {
   useCallback,
+  useEffect,
   useRef,
   useState,
   type ReactNode,
@@ -17,15 +18,14 @@ import {
 import type { Motion } from "@/styles/tokens/enums";
 import { isReducedMotion } from "@/utils/is-reduced-motion";
 
+import { useRegisterAnchorAction } from "./anchor-actions";
 import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
-import { SelectionAffordance } from "./selection-affordance";
 import type { AnchorDraft, AnchoredNote } from "./types";
 import { useAnchorHighlights } from "./use-anchor-highlights";
 import { useAnchorRanges } from "./use-anchor-ranges";
-import { useSelectionCapture } from "./use-selection-capture";
 import { useTextClick } from "./use-text-click";
 
 export interface MarginAnchorLayerProps {
@@ -78,8 +78,24 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   // Геометрия движка (Range/ready/пересчёт/getAnchorRect) — вынесена в общий хук,
   // переиспользуемый eager/lazy-политиками. Поведение идентично прежней инлайн-логике.
   const { ranges, getAnchorRect, recomputeKey, ready } = useAnchorRanges({ astRootRef, notes });
-  const { draft, clear } = useSelectionCapture({ rootRef: astRootRef, enabled: canCreate });
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Захват выделения + аффорданс делегированы общему хосту (SelectionAffordanceHost):
+  // слой лишь РЕГИСТРИРУЕТ своё действие. onCreate стабилизируем через ref, чтобы
+  // меняющийся onCreateRequest не вызывал re-register loop (см. useRegisterAnchorAction).
+  const onCreateRef = useRef(onCreateRequest);
+  useEffect(() => {
+    onCreateRef.current = onCreateRequest;
+  });
+  const registerOnCreate = useCallback((draft: AnchorDraft) => {
+    onCreateRef.current(draft);
+  }, []);
+  useRegisterAnchorAction({
+    id: props.highlightName ?? "annotation",
+    label: affordanceLabel,
+    onCreate: registerOnCreate,
+    enabled: canCreate,
+  });
 
   // Подсветка (основной путь — CSS Custom Highlight API). Оверлей-фолбэк — ниже
   // через controller.supported. Eager-политика: держим подсветку ВСЕХ нот
@@ -128,13 +144,6 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
     };
   });
 
-  const create = useCallback(() => {
-    if (draft) {
-      onCreateRequest(draft);
-      clear();
-    }
-  }, [draft, onCreateRequest, clear]);
-
   const overlayRanges =
     !controller.supported && highlightEnabled
       ? [...ranges.values()].filter((r): r is Range => r !== null)
@@ -142,9 +151,6 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
 
   return (
     <>
-      {draft && canCreate && (
-        <SelectionAffordance rect={draft.rect} label={affordanceLabel} onCreate={create} />
-      )}
       {overlayRanges.length > 0 && (
         <HighlightOverlay
           ranges={overlayRanges}

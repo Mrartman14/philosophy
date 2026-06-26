@@ -7,15 +7,14 @@
 // как в eager-политике. Side колонки задаёт страница через MarginNote.
 import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
+import { useRegisterAnchorAction } from "./anchor-actions";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
 import { MarginNotesColumn } from "./margin-notes-column";
-import { SelectionAffordance } from "./selection-affordance";
 import type { AnchorDraft, AnchoredNote } from "./types";
 import { useAnchorHighlights } from "./use-anchor-highlights";
 import { useAnchorRanges } from "./use-anchor-ranges";
 import { useHoverReveal } from "./use-hover-reveal";
-import { useSelectionCapture } from "./use-selection-capture";
 import { useTextClick } from "./use-text-click";
 
 const WIDE = "(min-width: 80rem)";
@@ -50,7 +49,24 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
   const controller = controllerRef.current;
 
   const { ranges, getAnchorRect, recomputeKey, ready } = useAnchorRanges({ astRootRef, notes });
-  const { draft, clear } = useSelectionCapture({ rootRef: astRootRef, enabled: canCreate });
+
+  // Захват выделения + аффорданс делегированы общему хосту (SelectionAffordanceHost):
+  // слой лишь РЕГИСТРИРУЕТ своё действие. onCreate стабилизируем через ref, чтобы
+  // меняющийся onCreateRequest не вызывал re-register loop (см. useRegisterAnchorAction).
+  const onCreateRef = useRef(onCreateRequest);
+  useEffect(() => {
+    onCreateRef.current = onCreateRequest;
+  });
+  const registerOnCreate = useCallback((draft: AnchorDraft) => {
+    onCreateRef.current(draft);
+  }, []);
+  useRegisterAnchorAction({
+    // highlightName уже имеет дефолт "comment" в деструктуризации пропсов выше.
+    id: highlightName,
+    label: affordanceLabel,
+    onCreate: registerOnCreate,
+    enabled: canCreate,
+  });
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -95,13 +111,6 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
   );
   useTextClick({ astRootRef, notes, ready, onPick: pick });
 
-  const create = useCallback(() => {
-    if (draft) {
-      onCreateRequest(draft);
-      clear();
-    }
-  }, [draft, onCreateRequest, clear]);
-
   // Превью-карточка: только открытая (openId уже null на narrow). Клик по ТЕЛУ
   // карточки её НЕ закрывает (onActivate — no-op): карточка для чтения. Закрытие —
   // клик по другому фрагменту (переоткрывает openId) или уход в narrow.
@@ -127,9 +136,6 @@ export function InlineAnchorLayer(props: InlineAnchorLayerProps) {
 
   return (
     <>
-      {draft && canCreate && (
-        <SelectionAffordance rect={draft.rect} label={affordanceLabel} onCreate={create} />
-      )}
       {overlayRanges.length > 0 && (
         <HighlightOverlay ranges={overlayRanges} activeRange={activeRange} />
       )}

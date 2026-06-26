@@ -2,6 +2,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { AnchorActionsProvider, SelectionAffordanceHost } from "@/components/anchor-engine";
 import { AstToc, extractHeadings } from "@/components/ast-toc";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { DocumentAnnotations } from "@/features/annotations";
@@ -55,7 +56,10 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   ]);
 
   return (
-    <>
+    <AnchorActionsProvider>
+      {/* Единый хост захвата выделения + аффорданса (PR3 dual-affordance fix):
+          охватывает контент с data-ast-root И MarginNote с аннотациями. */}
+      <SelectionAffordanceHost />
       <div className="flex flex-col gap-8 p-4">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{document.filename ?? t("documentDefaultTitle")}</h1>
@@ -129,7 +133,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
           <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>
         )}
       </MarginNote>
-    </>
+    </AnchorActionsProvider>
   );
 }
 
