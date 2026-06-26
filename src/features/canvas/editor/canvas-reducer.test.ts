@@ -70,12 +70,6 @@ describe("selection команды", () => {
 });
 
 describe("viewport команды", () => {
-  it("panBy сдвигает мир", () => {
-    let s = initEditorState(baseData);
-    s = canvasReducer(s, { type: "panBy", dx: 10, dy: -5 });
-    expect(s.viewport.x).toBe(10);
-    expect(s.viewport.y).toBe(-5);
-  });
   it("toggleGrid переключает", () => {
     let s = initEditorState(baseData);
     expect(s.gridEnabled).toBe(true);

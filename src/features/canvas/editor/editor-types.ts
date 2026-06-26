@@ -64,8 +64,6 @@ export const GRID_SIZE = 8;
  */
 export type EditorCommand =
   // --- viewport ---
-  | { type: "panBy"; dx: number; dy: number }
-  | { type: "zoomAt"; factor: number; screenX: number; screenY: number; viewportWidth: number; viewportHeight: number }
   | { type: "setViewport"; viewport: Viewport }
   // --- selection ---
   | { type: "selectNode"; nodeId: string; additive: boolean }

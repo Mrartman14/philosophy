@@ -70,20 +70,8 @@ function toggleId(list: string[], id: string): string[] {
 export function canvasReducer(state: EditorState, command: EditorCommand): EditorState {
   switch (command.type) {
     // ---------------- viewport ----------------
-    case "panBy":
-      return { ...state, viewport: { ...state.viewport, x: state.viewport.x + command.dx, y: state.viewport.y + command.dy } };
     case "setViewport":
       return { ...state, viewport: command.viewport };
-    case "zoomAt": {
-      // зум вычисляется в interaction-слое через applyZoomAtPoint и приходит как setViewport;
-      // этот кейс оставлен для прямого вызова, повторяет coords.applyZoomAtPoint.
-      const { factor, screenX, screenY } = command;
-      const vp = state.viewport;
-      const newZoom = Math.min(8, Math.max(0.1, vp.zoom * factor));
-      const worldX = vp.x + screenX / vp.zoom;
-      const worldY = vp.y + screenY / vp.zoom;
-      return { ...state, viewport: { zoom: newZoom, x: worldX - screenX / newZoom, y: worldY - screenY / newZoom } };
-    }
     case "toggleGrid":
       return { ...state, gridEnabled: !state.gridEnabled };
 
