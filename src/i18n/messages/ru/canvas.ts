@@ -70,6 +70,7 @@ const canvas = {
     toolSelect: "Выделение",
     toolHand: "Рука",
     fit: "Показать всё",
+    grid: "Линейки",
     showCanvas: "Холст",
     showJson: "JSON",
     export: "Скачать",

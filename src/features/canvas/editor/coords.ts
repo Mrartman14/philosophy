@@ -74,6 +74,39 @@ export function centerViewport(center: Point, size: { width: number; height: num
   return { zoom, x: center.x - size.width / 2 / zoom, y: center.y - size.height / 2 / zoom };
 }
 
+/** Засечка линейки: мировое значение координаты + её экранная позиция (px). */
+export interface RulerTick {
+  world: number;
+  screen: number;
+}
+
+/** Ближайшее «красивое» число (1/2/5 × 10^k) НЕ меньше raw — шаг засечек. */
+function niceStep(raw: number): number {
+  if (raw <= 0) return 1;
+  const pow = 10 ** Math.floor(Math.log10(raw));
+  const norm = raw / pow; // [1, 10)
+  const nice = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+  return nice * pow;
+}
+
+/**
+ * Засечки линейки вдоль одной оси (Figma-стиль). Мир, видимый на отрезке длиной
+ * `lengthPx`: [originWorld, originWorld + lengthPx/zoom]. Шаг — «красивое» число,
+ * подобранное так, чтобы экранный интервал был ≈ `targetPx` (адаптивно к зуму).
+ * Линейка всегда у края экрана → координаты видны, даже когда мировой 0 ушёл.
+ */
+export function rulerTicks(originWorld: number, lengthPx: number, zoom: number, targetPx = 80): RulerTick[] {
+  if (lengthPx <= 0 || zoom <= 0) return [];
+  const step = niceStep(targetPx / zoom);
+  const worldMax = originWorld + lengthPx / zoom;
+  const ticks: RulerTick[] = [];
+  // первая засечка — ближайшее кратное шага, не меньше левого/верхнего края.
+  for (let w = Math.ceil(originWorld / step) * step; w <= worldMax; w += step) {
+    ticks.push({ world: w, screen: (w - originWorld) * zoom });
+  }
+  return ticks;
+}
+
 /** Округляет к ближайшему GRID_SIZE при enabled, иначе к ближайшему int. */
 export function snapToGrid(value: number, enabled: boolean): number {
   // `+ 0` нормализует -0 в +0 (Math.round(-0.375) даёт -0, ломает toBe(0)).

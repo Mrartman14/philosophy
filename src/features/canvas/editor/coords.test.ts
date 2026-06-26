@@ -1,7 +1,7 @@
 // src/features/canvas/editor/coords.test.ts
 import { describe, it, expect } from "vitest";
 
-import { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, snapToGrid, snapPoint } from "./coords";
+import { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, rulerTicks, snapToGrid, snapPoint } from "./coords";
 import type { Viewport } from "./editor-types";
 
 const vp = (over: Partial<Viewport> = {}): Viewport => ({ x: 0, y: 0, zoom: 1, ...over });
@@ -97,5 +97,28 @@ describe("centerViewport", () => {
     const v = centerViewport({ x: 100, y: 50 }, { width: 200, height: 200 }, 2);
     expect(v.zoom).toBe(2);
     expect(worldToScreen({ x: 100, y: 50 }, v)).toEqual({ x: 100, y: 100 });
+  });
+});
+
+describe("rulerTicks", () => {
+  it("шаг — «красивое» число, экранный интервал ≈ target (зум 1)", () => {
+    // target 80, zoom 1 → niceStep(80) = 100 → засечки 0,100,200
+    const ts = rulerTicks(0, 200, 1, 80);
+    expect(ts.map((t) => t.world)).toEqual([0, 100, 200]);
+    expect(ts.map((t) => t.screen)).toEqual([0, 100, 200]);
+  });
+  it("первая засечка — ближайшее кратное шага у края (смещённый origin)", () => {
+    const ts = rulerTicks(50, 200, 1, 80); // шаг 100, мир 50..250 → 100,200
+    expect(ts.map((t) => t.world)).toEqual([100, 200]);
+    expect(ts.map((t) => t.screen)).toEqual([50, 150]); // (world-origin)*zoom
+  });
+  it("адаптивность к зуму: при zoom 2 шаг мельче, экранный интервал держится", () => {
+    const ts = rulerTicks(0, 200, 2, 80); // target/zoom=40 → niceStep=50; мир 0..100
+    expect(ts.map((t) => t.world)).toEqual([0, 50, 100]);
+    expect(ts.map((t) => t.screen)).toEqual([0, 100, 200]); // интервал 100px ≈ target
+  });
+  it("нулевая длина/зум → пусто", () => {
+    expect(rulerTicks(0, 0, 1)).toEqual([]);
+    expect(rulerTicks(0, 200, 0)).toEqual([]);
   });
 });

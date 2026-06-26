@@ -9,6 +9,7 @@ import { HandIcon } from "@/assets/icons/hand-icon";
 import { LinkIcon } from "@/assets/icons/link-icon";
 import { RedoIcon } from "@/assets/icons/redo-icon";
 import { ResetIcon } from "@/assets/icons/reset-icon";
+import { RulerIcon } from "@/assets/icons/ruler-icon";
 import { ShapeDiamondIcon } from "@/assets/icons/shape-diamond-icon";
 import { ShapeEllipseIcon } from "@/assets/icons/shape-ellipse-icon";
 import { ShapeRectIcon } from "@/assets/icons/shape-rect-icon";
@@ -38,6 +39,10 @@ interface Props {
   onFit?: (() => void) | undefined;
   /** Граф непустой — для disabled кнопки «показать всё». */
   canFit?: boolean | undefined;
+  /** Координатные линейки включены (pressed-состояние тогла). */
+  gridOn?: boolean | undefined;
+  /** Тогл координатных линеек. Без него кнопка скрыта. */
+  onToggleGrid?: (() => void) | undefined;
   /** Раскладка. По умолчанию горизонтальная полоса; vertical — столбец в поле. */
   orientation?: Orientation;
   /** Экспорт графа. Без `onExportSvg` кнопка скачивания (дропдаун форматов) скрыта. */
@@ -102,7 +107,7 @@ function TbButton({ label, onClick, children, tone = "neutral", disabled, presse
  *  Save и приватность живут в панели-шапке редактора, не здесь. */
 export function EditorToolbar({
   dispatch, tool, canUndo, canRedo, dirty, hasSelection,
-  onAddText, onAddShape, onAddEntityRef, onFit, canFit,
+  onAddText, onAddShape, onAddEntityRef, onFit, canFit, gridOn, onToggleGrid,
   orientation = "horizontal",
   onExportSvg, onExportPng, onExportJson, onCopyJson, canExport,
 }: Props) {
@@ -137,6 +142,11 @@ export function EditorToolbar({
         {onFit && (
           <TbButton label={t("toolbar.fit")} tipSide={tip} disabled={!canFit} onClick={onFit}>
             <FitIcon />
+          </TbButton>
+        )}
+        {onToggleGrid && (
+          <TbButton label={t("toolbar.grid")} tipSide={tip} pressed={!!gridOn} tone={gridOn ? "primary" : "neutral"} onClick={onToggleGrid}>
+            <RulerIcon />
           </TbButton>
         )}
         <Sep vertical={vertical} />

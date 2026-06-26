@@ -21,6 +21,7 @@ import { makeEntityRefResolver } from "../entity-ref";
 import type { Canvas, CanvasRefEntityType, Visibility } from "../types";
 
 import { EditorInspector } from "./editor-inspector";
+import { CanvasRulers } from "./editor-rulers";
 import { EditorTextOverlay } from "./editor-text-overlay";
 import { EditorToolbar } from "./editor-toolbar";
 import { EntityRefDialog } from "./entity-ref-dialog";
@@ -95,6 +96,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const [spaceHeld, setSpaceHeld] = useState(false);
   // id узла под правым кликом — цель пункта «Центрировать» контекст-меню.
   const [contextNodeId, setContextNodeId] = useState<string | null>(null);
+  // координатные линейки (Figma-стиль) — тогл тулбара / Shift+R.
+  const [showGrid, setShowGrid] = useState(false);
 
   // «Грязно»: правки графа ИЛИ переименование (edit). Единый источник для
   // beforeunload-гарда, индикатора «не сохранено» в панели и доступности Save.
@@ -373,6 +376,12 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       fitToContent();
       return;
     }
+    // Shift+R — тогл координатных линеек (Figma-конвенция); без ctrl/meta (не R перезагрузки).
+    if (e.shiftKey && !e.ctrlKey && !e.metaKey && e.code === "KeyR") {
+      e.preventDefault();
+      setShowGrid((v) => !v);
+      return;
+    }
     if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
       dispatch({ type: "deleteSelection" });
@@ -609,6 +618,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
         onFit={fitToContent} canFit={renderData.nodes.length > 0}
+        gridOn={showGrid} onToggleGrid={() => { setShowGrid((v) => !v); }}
         onExportSvg={onExportSvg} onExportPng={onExportPng} onExportJson={onExportJson} onCopyJson={onCopyJson} canExport={renderData.nodes.length > 0}
       />
     </MarginNote>
@@ -683,6 +693,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
             }
           >
           <painter.Surface scene={scene} size={size} />
+
+          {showGrid && <CanvasRulers viewport={vp} size={size} />}
 
           {editingNode && (
             <EditorTextOverlay

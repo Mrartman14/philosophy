@@ -71,6 +71,7 @@ const canvas: Messages["canvas"] = {
     toolSelect: "选择",
     toolHand: "抓手",
     fit: "适应内容",
+    grid: "标尺",
     showCanvas: "画布",
     showJson: "JSON",
     export: "下载",

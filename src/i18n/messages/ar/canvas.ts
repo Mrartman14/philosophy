@@ -71,6 +71,7 @@ const canvas: Messages["canvas"] = {
     toolSelect: "تحديد",
     toolHand: "يد",
     fit: "ملاءمة المحتوى",
+    grid: "المساطر",
     showCanvas: "اللوحة",
     showJson: "JSON",
     export: "تنزيل",

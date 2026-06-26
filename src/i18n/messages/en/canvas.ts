@@ -71,6 +71,7 @@ const canvas: Messages["canvas"] = {
     toolSelect: "Select",
     toolHand: "Hand",
     fit: "Fit to content",
+    grid: "Rulers",
     showCanvas: "Canvas",
     showJson: "JSON",
     export: "Download",
