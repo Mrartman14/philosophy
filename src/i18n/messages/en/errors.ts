@@ -23,6 +23,13 @@ const errors = {
   COMMENT_DELETED: "Comment has been deleted.",
   PARENT_NOT_AVAILABLE: "The parent comment is not available.",
   PARENT_WRONG_LECTURE: "The parent comment is not available.",
+  // Comment anchor (binding to a fragment). Backend 422 codes, see
+  // POST /api/lectures/{id}/comments. ANCHOR_BLOCK_NOT_FOUND is common when the
+  // selected text drifts.
+  ANCHOR_ENTITY_UNKNOWN: "Unknown target type for the comment anchor.",
+  ANCHOR_BLOCK_NOT_FOUND: "The selected fragment is no longer available — select it again.",
+  ANCHOR_TARGET_NOT_FOUND: "The comment anchor target was not found.",
+  ANCHOR_TARGET_WRONG_LECTURE: "The anchor target belongs to a different lecture.",
   INVALID_ROOT_TYPE: "This comment type cannot be used as a root.",
   INVALID_TYPE_FOR_PARENT:
     "This comment type is not allowed as a reply to the selected node.",

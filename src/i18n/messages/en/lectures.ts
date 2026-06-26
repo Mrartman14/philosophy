@@ -77,6 +77,7 @@ const lectures = {
     loadItemFailed: "Failed to load lecture",
     loadDocumentsFailed: "Failed to load lecture documents",
     loadMediaFailed: "Failed to load lecture media",
+    loadCanvasesFailed: "Failed to load lecture canvases",
   },
 };
 

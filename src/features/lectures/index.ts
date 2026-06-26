@@ -30,8 +30,9 @@ export { canManageCover } from "./permissions";
 export { setLectureCover, clearLectureCover } from "./actions";
 
 // lecture-enrichment (волна 3) — attachments.
-export { getLectureDocuments, getLectureMedia } from "./api";
+export { getLectureDocuments, getLectureMedia, getLectureCanvases } from "./api";
 export { resolveActiveDocId } from "./active-document";
+export { LectureCanvasList } from "./ui/lecture-canvas-list";
 export {
   attachToLecture,
   detachFromLecture,
@@ -47,6 +48,7 @@ export type { DocTabMeta } from "./ui/lecture-document-tabs";
 export type {
   LectureDocument,
   LectureMediaItem,
+  LectureCanvasItem,
   LectureAttachment,
   AttachmentEntityType,
 } from "./types";

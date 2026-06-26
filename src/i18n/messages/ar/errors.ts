@@ -23,6 +23,12 @@ const errors = {
   COMMENT_DELETED: "تم حذف التعليق.",
   PARENT_NOT_AVAILABLE: "التعليق الأصل غير متاح.",
   PARENT_WRONG_LECTURE: "التعليق الأصل غير متاح.",
+  // مرساة التعليق (الربط بمقطع). رموز 422 من الخادم، راجع
+  // POST /api/lectures/{id}/comments. ANCHOR_BLOCK_NOT_FOUND شائع عند انحراف نص التحديد.
+  ANCHOR_ENTITY_UNKNOWN: "نوع هدف غير معروف لمرساة التعليق.",
+  ANCHOR_BLOCK_NOT_FOUND: "المقطع المحدد لم يعد متاحًا — حدّده من جديد.",
+  ANCHOR_TARGET_NOT_FOUND: "تعذّر العثور على هدف مرساة التعليق.",
+  ANCHOR_TARGET_WRONG_LECTURE: "هدف المرساة يعود إلى محاضرة أخرى.",
   INVALID_ROOT_TYPE: "لا يمكن استخدام هذا النوع من التعليقات كجذر.",
   INVALID_TYPE_FOR_PARENT:
     "هذا النوع من التعليقات غير مسموح كرد على العقدة المحددة.",

@@ -10,8 +10,10 @@ import { DocumentDetail, getDocumentById } from "@/features/documents";
 import {
   canUpdateLecture,
   getLectureById,
+  getLectureCanvases,
   getLectureDocuments,
   getLectureMedia,
+  LectureCanvasList,
   lectureCoverUrl,
   LectureDetail,
   LectureDocumentSelector,
@@ -42,12 +44,13 @@ interface Props {
 export default async function LecturePage({ params, searchParams }: Props) {
   const { id } = await params;
   const { cq, token, doc } = await searchParams;
-  const [me, lecture, tags, documents, media] = await Promise.all([
+  const [me, lecture, tags, documents, media, canvases] = await Promise.all([
     getMe(),
     getLectureById(id, token),
     getLectureTags(id),
     getLectureDocuments(id, token),
     getLectureMedia(id, token),
+    getLectureCanvases(id, token),
   ]);
   if (!lecture) notFound();
 
@@ -131,6 +134,15 @@ export default async function LecturePage({ params, searchParams }: Props) {
             </ul>
           </section>
         )}
+
+        {/* Канвасы — ссылки на /canvases/{id} (лёгкий листинг, без data графа). */}
+        <LectureCanvasList
+          canvases={canvases}
+          token={token}
+          heading={t("lectureCanvasesHeading")}
+          entryBadge={t("lectureCanvasEntryBadge")}
+          untitledLabel={t("lectureCanvasUntitled")}
+        />
 
         <Suspense fallback={<Skeleton className="h-48 w-full" />}>
           <CommentSection lectureId={id} query={cq} />

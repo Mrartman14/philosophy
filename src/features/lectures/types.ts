@@ -23,6 +23,13 @@ export type LectureDocument = components["schemas"]["document.Document"];
 /** Медиа, прикреплённое к лекции (GET /api/lectures/{id}/media). */
 export type LectureMediaItem = components["schemas"]["media.Media"];
 
+/**
+ * Канвас, прикреплённый к лекции (GET /api/lectures/{id}/canvases). Лёгкий
+ * листинг — `data` графа НЕ приходит (рендер на /canvases/{id}); `is_entry`
+ * помечает основной канвас лекции и выставляется только этим листингом.
+ */
+export type LectureCanvasItem = components["schemas"]["canvas.Canvas"];
+
 /** Элемент attachment-списка лекции (reverse — какие сущности прикреплены). */
 export type LectureAttachment = components["schemas"]["attachment.AttachmentDTO"];
 

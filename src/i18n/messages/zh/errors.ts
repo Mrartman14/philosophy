@@ -23,6 +23,12 @@ const errors = {
   COMMENT_DELETED: "评论已被删除。",
   PARENT_NOT_AVAILABLE: "父评论不可用。",
   PARENT_WRONG_LECTURE: "父评论不可用。",
+  // 评论锚点（绑定到片段）。后端 422 错误码，见
+  // POST /api/lectures/{id}/comments。文本漂移时常出现 ANCHOR_BLOCK_NOT_FOUND。
+  ANCHOR_ENTITY_UNKNOWN: "评论锚点的目标类型未知。",
+  ANCHOR_BLOCK_NOT_FOUND: "所选片段已不可用——请重新选择。",
+  ANCHOR_TARGET_NOT_FOUND: "未找到评论锚点的目标。",
+  ANCHOR_TARGET_WRONG_LECTURE: "锚点目标属于另一场讲座。",
   INVALID_ROOT_TYPE: "此评论类型不能用作根评论。",
   INVALID_TYPE_FOR_PARENT:
     "此评论类型不允许作为对所选节点的回复。",

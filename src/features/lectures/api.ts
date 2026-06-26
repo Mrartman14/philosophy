@@ -8,6 +8,7 @@ import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
   Lecture,
+  LectureCanvasItem,
   LectureDocument,
   LectureMediaItem,
 } from "./types";
@@ -93,6 +94,21 @@ export const getLectureMedia = cache(
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadMediaFailed"));
+    return unwrap(data) ?? [];
+  },
+);
+
+/** GET /api/lectures/{id}/canvases — канвасы лекции (лёгкий листинг, без data
+ *  графа). is_entry помечает основной канвас. 404 → [].
+ *  token (?token=) для приватных лекций через share-link. */
+export const getLectureCanvases = cache(
+  async (id: string, token?: string): Promise<LectureCanvasItem[]> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/lectures/{id}/canvases", {
+      params: { path: { id }, ...(token ? { query: { token } } : {}) },
+    });
+    if (response.status === 404) return [];
+    if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadCanvasesFailed"));
     return unwrap(data) ?? [];
   },
 );

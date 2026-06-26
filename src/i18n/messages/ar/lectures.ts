@@ -77,6 +77,7 @@ const lectures = {
     loadItemFailed: "تعذّر تحميل المحاضرة",
     loadDocumentsFailed: "تعذّر تحميل مستندات المحاضرة",
     loadMediaFailed: "تعذّر تحميل وسائط المحاضرة",
+    loadCanvasesFailed: "تعذّر تحميل لوحات المحاضرة",
   },
 };
 
