@@ -11,18 +11,17 @@ import type { ActionResult } from "@/utils/create-action";
 import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
-  screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits, newId,
+  screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
   resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
+import { painter } from "../engine";
+import type { Scene } from "../engine";
 import { makeEntityRefResolver } from "../entity-ref";
 import type { Canvas, CanvasRefEntityType, Visibility } from "../types";
 
 import { CanvasEditForm } from "./canvas-edit-form";
-import { downloadCanvasSvg, downloadCanvasPng } from "./canvas-export";
-import { EditorEdgeLayer } from "./editor-edge-layer";
 import { EditorInspector } from "./editor-inspector";
-import { EditorNodeLayer } from "./editor-node-layer";
 import { EditorTextOverlay } from "./editor-text-overlay";
 import { EditorToolbar } from "./editor-toolbar";
 import { EntityRefDialog } from "./entity-ref-dialog";
@@ -73,7 +72,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const [title, setTitle] = useState(canvas?.title ?? "");
   const [visibility, setVisibility] = useState<Visibility>(canvas?.visibility ?? "private");
 
-  const svgRef = useRef<SVGSVGElement>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<Drag>(null);
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   // id узла, который только что создан кнопкой «Текст» и ещё не подтверждён
@@ -105,9 +104,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     return () => { window.removeEventListener("beforeunload", handler); };
   }, [state.dirty]);
 
-  // измеряем контейнер для viewBox
+  // измеряем контейнер поверхности → size для painter.Surface (он считает viewBox)
   useEffect(() => {
-    const el = svgRef.current;
+    const el = surfaceRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
       const r = entries[0]?.contentRect;
@@ -122,14 +121,14 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const nodesById = useMemo(() => new Map<string, RenderNode>(renderData.nodes.map((n) => [n.id, n])), [renderData.nodes]);
   const selectedNodeIds = useMemo(() => new Set(state.selection.nodeIds), [state.selection.nodeIds]);
   const selectedEdgeIds = useMemo(() => new Set(state.selection.edgeIds), [state.selection.edgeIds]);
+  // id единственного выделенного узла — общий источник для ручек/портов (рендер) и хит-теста.
+  const singleSelectedNodeId = state.selection.nodeIds.length === 1 ? (state.selection.nodeIds[0] ?? null) : null;
 
   const vp = state.viewport;
-  // viewBox: мировые координаты видимой области = viewport.{x,y} + размер/zoom
-  const viewBox = `${vp.x} ${vp.y} ${size.width / vp.zoom} ${size.height / vp.zoom}`;
 
   /** Экранные координаты события (относительно SVG) → мировые. */
   const eventWorld = useCallback((e: { clientX: number; clientY: number }): Point => {
-    const rect = svgRef.current?.getBoundingClientRect();
+    const rect = surfaceRef.current?.getBoundingClientRect();
     const sx = e.clientX - (rect?.left ?? 0);
     const sy = e.clientY - (rect?.top ?? 0);
     return screenToWorld({ x: sx, y: sy }, state.viewport);
@@ -154,68 +153,89 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
-  const onBackgroundPointerDown = (e: React.PointerEvent) => {
-    if (e.target !== e.currentTarget) return; // клик именно по фону
-    const gesture = resolveBackgroundGesture({
-      tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
-    });
+  /** Единый pointerdown по поверхности: JS hit-test решает жест. */
+  const onSurfacePointerDown = (e: React.PointerEvent) => {
     const world = eventWorld(e);
-    if (gesture === "marquee") {
-      // НЕ-аддитивный marquee сразу гасит выделение, чтобы старая подсветка не
-      // «висела» во время протягивания рамки; shift → аддитивный (к текущему).
-      if (!e.shiftKey) dispatch({ type: "clearSelection" });
-      dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive: e.shiftKey };
-      (e.currentTarget as Element).setPointerCapture(e.pointerId);
-    } else {
-      dispatch({ type: "clearSelection" });
-      startPan(e);
-    }
-  };
-
-  const onNodePointerDown = (nodeId: string, e: React.PointerEvent) => {
-    e.stopPropagation();
-    const gesture = resolveNodeGesture({
-      tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
+    const hit = hitTest(world, {
+      nodes: renderData.nodes,
+      edges: renderData.edges,
+      nodesById,
+      singleSelectedNodeId,
     });
-    if (gesture === "pan") {
-      // hand/Space/средняя кнопка поверх узла → пан, а не select/move
-      startPan(e);
-      return;
+    const capture = () => { (e.currentTarget as Element).setPointerCapture(e.pointerId); };
+    switch (hit.kind) {
+      case "resize-handle":
+        dragRef.current = { kind: "resize", nodeId: hit.nodeId, handle: hit.handle, lastWorld: world };
+        capture();
+        return;
+      case "port":
+        dragRef.current = { kind: "edge", fromNode: hit.nodeId, fromSide: hit.side, currentWorld: world };
+        capture();
+        return;
+      case "node": {
+        const gesture = resolveNodeGesture({
+          tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
+        });
+        if (gesture === "pan") { startPan(e); return; }
+        if (!selectedNodeIds.has(hit.nodeId)) {
+          dispatch({ type: "selectNode", nodeId: hit.nodeId, additive: e.shiftKey });
+        } else if (e.shiftKey) {
+          dispatch({ type: "selectNode", nodeId: hit.nodeId, additive: true });
+        }
+        dragRef.current = { kind: "move", lastWorld: world };
+        capture();
+        return;
+      }
+      case "edge":
+        dispatch({ type: "selectEdge", edgeId: hit.edgeId, additive: e.shiftKey });
+        return;
+      case "background": {
+        const gesture = resolveBackgroundGesture({
+          tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
+        });
+        if (gesture === "marquee") {
+          if (!e.shiftKey) dispatch({ type: "clearSelection" });
+          dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive: e.shiftKey };
+          capture();
+        } else {
+          dispatch({ type: "clearSelection" });
+          startPan(e);
+        }
+        return;
+      }
     }
-    if (!selectedNodeIds.has(nodeId)) {
-      dispatch({ type: "selectNode", nodeId, additive: e.shiftKey });
-    } else if (e.shiftKey) {
-      dispatch({ type: "selectNode", nodeId, additive: true });
+  };
+
+  /** Двойной клик по узлу (text/shape) → инлайн-редактор текста. */
+  const onSurfaceDoubleClick = (e: React.MouseEvent) => {
+    const world = eventWorld(e);
+    const hit = hitTestNode(world, renderData.nodes);
+    if (!hit) return;
+    const node = (state.data.nodes ?? []).find((n) => n.id === hit.id);
+    if (node && (node.type === "text" || node.type === "shape")) {
+      dispatch({ type: "selectNode", nodeId: hit.id, additive: false });
+      setNewNodeId(null);
+      setEditingNodeId(hit.id);
     }
-    dragRef.current = { kind: "move", lastWorld: eventWorld(e) };
-    // Захват ставим на сам <g> узла, а НЕ на корневой <svg>: по спеке Pointer
-    // Events синтетический click/dblclick уводится в элемент с захватом. Захват
-    // на <svg> ретаргетил dblclick на корень → onDoubleClick на <g> не срабатывал
-    // (даблклик «не открывал» редактирование текста). Drag сохраняется: события
-    // всплывают с <g> к <svg>, где висят onPointerMove/onPointerUp.
-    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
-  const onResizeHandleDown = (nodeId: string, handle: ResizeHandle, e: React.PointerEvent) => {
-    e.stopPropagation();
-    dragRef.current = { kind: "resize", nodeId, handle, lastWorld: eventWorld(e) };
-    svgRef.current?.setPointerCapture(e.pointerId);
-  };
-
-  const onSideHandleDown = (nodeId: string, side: Side, e: React.PointerEvent) => {
-    e.stopPropagation();
-    dragRef.current = { kind: "edge", fromNode: nodeId, fromSide: side, currentWorld: eventWorld(e) };
-    svgRef.current?.setPointerCapture(e.pointerId);
-  };
-
-  const onEdgePointerDown = (edgeId: string, e: React.PointerEvent) => {
-    e.stopPropagation();
-    dispatch({ type: "selectEdge", edgeId, additive: e.shiftKey });
+  /** Курсор поверхности по тому, что под указателем (без активного drag). */
+  const updateHoverCursor = (world: Point) => {
+    const el = surfaceRef.current;
+    if (!el) return;
+    if (state.tool === "hand" || spaceHeld) { el.style.cursor = "grab"; return; }
+    const hit = hitTest(world, { nodes: renderData.nodes, edges: renderData.edges, nodesById, singleSelectedNodeId });
+    el.style.cursor =
+      hit.kind === "resize-handle" ? `${hit.handle}-resize`
+        : hit.kind === "port" ? "crosshair"
+          : hit.kind === "node" ? "move"
+            : hit.kind === "edge" ? "pointer"
+              : "default";
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     const drag = dragRef.current;
-    if (!drag) return;
+    if (!drag) { updateHoverCursor(eventWorld(e)); return; }
     const world = eventWorld(e);
     switch (drag.kind) {
       case "pan": {
@@ -276,7 +296,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // ---- wheel (Figma: ctrl/meta → зум у курсора, иначе → пан) ----
   // React onWheel ПАССИВНЫЙ → e.preventDefault() в JSX-хендлере игнорируется и
   // страница скроллится/зумится вместе с холстом. Поэтому вешаем НЕпассивный
-  // нативный listener на svgRef (он заполняет холст, ref-мердж Trigger'а не задет).
+  // нативный listener на surfaceRef (он заполняет холст, ref-мердж Trigger'а не задет).
   // Логику держим в ref и обновляем в effect'е каждый рендер (не во время рендера —
   // react-hooks/refs запрещает писать ref.current в фазе рендера), чтобы listener
   // не переподписывался и не ловил stale closure (vp/state читаются из current).
@@ -288,7 +308,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         deltaX: e.deltaX, deltaY: e.deltaY, ctrlKey: e.ctrlKey, metaKey: e.metaKey, shiftKey: e.shiftKey,
       });
       if (action.kind === "zoom") {
-        const rect = svgRef.current?.getBoundingClientRect();
+        const rect = surfaceRef.current?.getBoundingClientRect();
         const sx = e.clientX - (rect?.left ?? 0);
         const sy = e.clientY - (rect?.top ?? 0);
         dispatch({ type: "setViewport", viewport: applyZoomAtPoint(vp, action.factor, sx, sy) });
@@ -298,7 +318,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     };
   });
   useEffect(() => {
-    const el = svgRef.current;
+    const el = surfaceRef.current;
     if (!el) return;
     const h = (e: WheelEvent) => { onWheelRef.current?.(e); };
     el.addEventListener("wheel", h, { passive: false });
@@ -392,16 +412,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     // на узле: НЕ зовём preventBaseUIHandler — даём меню открыться и заанкориться к курсору
   };
 
-  // ---- node double-click → текст-оверлей (text/shape) ----
-  const onNodeDoubleClick = (nodeId: string) => {
-    const node = (state.data.nodes ?? []).find((n) => n.id === nodeId);
-    if (node && (node.type === "text" || node.type === "shape")) {
-      dispatch({ type: "selectNode", nodeId, additive: false });
-      setNewNodeId(null); // правим существующий узел — очистка текста его НЕ удаляет
-      setEditingNodeId(nodeId);
-    }
-  };
-
   // ---- create-node helpers (центр вьюпорта) ----
   const viewportCenterWorld = useCallback((): Point => {
     return snapPoint(screenToWorld({ x: size.width / 2, y: size.height / 2 }, vp), true);
@@ -431,10 +441,10 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // rootEl = живой svg редактора: из него getComputedStyle берёт реальные цвета темы.
   const exportTitle = isCreate ? title : (canvas?.title ?? "");
   const onExportSvg = () => {
-    downloadCanvasSvg(renderData, resolveEntityRef, exportTitle, svgRef.current ?? document.documentElement);
+    painter.exportSvg(renderData, resolveEntityRef, exportTitle, surfaceRef.current ?? document.documentElement);
   };
   const onExportPng = () => {
-    void downloadCanvasPng(renderData, resolveEntityRef, exportTitle, svgRef.current ?? document.documentElement);
+    void painter.exportPng(renderData, resolveEntityRef, exportTitle, surfaceRef.current ?? document.documentElement);
   };
 
   // ---- save ----
@@ -514,6 +524,19 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     if (state.dirty && !window.confirm(t("editor.confirmLeave"))) return;
     router.push(isCreate ? "/canvases" : `/canvases/${canvas?.id}`);
   };
+
+  const scene: Scene = useMemo(() => ({
+    data: renderData,
+    viewport: vp,
+    resolveEntityRef,
+    selectedNodeIds,
+    selectedEdgeIds,
+    handlesForNodeId: singleSelectedNodeId,
+    edgeTargetId,
+    invalidNodeId: invalidNodeId ?? null,
+    edgeDraft: edgePreview,
+    marquee,
+  }), [renderData, vp, resolveEntityRef, selectedNodeIds, selectedEdgeIds, singleSelectedNodeId, edgeTargetId, invalidNodeId, edgePreview, marquee]);
 
   const editingNode = editingNodeId ? (state.data.nodes ?? []).find((n) => n.id === editingNodeId) : undefined;
 
@@ -606,69 +629,23 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
             render={
               // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
               <div
+                ref={surfaceRef}
                 role="application"
                 aria-label={t("editor.ariaLabel")}
-                className="relative flex-1"
-                style={{ height: "70vh", cursor: canvasCursor }}
+                className="relative flex-1 select-none"
+                style={{ height: "70vh", cursor: canvasCursor, touchAction: "none" }}
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={0}
                 onKeyDown={onKeyDown}
                 onContextMenu={onCanvasContextMenu}
+                onPointerDown={onSurfacePointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onDoubleClick={onSurfaceDoubleClick}
               />
             }
           >
-          <svg
-            ref={svgRef}
-            // select-none: при перетаскивании узлов/рёбер/ресайзе браузер не выделяет
-            // SVG-текст. Текст-оверлей редактирования — сосед svg, не потомок → не задет.
-            className="select-none"
-            width="100%" height="100%"
-            viewBox={viewBox}
-            style={{ touchAction: "none", background: "var(--color-surface)", display: "block" }}
-            onPointerDown={onBackgroundPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-          >
-            <defs>
-              {/* markerUnits=userSpaceOnUse: размер стрелки НЕ зависит от strokeWidth,
-                  поэтому у выбранного (более толстого) ребра стрелка не увеличивается
-                  (10.5 = прежний размер обычной стрелки: markerWidth 7 × stroke 1.5).
-                  Два маркера = два цвета: стрелка перекрашивается в цвет своего ребра. */}
-              <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="10.5" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-fg-muted)" />
-              </marker>
-              <marker id="cv-arrow-selected" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="10.5" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-accent)" />
-              </marker>
-            </defs>
-
-            <EditorEdgeLayer
-              edges={renderData.edges}
-              nodesById={nodesById}
-              selectedEdgeIds={selectedEdgeIds}
-              preview={edgePreview ?? undefined}
-              onEdgePointerDown={onEdgePointerDown}
-            />
-            <EditorNodeLayer
-              nodes={renderData.nodes}
-              selectedNodeIds={selectedNodeIds}
-              resolveEntityRef={resolveEntityRef}
-              invalidNodeId={invalidNodeId}
-              edgeTargetId={edgeTargetId ?? undefined}
-              onNodePointerDown={onNodePointerDown}
-              onNodeDoubleClick={onNodeDoubleClick}
-              onResizeHandleDown={onResizeHandleDown}
-              onSideHandleDown={onSideHandleDown}
-            />
-
-            {marquee && (
-              <rect
-                x={marquee.x} y={marquee.y} width={marquee.width} height={marquee.height}
-                fill="var(--color-accent)" fillOpacity={0.1}
-                stroke="var(--color-accent)" strokeDasharray="4 2" pointerEvents="none"
-              />
-            )}
-          </svg>
+          <painter.Surface scene={scene} size={size} />
 
           {editingNode && (
             <EditorTextOverlay
