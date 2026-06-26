@@ -21,6 +21,7 @@ export { Dialog, DialogClose } from "./dialog";
 export { DirectionProvider } from "./direction-provider";
 export { Toolbar } from "./toolbar";
 export { Popover } from "./popover";
+export { Tooltip, type TooltipProps } from "./tooltip";
 export { Menu } from "./menu";
 export { ContextMenu } from "./context-menu";
 export { Combobox } from "./combobox";
