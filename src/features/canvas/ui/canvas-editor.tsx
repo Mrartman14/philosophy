@@ -12,6 +12,7 @@ import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, snapPoint, validateGraph, hitTestNode, marqueeHits, newId,
+  resolveBackgroundGesture, resolveNodeGesture, resolveWheel,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { makeEntityRefResolver } from "../entity-ref";
@@ -40,7 +41,7 @@ type Drag =
   | { kind: "pan"; startScreen: Point; startVp: { x: number; y: number } }
   | { kind: "move"; lastWorld: Point }
   | { kind: "resize"; nodeId: string; handle: ResizeHandle; lastWorld: Point }
-  | { kind: "marquee"; startWorld: Point; currentWorld: Point }
+  | { kind: "marquee"; startWorld: Point; currentWorld: Point; additive: boolean }
   | { kind: "edge"; fromNode: string; fromSide: Side; currentWorld: Point }
   | null;
 
@@ -87,6 +88,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const [edgePreview, setEdgePreview] = useState<{ from: Point; to: Point } | null>(null);
   // узел-кандидат под курсором во время протягивания нового ребра — подсвечивается
   const [edgeTargetId, setEdgeTargetId] = useState<string | null>(null);
+  // Space зажат → временный режим пана (Figma). Читается inline-хендлерами из
+  // замыкания рендера — поэтому их НЕ оборачивать в useCallback (stale closure).
+  const [spaceHeld, setSpaceHeld] = useState(false);
 
   // dirty-guard: beforeunload при несохранённых изменениях
   useEffect(() => {
@@ -146,9 +150,13 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // ---- pointer handlers ----
   const onBackgroundPointerDown = (e: React.PointerEvent) => {
     if (e.target !== e.currentTarget) return; // клик именно по фону
+    const gesture = resolveBackgroundGesture({
+      tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
+    });
     const world = eventWorld(e);
-    if (e.shiftKey) {
-      dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world };
+    if (gesture === "marquee") {
+      // shift → аддитивный marquee (к текущему выделению)
+      dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive: e.shiftKey };
     } else {
       dispatch({ type: "clearSelection" });
       dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
@@ -158,6 +166,15 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   const onNodePointerDown = (nodeId: string, e: React.PointerEvent) => {
     e.stopPropagation();
+    const gesture = resolveNodeGesture({
+      tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
+    });
+    if (gesture === "pan") {
+      // hand/Space/средняя кнопка поверх узла → пан, а не select/move
+      dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
+      (e.currentTarget as Element).setPointerCapture(e.pointerId);
+      return;
+    }
     if (!selectedNodeIds.has(nodeId)) {
       dispatch({ type: "selectNode", nodeId, additive: e.shiftKey });
     } else if (e.shiftKey) {
@@ -233,7 +250,10 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       const world = eventWorld(e);
       const rect = { x: Math.min(drag.startWorld.x, world.x), y: Math.min(drag.startWorld.y, world.y), width: Math.abs(world.x - drag.startWorld.x), height: Math.abs(world.y - drag.startWorld.y) };
       const ids = marqueeHits(rect, renderData.nodes);
-      dispatch({ type: "selectMany", nodeIds: ids, edgeIds: [] });
+      const nextNodeIds = drag.additive
+        ? Array.from(new Set([...state.selection.nodeIds, ...ids]))
+        : ids;
+      dispatch({ type: "selectMany", nodeIds: nextNodeIds, edgeIds: drag.additive ? state.selection.edgeIds : [] });
       setMarquee(null);
     } else if (drag.kind === "edge") {
       const world = eventWorld(e);
@@ -246,27 +266,49 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     }
   };
 
-  // ---- wheel zoom ----
+  // ---- wheel (Figma: ctrl/meta → зум у курсора, иначе → пан) ----
   const onWheel = (e: React.WheelEvent) => {
-    const rect = svgRef.current?.getBoundingClientRect();
-    const sx = e.clientX - (rect?.left ?? 0);
-    const sy = e.clientY - (rect?.top ?? 0);
-    const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
-    dispatch({ type: "setViewport", viewport: applyZoomAtPoint(vp, factor, sx, sy) });
+    const action = resolveWheel({
+      deltaX: e.deltaX, deltaY: e.deltaY, ctrlKey: e.ctrlKey, metaKey: e.metaKey, shiftKey: e.shiftKey,
+    });
+    if (action.kind === "zoom") {
+      const rect = svgRef.current?.getBoundingClientRect();
+      const sx = e.clientX - (rect?.left ?? 0);
+      const sy = e.clientY - (rect?.top ?? 0);
+      dispatch({ type: "setViewport", viewport: applyZoomAtPoint(vp, action.factor, sx, sy) });
+    } else {
+      dispatch({ type: "setViewport", viewport: { ...vp, x: vp.x + action.dx / vp.zoom, y: vp.y + action.dy / vp.zoom } });
+    }
   };
 
   // ---- keyboard ----
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (editingNodeId) return; // текст-оверлей перехватывает
+    if (editingNodeId) return; // текст-оверлей перехватывает ввод
+
+    if (e.code === "Space") {
+      e.preventDefault();              // не скроллить / не «жать» фокус (на каждом repeat)
+      if (!spaceHeld) setSpaceHeld(true);
+      return;
+    }
     if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
       dispatch({ type: "deleteSelection" });
-    } else if (e.key === "Escape") {
+      return;
+    }
+    if (e.key === "Escape") {
       dispatch({ type: "clearSelection" });
-    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
       e.preventDefault();
       dispatch(e.shiftKey ? { type: "redo" } : { type: "undo" });
+      return;
     }
+    // ветки V/H + z-order + nudge дописываются в Task 6 (тут пока всё).
+  };
+
+  const onKeyUp = (e: React.KeyboardEvent) => {
+    if (e.code === "Space") setSpaceHeld(false);
   };
 
   // ---- node double-click → текст-оверлей (text/shape) ----
@@ -394,6 +436,13 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   const editingNode = editingNodeId ? (state.data.nodes ?? []).find((n) => n.id === editingNodeId) : undefined;
 
+  // Курсор холста: hand-инструмент или зажатый Space → grab; иначе → default.
+  // Обновляется через state.tool / spaceHeld (оба триггерят ре-рендер).
+  // «grabbing» во время активного пана опущен намеренно: dragRef — ref, читать
+  // его current в рендере нельзя (react-hooks/refs), а ref-смена не ре-рендерит.
+  // Отдельный useState под активный drag-kind — follow-up (brief, Step 7).
+  const canvasCursor = (state.tool === "hand" || spaceHeld) ? "grab" : "default";
+
   // create: сейв активен при непустом title (граф может быть пустым — бек допускает).
   const saveDisabled = saving || (isCreate ? title.trim() === "" : !state.dirty);
   const saveLabel = isCreate ? t("toolbar.create") : undefined;
@@ -473,10 +522,11 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           role="application"
           aria-label={t("editor.ariaLabel")}
           className="relative flex-1"
-          style={{ height: "70vh" }}
+          style={{ height: "70vh", cursor: canvasCursor }}
           // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
           tabIndex={0}
           onKeyDown={onKeyDown}
+          onKeyUp={onKeyUp}
           onWheel={onWheel}
         >
           <svg
