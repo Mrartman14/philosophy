@@ -1109,6 +1109,63 @@ git commit -m "feat(canvas): контекстное меню z-order по пра
 
 ---
 
+## Task 9: вычистка мёртвого кода (`panBy` / `zoomAt`)
+
+**Контекст:** ревью нашло мёртвые viewport-команды. `panBy` и `zoomAt` определены в `EditorCommand` и обработаны в редьюсере, но **нигде не диспатчатся** (grep по `src` — только кейсы редьюсера + один тест `panBy`; пан/зум идут через `setViewport`/`applyZoomAtPoint`). Удаляем обе. Эта задача независима от Tasks 1–8 — можно выполнять первой или последней.
+
+**Files:**
+- Modify: `src/features/canvas/editor/editor-types.ts` (убрать 2 строки из `EditorCommand`)
+- Modify: `src/features/canvas/editor/canvas-reducer.ts` (убрать `case "panBy"` и `case "zoomAt"`)
+- Modify: `src/features/canvas/editor/canvas-reducer.test.ts` (убрать тест `panBy`)
+
+**Interfaces:**
+- Produces: ничего нового; сужает `EditorCommand` (убирает `panBy`/`zoomAt`).
+
+- [ ] **Step 1: Убедиться, что команды мертвы**
+
+Run: `grep -rn 'panBy\|zoomAt' src`
+Expected: совпадения ТОЛЬКО в `editor-types.ts` (объявления), `canvas-reducer.ts` (кейсы), `canvas-reducer.test.ts` (тест panBy). Никаких `dispatch({ type: "panBy" })`/`"zoomAt"` в UI. Если есть call-site — НЕ удалять, эскалировать.
+
+- [ ] **Step 2: Удалить тест `panBy`**
+
+В `canvas-reducer.test.ts`, в `describe("viewport команды", …)`, удалить блок (сохранив `toggleGrid`):
+
+```ts
+  it("panBy сдвигает мир", () => {
+    let s = initEditorState(baseData);
+    s = canvasReducer(s, { type: "panBy", dx: 10, dy: -5 });
+    expect(s.viewport.x).toBe(10);
+    expect(s.viewport.y).toBe(-5);
+  });
+```
+
+- [ ] **Step 3: Удалить команды из `editor-types.ts`**
+
+В `EditorCommand`, секция `// --- viewport ---`, удалить две строки (оставить `setViewport`):
+
+```ts
+  | { type: "panBy"; dx: number; dy: number }
+  | { type: "zoomAt"; factor: number; screenX: number; screenY: number; viewportWidth: number; viewportHeight: number }
+```
+
+- [ ] **Step 4: Удалить кейсы из `canvas-reducer.ts`**
+
+Удалить `case "panBy": …` и весь блок `case "zoomAt": { … }` (около строк 73-86). НЕ трогать `case "setViewport"` и `case "toggleGrid"`. Проверить, что импорт `Viewport` остаётся нужен (его использует `DEFAULT_VIEWPORT`) — не удалять импорт.
+
+- [ ] **Step 5: Verify**
+
+Run: `pnpm test src/features/canvas/editor/canvas-reducer.test.ts && pnpm lint`
+Expected: PASS — switch имеет `default: return state;`, удаление кейсов безопасно; TS-исчерпывающести по `EditorCommand` нет (есть default), так что красноты нет. `grep -rn 'panBy\|zoomAt' src` теперь пусто.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/features/canvas/editor/editor-types.ts src/features/canvas/editor/canvas-reducer.ts src/features/canvas/editor/canvas-reducer.test.ts
+git commit -m "refactor(canvas): удалить мёртвые команды panBy/zoomAt"
+```
+
+---
+
 ## Финальная верификация (после всех задач)
 
 - [ ] **Гейт зелёный:** `pnpm lint && pnpm test && pnpm build`.
