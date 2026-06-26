@@ -93,6 +93,14 @@ const comments = {
   // --- admin-comment-row ---
   adminDeleted: "удалён",
 
+  // --- margin comments (selection marginalia UI) ---
+  marginCommentAdd: "Комментировать",
+  marginComposerTitle: "Комментарий к фрагменту",
+  marginHighlightShow: "Показать комментарии в тексте",
+  marginHighlightHide: "Скрыть комментарии в тексте",
+  marginOpenThread: "Открыть обсуждение",
+  marginColumnLabel: "Комментарии к фрагментам",
+
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {
     agreement: "Согласие",

@@ -91,6 +91,14 @@ const comments = {
   // --- admin-comment-row ---
   adminDeleted: "deleted",
 
+  // --- margin comments (selection marginalia UI) ---
+  marginCommentAdd: "Comment",
+  marginComposerTitle: "Comment on selection",
+  marginHighlightShow: "Show comments in text",
+  marginHighlightHide: "Hide comments in text",
+  marginOpenThread: "Open thread",
+  marginColumnLabel: "Comments on selections",
+
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {
     agreement: "Agreement",
