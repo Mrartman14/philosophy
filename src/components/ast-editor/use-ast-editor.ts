@@ -36,8 +36,13 @@ export function useAstEditor(opts: UseAstEditorOptions): Editor | null {
           "aria-label": ariaLabel ?? t("editorAriaLabel"),
           role: "textbox",
           "aria-multiline": "true",
-          // отступ как у тулбара (p-1) + снимаем нативный focus-outline contenteditable
-          class: "p-1 outline-none",
+          // `.content` на самом узле ProseMirror, а не на обёртке EditorContent:
+          // блоки должны быть ПРЯМЫМИ детьми `.content`, иначе flow-селекторы
+          // content.css (`.content > * + *`, `.content > :is(h1..h6)`) не матчатся
+          // и пропадает вертикальный ритм. + p-1 (отступ как у тулбара) и снятие
+          // нативного focus-outline contenteditable.
+          class: "content p-1 outline-none",
+          "data-size": "sm",
         },
       },
       extensions: [...buildExtensions({ snapshot: schema, context: entityContext, placeholder }), ...(extraExtensions ?? [])],

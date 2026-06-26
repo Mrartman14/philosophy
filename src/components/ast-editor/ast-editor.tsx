@@ -116,7 +116,11 @@ export const AstEditor = forwardRef<AstEditorRef, AstEditorProps>(function AstEd
           defaultLectureId={props.defaultLectureId}
         />
       )}
-      <EditorContent editor={editor} className="content" data-size="sm" />
+      {/* `.content`/`data-size` живут на самом узле ProseMirror (см.
+          use-ast-editor.ts editorProps), а не на этой обёртке: ProseMirror
+          вставляет свой div между обёрткой и блоками и рвал бы flow-контракт
+          content.css (`.content > *`). */}
+      <EditorContent editor={editor} />
       {props.editable !== false && (
         <SlashMenu editor={editor} schema={schema} context={props.entityContext} />
       )}
