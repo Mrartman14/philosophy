@@ -10,7 +10,7 @@ import type { AnchoredNote } from "./types";
 // рендерит карточку-сироту через renderNote(note, true). Реальная геометрия /
 // двусторонний клик / подсветка — ручной QA (Task 20).
 
-function Harness({ notes }: { notes: AnchoredNote[] }) {
+function Harness({ notes, tone }: { notes: AnchoredNote[]; tone?: "annotation" | "comment" }) {
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div>
@@ -24,6 +24,9 @@ function Harness({ notes }: { notes: AnchoredNote[] }) {
         canCreate={false}
         onCreateRequest={() => undefined}
         affordanceLabel="Add"
+        // exactOptionalPropertyTypes: tone? без undefined в проде → передаём
+        // только когда задан (conditional spread), не пробрасывая explicit undefined.
+        {...(tone ? { tone } : {})}
         renderNote={(n, orphan) => (
           <span>
             {orphan ? "orphan:" : "anchored:"}
@@ -58,5 +61,12 @@ describe("MarginAnchorLayer (smoke)", () => {
     expect(() => {
       render(<Harness notes={[]} />);
     }).not.toThrow();
+  });
+
+  it("монтируется с tone=comment без throw", () => {
+    expect(() => {
+      render(<Harness notes={[orphanNote]} tone="comment" />);
+    }).not.toThrow();
+    expect(screen.getByText(/orphan:/)).toBeTruthy();
   });
 });

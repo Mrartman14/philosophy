@@ -1,8 +1,8 @@
 // src/components/anchor-engine/use-hover-reveal.ts
 // Lazy-подсветка: движение мыши в AST-руте → hit-test по КЭШИРОВАННЫМ ranges →
 // onHover(id) подсвечивает фрагмент под курсором; mouseleave → onHover(null).
-// Throttle через rAF. Только для InlineAnchorLayer (комментарии). Хит-тест по
-// готовым ranges (не пересчитывает rangeFromAnchor на каждый кадр).
+// Throttle через rAF. Используется eager-слоем MarginAnchorLayer (текст-hover →
+// эмфаза). Хит-тест по готовым ranges (не пересчитывает rangeFromAnchor на каждый кадр).
 import { useEffect, type RefObject } from "react";
 
 import { noteAtPointInRanges } from "./hit-test";

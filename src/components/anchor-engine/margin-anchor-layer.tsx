@@ -18,6 +18,7 @@ import type { Motion } from "@/styles/tokens/enums";
 import { isReducedMotion } from "@/utils/is-reduced-motion";
 
 import { useStableAnchorAction } from "./anchor-actions";
+import { ConnectorLayer } from "./connector-layer";
 import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
@@ -25,6 +26,7 @@ import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
 import type { AnchorDraft, AnchoredNote } from "./types";
 import { useAnchorHighlights } from "./use-anchor-highlights";
 import { useAnchorRanges } from "./use-anchor-ranges";
+import { useHoverReveal } from "./use-hover-reveal";
 import { useTextClick } from "./use-text-click";
 
 export interface MarginAnchorLayerProps {
@@ -38,6 +40,8 @@ export interface MarginAnchorLayerProps {
   // Канал CSS Custom Highlight API (HighlightController). Доменно-агностичный:
   // аннотации не передают → дефолт "annotation". Иные потребители задают свой.
   highlightName?: string;
+  // Тон выноски/акцента карточки: annotation (тёплый) | comment (синий). Default annotation.
+  tone?: "annotation" | "comment";
 }
 
 // Поведение скролла под осью motion. ЗЕРКАЛО `reducedNow` из view-transition.ts:
@@ -69,6 +73,7 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
     onCreateRequest,
     affordanceLabel,
     highlightName = "annotation",
+    tone = "annotation",
   } = props;
 
   const controllerRef = useRef<HighlightController | null>(null);
@@ -79,6 +84,12 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   // переиспользуемый eager/lazy-политиками. Поведение идентично прежней инлайн-логике.
   const { ranges, getAnchorRect, recomputeKey, ready } = useAnchorRanges({ astRootRef, notes });
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Hover-акцент поверх постоянной видимости: наведение на текст (useHoverReveal)
+  // или на карточку (onHoverNote колонки) → hoveredId; эмфаза = hoveredId ?? activeId.
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  useHoverReveal({ astRootRef, ranges, ready, onHover: setHoveredId });
+  const emphasizedId = hoveredId ?? activeId;
 
   // Захват выделения + аффорданс делегированы общему хосту (SelectionAffordanceHost):
   // слой лишь РЕГИСТРИРУЕТ своё действие (useStableAnchorAction стабилизирует
@@ -98,7 +109,7 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
     controller,
     ranges,
     persistentIds: allIds,
-    activeId,
+    activeId: emphasizedId,
     enabled: highlightEnabled,
   });
 
@@ -128,12 +139,21 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
     [ranges],
   );
 
+  // Тон-акцент карточки: бордюр по логической стартовой стороне (RTL-safe).
+  const accent = tone === "comment" ? "var(--color-link)" : "var(--color-highlight-active)";
   const columnNotes: ColumnNote[] = notes.map((n) => {
     const orphan = (ranges.get(n.id) ?? null) === null;
     return {
       id: n.id,
       orphan,
-      node: <div data-note-card={n.id}>{renderNote(n, orphan)}</div>,
+      node: (
+        <div
+          data-note-card={n.id}
+          style={{ borderInlineStart: `3px solid ${accent}`, paddingInlineStart: "0.5rem" }}
+        >
+          {renderNote(n, orphan)}
+        </div>
+      ),
     };
   });
 
@@ -154,6 +174,15 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
         notes={columnNotes}
         getAnchorRect={getAnchorRect}
         onActivate={onActivate}
+        onHoverNote={setHoveredId}
+        recomputeKey={recomputeKey}
+      />
+      <ConnectorLayer
+        ids={allIds}
+        getAnchorRect={getAnchorRect}
+        astRootRef={astRootRef}
+        activeId={emphasizedId}
+        tone={tone}
         recomputeKey={recomputeKey}
       />
     </>
