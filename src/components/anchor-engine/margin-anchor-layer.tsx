@@ -23,6 +23,7 @@ import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
+import { toneColor } from "./tone";
 import type { AnchorDraft, AnchoredNote } from "./types";
 import { useAnchorHighlights } from "./use-anchor-highlights";
 import { useAnchorRanges } from "./use-anchor-ranges";
@@ -140,7 +141,7 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   );
 
   // Тон-акцент карточки: бордюр по логической стартовой стороне (RTL-safe).
-  const accent = tone === "comment" ? "var(--color-link)" : "var(--color-highlight-active)";
+  const accent = toneColor(tone);
   const columnNotes: ColumnNote[] = notes.map((n) => {
     const orphan = (ranges.get(n.id) ?? null) === null;
     return {

@@ -12,6 +12,7 @@ import { createPortal } from "react-dom";
 
 import { connectorPath } from "./connector-geometry";
 import { cssEscape } from "./css-escape";
+import { toneColor, type Tone } from "./tone";
 
 const WIDE = "(min-width: 80rem)";
 const CARD_ATTACH_PX = 14; // вертикальный отступ точки крепления к карточке
@@ -22,7 +23,7 @@ export interface ConnectorLayerProps {
   getAnchorRect: (id: string) => DOMRect | null; // viewport-координаты якоря
   astRootRef: RefObject<HTMLElement | null>;
   activeId: string | null;
-  tone: "annotation" | "comment";
+  tone: Tone;
   recomputeKey: number;
 }
 
@@ -91,7 +92,7 @@ export function ConnectorLayer({
   }, [idsKey, getAnchorRect, astRootRef, recomputeKey]);
 
   if (segs.length === 0) return null;
-  const stroke = tone === "comment" ? "var(--color-link)" : "var(--color-highlight-active)";
+  const stroke = toneColor(tone);
 
   return createPortal(
     <svg

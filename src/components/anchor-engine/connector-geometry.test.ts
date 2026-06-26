@@ -24,7 +24,7 @@ describe("connectorPath", () => {
 
   it("инвариант: все x пути лежат в [min(x1,x2), max(x1,x2)] (текст не пересекается)", () => {
     const d = connectorPath({ x1: 120, y1: 0, x2: 420, y2: 999 });
-    const xs = [...d.matchAll(/[ML] (\d+(?:\.\d+)?) /g)].map((m) => Number(m[1]));
+    const xs = [...d.matchAll(/[ML] (-?\d+(?:\.\d+)?) /g)].map((m) => Number(m[1]));
     for (const x of xs) {
       expect(x).toBeGreaterThanOrEqual(120);
       expect(x).toBeLessThanOrEqual(420);
