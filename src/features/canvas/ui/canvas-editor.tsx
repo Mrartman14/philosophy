@@ -104,17 +104,24 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     return () => { window.removeEventListener("beforeunload", handler); };
   }, [state.dirty]);
 
-  // измеряем контейнер поверхности → size для painter.Surface (он считает viewBox)
+  // измеряем контейнер поверхности → size для painter.Surface (он считает viewBox).
+  // ЗАВИСИМОСТЬ [showJson] критична: при переключении в JSON-режим (ранний return
+  // ниже) surface-div АНМАУНТИТСЯ, при возврате — МАУНТИТСЯ заново (новый узел).
+  // С пустыми deps наблюдатель остался бы на старом (удалённом) div, новый никто
+  // не мерит → size застывает на 0 (Chromium шлёт 0×0 при дисконнекте элемента) →
+  // viewBox "x y 0 0" → SVG не рендерится (нулевой viewBox по спеке отключает
+  // отрисовку), хотя курсор меняется (hit-test идёт по world-координатам). Гард
+  // ширина/высота>0 не даёт переходному 0 при тиردауне отравить size.
   useEffect(() => {
     const el = surfaceRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
       const r = entries[0]?.contentRect;
-      if (r) setSize({ width: r.width, height: r.height });
+      if (r && r.width > 0 && r.height > 0) setSize({ width: r.width, height: r.height });
     });
     ro.observe(el);
     return () => { ro.disconnect(); };
-  }, []);
+  }, [showJson]);
 
   const renderData = useMemo(() => canvasDataToRenderData(state.data), [state.data]);
   const resolveEntityRef = useMemo(() => makeEntityRefResolver(t), [t]);
@@ -317,13 +324,16 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       }
     };
   });
+  // [showJson]: тот же remount-инвариант, что и у ResizeObserver — surface-div при
+  // JSON-тогле пересоздаётся, без переподписки колесо (зум/пан) повисло бы на старом
+  // удалённом узле, а новый остался бы без нативного non-passive listener'а.
   useEffect(() => {
     const el = surfaceRef.current;
     if (!el) return;
     const h = (e: WheelEvent) => { onWheelRef.current?.(e); };
     el.addEventListener("wheel", h, { passive: false });
     return () => { el.removeEventListener("wheel", h); };
-  }, []);
+  }, [showJson]);
 
   // Выделены ли узлы. Один источник истины для: z-order хоткеев, nudge-гарда и
   // disabled пунктов контекстного меню (НЕ путать с toolbar.hasSelection = node+edge).
