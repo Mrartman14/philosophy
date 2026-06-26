@@ -1,4 +1,4 @@
-// src/features/canvas/editor/shortcuts.test.ts
+// src/utils/shortcuts.test.ts
 import { describe, it, expect, vi } from "vitest";
 
 import { runShortcuts, hasMod, type Shortcut, type KeyLike } from "./shortcuts";

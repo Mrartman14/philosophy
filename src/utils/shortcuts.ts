@@ -1,7 +1,7 @@
-// src/features/canvas/editor/shortcuts.ts
+// src/utils/shortcuts.ts
 // Лёгкий реестр команд+шорткатов: декларативный список {combo|when, run} + один
-// диспетчер на keydown (вместо разросшегося switch). Чистый и тестируемый — UI
-// строит реестр со своими хендлерами и зовёт runShortcuts из onKeyDown.
+// диспетчер. Чистый, UI-агностичный, тестируемый — потребитель строит реестр со
+// своими хендлерами и зовёт runShortcuts из своего keydown-обработчика.
 
 /** Минимальный срез KeyboardEvent, нужный для матчинга (удобно для тестов). */
 export interface KeyLike {

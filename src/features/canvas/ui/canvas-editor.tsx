@@ -7,12 +7,13 @@ import { boundingBox, sidePoint, type Point, type RenderNode, type Side } from "
 import { Button, ContextMenu, FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
+import { runShortcuts, hasMod } from "@/utils/shortcuts";
 
 import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, NODE_DEFAULT_SIZE, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, fitViewport, centerViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
-  resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge, runShortcuts, hasMod,
+  resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { downloadCanvasJson, painter } from "../engine";
@@ -386,7 +387,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // ---- keyboard ----
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (editingNodeId) return; // текст-оверлей перехватывает ввод
-    // Декларативный реестр шорткатов (editor/shortcuts). Порядок = приоритет.
+    // Декларативный реестр шорткатов (@/utils/shortcuts). Порядок = приоритет.
     runShortcuts([
       // Space (зажат) — временный пан; keyup/blur ловятся на window отдельно.
       { id: "pan-hold", combo: "Space", run: () => { if (!spaceHeld) setSpaceHeld(true); } },
