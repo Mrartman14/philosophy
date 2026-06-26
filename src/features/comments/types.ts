@@ -4,6 +4,9 @@ import type { components } from "@/api/schema";
 /** Узел дерева комментариев (enrich'нутый сервисом бека). */
 export type Comment = components["schemas"]["comment.Comment"];
 
+/** Якорь комментария: координаты фрагмента + цель (target_entity_*). */
+export type Anchor = components["schemas"]["comment.Anchor"];
+
 /** Корень + плоский список потомков — единица листинга. */
 export type RootSubtree = components["schemas"]["comment.RootSubtree"];
 
