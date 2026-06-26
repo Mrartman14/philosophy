@@ -79,6 +79,13 @@ const canvas: Messages["canvas"] = {
     create: "Create",
   },
 
+  // --- editor context menu (right-click) ---
+  contextMenu: {
+    bringToFront: "Bring to front",
+    sendToBack: "Send to back",
+    delete: "Delete",
+  },
+
   // --- editor-inspector ---
   inspector: {
     emptyHint: "Select a node or edge.",

@@ -78,6 +78,13 @@ const canvas = {
     create: "Создать",
   },
 
+  // --- editor context menu (right-click) ---
+  contextMenu: {
+    bringToFront: "На передний план",
+    sendToBack: "На задний план",
+    delete: "Удалить",
+  },
+
   // --- editor-inspector ---
   inspector: {
     emptyHint: "Выберите узел или ребро.",

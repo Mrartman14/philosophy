@@ -79,6 +79,13 @@ const canvas: Messages["canvas"] = {
     create: "创建",
   },
 
+  // --- editor context menu (right-click) ---
+  contextMenu: {
+    bringToFront: "置于顶层",
+    sendToBack: "置于底层",
+    delete: "删除",
+  },
+
   // --- editor-inspector ---
   inspector: {
     emptyHint: "请选择一个节点或边。",

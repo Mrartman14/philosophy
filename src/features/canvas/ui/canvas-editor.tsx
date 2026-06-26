@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 import type { Point, RenderNode, Side } from "@/components/canvas-render";
-import { FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
+import { ContextMenu, FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -336,6 +336,26 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     if (e.code === "Space") setSpaceHeld(false);
   };
 
+  // правый клик: нацелить меню на узел под курсором; по пустому фону — НЕ показывать.
+  // КРИТИЧНО (ревью): Base UI ContextMenu открывается своим обработчиком contextmenu,
+  // и обычный e.preventDefault() его НЕ останавливает (гасит лишь нативное меню браузера).
+  // Чтобы подавить открытие popup, надо вызвать e.preventBaseUIHandler() — Base UI
+  // добавляет этот метод на синтетическое событие, а наш onContextMenu по правилам
+  // mergeProps выполняется ДО базового. Тип события расширяем локально.
+  const onCanvasContextMenu = (e: React.MouseEvent & { preventBaseUIHandler?: () => void }) => {
+    const world = eventWorld(e);
+    const hit = hitTestNode(world, renderData.nodes);
+    if (!hit) {
+      e.preventDefault();          // нет нативного меню
+      e.preventBaseUIHandler?.();  // и Base UI не открывает popup по пустому фону
+      return;
+    }
+    if (!selectedNodeIds.has(hit.id)) {
+      dispatch({ type: "selectNode", nodeId: hit.id, additive: false });
+    }
+    // на узле: НЕ зовём preventBaseUIHandler — даём меню открыться и заанкориться к курсору
+  };
+
   // ---- node double-click → текст-оверлей (text/shape) ----
   const onNodeDoubleClick = (nodeId: string) => {
     const node = (state.data.nodes ?? []).find((n) => n.id === nodeId);
@@ -468,6 +488,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   // Отдельный useState под активный drag-kind — follow-up (brief, Step 7).
   const canvasCursor = (state.tool === "hand" || spaceHeld) ? "grab" : "default";
 
+  // z-order + удаление в контекстном меню активны только при выделении узла(ов).
+  const hasNodeSelection = state.selection.nodeIds.length > 0;
+
   // create: сейв активен при непустом title (граф может быть пустым — бек допускает).
   const saveDisabled = saving || (isCreate ? title.trim() === "" : !state.dirty);
   const saveLabel = isCreate ? t("toolbar.create") : undefined;
@@ -545,18 +568,24 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           указателя — не реализованы. Полная клавиатурная авторизация отложена
           до основной работы над canvas (деferred scope).
         */}
-        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-        <div
-          role="application"
-          aria-label={t("editor.ariaLabel")}
-          className="relative flex-1"
-          style={{ height: "70vh", cursor: canvasCursor }}
-          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-          tabIndex={0}
-          onKeyDown={onKeyDown}
-          onKeyUp={onKeyUp}
-          onWheel={onWheel}
-        >
+        <ContextMenu.Root>
+          <ContextMenu.Trigger
+            render={
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+              <div
+                role="application"
+                aria-label={t("editor.ariaLabel")}
+                className="relative flex-1"
+                style={{ height: "70vh", cursor: canvasCursor }}
+                // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+                tabIndex={0}
+                onKeyDown={onKeyDown}
+                onKeyUp={onKeyUp}
+                onWheel={onWheel}
+                onContextMenu={onCanvasContextMenu}
+              />
+            }
+          >
           <svg
             ref={svgRef}
             // select-none: при перетаскивании узлов/рёбер/ресайзе браузер не выделяет
@@ -634,7 +663,25 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
               }}
             />
           )}
-        </div>
+          </ContextMenu.Trigger>
+
+          <ContextMenu.Portal>
+            <ContextMenu.Positioner>
+              <ContextMenu.Popup>
+                <ContextMenu.Item disabled={!hasNodeSelection} onClick={() => { dispatch({ type: "bringToFront", nodeIds: state.selection.nodeIds }); }}>
+                  {t("contextMenu.bringToFront")}
+                </ContextMenu.Item>
+                <ContextMenu.Item disabled={!hasNodeSelection} onClick={() => { dispatch({ type: "sendToBack", nodeIds: state.selection.nodeIds }); }}>
+                  {t("contextMenu.sendToBack")}
+                </ContextMenu.Item>
+                <ContextMenu.Separator />
+                <ContextMenu.Item disabled={!hasNodeSelection} onClick={() => { dispatch({ type: "deleteSelection" }); }}>
+                  {t("contextMenu.delete")}
+                </ContextMenu.Item>
+              </ContextMenu.Popup>
+            </ContextMenu.Positioner>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>
 
       </div>
 

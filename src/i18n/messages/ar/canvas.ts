@@ -79,6 +79,13 @@ const canvas: Messages["canvas"] = {
     create: "إنشاء",
   },
 
+  // --- editor context menu (right-click) ---
+  contextMenu: {
+    bringToFront: "إحضار إلى الأمام",
+    sendToBack: "إرسال إلى الخلف",
+    delete: "حذف",
+  },
+
   // --- editor-inspector ---
   inspector: {
     emptyHint: "اختر عقدة أو حافة.",
