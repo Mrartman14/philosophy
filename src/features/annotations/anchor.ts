@@ -1,5 +1,5 @@
 // src/features/annotations/anchor.ts
-import type { TextAnchor } from "@/components/annotation-layer";
+import type { TextAnchor } from "@/components/anchor-engine";
 
 import type { Anchor } from "./types";
 

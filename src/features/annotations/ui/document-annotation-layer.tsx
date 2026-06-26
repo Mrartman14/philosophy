@@ -1,7 +1,7 @@
 "use client";
 // src/features/annotations/ui/document-annotation-layer.tsx
 // Коннектор движок↔домен (client). Связывает доменно-агностичный движок
-// маргиналий (@/components/annotation-layer) с доменом аннотаций. КРИТИЧНЫЙ
+// маргиналий (@/components/anchor-engine) с доменом аннотаций. КРИТИЧНЫЙ
 // SSR-инвариант: якорённые карточки рендерятся обычным списком при ready=false
 // (server-проход / no-JS) — они ЕСТЬ в HTML (SEO/доступность). После mount
 // (ready=true) те же ноды отдаются в AnnotationLayer, который ПОЗИЦИОНИРУЕТ их
@@ -18,7 +18,7 @@ import {
   AnnotationLayer,
   type AnchorDraft,
   type AnchoredNote,
-} from "@/components/annotation-layer";
+} from "@/components/anchor-engine";
 import { Button, Inline } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
