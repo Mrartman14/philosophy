@@ -85,6 +85,7 @@ export type EditorCommand =
   | { type: "setNodeText"; nodeId: string; text: string }
   | { type: "setShapeKind"; nodeId: string; shapeKind: "rect" | "ellipse" | "diamond" }
   | { type: "setNodeSize"; nodeId: string; width: number; height: number }
+  | { type: "setNodePosition"; nodeId: string; x: number; y: number }
   // --- z-order ---
   | { type: "bringToFront"; nodeIds: string[] }
   | { type: "sendToBack"; nodeIds: string[] }

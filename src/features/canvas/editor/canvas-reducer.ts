@@ -169,6 +169,12 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
       );
       return commit(state, { ...state.data, nodes });
     }
+    case "setNodePosition": {
+      const nodes = (state.data.nodes ?? []).map((n) =>
+        n.id === command.nodeId ? { ...n, x: Math.round(command.x), y: Math.round(command.y) } : n,
+      );
+      return commit(state, { ...state.data, nodes });
+    }
 
     // ---------------- z-order ----------------
     case "bringToFront":

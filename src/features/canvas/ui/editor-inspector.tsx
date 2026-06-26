@@ -70,6 +70,24 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
         )}
         <div className="flex gap-2">
           <div className="flex flex-1 flex-col gap-1">
+            <Label htmlFor="inspector-node-x">{t("inspector.xLabel")}</Label>
+            <NumberField
+              id="inspector-node-x"
+              value={node.x ?? 0}
+              onValueChange={(v) => { dispatch({ type: "setNodePosition", nodeId, x: v ?? 0, y: node.y ?? 0 }); }}
+            />
+          </div>
+          <div className="flex flex-1 flex-col gap-1">
+            <Label htmlFor="inspector-node-y">{t("inspector.yLabel")}</Label>
+            <NumberField
+              id="inspector-node-y"
+              value={node.y ?? 0}
+              onValueChange={(v) => { dispatch({ type: "setNodePosition", nodeId, x: node.x ?? 0, y: v ?? 0 }); }}
+            />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex flex-1 flex-col gap-1">
             <Label htmlFor="inspector-node-width">{t("inspector.widthLabel")}</Label>
             <NumberField
               id="inspector-node-width"

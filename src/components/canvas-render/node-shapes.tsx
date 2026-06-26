@@ -33,11 +33,12 @@ function NodeText({ node }: { node: RenderNode }) {
   const lines = wrapLines(node.text ?? "", node.width);
   return (
     <g>
-      {/* fill="transparent" (а не "none"): без видимого фона, но тело узла
-          остаётся кликабельным в редакторе (none убирает hit-area заливки). */}
+      {/* Без видимого бордера: в обычном состоянии текст без рамки, при выделении
+          акцентную обводку даёт SvgOverlays. fill="transparent" (не "none") —
+          тело остаётся кликабельным (hit-area заливки). */}
       <rect
         x={node.x} y={node.y} width={node.width} height={node.height}
-        rx={4} fill="transparent" stroke="var(--color-border)"
+        rx={4} fill="transparent" stroke="none"
       />
       <text x={node.x + PADDING} y={node.y + 18} fontSize={12} fill="var(--color-fg)">
         {lines.map((ln, i) => (

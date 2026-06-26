@@ -101,6 +101,8 @@ const canvas = {
     shapeRect: "Прямоугольник",
     shapeEllipse: "Эллипс",
     shapeDiamond: "Ромб",
+    xLabel: "X",
+    yLabel: "Y",
     widthLabel: "Ширина",
     heightLabel: "Высота",
     edgeHeading: "Ребро",

@@ -102,6 +102,8 @@ const canvas: Messages["canvas"] = {
     shapeRect: "Rectangle",
     shapeEllipse: "Ellipse",
     shapeDiamond: "Diamond",
+    xLabel: "X",
+    yLabel: "Y",
     widthLabel: "Width",
     heightLabel: "Height",
     edgeHeading: "Edge",
