@@ -7,6 +7,10 @@ import { GRID_SIZE } from "./editor-types";
 const MIN_ZOOM = 0.1;
 const MAX_ZOOM = 8;
 
+/** Шаг зума колеса/пинча (один «щелчок» = ±10%). Владелец зум-математики — этот модуль. */
+export const ZOOM_IN = 1.1;
+export const ZOOM_OUT = 1 / 1.1;
+
 /**
  * Экранная точка (внутри SVG-контейнера, пиксели) → мировая (координаты графа).
  * Модель вьюпорта: world = viewport.{x,y} + screen / zoom.

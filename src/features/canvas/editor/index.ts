@@ -15,6 +15,13 @@ export {
   portPoint,
 } from "./geometry-editor";
 export type { Rect } from "./geometry-editor";
+export {
+  resolveBackgroundGesture,
+  resolveNodeGesture,
+  resolveWheel,
+  resolveNudge,
+} from "./interaction";
+export type { GestureInput, WheelInput, WheelAction } from "./interaction";
 export type {
   EditorState,
   EditorCommand,
