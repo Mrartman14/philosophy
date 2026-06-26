@@ -44,7 +44,7 @@ export function EditorEdgeLayer({ edges, nodesById, selectedEdgeIds, preview, on
               stroke={selected ? "var(--color-accent)" : "var(--color-fg-muted)"}
               strokeWidth={selected ? 2.5 : 1.5}
               strokeDasharray={e.style === "dashed" ? "6 4" : undefined}
-              markerEnd={arrow ? "url(#cv-arrow)" : undefined}
+              markerEnd={arrow ? (selected ? "url(#cv-arrow-selected)" : "url(#cv-arrow)") : undefined}
               pointerEvents="none"
             />
             {e.label && (

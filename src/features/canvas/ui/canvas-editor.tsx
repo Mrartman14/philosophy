@@ -489,8 +489,15 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
             onPointerUp={onPointerUp}
           >
             <defs>
-              <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              {/* markerUnits=userSpaceOnUse: размер стрелки НЕ зависит от strokeWidth,
+                  поэтому у выбранного (более толстого) ребра стрелка не увеличивается
+                  (10.5 = прежний размер обычной стрелки: markerWidth 7 × stroke 1.5).
+                  Два маркера = два цвета: стрелка перекрашивается в цвет своего ребра. */}
+              <marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="10.5" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-fg-muted)" />
+              </marker>
+              <marker id="cv-arrow-selected" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="10.5" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-accent)" />
               </marker>
             </defs>
 
