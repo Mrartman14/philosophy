@@ -10,12 +10,12 @@
 import { useLayoutEffect, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 
-import { cardAttachY, connectorPath } from "./connector-geometry";
+import { attachYs, connectorPath } from "./connector-geometry";
 import { cssEscape } from "./css-escape";
 import { toneColor, type Tone } from "./tone";
 
 const WIDE = "(min-width: 80rem)";
-const CARD_ATTACH_PX = 14; // вертикальный отступ точки крепления к карточке
+const CARD_EDGE_PAD = 8; // отступ внутрь от края карточки при локте (нет пересечения)
 const FIRST_LINE_CLAMP_PX = 24; // оценка высоты первой строки для центра якоря
 
 export interface ConnectorLayerProps {
@@ -53,11 +53,20 @@ function measure(
     const c = card.getBoundingClientRect();
     const right = c.left >= a.right; // карточка правее текста → правая сторона (RTL-safe)
     const x1 = (right ? rootRect.right : rootRect.left) + window.scrollX;
-    const y1 = a.top + Math.min(a.height, FIRST_LINE_CLAMP_PX) / 2 + window.scrollY;
     const x2 = (right ? c.left : c.right) + window.scrollX;
-    // Крепимся к карточке НА ВЫСОТЕ ЯКОРЯ (зажатой в её границы): карточка напротив
-    // якоря → y2===y1 → строго горизонтальная линия; увело стэкингом → край → локоть.
-    const y2 = cardAttachY(y1, c.top + window.scrollY, c.bottom + window.scrollY, CARD_ATTACH_PX);
+    // Высоты крепления — по пересечению вертикальных диапазонов якоря и карточки:
+    // пересекаются → горизонталь; нет пересечения → локоть, чтобы «добраться» (attachYs).
+    const anchorTop = a.top + window.scrollY;
+    const anchorBottom = a.bottom + window.scrollY;
+    const anchorY = anchorTop + Math.min(a.height, FIRST_LINE_CLAMP_PX) / 2;
+    const { y1, y2 } = attachYs(
+      anchorTop,
+      anchorBottom,
+      anchorY,
+      c.top + window.scrollY,
+      c.bottom + window.scrollY,
+      CARD_EDGE_PAD,
+    );
     segs.push({ id, d: connectorPath({ x1, y1, x2, y2 }) });
   }
   return segs;
