@@ -38,6 +38,7 @@ SVG-графом узлов и рёбер. Состояние живёт в чи
 | Модель ввода | `state.tool: "select" \| "hand"` (дефолт `select`). Десктоп select: пустой drag = marquee. Пан = hand-tool / зажатый Space / средняя кнопка / two-finger тачпад. |
 | Колесо/зум | Figma-конвенция: плоское колесо и two-finger = пан; `Shift`+колесо = горизонтальный пан; `Cmd/Ctrl`+колесо и пинч (`ctrlKey`+wheel) = зум к курсору. |
 | Тач | Десктоп-first, тач минимальный: один палец = пан, тап по узлу = выделить один, пинч = зум. Marquee/мультивыделение на тач — вне scope. |
+| Nudge стрелками | Выделенные узлы двигаются стрелками (Figma): `Arrow` = 1px, `Shift+Arrow` = 10px. Переиспользуем `moveSelection` (новой команды нет), один нажим = один шаг undo. |
 | Z-order | Две команды `bringToFront`/`sendToBack` (undoable). Поверхность: правый клик → kit `ContextMenu` + хоткеи `Cmd+]` / `Cmd+[`. Кнопок в инспекторе не добавляем. |
 | ContextMenu | Новый kit-примитив (обёртка Base UI `ContextMenu`) в `src/components/ui/`. Реализуем **в одной ветке** с канвасом, отдельными коммитами — явный, согласованный с пользователем отход от правила AGENTS.md «новый kit-примитив = отдельный PR». |
 
@@ -162,6 +163,29 @@ export type EditorCommand =
 - Горячие клавиши `V` (select) / `H` (hand) в `onKeyDown` канваса.
 - Тултипы/`aria-label` — через `@/i18n` (новые ключи, см. §6).
 
+### B7. Nudge стрелками (Figma)
+
+Выделенные узлы двигаются стрелками клавиатуры. В `onKeyDown` (`ui/canvas-editor.tsx`),
+**после** гейта `if (editingNodeId) return` (в режиме редактирования текста стрелки
+двигают курсор, не узел):
+
+- `ArrowLeft/Right/Up/Down` при непустом `selection.nodeIds`:
+  - `e.preventDefault()` (не скроллить страницу);
+  - шаг `step = e.shiftKey ? 10 : 1` (Figma: small/big nudge);
+  - dispatch `moveSelection` с дельтой по направлению: Left `dx=-step`, Right
+    `dx=+step`, Up `dy=-step`, Down `dy=+step` (мир Y растёт вниз, поэтому
+    Up — отрицательный `dy`).
+- Двигаются только узлы (`moveSelection` затрагивает `nodeIds`); рёбра следуют
+  за своими концами автоматически. Если выбраны только рёбра — стрелки no-op.
+- Переиспользуем существующую команду `moveSelection` — **новой команды
+  редьюсера не нужно**. `moveSelection` не снепит к сетке
+  (`snapToGrid(dx, false)`), поэтому nudge — ровно 1px/10px.
+- Undo: каждое нажатие = один `commit()` = один шаг undo (см. §9 про текущую
+  семантику `commit` на каждый dispatch). Коалесцинг серий nudge — вне scope.
+- Маппинг «клавиша+shift → дельта» вынести в чистый хелпер в
+  `editor/interaction.ts` (`resolveNudge(key, shift)` → `{dx,dy} | null`),
+  тестируемый без jsdom.
+
 ## 5. Раздел C — z-order
 
 ### C1. Команды (`canvas-reducer.ts`)
@@ -227,6 +251,9 @@ git-статусу). Под-блоки:
   (tool × space × button × pointerType × shift) → ожидаемый жест.
 - `onWheel`-ветвление зум-vs-пан: чистая функция выбора (вынести расчёт из
   React-обработчика), таблица по `ctrlKey/metaKey/shiftKey/delta`.
+- `resolveNudge(key, shift)`: 4 направления × (shift/no-shift) → корректные
+  `{dx,dy}` со знаком (Up = `dy<0`); не-стрелки → `null`. Плюс редьюсер-проверка,
+  что `moveSelection` от nudge даёт один шаг undo.
 
 **kit:** `context-menu.test.tsx` — рендер, открытие по `contextmenu`, клик
 пункта, `disabled`.
@@ -234,23 +261,27 @@ git-статусу). Под-блоки:
 **Ручная браузер-QA (jsdom не воспроизводит pointer-capture/жесты):** пан
 (Space/средняя/тачпад), marquee-drag и аддитивный marquee, тогл Select/Hand +
 `V`/`H`, пинч-зум, правый клик → z-order на узле и на группе, хоткеи `Cmd+]`/
-`Cmd+[`, тач (один палец = пан, тап = выбор), RTL-раскладка меню/тулбара.
+`Cmd+[`, nudge стрелками (1px/`Shift`=10px на одном узле и на группе; в
+текст-режиме стрелки двигают курсор, не узел), тач (один палец = пан, тап =
+выбор), RTL-раскладка меню/тулбара.
 
 ## 8. Затронутые файлы и границы
 
 **Foundation (один кусок, отдельные коммиты, согласовано):**
+
 - `src/components/ui/context-menu.tsx` (+ `.test.tsx`) — НОВЫЙ kit-примитив.
 
 **Слайс канваса (`src/features/canvas/`):**
+
 - `editor/editor-types.ts` — `CanvasTool`, поле `tool`, команды `setTool`/
   `bringToFront`/`sendToBack`.
 - `editor/canvas-reducer.ts` (+ `.test.ts`) — инициализация `tool`, обработка
   новых команд.
-- `editor/interaction.ts` (НОВЫЙ, + тест) — чистые хелперы выбора жеста и
-  ветвления колеса.
+- `editor/interaction.ts` (НОВЫЙ, + тест) — чистые хелперы выбора жеста,
+  ветвления колеса и `resolveNudge`.
 - `ui/canvas-editor.tsx` — маршрутизация указателя/Space/средней кнопки,
-  переписанный `onWheel`, хоткеи (`V`/`H`, `Cmd+]`/`Cmd+[`), интеграция
-  `ContextMenu.Trigger` + hit-test на `contextmenu`.
+  переписанный `onWheel`, хоткеи (`V`/`H`, `Cmd+]`/`Cmd+[`, стрелки-nudge),
+  интеграция `ContextMenu.Trigger` + hit-test на `contextmenu`.
 - `ui/editor-toolbar.tsx` — тогл Select/Hand.
 - `i18n/messages/{en,ru,ar,zh}/canvas.ts` — новые ключи `toolbar.*`,
   `contextMenu.*`.
@@ -270,3 +301,8 @@ git-статусу). Под-блоки:
 - Пинч-зум на сенсорных экранах: объём уточняется при реализации (минимально —
   через `ctrlKey`-ветку `onWheel`); полноценный two-pointer pinch — по факту
   необходимости.
+- **Наблюдение (вне scope):** `moveSelection` коммитит на каждый dispatch,
+  поэтому drag-move уже сейчас кладёт в undo-стек по шагу на каждое
+  `pointermove` (undo откатывает движение «по чуть-чуть»). Nudge сознательно
+  повторяет эту семантику (один нажим = один шаг). Коалесцинг серий move/nudge
+  в один undo-шаг — потенциальный отдельный улучшающий тикет, не в этой фиче.
