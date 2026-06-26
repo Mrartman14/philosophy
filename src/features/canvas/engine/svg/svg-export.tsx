@@ -5,6 +5,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { ArrowMarkerDefs, boundingBox, EdgeShapeRender, NodeShapeRender } from "@/components/canvas-render";
 import type { EntityRefResolver, RenderData, RenderNode } from "@/components/canvas-render";
 
+import type { CanvasData } from "../../types";
+
 const MARGIN = 24;
 
 /**
@@ -83,6 +85,14 @@ function triggerDownload(blob: Blob, filename: string): void {
 function safeName(title: string): string {
   const base = title.trim().replace(/[^\p{L}\p{N}\-_ ]/gu, "").replace(/\s+/g, "-");
   return base || "canvas";
+}
+
+/** Скачивает граф как .json — исходные данные канваса (schema-форма, как при сейве). */
+export function downloadCanvasJson(data: CanvasData, title: string): void {
+  triggerDownload(
+    new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" }),
+    `${safeName(title)}.json`,
+  );
 }
 
 /** Скачивает граф как .svg. */

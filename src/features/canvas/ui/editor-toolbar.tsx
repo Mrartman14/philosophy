@@ -14,7 +14,7 @@ import { ShapeRectIcon } from "@/assets/icons/shape-rect-icon";
 import { TextIcon } from "@/assets/icons/text-icon";
 import { TrashIcon } from "@/assets/icons/trash-icon";
 import { UndoIcon } from "@/assets/icons/undo-icon";
-import { IconButton, type IconButtonTone, Tooltip } from "@/components/ui";
+import { IconButton, type IconButtonTone, Menu, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { CanvasTool, EditorCommand } from "../editor";
@@ -35,9 +35,10 @@ interface Props {
   onAddEntityRef: () => void;
   /** Раскладка. По умолчанию горизонтальная полоса; vertical — столбец в поле. */
   orientation?: Orientation;
-  /** Экспорт графа в SVG/PNG. Если не переданы — кнопки экспорта скрыты. */
+  /** Экспорт графа. Без `onExportSvg` кнопка скачивания (дропдаун форматов) скрыта. */
   onExportSvg?: (() => void) | undefined;
   onExportPng?: (() => void) | undefined;
+  onExportJson?: (() => void) | undefined;
   /** Есть что экспортировать (граф непустой). */
   canExport?: boolean | undefined;
 }
@@ -96,7 +97,7 @@ export function EditorToolbar({
   dispatch, tool, canUndo, canRedo, dirty, hasSelection,
   onAddText, onAddShape, onAddEntityRef,
   orientation = "horizontal",
-  onExportSvg, onExportPng, canExport,
+  onExportSvg, onExportPng, onExportJson, canExport,
 }: Props) {
   const t = useT("canvas");
   const vertical = orientation === "vertical";
@@ -106,7 +107,7 @@ export function EditorToolbar({
   // над холстом; на xl+ → сетка 2×N иконок в левом поле, прижатая к холсту (ms-auto),
   // разделители — на всю ширину обеих колонок.
   const containerClass = vertical
-    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 xl:ms-auto xl:grid xl:w-fit xl:grid-cols-2 xl:items-start xl:justify-items-center xl:border-b-0"
+    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 xl:ms-auto xl:grid xl:w-fit xl:grid-cols-2 xl:items-start xl:justify-items-center xl:rounded-lg xl:border"
     : "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2";
 
   return (
@@ -167,14 +168,25 @@ export function EditorToolbar({
         {onExportSvg && (
           <>
             <Sep vertical={vertical} />
-            <TbButton label={t("toolbar.exportSvg")} tipSide={tip} disabled={!canExport} onClick={onExportSvg}>
-              <DownloadIcon />
-            </TbButton>
-            {onExportPng && (
-              <TbButton label={t("toolbar.exportPng")} tipSide={tip} disabled={!canExport} onClick={onExportPng}>
-                <DownloadIcon />
-              </TbButton>
-            )}
+            {/* Одна кнопка скачивания → дропдаун со всеми форматами (SVG/PNG/JSON). */}
+            <Menu.Root>
+              <Menu.Trigger
+                render={
+                  <IconButton type="button" compact aria-label={t("toolbar.export")} title={t("toolbar.export")} disabled={!canExport}>
+                    <span className="inline-flex text-lg"><DownloadIcon /></span>
+                  </IconButton>
+                }
+              />
+              <Menu.Portal>
+                <Menu.Positioner side={vertical ? "right" : "bottom"} align="start" sideOffset={6}>
+                  <Menu.Popup>
+                    <Menu.Item onClick={onExportSvg}>{t("toolbar.exportSvg")}</Menu.Item>
+                    {onExportPng && <Menu.Item onClick={onExportPng}>{t("toolbar.exportPng")}</Menu.Item>}
+                    {onExportJson && <Menu.Item onClick={onExportJson}>{t("toolbar.exportJson")}</Menu.Item>}
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
           </>
         )}
 

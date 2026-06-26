@@ -15,7 +15,7 @@ import {
   resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
-import { painter } from "../engine";
+import { downloadCanvasJson, painter } from "../engine";
 import type { Scene } from "../engine";
 import { makeEntityRefResolver } from "../entity-ref";
 import type { Canvas, CanvasRefEntityType, Visibility } from "../types";
@@ -463,6 +463,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const onExportPng = () => {
     void painter.exportPng(renderData, resolveEntityRef, exportTitle, surfaceRef.current ?? document.documentElement);
   };
+  // JSON — данные канваса (не рендер), мимо painter-контракта.
+  const onExportJson = () => { downloadCanvasJson(state.data, exportTitle); };
 
   // ---- save ----
   /** Граф структурно-валиден? Иначе тостит ошибку и подсвечивает узел. */
@@ -579,13 +581,13 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         dirty={state.dirty} orientation="vertical"
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-        onExportSvg={onExportSvg} onExportPng={onExportPng} canExport={renderData.nodes.length > 0}
+        onExportSvg={onExportSvg} onExportPng={onExportPng} onExportJson={onExportJson} canExport={renderData.nodes.length > 0}
       />
     </MarginNote>
     <div className="flex flex-col" style={{ height: "calc(100vh - var(--header-height))" }}>
       {/* Панель шапки — единая для создания и редактирования (внешняя идентичность):
-          имя + уровень приватности (в edit здесь не меняется → disabled), справа
-          Save и индикатор несохранённых изменений (только edit). */}
+          имя + уровень приватности (в edit здесь не меняется → disabled) + Save справа.
+          Индикатор «не сохранено» не нужен: активная кнопка Save это и сообщает. */}
       <div className="flex flex-wrap items-end gap-4 border-b border-(--color-border) p-3">
         <FormField name="title" label={t("createForm.titleLabel")} required className="min-w-64 flex-1">
           <TextInput value={title} onChange={(e) => { setTitle(e.target.value); }} />
@@ -601,8 +603,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
             ]}
           />
         </FormField>
-        <div className="ms-auto flex items-center gap-2">
-          {!isCreate && isDirty && <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>}
+        <div className="ms-auto">
           <Button type="button" tone="primary" disabled={saveDisabled} onClick={() => { void onSave(); }}>
             {saving ? t("toolbar.saving") : (saveLabel ?? t("toolbar.save"))}
           </Button>
