@@ -1,6 +1,6 @@
 "use client";
 // src/features/canvas/engine/svg/svg-overlays.tsx
-import type { RenderNode, Side } from "@/components/canvas-render";
+import type { Point, RenderNode, Side } from "@/components/canvas-render";
 
 import { PORT_OFFSET, portPoint, resizeHandles } from "../../editor";
 import type { ResizeHandle } from "../../editor";
@@ -62,7 +62,7 @@ export function SvgOverlays({ nodes, selectedNodeIds, invalidNodeId, edgeTargetI
         );
       })}
 
-      {single && (Object.entries(resizeHandles(single)) as [ResizeHandle, { x: number; y: number }][]).map(([handle, p]) => (
+      {single && (Object.entries(resizeHandles(single)) as [ResizeHandle, Point][]).map(([handle, p]) => (
         <rect
           key={`rh-${handle}`}
           x={p.x - 4} y={p.y - 4} width={8} height={8}
