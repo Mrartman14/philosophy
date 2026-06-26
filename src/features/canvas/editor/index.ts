@@ -1,5 +1,5 @@
 // src/features/canvas/editor/index.ts
-export { canvasReducer, initEditorState } from "./canvas-reducer";
+export { canvasReducer, initEditorState, NODE_DEFAULT_SIZE } from "./canvas-reducer";
 export { newId } from "./id";
 export { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, rulerTicks, snapToGrid, snapPoint } from "./coords";
 export type { RulerTick } from "./coords";

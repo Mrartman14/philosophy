@@ -17,6 +17,15 @@ const SHAPE_H = 80;
 const REF_W = 200;
 const REF_H = 72;
 
+/** Дефолтные размеры узлов по типу — чтобы UI клал новую ноду ЦЕНТРОМ в точку
+ *  (как вставка в Figma), а не углом. Команды add* по-прежнему принимают x,y =
+ *  левый верхний угол (контракт не меняется). */
+export const NODE_DEFAULT_SIZE = {
+  text: { width: TEXT_W, height: TEXT_H },
+  shape: { width: SHAPE_W, height: SHAPE_H },
+  entity_ref: { width: REF_W, height: REF_H },
+} as const;
+
 /** Клонирует CanvasData (структурно, для снапшотов undo). */
 function cloneData(data: CanvasData): CanvasData {
   return {

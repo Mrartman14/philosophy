@@ -10,7 +10,7 @@ import type { ActionResult } from "@/utils/create-action";
 
 import { createCanvas, updateCanvas } from "../actions";
 import {
-  canvasReducer, initEditorState, canvasDataToRenderData,
+  canvasReducer, initEditorState, NODE_DEFAULT_SIZE, canvasDataToRenderData,
   screenToWorld, applyZoomAtPoint, fitViewport, centerViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
   resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
 } from "../editor";
@@ -481,12 +481,18 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const viewportCenterWorld = useCallback((): Point => {
     return snapPoint(screenToWorld({ x: size.width / 2, y: size.height / 2 }, vp), true);
   }, [size, vp]);
+  // Левый верхний угол так, чтобы ЦЕНТР ноды попал в центр вьюпорта (как вставка в
+  // Figma — объект кладётся центром, а не углом). Команды add* принимают угол.
+  const centeredTopLeft = (s: { width: number; height: number }): Point => {
+    const c = viewportCenterWorld();
+    return { x: c.x - s.width / 2, y: c.y - s.height / 2 };
+  };
 
   const onAddText = () => {
     // Детерминированный id → сразу открываем текст-оверлей нового узла.
-    const c = viewportCenterWorld();
+    const p = centeredTopLeft(NODE_DEFAULT_SIZE.text);
     const id = newId();
-    dispatch({ type: "addTextNode", x: c.x, y: c.y, id });
+    dispatch({ type: "addTextNode", x: p.x, y: p.y, id });
     setNewNodeId(id);
     setEditingNodeId(id);
   };
@@ -495,10 +501,10 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     dispatch({ type: "selectNode", nodeId: id, additive: false });
     dispatch({ type: "deleteSelection" });
   };
-  const onAddShape = (kind: "rect" | "ellipse" | "diamond") => { const c = viewportCenterWorld(); dispatch({ type: "addShapeNode", shapeKind: kind, x: c.x, y: c.y }); };
+  const onAddShape = (kind: "rect" | "ellipse" | "diamond") => { const p = centeredTopLeft(NODE_DEFAULT_SIZE.shape); dispatch({ type: "addShapeNode", shapeKind: kind, x: p.x, y: p.y }); };
   const onAddEntityRefConfirm = (entityType: CanvasRefEntityType, entityId: string) => {
-    const c = viewportCenterWorld();
-    dispatch({ type: "addEntityRefNode", entityType, entityId, x: c.x, y: c.y });
+    const p = centeredTopLeft(NODE_DEFAULT_SIZE.entity_ref);
+    dispatch({ type: "addEntityRefNode", entityType, entityId, x: p.x, y: p.y });
     setRefDialogOpen(false);
   };
 
