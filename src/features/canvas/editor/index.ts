@@ -12,6 +12,7 @@ export {
   handleAtPoint,
   applyResize,
   marqueeHits,
+  portPoint,
 } from "./geometry-editor";
 export type { Rect } from "./geometry-editor";
 export type {

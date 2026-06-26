@@ -1,12 +1,15 @@
 "use client";
 // src/features/canvas/ui/editor-node-layer.tsx
-import { NodeShapeRender, sidePoint } from "@/components/canvas-render";
+import { NodeShapeRender } from "@/components/canvas-render";
 import type { RenderNode, Side, EntityRefResolver } from "@/components/canvas-render";
 
-import { resizeHandles } from "../editor";
+import { portPoint, resizeHandles } from "../editor";
 import type { ResizeHandle } from "../editor";
 
 const SIDES: Side[] = ["top", "right", "bottom", "left"];
+/** Вынос порта ребра за границу узла, чтобы он не накладывался на среднюю ручку
+ *  ресайза (та же точка) — иначе квадрат ресайза перекрывает кружок-порт. */
+const PORT_OFFSET = 14;
 
 interface Props {
   nodes: RenderNode[];
@@ -58,9 +61,10 @@ export function EditorNodeLayer({
         );
       })}
 
-      {/* side-handles на одиночном выделении — старт ребра */}
+      {/* side-handles на одиночном выделении — старт ребра (вынесены за границу
+          узла, чтобы не пересекаться со средними ручками ресайза) */}
       {singleSelected && SIDES.map((side) => {
-        const p = sidePoint(singleSelected, side);
+        const p = portPoint(singleSelected, side, PORT_OFFSET);
         return (
           <circle
             key={`side-${side}`}

@@ -1,5 +1,6 @@
 // src/features/canvas/editor/geometry-editor.ts
-import type { Point, RenderNode } from "@/components/canvas-render";
+import { sidePoint } from "@/components/canvas-render";
+import type { Point, RenderNode, Side } from "@/components/canvas-render";
 
 import type { ResizeHandle } from "./editor-types";
 
@@ -43,6 +44,22 @@ export function resizeHandles(n: RenderNode): Record<ResizeHandle, Point> {
     sw: { x, y: y + h },
     w: { x, y: y + h / 2 },
   };
+}
+
+/**
+ * Точка порта ребра: середина стороны узла, вынесенная наружу по внешней нормали
+ * на `offset`. Нужна, чтобы видимый порт (старт ребра) не накладывался на среднюю
+ * ручку ресайза (n/e/s/w) в той же точке. Привязка ребра остаётся к стороне узла
+ * (sidePoint) — смещается только маркер/хит-зона.
+ */
+export function portPoint(n: RenderNode, side: Side, offset: number): Point {
+  const p = sidePoint(n, side);
+  switch (side) {
+    case "top": return { x: p.x, y: p.y - offset };
+    case "right": return { x: p.x + offset, y: p.y };
+    case "bottom": return { x: p.x, y: p.y + offset };
+    case "left": return { x: p.x - offset, y: p.y };
+  }
 }
 
 /** Ручка ресайза в радиусе `tolerance` от точки, либо null. */

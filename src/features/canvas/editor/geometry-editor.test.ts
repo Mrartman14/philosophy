@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 
 import type { RenderNode } from "@/components/canvas-render";
 
-import { pointInRect, hitTestNode, resizeHandles, applyResize, marqueeHits, handleAtPoint } from "./geometry-editor";
+import { pointInRect, hitTestNode, resizeHandles, applyResize, marqueeHits, handleAtPoint, portPoint } from "./geometry-editor";
 
 const node = (over: Partial<RenderNode> = {}): RenderNode => ({
   id: "n", type: "shape", x: 0, y: 0, width: 100, height: 50, shapeKind: "rect", ...over,
@@ -40,6 +40,16 @@ describe("resizeHandles", () => {
     expect(h.nw).toEqual({ x: 0, y: 0 });
     expect(h.se).toEqual({ x: 100, y: 50 });
     expect(h.n).toEqual({ x: 50, y: 0 });
+  });
+});
+
+describe("portPoint", () => {
+  const n = node({ x: 0, y: 0, width: 100, height: 50 });
+  it("выносит порт ребра наружу по внешней нормали стороны (середина + offset)", () => {
+    expect(portPoint(n, "top", 12)).toEqual({ x: 50, y: -12 });
+    expect(portPoint(n, "right", 12)).toEqual({ x: 112, y: 25 });
+    expect(portPoint(n, "bottom", 12)).toEqual({ x: 50, y: 62 });
+    expect(portPoint(n, "left", 12)).toEqual({ x: -12, y: 25 });
   });
 });
 
