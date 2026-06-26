@@ -66,7 +66,6 @@ const canvas: Messages["canvas"] = {
     undoAriaLabel: "Undo",
     redoAriaLabel: "Redo",
     reset: "Revert",
-    grid: "Grid",
     toolSelect: "Select",
     toolHand: "Hand",
     showCanvas: "Canvas",

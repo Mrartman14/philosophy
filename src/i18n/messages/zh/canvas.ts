@@ -66,7 +66,6 @@ const canvas: Messages["canvas"] = {
     undoAriaLabel: "撤销",
     redoAriaLabel: "重做",
     reset: "还原",
-    grid: "网格",
     toolSelect: "选择",
     toolHand: "抓手",
     showCanvas: "画布",

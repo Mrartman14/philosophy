@@ -65,7 +65,6 @@ const canvas = {
     undoAriaLabel: "Отменить",
     redoAriaLabel: "Повторить",
     reset: "Откатить",
-    grid: "Сетка",
     toolSelect: "Выделение",
     toolHand: "Рука",
     showCanvas: "Холст",
