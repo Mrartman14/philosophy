@@ -67,6 +67,8 @@ const canvas: Messages["canvas"] = {
     redoAriaLabel: "Redo",
     reset: "Revert",
     grid: "Grid",
+    toolSelect: "Select",
+    toolHand: "Hand",
     showCanvas: "Canvas",
     showJson: "JSON",
     exportSvg: "Download SVG",

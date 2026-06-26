@@ -4,10 +4,12 @@ import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
-import type { EditorCommand } from "../editor";
+import type { CanvasTool, EditorCommand } from "../editor";
 
 interface Props {
   dispatch: (c: EditorCommand) => void;
+  /** Активный инструмент холста (Select/Hand). */
+  tool: CanvasTool;
   canUndo: boolean;
   canRedo: boolean;
   dirty: boolean;
@@ -35,7 +37,7 @@ interface Props {
 
 /** Тулбар редактора: создание узлов, удаление, история, сохранение. */
 export function EditorToolbar({
-  dispatch, canUndo, canRedo, dirty, saving, showJson, hasSelection,
+  dispatch, tool, canUndo, canRedo, dirty, saving, showJson, hasSelection,
   onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson, onBack,
   saveLabel, saveDisabled, hideJsonToggle,
   onExportSvg, onExportPng, canExport,
@@ -45,6 +47,14 @@ export function EditorToolbar({
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-(--color-border) p-2">
       <Button type="button" compact tone="quiet" onClick={onBack}><ChevronIcon className="rtl-flip rotate-180" />{t("toolbar.back")}</Button>
+      <span className="mx-1 h-5 w-px bg-(--color-border)" />
+
+      <Button type="button" compact tone={tool === "select" ? "primary" : "quiet"} onClick={() => { dispatch({ type: "setTool", tool: "select" }); }}>
+        {t("toolbar.toolSelect")}
+      </Button>
+      <Button type="button" compact tone={tool === "hand" ? "primary" : "quiet"} onClick={() => { dispatch({ type: "setTool", tool: "hand" }); }}>
+        {t("toolbar.toolHand")}
+      </Button>
       <span className="mx-1 h-5 w-px bg-(--color-border)" />
 
       <Button type="button" compact onClick={onAddText}>{t("toolbar.addText")}</Button>

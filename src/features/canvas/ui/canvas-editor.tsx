@@ -477,7 +477,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     return (
       <div className="flex flex-col gap-3">
         <EditorToolbar
-          dispatch={dispatch} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
+          dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
           dirty={state.dirty} saving={saving} showJson={showJson}
           hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
           onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
@@ -513,7 +513,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       )}
 
       <EditorToolbar
-        dispatch={dispatch} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
+        dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
         dirty={state.dirty} saving={saving} showJson={showJson}
         hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
         onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}

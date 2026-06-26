@@ -67,6 +67,8 @@ const canvas: Messages["canvas"] = {
     redoAriaLabel: "إعادة",
     reset: "إرجاع",
     grid: "شبكة",
+    toolSelect: "تحديد",
+    toolHand: "يد",
     showCanvas: "اللوحة",
     showJson: "JSON",
     exportSvg: "تنزيل SVG",
