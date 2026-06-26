@@ -13,8 +13,11 @@ export {
   applyResize,
   marqueeHits,
   portPoint,
+  PORT_OFFSET,
 } from "./geometry-editor";
 export type { Rect } from "./geometry-editor";
+export { hitTest, hitTestEdge, portAtPoint, RESIZE_HANDLE_HIT, PORT_HIT, EDGE_HIT } from "./hit-test";
+export type { HitResult, HitTestInput } from "./hit-test";
 export {
   resolveBackgroundGesture,
   resolveNodeGesture,

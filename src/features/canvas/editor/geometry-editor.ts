@@ -14,6 +14,10 @@ export interface Rect {
 
 const MIN_SIZE = 20;
 
+/** Вынос порта ребра наружу узла, чтобы он не накладывался на среднюю ручку
+ *  ресайза (та же точка). Делится между отрисовкой портов и их хит-тестом. */
+export const PORT_OFFSET = 14;
+
 /** Точка внутри бокса узла (границы включительно). */
 export function pointInRect(p: Point, n: RenderNode): boolean {
   return p.x >= n.x && p.x <= n.x + n.width && p.y >= n.y && p.y <= n.y + n.height;
