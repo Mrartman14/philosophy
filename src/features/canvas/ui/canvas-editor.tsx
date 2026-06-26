@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
-import type { Point, RenderNode, Side } from "@/components/canvas-render";
+import { sidePoint, type Point, type RenderNode, type Side } from "@/components/canvas-render";
 import { ContextMenu, FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
@@ -74,6 +74,11 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   const surfaceRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<Drag>(null);
+  // hover-курсор коалесим в один rAF на кадр: hit-test — O(N+E), а pointermove без
+  // drag сыплется десятками/кадр на больших графах → джанк. Последние мировые
+  // координаты держим в ref, планируем один rAF.
+  const hoverRafRef = useRef<number | null>(null);
+  const hoverWorldRef = useRef<Point | null>(null);
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   // id узла, который только что создан кнопкой «Текст» и ещё не подтверждён
   // непустым текстом: если останется пустым (Enter/blur/Esc) — узел удаляем.
@@ -144,24 +149,18 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   /** Мировая точка стороны узла (для preview ребра). */
   const sideWorld = useCallback((nodeId: string, side: Side): Point => {
     const n = nodesById.get(nodeId);
-    if (!n) return { x: 0, y: 0 };
-    switch (side) {
-      case "top": return { x: n.x + n.width / 2, y: n.y };
-      case "right": return { x: n.x + n.width, y: n.y + n.height / 2 };
-      case "bottom": return { x: n.x + n.width / 2, y: n.y + n.height };
-      case "left": return { x: n.x, y: n.y + n.height / 2 };
-    }
+    return n ? sidePoint(n, side) : { x: 0, y: 0 };
   }, [nodesById]);
 
   // ---- pointer handlers ----
   /** Старт пана: записываем drag-стейт и захватываем указатель. */
-  const startPan = (e: React.PointerEvent) => {
+  const startPan = (e: React.PointerEvent<HTMLDivElement>) => {
     dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
-    (e.currentTarget as Element).setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   /** Единый pointerdown по поверхности: JS hit-test решает жест. */
-  const onSurfacePointerDown = (e: React.PointerEvent) => {
+  const onSurfacePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const world = eventWorld(e);
     const hit = hitTest(world, {
       nodes: renderData.nodes,
@@ -169,7 +168,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       nodesById,
       singleSelectedNodeId,
     });
-    const capture = () => { (e.currentTarget as Element).setPointerCapture(e.pointerId); };
+    const capture = () => { e.currentTarget.setPointerCapture(e.pointerId); };
     switch (hit.kind) {
       case "resize-handle":
         dragRef.current = { kind: "resize", nodeId: hit.nodeId, handle: hit.handle, lastWorld: world };
@@ -240,9 +239,18 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
               : "default";
   };
 
-  const onPointerMove = (e: React.PointerEvent) => {
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
-    if (!drag) { updateHoverCursor(eventWorld(e)); return; }
+    if (!drag) {
+      hoverWorldRef.current = eventWorld(e);
+      // ??= планирует rAF максимум раз на кадр (RHS вычисляется лишь когда current null).
+      hoverRafRef.current ??= requestAnimationFrame(() => {
+        hoverRafRef.current = null;
+        // во время начавшегося drag hover-курсор не трогаем
+        if (!dragRef.current && hoverWorldRef.current) updateHoverCursor(hoverWorldRef.current);
+      });
+      return;
+    }
     const world = eventWorld(e);
     switch (drag.kind) {
       case "pan": {
@@ -276,7 +284,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     }
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     dragRef.current = null;
     if (!drag) return;
@@ -401,6 +409,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     window.addEventListener("blur", onBlur);
     return () => { window.removeEventListener("keyup", onUp); window.removeEventListener("blur", onBlur); };
   }, []);
+
+  // Чистая отписка висящего hover-rAF на размонтировании (ref'ы стабильны → deps []).
+  useEffect(() => () => { if (hoverRafRef.current !== null) cancelAnimationFrame(hoverRafRef.current); }, []);
 
   // правый клик: нацелить меню на узел под курсором; по пустому фону — НЕ показывать.
   // КРИТИЧНО (ревью): Base UI ContextMenu открывается своим обработчиком contextmenu,
