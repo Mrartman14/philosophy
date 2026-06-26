@@ -10,7 +10,7 @@
 import { useLayoutEffect, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 
-import { connectorPath } from "./connector-geometry";
+import { cardAttachY, connectorPath } from "./connector-geometry";
 import { cssEscape } from "./css-escape";
 import { toneColor, type Tone } from "./tone";
 
@@ -55,7 +55,9 @@ function measure(
     const x1 = (right ? rootRect.right : rootRect.left) + window.scrollX;
     const y1 = a.top + Math.min(a.height, FIRST_LINE_CLAMP_PX) / 2 + window.scrollY;
     const x2 = (right ? c.left : c.right) + window.scrollX;
-    const y2 = c.top + CARD_ATTACH_PX + window.scrollY;
+    // Крепимся к карточке НА ВЫСОТЕ ЯКОРЯ (зажатой в её границы): карточка напротив
+    // якоря → y2===y1 → строго горизонтальная линия; увело стэкингом → край → локоть.
+    const y2 = cardAttachY(y1, c.top + window.scrollY, c.bottom + window.scrollY, CARD_ATTACH_PX);
     segs.push({ id, d: connectorPath({ x1, y1, x2, y2 }) });
   }
   return segs;

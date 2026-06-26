@@ -40,6 +40,19 @@ function addCard(id: string) {
   document.body.appendChild(w);
 }
 
+function addCardWith(id: string, r: Partial<DOMRect>) {
+  const w = document.createElement("div");
+  w.setAttribute("data-note-card-wrapper", id);
+  w.getBoundingClientRect = () => rect({ left: 760, right: 920, width: 160, ...r });
+  document.body.appendChild(w);
+}
+
+function pathYs(id: string): number[] {
+  // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
+  const d = document.querySelector(`[data-connector="${id}"]`)?.getAttribute("d") ?? "";
+  return [...d.matchAll(/[ML] \S+ (\S+)/g)].map((m) => Number(m[1]));
+}
+
 const anchorRect = () => rect({ left: 100, right: 300, top: 50, bottom: 70, width: 200, height: 20 });
 
 afterEach(() => {
@@ -126,5 +139,39 @@ describe("ConnectorLayer", () => {
     expect(a?.getAttribute("stroke-opacity")).toBe("1");
     expect(a?.getAttribute("stroke-width")).toBe("2");
     expect(b?.getAttribute("stroke-opacity")).toBe("0.25");
+  });
+
+  it("карточка напротив якоря → строго горизонтальная линия (без излома)", () => {
+    stubMatch(true);
+    const root = makeRoot();
+    addCard("a"); // span 40..120, якорь y1=60 внутри → крепление на 60 → y2===y1
+    render(
+      <ConnectorLayer
+        ids={["a"]}
+        getAnchorRect={anchorRect}
+        astRootRef={{ current: root }}
+        activeId={null}
+        tone="annotation"
+        recomputeKey={0}
+      />,
+    );
+    expect(new Set(pathYs("a")).size).toBe(1); // все точки на одной высоте → горизонталь
+  });
+
+  it("карточку увело вниз стэкингом → локоть (есть вертикальный сегмент)", () => {
+    stubMatch(true);
+    const root = makeRoot();
+    addCardWith("a", { top: 300, bottom: 380 }); // якорь y1=60 выше карточки → край → локоть
+    render(
+      <ConnectorLayer
+        ids={["a"]}
+        getAnchorRect={anchorRect}
+        astRootRef={{ current: root }}
+        activeId={null}
+        tone="annotation"
+        recomputeKey={0}
+      />,
+    );
+    expect(new Set(pathYs("a")).size).toBeGreaterThan(1); // разные высоты → локоть
   });
 });
