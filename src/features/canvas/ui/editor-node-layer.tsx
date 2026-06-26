@@ -17,6 +17,8 @@ interface Props {
   resolveEntityRef: EntityRefResolver;
   /** id узла с ошибкой валидации — подсвечивается красным. */
   invalidNodeId?: string | undefined;
+  /** id узла-кандидата под курсором при протягивании ребра — подсвечивается как цель. */
+  edgeTargetId?: string | undefined;
   onNodePointerDown: (nodeId: string, e: React.PointerEvent) => void;
   onNodeDoubleClick: (nodeId: string, e: React.MouseEvent) => void;
   onResizeHandleDown: (nodeId: string, handle: ResizeHandle, e: React.PointerEvent) => void;
@@ -29,7 +31,7 @@ interface Props {
  * на одиночном выделении — 8 ручек ресайза и 4 side-handle для старта ребра.
  */
 export function EditorNodeLayer({
-  nodes, selectedNodeIds, resolveEntityRef, invalidNodeId,
+  nodes, selectedNodeIds, resolveEntityRef, invalidNodeId, edgeTargetId,
   onNodePointerDown, onNodeDoubleClick, onResizeHandleDown, onSideHandleDown,
 }: Props) {
   const singleSelected = selectedNodeIds.size === 1 ? nodes.find((n) => selectedNodeIds.has(n.id)) ?? null : null;
@@ -39,6 +41,7 @@ export function EditorNodeLayer({
       {nodes.map((n) => {
         const selected = selectedNodeIds.has(n.id);
         const invalid = n.id === invalidNodeId;
+        const isEdgeTarget = n.id === edgeTargetId;
         return (
           <g
             key={n.id}
@@ -47,6 +50,16 @@ export function EditorNodeLayer({
             onDoubleClick={(e) => { onNodeDoubleClick(n.id, e); }}
           >
             <NodeShapeRender node={n} resolve={resolveEntityRef} />
+            {isEdgeTarget && (
+              // подсветка «сюда можно бросить ребро»: акцентная рамка + лёгкая заливка
+              <rect
+                x={n.x - 3} y={n.y - 3} width={n.width + 6} height={n.height + 6}
+                rx={4}
+                fill="var(--color-accent)" fillOpacity={0.12}
+                stroke="var(--color-accent)" strokeWidth={2.5}
+                pointerEvents="none"
+              />
+            )}
             {(selected || invalid) && (
               <rect
                 x={n.x - 2} y={n.y - 2} width={n.width + 4} height={n.height + 4}

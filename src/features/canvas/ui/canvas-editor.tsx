@@ -85,6 +85,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   const [size, setSize] = useState({ width: 800, height: 600 });
   const [marquee, setMarquee] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [edgePreview, setEdgePreview] = useState<{ from: Point; to: Point } | null>(null);
+  // узел-кандидат под курсором во время протягивания нового ребра — подсвечивается
+  const [edgeTargetId, setEdgeTargetId] = useState<string | null>(null);
 
   // dirty-guard: beforeunload при несохранённых изменениях
   useEffect(() => {
@@ -212,10 +214,14 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         drag.currentWorld = world;
         setMarquee({ x: Math.min(drag.startWorld.x, world.x), y: Math.min(drag.startWorld.y, world.y), width: Math.abs(world.x - drag.startWorld.x), height: Math.abs(world.y - drag.startWorld.y) });
         break;
-      case "edge":
+      case "edge": {
         drag.currentWorld = world;
         setEdgePreview({ from: sideWorld(drag.fromNode, drag.fromSide), to: world });
+        // подсветка валидной цели: узел под курсором, кроме исходного (self-loop запрещён)
+        const hovered = hitTestNode(world, renderData.nodes);
+        setEdgeTargetId(hovered && hovered.id !== drag.fromNode ? hovered.id : null);
         break;
+      }
     }
   };
 
@@ -236,6 +242,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         dispatch({ type: "addEdge", fromNode: drag.fromNode, toNode: target.id, fromSide: drag.fromSide });
       }
       setEdgePreview(null);
+      setEdgeTargetId(null);
     }
   };
 
@@ -496,6 +503,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
               selectedNodeIds={selectedNodeIds}
               resolveEntityRef={resolveEntityRef}
               invalidNodeId={invalidNodeId}
+              edgeTargetId={edgeTargetId ?? undefined}
               onNodePointerDown={onNodePointerDown}
               onNodeDoubleClick={onNodeDoubleClick}
               onResizeHandleDown={onResizeHandleDown}
