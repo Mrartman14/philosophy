@@ -22,3 +22,4 @@ export {
 } from "./geometry";
 export type { Point, EdgeGeometry } from "./geometry";
 export { NodeShapeRender } from "./node-shapes";
+export { EdgeShapeRender, ArrowMarkerDefs } from "./edge-shape";
