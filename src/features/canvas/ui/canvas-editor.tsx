@@ -541,11 +541,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   const onSave = isCreate ? onCreate : onUpdate;
 
-  const onBack = () => {
-    if (state.dirty && !window.confirm(t("editor.confirmLeave"))) return;
-    router.push(isCreate ? "/canvases" : `/canvases/${canvas?.id}`);
-  };
-
   const scene: Scene = useMemo(() => ({
     data: renderData,
     viewport: vp,
@@ -581,7 +576,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           dirty={state.dirty} saving={saving} showJson={showJson}
           hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
           onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-          onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(false); }} onBack={onBack}
+          onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(false); }}
           saveLabel={saveLabel} saveDisabled={saveDisabled}
         />
         <CanvasEditForm canvas={canvas} etag={etag} />
@@ -590,9 +585,22 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   }
 
   return (
-    // Фрагмент: контент-хребет + правая маргиналия (инспектор). Прямые потомки
-    // .page-grid (страница рендерит CanvasEditor без обёрток) → инспектор в поле.
+    // Фрагмент — прямые потомки .page-grid (страница рендерит CanvasEditor без
+    // обёрток): тулбар в ЛЕВОМ поле (vertical, sticky под хедером), контент-хребет
+    // с холстом, инспектор в ПРАВОМ поле. На < xl поля схлопываются → тулбар сверху,
+    // холст, инспектор снизу.
     <>
+    <MarginNote side="start" className="p-2 xl:pe-0 xl:self-start xl:sticky xl:top-(--layout-sticky-top)">
+      <EditorToolbar
+        dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
+        dirty={state.dirty} saving={saving} showJson={showJson} orientation="vertical"
+        hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
+        onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
+        onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(true); }}
+        saveLabel={saveLabel} saveDisabled={saveDisabled} hideJsonToggle={isCreate}
+        onExportSvg={onExportSvg} onExportPng={onExportPng} canExport={renderData.nodes.length > 0}
+      />
+    </MarginNote>
     <div className="flex flex-col">
       {isCreate && (
         <div className="flex flex-wrap items-end gap-4 border-b border-(--color-border) p-3">
@@ -611,16 +619,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           </FormField>
         </div>
       )}
-
-      <EditorToolbar
-        dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
-        dirty={state.dirty} saving={saving} showJson={showJson}
-        hasSelection={state.selection.nodeIds.length + state.selection.edgeIds.length > 0}
-        onAddText={onAddText} onAddShape={onAddShape} onAddEntityRef={() => { setRefDialogOpen(true); }}
-        onSave={() => { void onSave(); }} onToggleJson={() => { setShowJson(true); }} onBack={onBack}
-        saveLabel={saveLabel} saveDisabled={saveDisabled} hideJsonToggle={isCreate}
-        onExportSvg={onExportSvg} onExportPng={onExportPng} canExport={renderData.nodes.length > 0}
-      />
 
       <div className="flex">
         {/* холст */}
@@ -654,7 +652,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
                 role="application"
                 aria-label={t("editor.ariaLabel")}
                 className="relative flex-1 select-none"
-                style={{ height: "70vh", cursor: canvasCursor, touchAction: "none" }}
+                style={{ height: "calc(100vh - var(--header-height))", cursor: canvasCursor, touchAction: "none" }}
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={0}
                 onKeyDown={onKeyDown}

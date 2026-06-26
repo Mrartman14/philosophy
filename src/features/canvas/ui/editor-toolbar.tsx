@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 
 import { BracesIcon } from "@/assets/icons/braces-icon";
-import { ChevronIcon } from "@/assets/icons/chevron-icon";
 import { CursorIcon } from "@/assets/icons/cursor-icon";
 import { DownloadIcon } from "@/assets/icons/download-icon";
 import { HandIcon } from "@/assets/icons/hand-icon";
@@ -21,6 +20,9 @@ import { useT } from "@/i18n/client";
 
 import type { CanvasTool, EditorCommand } from "../editor";
 
+/** Ориентация тулбара: horizontal (JSON-режим, полоса) | vertical (левое поле). */
+type Orientation = "horizontal" | "vertical";
+
 interface Props {
   dispatch: (c: EditorCommand) => void;
   /** Активный инструмент холста (Select/Hand). */
@@ -36,7 +38,8 @@ interface Props {
   onAddEntityRef: () => void;
   onSave: () => void;
   onToggleJson: () => void;
-  onBack: () => void;
+  /** Раскладка. По умолчанию горизонтальная полоса; vertical — столбец в поле. */
+  orientation?: Orientation;
   /** Экспорт графа в SVG/PNG. Если не переданы — кнопки экспорта скрыты (напр. в JSON-режиме). */
   onExportSvg?: (() => void) | undefined;
   onExportPng?: (() => void) | undefined;
@@ -50,9 +53,14 @@ interface Props {
   hideJsonToggle?: boolean | undefined;
 }
 
-/** Вертикальный разделитель между группами иконок. */
-function Sep() {
-  return <span className="mx-1 h-5 w-px bg-(--color-border)" />;
+/** Разделитель между группами. vertical: ниже xl — вертикальная чёрточка (полоса),
+ *  на xl+ — горизонтальная (столбец в поле). */
+function Sep({ vertical }: { vertical: boolean }) {
+  return (
+    <span className={vertical
+      ? "mx-1 h-5 w-px bg-(--color-border) xl:mx-0 xl:my-1 xl:h-px xl:w-7"
+      : "mx-1 h-5 w-px bg-(--color-border)"} />
+  );
 }
 
 interface TbButtonProps {
@@ -64,16 +72,18 @@ interface TbButtonProps {
   disabled?: boolean;
   /** Состояние тоггла; задаёт `aria-pressed`. Не указывать для обычных кнопок. */
   pressed?: boolean;
+  /** Сторона тултипа: в столбце — вправо (к холсту), в полосе — вверх. */
+  tipSide: "top" | "right";
 }
 
 /**
  * Иконочная кнопка тулбара: `label` служит и `aria-label` (доступное имя), и
- * контентом тултипа — текст «переехал» в подсказку, как просили. Тултип несёт
- * лишь описание, поэтому `aria-label` обязателен отдельно.
+ * контентом тултипа — текст «переехал» в подсказку. Тултип несёт лишь описание,
+ * поэтому `aria-label` обязателен отдельно.
  */
-function TbButton({ label, onClick, children, tone = "neutral", disabled, pressed }: TbButtonProps) {
+function TbButton({ label, onClick, children, tone = "neutral", disabled, pressed, tipSide }: TbButtonProps) {
   return (
-    <Tooltip content={label}>
+    <Tooltip content={label} side={tipSide}>
       <IconButton
         type="button"
         compact
@@ -94,82 +104,90 @@ function TbButton({ label, onClick, children, tone = "neutral", disabled, presse
 /** Тулбар редактора: создание узлов, удаление, история, сохранение. */
 export function EditorToolbar({
   dispatch, tool, canUndo, canRedo, dirty, saving, showJson, hasSelection,
-  onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson, onBack,
-  saveLabel, saveDisabled, hideJsonToggle,
+  onAddText, onAddShape, onAddEntityRef, onSave, onToggleJson,
+  orientation = "horizontal", saveLabel, saveDisabled, hideJsonToggle,
   onExportSvg, onExportPng, canExport,
 }: Props) {
   const t = useT("canvas");
+  const vertical = orientation === "vertical";
+  const tip = vertical ? "right" : "top";
+
+  // vertical = адаптивный: ниже xl поле схлопнуто → тулбар горизонтальной полосой
+  // над холстом; на xl+ → столбец в левом поле.
+  const containerClass = vertical
+    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 xl:flex-col xl:flex-nowrap xl:items-start xl:border-b-0"
+    : "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2";
+
+  const saveCluster = (
+    <Button type="button" compact tone="primary" disabled={saveDisabled ?? (saving || !dirty)} onClick={onSave}>
+      {saving ? t("toolbar.saving") : (saveLabel ?? t("toolbar.save"))}
+    </Button>
+  );
+  const unsaved = dirty
+    ? <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>
+    : null;
 
   return (
     <Tooltip.Provider delay={400}>
-      <div className="flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2">
-        <TbButton label={t("toolbar.back")} onClick={onBack}>
-          <ChevronIcon className="rtl-flip rotate-180" />
-        </TbButton>
-        <Sep />
-
+      <div className={containerClass}>
         <TbButton
-          label={t("toolbar.toolSelect")}
-          pressed={tool === "select"}
-          tone={tool === "select" ? "primary" : "neutral"}
+          label={t("toolbar.toolSelect")} tipSide={tip}
+          pressed={tool === "select"} tone={tool === "select" ? "primary" : "neutral"}
           onClick={() => { dispatch({ type: "setTool", tool: "select" }); }}
         >
           <CursorIcon />
         </TbButton>
         <TbButton
-          label={t("toolbar.toolHand")}
-          pressed={tool === "hand"}
-          tone={tool === "hand" ? "primary" : "neutral"}
+          label={t("toolbar.toolHand")} tipSide={tip}
+          pressed={tool === "hand"} tone={tool === "hand" ? "primary" : "neutral"}
           onClick={() => { dispatch({ type: "setTool", tool: "hand" }); }}
         >
           <HandIcon />
         </TbButton>
-        <Sep />
+        <Sep vertical={vertical} />
 
-        <TbButton label={t("toolbar.addText")} onClick={onAddText}>
+        <TbButton label={t("toolbar.addText")} tipSide={tip} onClick={onAddText}>
           <TextIcon />
         </TbButton>
-        <TbButton label={t("toolbar.addRect")} onClick={() => { onAddShape("rect"); }}>
+        <TbButton label={t("toolbar.addRect")} tipSide={tip} onClick={() => { onAddShape("rect"); }}>
           <ShapeRectIcon />
         </TbButton>
-        <TbButton label={t("toolbar.addEllipse")} onClick={() => { onAddShape("ellipse"); }}>
+        <TbButton label={t("toolbar.addEllipse")} tipSide={tip} onClick={() => { onAddShape("ellipse"); }}>
           <ShapeEllipseIcon />
         </TbButton>
-        <TbButton label={t("toolbar.addDiamond")} onClick={() => { onAddShape("diamond"); }}>
+        <TbButton label={t("toolbar.addDiamond")} tipSide={tip} onClick={() => { onAddShape("diamond"); }}>
           <ShapeDiamondIcon />
         </TbButton>
-        <TbButton label={t("toolbar.addLink")} onClick={onAddEntityRef}>
+        <TbButton label={t("toolbar.addLink")} tipSide={tip} onClick={onAddEntityRef}>
           <LinkIcon />
         </TbButton>
-        <Sep />
+        <Sep vertical={vertical} />
 
         <TbButton
-          label={t("toolbar.deleteSelected")}
-          tone="danger"
-          disabled={!hasSelection}
+          label={t("toolbar.deleteSelected")} tipSide={tip}
+          tone="danger" disabled={!hasSelection}
           onClick={() => { dispatch({ type: "deleteSelection" }); }}
         >
           <TrashIcon />
         </TbButton>
-        <Sep />
+        <Sep vertical={vertical} />
 
-        <TbButton label={t("toolbar.undoAriaLabel")} disabled={!canUndo} onClick={() => { dispatch({ type: "undo" }); }}>
+        <TbButton label={t("toolbar.undoAriaLabel")} tipSide={tip} disabled={!canUndo} onClick={() => { dispatch({ type: "undo" }); }}>
           <UndoIcon />
         </TbButton>
-        <TbButton label={t("toolbar.redoAriaLabel")} disabled={!canRedo} onClick={() => { dispatch({ type: "redo" }); }}>
+        <TbButton label={t("toolbar.redoAriaLabel")} tipSide={tip} disabled={!canRedo} onClick={() => { dispatch({ type: "redo" }); }}>
           <RedoIcon />
         </TbButton>
-        <TbButton label={t("toolbar.reset")} disabled={!dirty} onClick={() => { dispatch({ type: "reset" }); }}>
+        <TbButton label={t("toolbar.reset")} tipSide={tip} disabled={!dirty} onClick={() => { dispatch({ type: "reset" }); }}>
           <ResetIcon />
         </TbButton>
 
         {!hideJsonToggle && (
           <>
-            <Sep />
+            <Sep vertical={vertical} />
             <TbButton
-              label={showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")}
-              pressed={showJson}
-              tone={showJson ? "primary" : "neutral"}
+              label={showJson ? t("toolbar.showCanvas") : t("toolbar.showJson")} tipSide={tip}
+              pressed={showJson} tone={showJson ? "primary" : "neutral"}
               onClick={onToggleJson}
             >
               <BracesIcon />
@@ -179,23 +197,25 @@ export function EditorToolbar({
 
         {onExportSvg && (
           <>
-            <Sep />
-            <TbButton label={t("toolbar.exportSvg")} disabled={!canExport} onClick={onExportSvg}>
+            <Sep vertical={vertical} />
+            <TbButton label={t("toolbar.exportSvg")} tipSide={tip} disabled={!canExport} onClick={onExportSvg}>
               <DownloadIcon />
             </TbButton>
             {onExportPng && (
-              <TbButton label={t("toolbar.exportPng")} disabled={!canExport} onClick={onExportPng}>
+              <TbButton label={t("toolbar.exportPng")} tipSide={tip} disabled={!canExport} onClick={onExportPng}>
                 <DownloadIcon />
               </TbButton>
             )}
           </>
         )}
 
-        <span className="ms-auto flex items-center gap-2">
-          {dirty && <span className="text-xs text-(--color-fg-muted)">{t("toolbar.unsavedChanges")}</span>}
-          <Button type="button" compact tone="primary" disabled={saveDisabled ?? (saving || !dirty)} onClick={onSave}>
-            {saving ? t("toolbar.saving") : (saveLabel ?? t("toolbar.save"))}
-          </Button>
+        {/* Save-кластер отжат вправо (ms-auto). В vertical на xl+ переезжает вниз
+            столбцом: индикатор «не сохранено» над кнопкой. */}
+        <span className={vertical
+          ? "ms-auto flex items-center gap-2 xl:ms-0 xl:mt-2 xl:w-full xl:flex-col xl:items-start"
+          : "ms-auto flex items-center gap-2"}>
+          {unsaved}
+          {saveCluster}
         </span>
       </div>
     </Tooltip.Provider>
