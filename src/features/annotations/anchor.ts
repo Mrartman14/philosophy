@@ -1,5 +1,6 @@
 // src/features/annotations/anchor.ts
 import type { TextAnchor } from "@/components/anchor-engine";
+import { coordsToEngineAnchor, engineAnchorToCoords } from "@/utils/text-anchor";
 
 import type { Anchor } from "./types";
 
@@ -83,34 +84,16 @@ export function isValidMediaAnchor(a: Anchor): boolean {
  * без преобразования. Отсутствующие char-поля дефолтятся в 0.
  */
 export function toEngineAnchor(a: Anchor): TextAnchor | null {
-  if (a.start_sec !== undefined || a.end_sec !== undefined) return null;
-  if (!a.start_block_id || !a.end_block_id || !a.exact) return null;
-  const engine: TextAnchor = {
-    startBlockId: a.start_block_id,
-    endBlockId: a.end_block_id,
-    startChar: a.start_char ?? 0,
-    endChar: a.end_char ?? 0,
-    exact: a.exact,
-  };
-  if (a.prefix) engine.prefix = a.prefix;
-  if (a.suffix) engine.suffix = a.suffix;
-  return engine;
+  return coordsToEngineAnchor(a);
 }
 
 /**
  * Маппит `TextAnchor` движка обратно в доменный `annotation.Anchor`.
- * Делегирует `buildTextAnchor` — единый источник правил опускания пустых
- * prefix/suffix.
+ *
+ * Делегирует общему `@/utils/text-anchor` — координатный объект уже валиден
+ * как `annotation.Anchor` (target-полей у аннотации нет): полная DRY, единый
+ * источник правил опускания пустых prefix/suffix.
  */
 export function fromEngineAnchor(a: TextAnchor): Anchor {
-  const input: TextAnchorInput = {
-    startBlockId: a.startBlockId,
-    endBlockId: a.endBlockId,
-    startChar: a.startChar,
-    endChar: a.endChar,
-    exact: a.exact,
-  };
-  if (a.prefix) input.prefix = a.prefix;
-  if (a.suffix) input.suffix = a.suffix;
-  return buildTextAnchor(input);
+  return engineAnchorToCoords(a);
 }
