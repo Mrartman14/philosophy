@@ -133,7 +133,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   const vp = state.viewport;
 
-  /** Экранные координаты события (относительно SVG) → мировые. */
+  /** Экранные координаты события (относительно поверхности-div) → мировые. */
   const eventWorld = useCallback((e: { clientX: number; clientY: number }): Point => {
     const rect = surfaceRef.current?.getBoundingClientRect();
     const sx = e.clientX - (rect?.left ?? 0);
@@ -448,7 +448,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   };
 
   // ---- export (svg/png) ----
-  // rootEl = живой svg редактора: из него getComputedStyle берёт реальные цвета темы.
+  // rootEl = живая поверхность-div редактора: из неё getComputedStyle берёт реальные цвета темы.
   const exportTitle = isCreate ? title : (canvas?.title ?? "");
   const onExportSvg = () => {
     painter.exportSvg(renderData, resolveEntityRef, exportTitle, surfaceRef.current ?? document.documentElement);
