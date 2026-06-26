@@ -30,7 +30,9 @@ export async function DocumentAnnotations({ parentId }: { parentId: string }) {
   const { items } = await getAnnotationsFor("document", parentId);
   const canCreate = canCreateAnnotation(me);
   const astSchema = await loadSchemaIfNeeded(me, items, canCreate);
-  const notes = buildAnnotationCards({ items, me, astSchema });
+  // margin-режим: цитату якоря прячем на ≥xl (связь показывает выноска-линия), на
+  // мобильном (поле схлопнуто) — оставляем.
+  const notes = buildAnnotationCards({ items, me, astSchema, hideAnchorOnWide: true });
 
   return (
     <section className="flex flex-col gap-4" aria-label={t("sectionLabel")}>

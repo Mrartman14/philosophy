@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { PencilIcon } from "@/assets/icons/pencil-icon";
 import type { SchemaResponse } from "@/components/ast-editor";
 import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
-import { Button, Dialog } from "@/components/ui";
+import { Button, Dialog, IconButton } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { Annotation } from "../types";
@@ -16,6 +17,8 @@ interface Props {
   annotation: Annotation;
   /** Серверно-загруженная схема AST: гидрируем провайдер без похода в бек. */
   initial?: SchemaResponse | undefined;
+  /** true → иконочная кнопка (карандаш) вместо текстовой (для маргиналии). */
+  icon?: boolean;
 }
 
 /**
@@ -26,16 +29,24 @@ interface Props {
  * серверно и передаёт пропом `initial` (браузер за ней не ходит). После успеха
  * форма зовёт onSuccess → закрываем диалог и router.refresh().
  */
-export function AnnotationEditButton({ annotation, initial }: Props) {
+export function AnnotationEditButton({ annotation, initial, icon = false }: Props) {
   const router = useRouter();
   const t = useT("annotations");
   const [open, setOpen] = useState(false);
+
+  const trigger = icon ? (
+    <IconButton type="button" compact aria-label={t("editButton")} title={t("editButton")}>
+      <PencilIcon className="text-base" />
+    </IconButton>
+  ) : (
+    <Button tone="neutral">{t("editButton")}</Button>
+  );
 
   return (
     <Dialog
       open={open}
       onOpenChange={setOpen}
-      trigger={<Button tone="neutral">{t("editButton")}</Button>}
+      trigger={trigger}
       title={t("editDialogTitle")}
     >
       <SchemaContextProvider

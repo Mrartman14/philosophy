@@ -64,10 +64,13 @@ export function buildAnnotationCards({
   items,
   me,
   astSchema,
+  hideAnchorOnWide = false,
 }: {
   items: Annotation[];
   me: Me | null;
   astSchema: SchemaResponse | null;
+  /** margin-режим: прятать цитату на ≥xl (см. AnnotationCard.hideAnchorOnWide). */
+  hideAnchorOnWide?: boolean;
 }): AnnotationCardVM[] {
   return items.flatMap((a) => {
     const id = a.id;
@@ -83,20 +86,16 @@ export function buildAnnotationCards({
         card: (
           <AnnotationCard
             annotation={a}
+            hideAnchorOnWide={hideAnchorOnWide}
             anchorContext={<AnnotationAnchorContext anchor={a.anchor} />}
-            actions={
-              <>
-                <AnnotationExportLinks id={id} />
-                {ownEditable && (
-                  <>
-                    <AnnotationEditButton
-                      annotation={a}
-                      initial={astSchema ?? undefined}
-                    />
-                    <AnnotationDeleteButton annotationId={id} />
-                  </>
-                )}
-              </>
+            actions={<AnnotationExportLinks id={id} />}
+            headerActions={
+              ownEditable ? (
+                <>
+                  <AnnotationEditButton annotation={a} initial={astSchema ?? undefined} icon />
+                  <AnnotationDeleteButton annotationId={id} icon />
+                </>
+              ) : undefined
             }
           />
         ),

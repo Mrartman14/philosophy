@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-import { Button, ConfirmDialog, useToast } from "@/components/ui";
+import { TrashIcon } from "@/assets/icons/trash-icon";
+import { Button, ConfirmDialog, IconButton, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
@@ -14,6 +15,8 @@ interface Props {
   annotationId: string;
   /** true → admin-удаление (DELETE /api/admin/annotations/{id}); иначе own. */
   admin?: boolean;
+  /** true → иконочная кнопка (корзина) вместо текстовой (для маргиналии). */
+  icon?: boolean;
 }
 
 /**
@@ -21,7 +24,7 @@ interface Props {
  * (conventions §3.4) и показываем тостом. forbidden → branded-текст.
  * После успеха — router.refresh() (списки/секции перечитываются на сервере).
  */
-export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
+export function AnnotationDeleteButton({ annotationId, admin = false, icon = false }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("annotations");
@@ -29,9 +32,17 @@ export function AnnotationDeleteButton({ annotationId, admin = false }: Props) {
   const [, startTransition] = useTransition();
   const { key } = useIdempotencyKey();
 
+  const trigger = icon ? (
+    <IconButton type="button" compact tone="danger" aria-label={t("deleteButton")} title={t("deleteButton")}>
+      <TrashIcon className="text-base" />
+    </IconButton>
+  ) : (
+    <Button tone="danger">{t("deleteButton")}</Button>
+  );
+
   return (
     <ConfirmDialog
-      trigger={<Button tone="danger">{t("deleteButton")}</Button>}
+      trigger={trigger}
       title={t("deleteDialogTitle")}
       description={t("deleteDialogDescription")}
       destructive
