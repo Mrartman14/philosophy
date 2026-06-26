@@ -41,7 +41,7 @@ export interface EntityRefDraft {
  * Полное состояние редактора. `data` — единственный источник графа (snake_case
  * schema-форма, как CanvasData). Selection/viewport — UI-состояние (НЕ в undo).
  * past/future — стеки снапшотов CanvasData для undo/redo. baseline — снапшот
- * последнего сохранённого графа (для вычисления dirty). gridEnabled — snap.
+ * последнего сохранённого графа (для вычисления dirty).
  */
 export interface EditorState {
   data: CanvasData;
@@ -51,7 +51,6 @@ export interface EditorState {
   future: CanvasData[];
   baseline: CanvasData;
   dirty: boolean;
-  gridEnabled: boolean;
   /** Активный инструмент (UI-состояние, НЕ в undo). */
   tool: CanvasTool;
 }
@@ -101,5 +100,4 @@ export type EditorCommand =
   | { type: "undo" }
   | { type: "redo" }
   | { type: "reset" }
-  | { type: "toggleGrid" }
   | { type: "markSaved"; data: CanvasData };

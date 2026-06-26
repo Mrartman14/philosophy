@@ -29,7 +29,6 @@ describe("initEditorState", () => {
     expect(s.future).toEqual([]);
     expect(s.dirty).toBe(false);
     expect(s.baseline).toEqual(baseData);
-    expect(s.gridEnabled).toBe(true);
     expect(s.viewport.zoom).toBe(1);
   });
   it("нормализует undefined nodes/edges в пустые массивы", () => {
@@ -69,15 +68,6 @@ describe("selection команды", () => {
   });
 });
 
-describe("viewport команды", () => {
-  it("toggleGrid переключает", () => {
-    let s = initEditorState(baseData);
-    expect(s.gridEnabled).toBe(true);
-    s = canvasReducer(s, { type: "toggleGrid" });
-    expect(s.gridEnabled).toBe(false);
-  });
-});
-
 describe("tool команды", () => {
   it("setTool переключает инструмент, не трогая data/undo", () => {
     const s = initEditorState({ nodes: [], edges: [] });
@@ -98,7 +88,7 @@ describe("add-команды", () => {
     expect(added?.id).toBe("gen-1");
     expect(added?.type).toBe("text");
     expect(added?.text).toBe("");
-    // gridEnabled=true по умолчанию → x снапится к сетке 8px: snap(50)=48.
+    // снап всегда включён → x снапится к сетке 8px: snap(50)=48.
     expect(added?.x).toBe(48);
     expect(s.dirty).toBe(true);
     expect(s.past).toHaveLength(1);

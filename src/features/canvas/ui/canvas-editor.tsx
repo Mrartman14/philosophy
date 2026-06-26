@@ -281,8 +281,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
 
   // ---- create-node helpers (центр вьюпорта) ----
   const viewportCenterWorld = useCallback((): Point => {
-    return snapPoint(screenToWorld({ x: size.width / 2, y: size.height / 2 }, vp), state.gridEnabled);
-  }, [size, vp, state.gridEnabled]);
+    return snapPoint(screenToWorld({ x: size.width / 2, y: size.height / 2 }, vp), true);
+  }, [size, vp]);
 
   const onAddText = () => {
     // Детерминированный id → сразу открываем текст-оверлей нового узла.

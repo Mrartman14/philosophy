@@ -41,7 +41,6 @@ export function initEditorState(data: CanvasData): EditorState {
     future: [],
     baseline: cloneData(normalized),
     dirty: false,
-    gridEnabled: true,
     tool: "select",
   };
 }
@@ -86,8 +85,6 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
     // ---------------- viewport ----------------
     case "setViewport":
       return { ...state, viewport: command.viewport };
-    case "toggleGrid":
-      return { ...state, gridEnabled: !state.gridEnabled };
 
     // ---------------- tool ----------------
     case "setTool":
@@ -120,7 +117,7 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
       const id = command.id ?? newId();
       const node: CanvasNode = {
         id, type: "text",
-        x: snapToGrid(command.x, state.gridEnabled), y: snapToGrid(command.y, state.gridEnabled),
+        x: snapToGrid(command.x, true), y: snapToGrid(command.y, true),
         width: TEXT_W, height: TEXT_H, text: "",
       };
       return commit(state, { ...state.data, nodes: [...(state.data.nodes ?? []), node] }, { nodeIds: [id], edgeIds: [] });
@@ -129,7 +126,7 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
       const id = newId();
       const node: CanvasNode = {
         id, type: "shape",
-        x: snapToGrid(command.x, state.gridEnabled), y: snapToGrid(command.y, state.gridEnabled),
+        x: snapToGrid(command.x, true), y: snapToGrid(command.y, true),
         width: SHAPE_W, height: SHAPE_H, shape_kind: command.shapeKind,
       };
       return commit(state, { ...state.data, nodes: [...(state.data.nodes ?? []), node] }, { nodeIds: [id], edgeIds: [] });
@@ -138,7 +135,7 @@ export function canvasReducer(state: EditorState, command: EditorCommand): Edito
       const id = newId();
       const node: CanvasNode = {
         id, type: "entity_ref",
-        x: snapToGrid(command.x, state.gridEnabled), y: snapToGrid(command.y, state.gridEnabled),
+        x: snapToGrid(command.x, true), y: snapToGrid(command.y, true),
         width: REF_W, height: REF_H,
         entity_type: command.entityType, entity_id: command.entityId,
       };
