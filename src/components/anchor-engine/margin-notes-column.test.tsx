@@ -144,4 +144,24 @@ describe("MarginNotesColumn (smoke)", () => {
       );
     }).not.toThrow();
   });
+
+  it("сообщает наведение на карточку через onHoverNote", () => {
+    const onHoverNote = vi.fn();
+    const { container } = render(
+      <MarginNotesColumn
+        notes={makeNotes()}
+        getAnchorRect={noRect}
+        onActivate={() => undefined}
+        onHoverNote={onHoverNote}
+        recomputeKey={0}
+      />,
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- карточка без роли по дизайну
+    const card = container.querySelector('[data-note-card-wrapper="a"]');
+    if (card === null) throw new Error('card "a" не найдена');
+    fireEvent.mouseEnter(card);
+    expect(onHoverNote).toHaveBeenCalledWith("a");
+    fireEvent.mouseLeave(card);
+    expect(onHoverNote).toHaveBeenCalledWith(null);
+  });
 });

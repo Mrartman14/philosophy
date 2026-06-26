@@ -30,11 +30,12 @@ interface Props {
   onActivate: (id: string) => void;
   recomputeKey: number; // меняется при resize/fonts от движка (scroll не требует
   // пересчёта — позиции относительны контейнеру колонки)
+  onHoverNote?: (id: string | null) => void;
 }
 
 const WIDE = "(min-width: 80rem)";
 
-export function MarginNotesColumn({ notes, getAnchorRect, onActivate, recomputeKey }: Props) {
+export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNote, recomputeKey }: Props) {
   const anchoredRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef(new Map<string, HTMLElement>());
   const [tops, setTops] = useState<Map<string, number>>(new Map());
@@ -121,6 +122,8 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, recomputeK
               else cardRefs.current.delete(n.id);
             }}
             onClick={onCardClick(n.id)}
+            onMouseEnter={() => onHoverNote?.(n.id)}
+            onMouseLeave={() => onHoverNote?.(null)}
             style={
               wide && tops.has(n.id)
                 ? { position: "absolute", top: tops.get(n.id), insetInlineStart: 0, insetInlineEnd: 0 }
