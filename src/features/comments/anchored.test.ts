@@ -49,4 +49,17 @@ describe("selectAnchoredRoots", () => {
     ];
     expect(selectAnchoredRoots(subtrees, "doc-1")).toHaveLength(0);
   });
+
+  it("отсеивает удалённый корень (is_deleted) даже с валидным text-якорем", () => {
+    const subtrees: RootSubtree[] = [
+      {
+        root: {
+          id: "c1", created_at: "", updated_at: "", lecture_id: "L", type: "claim",
+          is_deleted: true, anchor: textAnchor("doc-1"),
+        },
+        descendants: [],
+      },
+    ];
+    expect(selectAnchoredRoots(subtrees, "doc-1")).toHaveLength(0);
+  });
 });
