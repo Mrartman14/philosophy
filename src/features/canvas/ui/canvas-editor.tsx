@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 import type { Point, RenderNode, Side } from "@/components/canvas-render";
-import { FormField, Select, TextInput, useToast } from "@/components/ui";
+import { FormField, MarginNote, Select, TextInput, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import type { ActionResult } from "@/utils/create-action";
 
@@ -416,6 +416,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   }
 
   return (
+    // Фрагмент: контент-хребет + правая маргиналия (инспектор). Прямые потомки
+    // .page-grid (страница рендерит CanvasEditor без обёрток) → инспектор в поле.
+    <>
     <div className="flex flex-col">
       {isCreate && (
         <div className="flex flex-wrap items-end gap-4 border-b border-(--color-border) p-3">
@@ -545,18 +548,20 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
           )}
         </div>
 
-        {/* инспектор */}
-        <aside className="w-64 shrink-0 border-s border-(--color-border) p-3">
-          <EditorInspector
-            data={state.data}
-            selectedNodeIds={state.selection.nodeIds}
-            selectedEdgeIds={state.selection.edgeIds}
-            dispatch={dispatch}
-          />
-        </aside>
       </div>
 
       <EntityRefDialog open={refDialogOpen} onClose={() => { setRefDialogOpen(false); }} onConfirm={onAddEntityRefConfirm} />
     </div>
+
+    {/* инспектор — в правом поле (маргиналии); < xl втекает под холст */}
+    <MarginNote side="end" grow className="p-3 xl:ps-0">
+      <EditorInspector
+        data={state.data}
+        selectedNodeIds={state.selection.nodeIds}
+        selectedEdgeIds={state.selection.edgeIds}
+        dispatch={dispatch}
+      />
+    </MarginNote>
+    </>
   );
 }

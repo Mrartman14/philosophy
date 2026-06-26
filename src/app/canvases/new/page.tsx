@@ -22,9 +22,11 @@ export default async function NewCanvasPage() {
   const t = await getT("pages");
 
   return (
-    <div className="flex flex-col">
+    // Фрагмент (не обёрточный div): CanvasEditor возвращает контент-хребет +
+    // MarginNote-инспектор — оба должны быть прямыми потомками .page-grid.
+    <>
       <h1 className="sr-only">{t("canvasNewHeading")}</h1>
       <CanvasEditor mode="create" />
-    </div>
+    </>
   );
 }
