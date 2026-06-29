@@ -53,7 +53,50 @@ const forms = {
     submissionModeHint:
       "Режим «без изменений» нельзя будет смягчить позже. Публичную форму нельзя вернуть в приватную, а её структуру — менять.",
     addField: "+ Добавить поле",
+    submissionVisibilityLabel: "Видимость результатов",
+    submissionVisibilityPrivate: "Приватные (видит только владелец)",
+    submissionVisibilityPublic: "Публичные (атрибутированные голоса видны периметру)",
+    submissionVisibilityHint: "После создания изменить нельзя.",
   },
+
+  // --- form-results ---
+  results: {
+    totalSubmissions:
+      "{n, plural, one {# отклик} few {# отклика} many {# откликов} other {# отклика}}",
+    answered:
+      "{n, plural, one {# ответил} few {# ответили} many {# ответили} other {# ответили}}",
+    multiHint: "возможно несколько вариантов",
+    min: "мин",
+    max: "макс",
+    avg: "сред",
+    sum: "сумма",
+    empty: "Пока нет откликов",
+    noTextAnswers: "Нет ответов",
+    allAnswers: "Все ответы →",
+    forbidden: "Результаты этой формы закрыты",
+    titleSuffix: "Результаты",
+    prevPage: "← Назад",
+    nextPage: "Вперёд →",
+    fieldType: {
+      text: "текст",
+      long_text: "текст",
+      single_choice: "одиночный выбор",
+      multi_choice: "множественный выбор",
+      number: "число",
+      date: "дата",
+    },
+  },
+
+  // --- form/result/mode badges ---
+  badges: {
+    form: { private: "Форма: приватная", public: "Форма: публичная" },
+    results: { private: "Результаты: приватные", public: "Результаты: публичные" },
+    mode: { editable: "Режим: редактируемый", immutable: "Режим: фиксированный" },
+  },
+
+  // --- form-fill: согласие на публичный голос ---
+  publicVoteConsent:
+    "Это публичный опрос: твой ответ будет виден всем, кто видит эту форму, с указанием авторства.",
 
   // --- form-builder-field-row ---
   fieldRow: {

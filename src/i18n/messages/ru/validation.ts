@@ -222,6 +222,7 @@ const validation = {
     badJsonPayload: "Не удалось обработать форму. Обновите страницу и попробуйте снова.",
     payloadStructureError: "Ошибка структуры формы",
     visibilityRequired: "Не указана видимость",
+    submissionVisibilityRequired: "Укажите видимость результатов",
     modeRequired: "Не указан режим",
     emptyAnswers: "Нет ответов",
     badJsonAnswers: "Не удалось обработать ответы. Обновите страницу и попробуйте снова.",

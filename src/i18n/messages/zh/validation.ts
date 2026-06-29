@@ -219,6 +219,7 @@ const validation = {
     badJsonPayload: "无法处理表单。请刷新页面后重试。",
     payloadStructureError: "表单结构错误",
     visibilityRequired: "未指定可见性",
+    submissionVisibilityRequired: "未指定结果可见性",
     modeRequired: "未指定模式",
     emptyAnswers: "没有答案",
     badJsonAnswers: "无法处理答案。请刷新页面后重试。",

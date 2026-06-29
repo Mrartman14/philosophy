@@ -53,7 +53,47 @@ const forms = {
     submissionModeHint:
       "“不可修改”模式之后无法放宽。公开表单无法重新设为私有，其结构也无法更改。",
     addField: "+ 添加字段",
+    submissionVisibilityLabel: "结果可见性",
+    submissionVisibilityPrivate: "私有（仅所有者可见）",
+    submissionVisibilityPublic: "公开（署名投票对表单受众可见）",
+    submissionVisibilityHint: "创建后无法更改。",
   },
+
+  // --- form-results ---
+  results: {
+    totalSubmissions: "{n, plural, other {# 条回复}}",
+    answered: "{n, plural, other {# 人已回答}}",
+    multiHint: "可多选",
+    min: "最小",
+    max: "最大",
+    avg: "平均",
+    sum: "总和",
+    empty: "暂无回复",
+    noTextAnswers: "没有答案",
+    allAnswers: "全部答案 →",
+    forbidden: "此表单的结果为私有",
+    titleSuffix: "结果",
+    prevPage: "← 上一页",
+    nextPage: "下一页 →",
+    fieldType: {
+      text: "文本",
+      long_text: "文本",
+      single_choice: "单选",
+      multi_choice: "多选",
+      number: "数字",
+      date: "日期",
+    },
+  },
+
+  // --- form/result/mode badges ---
+  badges: {
+    form: { private: "表单：私有", public: "表单：公开" },
+    results: { private: "结果：私有", public: "结果：公开" },
+    mode: { editable: "模式：可编辑", immutable: "模式：固定" },
+  },
+
+  // --- form-fill: public vote consent ---
+  publicVoteConsent: "这是一项公开投票：您的回答将对所有能看到此表单的人可见，并署上您的名字。",
 
   // --- form-builder-field-row ---
   fieldRow: {

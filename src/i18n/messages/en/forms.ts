@@ -53,7 +53,48 @@ const forms = {
     submissionModeHint:
       "The immutable mode cannot be relaxed later. A public form cannot be made private again, and its structure cannot be changed.",
     addField: "+ Add field",
+    submissionVisibilityLabel: "Results visibility",
+    submissionVisibilityPrivate: "Private (owner only)",
+    submissionVisibilityPublic: "Public (attributed votes visible to the form's audience)",
+    submissionVisibilityHint: "Cannot be changed after creation.",
   },
+
+  // --- form-results ---
+  results: {
+    totalSubmissions: "{n, plural, one {# response} other {# responses}}",
+    answered: "{n, plural, one {# answered} other {# answered}}",
+    multiHint: "multiple choices allowed",
+    min: "min",
+    max: "max",
+    avg: "avg",
+    sum: "sum",
+    empty: "No responses yet",
+    noTextAnswers: "No answers",
+    allAnswers: "All answers →",
+    forbidden: "This form's results are private",
+    titleSuffix: "Results",
+    prevPage: "← Prev",
+    nextPage: "Next →",
+    fieldType: {
+      text: "text",
+      long_text: "text",
+      single_choice: "single choice",
+      multi_choice: "multiple choice",
+      number: "number",
+      date: "date",
+    },
+  },
+
+  // --- form/result/mode badges ---
+  badges: {
+    form: { private: "Form: private", public: "Form: public" },
+    results: { private: "Results: private", public: "Results: public" },
+    mode: { editable: "Mode: editable", immutable: "Mode: fixed" },
+  },
+
+  // --- form-fill: public vote consent ---
+  publicVoteConsent:
+    "This is a public poll: your answer will be visible to everyone who can see this form, attributed to you.",
 
   // --- form-builder-field-row ---
   fieldRow: {

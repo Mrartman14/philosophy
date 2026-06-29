@@ -219,6 +219,7 @@ const validation = {
     badJsonPayload: "تعذّرت معالجة النموذج. حدّث الصفحة وحاول مرة أخرى.",
     payloadStructureError: "خطأ في بنية النموذج",
     visibilityRequired: "الظهور مطلوب",
+    submissionVisibilityRequired: "ظهور النتائج مطلوب",
     modeRequired: "الوضع مطلوب",
     emptyAnswers: "لا توجد إجابات",
     badJsonAnswers: "تعذّرت معالجة الإجابات. حدّث الصفحة وحاول مرة أخرى.",

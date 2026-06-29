@@ -208,6 +208,7 @@ const pages = {
   // ─── /forms/[id] ─────────────────────────────────────────────────────
   formDefaultTitle: "Форма",
   formSubmissionsLink: "Отклики",
+  formResultsLink: "Результаты",
   formFillSection: "Заполнить",
   formEditSection: "Редактирование структуры",
   formEditHint: "Доступно только до публикации. После публикации структура замораживается.",

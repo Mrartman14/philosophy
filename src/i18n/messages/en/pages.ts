@@ -208,6 +208,7 @@ const pages = {
   // ─── /forms/[id] ─────────────────────────────────────────────────────
   formDefaultTitle: "Form",
   formSubmissionsLink: "Submissions",
+  formResultsLink: "Results",
   formFillSection: "Fill in",
   formEditSection: "Edit structure",
   formEditHint: "Available only before publishing. The structure is frozen after publishing.",

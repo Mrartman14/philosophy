@@ -53,7 +53,50 @@ const forms = {
     submissionModeHint:
       "لا يمكن تخفيف الوضع غير القابل للتغيير لاحقًا. ولا يمكن إعادة النموذج العام إلى خاص، كما لا يمكن تغيير بنيته.",
     addField: "+ إضافة حقل",
+    submissionVisibilityLabel: "ظهور النتائج",
+    submissionVisibilityPrivate: "خاصة (يراها المالك فقط)",
+    submissionVisibilityPublic: "عامة (الأصوات المنسوبة مرئية لجمهور النموذج)",
+    submissionVisibilityHint: "لا يمكن تغييره بعد الإنشاء.",
   },
+
+  // --- form-results ---
+  results: {
+    totalSubmissions:
+      "{n, plural, zero {# رد} one {# رد} two {ردّان} few {# ردود} many {# ردًا} other {# رد}}",
+    answered:
+      "{n, plural, zero {# أجاب} one {# أجاب} two {أجاب اثنان} few {# أجابوا} many {# أجابوا} other {# أجابوا}}",
+    multiHint: "يُسمح باختيارات متعددة",
+    min: "الأدنى",
+    max: "الأقصى",
+    avg: "المتوسط",
+    sum: "المجموع",
+    empty: "لا توجد ردود بعد",
+    noTextAnswers: "لا توجد إجابات",
+    allAnswers: "كل الإجابات →",
+    forbidden: "نتائج هذا النموذج خاصة",
+    titleSuffix: "النتائج",
+    prevPage: "← السابق",
+    nextPage: "التالي →",
+    fieldType: {
+      text: "نص",
+      long_text: "نص",
+      single_choice: "اختيار واحد",
+      multi_choice: "اختيار متعدد",
+      number: "رقم",
+      date: "تاريخ",
+    },
+  },
+
+  // --- form/result/mode badges ---
+  badges: {
+    form: { private: "النموذج: خاص", public: "النموذج: عام" },
+    results: { private: "النتائج: خاصة", public: "النتائج: عامة" },
+    mode: { editable: "الوضع: قابل للتعديل", immutable: "الوضع: ثابت" },
+  },
+
+  // --- form-fill: public vote consent ---
+  publicVoteConsent:
+    "هذا استطلاع عام: ستكون إجابتك مرئية لكل من يرى هذا النموذج، منسوبة إليك.",
 
   // --- form-builder-field-row ---
   fieldRow: {

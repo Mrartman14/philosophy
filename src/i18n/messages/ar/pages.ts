@@ -208,6 +208,7 @@ const pages = {
   // ─── /forms/[id] ─────────────────────────────────────────────────────
   formDefaultTitle: "نموذج",
   formSubmissionsLink: "الردود",
+  formResultsLink: "النتائج",
   formFillSection: "تعبئة",
   formEditSection: "تحرير البنية",
   formEditHint: "متاح فقط قبل النشر. تُجمّد البنية بعد النشر.",

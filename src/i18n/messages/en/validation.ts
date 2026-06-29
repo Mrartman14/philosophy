@@ -219,6 +219,7 @@ const validation = {
     badJsonPayload: "Couldn’t process the form. Refresh the page and try again.",
     payloadStructureError: "Form structure error",
     visibilityRequired: "Visibility is required",
+    submissionVisibilityRequired: "Results visibility is required",
     modeRequired: "Mode is required",
     emptyAnswers: "No answers",
     badJsonAnswers: "Couldn’t process the answers. Refresh the page and try again.",

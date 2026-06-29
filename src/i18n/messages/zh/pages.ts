@@ -208,6 +208,7 @@ const pages = {
   // ─── /forms/[id] ─────────────────────────────────────────────────────
   formDefaultTitle: "表单",
   formSubmissionsLink: "提交",
+  formResultsLink: "结果",
   formFillSection: "填写",
   formEditSection: "编辑结构",
   formEditHint: "仅在发布前可用。发布后结构将被冻结。",
