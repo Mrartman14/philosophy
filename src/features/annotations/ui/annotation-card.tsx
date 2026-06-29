@@ -54,7 +54,7 @@ export async function AnnotationCard({
       {/* Один кламп на цитату+тело: при крупном контенте оба сворачиваются под
           ОДНИМ тогглом (не два отдельных). На wide цитата скрыта (hideAnchorOnWide)
           → регион меряет только тело; на narrow — цитата и тело вместе. */}
-      <ClampableContent maxHeight={16} expandLabel={t("marginExpand")} collapseLabel={t("marginCollapse")}>
+      <ClampableContent>
         <div className="flex flex-col gap-2">
           {anchorContext &&
             (hideAnchorOnWide ? <div className="xl:hidden">{anchorContext}</div> : anchorContext)}

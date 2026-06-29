@@ -43,4 +43,5 @@
   .content :is(th,td)[data-align="left"] { text-align: left; }
   .content :is(th,td)[data-align="center"] { text-align: center; }
   .content :is(th,td)[data-align="right"] { text-align: right; }
+  .clampable { max-block-size: var(--clamp-max); overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 1.5rem), transparent); mask-image: linear-gradient(to bottom, black calc(100% - 1.5rem), transparent); }
 }

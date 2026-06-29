@@ -60,6 +60,12 @@ const common = {
     invalid: "يرجى إدخال قيمة صحيحة",
   },
 
+  // UI-kit: clampable-content (client)
+  clampable: {
+    expand: "إظهار النص كاملاً",
+    collapse: "عرض أقل",
+  },
+
   // permission/status-banner
   statusBanner: {
     suspended: "حسابك مقيّد مؤقتًا. القراءة متاحة، أمّا الإجراءات الجديدة فلا.",

@@ -60,6 +60,12 @@ const common = {
     invalid: "Please enter a valid value",
   },
 
+  // UI-kit: clampable-content (client)
+  clampable: {
+    expand: "Show full text",
+    collapse: "Show less",
+  },
+
   // permission/status-banner
   statusBanner: {
     suspended: "Your account is temporarily restricted. Reading is available, new actions are not.",

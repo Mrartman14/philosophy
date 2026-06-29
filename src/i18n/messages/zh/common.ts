@@ -60,6 +60,12 @@ const common = {
     invalid: "请输入有效的值",
   },
 
+  // UI-kit: clampable-content (client)
+  clampable: {
+    expand: "显示全文",
+    collapse: "收起",
+  },
+
   // permission/status-banner
   statusBanner: {
     suspended: "您的账户已被临时限制。可以阅读，但无法进行新的操作。",

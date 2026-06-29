@@ -65,8 +65,6 @@ const annotations = {
   marginHighlightToggleOn: "Hide highlights",
   marginHighlightToggleOff: "Show highlights",
   marginColumnLabel: "Margin annotations",
-  marginExpand: "Show full text",
-  marginCollapse: "Show less",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

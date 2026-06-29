@@ -20,7 +20,7 @@ export async function CommentPreviewCard({ comment, replyCount }: { comment: Com
         <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
         <UserView username={comment.author?.username} />
       </div>
-      <ClampableContent maxHeight={16} expandLabel={t("marginExpand")} collapseLabel={t("marginCollapse")}>
+      <ClampableContent>
         <div className="content" data-size="sm">
           <AstRender blocks={comment.blocks ?? []} />
         </div>

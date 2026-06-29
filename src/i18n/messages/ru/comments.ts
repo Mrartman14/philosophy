@@ -99,8 +99,6 @@ const comments = {
   marginOpenThread: "Открыть обсуждение",
   marginColumnLabel: "Комментарии к фрагментам",
   marginOrphanLabel: "Фрагмент не найден",
-  marginExpand: "Показать полностью",
-  marginCollapse: "Свернуть",
 
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {

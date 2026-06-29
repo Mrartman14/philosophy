@@ -60,6 +60,12 @@ const common = {
     invalid: "Введите корректное значение",
   },
 
+  // UI-kit: clampable-content (client)
+  clampable: {
+    expand: "Показать полностью",
+    collapse: "Свернуть",
+  },
+
   // permission/status-banner
   statusBanner: {
     suspended: "Ваш аккаунт временно ограничен. Чтение доступно, новые действия — нет.",

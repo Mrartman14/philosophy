@@ -1,25 +1,33 @@
 "use client";
 // src/components/ui/clampable-content.tsx
-// Клампит крупный контент до превью (max-block-size + нижний masked-фейд) и
-// рендерит доступный тоггл «показать полностью / свернуть». Доменно-чистый: не
-// знает про маргиналию/аннотации/комменты — лейблы и порог приходят пропами.
-// Контент рендерится целиком (есть в DOM до измерения / на no-JS); кламп —
-// клиентское улучшение по измеренной естественной высоте детей.
-import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+// Клампит крупный контент до превью (max-block-size + нижний masked-фейд, класс
+// .clampable) и рендерит доступный тоггл «показать полностью / свернуть».
+// Доменно-чистый: лейблы по умолчанию резолвятся из common (как ConfirmDialog/
+// Select), порог — проп с дефолтом; оба переопределяемы. Контент рендерится
+// целиком (есть в DOM до измерения / на no-JS); кламп — клиентское улучшение по
+// измеренной естественной высоте детей.
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+
+import { useT } from "@/i18n/client";
 
 import { Button } from "./button";
 
 interface Props {
-  /** Порог высоты в rem; естественный контент выше — клампится с тогглом. */
-  maxHeight: number;
-  expandLabel: string;
-  collapseLabel: string;
+  /** Порог высоты в rem; естественный контент выше — клампится. По умолчанию 16. */
+  maxHeight?: number;
+  /** Лейбл свёрнутого состояния; по умолчанию common.clampable.expand. */
+  expandLabel?: string;
+  /** Лейбл развёрнутого состояния; по умолчанию common.clampable.collapse. */
+  collapseLabel?: string;
   children: ReactNode;
 }
 
-export function ClampableContent({ maxHeight, expandLabel, collapseLabel, children }: Props) {
+export function ClampableContent({ maxHeight = 16, expandLabel, collapseLabel, children }: Props) {
+  const t = useT("common");
+  const expand = expandLabel ?? t("clampable.expand");
+  const collapse = collapseLabel ?? t("clampable.collapse");
   // Внутренний враппер НЕ клампится — его scrollHeight = естественная высота,
-  // независимо от max-block-size на region (overflow:hidden родителя не меняет
+  // независимо от .clampable на region (overflow:hidden родителя не меняет
   // layout-высоту ребёнка) → нет петли «кламп уменьшил высоту → пере-замер».
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [overflowing, setOverflowing] = useState(false);
@@ -49,17 +57,8 @@ export function ClampableContent({ maxHeight, expandLabel, collapseLabel, childr
     <div className="flex flex-col gap-1">
       <div
         id={regionId}
-        style={
-          clamp
-            ? {
-                maxBlockSize: `${maxHeight}rem`,
-                overflow: "hidden",
-                maskImage: "linear-gradient(to bottom, black calc(100% - 1.5rem), transparent)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, black calc(100% - 1.5rem), transparent)",
-              }
-            : undefined
-        }
+        className={clamp ? "clampable" : undefined}
+        style={clamp ? ({ "--clamp-max": `${maxHeight}rem` } as CSSProperties) : undefined}
       >
         <div ref={contentRef}>{children}</div>
       </div>
@@ -73,7 +72,7 @@ export function ClampableContent({ maxHeight, expandLabel, collapseLabel, childr
             setExpanded((v) => !v);
           }}
         >
-          {expanded ? collapseLabel : expandLabel}
+          {expanded ? collapse : expand}
         </Button>
       )}
     </div>

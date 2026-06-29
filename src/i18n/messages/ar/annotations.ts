@@ -65,8 +65,6 @@ const annotations = {
   marginHighlightToggleOn: "إخفاء التظليل",
   marginHighlightToggleOff: "إظهار التظليل",
   marginColumnLabel: "تعليقات الهامش",
-  marginExpand: "إظهار النص كاملاً",
-  marginCollapse: "عرض أقل",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

@@ -65,8 +65,6 @@ const annotations = {
   marginHighlightToggleOn: "隐藏高亮",
   marginHighlightToggleOff: "显示高亮",
   marginColumnLabel: "页边批注",
-  marginExpand: "显示全文",
-  marginCollapse: "收起",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

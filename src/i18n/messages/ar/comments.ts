@@ -97,8 +97,6 @@ const comments = {
   marginOpenThread: "فتح المناقشة",
   marginColumnLabel: "تعليقات على المقاطع المحددة",
   marginOrphanLabel: "لم يتم العثور على المقطع",
-  marginExpand: "إظهار النص كاملاً",
-  marginCollapse: "عرض أقل",
 
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {
