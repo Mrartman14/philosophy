@@ -14,9 +14,12 @@ interface Props {
   /** Контекст якоря (цитата) — опциональный слот. */
   anchorContext?: React.ReactNode;
   /**
-   * Прятать цитату якоря на широких экранах (≥xl). В маргиналии связь с текстом
-   * показывает выноска-линия, цитата избыточна; на мобильном (поле схлопнуто, линии
-   * нет) — цитату оставляем. В list-режиме (отдельная страница) — не прячем.
+   * Прятать цитату якоря, когда карточка в РАСКРЫТОМ поле (связь с текстом
+   * показывает выноска-линия, цитата избыточна). Порог — тот же @container, что и
+   * раскрытие полей (см. layout.css §13), не вьюпортный xl: иначе при крупном
+   * тексте цитата прячется, пока карточка ещё инлайн (поле не раскрыто) → теряется
+   * контекст. На схлопнутом поле (линии нет) — цитату оставляем. В list-режиме
+   * (отдельная страница) — не прячем.
    */
   hideAnchorOnWide?: boolean;
 }
@@ -57,7 +60,7 @@ export async function AnnotationCard({
       <ClampableContent>
         <div className="flex flex-col gap-2">
           {anchorContext &&
-            (hideAnchorOnWide ? <div className="xl:hidden">{anchorContext}</div> : anchorContext)}
+            (hideAnchorOnWide ? <div className="@min-[80em]:hidden">{anchorContext}</div> : anchorContext)}
           <div className="content" data-size="sm">
             <AstRender blocks={annotation.blocks ?? []} />
           </div>

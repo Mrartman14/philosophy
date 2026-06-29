@@ -555,10 +555,11 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   return (
     // Фрагмент — прямые потомки .page-grid (страница рендерит CanvasEditor без
     // обёрток): тулбар в ЛЕВОМ поле (vertical, sticky под хедером), контент-хребет
-    // с холстом, инспектор в ПРАВОМ поле. На < xl поля схлопываются → тулбар сверху,
-    // холст, инспектор снизу.
+    // с холстом, инспектор в ПРАВОМ поле. Когда поля схлопнуты (узкий контейнер) →
+    // тулбар сверху, холст, инспектор снизу. Координация — через @container (тот же
+    // порог 80em что и reveal в layout.css §13), не вьюпортный xl.
     <>
-    <MarginNote side="start" className="p-2 xl:pe-0 xl:self-start xl:sticky xl:top-(--layout-sticky-top)">
+    <MarginNote side="start" className="p-2 @min-[80em]:pe-0 @min-[80em]:self-start @min-[80em]:sticky @min-[80em]:top-(--layout-sticky-top)">
       <EditorToolbar
         dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
         dirty={state.dirty} orientation="vertical"
@@ -695,8 +696,9 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       <EntityRefDialog open={refDialogOpen} onClose={() => { setRefDialogOpen(false); }} onConfirm={onAddEntityRefConfirm} />
     </div>
 
-    {/* инспектор — в правом поле (маргиналии); < xl втекает под холст */}
-    <MarginNote side="end" grow className="p-3 xl:ps-0">
+    {/* инспектор — в правом поле (маргиналии); на схлопнутом поле втекает под холст.
+        @min-[80em]:ps-0 — тот же @container-порог что и reveal (layout.css §13). */}
+    <MarginNote side="end" grow className="p-3 @min-[80em]:ps-0">
       <EditorInspector
         data={state.data}
         selectedNodeIds={state.selection.nodeIds}

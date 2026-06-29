@@ -115,11 +115,13 @@ export function EditorToolbar({
   const vertical = orientation === "vertical";
   const tip = vertical ? "right" : "top";
 
-  // vertical = адаптивный: ниже xl поле схлопнуто → тулбар горизонтальной полосой
-  // над холстом; на xl+ → сетка 2×N иконок в левом поле, прижатая к холсту (ms-auto),
-  // разделители — на всю ширину обеих колонок.
+  // vertical = адаптивный: поле схлопнуто → тулбар горизонтальной полосой над
+  // холстом; поле раскрыто → сетка 2×N иконок в левом поле, прижатая к холсту
+  // (ms-auto), разделители — на всю ширину обеих колонок. Координация через
+  // @container (тот же порог 80em что и reveal полей, layout.css §13), не вьюпортный
+  // xl — иначе при крупном тексте reflow не в такт с раскрытием поля.
   const containerClass = vertical
-    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 xl:ms-auto xl:grid xl:w-fit xl:grid-cols-2 xl:items-start xl:justify-items-center xl:rounded-lg xl:border"
+    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 @min-[80em]:ms-auto @min-[80em]:grid @min-[80em]:w-fit @min-[80em]:grid-cols-2 @min-[80em]:items-start @min-[80em]:justify-items-center @min-[80em]:rounded-lg @min-[80em]:border"
     : "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2";
 
   return (

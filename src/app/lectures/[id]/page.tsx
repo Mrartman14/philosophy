@@ -154,18 +154,21 @@ export default async function LecturePage({ params, searchParams }: Props) {
         </Suspense>
       </div>
 
-      {/* Аннотации активного документа — правое поле грида (как /documents/[id]). */}
+      {/* Аннотации активного документа — правое поле грида (как /documents/[id]).
+          @min-[80em]:ps-0 — гасим внутренний паддинг, когда поле раскрыто (тот же
+          @container-порог что и reveal, см. layout.css §13; не вьюпортный xl). */}
       {activeDoc && activeId && (
-        <MarginNote side="end" grow className="p-4 xl:ps-0">
+        <MarginNote side="end" grow className="p-4 @min-[80em]:ps-0">
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={activeId} />
           </Suspense>
         </MarginNote>
       )}
 
-      {/* Заякоренные комментарии активного документа — ЛЕВОЕ поле грида. */}
+      {/* Заякоренные комментарии активного документа — ЛЕВОЕ поле грида.
+          @min-[80em]:pe-0 — гасим внутренний паддинг (к хребту), когда поле раскрыто. */}
       {activeDoc && activeId && (
-        <MarginNote side="start" grow className="p-4 xl:pe-0">
+        <MarginNote side="start" grow className="p-4 @min-[80em]:pe-0">
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentComments lectureId={id} documentId={activeId} />
           </Suspense>
