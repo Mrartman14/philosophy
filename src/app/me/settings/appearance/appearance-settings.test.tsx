@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const setAxis = vi.fn();
 vi.mock("@/components/appearance", () => ({
   useAppearance: () => ({
-    appearance: { theme: "light", contrast: "auto", density: "comfortable", font: "sans", textSize: "md", motion: "system" },
+    appearance: { theme: "light", contrast: "auto", density: "comfortable", font: "sans", textSize: "md", motion: "system", textAlign: "start" },
     setAxis,
   }),
 }));
@@ -51,5 +51,14 @@ describe("AppearanceSettings", () => {
     // Сегменты подписаны локализованным текстом (sr-only), визуал — глиф «Aa».
     fireEvent.click(within(group).getByText(/крупнее/i));
     expect(setAxis).toHaveBeenCalledWith("textSize", "lg");
+  });
+
+  it("выравнивание — radiogroup; выбор сегмента зовёт setAxis('textAlign')", () => {
+    render(<AppearanceSettings />);
+    const group = screen.getByRole("radiogroup", { name: /выравнивание/i });
+    // Сегменты визуально — иконки align-start/justify; адресация и доступное имя
+    // остаются по локализованному sr-only тексту (иконка декоративна, aria-hidden).
+    fireEvent.click(within(group).getByText(/по ширине/i));
+    expect(setAxis).toHaveBeenCalledWith("textAlign", "justify");
   });
 });
