@@ -21,6 +21,7 @@ function normalizeNotification(dto: NotificationDTO): AppNotification {
     type: dto.type ?? null,
     reason: dto.reason ?? null,
     actorId: dto.actor?.id ?? null,
+    actorName: dto.actor?.username ?? null,
     targetId: dto.target_id ?? null,
     targetType: dto.target_type ?? null,
     targetVersion: dto.target_version ?? null,

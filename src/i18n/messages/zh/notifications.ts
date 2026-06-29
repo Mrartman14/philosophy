@@ -5,6 +5,7 @@ const notifications = {
   lectureUpdated: "{count, plural, other{您订阅的讲座已更新 # 次}}",
   canvasUpdated: "{count, plural, other{您订阅的画布已更新 # 次}}",
   fallback: "新通知",
+  byActor: "由 {actor}",
 
   // --- Notification popover (notification-popover) ---
   popoverAriaLabel: "通知",

@@ -21,6 +21,8 @@ export interface AppNotification {
   type: NotificationType | null;
   reason: NotificationReason | null;
   actorId: string | null;
+  /** username актора (бэк: notification.actor.username) — для атрибуции «от X». */
+  actorName: string | null;
   targetId: string | null;
   targetType: NotificationTargetType | null;
   targetVersion: number | null;

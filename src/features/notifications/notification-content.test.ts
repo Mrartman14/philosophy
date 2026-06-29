@@ -6,7 +6,7 @@ import type { AppNotification } from "./types";
 
 function make(p: Partial<AppNotification>): AppNotification {
   return {
-    id: "n1", type: null, reason: null, actorId: null, targetId: null,
+    id: "n1", type: null, reason: null, actorId: null, actorName: null, targetId: null,
     targetType: null, targetVersion: null, groupCount: 1,
     readAt: null, seenAt: null, createdAt: null, ...p,
   };

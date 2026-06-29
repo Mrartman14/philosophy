@@ -55,7 +55,14 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
           aria-hidden="true"
         />
       )}
-      <span>{text}</span>
+      <span className="flex min-w-0 flex-col gap-0.5">
+        <span>{text}</span>
+        {notification.groupCount === 1 && notification.actorName && (
+          <span className="text-xs font-normal text-(--color-fg-muted)">
+            {t("byActor", { actor: notification.actorName })}
+          </span>
+        )}
+      </span>
     </Button>
   );
 }

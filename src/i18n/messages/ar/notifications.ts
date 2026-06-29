@@ -8,6 +8,7 @@ const notifications = {
   canvasUpdated:
     "{count, plural, zero{تم تحديث لوحة تتابعها} one{تم تحديث لوحة تتابعها} two{تم تحديث لوحة تتابعها مرتين} few{تم تحديث لوحة تتابعها # مرات} many{تم تحديث لوحة تتابعها # مرة} other{تم تحديث لوحة تتابعها # مرة}}",
   fallback: "إشعار جديد",
+  byActor: "بواسطة {actor}",
 
   // --- Notification popover (notification-popover) ---
   popoverAriaLabel: "الإشعارات",

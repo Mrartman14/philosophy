@@ -1,4 +1,5 @@
 // src/features/forms/ui/submission-list.tsx
+import { UserView } from "@/components/shared/user-view";
 import { RouterLink } from "@/components/ui";
 import { getT, getServerFmt } from "@/i18n";
 
@@ -19,9 +20,15 @@ export async function SubmissionList({ submissions }: Props) {
     <ul className="flex flex-col divide-y divide-(--color-border)">
       {submissions.map((s) => (
         <li key={s.id} className="flex items-center justify-between gap-2 py-2">
-          <RouterLink href={`/submissions/${s.id}`} className="text-sm hover:underline">
-            {t("submissionLinkPrefix", { id: s.id?.slice(0, 8) ?? "" })}
-          </RouterLink>
+          <div className="flex min-w-0 flex-col">
+            <RouterLink href={`/submissions/${s.id}`} className="text-sm hover:underline">
+              {t("submissionLinkPrefix", { id: s.id?.slice(0, 8) ?? "" })}
+            </RouterLink>
+            {/* Автор отклика — бэк отдаёт submission.user (userref.Ref). */}
+            <span className="text-xs text-(--color-fg-muted)">
+              <UserView user={s.user} />
+            </span>
+          </div>
           <span className="text-xs text-(--color-fg-muted)">
             {s.retracted_at
               ? t("submissionRetractedLabel")

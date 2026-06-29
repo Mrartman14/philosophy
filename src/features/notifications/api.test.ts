@@ -67,12 +67,34 @@ describe("getNotifications — pagination defaults", () => {
       type: "document.updated",
       reason: "subscribed",
       actorId: null,
+      actorName: null,
       targetId: null,
       groupCount: 1,
       readAt: null,
       seenAt: null,
       createdAt: null,
     });
+  });
+
+  it("маппит actor.username → actorName (атрибуция «от X»)", async () => {
+    getMock.mockResolvedValue(
+      apiResult({
+        data: {
+          data: [
+            {
+              id: "n-2",
+              type: "document.updated",
+              actor: { id: "u-9", username: "alex_b" },
+            },
+          ],
+          pagination: { total: 1, offset: 0, limit: 20 },
+        },
+      }),
+    );
+
+    const { items } = await getNotifications();
+
+    expect(items[0]).toMatchObject({ actorId: "u-9", actorName: "alex_b" });
   });
 
   it("бросает ошибку при error-ответе (нет мягкой деградации)", async () => {

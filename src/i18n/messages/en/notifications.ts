@@ -8,6 +8,7 @@ const notifications = {
   canvasUpdated:
     "{count, plural, one{A canvas you follow was updated} other{A canvas you follow was updated # times}}",
   fallback: "New notification",
+  byActor: "by {actor}",
 
   // --- Notification popover (notification-popover) ---
   popoverAriaLabel: "Notifications",
