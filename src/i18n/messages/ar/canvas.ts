@@ -85,6 +85,14 @@ const canvas: Messages["canvas"] = {
     create: "إنشاء",
   },
 
+  // --- read-only viewer (pan/zoom) ---
+  // TODO(i18n): EN-стопгап, ждёт вычитки носителем ar (общий follow-up).
+  viewer: {
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    resetZoom: "Reset zoom (100%)",
+  },
+
   // --- editor context menu (right-click) ---
   contextMenu: {
     center: "توسيط في العرض",

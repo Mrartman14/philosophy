@@ -84,6 +84,13 @@ const canvas = {
     create: "Создать",
   },
 
+  // --- read-only viewer (pan/zoom) ---
+  viewer: {
+    zoomIn: "Приблизить",
+    zoomOut: "Отдалить",
+    resetZoom: "Сбросить масштаб (100%)",
+  },
+
   // --- editor context menu (right-click) ---
   contextMenu: {
     center: "Центрировать",

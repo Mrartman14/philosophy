@@ -85,6 +85,14 @@ const canvas: Messages["canvas"] = {
     create: "创建",
   },
 
+  // --- read-only viewer (pan/zoom) ---
+  // TODO(i18n): EN-стопгап, ждёт вычитки носителем zh (общий follow-up).
+  viewer: {
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    resetZoom: "Reset zoom (100%)",
+  },
+
   // --- editor context menu (right-click) ---
   contextMenu: {
     center: "居中显示",

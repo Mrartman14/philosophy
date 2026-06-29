@@ -85,6 +85,13 @@ const canvas: Messages["canvas"] = {
     create: "Create",
   },
 
+  // --- read-only viewer (pan/zoom) ---
+  viewer: {
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    resetZoom: "Reset zoom (100%)",
+  },
+
   // --- editor context menu (right-click) ---
   contextMenu: {
     center: "Center in view",
