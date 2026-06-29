@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 
-import { DEFAULT_APPEARANCE, parseAppearance, serializeAppearance, htmlAttrs } from "./appearance-cookie";
+import { THEME_COLOR } from "@/styles/theme-color.generated";
+
+import { DEFAULT_APPEARANCE, parseAppearance, serializeAppearance, htmlAttrs, themeColorMeta } from "./appearance-cookie";
 
 describe("appearance-cookie", () => {
   it("defaults on undefined/garbage", () => {
@@ -40,5 +42,18 @@ describe("appearance-cookie", () => {
   it("parseAppearance coerces unknown motion → system and defaults to system", () => {
     expect(parseAppearance(JSON.stringify({ motion: "warp" })).motion).toBe("system");
     expect(DEFAULT_APPEARANCE.motion).toBe("system");
+  });
+
+  // theme-color: при ЯВНОЙ теме хром браузера фиксирован под surface этой темы
+  // (не зависит от ОС); при system — отдаём пару под prefers-color-scheme.
+  it("themeColorMeta: explicit light/dark → single fixed color matching the surface", () => {
+    expect(themeColorMeta({ ...DEFAULT_APPEARANCE, theme: "light" })).toEqual({ type: "fixed", color: THEME_COLOR.light });
+    expect(themeColorMeta({ ...DEFAULT_APPEARANCE, theme: "dark" })).toEqual({ type: "fixed", color: THEME_COLOR.dark });
+  });
+  it("themeColorMeta: system → adaptive pair (OS prefers-color-scheme decides)", () => {
+    expect(themeColorMeta({ ...DEFAULT_APPEARANCE, theme: "system" })).toEqual({ type: "adaptive", light: THEME_COLOR.light, dark: THEME_COLOR.dark });
+  });
+  it("themeColorMeta: contrast does not change the color (surface is contrast-invariant)", () => {
+    expect(themeColorMeta({ ...DEFAULT_APPEARANCE, theme: "dark", contrast: "high" })).toEqual({ type: "fixed", color: THEME_COLOR.dark });
   });
 });

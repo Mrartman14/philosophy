@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Atkinson_Hyperlegible, Source_Serif_4 } from "next/font/google";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -9,7 +9,7 @@ import { AppHeader } from "@/components/app/app-header/app-header";
 import { InstallBanner } from "@/components/app/install-banner";
 import { UpdatePrompt } from "@/components/app/update-prompt";
 import { AppearanceProvider } from "@/components/appearance";
-import { htmlAttrs } from "@/components/appearance/appearance-cookie";
+import { htmlAttrs, themeColorMeta } from "@/components/appearance/appearance-cookie";
 import { StatusBanner } from "@/components/permission/status-banner";
 import { TimezoneProvider } from "@/components/timezone";
 import { DirectionProvider, ToastProvider, Toaster } from "@/components/ui";
@@ -80,6 +80,22 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// theme-color считаем из РАЗРЕШЁННОЙ темы (cookie), а не из prefers-color-scheme:
+// при явном выборе light/dark хром браузера обязан совпасть с фоном страницы,
+// а не с настройкой ОС. system → пара под prefers-color-scheme (ОС решает).
+export async function generateViewport(): Promise<Viewport> {
+  const tc = themeColorMeta(await getAppearance());
+  return {
+    themeColor:
+      tc.type === "fixed"
+        ? tc.color
+        : [
+            { media: "(prefers-color-scheme: light)", color: tc.light },
+            { media: "(prefers-color-scheme: dark)", color: tc.dark },
+          ],
+  };
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -113,18 +129,6 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={dirForLocale(locale)} {...dataAttrs} style={{ ...style, colorScheme }}>
-      <head>
-        <meta
-          name="theme-color"
-          content="#f6f2eb"
-          media="(prefers-color-scheme: light)"
-        />
-        <meta
-          name="theme-color"
-          content="#111a20"
-          media="(prefers-color-scheme: dark)"
-        />
-      </head>
       <body
         className={`
           root bg-(--color-surface)

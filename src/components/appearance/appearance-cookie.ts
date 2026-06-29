@@ -1,3 +1,4 @@
+import { THEME_COLOR } from "@/styles/theme-color.generated";
 import { THEMES, CONTRASTS, DENSITIES, FONTS, TEXT_SIZES, MOTIONS,
   type Theme, type Contrast, type Density, type FontChoice, type TextSize, type Motion } from "@/styles/tokens/enums";
 import { TEXT_SCALE } from "@/styles/tokens/scales";
@@ -31,4 +32,22 @@ export function htmlAttrs(a: Appearance) {
     style: { "--text-scale": String(TEXT_SCALE[a.textSize]) } as Record<string, string>,
     colorScheme: a.theme === "system" ? "light dark" : a.theme,
   };
+}
+
+/**
+ * theme-color (адресная строка/PWA-хром) под РАЗРЕШЁННУЮ тему, не под ОС.
+ * Тема в проекте — cookie-выбор, поэтому при явных light/dark цвет хрома
+ * фиксирован под surface этой темы (иначе хром бы спорил с ОС-настройкой).
+ * Только system отдаёт ОС решать → пара под prefers-color-scheme.
+ * Контраст на surface не влияет (light/light-high и dark/dark-high делят bg),
+ * поэтому ветвимся лишь по theme.
+ */
+export type ThemeColorMeta =
+  | { type: "fixed"; color: string }
+  | { type: "adaptive"; light: string; dark: string };
+
+export function themeColorMeta(a: Appearance): ThemeColorMeta {
+  if (a.theme === "light") return { type: "fixed", color: THEME_COLOR.light };
+  if (a.theme === "dark") return { type: "fixed", color: THEME_COLOR.dark };
+  return { type: "adaptive", light: THEME_COLOR.light, dark: THEME_COLOR.dark };
 }
