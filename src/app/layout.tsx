@@ -133,7 +133,7 @@ export default async function RootLayout({
         className={`
           root bg-(--color-surface)
           ${geistSans.variable} ${geistMono.variable} ${atkinson.variable} ${sourceSerif.variable} antialiased
-          grid grid-rows-[var(--header-height)_1fr] items-stretch justify-items-center min-h-screen
+          flex flex-col items-stretch min-h-screen
           `}
         style={{ fontFamily: "var(--font-ui)" }}
       >
@@ -147,7 +147,7 @@ export default async function RootLayout({
                   <StatusBanner me={me} />
                   <ActiveBanners />
                   <InstallBanner />
-                  <main className="page-grid">
+                  <main className="page-grid grow">
                     <div className="spine-frame" aria-hidden="true" />
                     {children}
                   </main>
