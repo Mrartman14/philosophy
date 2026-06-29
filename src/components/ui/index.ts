@@ -9,6 +9,7 @@ export { Textarea, type TextareaProps } from "./textarea";
 export { Select, type SelectProps } from "./select";
 export { RadioGroup, type RadioGroupProps } from "./radio-group";
 export { Checkbox, type CheckboxProps } from "./checkbox";
+export { ClampableContent } from "./clampable-content";
 export { Label, type LabelProps } from "./label";
 export { Form } from "./form";
 export { FormField, type FormFieldProps } from "./form-field";
