@@ -696,10 +696,10 @@ git commit -m "feat(forms): TextAnswersPreview — превью атрибути
 - Create: `src/features/forms/ui/form-results-view.tsx`
 
 **Interfaces:**
-- Consumes: `FormStats`, `FieldStats`, `Form`, `FormField` (Task 1/types); `ChoiceBars`, `NumberSummary`, `DateSummary`, `TextAnswersPreview` (Tasks 6-8); `FormVisibilityBadges` — **из Task 12**; `getT`, `getServerFmt`; рендер AST prompt через существующий `@/components/ast-render` (как в форме).
+- Consumes: `FormStats`, `FieldStats`, `Form`, `FormField` (Task 1/types); `ChoiceBars`, `NumberSummary`, `DateSummary`, `TextAnswersPreview` (Tasks 6-8); `FormVisibilityBadges` — **из Task 11**; `getT`, `getServerFmt`; рендер AST prompt через `blocksToPlainText` (`./blocks-text`).
 - Produces: `FieldStatsCard({ field, stats, formId, token })`; `FormResultsView({ form, stats, token })`.
 
-> Зависимость: `FormResultsView` использует `FormVisibilityBadges` (Task 12). Реализовать Task 12 до этого шага **или** временно не подключать бейджи (раскомментировать в Task 12). Для линейного исполнения: сделать Task 12 перед Task 9 — порядок задач допускает это (Task 12 не зависит от Task 9).
+> Зависимость: `FormResultsView` использует `FormVisibilityBadges` (Task 11). Реализовать Task 11 до этого шага. Контроллер диспатчит Task 11 перед Task 9 (Task 11 не зависит от Task 9).
 
 - [ ] **Step 1: Реализация** `src/features/forms/ui/field-stats-card.tsx`:
 
