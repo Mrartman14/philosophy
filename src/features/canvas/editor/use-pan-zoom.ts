@@ -15,6 +15,8 @@ export interface UsePanZoomOptions {
   onPointerDownOther?: (e: PointerEvent) => void;
   /** Полностью отключить жесты (напр. до замера контейнера). */
   disabled?: boolean;
+  /** Уведомление о старте/конце drag-пана (для курсора grabbing у консьюмера). */
+  onPanningChange?: (panning: boolean) => void;
 }
 
 /**
@@ -65,16 +67,20 @@ export function usePanZoom(ref: RefObject<HTMLElement | null>, opts: UsePanZoomO
     let startScreen = { x: 0, y: 0 };
     let startVp = { x: 0, y: 0 };
     let pinchPrevDist = 0;
+    let otherPointerId = -1;
 
     const onDown = (e: PointerEvent) => {
-      const { disabled, viewport, enablePanDrag, onPointerDownOther } = optsRef.current;
+      const { disabled, viewport, enablePanDrag, onPointerDownOther, onPanningChange } = optsRef.current;
       if (disabled || !viewport) return;
       points.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (points.size === 2) {
-        // начался пинч → отменяем возможный пан
-        panning = false;
-        const [a, b] = [...points.values()];
-        if (a && b) pinchPrevDist = Math.hypot(a.x - b.x, a.y - b.y);
+        // Пинч — только если консьюмер не ведёт не-пановый жест (иначе 2-й палец
+        // во время drag узла дёргал бы и зум, и перемещение).
+        if (otherPointerId === -1) {
+          panning = false;
+          const [a, b] = [...points.values()];
+          if (a && b) pinchPrevDist = Math.hypot(a.x - b.x, a.y - b.y);
+        }
         return;
       }
       const wantPan = typeof enablePanDrag === "function" ? enablePanDrag(e) : enablePanDrag;
@@ -84,7 +90,9 @@ export function usePanZoom(ref: RefObject<HTMLElement | null>, opts: UsePanZoomO
         startScreen = { x: e.clientX, y: e.clientY };
         startVp = { x: viewport.x, y: viewport.y };
         el.setPointerCapture(e.pointerId);
+        onPanningChange?.(true);
       } else {
+        otherPointerId = e.pointerId;
         onPointerDownOther?.(e);
       }
     };
@@ -93,7 +101,7 @@ export function usePanZoom(ref: RefObject<HTMLElement | null>, opts: UsePanZoomO
       const { viewport, onViewportChange } = optsRef.current;
       if (!viewport) return;
       if (points.has(e.pointerId)) points.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (points.size === 2) {
+      if (points.size === 2 && otherPointerId === -1) {
         const [a, b] = [...points.values()];
         if (!a || !b) return;
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
@@ -113,12 +121,15 @@ export function usePanZoom(ref: RefObject<HTMLElement | null>, opts: UsePanZoomO
     };
 
     const onUp = (e: PointerEvent) => {
+      const { onPanningChange } = optsRef.current;
       points.delete(e.pointerId);
+      if (e.pointerId === otherPointerId) otherPointerId = -1;
       if (points.size < 2) pinchPrevDist = 0;
       if (e.pointerId === panPointerId) {
         panning = false;
         panPointerId = -1;
         el.releasePointerCapture(e.pointerId);
+        onPanningChange?.(false);
       }
     };
 

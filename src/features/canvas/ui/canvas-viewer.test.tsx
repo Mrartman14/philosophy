@@ -80,4 +80,16 @@ describe("CanvasViewer", () => {
     fireEvent.click(screen.getByLabelText("viewer.zoomIn"));
     expect(svg.getAttribute("viewBox")).not.toBe(before);
   });
+
+  it("клавиатура: стрелка вправо панорамирует (viewBox x растёт)", () => {
+    const ro = stubResizeObserver();
+    const { container } = render(<CanvasViewer data={oneNode} />);
+    ro.fire(800, 600);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- читаем атрибут viewBox у SVG, RTL-запросом не достать (прецедент: canvas-render relaxation block)
+    const svg = container.querySelector("svg");
+    if (!svg) throw new Error("svg not rendered");
+    const before = svg.getAttribute("viewBox");
+    fireEvent.keyDown(screen.getByRole("application"), { key: "ArrowRight" });
+    expect(svg.getAttribute("viewBox")).not.toBe(before);
+  });
 });
