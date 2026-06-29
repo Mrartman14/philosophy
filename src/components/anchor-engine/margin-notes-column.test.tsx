@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, it, expect, vi } from "vitest";
 
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
@@ -137,6 +137,44 @@ describe("MarginNotesColumn (smoke)", () => {
       el.getAttribute("data-note-card-wrapper"),
     );
     expect(ids).toEqual(["b", "c", "a"]);
+    vi.unstubAllGlobals();
+  });
+
+  it("ResizeObserver карточки → пересчёт раскладки (restack при смене высоты)", () => {
+    let roCb: () => void = () => undefined;
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(cb: () => void) {
+          roCb = cb;
+        }
+        observe = vi.fn();
+        unobserve = vi.fn();
+        disconnect = vi.fn();
+      },
+    );
+    const mql = { matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() };
+    vi.stubGlobal("matchMedia", vi.fn().mockReturnValue(mql));
+    const tops: Record<string, number> = { a: 0, b: 100 };
+    const getRect = vi.fn((id: string) => ({ top: tops[id] }) as DOMRect);
+    const notes: ColumnNote[] = [
+      { id: "a", node: <span>note-a</span>, orphan: false },
+      { id: "b", node: <span>note-b</span>, orphan: false },
+    ];
+    render(
+      <MarginNotesColumn
+        notes={notes}
+        getAnchorRect={getRect}
+        onActivate={() => undefined}
+        recomputeKey={0}
+      />,
+    );
+    getRect.mockClear();
+    // Имитируем изменение высоты карточки (разворот клампа) — RO дёргает колбэк.
+    act(() => {
+      roCb();
+    });
+    expect(getRect).toHaveBeenCalled(); // раскладка пере-измерилась
     vi.unstubAllGlobals();
   });
 

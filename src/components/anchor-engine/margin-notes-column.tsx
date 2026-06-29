@@ -47,6 +47,10 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNot
   // во входном порядке (там DOM-порядок и так = визуальному).
   const [order, setOrder] = useState<string[]>([]);
   const [wide, setWide] = useState(false);
+  // Бампится при изменении высоты любой карточки (разворот ClampableContent,
+  // догрузка картинки, шрифт) — форсит restack ниже. Чинит латентный баг: ранее
+  // изменение высоты карточки не пересчитывало стек и карточки наезжали.
+  const [sizeKey, setSizeKey] = useState(0);
 
   useEffect(() => {
     // Defensive: в jsdom/SSR window.matchMedia отсутствует → деградируем в поток
@@ -92,7 +96,22 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNot
       setOrder(nextOrder);
     };
     update();
-  }, [notes, getAnchorRect, wide, recomputeKey]);
+  }, [notes, getAnchorRect, wide, recomputeKey, sizeKey]);
+
+  // Наблюдаем высоту карточек: при её изменении (разворот клампа/картинка/шрифт)
+  // бампим sizeKey → restack. Только на wide (там абсолют, поток сам не реагирует)
+  // и при наличии ResizeObserver (SSR/jsdom — no-op). Петли нет: restack меняет
+  // только top соседей, не их высоту, поэтому RO повторно не стреляет.
+  useEffect(() => {
+    if (!wide || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      setSizeKey((k) => k + 1);
+    });
+    for (const el of cardRefs.current.values()) ro.observe(el);
+    return () => {
+      ro.disconnect();
+    };
+  }, [notes, wide]);
 
   const orphans = notes.filter((n) => n.orphan);
   // Привязанные — в вертикальном порядке якоря (applyOrder), чтобы таб-порядок
