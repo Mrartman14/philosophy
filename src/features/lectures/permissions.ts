@@ -3,13 +3,15 @@ import "server-only";
 import type { MaybeMe } from "@/utils/me";
 import { can, isMutationAllowed } from "@/utils/permissions";
 
+import type { Lecture } from "./types";
+
 export function canCreateLecture(me: MaybeMe): boolean {
   return can(me, "lecture.create");
 }
 
 export function canUpdateLecture(
   me: MaybeMe,
-  lecture: { owner?: { id?: string | null } | undefined },
+  lecture: Pick<Lecture, "owner">,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   return lecture.owner?.id === me.id;
@@ -17,7 +19,7 @@ export function canUpdateLecture(
 
 export function canSetLectureVisibility(
   me: MaybeMe,
-  lecture: { owner?: { id?: string | null } | undefined },
+  lecture: Pick<Lecture, "owner">,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   return lecture.owner?.id === me.id;
@@ -34,7 +36,7 @@ export function canDeleteLecture(me: MaybeMe): boolean {
  */
 export function canManageCover(
   me: MaybeMe,
-  lecture: { owner?: { id?: string | null } | undefined },
+  lecture: Pick<Lecture, "owner">,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   return lecture.owner?.id === me.id;
@@ -46,7 +48,7 @@ export function canManageCover(
  */
 export function canManageAttachments(
   me: MaybeMe,
-  lecture: { owner?: { id?: string | null } | undefined },
+  lecture: Pick<Lecture, "owner">,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   return lecture.owner?.id === me.id;
@@ -59,7 +61,7 @@ export function canManageAttachments(
  */
 export function canAttachToLecture(
   me: MaybeMe,
-  lecture: { owner?: { id?: string | null } | undefined },
+  lecture: Pick<Lecture, "owner">,
 ): boolean {
   // isMutationAllowed сужает me к NonNullable (тип-гард) и проверяет
   // status==active; can() покрывает наличие capability.

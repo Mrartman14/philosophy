@@ -23,6 +23,11 @@ describe("UserView", () => {
     expect(el).toHaveClass("font-mono");
   });
 
+  it("показывает имя при { username } без id (паттерн audit/comments)", () => {
+    render(<UserView user={{ username: "alex_b" }} />);
+    expect(screen.getByText("alex_b")).toBeInTheDocument();
+  });
+
   it("пустой/whitespace username трактуется как отсутствующий", () => {
     render(<UserView user={{ id: UUID, username: "   " }} />);
     expect(screen.getByText(UUID)).toBeInTheDocument();

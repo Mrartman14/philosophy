@@ -9,7 +9,7 @@ import type { Form, Submission } from "./types";
  * Имена capabilities сверены с philosophy-api internal/rbac/capabilities.go
  * (CapFormCreate, CapFormDeleteAny); typo ловит tsc через union `Capability`.
  * Чистые cap-чеки делегированы `can()` (status-гейт внутри). Owner-aware
- * хелперы комбинируют can()-семантику с owner_id / user_id.
+ * хелперы комбинируют can()-семантику с owner?.id / user?.id (userref.Ref).
  */
 
 /** Создание формы — capability form.create. */

@@ -54,7 +54,7 @@ function renderContent(
             <li key={item.id} className="rounded border border-(--color-border) p-2 text-sm">
               <span className="text-xs text-(--color-fg-muted)">
                 {typeLabel(item.type ?? "claim")} ·{" "}
-                <UserView user={item.author} />
+                <UserView user={{ username: item.author?.username }} />
               </span>
               <p>
                 {item.id ? (

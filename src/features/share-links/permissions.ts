@@ -5,10 +5,10 @@ import { can, isMutationAllowed } from "@/utils/permissions";
 
 /**
  * Минимальная форма ресурса для проверки права создать ссылку.
- * owner_id и visibility приходят в payload lecture/document/media/trail/form.
+ * owner и visibility приходят в payload lecture/document/media/trail/form.
  */
 export interface ShareableResource {
-  owner?: { id?: string | null } | undefined;
+  owner?: { id?: string } | undefined;
   visibility?: string;
 }
 
