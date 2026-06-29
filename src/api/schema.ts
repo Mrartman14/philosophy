@@ -4838,6 +4838,16 @@ export interface paths {
         /**
          * Список аннотаций родительской сущности
          * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Порядок (гарантия контракта): для текстовых родителей
+         *     (document / glossary / comment) аннотации возвращаются в
+         *     document-order — по позиции стартового блока якоря в теле
+         *     родителя, затем start_char, затем end-позиция, затем created_at/id.
+         *     Это маргиналийный (Word-style) порядок карточек: совпадает с
+         *     порядком фрагментов в тексте и стабилен под offset/limit (важно
+         *     для SSR и таб-порядка, WCAG 2.4.3). Аннотации без текстовой
+         *     позиции (media-якорь / без якоря) идут детерминированно в конец.
+         *     Для нетекстовых родителей (media / banner / event / canvas) —
+         *     created_at DESC, id DESC.
          */
         get: {
             parameters: {
@@ -5626,6 +5636,16 @@ export interface paths {
         /**
          * Список аннотаций родительской сущности
          * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Порядок (гарантия контракта): для текстовых родителей
+         *     (document / glossary / comment) аннотации возвращаются в
+         *     document-order — по позиции стартового блока якоря в теле
+         *     родителя, затем start_char, затем end-позиция, затем created_at/id.
+         *     Это маргиналийный (Word-style) порядок карточек: совпадает с
+         *     порядком фрагментов в тексте и стабилен под offset/limit (важно
+         *     для SSR и таб-порядка, WCAG 2.4.3). Аннотации без текстовой
+         *     позиции (media-якорь / без якоря) идут детерминированно в конец.
+         *     Для нетекстовых родителей (media / banner / event / canvas) —
+         *     created_at DESC, id DESC.
          */
         get: {
             parameters: {
@@ -6316,6 +6336,16 @@ export interface paths {
         /**
          * Список аннотаций родительской сущности
          * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Порядок (гарантия контракта): для текстовых родителей
+         *     (document / glossary / comment) аннотации возвращаются в
+         *     document-order — по позиции стартового блока якоря в теле
+         *     родителя, затем start_char, затем end-позиция, затем created_at/id.
+         *     Это маргиналийный (Word-style) порядок карточек: совпадает с
+         *     порядком фрагментов в тексте и стабилен под offset/limit (важно
+         *     для SSR и таб-порядка, WCAG 2.4.3). Аннотации без текстовой
+         *     позиции (media-якорь / без якоря) идут детерминированно в конец.
+         *     Для нетекстовых родителей (media / banner / event / canvas) —
+         *     created_at DESC, id DESC.
          */
         get: {
             parameters: {
@@ -8034,6 +8064,16 @@ export interface paths {
         /**
          * Список аннотаций родительской сущности
          * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Порядок (гарантия контракта): для текстовых родителей
+         *     (document / glossary / comment) аннотации возвращаются в
+         *     document-order — по позиции стартового блока якоря в теле
+         *     родителя, затем start_char, затем end-позиция, затем created_at/id.
+         *     Это маргиналийный (Word-style) порядок карточек: совпадает с
+         *     порядком фрагментов в тексте и стабилен под offset/limit (важно
+         *     для SSR и таб-порядка, WCAG 2.4.3). Аннотации без текстовой
+         *     позиции (media-якорь / без якоря) идут детерминированно в конец.
+         *     Для нетекстовых родителей (media / banner / event / canvas) —
+         *     created_at DESC, id DESC.
          */
         get: {
             parameters: {
@@ -8545,6 +8585,16 @@ export interface paths {
         /**
          * Список аннотаций родительской сущности
          * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Порядок (гарантия контракта): для текстовых родителей
+         *     (document / glossary / comment) аннотации возвращаются в
+         *     document-order — по позиции стартового блока якоря в теле
+         *     родителя, затем start_char, затем end-позиция, затем created_at/id.
+         *     Это маргиналийный (Word-style) порядок карточек: совпадает с
+         *     порядком фрагментов в тексте и стабилен под offset/limit (важно
+         *     для SSR и таб-порядка, WCAG 2.4.3). Аннотации без текстовой
+         *     позиции (media-якорь / без якоря) идут детерминированно в конец.
+         *     Для нетекстовых родителей (media / banner / event / canvas) —
+         *     created_at DESC, id DESC.
          */
         get: {
             parameters: {
@@ -9808,6 +9858,16 @@ export interface paths {
         /**
          * Список аннотаций родительской сущности
          * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Порядок (гарантия контракта): для текстовых родителей
+         *     (document / glossary / comment) аннотации возвращаются в
+         *     document-order — по позиции стартового блока якоря в теле
+         *     родителя, затем start_char, затем end-позиция, затем created_at/id.
+         *     Это маргиналийный (Word-style) порядок карточек: совпадает с
+         *     порядком фрагментов в тексте и стабилен под offset/limit (важно
+         *     для SSR и таб-порядка, WCAG 2.4.3). Аннотации без текстовой
+         *     позиции (media-якорь / без якоря) идут детерминированно в конец.
+         *     Для нетекстовых родителей (media / banner / event / canvas) —
+         *     created_at DESC, id DESC.
          */
         get: {
             parameters: {
@@ -10854,12 +10914,24 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Список комментариев к лекции */
+        /**
+         * Список комментариев к лекции
+         * @description Порядок: по умолчанию — created_at DESC, id DESC (лента лекции).
+         *     При указании document_id выдача сужается до тредов, чей корень
+         *     заякорен в этот документ, и сортируется в document-order — по
+         *     позиции стартового блока якоря корня, затем start_char, затем
+         *     end-позиция, затем created_at/id. Это маргиналийный (Word-style)
+         *     порядок карточек: совпадает с порядком фрагментов в тексте и
+         *     стабилен под offset/limit (важно для SSR и таб-порядка, WCAG
+         *     2.4.3). Треды без якоря в документ в эту выдачу не попадают.
+         */
         get: {
             parameters: {
                 query?: {
-                    /** @description Filter by document block ID */
+                    /** @description Filter by document block ID (треды, любой узел которых заякорен в этот блок) */
                     block_id?: string;
+                    /** @description Маргиналийный слой: только треды, чей корень заякорен в этот документ, в document-order */
+                    document_id?: string;
                     /** @description Смещение */
                     offset?: number;
                     /** @description Записей на странице */
@@ -14325,6 +14397,16 @@ export interface paths {
         /**
          * Список аннотаций родительской сущности
          * @description Список аннотаций для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Порядок (гарантия контракта): для текстовых родителей
+         *     (document / glossary / comment) аннотации возвращаются в
+         *     document-order — по позиции стартового блока якоря в теле
+         *     родителя, затем start_char, затем end-позиция, затем created_at/id.
+         *     Это маргиналийный (Word-style) порядок карточек: совпадает с
+         *     порядком фрагментов в тексте и стабилен под offset/limit (важно
+         *     для SSR и таб-порядка, WCAG 2.4.3). Аннотации без текстовой
+         *     позиции (media-якорь / без якоря) идут детерминированно в конец.
+         *     Для нетекстовых родителей (media / banner / event / canvas) —
+         *     created_at DESC, id DESC.
          */
         get: {
             parameters: {
@@ -15422,7 +15504,10 @@ export interface paths {
         delete: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасного повтора офлайн-удаления; повтор с тем же ключом возвращает 204, а не 404 */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID отклика */
                     id: string;
@@ -15474,6 +15559,24 @@ export interface paths {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
+                /** @description IDEMPOTENCY_KEY_IN_USE */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
             };
         };
         options?: never;
@@ -15482,7 +15585,10 @@ export interface paths {
         patch: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасного повтора офлайн-правки; реплей возвращает представление на момент первого применения — за актуальным состоянием возьмите GET */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID отклика */
                     id: string;
@@ -15543,7 +15649,7 @@ export interface paths {
                         "application/json": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description IDEMPOTENCY_KEY_IN_USE */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -15587,7 +15693,10 @@ export interface paths {
         post: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Опциональный клиентский ключ идемпотентности (UUID v4) для безопасного повтора офлайн-отзыва; повтор с тем же ключом возвращает 204 */
+                    "Idempotency-Key"?: string;
+                };
                 path: {
                     /** @description ID отклика */
                     id: string;
@@ -15639,8 +15748,17 @@ export interface paths {
                         "*/*": components["schemas"]["httputil.ErrorResponse"];
                     };
                 };
-                /** @description Conflict */
+                /** @description ALREADY_RETRACTED / IDEMPOTENCY_KEY_IN_USE */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description IDEMPOTENCY_KEY_REUSED */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -15650,6 +15768,89 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/submissions/{id}/revisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * История правок отклика (edit-history публичного опроса)
+         * @description Снэпшоты набора ответов до правки. Виден периметру формы (автор ∨ владелец ∨ публичный опрос). Приватные отклики истории не имеют.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description ID отклика */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["form.SubmissionRevisionItem"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -16742,7 +16943,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "ANCHOR_ENTITY_UNKNOWN" | "ANCHOR_BLOCK_NOT_FOUND" | "ANCHOR_TARGET_NOT_FOUND" | "ANCHOR_TARGET_WRONG_LECTURE" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "ENTRY_NOT_VISIBLE_ENOUGH" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "FIELD_NOT_FOUND" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY" | "GRAPH_NOT_READY";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "ANCHOR_ENTITY_UNKNOWN" | "ANCHOR_BLOCK_NOT_FOUND" | "ANCHOR_TARGET_NOT_FOUND" | "ANCHOR_TARGET_WRONG_LECTURE" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "ENTRY_NOT_VISIBLE_ENOUGH" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "FIELD_NOT_FOUND" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY" | "GRAPH_NOT_READY";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -16860,7 +17061,7 @@ export interface components {
             sort_order?: number;
         };
         /** @enum {string} */
-        "audit.Action": "annotation.admin_delete" | "annotation.create" | "annotation.delete" | "annotation.update" | "attachment.create" | "attachment.delete" | "attachment.entry_clear" | "attachment.entry_set" | "attachment.reorder" | "banner.create" | "banner.delete" | "banner.update" | "canvas.create" | "canvas.delete" | "canvas.update" | "canvas.visibility_change" | "comment.admin_delete" | "comment.create" | "comment.delete" | "comment.update" | "document.create" | "document.delete" | "document.update" | "document.upload" | "document.visibility_change" | "event.create" | "event.delete" | "event.update" | "form.admin_delete" | "form.create" | "form.delete" | "form.publish" | "form.vote.retract" | "form.vote.submit" | "glossary.create" | "glossary.delete" | "glossary.update" | "lecture.cover.clear" | "lecture.cover.set" | "lecture.create" | "lecture.delete" | "lecture.update" | "lecture.visibility_change" | "map.rebuild" | "media.create" | "media.delete" | "media.upload" | "media.visibility_change" | "push.broadcast" | "share_link.admin_revoke" | "share_link.create" | "share_link.revoke" | "tag.create" | "tag.delete" | "tag.set_lecture_tags" | "tag.update" | "trail.create" | "trail.delete" | "trail.set_items" | "trail.update" | "trail.visibility_change" | "user.role_change" | "user.status_change";
+        "audit.Action": "annotation.admin_delete" | "annotation.create" | "annotation.delete" | "annotation.update" | "attachment.create" | "attachment.delete" | "attachment.entry_clear" | "attachment.entry_set" | "attachment.reorder" | "banner.create" | "banner.delete" | "banner.update" | "canvas.create" | "canvas.delete" | "canvas.update" | "canvas.visibility_change" | "comment.admin_delete" | "comment.create" | "comment.delete" | "comment.update" | "document.create" | "document.delete" | "document.update" | "document.upload" | "document.visibility_change" | "event.create" | "event.delete" | "event.update" | "form.admin_delete" | "form.create" | "form.delete" | "form.publish" | "form.vote.delete" | "form.vote.edit" | "form.vote.retract" | "form.vote.submit" | "glossary.create" | "glossary.delete" | "glossary.update" | "lecture.cover.clear" | "lecture.cover.set" | "lecture.create" | "lecture.delete" | "lecture.update" | "lecture.visibility_change" | "map.rebuild" | "media.create" | "media.delete" | "media.upload" | "media.visibility_change" | "push.broadcast" | "share_link.admin_revoke" | "share_link.create" | "share_link.revoke" | "tag.create" | "tag.delete" | "tag.set_lecture_tags" | "tag.update" | "trail.create" | "trail.delete" | "trail.set_items" | "trail.update" | "trail.visibility_change" | "user.role_change" | "user.status_change";
         "audit.Record": {
             action?: components["schemas"]["audit.Action"];
             actor?: components["schemas"]["userref.Ref"];
@@ -16876,7 +17077,6 @@ export interface components {
         /** @enum {string} */
         "audit.TargetType": "annotation" | "banner" | "canvas" | "comment" | "document" | "event" | "form" | "glossary_term" | "lecture" | "map" | "media" | "push" | "tag" | "trail" | "user";
         "banner.Banner": {
-            background_color?: string;
             blocks?: components["schemas"]["ast.Block"][];
             created_at?: string;
             dismissible?: boolean;
@@ -16886,6 +17086,7 @@ export interface components {
             start_at?: string;
             target_audience?: components["schemas"]["banner.TargetAudience"];
             updated_at?: string;
+            variant?: components["schemas"]["banner.Variant"];
             /**
              * @description Version is the optimistic-lock counter (banners.version, migration 008).
              *     The single GET (and POST 201) surface it both as a body field and as a
@@ -16896,7 +17097,6 @@ export interface components {
             version?: number;
         };
         "banner.CreateRequest": {
-            background_color: string;
             blocks?: components["schemas"]["ast.Block"][];
             dismissible?: boolean;
             end_at?: string;
@@ -16904,11 +17104,12 @@ export interface components {
             start_at: string;
             /** @enum {unknown} */
             target_audience: "all" | "authenticated" | "admin";
+            /** @enum {unknown} */
+            variant: "info" | "success" | "warning" | "danger" | "brand" | "neutral";
         };
         /** @enum {string} */
         "banner.TargetAudience": "all" | "authenticated" | "admin";
         "banner.UpdateRequest": {
-            background_color?: string;
             blocks?: components["schemas"]["ast.Block"][];
             dismissible?: boolean;
             end_at?: string;
@@ -16916,7 +17117,11 @@ export interface components {
             start_at?: string;
             /** @enum {unknown} */
             target_audience?: "all" | "authenticated" | "admin";
+            /** @enum {unknown} */
+            variant?: "info" | "success" | "warning" | "danger" | "brand" | "neutral";
         };
+        /** @enum {string} */
+        "banner.Variant": "info" | "success" | "warning" | "danger" | "brand" | "neutral";
         "canvas.Canvas": {
             created_at?: string;
             data?: components["schemas"]["canvas.Data"];
@@ -17249,7 +17454,15 @@ export interface components {
             field_id?: string;
             id?: string;
             submission_id?: string;
-            value?: Record<string, never>;
+            value?: components["schemas"]["form.AnswerValue"];
+        };
+        "form.AnswerValue": {
+            /** @description YYYY-MM-DD */
+            date?: string;
+            number?: number;
+            option_id?: string;
+            option_ids?: string[];
+            text?: string;
         };
         "form.CreateFieldRequest": {
             help_text?: string;
@@ -17285,7 +17498,7 @@ export interface components {
             /** @description RFC3339 */
             submitted_at?: string;
             user?: components["schemas"]["userref.Ref"];
-            value?: Record<string, never>;
+            value?: components["schemas"]["form.AnswerValue"];
         };
         "form.FieldOption": {
             id?: string;
@@ -17361,6 +17574,13 @@ export interface components {
         };
         /** @enum {string} */
         "form.SubmissionMode": "editable" | "immutable";
+        "form.SubmissionRevisionItem": {
+            answers?: components["schemas"]["form.Answer"][];
+            /** @description RFC3339 */
+            created_at?: string;
+            id?: string;
+            submission_id?: string;
+        };
         /** @enum {string} */
         "form.SubmissionVisibility": "private" | "public";
         "form.SubmitAnswer": {
