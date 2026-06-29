@@ -51,19 +51,16 @@ export async function AnnotationCard({
           {headerActions}
         </div>
       </header>
-      {(() => {
-        // Цитата может быть большой — клампим её отдельным меньшим порогом
-        // (≈3 строки). На wide цитата и так скрыта (hideAnchorOnWide).
-        const quote = anchorContext ? (
-          <ClampableContent maxHeight={6} expandLabel={t("marginExpand")} collapseLabel={t("marginCollapse")}>
-            {anchorContext}
-          </ClampableContent>
-        ) : null;
-        return hideAnchorOnWide ? <div className="xl:hidden">{quote}</div> : quote;
-      })()}
+      {/* Один кламп на цитату+тело: при крупном контенте оба сворачиваются под
+          ОДНИМ тогглом (не два отдельных). На wide цитата скрыта (hideAnchorOnWide)
+          → регион меряет только тело; на narrow — цитата и тело вместе. */}
       <ClampableContent maxHeight={16} expandLabel={t("marginExpand")} collapseLabel={t("marginCollapse")}>
-        <div className="content" data-size="sm">
-          <AstRender blocks={annotation.blocks ?? []} />
+        <div className="flex flex-col gap-2">
+          {anchorContext &&
+            (hideAnchorOnWide ? <div className="xl:hidden">{anchorContext}</div> : anchorContext)}
+          <div className="content" data-size="sm">
+            <AstRender blocks={annotation.blocks ?? []} />
+          </div>
         </div>
       </ClampableContent>
       {actions && <div className="flex gap-2">{actions}</div>}
