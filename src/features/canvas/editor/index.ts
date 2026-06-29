@@ -37,3 +37,5 @@ export type {
   CanvasTool,
 } from "./editor-types";
 export { GRID_SIZE, UNDO_LIMIT } from "./editor-types";
+export { usePanZoom } from "./use-pan-zoom";
+export type { UsePanZoomOptions } from "./use-pan-zoom";
