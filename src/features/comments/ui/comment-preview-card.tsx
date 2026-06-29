@@ -4,6 +4,7 @@
 // в нижнем треде (CommentSection), куда ведёт OpenThreadButton.
 import { AstRender } from "@/components/ast-render";
 import { UserView } from "@/components/shared/user-view";
+import { ClampableContent } from "@/components/ui";
 import { getT } from "@/i18n";
 
 import type { Comment } from "../types";
@@ -19,9 +20,11 @@ export async function CommentPreviewCard({ comment, replyCount }: { comment: Com
         <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
         <UserView username={comment.author?.username} />
       </div>
-      <div className="content" data-size="sm">
-        <AstRender blocks={comment.blocks ?? []} />
-      </div>
+      <ClampableContent maxHeight={16} expandLabel={t("marginExpand")} collapseLabel={t("marginCollapse")}>
+        <div className="content" data-size="sm">
+          <AstRender blocks={comment.blocks ?? []} />
+        </div>
+      </ClampableContent>
       <OpenThreadButton
         commentId={comment.id}
         label={replyCount > 0 ? `${t("marginOpenThread")} (${replyCount})` : t("marginOpenThread")}

@@ -97,6 +97,8 @@ const comments = {
   marginOpenThread: "打开讨论",
   marginColumnLabel: "对所选内容的评论",
   marginOrphanLabel: "未找到片段",
+  marginExpand: "显示全文",
+  marginCollapse: "收起",
 
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {

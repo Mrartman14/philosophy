@@ -97,6 +97,8 @@ const comments = {
   marginOpenThread: "Open thread",
   marginColumnLabel: "Comments on selections",
   marginOrphanLabel: "Fragment not found",
+  marginExpand: "Show full text",
+  marginCollapse: "Show less",
 
   // --- reactions.ts axis labels (catalog only — isomorphic boundary) ---
   axis: {
