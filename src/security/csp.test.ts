@@ -37,18 +37,23 @@ describe("buildCsp", () => {
     expect(csp).toContain("script-src 'self' 'nonce-abc123' 'strict-dynamic'");
     expect(csp).not.toContain("script-src 'self' 'unsafe-inline'");
   });
-  it("style-src сохраняет unsafe-inline (фолбэк для style-атрибутов и старых браузеров)", () => {
-    expect(buildCsp(base)).toContain("style-src 'self' 'unsafe-inline'");
-  });
-  it("style-src-elem в проде: nonce, без unsafe-inline (нонсенные <style> Base UI)", () => {
+  it("прод: style-src на nonce, БЕЗ unsafe-inline нигде в политике (Level 2)", () => {
     const csp = buildCsp(base);
-    expect(csp).toContain("style-src-elem 'self' 'nonce-abc123'");
-    expect(csp).not.toContain("style-src-elem 'self' 'unsafe-inline'");
+    expect(csp).toContain("style-src 'self' 'nonce-abc123'");
+    expect(csp).not.toContain("'unsafe-inline'");
   });
-  it("style-src-elem в dev: unsafe-inline для HMR-стилей, без nonce", () => {
-    const csp = buildCsp({ ...base, isDev: true });
-    expect(csp).toContain("style-src-elem 'self' 'unsafe-inline'");
-    expect(csp).not.toContain("style-src-elem 'self' 'nonce-abc123'");
+  it("прод: style-src-attr 'none' — SSR inline style-атрибуты запрещены (Level 2)", () => {
+    expect(buildCsp(base)).toContain("style-src-attr 'none'");
+  });
+  it("style-src-elem в проде: nonce (нонсенные <style> Base UI)", () => {
+    expect(buildCsp(base)).toContain("style-src-elem 'self' 'nonce-abc123'");
+  });
+  it("dev: style-src/elem/attr оставляют unsafe-inline для HMR, без nonce", () => {
+    const dev = buildCsp({ ...base, isDev: true });
+    expect(dev).toContain("style-src 'self' 'unsafe-inline'");
+    expect(dev).toContain("style-src-elem 'self' 'unsafe-inline'");
+    expect(dev).toContain("style-src-attr 'unsafe-inline'");
+    expect(dev).not.toContain("style-src-attr 'none'");
   });
   it("frame-ancestors none и object-src none", () => {
     const csp = buildCsp(base);

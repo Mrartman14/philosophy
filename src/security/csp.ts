@@ -58,24 +58,31 @@ export function buildCsp({
     ...new Set(externalOrigins),
     ...(isDev ? ["ws:"] : []),
   ];
-  // style-src-elem ужесточает ЭЛЕМЕНТНУЮ сторону (<style>/<link>) до nonce:
-  // Base UI инжектит нонсенные <style> через CSPProvider (Tabs.Indicator,
-  // Select.Popup), а same-origin <link rel=stylesheet> покрывает 'self'.
-  // Атрибуты style="..." остаются под style-src 'unsafe-inline' (style-src-attr
-  // не задан → фолбэк на style-src): nonce на атрибуты не действует, а no-FOUC
-  // ставит CSS-переменные именно как <html style="--…"> в SSR-разметке.
-  // В dev — 'unsafe-inline': HMR инжектит <style> без нашего nonce.
+  // CSP Level 2: со всех SSR-инлайн-style-атрибутов inline снят (canvas/appearance/
+  // banners → классы и data-attr CSS), поэтому в проде убираем 'unsafe-inline' из
+  // стилей ПОЛНОСТЬЮ.
+  //  - style-src: базовый фолбэк для старых браузеров без style-src-elem/attr —
+  //    nonce (нонсенные <style> Base UI) + 'self' (<link rel=stylesheet>).
+  //  - style-src-elem: <style>/<link> → nonce (CSPProvider стампит nonce на
+  //    инжектируемые <style> Tabs.Indicator/Select.Popup).
+  //  - style-src-attr 'none': SSR style="..." запрещён. Клиентские inline-стили
+  //    React/floating-ui идут через CSSOM (element.style) и под CSP НЕ попадают.
+  //  - dev: 'unsafe-inline' везде — HMR инжектит <style> без нашего nonce.
+  const styleSrc = isDev
+    ? ["'self'", "'unsafe-inline'"]
+    : ["'self'", `'nonce-${nonce}'`];
   const styleSrcElem = [
     "'self'",
     ...(isDev ? ["'unsafe-inline'"] : [`'nonce-${nonce}'`]),
   ];
+  const styleSrcAttr = isDev ? "'unsafe-inline'" : "'none'";
 
   return [
     "default-src 'self'",
     `script-src ${scriptSrc.join(" ")}`,
-    // Базовый фолбэк для style-атрибутов и браузеров без style-src-elem.
-    "style-src 'self' 'unsafe-inline'",
+    `style-src ${styleSrc.join(" ")}`,
     `style-src-elem ${styleSrcElem.join(" ")}`,
+    `style-src-attr ${styleSrcAttr}`,
     `img-src ${imgSrc.join(" ")}`,
     "font-src 'self'",
     `connect-src ${connectSrc.join(" ")}`,
