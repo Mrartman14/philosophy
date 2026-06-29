@@ -3,7 +3,6 @@ export { cn, FOCUS_RING_CONTROL, FOCUS_RING_INPUT } from "./cn";
 export { Button, type ButtonProps, type ButtonTone } from "./button";
 export { IconButton, type IconButtonProps, type IconButtonTone } from "./icon-button";
 export { TextInput, type TextInputProps } from "./text-input";
-export { ColorInput, type ColorInputProps } from "./color-input";
 export { NumberField, type NumberFieldProps } from "./number-field";
 export { Textarea, type TextareaProps } from "./textarea";
 export { Select, type SelectProps } from "./select";
