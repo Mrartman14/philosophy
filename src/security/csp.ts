@@ -58,11 +58,24 @@ export function buildCsp({
     ...new Set(externalOrigins),
     ...(isDev ? ["ws:"] : []),
   ];
+  // style-src-elem ужесточает ЭЛЕМЕНТНУЮ сторону (<style>/<link>) до nonce:
+  // Base UI инжектит нонсенные <style> через CSPProvider (Tabs.Indicator,
+  // Select.Popup), а same-origin <link rel=stylesheet> покрывает 'self'.
+  // Атрибуты style="..." остаются под style-src 'unsafe-inline' (style-src-attr
+  // не задан → фолбэк на style-src): nonce на атрибуты не действует, а no-FOUC
+  // ставит CSS-переменные именно как <html style="--…"> в SSR-разметке.
+  // В dev — 'unsafe-inline': HMR инжектит <style> без нашего nonce.
+  const styleSrcElem = [
+    "'self'",
+    ...(isDev ? ["'unsafe-inline'"] : [`'nonce-${nonce}'`]),
+  ];
 
   return [
     "default-src 'self'",
     `script-src ${scriptSrc.join(" ")}`,
+    // Базовый фолбэк для style-атрибутов и браузеров без style-src-elem.
     "style-src 'self' 'unsafe-inline'",
+    `style-src-elem ${styleSrcElem.join(" ")}`,
     `img-src ${imgSrc.join(" ")}`,
     "font-src 'self'",
     `connect-src ${connectSrc.join(" ")}`,

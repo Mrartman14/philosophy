@@ -12,7 +12,7 @@ import { AppearanceProvider } from "@/components/appearance";
 import { htmlAttrs, themeColorMeta } from "@/components/appearance/appearance-cookie";
 import { StatusBanner } from "@/components/permission/status-banner";
 import { TimezoneProvider } from "@/components/timezone";
-import { DirectionProvider, ToastProvider, Toaster } from "@/components/ui";
+import { CSPProvider, DirectionProvider, ToastProvider, Toaster } from "@/components/ui";
 import { YandexMetrika } from "@/components/yandex-metrika/yandex-metrika";
 import { ActiveBanners } from "@/features/banners";
 import { getClientMessages, getLocale, getT } from "@/i18n";
@@ -103,8 +103,12 @@ export default async function RootLayout({
 }>) {
   // server-route для телеметрии: путь приходит из x-pathname (ставит middleware).
   // Ставим до getMe(), чтобы метрика auth.resolve уже несла маршрут.
-  const obsRoute = (await headers()).get("x-pathname");
+  const hdrs = await headers();
+  const obsRoute = hdrs.get("x-pathname");
   if (obsRoute) setServerRoute(obsRoute);
+  // nonce из middleware (x-nonce) → CSPProvider, чтобы нонсенные <style> Base UI
+  // проходили style-src-elem 'nonce-…' (см. src/security/csp.ts).
+  const nonce = hdrs.get("x-nonce") ?? undefined;
 
   let me: MaybeMe = null;
   let banned = false;
@@ -137,35 +141,37 @@ export default async function RootLayout({
           `}
         style={{ fontFamily: "var(--font-ui)" }}
       >
-        <DirectionProvider direction={dirForLocale(locale)}>
-          <I18nProvider locale={locale} messages={messages}>
-            <TimezoneProvider initial={{ pref: tzPref, resolved: tzResolved }}>
-              <AppearanceProvider initial={appearance}>
-                <ToastProvider>
-                  <OfflineIdentityGuard userId={me?.id ?? null} />
-                  <AppHeader />
-                  <StatusBanner me={me} />
-                  <ActiveBanners />
-                  <InstallBanner />
-                  <main className="page-grid grow">
-                    <div className="spine-frame" aria-hidden="true" />
-                    {children}
-                  </main>
-                  <WebVitalsReporter />
-                  <ClientContextReporter
-                    actorHash={obsActor?.hash ?? null}
-                    actorRole={obsActor?.role ?? null}
-                  />
-                  <UpdatePrompt />
-                  <Suspense>
-                    <YandexMetrika />
-                  </Suspense>
-                  <Toaster />
-                </ToastProvider>
-              </AppearanceProvider>
-            </TimezoneProvider>
-          </I18nProvider>
-        </DirectionProvider>
+        <CSPProvider nonce={nonce}>
+          <DirectionProvider direction={dirForLocale(locale)}>
+            <I18nProvider locale={locale} messages={messages}>
+              <TimezoneProvider initial={{ pref: tzPref, resolved: tzResolved }}>
+                <AppearanceProvider initial={appearance}>
+                  <ToastProvider>
+                    <OfflineIdentityGuard userId={me?.id ?? null} />
+                    <AppHeader />
+                    <StatusBanner me={me} />
+                    <ActiveBanners />
+                    <InstallBanner />
+                    <main className="page-grid grow">
+                      <div className="spine-frame" aria-hidden="true" />
+                      {children}
+                    </main>
+                    <WebVitalsReporter />
+                    <ClientContextReporter
+                      actorHash={obsActor?.hash ?? null}
+                      actorRole={obsActor?.role ?? null}
+                    />
+                    <UpdatePrompt />
+                    <Suspense>
+                      <YandexMetrika />
+                    </Suspense>
+                    <Toaster />
+                  </ToastProvider>
+                </AppearanceProvider>
+              </TimezoneProvider>
+            </I18nProvider>
+          </DirectionProvider>
+        </CSPProvider>
       </body>
     </html>
   );

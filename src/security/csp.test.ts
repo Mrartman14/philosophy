@@ -37,8 +37,18 @@ describe("buildCsp", () => {
     expect(csp).toContain("script-src 'self' 'nonce-abc123' 'strict-dynamic'");
     expect(csp).not.toContain("script-src 'self' 'unsafe-inline'");
   });
-  it("style-src сохраняет unsafe-inline", () => {
+  it("style-src сохраняет unsafe-inline (фолбэк для style-атрибутов и старых браузеров)", () => {
     expect(buildCsp(base)).toContain("style-src 'self' 'unsafe-inline'");
+  });
+  it("style-src-elem в проде: nonce, без unsafe-inline (нонсенные <style> Base UI)", () => {
+    const csp = buildCsp(base);
+    expect(csp).toContain("style-src-elem 'self' 'nonce-abc123'");
+    expect(csp).not.toContain("style-src-elem 'self' 'unsafe-inline'");
+  });
+  it("style-src-elem в dev: unsafe-inline для HMR-стилей, без nonce", () => {
+    const csp = buildCsp({ ...base, isDev: true });
+    expect(csp).toContain("style-src-elem 'self' 'unsafe-inline'");
+    expect(csp).not.toContain("style-src-elem 'self' 'nonce-abc123'");
   });
   it("frame-ancestors none и object-src none", () => {
     const csp = buildCsp(base);

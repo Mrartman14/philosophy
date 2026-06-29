@@ -20,6 +20,7 @@ export { IdempotencyField } from "./idempotency-field";
 export { VersionField } from "./version-field";
 export { Dialog, DialogClose } from "./dialog";
 export { DirectionProvider } from "./direction-provider";
+export { CSPProvider } from "./csp-provider";
 export { Toolbar } from "./toolbar";
 export { Popover } from "./popover";
 export { Tooltip, type TooltipProps } from "./tooltip";
