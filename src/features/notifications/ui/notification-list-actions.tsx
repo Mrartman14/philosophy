@@ -10,7 +10,14 @@ import type { ActionResult } from "@/utils/create-action";
 
 import { markAllRead, markAllSeen } from "../actions";
 
-export function NotificationListActions() {
+interface Props {
+  /** Есть ли непрочитанные — иначе «прочитать все» нечего делать. */
+  hasUnread: boolean;
+  /** Есть ли непросмотренные — иначе «просмотреть все» нечего делать. */
+  hasUnseen: boolean;
+}
+
+export function NotificationListActions({ hasUnread, hasUnseen }: Props) {
   const router = useRouter();
   const toast = useToast();
   const t = useT("notifications");
@@ -36,7 +43,7 @@ export function NotificationListActions() {
     <div className="flex gap-2">
       <Button
         tone="neutral"
-        disabled={pending}
+        disabled={pending || !hasUnread}
         onClick={() => {
           void run(markAllRead, t("markAllReadSuccess"));
         }}
@@ -45,7 +52,7 @@ export function NotificationListActions() {
       </Button>
       <Button
         tone="quiet"
-        disabled={pending}
+        disabled={pending || !hasUnseen}
         onClick={() => {
           void run(markAllSeen, t("markAllSeenSuccess"));
         }}

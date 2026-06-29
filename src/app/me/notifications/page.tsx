@@ -2,6 +2,7 @@
 import { Pagination } from "@/components/ui";
 import { getPaginationLabels } from "@/components/ui/pagination.server";
 import {
+  getNotificationCounts,
   getNotifications,
   NotificationItem,
   NotificationListActions,
@@ -25,7 +26,10 @@ export default async function NotificationsPage({ searchParams }: Props) {
   const { offset: offsetParam } = await searchParams;
   const limit = 20;
   const offset = parseNonNegativeInt(offsetParam, 0);
-  const { items, total } = await getNotifications(offset, limit);
+  const [{ items, total }, { unread, unseen }] = await Promise.all([
+    getNotifications(offset, limit),
+    getNotificationCounts(),
+  ]);
   const t = await getT("pages");
 
   const paginationLabels = await getPaginationLabels();
@@ -33,7 +37,7 @@ export default async function NotificationsPage({ searchParams }: Props) {
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{t("notificationsHeading")}</h1>
-        <NotificationListActions />
+        <NotificationListActions hasUnread={unread > 0} hasUnseen={unseen > 0} />
       </div>
 
       {items.length === 0 ? (
