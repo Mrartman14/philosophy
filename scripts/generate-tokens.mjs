@@ -104,6 +104,9 @@ ${densityVars("compact")}
 
 [data-font="legible"] { --app-font: ${scales.FONT_STACKS.legible}; }
 [data-font="serif"]   { --app-font: ${scales.FONT_STACKS.serif}; }
+
+/* размер текста: data-text-size → --text-scale (md = дефолт via var(--text-scale,1)) */
+${Object.entries(scales.TEXT_SCALE).filter(([, v]) => v !== 1).map(([k, v]) => `[data-text-size="${k}"] { --text-scale: ${v}; }`).join("\n")}
 `;
 
 writeFileSync(resolve(root, "src/styles/tokens.generated.css"), css);

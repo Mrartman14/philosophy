@@ -456,3 +456,8 @@
 
 [data-font="legible"] { --app-font: var(--font-atkinson), var(--font-geist-sans), sans-serif; }
 [data-font="serif"]   { --app-font: var(--font-serif), ui-serif, Georgia, serif; }
+
+/* размер текста: data-text-size → --text-scale (md = дефолт via var(--text-scale,1)) */
+[data-text-size="sm"] { --text-scale: 0.9; }
+[data-text-size="lg"] { --text-scale: 1.125; }
+[data-text-size="xl"] { --text-scale: 1.25; }

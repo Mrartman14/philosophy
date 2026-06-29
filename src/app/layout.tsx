@@ -129,17 +129,19 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getClientMessages();
   const [tzPref, tzResolved] = await Promise.all([getStoredTzPref(), getServerTz()]);
-  const { style, colorScheme, ...dataAttrs } = htmlAttrs(appearance);
+  // data-* оси оформления; --text-scale и color-scheme правит CSS по этим
+  // атрибутам (tokens.generated.css / globals.css), без inline-style на <html>/<body>
+  // — чтобы SSR-разметка не несла style="..." под style-src-attr (CSP Level 2).
+  const dataAttrs = htmlAttrs(appearance);
 
   return (
-    <html lang={locale} dir={dirForLocale(locale)} {...dataAttrs} style={{ ...style, colorScheme }}>
+    <html lang={locale} dir={dirForLocale(locale)} {...dataAttrs}>
       <body
         className={`
           root bg-(--color-surface)
           ${geistSans.variable} ${geistMono.variable} ${atkinson.variable} ${sourceSerif.variable} antialiased
           flex flex-col items-stretch min-h-screen
           `}
-        style={{ fontFamily: "var(--font-ui)" }}
       >
         <CSPProvider nonce={nonce}>
           <DirectionProvider direction={dirForLocale(locale)}>

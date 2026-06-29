@@ -17,16 +17,19 @@ function Probe() {
     <button onClick={() => { setAxis("motion", "reduced"); }}>reduce</button>
     <button onClick={() => { setAxis("motion", "full"); }}>motion-full</button>
     <button onClick={() => { setAxis("motion", "system"); }}>motion-system</button>
+    <button onClick={() => { setAxis("textSize", "xl"); }}>size-xl</button>
+    <button onClick={() => { setAxis("textSize", "md"); }}>size-md</button>
   </>);
 }
 
 afterEach(cleanup);
 
 describe("AppearanceProvider", () => {
-  beforeEach(() => { vi.mocked(persistAppearance).mockClear(); document.documentElement.removeAttribute("data-theme"); document.documentElement.removeAttribute("data-density"); document.documentElement.removeAttribute("data-contrast"); document.documentElement.removeAttribute("data-font"); document.documentElement.removeAttribute("data-motion"); document.documentElement.style.colorScheme = ""; document.documentElement.style.removeProperty("--text-scale"); document.cookie = "appearance=; path=/; max-age=0"; });
+  beforeEach(() => { vi.mocked(persistAppearance).mockClear(); document.documentElement.removeAttribute("data-theme"); document.documentElement.removeAttribute("data-density"); document.documentElement.removeAttribute("data-contrast"); document.documentElement.removeAttribute("data-font"); document.documentElement.removeAttribute("data-motion"); document.documentElement.removeAttribute("data-text-size"); document.cookie = "appearance=; path=/; max-age=0"; });
   it("exposes initial", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); expect(screen.getByTestId("theme").textContent).toBe("system"); });
   it("setAxis mutates <html> + state", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("dark")); expect(document.documentElement.getAttribute("data-theme")).toBe("dark"); expect(screen.getByTestId("theme").textContent).toBe("dark"); });
-  it("explicit→system removes data-theme + sets color-scheme", () => { render(<AppearanceProvider initial={{ ...DEFAULT_APPEARANCE, theme: "dark" }}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("system")); expect(document.documentElement.hasAttribute("data-theme")).toBe(false); expect(document.documentElement.style.colorScheme).toBe("light dark"); });
+  it("explicit→system removes data-theme (color-scheme теперь через CSS по data-theme)", () => { render(<AppearanceProvider initial={{ ...DEFAULT_APPEARANCE, theme: "dark" }}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("system")); expect(document.documentElement.hasAttribute("data-theme")).toBe(false); });
+  it("setAxis textSize: xl ставит data-text-size, md убирает (--text-scale через CSS)", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("size-xl")); expect(document.documentElement.getAttribute("data-text-size")).toBe("xl"); fireEvent.click(screen.getByText("size-md")); expect(document.documentElement.hasAttribute("data-text-size")).toBe(false); });
   it("writes cookie", () => { render(<AppearanceProvider initial={DEFAULT_APPEARANCE}><Probe/></AppearanceProvider>); fireEvent.click(screen.getByText("compact")); expect(document.cookie).toContain("appearance="); });
   it("seeds the cookie on mount when absent (e.g. backend-seeded initial)", () => {
     render(<AppearanceProvider initial={{ ...DEFAULT_APPEARANCE, theme: "dark" }}><Probe/></AppearanceProvider>);

@@ -8,14 +8,14 @@ import { persistAppearance } from "./persist-appearance";
 interface Ctx { appearance: Appearance; setAxis: <K extends keyof Appearance>(k: K, v: Appearance[K]) => void }
 const AppearanceContext = createContext<Ctx | null>(null);
 
-const DATA_KEYS = ["data-theme", "data-contrast", "data-density", "data-font", "data-motion", "data-align"] as const;
+const DATA_KEYS = ["data-theme", "data-contrast", "data-density", "data-font", "data-motion", "data-align", "data-text-size"] as const;
 function applyToHtml(a: Appearance) {
+  // Все оси — через data-атрибуты; --text-scale и color-scheme правит CSS по ним
+  // (см. htmlAttrs / tokens.generated.css / globals.css). setAttribute идёт через
+  // CSSOM и под CSP не попадает, но единый data-attr путь = тот же результат, что в SSR.
   const el = document.documentElement;
-  const { style, colorScheme, ...rest } = htmlAttrs(a);
-  const data = rest as Record<string, string>;
+  const data = htmlAttrs(a) as Record<string, string>;
   for (const key of DATA_KEYS) { const v = data[key]; if (v) el.setAttribute(key, v); else el.removeAttribute(key); }
-  el.style.setProperty("--text-scale", style["--text-scale"] ?? null);
-  el.style.colorScheme = colorScheme;
 }
 
 function writeCookie(a: Appearance) {

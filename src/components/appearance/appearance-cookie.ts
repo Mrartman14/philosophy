@@ -1,7 +1,6 @@
 import { THEME_COLOR } from "@/styles/theme-color.generated";
 import { THEMES, CONTRASTS, DENSITIES, FONTS, TEXT_SIZES, MOTIONS, TEXT_ALIGNS,
   type Theme, type Contrast, type Density, type FontChoice, type TextSize, type Motion, type TextAlign } from "@/styles/tokens/enums";
-import { TEXT_SCALE } from "@/styles/tokens/scales";
 
 export interface Appearance { theme: Theme; contrast: Contrast; density: Density; font: FontChoice; textSize: TextSize; motion: Motion; textAlign: TextAlign }
 export const APPEARANCE_COOKIE = "appearance";
@@ -32,8 +31,11 @@ export function htmlAttrs(a: Appearance) {
     // "start" → нет атрибута (дефолтный поток text-align: start); "justify" эмитим
     // → content.css юстирует прозу + включает переносы.
     ...(a.textAlign !== "start" ? { "data-align": a.textAlign } : {}),
-    style: { "--text-scale": String(TEXT_SCALE[a.textSize]) } as Record<string, string>,
-    colorScheme: a.theme === "system" ? "light dark" : a.theme,
+    // textSize → data-text-size ("md" опущен: фолбэк var(--text-scale,1)).
+    // --text-scale и color-scheme теперь правит CSS по data-атрибутам
+    // (tokens.generated.css / globals.css), а НЕ inline-style на <html>, чтобы
+    // SSR-разметка не несла style="..." под style-src-attr (CSP Level 2).
+    ...(a.textSize !== "md" ? { "data-text-size": a.textSize } : {}),
   };
 }
 

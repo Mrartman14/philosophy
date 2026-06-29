@@ -14,6 +14,12 @@ describe("tokens.generated.css", () => {
     expect(css).toContain('[data-density="compact"]');
     expect(css).toContain('[data-font="serif"]');
   });
+  it("маппит data-text-size → --text-scale (md опущен: фолбэк var(--text-scale,1))", () => {
+    expect(css).toContain('[data-text-size="lg"] { --text-scale: 1.125; }');
+    expect(css).toContain('[data-text-size="xl"] { --text-scale: 1.25; }');
+    expect(css).toContain('[data-text-size="sm"] { --text-scale: 0.9; }');
+    expect(css).not.toContain('[data-text-size="md"]');
+  });
   it("high-contrast cascade is correct: no bare unqualified rule, correct media selectors", () => {
     // no bare [data-contrast="high"] without theme qualifier
     expect(css).not.toMatch(/^\[data-contrast="high"\]\s*\{/m);

@@ -21,13 +21,15 @@ describe("appearance-cookie", () => {
     const a = parseAppearance(JSON.stringify({ theme: "neon", textSize: "huge" }));
     expect(a.theme).toBe("system"); expect(a.textSize).toBe("md");
   });
-  it("htmlAttrs omits data-theme for system, sets color-scheme", () => {
+  it("htmlAttrs omits data-theme for system (color-scheme через CSS, не inline)", () => {
     expect(htmlAttrs({ ...DEFAULT_APPEARANCE, theme: "system" })["data-theme"]).toBeUndefined();
-    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, theme: "system" }).colorScheme).toBe("light dark");
+    expect("colorScheme" in htmlAttrs({ ...DEFAULT_APPEARANCE, theme: "system" })).toBe(false);
     expect(htmlAttrs({ ...DEFAULT_APPEARANCE, theme: "dark" })["data-theme"]).toBe("dark");
   });
-  it("htmlAttrs maps textSize → --text-scale", () => {
-    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, textSize: "xl" }).style["--text-scale"]).toBe("1.25");
+  it("htmlAttrs maps textSize → data-text-size (md опущен, без inline-style)", () => {
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, textSize: "xl" })["data-text-size"]).toBe("xl");
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, textSize: "md" })["data-text-size"]).toBeUndefined();
+    expect("style" in htmlAttrs({ ...DEFAULT_APPEARANCE, textSize: "xl" })).toBe(false);
   });
   it("htmlAttrs: auto contrast omits data-contrast (OS boost applies); explicit normal/high emit it (opt-out/force)", () => {
     expect(htmlAttrs({ ...DEFAULT_APPEARANCE, contrast: "auto" })["data-contrast"]).toBeUndefined();

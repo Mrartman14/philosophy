@@ -6,9 +6,15 @@
 
 /* Глобальная ось размера текста: масштабирует все rem (вкл. type-утилиты). */
 html { font-size: calc(100% * var(--text-scale, 1)); }
+/* Базовый шрифт UI (был inline style на <body>; вынесен ради CSP style-src-attr). */
+body { font-family: var(--font-ui); }
 
 :root { --header-height: var(--spacing-header); }
-/* NB: color-scheme НЕ задаём в :root — единственный источник = inline-style на <html> из htmlAttrs (Task 11). */
+/* color-scheme правит CSS по data-theme (НЕ inline на <html> — ради CSP style-src-attr):
+   system (нет data-theme) → обе схемы; явная тема → одна. Источник data-theme — htmlAttrs. */
+html { color-scheme: light dark; }
+html[data-theme="light"] { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
 :root { --vt-duration: 400ms; --vt-easing: ease-in-out; }
 
 @media (forced-colors: active) {
