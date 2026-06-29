@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Button, Combobox } from "@/components/ui";
+import { Button, Combobox, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import { ComboboxResultsStatus } from "./combobox-results-status";
@@ -22,6 +22,8 @@ export interface RefPickerProps {
   anchor?: { getBoundingClientRect: () => DOMRect } | undefined;
   /** Тулбар: триггер-кнопка (Combobox.Trigger). */
   trigger?: React.ReactNode;
+  /** Тултип для триггер-кнопки (только тулбарный путь; @-меню без подсказки). */
+  tooltip?: React.ReactNode;
   /** Вызывается синхронно перед вставкой марки (AtMenu удаляет "@"-маркер). */
   onWillInsert?: (() => void) | undefined;
 }
@@ -169,7 +171,11 @@ export function RefPicker(props: RefPickerProps) {
       onValueChange={onValueChange}
       isItemEqualToValue={(a, b) => getKey(a) === getKey(b)}
     >
-      {props.trigger ? <Combobox.Trigger render={props.trigger as React.ReactElement} /> : null}
+      {props.trigger ? (
+        <Tooltip content={props.tooltip}>
+          <Combobox.Trigger render={props.trigger as React.ReactElement} />
+        </Tooltip>
+      ) : null}
       <Combobox.Portal>
         <Combobox.Positioner
           {...(props.anchor ? { anchor: props.anchor } : {})}

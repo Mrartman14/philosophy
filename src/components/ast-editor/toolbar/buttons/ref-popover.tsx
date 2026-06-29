@@ -28,6 +28,7 @@ export function RefPopover({ editor, schema, defaultLectureId }: Props) {
       defaultLectureId={defaultLectureId}
       open={open}
       onOpenChange={setOpen}
+      tooltip={t("insertRefAriaLabel")}
       trigger={
         <Toolbar.Button aria-label={t("insertRefAriaLabel")}>
           <AtIcon />

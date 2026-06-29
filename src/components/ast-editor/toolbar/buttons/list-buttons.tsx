@@ -5,7 +5,7 @@ import { useEditorState } from "@tiptap/react";
 import { ListBulletIcon } from "@/assets/icons/list-bullet-icon";
 import { ListChecklistIcon } from "@/assets/icons/list-checklist-icon";
 import { ListOrderedIcon } from "@/assets/icons/list-ordered-icon";
-import { Toolbar } from "@/components/ui";
+import { Toolbar, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
@@ -32,27 +32,33 @@ export function ListButtonsGroup({ editor, schema, context }: Props) {
 
   return (
     <Toolbar.Group>
-      <Toolbar.Button
-        aria-label={t("bulletList")}
-        aria-pressed={active.bullet}
-        onClick={() => { applyListKind(editor, "bullet"); }}
-      >
-        <ListBulletIcon />
-      </Toolbar.Button>
-      <Toolbar.Button
-        aria-label={t("orderedList")}
-        aria-pressed={active.ordered}
-        onClick={() => { applyListKind(editor, "ordered"); }}
-      >
-        <ListOrderedIcon />
-      </Toolbar.Button>
-      <Toolbar.Button
-        aria-label={t("checkList")}
-        aria-pressed={active.task}
-        onClick={() => { applyListKind(editor, "task"); }}
-      >
-        <ListChecklistIcon />
-      </Toolbar.Button>
+      <Tooltip content={t("bulletList")}>
+        <Toolbar.Button
+          aria-label={t("bulletList")}
+          aria-pressed={active.bullet}
+          onClick={() => { applyListKind(editor, "bullet"); }}
+        >
+          <ListBulletIcon />
+        </Toolbar.Button>
+      </Tooltip>
+      <Tooltip content={t("orderedList")}>
+        <Toolbar.Button
+          aria-label={t("orderedList")}
+          aria-pressed={active.ordered}
+          onClick={() => { applyListKind(editor, "ordered"); }}
+        >
+          <ListOrderedIcon />
+        </Toolbar.Button>
+      </Tooltip>
+      <Tooltip content={t("checkList")}>
+        <Toolbar.Button
+          aria-label={t("checkList")}
+          aria-pressed={active.task}
+          onClick={() => { applyListKind(editor, "task"); }}
+        >
+          <ListChecklistIcon />
+        </Toolbar.Button>
+      </Tooltip>
     </Toolbar.Group>
   );
 }

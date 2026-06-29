@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import { Fragment } from "react";
 
-import { Toolbar } from "@/components/ui";
+import { Toolbar, Tooltip } from "@/components/ui";
 
 import type { SchemaSnapshot, EntityContext } from "../types";
 
@@ -66,13 +66,17 @@ export function EditorToolbar({ editor, schema, context, defaultLectureId }: Edi
   ].filter((g) => g.visible);
 
   return (
-    <Toolbar.Root>
-      {groups.map((g, i) => (
-        <Fragment key={i}>
-          {i > 0 && <Toolbar.Separator />}
-          {g.node}
-        </Fragment>
-      ))}
-    </Toolbar.Root>
+    // Provider — общий hover-delay для ряда: первая подсказка ждёт, соседние
+    // показываются мгновенно (как в канвас-тулбаре).
+    <Tooltip.Provider delay={400}>
+      <Toolbar.Root>
+        {groups.map((g, i) => (
+          <Fragment key={i}>
+            {i > 0 && <Toolbar.Separator />}
+            {g.node}
+          </Fragment>
+        ))}
+      </Toolbar.Root>
+    </Tooltip.Provider>
   );
 }

@@ -6,7 +6,7 @@ import { CodeBlockIcon } from "@/assets/icons/code-block-icon";
 import { HorizontalRuleIcon } from "@/assets/icons/horizontal-rule-icon";
 import { QuoteIcon } from "@/assets/icons/quote-icon";
 import { TableIcon } from "@/assets/icons/table-icon";
-import { Toolbar } from "@/components/ui";
+import { Toolbar, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
@@ -41,43 +41,50 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
   return (
     <Toolbar.Group>
       {allowed.has("blockquote") && (
-        <Toolbar.Button
-          aria-label={t("blockquote")}
-          aria-pressed={active.blockquote}
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        >
-          <QuoteIcon />
-        </Toolbar.Button>
+        <Tooltip content={t("blockquote")}>
+          <Toolbar.Button
+            aria-label={t("blockquote")}
+            aria-pressed={active.blockquote}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          >
+            <QuoteIcon />
+          </Toolbar.Button>
+        </Tooltip>
       )}
       {allowed.has("code_block") && (
-        <Toolbar.Button
-          aria-label={t("codeBlock")}
-          aria-pressed={active.codeBlock}
-          onClick={() =>
-            editor.chain().focus().toggleNode("code_block", "paragraph").run()
-          }
-        >
-          <CodeBlockIcon />
-        </Toolbar.Button>
+        <Tooltip content={t("codeBlock")}>
+          <Toolbar.Button
+            aria-label={t("codeBlock")}
+            aria-pressed={active.codeBlock}
+            onClick={() =>
+              editor.chain().focus().toggleNode("code_block", "paragraph").run()
+            }
+          >
+            <CodeBlockIcon />
+          </Toolbar.Button>
+        </Tooltip>
       )}
       {allowed.has("thematic_break") && (
-        <Toolbar.Button
-          aria-label={t("thematicBreak")}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .insertContent({ type: "thematic_break" })
-              .run()
-          }
-        >
-          <HorizontalRuleIcon />
-        </Toolbar.Button>
+        <Tooltip content={t("thematicBreak")}>
+          <Toolbar.Button
+            aria-label={t("thematicBreak")}
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .insertContent({ type: "thematic_break" })
+                .run()
+            }
+          >
+            <HorizontalRuleIcon />
+          </Toolbar.Button>
+        </Tooltip>
       )}
       {allowed.has("table") && (
-        <Toolbar.Button
-          aria-label={t("table")}
-          onClick={() =>
+        <Tooltip content={t("table")}>
+          <Toolbar.Button
+            aria-label={t("table")}
+            onClick={() =>
             editor
               .chain()
               .focus()
@@ -111,10 +118,11 @@ export function BlockButtonsGroup({ editor, schema, context }: Props) {
                 ],
               })
               .run()
-          }
-        >
-          <TableIcon />
-        </Toolbar.Button>
+            }
+          >
+            <TableIcon />
+          </Toolbar.Button>
+        </Tooltip>
       )}
     </Toolbar.Group>
   );

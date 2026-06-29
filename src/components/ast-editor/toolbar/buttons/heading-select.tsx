@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import { useEditorState } from "@tiptap/react";
 
-import { Menu, Toolbar } from "@/components/ui";
+import { Menu, Toolbar, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
@@ -70,11 +70,13 @@ export function HeadingSelect({ editor, schema, context }: Props) {
 
   return (
     <Menu.Root>
-      <Menu.Trigger
-        render={<Toolbar.Button aria-label={t("blockTypeAriaLabel")} className="font-semibold" />}
-      >
-        {SHORT[active]}
-      </Menu.Trigger>
+      <Tooltip content={t("blockTypeAriaLabel")}>
+        <Menu.Trigger
+          render={<Toolbar.Button aria-label={t("blockTypeAriaLabel")} className="font-semibold" />}
+        >
+          {SHORT[active]}
+        </Menu.Trigger>
+      </Tooltip>
       <Menu.Portal>
         <Menu.Positioner sideOffset={4} align="start" className="outline-none">
           <Menu.Popup>

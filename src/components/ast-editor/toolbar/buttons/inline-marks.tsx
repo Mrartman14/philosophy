@@ -5,7 +5,7 @@ import { useEditorState } from "@tiptap/react";
 import { BoldIcon } from "@/assets/icons/bold-icon";
 import { CodeIcon } from "@/assets/icons/code-icon";
 import { ItalicIcon } from "@/assets/icons/italic-icon";
-import { Toolbar } from "@/components/ui";
+import { Toolbar, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot } from "../../types";
@@ -39,31 +39,37 @@ export function InlineMarksGroup({ editor, schema }: Props) {
   return (
     <Toolbar.Group>
       {schema.marks.has("bold") && (
-        <Toolbar.Button
-          aria-label={t("bold")}
-          aria-pressed={active.bold}
-          onClick={() => editor.chain().focus().toggleBold().run()}
-        >
-          <BoldIcon />
-        </Toolbar.Button>
+        <Tooltip content={t("bold")}>
+          <Toolbar.Button
+            aria-label={t("bold")}
+            aria-pressed={active.bold}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+          >
+            <BoldIcon />
+          </Toolbar.Button>
+        </Tooltip>
       )}
       {schema.marks.has("italic") && (
-        <Toolbar.Button
-          aria-label={t("italic")}
-          aria-pressed={active.italic}
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-        >
-          <ItalicIcon />
-        </Toolbar.Button>
+        <Tooltip content={t("italic")}>
+          <Toolbar.Button
+            aria-label={t("italic")}
+            aria-pressed={active.italic}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+          >
+            <ItalicIcon />
+          </Toolbar.Button>
+        </Tooltip>
       )}
       {schema.marks.has("code") && (
-        <Toolbar.Button
-          aria-label={t("code")}
-          aria-pressed={active.code}
-          onClick={() => editor.chain().focus().toggleCode().run()}
-        >
-          <CodeIcon />
-        </Toolbar.Button>
+        <Tooltip content={t("code")}>
+          <Toolbar.Button
+            aria-label={t("code")}
+            aria-pressed={active.code}
+            onClick={() => editor.chain().focus().toggleCode().run()}
+          >
+            <CodeIcon />
+          </Toolbar.Button>
+        </Tooltip>
       )}
     </Toolbar.Group>
   );

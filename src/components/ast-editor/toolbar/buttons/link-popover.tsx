@@ -4,7 +4,7 @@ import { useEditorState } from "@tiptap/react";
 import { useRef, useState } from "react";
 
 import { LinkIcon } from "@/assets/icons/link-icon";
-import { Button, Popover, Toolbar } from "@/components/ui";
+import { Button, Popover, Toolbar, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot } from "../../types";
@@ -86,16 +86,18 @@ export function LinkPopover({ editor, schema }: Props) {
 
   return (
     <Popover.Root open={open} onOpenChange={handleOpen}>
-      <Popover.Trigger
-        render={
-          <Toolbar.Button
-            aria-label={t("linkAriaLabel")}
-            aria-pressed={isActive}
-          />
-        }
-      >
-        <LinkIcon />
-      </Popover.Trigger>
+      <Tooltip content={t("linkAriaLabel")}>
+        <Popover.Trigger
+          render={
+            <Toolbar.Button
+              aria-label={t("linkAriaLabel")}
+              aria-pressed={isActive}
+            />
+          }
+        >
+          <LinkIcon />
+        </Popover.Trigger>
+      </Tooltip>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8}>
           <Popover.Popup initialFocus={inputRef} className="p-3">

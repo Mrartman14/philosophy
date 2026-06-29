@@ -4,7 +4,7 @@ import type { Editor } from "@tiptap/core";
 import { useRef, useState, type ChangeEvent } from "react";
 
 import { ImageIcon } from "@/assets/icons/image-icon";
-import { Toolbar, useToast } from "@/components/ui";
+import { Toolbar, Tooltip, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
@@ -88,13 +88,15 @@ export function ImageButton({ editor, schema, context }: Props) {
 
   return (
     <>
-      <Toolbar.Button
-        aria-label={t("imageAriaLabel")}
-        disabled={busy}
-        onClick={() => inputRef.current?.click()}
-      >
-        <ImageIcon />
-      </Toolbar.Button>
+      <Tooltip content={t("imageAriaLabel")}>
+        <Toolbar.Button
+          aria-label={t("imageAriaLabel")}
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+        >
+          <ImageIcon />
+        </Toolbar.Button>
+      </Tooltip>
       <input
         ref={inputRef}
         type="file"
