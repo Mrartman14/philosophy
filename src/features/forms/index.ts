@@ -73,6 +73,7 @@ export { FormDetail } from "./ui/form-detail";
 export { FormMeta } from "./ui/form-meta";
 export { FormAfterSubmit } from "./ui/form-after-submit";
 export { FormFill } from "./ui/form-fill";
+export { FormResultsView } from "./ui/form-results-view";
 export { FormFieldInput } from "./ui/form-field-input";
 export { SubmissionDetail } from "./ui/submission-detail";
 export { SubmissionEditForm } from "./ui/submission-edit-form";
