@@ -1,10 +1,9 @@
 // src/features/canvas/ui/canvas-detail.tsx
 import type { RenderData, RenderEdge, RenderNode } from "@/components/canvas-render";
-import { CanvasRender } from "@/components/canvas-render/canvas-render";
-import { getT } from "@/i18n";
 
-import { makeEntityRefResolver } from "../entity-ref";
 import type { CanvasData } from "../types";
+
+import { CanvasViewer } from "./canvas-viewer";
 
 interface Props {
   data: CanvasData | undefined;
@@ -49,13 +48,15 @@ function toRenderData(data: CanvasData | undefined): RenderData {
   return { nodes, edges };
 }
 
-/** Read-only SSR-визуализация графа канваса. */
-export async function CanvasDetail({ data }: Props) {
-  const t = await getT("canvas");
+/**
+ * Read-only визуализация графа канваса. Маппинг чистый → синхронный серверный
+ * компонент; интерактив (pan/zoom) и i18n/ссылки ведёт клиентский CanvasViewer.
+ * Единая точка для /canvases/[id] и модалки ревизий (CanvasRevisions).
+ */
+export function CanvasDetail({ data }: Props) {
   return (
-    <CanvasRender
+    <CanvasViewer
       data={toRenderData(data)}
-      resolveEntityRef={makeEntityRefResolver(t)}
       className="rounded border border-(--color-border) bg-(--color-surface) p-2"
     />
   );
