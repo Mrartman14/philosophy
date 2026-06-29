@@ -79,10 +79,6 @@ Read-only интерактивный просмотр. Пропсы:
 ```tsx
 interface CanvasViewerProps {
   data: RenderData;
-  /** Пред-резолвленные entity_ref (i18n уже применён на сервере), сериализуемо. */
-  entityRefs: Record<string, EntityRefView>;   // ключ `${entityType}:${entityId}`
-  emptyText: string;
-  ariaLabel: string;
   className?: string;
   children?: ReactNode;   // оверлей (бейдж ревизии и т.п.)
 }
@@ -90,8 +86,12 @@ interface CanvasViewerProps {
 
 Логика:
 
-- `resolveEntityRef = (type, id) => entityRefs[`${type}:${id}`] ?? FALLBACK` — чистый резолвер
-  из сериализованной карты (переводы остались на сервере).
+- Это `"use client"`-компонент, поэтому i18n и резолвер ссылок он строит сам — **как редактор**:
+  `const t = useT("canvas"); const resolveEntityRef = useMemo(() => makeEntityRefResolver(t), [t])`
+  (см. [canvas-editor.tsx:142](../../../src/features/canvas/ui/canvas-editor.tsx#L142)). Никакой
+  сериализации entity_ref через границу RSC НЕ нужно. `aria`/`emptyText` — из `useT("common")`
+  по тем же ключам `canvasRender.*`, что у `CanvasRender`. (Клиентские компоненты SSR-ятся под
+  i18n-провайдером, как и редактор.)
 - Состояние: `size: {width,height} | null` (мерим контейнер через `ResizeObserver`),
   `viewport: Viewport | null`.
 - **Ветка «статика»** (`size === null`, т.е. SSR + первый клиентский рендер до измерения):
@@ -110,34 +110,22 @@ interface CanvasViewerProps {
 
 ### `CanvasDetail` (правка)
 
-Остаётся серверным компонентом. Вместо передачи функции-резолвера — пред-резолвит entity_ref
-в сериализуемую карту и рендерит `<CanvasViewer>`:
+Упрощается: больше не нужен `getT`/резолвер — только маппинг `CanvasData → RenderData` и
+рендер `<CanvasViewer>` (тот сам резолвит i18n/ссылки клиентски):
 
 ```tsx
-const t = await getT("canvas");          // метки типов entity_ref
-const tCommon = await getT("common");    // aria/emptyText — тот же неймспейс, что у CanvasRender
-const resolve = makeEntityRefResolver(t);
-const renderData = toRenderData(data);
-const entityRefs: Record<string, EntityRefView> = {};
-for (const n of renderData.nodes) {
-  if (n.type === "entity_ref" && n.entityType && n.entityId) {
-    entityRefs[`${n.entityType}:${n.entityId}`] = resolve(n.entityType, n.entityId);
-  }
+export function CanvasDetail({ data }: Props) {
+  return (
+    <CanvasViewer
+      data={toRenderData(data)}
+      className="rounded border border-(--color-border) bg-(--color-surface) p-2"
+    />
+  );
 }
-return (
-  <CanvasViewer
-    data={renderData}
-    entityRefs={entityRefs}
-    ariaLabel={tCommon("canvasRender.graphAriaLabel")}
-    emptyText={tCommon("canvasRender.emptyGraph")}
-    className="rounded border border-(--color-border) bg-(--color-surface) p-2"
-  />
-);
 ```
 
-Так через границу RSC идут только сериализуемые данные; переводы — на сервере. `ariaLabel`/`emptyText`
-берутся из `common` (тот же источник, что внутри `CanvasRender` сейчас), т.к. клиентский
-`CanvasViewer` не может звать `getT`.
+`CanvasDetail` перестаёт быть `async` (маппинг чистый). Через границу RSC идёт только
+сериализуемый `RenderData` (числа/строки) — функции не пересекают границу.
 
 ## Общий хук `usePanZoom` (новый, `src/features/canvas/editor/use-pan-zoom.ts`)
 
@@ -193,11 +181,11 @@ touch-pan, marquee, select, move, resize, edge-draw, zoom-у-курсора). Т
 ## Поток данных и SSR
 
 ```text
-CanvasDetail (server)                     CanvasViewer (client)
-  getT → makeEntityRefResolver               resolveEntityRef ← entityRefs (map)
-  toRenderData(CanvasData)        ──props──►  size=null → CanvasScene (статика, = текущий SSR)
-  pre-resolve entity_ref → map               useLayoutEffect: измерить → fitViewport
-                                             size set → CanvasScene (интерактив) + usePanZoom
+CanvasDetail (server)                     CanvasViewer ("use client", SSR+hydrate)
+  toRenderData(CanvasData)        ──prop──►  useT("canvas") → resolveEntityRef (как редактор)
+                                            size=null → CanvasScene (статика, = текущий SSR)
+                                            useLayoutEffect: измерить → fitViewport
+                                            size set → CanvasScene (интерактив) + usePanZoom
 ```
 
 - **SSR / no-JS:** сервер отдаёт статичный SVG (весь граф, скроллируемый) — как сейчас.
@@ -214,9 +202,10 @@ CanvasDetail (server)                     CanvasViewer (client)
 ## Тестирование
 
 - **Чистая математика** (`coords`, `interaction`, `resolveWheel`) — уже покрыта, не дублируем.
-- **`usePanZoom`** — юнит/хук-тест: wheel→зум/пан вызывает `onViewportChange` с верным `Viewport`;
-  pointerdown при `enablePanDrag=false` зовёт `onPointerDownOther` и не панит; drag-пан считает
-  дельту через zoom. (jsdom без layout — `getSize` мокается.)
+- **`usePanZoom`** — хук-тест (`renderHook` + реальный `div`): диспатч `new WheelEvent` → зум/пан
+  вызывает `onViewportChange` с верным `Viewport`; `disabled` → не вызывает; на unmount слушатель
+  снят. ⚠️ jsdom не реализует `PointerEvent` → drag-пан и пинч (pointer-механика) проверяются в
+  браузер-QA, а их математика — это уже покрытые `coords` (`applyZoomAtPoint` + формула пана).
 - **`CanvasViewer`** (RTL/jsdom): статичная ветка даёт `viewBox = bbox+MARGIN` (= текущий);
   тулбар `+/−/⤢` меняет `viewBox`; пустой граф → `emptyText`. ⚠️ jsdom не считает layout
   (`getBoundingClientRect→0`), `ResizeObserver` мокается; реальные wheel/pinch — только браузер.
@@ -241,8 +230,10 @@ CanvasDetail (server)                     CanvasViewer (client)
 | `src/features/canvas/editor/use-pan-zoom.ts` | новый — общий хук жестов |
 | `src/features/canvas/ui/canvas-viewer.tsx` | новый — интерактивный read-only просмотр |
 | `src/features/canvas/ui/canvas-editor.tsx` | рефактор — потребляет `usePanZoom` |
-| `src/features/canvas/ui/canvas-detail.tsx` | правка — пред-резолв entity_ref + `CanvasViewer` |
-| тесты | `use-pan-zoom.test.ts`, `canvas-viewer.test.tsx`, обновление снапшотов |
+| `src/features/canvas/ui/canvas-detail.tsx` | правка — маппинг + `CanvasViewer` (не-async) |
+| `src/assets/icons/zoom-in-icon.tsx`, `zoom-out-icon.tsx` | новые иконки тулбара (нет в наборе) |
+| `src/i18n/messages/*/canvas.ts` | 3 ключа `viewer.zoomIn/zoomOut/resetZoom` (fit — reuse `toolbar.fit`) |
+| тесты | `use-pan-zoom.test.tsx`, `canvas-viewer.test.tsx`, существующий `canvas-render.test.tsx` остаётся зелёным |
 
 Кросс-фичевых импортов нет: viewer/хук — внутри `features/canvas`; импорт `components/canvas-render`
 разрешён (верное направление слоёв).
