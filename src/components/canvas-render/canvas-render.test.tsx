@@ -47,6 +47,21 @@ describe("CanvasRender", () => {
     expect(container.querySelector("path[marker-end]")).not.toBeNull();
   });
 
+  it("обёртка без inline-стиля, габариты через классы, сохраняет переданный className (CSP)", async () => {
+    const data: RenderData = {
+      nodes: [{ id: "a", type: "text", x: 0, y: 0, width: 100, height: 40, text: "x" }],
+      edges: [],
+    };
+    const { container } = render(
+      await CanvasRender({ data, resolveEntityRef: resolve, className: "my-wrap" }),
+    );
+    const wrapper = container.firstElementChild as HTMLElement;
+    expect(wrapper.getAttribute("style")).toBeNull();
+    expect(wrapper.classList.contains("overflow-auto")).toBe(true);
+    expect(wrapper.classList.contains("max-w-full")).toBe(true);
+    expect(wrapper.classList.contains("my-wrap")).toBe(true);
+  });
+
   it("entity_ref с известным типом → ссылка", async () => {
     const data: RenderData = {
       nodes: [{ id: "r", type: "entity_ref", x: 0, y: 0, width: 120, height: 60, entityType: "document", entityId: "d1" }],

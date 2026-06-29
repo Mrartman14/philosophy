@@ -1,6 +1,4 @@
 // src/components/canvas-render/canvas-scene.tsx
-import type { CSSProperties } from "react";
-
 import { EdgeShapeRender, ArrowMarkerDefs } from "./edge-shape";
 import { NodeShapeRender } from "./node-shapes";
 import type { BBox, EntityRefResolver, RenderData, RenderNode } from "./types";
@@ -27,8 +25,6 @@ export interface CanvasSceneProps {
   width: number | string;
   height: number | string;
   ariaLabel: string;
-  /** Доп. inline-стиль <svg>. */
-  svgStyle?: CSSProperties;
 }
 
 /**
@@ -52,9 +48,9 @@ export function CanvasSceneBody({ data, resolveEntityRef }: { data: RenderData; 
 }
 
 /** Чистое (client-safe, НЕ async) тело SVG canvas-графа с заданным viewBox. */
-export function CanvasScene({ data, resolveEntityRef, viewBox, width, height, ariaLabel, svgStyle }: CanvasSceneProps) {
+export function CanvasScene({ data, resolveEntityRef, viewBox, width, height, ariaLabel }: CanvasSceneProps) {
   return (
-    <svg viewBox={viewBox} width={width} height={height} role="img" aria-label={ariaLabel} style={svgStyle}>
+    <svg viewBox={viewBox} width={width} height={height} role="img" aria-label={ariaLabel} className="max-w-full h-auto">
       <CanvasSceneBody data={data} resolveEntityRef={resolveEntityRef} />
     </svg>
   );

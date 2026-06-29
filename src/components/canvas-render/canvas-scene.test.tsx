@@ -30,6 +30,20 @@ describe("CanvasScene", () => {
     expect(container.querySelector("path[marker-end]")).not.toBeNull();
   });
 
+  it("svg без inline-стиля, габариты через утилитарные классы (CSP style-src-attr)", () => {
+    const data: RenderData = {
+      nodes: [{ id: "a", type: "text", x: 0, y: 0, width: 100, height: 40, text: "x" }],
+      edges: [],
+    };
+    const { container } = render(
+      <CanvasScene data={data} resolveEntityRef={resolve} viewBox="0 0 100 40" width="100%" height="100%" ariaLabel="граф" />,
+    );
+    const svg = container.querySelector("svg");
+    expect(svg?.getAttribute("style")).toBeNull();
+    expect(svg?.classList.contains("max-w-full")).toBe(true);
+    expect(svg?.classList.contains("h-auto")).toBe(true);
+  });
+
   it("entity_ref известного типа → ссылка", () => {
     const data: RenderData = {
       nodes: [{ id: "r", type: "entity_ref", x: 0, y: 0, width: 120, height: 60, entityType: "document", entityId: "d1" }],

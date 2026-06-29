@@ -20,8 +20,10 @@ export async function CanvasRender({ data, resolveEntityRef, emptyText, classNam
 
   const { viewBox, width, height } = staticViewBox(boundingBox(data.nodes));
 
+  const wrapperClass = ["overflow-auto max-w-full", className].filter(Boolean).join(" ");
+
   return (
-    <div className={className} style={{ overflow: "auto", maxWidth: "100%" }}>
+    <div className={wrapperClass}>
       <CanvasScene
         data={data}
         resolveEntityRef={resolveEntityRef}
@@ -29,7 +31,6 @@ export async function CanvasRender({ data, resolveEntityRef, emptyText, classNam
         width={width}
         height={height}
         ariaLabel={t("canvasRender.graphAriaLabel")}
-        svgStyle={{ maxWidth: "100%", height: "auto" }}
       />
       {children}
     </div>
