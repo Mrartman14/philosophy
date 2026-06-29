@@ -15,7 +15,7 @@ export const MARGIN_NOTE_SIDE_WIDE = {
   end: "col-margin-end-wide",
 } as const;
 
-/** Карта поведения на узких экранах (< xl). */
+/** Карта поведения, когда полю не хватает места (узкий контейнер). */
 const COLLAPSE_CLASS = {
   inline: "margin-note--inline",
   hidden: "margin-note--hidden",
@@ -24,12 +24,12 @@ const COLLAPSE_CLASS = {
 export interface MarginNoteProps {
   /** Логическая сторона: start (инлайн-начало) | end (инлайн-конец). */
   side: keyof typeof MARGIN_NOTE_SIDE;
-  /** Поведение на < xl (1280px): inline — втекает в поток (default); hidden — скрыт. */
+  /** Когда поле схлопнуто (узкий контейнер): inline — втекает в поток (default); hidden — скрыт. */
   collapse?: keyof typeof COLLAPSE_CLASS;
   /**
-   * Растягивает поле в смежный bleed-трек до `--layout-margin-wide` (~32rem) на ≥xl;
-   * ниже xl — как обычно по collapse. Для широких панелей, напр. комментариев/
-   * аннотаций. opt-in, default false.
+   * Растягивает поле в смежный bleed-трек до `--layout-margin-wide` (~32rem), когда
+   * поля раскрыты; на узком контейнере — как обычно по collapse. Для широких панелей,
+   * напр. комментариев/аннотаций. opt-in, default false.
    */
   grow?: boolean;
   className?: string;
@@ -37,8 +37,10 @@ export interface MarginNoteProps {
 }
 
 /**
- * Маргиналия: контент в поле слева/справа от хребта. Появляется только на >= xl
- * (1280px); ниже — по `collapse`. ДОЛЖЕН быть прямым потомком `.page-grid`
+ * Маргиналия: контент в поле слева/справа от хребта. Появляется, когда контейнер
+ * широк настолько, что поле реально помещается (см. layout.css — @container, порог
+ * в em, масштаб-инвариантно к размеру текста); иначе — по `collapse`. ДОЛЖЕН быть
+ * прямым потомком `.page-grid`
  * (страница возвращает фрагмент: контент-хребет + <MarginNote>). Server-rendered,
  * RTL — через логические грид-линии. Structural-примитив → className ОТКРЫТ.
  */

@@ -152,9 +152,14 @@ export default async function RootLayout({
                     <StatusBanner me={me} />
                     <ActiveBanners />
                     <InstallBanner />
-                    <main className="page-grid grow">
-                      <div className="spine-frame" aria-hidden="true" />
-                      {children}
+                    <main className="page-shell grow">
+                      {/* .page-grid — отдельный потомок, чтобы <main> служил
+                          size-контейнером для раскрытия полей (см. layout.css).
+                          children остаются ПРЯМЫМИ потомками .page-grid. */}
+                      <div className="page-grid grow">
+                        <div className="spine-frame" aria-hidden="true" />
+                        {children}
+                      </div>
                     </main>
                     <WebVitalsReporter />
                     <ClientContextReporter

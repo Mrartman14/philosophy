@@ -3,7 +3,13 @@ import { resolve } from "node:path";
 
 import { describe, it, expect } from "vitest";
 
-const css = readFileSync(resolve(process.cwd(), "src/styles/layout.css"), "utf-8");
+// Стрипаем комментарии: гард-проверки (нет голых px-порогов / @media не раскрывает
+// поля) проверяют РЕАЛЬНЫЕ правила, а не прозу — иначе пояснительный комментарий,
+// упоминающий `@media`/`px`, ложно роняет гард.
+const css = readFileSync(resolve(process.cwd(), "src/styles/layout.css"), "utf-8").replace(
+  /\/\*[\s\S]*?\*\//g,
+  "",
+);
 const globals = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf-8");
 
 describe("layout.css", () => {
@@ -13,10 +19,27 @@ describe("layout.css", () => {
     expect(css).toContain("--layout-gutter: 1rem");
   });
 
-  it("раскрывает поля только на >= xl (брейкпоинт из токена, не магическое число)", () => {
-    expect(css).toMatch(/@media \(min-width:\s*theme\(--breakpoint-xl\)\)[\s\S]*--layout-margin:\s*14rem/);
-    // никаких голых px-брейкпоинтов в @media — только токены через theme()
+  it("<main> = size-container (.page-shell): inline-size + имя", () => {
+    expect(css).toMatch(/\.page-shell[\s\S]*container-type:\s*inline-size/);
+    expect(css).toMatch(/\.page-shell[\s\S]*container-name:\s*page-shell/);
+  });
+
+  it("поля раскрываются через @container (не @media): порог в em → масштаб-инвариантно", () => {
+    // Раскрытие полей решается по СОБСТВЕННОЙ доступной ширине контейнера,
+    // мерянной в тех же масштабируемых rem, что и хребет — поэтому порог в em
+    // (em в @container резолвится от font-size контейнера, на который уже наложен
+    // --text-scale), а не фиксированный px-вьюпорт.
+    expect(css).toMatch(/@container page-shell \(min-width:\s*80em\)[\s\S]*--layout-margin:\s*14rem/);
+    // --layout-margin теперь ставится на .page-grid (потомок контейнера), НЕ на :root
+    // (контейнер-квери не может стилизовать предка :root).
+    expect(css).toMatch(/@container page-shell \(min-width:\s*80em\)\s*\{\s*\.page-grid/);
+    // старого @media-порога для раскрытия полей быть не должно.
+    expect(css).not.toMatch(/@media[\s\S]*--layout-margin:\s*14rem/);
+  });
+
+  it("никаких голых px-порогов: ни в @media, ни в @container (только em — scale-aware)", () => {
     expect(css).not.toMatch(/@media[^{]*\d{3,4}px/);
+    expect(css).not.toMatch(/@container[^{]*\d{3,4}px/);
   });
 
   it("грид page-grid использует именованные логические линии", () => {
@@ -42,8 +65,12 @@ describe("layout.css", () => {
     expect(css).toContain(".margin-note--hidden");
   });
 
-  it("бордер хребта логический (border-inline) и только md+", () => {
-    expect(css).toMatch(/@media \(min-width:\s*theme\(--breakpoint-md\)\)[\s\S]*border-inline/);
+  it("collapse маргиналий — по узости контейнера (@container width < 80em)", () => {
+    expect(css).toMatch(/@container page-shell \(width\s*<\s*80em\)[\s\S]*\.margin-note--inline/);
+  });
+
+  it("бордер хребта логический (border-inline) и появляется по ширине контейнера (>= 48em)", () => {
+    expect(css).toMatch(/@container page-shell \(min-width:\s*48em\)[\s\S]*border-inline/);
   });
 
   it("spine-frame держит непрерывность бордера (§5): inset-block/центрирование/ширина", () => {
@@ -58,10 +85,9 @@ describe("layout.css", () => {
     expect(css).not.toMatch(/\.spine-frame[\s\S]*z-index:\s*-1/);
   });
 
-  it("margin-nav: на ≥xl уходит в левое поле + sticky (сырой CSS, не Tailwind arbitrary)", () => {
+  it("margin-nav: при широком контейнере уходит в левое поле + sticky", () => {
     expect(css).toContain(".margin-nav");
-    // в @media ≥xl (токен) → grid-column в поле + sticky под шапкой
-    expect(css).toMatch(/@media \(min-width:\s*theme\(--breakpoint-xl\)\)[\s\S]*\.margin-nav[\s\S]*grid-column:\s*margin-start\s*\/\s*content-start/);
+    expect(css).toMatch(/@container page-shell \(min-width:\s*80em\)[\s\S]*\.margin-nav[\s\S]*grid-column:\s*margin-start\s*\/\s*content-start/);
     expect(css).toMatch(/\.margin-nav[\s\S]*position:\s*sticky/);
   });
 

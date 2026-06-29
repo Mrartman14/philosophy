@@ -3,27 +3,51 @@
    (margin-start/-end) для маргиналий + full-bleed escape. Все оси ЛОГИЧЕСКИЕ
    (грид раскладывает колонки вдоль inline-оси → следует dir → RTL-зеркалирование
    бесплатно). Дизайн:
-   docs/superpowers/specs/2026-06-23-marginalia-layout-foundation-design.md */
+   docs/superpowers/specs/2026-06-23-marginalia-layout-foundation-design.md
+
+   ── Почему раскрытие полей на @container, а не @media (решение 2026-06-29) ──
+   Хребет и поля заданы в `rem`, а корневой кегль умножается на `--text-scale`
+   (ось «размер текста», globals.css). Значит при крупном тексте 45rem хребта и
+   14rem поля физически РАСТУТ (мера в символах остаётся постоянной — это намеренно
+   и типографически верно). Но вьюпортный `@media`-брейкпоинт в px (или даже в
+   rem!) этого НЕ видит: единицы в медиа-запросе считаются от ИСХОДНОГО кегля
+   браузера, а не от заданного нами `font-size` на <html>. Из-за этого на крупном
+   тексте поля раскрывались по старому px-порогу, когда места под них уже не
+   хватало → маргиналии сжимались.
+   Решение: <main> — size-контейнер (.page-shell), а порог раскрытия — в `@container
+   … (min-width: 80em)`. `em` в контейнер-квери резолвится от ВЫЧИСЛЕННОГО (уже
+   масштабированного) font-size контейнера, поэтому порог едет синхронно с хребтом:
+   80em = 1280px при scale 1 (прежний xl), ~1600px при scale 1.25, ~1152px при 0.9.
+   Поля раскрываются ровно тогда, когда реально помещаются, при любом размере текста
+   — масштаб-инвариантность по построению. */
 
 :root {
   --layout-spine: 45rem;   /* ~720px: читаемая ширина хребта */
-  --layout-margin: 0px;    /* поля скрыты по умолчанию; раскрываются на >= xl */
+  --layout-margin: 0px;    /* поля скрыты по умолчанию; раскрываются когда контейнер широк */
   --layout-margin-wide: 32rem;  /* cap ширины растянутого поля (col-margin-*-wide) */
   --layout-gutter: 1rem;   /* зазор хребет <-> поле = паддинг контента (p-4) → единый отступ по лейауту */
   /* top sticky-навов: ниже хедера + небольшой зазор (не примыкать вплотную). */
   --layout-sticky-top: calc(var(--header-height) + 1rem);
 }
 
-/* Поля раскрываются только когда есть место (>= --breakpoint-xl). Брейкпоинт —
-   из токена через Tailwind theme() (резолвится на сборке, без дубля числа). */
-@media (min-width: theme(--breakpoint-xl)) {
-  :root { --layout-margin: 14rem; }   /* ~224px = ширина нав-сайдбара (w-56) */
+/* <main> = size-контейнер. .page-grid живёт ВНУТРИ него (отдельным div), чтобы
+   контейнер-квери мог решать раскрытие полей по доступной ширине самого <main>:
+   элемент не может квери-ить сам себя, поэтому контейнер — родитель грида.
+   display:flex + grow на гриде → грид заполняет высоту <main> (как раньше, когда
+   grow стоял прямо на .page-grid). container-type:inline-size контейнит только
+   inline-ось (высота — от контента), внутри <main> нет position:fixed-потомков,
+   так что смена containing-block безопасна. */
+.page-shell {
+  container-name: page-shell;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Грид корневого <main>. Именованные линии вдоль inline-оси:
+/* Грид .page-grid. Именованные линии вдоль inline-оси:
    bleed(1fr) | margin | content(spine) | margin | bleed(1fr).
-   column-gap (только на xl) рисует зазоры; ниже xl margin=0 и gap=0 →
-   поля схлопываются, 1fr-края центрируют хребет (как сейчас). */
+   column-gap (только на широком контейнере) рисует зазоры; на узком margin=0 и
+   gap=0 → поля схлопываются, 1fr-края центрируют хребет. */
 .page-grid {
   display: grid;
   inline-size: 100%;
@@ -39,8 +63,14 @@
   position: relative;     /* якорь containing-block для .spine-frame */
 }
 
-@media (min-width: theme(--breakpoint-xl)) {  /* брейкпоинт из токена (Tailwind theme() → на сборке) */
-  .page-grid { column-gap: var(--layout-gutter); }
+/* Поля раскрываются, когда у контейнера есть место (>= 80em масштабируемых).
+   --layout-margin ставится на .page-grid (потомок контейнера), НЕ на :root —
+   контейнер-квери стилизует только потомков контейнера, а :root ему предок. */
+@container page-shell (min-width: 80em) {
+  .page-grid {
+    --layout-margin: 14rem;   /* ~224px = ширина нав-сайдбара (w-56) */
+    column-gap: var(--layout-gutter);
+  }
 }
 
 /* Дефолт: любой прямой потомок (кроме декоративного бордера) едет в хребет.
@@ -53,10 +83,11 @@
 
 /* Декоративный бордер хребта: непрерывная вертикаль во всю высоту main.
    Абсолют + центрирование во всю ширину main → не зависит от грид-строк
-   контента. border-inline (логический) → корректно в RTL. Только md+.
-   z-index:40 — рисуем бордер ПОВЕРХ контента (как оконную раму), ниже sticky-
-   хедера (z-50): иначе непрозрачные фоны контента (напр. bg сайдбара /me с z-10)
-   перекрыли бы его. pointer-events:none — рамка декоративна, клики проходят. */
+   контента. border-inline (логический) → корректно в RTL. Только при широком
+   контейнере (>= 48em). z-index:40 — рисуем бордер ПОВЕРХ контента (как оконную
+   раму), ниже sticky-хедера (z-50): иначе непрозрачные фоны контента (напр. bg
+   сайдбара /me с z-10) перекрыли бы его. pointer-events:none — рамка декоративна,
+   клики проходят. */
 .spine-frame {
   position: absolute;
   inset-block: 0;
@@ -66,7 +97,7 @@
   pointer-events: none;
   z-index: 40;
 }
-@media (min-width: theme(--breakpoint-md)) {  /* брейкпоинт из токена */
+@container page-shell (min-width: 48em) {
   .spine-frame { border-inline: 1px solid var(--color-border); }
 }
 
@@ -87,9 +118,10 @@
 
 /* Растянутые поля: занимают своё поле + смежный bleed-трек, прижатые к хребту,
    с cap по ширине (читабельный предел для широких панелей, напр. аннотаций).
-   Только на >= xl (ниже — обычный margin-note--inline collapse). justify-self
-   прижимает панель к хребту; inline-size cap не даёт растечься на ультра-широких. */
-@media (min-width: theme(--breakpoint-xl)) {
+   Только при широком контейнере (ниже — обычный margin-note--inline collapse).
+   justify-self прижимает панель к хребту; inline-size cap не даёт растечься на
+   ультра-широких. */
+@container page-shell (min-width: 80em) {
   .col-margin-start-wide {
     grid-column: bleed-start / content-start;
     justify-self: end;
@@ -102,23 +134,24 @@
   }
 }
 
-/* Поведение маргиналий на узких экранах (< xl): inline втекает в хребет под
+/* Поведение маргиналий на узком контейнере (< 80em): inline втекает в хребет под
    своим местом; hidden прячется. */
-@media (width < theme(--breakpoint-xl)) {  /* строго ниже xl, брейкпоинт из токена */
+@container page-shell (width < 80em) {
   .margin-note--inline { grid-column: content-start / content-end; }
   .margin-note--hidden { display: none; }
 }
 
-/* Нав-сайдбар секции (/me и будущие): на ≥xl уходит в ЛЕВОЕ ПОЛЕ (margin-start),
-   sticky под шапкой → контент занимает ВЕСЬ хребет, не делит его с навом. Ниже xl
-   поле схлопнуто → нав идёт полосой сверху в хребте (border-block-end), скроллится
-   со страницей. Прямой потомок .page-grid. Сырой CSS (не Tailwind arbitrary) —
-   надёжно компилируется, не зависит от JIT-скана дев-режима. */
+/* Нав-сайдбар секции (/me и будущие): при широком контейнере уходит в ЛЕВОЕ ПОЛЕ
+   (margin-start), sticky под шапкой → контент занимает ВЕСЬ хребет, не делит его с
+   навом. На узком поле схлопнуто → нав идёт полосой сверху в хребте
+   (border-block-end), скроллится со страницей. Прямой потомок .page-grid. Сырой
+   CSS (не Tailwind arbitrary) — надёжно компилируется, не зависит от JIT-скана
+   дев-режима. */
 .margin-nav {
   border-block-end: 1px solid var(--color-border);
   padding: 1rem;
 }
-@media (min-width: theme(--breakpoint-xl)) {  /* ≥ xl (из токена): поле есть → нав в него */
+@container page-shell (min-width: 80em) {  /* поле есть → нав в него */
   .margin-nav {
     grid-column: margin-start / content-start;
     align-self: start;
@@ -129,10 +162,10 @@
   }
 }
 
-/* Вариант нав-сайдбара: на узких экранах (< xl) ПОЛНОСТЬЮ скрыт (а не падает
-   полосой сверху, как базовый .margin-nav). Для оглавления документа: на ≥xl —
-   sticky в левом поле (правила .margin-nav), ниже — нет. */
-@media (width < theme(--breakpoint-xl)) {
+/* Вариант нав-сайдбара: на узком контейнере (< 80em) ПОЛНОСТЬЮ скрыт (а не падает
+   полосой сверху, как базовый .margin-nav). Для оглавления документа: при широком
+   контейнере — sticky в левом поле (правила .margin-nav), ниже — нет. */
+@container page-shell (width < 80em) {
   .margin-nav--hide-narrow { display: none; }
 }
 
@@ -145,7 +178,7 @@
    auto-placement после контент-колонки → grid-auto-flow row уносит элемент в
    row 2 (под контент, без sticky-места). Явный grid-row: 1 сажает его в первую
    строку рядом с контентом (как nav-first в MarginSidebarLayout/me). */
-@media (min-width: theme(--breakpoint-xl)) {
+@container page-shell (min-width: 80em) {
   .margin-nav--hide-narrow {
     grid-row: 1;
     max-block-size: calc(100dvh - var(--layout-sticky-top) - 1rem);
