@@ -12,8 +12,9 @@ import { runShortcuts, hasMod } from "@/utils/shortcuts";
 import { createCanvas, updateCanvas } from "../actions";
 import {
   canvasReducer, initEditorState, NODE_DEFAULT_SIZE, canvasDataToRenderData,
-  screenToWorld, applyZoomAtPoint, fitViewport, centerViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
-  resolveBackgroundGesture, resolveNodeGesture, resolveWheel, resolveNudge,
+  screenToWorld, fitViewport, centerViewport, snapPoint, validateGraph, hitTestNode, hitTest, marqueeHits, newId,
+  resolveBackgroundGesture, resolveNodeGesture, resolveNudge,
+  usePanZoom,
 } from "../editor";
 import type { EditorCommand, ResizeHandle } from "../editor";
 import { downloadCanvasJson, painter } from "../engine";
@@ -38,7 +39,6 @@ interface Props {
 
 /** Тип активного drag-жеста. */
 type Drag =
-  | { kind: "pan"; startScreen: Point; startVp: { x: number; y: number } }
   | { kind: "move"; lastWorld: Point }
   | { kind: "resize"; nodeId: string; handle: ResizeHandle; lastWorld: Point }
   | { kind: "marquee"; startWorld: Point; currentWorld: Point; additive: boolean }
@@ -174,25 +174,23 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
   }, [nodesById]);
 
   // ---- pointer handlers ----
-  /** Старт пана: записываем drag-стейт и захватываем указатель. */
-  const startPan = (e: React.PointerEvent<HTMLDivElement>) => {
-    dragRef.current = { kind: "pan", startScreen: { x: e.clientX, y: e.clientY }, startVp: { x: vp.x, y: vp.y } };
-    e.currentTarget.setPointerCapture(e.pointerId);
+  // ---- pan-предикат для usePanZoom: hit-test + резолв жеста ----
+  // Возвращает true, когда pointerdown должен начать ПАН (хук возьмёт его на себя).
+  const enablePanDrag = (e: PointerEvent): boolean => {
+    const world = eventWorld(e);
+    const hit = hitTest(world, { nodes: renderData.nodes, edges: renderData.edges, nodesById, singleSelectedNodeId });
+    const g = { tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey };
+    if (hit.kind === "node") return resolveNodeGesture(g) === "pan";
+    if (hit.kind === "background") return resolveBackgroundGesture(g) === "pan";
+    return false; // resize-handle / port / edge — никогда не пан
   };
 
-  /** Единый pointerdown по поверхности: JS hit-test решает жест. */
-  const onSurfacePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Накопительное выделение: Shift ИЛИ Cmd/Ctrl добавляют к выделению (Cmd на mac,
-    // Ctrl на Win/Linux). Резолверы жестов shift игнорируют — на пан это не влияет.
+  /** Не-пановый pointerdown (хук уже отсеял пан): select/marquee/resize/edge. */
+  const onPointerDownOther = (e: PointerEvent) => {
     const additive = e.shiftKey || e.metaKey || e.ctrlKey;
     const world = eventWorld(e);
-    const hit = hitTest(world, {
-      nodes: renderData.nodes,
-      edges: renderData.edges,
-      nodesById,
-      singleSelectedNodeId,
-    });
-    const capture = () => { e.currentTarget.setPointerCapture(e.pointerId); };
+    const hit = hitTest(world, { nodes: renderData.nodes, edges: renderData.edges, nodesById, singleSelectedNodeId });
+    const capture = () => { (e.currentTarget as Element).setPointerCapture(e.pointerId); };
     switch (hit.kind) {
       case "resize-handle":
         dragRef.current = { kind: "resize", nodeId: hit.nodeId, handle: hit.handle, lastWorld: world };
@@ -203,10 +201,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
         capture();
         return;
       case "node": {
-        const gesture = resolveNodeGesture({
-          tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
-        });
-        if (gesture === "pan") { startPan(e); return; }
         if (!selectedNodeIds.has(hit.nodeId)) {
           dispatch({ type: "selectNode", nodeId: hit.nodeId, additive });
         } else if (additive) {
@@ -219,22 +213,24 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       case "edge":
         dispatch({ type: "selectEdge", edgeId: hit.edgeId, additive });
         return;
-      case "background": {
-        const gesture = resolveBackgroundGesture({
-          tool: state.tool, spaceHeld, button: e.button, pointerType: e.pointerType, shift: e.shiftKey,
-        });
-        if (gesture === "marquee") {
-          if (!additive) dispatch({ type: "clearSelection" });
-          dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive };
-          capture();
-        } else {
-          dispatch({ type: "clearSelection" });
-          startPan(e);
-        }
+      case "background":
+        if (!additive) dispatch({ type: "clearSelection" });
+        dragRef.current = { kind: "marquee", startWorld: world, currentWorld: world, additive };
+        capture();
         return;
-      }
     }
   };
+
+  // Единый клей жестов pan/zoom (общий с CanvasViewer). Wheel + drag-пан + пинч.
+  // Стейт вьюпорта остаётся в reducer; не-пановый pointerdown ведёт редактор сам.
+  // ПОРЯДОК КРИТИЧЕН: enablePanDrag/onPointerDownOther — const-стрелки (не хойстятся),
+  // поэтому вызов хука идёт строго ПОСЛЕ их объявления (иначе TDZ ReferenceError).
+  usePanZoom(surfaceRef, {
+    viewport: state.viewport,
+    onViewportChange: (next) => { dispatch({ type: "setViewport", viewport: next }); },
+    enablePanDrag,
+    onPointerDownOther,
+  });
 
   /** Двойной клик по узлу (text/shape) → инлайн-редактор текста. */
   const onSurfaceDoubleClick = (e: React.MouseEvent) => {
@@ -277,12 +273,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     }
     const world = eventWorld(e);
     switch (drag.kind) {
-      case "pan": {
-        const dxScreen = e.clientX - drag.startScreen.x;
-        const dyScreen = e.clientY - drag.startScreen.y;
-        dispatch({ type: "setViewport", viewport: { ...vp, x: drag.startVp.x - dxScreen / vp.zoom, y: drag.startVp.y - dyScreen / vp.zoom } });
-        break;
-      }
       case "move": {
         dispatch({ type: "moveSelection", dx: world.x - drag.lastWorld.x, dy: world.y - drag.lastWorld.y, coalesce: "move" });
         drag.lastWorld = world;
@@ -334,39 +324,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
       setEdgeTargetId(null);
     }
   };
-
-  // ---- wheel (Figma: ctrl/meta → зум у курсора, иначе → пан) ----
-  // React onWheel ПАССИВНЫЙ → e.preventDefault() в JSX-хендлере игнорируется и
-  // страница скроллится/зумится вместе с холстом. Поэтому вешаем НЕпассивный
-  // нативный listener на surfaceRef (он заполняет холст, ref-мердж Trigger'а не задет).
-  // Логику держим в ref и обновляем в effect'е каждый рендер (не во время рендера —
-  // react-hooks/refs запрещает писать ref.current в фазе рендера), чтобы listener
-  // не переподписывался и не ловил stale closure (vp/state читаются из current).
-  const onWheelRef = useRef<((e: WheelEvent) => void) | null>(null);
-  useEffect(() => {
-    onWheelRef.current = (e: WheelEvent) => {
-      e.preventDefault();
-      const action = resolveWheel({
-        deltaX: e.deltaX, deltaY: e.deltaY, ctrlKey: e.ctrlKey, metaKey: e.metaKey, shiftKey: e.shiftKey,
-      });
-      if (action.kind === "zoom") {
-        const rect = surfaceRef.current?.getBoundingClientRect();
-        const sx = e.clientX - (rect?.left ?? 0);
-        const sy = e.clientY - (rect?.top ?? 0);
-        dispatch({ type: "setViewport", viewport: applyZoomAtPoint(vp, action.factor, sx, sy) });
-      } else {
-        dispatch({ type: "setViewport", viewport: { ...vp, x: vp.x + action.dx / vp.zoom, y: vp.y + action.dy / vp.zoom } });
-      }
-    };
-  });
-  // Нативный non-passive wheel-listener (React onWheel пассивный).
-  useEffect(() => {
-    const el = surfaceRef.current;
-    if (!el) return;
-    const h = (e: WheelEvent) => { onWheelRef.current?.(e); };
-    el.addEventListener("wheel", h, { passive: false });
-    return () => { el.removeEventListener("wheel", h); };
-  }, []);
 
   // Выделены ли узлы. Один источник истины для: z-order хоткеев, nudge-гарда и
   // disabled пунктов контекстного меню (НЕ путать с toolbar.hasSelection = node+edge).
@@ -675,7 +632,6 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
                 tabIndex={0}
                 onKeyDown={onKeyDown}
                 onContextMenu={onCanvasContextMenu}
-                onPointerDown={onSurfacePointerDown}
                 onPointerMove={onPointerMove}
                 onPointerUp={onPointerUp}
                 onDoubleClick={onSurfaceDoubleClick}
