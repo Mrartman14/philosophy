@@ -30,6 +30,7 @@ const settings = {
     fontLabel: "Font",
     textSizeLabel: "Text Size",
     motionLabel: "Motion",
+    textAlignLabel: "Text alignment",
     theme: {
       system: "System",
       light: "Light",
@@ -59,6 +60,10 @@ const settings = {
       system: "System",
       reduced: "Reduced",
       full: "Full",
+    },
+    textAlign: {
+      start: "Left",
+      justify: "Justified",
     },
   },
 };

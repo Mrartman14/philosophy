@@ -10,6 +10,11 @@ export const TEXT_SIZES = ["sm", "md", "lg", "xl"] as const;
 // "system" (default) следует OS prefers-reduced-motion; "reduced" форсит
 // уменьшение движения; "full" форсит анимации даже при OS reduce.
 export const MOTIONS = ["system", "reduced", "full"] as const;
+// Выравнивание прозы. ЛОГИЧЕСКИЕ значения (start = по началу строки, в LTR слева,
+// в RTL справа) — физические left/right намеренно НЕ вводим, чтобы RTL работал
+// сам. "start" (default) — рваный правый край; "justify" — по ширине (opt-in,
+// книжный вид; включает переносы, см. content.css).
+export const TEXT_ALIGNS = ["start", "justify"] as const;
 
 export type Theme = (typeof THEMES)[number];
 export type Contrast = (typeof CONTRASTS)[number];
@@ -17,3 +22,4 @@ export type Density = (typeof DENSITIES)[number];
 export type FontChoice = (typeof FONTS)[number];
 export type TextSize = (typeof TEXT_SIZES)[number];
 export type Motion = (typeof MOTIONS)[number];
+export type TextAlign = (typeof TEXT_ALIGNS)[number];

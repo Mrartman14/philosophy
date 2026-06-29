@@ -49,6 +49,10 @@ export function AppearanceSettings() {
     { value: "reduced", label: t("appearance.motion.reduced") },
     { value: "full", label: t("appearance.motion.full") },
   ];
+  const TEXT_ALIGN = [
+    { value: "start", label: t("appearance.textAlign.start") },
+    { value: "justify", label: t("appearance.textAlign.justify") },
+  ];
 
   return (
     <section className="flex max-w-xl flex-col gap-4">
@@ -59,6 +63,7 @@ export function AppearanceSettings() {
       <Row name="font" label={t("appearance.fontLabel")}><RadioGroup aria-label={t("appearance.fontLabel")} options={FONT} value={appearance.font} onValueChange={(v) => { setAxis("font", v as typeof appearance.font); }} /></Row>
       <Row name="textSize" label={t("appearance.textSizeLabel")}><RadioGroup aria-label={t("appearance.textSizeLabel")} options={TEXT_SIZE} value={appearance.textSize} onValueChange={(v) => { setAxis("textSize", v as typeof appearance.textSize); }} /></Row>
       <Row name="motion" label={t("appearance.motionLabel")}><RadioGroup aria-label={t("appearance.motionLabel")} options={MOTION} value={appearance.motion} onValueChange={(v) => { setAxis("motion", v as typeof appearance.motion); }} /></Row>
+      <Row name="textAlign" label={t("appearance.textAlignLabel")}><RadioGroup aria-label={t("appearance.textAlignLabel")} options={TEXT_ALIGN} value={appearance.textAlign} onValueChange={(v) => { setAxis("textAlign", v as typeof appearance.textAlign); }} /></Row>
     </section>
   );
 }

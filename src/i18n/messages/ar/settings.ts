@@ -31,6 +31,7 @@ const settings = {
     fontLabel: "الخط",
     textSizeLabel: "حجم النص",
     motionLabel: "الحركة",
+    textAlignLabel: "محاذاة النص",
     theme: {
       system: "النظام",
       light: "فاتح",
@@ -60,6 +61,10 @@ const settings = {
       system: "النظام",
       reduced: "حركة أقل",
       full: "حركة كاملة",
+    },
+    textAlign: {
+      start: "إلى البداية",
+      justify: "ضبط",
     },
   },
 };

@@ -30,6 +30,7 @@ const settings = {
     fontLabel: "Шрифт",
     textSizeLabel: "Размер текста",
     motionLabel: "Анимация",
+    textAlignLabel: "Выравнивание текста",
     theme: {
       system: "Системная",
       light: "Светлая",
@@ -59,6 +60,10 @@ const settings = {
       system: "Системно",
       reduced: "Меньше движения",
       full: "Полная анимация",
+    },
+    textAlign: {
+      start: "Слева",
+      justify: "По ширине",
     },
   },
 };

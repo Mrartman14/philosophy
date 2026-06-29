@@ -10,7 +10,7 @@ describe("appearance-cookie", () => {
     expect(parseAppearance("not-json")).toEqual(DEFAULT_APPEARANCE);
   });
   it("round-trips valid appearance", () => {
-    const a = { theme: "dark", contrast: "high", density: "compact", font: "serif", textSize: "lg", motion: "reduced" } as const;
+    const a = { theme: "dark", contrast: "high", density: "compact", font: "serif", textSize: "lg", motion: "reduced", textAlign: "justify" } as const;
     expect(parseAppearance(serializeAppearance(a))).toEqual(a);
   });
   it("round-trips motion: full", () => {
@@ -42,6 +42,26 @@ describe("appearance-cookie", () => {
   it("parseAppearance coerces unknown motion → system and defaults to system", () => {
     expect(parseAppearance(JSON.stringify({ motion: "warp" })).motion).toBe("system");
     expect(DEFAULT_APPEARANCE.motion).toBe("system");
+  });
+
+  // textAlign: ось чтения start|justify. Значения ЛОГИЧЕСКИЕ (start/justify), не
+  // физические (left/right), поэтому RTL не требует спец-обработки. Дефолт start.
+  it("round-trips textAlign: justify", () => {
+    const a = { ...DEFAULT_APPEARANCE, textAlign: "justify" } as const;
+    expect(parseAppearance(serializeAppearance(a))).toEqual(a);
+  });
+  it("coerces unknown textAlign → start and defaults to start", () => {
+    // Намеренно подаём физическое "left" — оно НЕ в enum (start|justify), parser
+    // обязан схлопнуть его в start. Это и есть RTL-инвариант (физических значений
+    // нет в контракте). eslint-disable — это тест-данные, а не реальный style-проп.
+    // eslint-disable-next-line no-restricted-syntax -- проверяем коэрсинг запрещённого физического значения
+    expect(parseAppearance(JSON.stringify({ textAlign: "left" })).textAlign).toBe("start");
+    expect(parseAppearance(JSON.stringify({ textAlign: "centered" })).textAlign).toBe("start");
+    expect(DEFAULT_APPEARANCE.textAlign).toBe("start");
+  });
+  it("htmlAttrs: start textAlign omits data-align (дефолт-поток); justify emits it", () => {
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, textAlign: "start" })["data-align"]).toBeUndefined();
+    expect(htmlAttrs({ ...DEFAULT_APPEARANCE, textAlign: "justify" })["data-align"]).toBe("justify");
   });
 
   // theme-color: при ЯВНОЙ теме хром браузера фиксирован под surface этой темы

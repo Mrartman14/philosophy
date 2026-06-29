@@ -25,6 +25,10 @@ function fromBackend(a: Preferences["appearance"]): Appearance {
     font: a?.font ?? DEFAULT_APPEARANCE.font,
     textSize: a?.text_size ?? DEFAULT_APPEARANCE.textSize,
     motion: a?.motion ?? "system",
+    // СТОПГАП: бэкенд preference.Appearance ещё не несёт text_align (бэк-аск открыт).
+    // До регена схемы ось — cookie-only (cross-device sync неактивен), на новом
+    // устройстве дефолтим в start. Когда поле появится → `a?.text_align ?? DEFAULT`.
+    textAlign: DEFAULT_APPEARANCE.textAlign,
   };
 }
 

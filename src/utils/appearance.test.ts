@@ -32,7 +32,8 @@ describe("getAppearance", () => {
     getMe.mockResolvedValue({ id: "u1", status: "active", capabilities: [] });
     getPreferences.mockResolvedValue({ appearance: { theme: "dark", density: "compact", font: "serif", text_size: "lg" } });
     const a = await getAppearance();
-    expect(a).toEqual({ theme: "dark", contrast: "auto", density: "compact", font: "serif", textSize: "lg", motion: "system" });
+    // textAlign: бэкенд text_align ещё нет (стопгап) → дефолт start на seed-пути.
+    expect(a).toEqual({ theme: "dark", contrast: "auto", density: "compact", font: "serif", textSize: "lg", motion: "system", textAlign: "start" });
   });
 
   it("defaults for an anonymous user with no cookie (no backend call)", async () => {

@@ -43,5 +43,13 @@
   .content :is(th,td)[data-align="left"] { text-align: left; }
   .content :is(th,td)[data-align="center"] { text-align: center; }
   .content :is(th,td)[data-align="right"] { text-align: right; }
+  /* Opt-in юстировка прозы (appearance.textAlign = justify; логический data-align
+     на <html>). Юстируем ТОЛЬКО текстовые блоки прозы и включаем переносы. Гварды:
+     заголовки, код/преформат, ячейки таблиц (свой align) и подписи (center) НЕ в
+     селекторе — сохраняют поток, иначе justify рвёт их пробелами. .task-content/
+     .list-item-content — обёртки контента пунктов (flex-item с текстом). hyphens
+     требует корректного lang на предке (html lang из i18n) — без переносов justify
+     на узкой мере (~720) даёт «реки», поэтому переносы здесь обязательны. */
+  [data-align="justify"] .content :is(p,li,blockquote,.task-content,.list-item-content) { text-align: justify; hyphens: auto; }
   .clampable { max-block-size: var(--clamp-max); overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 1.5rem), transparent); mask-image: linear-gradient(to bottom, black calc(100% - 1.5rem), transparent); }
 }

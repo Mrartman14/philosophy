@@ -31,6 +31,7 @@ const settings = {
     fontLabel: "字体",
     textSizeLabel: "文字大小",
     motionLabel: "动画",
+    textAlignLabel: "文本对齐",
     theme: {
       system: "跟随系统",
       light: "浅色",
@@ -60,6 +61,10 @@ const settings = {
       system: "跟随系统",
       reduced: "减少动效",
       full: "完整动画",
+    },
+    textAlign: {
+      start: "左对齐",
+      justify: "两端对齐",
     },
   },
 };
