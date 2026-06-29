@@ -46,7 +46,7 @@ const users = {
     "لا يمكن إيقاف أو حظر آخر مشرف نشط.",
   conflictDemoteLastAdmin:
     "لا يمكن خفض دور آخر مشرف نشط.",
-  conflictFallback: "رفض الخادم العملية (تعارض).",
+  conflictFallback: "تعذّر الحفظ: تغيّرت البيانات. حدّث الصفحة وأعد المحاولة.",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

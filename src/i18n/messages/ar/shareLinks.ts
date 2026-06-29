@@ -45,7 +45,7 @@ const shareLinks = {
   // --- share-lookup-form ---
   resourceTypeLabel: "نوع المورد",
   resourceIdLabel: "معرّف المورد",
-  resourceIdPlaceholder: "UUID المورد",
+  resourceIdPlaceholder: "معرّف المورد",
   showLinksButton: "عرض الروابط",
 
   // --- toastActionError actions (phrase for errors.forbiddenAction) ---

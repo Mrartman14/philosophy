@@ -14,7 +14,7 @@ const errors = {
   IDEMPOTENCY_KEY_REUSED:
     "已修改的请求与已发送的请求冲突。请刷新页面。",
   IDEMPOTENCY_KEY_INVALID:
-    "幂等键无效。请刷新页面后重试。",
+    "无法安全地重新提交请求。请刷新页面后重试。",
 
   // --- comments slice: domain codes ---
   SELF_REACTION: "无法对自己的评论作出反应。",
@@ -34,7 +34,7 @@ const errors = {
     "此评论类型不允许作为对所选节点的回复。",
   MAX_DEPTH_EXCEEDED: "已超出线程的最大深度。",
   BLOCKS_EMPTY: "评论不能为空。",
-  BLOCKS_INVALID: "评论正文未通过 AST 校验。",
+  BLOCKS_INVALID: "评论文本包含无效的格式。",
   BLOCK_ID_UNKNOWN: "块 ID 错误。请重新加载编辑器。",
   DUPLICATE_BLOCK_ID: "块 ID 错误。请重新加载编辑器。",
   COMMENT_REFERENCED:
@@ -54,7 +54,7 @@ const errors = {
   RETRACT_NOT_APPLICABLE: "撤回仅适用于不允许编辑回复的表单。",
   ALREADY_SUBMITTED: "您已对此表单提交过回复。",
   ALREADY_RETRACTED: "该回复已被撤回。",
-  INVALID_FORM_SCHEMA: "表单结构未通过服务器端校验。",
+  INVALID_FORM_SCHEMA: "表单结构未通过校验。",
   INVALID_SUBMISSION: "答案未通过校验。请正确填写所有必填字段。",
   FORM_NOT_FOUND: "未找到表单。",
   SUBMISSION_NOT_FOUND: "未找到回复。",
@@ -69,7 +69,7 @@ const errors = {
   DOCUMENT_BLOCKS_HAVE_ANCHORS:
     "无法删除带有锚定评论的块。请先删除评论。",
   DOCUMENT_BLOCKS_EMPTY: "文档必须至少包含一个块。",
-  DOCUMENT_BLOCKS_INVALID: "文档正文未通过 AST 校验。",
+  DOCUMENT_BLOCKS_INVALID: "文档文本包含无效的格式。",
   DOCUMENT_BLOCK_ID_UNKNOWN: "块 ID 错误。请重新加载编辑器。",
   DOCUMENT_DUPLICATE_BLOCK_ID: "块 ID 错误。请重新加载编辑器。",
   DOCUMENT_IMAGE_UNKNOWN_KEY: "文档中含有键未知的图片。",
@@ -88,11 +88,11 @@ const errors = {
 
   // --- banners slice: domain codes ---
   BANNER_INVALID_COLOR:
-    "后端拒绝了背景颜色：必须是 #RGB 或 #RRGGBB 形式的十六进制值。",
+    "背景颜色无效：请使用 #RGB 或 #RRGGBB 形式的十六进制值。",
   BANNER_INVALID_DATE:
-    "后端拒绝了展示日期：请检查格式以及开始／结束的顺序。",
+    "展示日期无效：请检查格式以及开始与结束的顺序。",
   BANNER_INVALID_EVENT: "未找到此 ID 的活动。",
-  BANNER_BLOCKS_INVALID: "横幅文本未通过 AST 校验。",
+  BANNER_BLOCKS_INVALID: "横幅文本包含无效的格式。",
   BANNER_BLOCK_REFERENCED:
     "其他内容引用了此横幅中的某个块。请删除这些引用，或保留该块。",
   BANNER_NOT_DISMISSIBLE: "此横幅无法关闭。",
@@ -111,9 +111,9 @@ const errors = {
 
   // --- events slice: domain codes ---
   INVALID_DATE:
-    "后端拒绝了日期：请检查格式以及开始／结束日期的顺序。",
-  INVALID_RRULE: "后端拒绝了重复规则（RRULE）。",
-  EVENT_BLOCKS_INVALID: "活动描述未通过 AST 校验。",
+    "日期无效：请检查格式以及开始与结束日期的顺序。",
+  INVALID_RRULE: "无法识别重复规则。请检查重复设置。",
+  EVENT_BLOCKS_INVALID: "活动描述包含无效的格式。",
   EVENT_BLOCK_REFERENCED:
     "其他内容引用了此活动中的某个块。请删除这些引用，或保留该块。",
 
@@ -134,7 +134,7 @@ const errors = {
   RESOURCE_NOT_PRIVATE: "分享链接只能为私有资源创建。",
 
   // --- preferences slice: domain codes ---
-  NOT_CONFIGURED: "服务器未配置推送通知。",
+  NOT_CONFIGURED: "推送通知尚未设置。",
 
   // --- tokens slice: domain codes ---
   TOKEN_LIMIT: "已达到令牌上限。请撤销未使用的令牌后重试。",
@@ -150,7 +150,7 @@ const errors = {
 
   // --- annotations slice: domain codes ---
   ANNOTATION_BLOCKS_EMPTY: "批注正文不能为空。",
-  ANNOTATION_BLOCKS_INVALID: "批注正文未通过 AST 校验。",
+  ANNOTATION_BLOCKS_INVALID: "批注文本包含无效的格式。",
   ANNOTATION_ANCHOR_INVALID: "批注锚点无效。",
   ANNOTATION_INVALID_PARENT_TYPE: "此实体类型不支持批注。",
   ANNOTATION_REQUEST_BODY_TOO_LARGE: "批注过大。",

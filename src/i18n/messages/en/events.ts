@@ -24,7 +24,7 @@ const events = {
   fieldBlocks: "Event description",
   titlePlaceholder: "E.g.: «Kant seminar»",
   clearLimitation:
-    "Already saved End date and Recurrence cannot be cleared — the backend ignores empty values for these fields.",
+    "A saved “End date” and “Repeat” can’t be cleared — keep the current values or set new ones.",
 
   // --- event-edit-form status ---
   savedSuccess: "Saved.",

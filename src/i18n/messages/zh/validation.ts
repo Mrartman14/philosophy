@@ -24,7 +24,7 @@ const validation = {
   },
   // --- preferences: push subscribe/unsubscribe ---
   pushSubscribe: {
-    endpoint: "订阅 endpoint 无效",
+    endpoint: "无法设置通知订阅。",
     p256dh: "p256dh 密钥为空",
     auth: "auth 密钥为空",
   },
@@ -52,11 +52,11 @@ const validation = {
     invalidId: "画布 ID 无效",
     badJson: "图谱数据中的 JSON 无效",
     graphInvalid: "图谱未通过验证",
-    etagMissing: "画布版本（ETag）缺失——请刷新页面。",
+    etagMissing: "无法确定画布版本——请刷新页面。",
     // CanvasDataSchema superRefine (node/edge structural errors)
-    duplicateNodeId: "node.id \"{id}\" 重复",
-    edgeFromNotFound: "边 \"{edgeId}\"：未找到 from_node \"{nodeId}\"",
-    edgeToNotFound: "边 \"{edgeId}\"：未找到 to_node \"{nodeId}\"",
+    duplicateNodeId: "节点标识符 \"{id}\" 重复",
+    edgeFromNotFound: "边 \"{edgeId}\"：未找到起点节点 \"{nodeId}\"",
+    edgeToNotFound: "边 \"{edgeId}\"：未找到终点节点 \"{nodeId}\"",
   },
 
   // --- comments: createComment / updateCommentBlocks form schemas ---
@@ -64,11 +64,11 @@ const validation = {
     invalidType: "未知的评论类型",
     invalidParentId: "parent_id 无效",
     invalidCommentId: "评论 id 无效",
-    blocksInvalidJson: "正文中的 JSON 无效",
+    blocksInvalidJson: "无法处理评论文本。请刷新页面后重试。",
     blocksNotArray: "评论不能为空",
     blocksEmpty: "评论不能为空",
     anchorNotObject: "锚点必须是对象",
-    anchorInvalidJson: "锚点中的 JSON 无效",
+    anchorInvalidJson: "无法处理所选内容。请重新选择片段。",
   },
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
@@ -88,7 +88,7 @@ const validation = {
     titleMax: "最多 500 个字符",
     invalidId: "文档 ID 无效",
     blocksMinLength: "文档正文不能为空",
-    blocksInvalidJson: "文档正文中的 JSON 无效",
+    blocksInvalidJson: "无法处理文档文本。请刷新页面后重试。",
     blocksEmpty: "请至少添加一个块",
   },
 
@@ -101,8 +101,8 @@ const validation = {
     startAtInvalid: "请指定有效的展示开始日期和时间",
     endAtInvalid: "请指定有效的展示结束日期和时间",
     endAtBeforeStart: "展示结束时间必须晚于开始时间",
-    eventIdUuid: "活动 ID 必须是 UUID",
-    blocksInvalidJson: "表单正文中的 JSON 无效",
+    eventIdUuid: "活动 ID 无效",
+    blocksInvalidJson: "无法处理横幅文本。请刷新页面后重试。",
     invalidId: "横幅 ID 无效",
   },
 
@@ -112,7 +112,7 @@ const validation = {
     descriptionMax: "最多 2000 个字符",
     invalidId: "路径 ID 无效",
     documentIdsRequired: "未设置文档列表",
-    documentIdsBadJson: "文档列表中的 JSON 无效",
+    documentIdsBadJson: "无法处理文档列表。请刷新页面。",
     documentIdsNotArray: "文档列表必须是数组",
     documentItemNotString: "列表项不是字符串",
     documentItemInvalidId: "文档 ID 无效",
@@ -129,18 +129,18 @@ const validation = {
     endDateTimeRequired: "请输入结束日期和时间",
     endBeforeStart: "结束日期早于开始日期",
     rrulePrefix: "RRULE 必须以 FREQ= 开头",
-    blocksInvalidJson: "表单正文中的 JSON 无效",
+    blocksInvalidJson: "无法处理活动描述。请刷新页面后重试。",
     invalidId: "活动 ID 无效",
   },
 
   // --- annotations: AnnotationCreateSchema / AnnotationUpdateSchema ---
   annotations: {
     blocksMinLength: "批注正文不能为空",
-    blocksInvalidJson: "批注正文中的 JSON 无效",
+    blocksInvalidJson: "无法处理批注文本。请刷新页面后重试。",
     blocksNotArray: "正文必须是非空的块数组",
     blocksEmpty: "正文必须是非空的块数组",
     anchorNotObject: "锚点必须是对象",
-    anchorInvalidJson: "锚点中的 JSON 无效",
+    anchorInvalidJson: "无法处理所选内容。请重新选择片段。",
     invalidParentId: "父实体 ID 无效",
     invalidAnnotationId: "批注 ID 无效",
     offsetMin: "offset >= 0",
@@ -178,14 +178,14 @@ const validation = {
     nameMax: "最多 100 个字符",
     invalidId: "标签 ID 无效",
     invalidLectureId: "讲座 ID 无效",
-    tagIdsEmpty: "tag_ids 字段为空",
-    tagIdsInvalid: "tag_ids 必须是正整数 ID 的数组",
-    tagIdsBadJson: "tag_ids 中的 JSON 无效",
+    tagIdsEmpty: "未选择任何标签",
+    tagIdsInvalid: "标签列表无效",
+    tagIdsBadJson: "无法处理标签列表。请刷新页面。",
   },
 
   // --- audit: log filters (AuditActorSchema / AuditActionSchema / AuditDateSchema) ---
   audit: {
-    invalidActorUuid: "操作者 UUID 无效",
+    invalidActorUuid: "用户 ID 无效",
     invalidActionFormat: "格式：domain.verb",
   },
 
@@ -216,12 +216,12 @@ const validation = {
     fieldsRequired: "请至少添加一个字段",
     duplicateSortOrder: "字段 #{n} 的排序重复",
     emptyPayload: "表单为空",
-    badJsonPayload: "表单的 JSON 无效",
+    badJsonPayload: "无法处理表单。请刷新页面后重试。",
     payloadStructureError: "表单结构错误",
     visibilityRequired: "未指定可见性",
     modeRequired: "未指定模式",
     emptyAnswers: "没有答案",
-    badJsonAnswers: "答案的 JSON 无效",
+    badJsonAnswers: "无法处理答案。请刷新页面后重试。",
     answersNotArray: "答案必须是数组",
     invalidAnswer: "答案无效",
   },

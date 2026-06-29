@@ -46,7 +46,7 @@ const users = {
     "无法暂停或封禁最后一位活跃的管理员。",
   conflictDemoteLastAdmin:
     "无法降低最后一位活跃管理员的角色。",
-  conflictFallback: "操作被服务器拒绝（冲突）。",
+  conflictFallback: "无法保存：数据已发生变化。请刷新页面后重试。",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

@@ -45,7 +45,7 @@ const shareLinks = {
   // --- share-lookup-form ---
   resourceTypeLabel: "资源类型",
   resourceIdLabel: "资源 ID",
-  resourceIdPlaceholder: "资源 UUID",
+  resourceIdPlaceholder: "资源 ID",
   showLinksButton: "显示链接",
 
   // --- toastActionError actions (phrase for errors.forbiddenAction) ---

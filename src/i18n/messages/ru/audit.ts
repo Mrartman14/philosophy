@@ -3,10 +3,10 @@
 const audit = {
   // --- audit-filter-form: метки полей и кнопки ---
   filterAllTypes: "Все типы",
-  filterActorLabel: "ID актора (UUID)",
-  filterTargetTypeLabel: "Тип цели",
-  filterTargetIdLabel: "ID цели",
-  filterTargetIdPlaceholder: "ID сущности",
+  filterActorLabel: "ID пользователя",
+  filterTargetTypeLabel: "Тип объекта",
+  filterTargetIdLabel: "ID объекта",
+  filterTargetIdPlaceholder: "ID объекта",
   filterActionLabel: "Действие",
   filterAllActions: "Все действия",
   filterFromLabel: "С",
@@ -20,9 +20,9 @@ const audit = {
 
   // --- audit-table: заголовки и пустое состояние ---
   colTime: "Время",
-  colActor: "Актор",
+  colActor: "Пользователь",
   colAction: "Действие",
-  colTarget: "Цель",
+  colTarget: "Объект",
   colDetails: "Детали",
   detailsToggle: "Показать",
   emptyTitle: "Записей не найдено",
@@ -30,7 +30,7 @@ const audit = {
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
-    loadLogFailed: "Не удалось загрузить audit-лог",
+    loadLogFailed: "Не удалось загрузить журнал аудита",
   },
 };
 

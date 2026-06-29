@@ -14,7 +14,7 @@ const errors = {
   IDEMPOTENCY_KEY_REUSED:
     "يتعارض الطلب المُعدَّل مع طلب تم إرساله بالفعل. حدّث الصفحة.",
   IDEMPOTENCY_KEY_INVALID:
-    "مفتاح عدم التكرار غير صالح. حدّث الصفحة وأعد المحاولة.",
+    "تعذّرت إعادة إرسال الطلب بأمان. حدّث الصفحة وأعد المحاولة.",
 
   // --- comments slice: domain codes ---
   SELF_REACTION: "لا يمكنك التفاعل مع تعليقك الخاص.",
@@ -34,7 +34,7 @@ const errors = {
     "هذا النوع من التعليقات غير مسموح كرد على العقدة المحددة.",
   MAX_DEPTH_EXCEEDED: "تم تجاوز الحد الأقصى لعمق السلسلة.",
   BLOCKS_EMPTY: "لا يمكن أن يكون التعليق فارغًا.",
-  BLOCKS_INVALID: "فشل التحقق من بنية AST لمحتوى التعليق.",
+  BLOCKS_INVALID: "نص التعليق يحتوي على تنسيق غير صالح.",
   BLOCK_ID_UNKNOWN: "خطأ في معرّفات الكتل. أعد تحميل المحرر.",
   DUPLICATE_BLOCK_ID: "خطأ في معرّفات الكتل. أعد تحميل المحرر.",
   COMMENT_REFERENCED:
@@ -54,7 +54,7 @@ const errors = {
   RETRACT_NOT_APPLICABLE: "السحب متاح فقط في النماذج التي لا تسمح بتحرير الاستجابة.",
   ALREADY_SUBMITTED: "لقد أرسلت استجابة بالفعل على هذا النموذج.",
   ALREADY_RETRACTED: "تم سحب الاستجابة بالفعل.",
-  INVALID_FORM_SCHEMA: "فشل التحقق من بنية النموذج على الخادم.",
+  INVALID_FORM_SCHEMA: "لم تجتز بنية النموذج التحقق.",
   INVALID_SUBMISSION: "فشل التحقق من الإجابات. يُرجى ملء جميع الحقول المطلوبة بشكل صحيح.",
   FORM_NOT_FOUND: "النموذج غير موجود.",
   SUBMISSION_NOT_FOUND: "الاستجابة غير موجودة.",
@@ -69,7 +69,7 @@ const errors = {
   DOCUMENT_BLOCKS_HAVE_ANCHORS:
     "لا يمكن حذف كتلة مرتبطة بتعليقات. احذف التعليقات أولًا.",
   DOCUMENT_BLOCKS_EMPTY: "يجب أن يحتوي المستند على كتلة واحدة على الأقل.",
-  DOCUMENT_BLOCKS_INVALID: "فشل التحقق من بنية AST لمحتوى المستند.",
+  DOCUMENT_BLOCKS_INVALID: "نص المستند يحتوي على تنسيق غير صالح.",
   DOCUMENT_BLOCK_ID_UNKNOWN: "خطأ في معرّفات الكتل. أعد تحميل المحرر.",
   DOCUMENT_DUPLICATE_BLOCK_ID: "خطأ في معرّفات الكتل. أعد تحميل المحرر.",
   DOCUMENT_IMAGE_UNKNOWN_KEY: "يحتوي المستند على صورة بمفتاح غير معروف.",
@@ -88,11 +88,11 @@ const errors = {
 
   // --- banners slice: domain codes ---
   BANNER_INVALID_COLOR:
-    "رفض الخادم لون الخلفية: يجب أن يكون قيمة hex مثل #RGB أو #RRGGBB.",
+    "لون خلفية غير صالح: استخدم قيمة hex مثل #RGB أو #RRGGBB.",
   BANNER_INVALID_DATE:
-    "رفض الخادم تواريخ العرض: تحقق من التنسيق وترتيب البداية/النهاية.",
+    "تواريخ عرض غير صالحة: تحقق من التنسيق وترتيب البداية والنهاية.",
   BANNER_INVALID_EVENT: "لا توجد فعالية بهذا المعرّف.",
-  BANNER_BLOCKS_INVALID: "فشل التحقق من بنية AST لنص اللافتة.",
+  BANNER_BLOCKS_INVALID: "نص اللافتة يحتوي على تنسيق غير صالح.",
   BANNER_BLOCK_REFERENCED:
     "تشير محتويات أخرى إلى كتلة في هذه اللافتة. احذف المراجع أو أبقِ الكتلة.",
   BANNER_NOT_DISMISSIBLE: "لا يمكن إخفاء هذه اللافتة.",
@@ -111,9 +111,9 @@ const errors = {
 
   // --- events slice: domain codes ---
   INVALID_DATE:
-    "رفض الخادم التاريخ: تحقق من التنسيق وترتيب تاريخي البداية/النهاية.",
-  INVALID_RRULE: "رفض الخادم قاعدة التكرار (RRULE).",
-  EVENT_BLOCKS_INVALID: "فشل التحقق من بنية AST لوصف الفعالية.",
+    "تاريخ غير صالح: تحقق من التنسيق وترتيب تاريخي البداية والنهاية.",
+  INVALID_RRULE: "تعذّر التعرّف على قاعدة التكرار. تحقق من إعدادات التكرار.",
+  EVENT_BLOCKS_INVALID: "وصف الفعالية يحتوي على تنسيق غير صالح.",
   EVENT_BLOCK_REFERENCED:
     "تشير محتويات أخرى إلى كتلة في هذه الفعالية. احذف المراجع أو أبقِ الكتلة.",
 
@@ -134,7 +134,7 @@ const errors = {
   RESOURCE_NOT_PRIVATE: "لا يمكن إنشاء رابط مشاركة إلا لمورد خاص.",
 
   // --- preferences slice: domain codes ---
-  NOT_CONFIGURED: "إشعارات Push غير مُهيّأة على الخادم.",
+  NOT_CONFIGURED: "إشعارات Push لم تُهيّأ بعد.",
 
   // --- tokens slice: domain codes ---
   TOKEN_LIMIT: "تم بلوغ حد الرموز. ألغِ الرموز غير المستخدمة وأعد المحاولة.",
@@ -150,7 +150,7 @@ const errors = {
 
   // --- annotations slice: domain codes ---
   ANNOTATION_BLOCKS_EMPTY: "لا يمكن أن يكون محتوى التعليق التوضيحي فارغًا.",
-  ANNOTATION_BLOCKS_INVALID: "فشل التحقق من بنية AST لمحتوى التعليق التوضيحي.",
+  ANNOTATION_BLOCKS_INVALID: "نص التعليق التوضيحي يحتوي على تنسيق غير صالح.",
   ANNOTATION_ANCHOR_INVALID: "ربط (مرساة) التعليق التوضيحي غير صالح.",
   ANNOTATION_INVALID_PARENT_TYPE: "التعليقات التوضيحية غير متاحة لهذا النوع من الكيانات.",
   ANNOTATION_REQUEST_BODY_TOO_LARGE: "التعليق التوضيحي كبير جدًا.",

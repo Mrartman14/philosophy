@@ -24,7 +24,7 @@ const validation = {
   },
   // --- preferences: push subscribe/unsubscribe ---
   pushSubscribe: {
-    endpoint: "نقطة نهاية الاشتراك غير صالحة",
+    endpoint: "تعذّر إعداد الاشتراك في الإشعارات.",
     p256dh: "مفتاح p256dh فارغ",
     auth: "مفتاح auth فارغ",
   },
@@ -52,11 +52,11 @@ const validation = {
     invalidId: "معرّف اللوحة غير صالح",
     badJson: "JSON تالف في بيانات الرسم البياني",
     graphInvalid: "فشل الرسم البياني في التحقق",
-    etagMissing: "إصدار اللوحة (ETag) مفقود — أعد تحميل الصفحة.",
+    etagMissing: "تعذّر تحديد إصدار اللوحة — حدّث الصفحة.",
     // CanvasDataSchema superRefine (node/edge structural errors)
-    duplicateNodeId: "معرّف عقدة مكرر node.id \"{id}\"",
-    edgeFromNotFound: "الحافة \"{edgeId}\": لم يُعثر على from_node \"{nodeId}\"",
-    edgeToNotFound: "الحافة \"{edgeId}\": لم يُعثر على to_node \"{nodeId}\"",
+    duplicateNodeId: "معرّف عقدة مكرر \"{id}\"",
+    edgeFromNotFound: "الحافة \"{edgeId}\": لم يُعثر على العقدة المصدر \"{nodeId}\"",
+    edgeToNotFound: "الحافة \"{edgeId}\": لم يُعثر على العقدة الهدف \"{nodeId}\"",
   },
 
   // --- comments: createComment / updateCommentBlocks form schemas ---
@@ -64,11 +64,11 @@ const validation = {
     invalidType: "نوع تعليق غير معروف",
     invalidParentId: "معرّف parent_id غير صالح",
     invalidCommentId: "معرّف التعليق غير صالح",
-    blocksInvalidJson: "JSON تالف في المحتوى",
+    blocksInvalidJson: "تعذّرت معالجة نص التعليق. حدّث الصفحة وحاول مرة أخرى.",
     blocksNotArray: "لا يمكن أن يكون التعليق فارغًا",
     blocksEmpty: "لا يمكن أن يكون التعليق فارغًا",
     anchorNotObject: "يجب أن يكون المرساة كائنًا",
-    anchorInvalidJson: "JSON تالف في المرساة",
+    anchorInvalidJson: "تعذّرت معالجة التحديد. حدّد المقطع من جديد.",
   },
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
@@ -88,7 +88,7 @@ const validation = {
     titleMax: "حتى 500 حرف",
     invalidId: "معرّف المستند غير صالح",
     blocksMinLength: "لا يمكن أن يكون محتوى المستند فارغًا",
-    blocksInvalidJson: "JSON تالف في محتوى المستند",
+    blocksInvalidJson: "تعذّرت معالجة نص المستند. حدّث الصفحة وحاول مرة أخرى.",
     blocksEmpty: "أضف كتلة واحدة على الأقل",
   },
 
@@ -101,8 +101,8 @@ const validation = {
     startAtInvalid: "حدد تاريخًا ووقتًا صالحين لبدء العرض",
     endAtInvalid: "حدد تاريخًا ووقتًا صالحين لانتهاء العرض",
     endAtBeforeStart: "يجب أن يكون انتهاء العرض بعد بدايته",
-    eventIdUuid: "يجب أن يكون معرّف الفعالية بصيغة UUID",
-    blocksInvalidJson: "JSON تالف في محتوى النموذج",
+    eventIdUuid: "معرّف فعالية غير صالح",
+    blocksInvalidJson: "تعذّرت معالجة نص اللافتة. حدّث الصفحة وحاول مرة أخرى.",
     invalidId: "معرّف اللافتة غير صالح",
   },
 
@@ -112,7 +112,7 @@ const validation = {
     descriptionMax: "حتى 2000 حرف",
     invalidId: "معرّف المسار غير صالح",
     documentIdsRequired: "قائمة المستندات غير محددة",
-    documentIdsBadJson: "JSON تالف في قائمة المستندات",
+    documentIdsBadJson: "تعذّرت معالجة قائمة المستندات. حدّث الصفحة.",
     documentIdsNotArray: "يجب أن تكون قائمة المستندات مصفوفة",
     documentItemNotString: "عنصر القائمة ليس سلسلة نصية",
     documentItemInvalidId: "معرّف المستند غير صالح",
@@ -129,18 +129,18 @@ const validation = {
     endDateTimeRequired: "أدخل تاريخ ووقت الانتهاء",
     endBeforeStart: "تاريخ الانتهاء قبل تاريخ البدء",
     rrulePrefix: "يجب أن يبدأ RRULE بـ FREQ=",
-    blocksInvalidJson: "JSON تالف في محتوى النموذج",
+    blocksInvalidJson: "تعذّرت معالجة وصف الفعالية. حدّث الصفحة وحاول مرة أخرى.",
     invalidId: "معرّف الفعالية غير صالح",
   },
 
   // --- annotations: AnnotationCreateSchema / AnnotationUpdateSchema ---
   annotations: {
     blocksMinLength: "لا يمكن أن يكون محتوى التعليق التوضيحي فارغًا",
-    blocksInvalidJson: "JSON تالف في محتوى التعليق التوضيحي",
+    blocksInvalidJson: "تعذّرت معالجة نص التعليق التوضيحي. حدّث الصفحة وحاول مرة أخرى.",
     blocksNotArray: "يجب أن يكون المحتوى مصفوفة غير فارغة من الكتل",
     blocksEmpty: "يجب أن يكون المحتوى مصفوفة غير فارغة من الكتل",
     anchorNotObject: "يجب أن يكون المرساة كائنًا",
-    anchorInvalidJson: "JSON تالف في المرساة",
+    anchorInvalidJson: "تعذّرت معالجة التحديد. حدّد المقطع من جديد.",
     invalidParentId: "معرّف الكيان الأصل غير صالح",
     invalidAnnotationId: "معرّف التعليق التوضيحي غير صالح",
     offsetMin: "offset >= 0",
@@ -178,14 +178,14 @@ const validation = {
     nameMax: "حتى 100 حرف",
     invalidId: "معرّف الوسم غير صالح",
     invalidLectureId: "معرّف المحاضرة غير صالح",
-    tagIdsEmpty: "حقل tag_ids فارغ",
-    tagIdsInvalid: "يجب أن يكون tag_ids مصفوفة من معرّفات أعداد صحيحة موجبة",
-    tagIdsBadJson: "JSON تالف في tag_ids",
+    tagIdsEmpty: "لم يتم اختيار أي وسم",
+    tagIdsInvalid: "قائمة الوسوم غير صالحة",
+    tagIdsBadJson: "تعذّرت معالجة قائمة الوسوم. حدّث الصفحة.",
   },
 
   // --- audit: log filters (AuditActorSchema / AuditActionSchema / AuditDateSchema) ---
   audit: {
-    invalidActorUuid: "UUID الفاعل غير صالح",
+    invalidActorUuid: "معرّف مستخدم غير صالح",
     invalidActionFormat: "الصيغة: domain.verb",
   },
 
@@ -216,12 +216,12 @@ const validation = {
     fieldsRequired: "أضف حقلًا واحدًا على الأقل",
     duplicateSortOrder: "ترتيب الفرز مكرر للحقل رقم #{n}",
     emptyPayload: "نموذج فارغ",
-    badJsonPayload: "JSON تالف في النموذج",
+    badJsonPayload: "تعذّرت معالجة النموذج. حدّث الصفحة وحاول مرة أخرى.",
     payloadStructureError: "خطأ في بنية النموذج",
     visibilityRequired: "الظهور مطلوب",
     modeRequired: "الوضع مطلوب",
     emptyAnswers: "لا توجد إجابات",
-    badJsonAnswers: "JSON تالف في الإجابات",
+    badJsonAnswers: "تعذّرت معالجة الإجابات. حدّث الصفحة وحاول مرة أخرى.",
     answersNotArray: "يجب أن تكون الإجابات مصفوفة",
     invalidAnswer: "إجابة غير صالحة",
   },

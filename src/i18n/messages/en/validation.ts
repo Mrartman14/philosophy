@@ -24,7 +24,7 @@ const validation = {
   },
   // --- preferences: push subscribe/unsubscribe ---
   pushSubscribe: {
-    endpoint: "Invalid subscription endpoint",
+    endpoint: "Couldn’t set up the notification subscription.",
     p256dh: "Empty p256dh key",
     auth: "Empty auth key",
   },
@@ -52,11 +52,11 @@ const validation = {
     invalidId: "Invalid canvas ID",
     badJson: "Invalid JSON in graph data",
     graphInvalid: "Graph failed validation",
-    etagMissing: "Canvas version (ETag) is missing — refresh the page.",
+    etagMissing: "Couldn’t determine the canvas version — refresh the page.",
     // CanvasDataSchema superRefine (node/edge structural errors)
-    duplicateNodeId: "Duplicate node.id \"{id}\"",
-    edgeFromNotFound: "Edge \"{edgeId}\": from_node \"{nodeId}\" not found",
-    edgeToNotFound: "Edge \"{edgeId}\": to_node \"{nodeId}\" not found",
+    duplicateNodeId: "Duplicate node identifier \"{id}\"",
+    edgeFromNotFound: "Edge \"{edgeId}\": source node \"{nodeId}\" not found",
+    edgeToNotFound: "Edge \"{edgeId}\": target node \"{nodeId}\" not found",
   },
 
   // --- comments: createComment / updateCommentBlocks form schemas ---
@@ -64,11 +64,11 @@ const validation = {
     invalidType: "Unknown comment type",
     invalidParentId: "Invalid parent_id",
     invalidCommentId: "Invalid comment id",
-    blocksInvalidJson: "Invalid JSON in body",
+    blocksInvalidJson: "Couldn’t process the comment text. Refresh the page and try again.",
     blocksNotArray: "Comment cannot be empty",
     blocksEmpty: "Comment cannot be empty",
     anchorNotObject: "Anchor must be an object",
-    anchorInvalidJson: "Invalid JSON in anchor",
+    anchorInvalidJson: "Couldn’t process the selection. Select the fragment again.",
   },
 
   // --- lectures: LectureCreateSchema / LectureUpdateSchema / etc. ---
@@ -88,7 +88,7 @@ const validation = {
     titleMax: "Up to 500 characters",
     invalidId: "Invalid document ID",
     blocksMinLength: "Document body cannot be empty",
-    blocksInvalidJson: "Invalid JSON in document body",
+    blocksInvalidJson: "Couldn’t process the document text. Refresh the page and try again.",
     blocksEmpty: "Add at least one block",
   },
 
@@ -101,8 +101,8 @@ const validation = {
     startAtInvalid: "Specify a valid date and time for show start",
     endAtInvalid: "Specify a valid date and time for show end",
     endAtBeforeStart: "Show end must be after show start",
-    eventIdUuid: "Event ID must be a UUID",
-    blocksInvalidJson: "Invalid JSON in the form body",
+    eventIdUuid: "Invalid event ID",
+    blocksInvalidJson: "Couldn’t process the banner text. Refresh the page and try again.",
     invalidId: "Invalid banner ID",
   },
 
@@ -112,7 +112,7 @@ const validation = {
     descriptionMax: "Up to 2000 characters",
     invalidId: "Invalid trail ID",
     documentIdsRequired: "Document list is not set",
-    documentIdsBadJson: "Invalid JSON in document list",
+    documentIdsBadJson: "Couldn’t process the document list. Refresh the page.",
     documentIdsNotArray: "Document list must be an array",
     documentItemNotString: "List item is not a string",
     documentItemInvalidId: "Invalid document ID",
@@ -129,18 +129,18 @@ const validation = {
     endDateTimeRequired: "Enter an end date and time",
     endBeforeStart: "End date is before start date",
     rrulePrefix: "RRULE must start with FREQ=",
-    blocksInvalidJson: "Invalid JSON in form body",
+    blocksInvalidJson: "Couldn’t process the event description. Refresh the page and try again.",
     invalidId: "Invalid event ID",
   },
 
   // --- annotations: AnnotationCreateSchema / AnnotationUpdateSchema ---
   annotations: {
     blocksMinLength: "Annotation body cannot be empty",
-    blocksInvalidJson: "Invalid JSON in annotation body",
+    blocksInvalidJson: "Couldn’t process the annotation text. Refresh the page and try again.",
     blocksNotArray: "Body must be a non-empty array of blocks",
     blocksEmpty: "Body must be a non-empty array of blocks",
     anchorNotObject: "Anchor must be an object",
-    anchorInvalidJson: "Invalid JSON in anchor",
+    anchorInvalidJson: "Couldn’t process the selection. Select the fragment again.",
     invalidParentId: "Invalid parent entity ID",
     invalidAnnotationId: "Invalid annotation ID",
     offsetMin: "offset >= 0",
@@ -178,14 +178,14 @@ const validation = {
     nameMax: "Up to 100 characters",
     invalidId: "Invalid tag ID",
     invalidLectureId: "Invalid lecture ID",
-    tagIdsEmpty: "Empty tag_ids field",
-    tagIdsInvalid: "tag_ids must be an array of positive integer IDs",
-    tagIdsBadJson: "Invalid JSON in tag_ids",
+    tagIdsEmpty: "No tags selected",
+    tagIdsInvalid: "Invalid tag list",
+    tagIdsBadJson: "Couldn’t process the tag list. Refresh the page.",
   },
 
   // --- audit: log filters (AuditActorSchema / AuditActionSchema / AuditDateSchema) ---
   audit: {
-    invalidActorUuid: "Invalid actor UUID",
+    invalidActorUuid: "Invalid user ID",
     invalidActionFormat: "Format: domain.verb",
   },
 
@@ -216,12 +216,12 @@ const validation = {
     fieldsRequired: "Add at least one field",
     duplicateSortOrder: "Duplicate sort order for field #{n}",
     emptyPayload: "Empty form",
-    badJsonPayload: "Invalid JSON in form",
+    badJsonPayload: "Couldn’t process the form. Refresh the page and try again.",
     payloadStructureError: "Form structure error",
     visibilityRequired: "Visibility is required",
     modeRequired: "Mode is required",
     emptyAnswers: "No answers",
-    badJsonAnswers: "Invalid JSON in answers",
+    badJsonAnswers: "Couldn’t process the answers. Refresh the page and try again.",
     answersNotArray: "Answers must be an array",
     invalidAnswer: "Invalid answer",
   },

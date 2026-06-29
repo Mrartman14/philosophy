@@ -60,9 +60,9 @@ const admin = {
   // --- комментарии ---
   commentsTitle: "إشراف التعليقات",
   commentsLectureIdLabel: "معرّف المحاضرة",
-  commentsLectureIdPlaceholder: "UUID المحاضرة",
+  commentsLectureIdPlaceholder: "معرّف المحاضرة",
   commentsShowButton: "عرض",
-  commentsNoLectureHint: "أدخل معرّف المحاضرة — لا توجد قائمة تعليقات شاملة في الواجهة الخلفية.",
+  commentsNoLectureHint: "تُعرض التعليقات لكل محاضرة على حدة — أدخل معرّف المحاضرة.",
   commentsTotal: "الإجمالي: {total}",
   commentsEmpty: "لا توجد تعليقات.",
 

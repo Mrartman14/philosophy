@@ -60,9 +60,9 @@ const admin = {
   // --- комментарии ---
   commentsTitle: "Comment moderation",
   commentsLectureIdLabel: "Lecture ID",
-  commentsLectureIdPlaceholder: "Lecture UUID",
+  commentsLectureIdPlaceholder: "Lecture ID",
   commentsShowButton: "Show",
-  commentsNoLectureHint: "Provide a lecture ID — there is no global comment list on the backend.",
+  commentsNoLectureHint: "Comments are shown per lecture — enter the lecture's ID.",
   commentsTotal: "Total: {total}",
   commentsEmpty: "No comments.",
 

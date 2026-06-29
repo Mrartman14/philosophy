@@ -114,7 +114,7 @@ const comments = {
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
-    loadSchemaFailed: "تعذّر تحميل مخطط التعليقات",
+    loadSchemaFailed: "تعذّر تحميل محرر التعليقات",
     loadListFailed: "تعذّر تحميل التعليقات",
     loadSubtreeFailed: "تعذّر تحميل سلسلة الردود",
     searchFailed: "تعذّر تنفيذ البحث",

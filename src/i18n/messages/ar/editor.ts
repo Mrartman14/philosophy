@@ -2,10 +2,10 @@
 // UI strings for the AST editor component (mirror of ru/editor.ts).
 const editor = {
   // --- Editor (use-ast-editor) ---
-  editorAriaLabel: "محرر AST",
+  editorAriaLabel: "المحرر",
 
   // --- Schema context (schema-context) ---
-  schemaUnavailable: "مخطط AST غير متاح: {message}",
+  schemaUnavailable: "تعذّر تحميل المحرر: {message}",
 
   // --- Image node view (image-node-view) ---
   imageLoading: "جارٍ تحميل الصورة",
@@ -102,7 +102,7 @@ const editor = {
   mediaTypeAudio: "صوت",
 
   // --- Schema server (schema-server) ---
-  schemaLoadError: "تعذّر تحميل مخطط محرر AST",
+  schemaLoadError: "تعذّر تحميل المحرر",
 };
 
 export default editor;

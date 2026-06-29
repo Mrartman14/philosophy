@@ -2,10 +2,10 @@
 // UI strings for the AST editor component (mirror of ru/editor.ts).
 const editor = {
   // --- Editor (use-ast-editor) ---
-  editorAriaLabel: "AST 编辑器",
+  editorAriaLabel: "编辑器",
 
   // --- Schema context (schema-context) ---
-  schemaUnavailable: "AST schema 不可用：{message}",
+  schemaUnavailable: "无法加载编辑器：{message}",
 
   // --- Image node view (image-node-view) ---
   imageLoading: "图片加载中",
@@ -102,7 +102,7 @@ const editor = {
   mediaTypeAudio: "音频",
 
   // --- Schema server (schema-server) ---
-  schemaLoadError: "无法加载 AST 编辑器架构",
+  schemaLoadError: "无法加载编辑器",
 };
 
 export default editor;

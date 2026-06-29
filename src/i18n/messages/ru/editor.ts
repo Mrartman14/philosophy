@@ -2,10 +2,10 @@
 // UI-строки AST-редактора (ast-editor компонент).
 const editor = {
   // --- Редактор (use-ast-editor) ---
-  editorAriaLabel: "Редактор AST",
+  editorAriaLabel: "Редактор",
 
   // --- Schema context (schema-context) ---
-  schemaUnavailable: "AST schema недоступна: {message}",
+  schemaUnavailable: "Не удалось загрузить редактор: {message}",
 
   // --- Image node view (image-node-view) ---
   imageLoading: "Изображение загружается",
@@ -102,7 +102,7 @@ const editor = {
   mediaTypeAudio: "аудио",
 
   // --- Schema server (schema-server) ---
-  schemaLoadError: "Не удалось загрузить схему AST-редактора",
+  schemaLoadError: "Не удалось загрузить редактор",
 };
 
 export default editor;

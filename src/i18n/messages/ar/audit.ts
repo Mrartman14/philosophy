@@ -3,10 +3,10 @@
 const audit = {
   // --- audit-filter-form: field labels and buttons ---
   filterAllTypes: "جميع الأنواع",
-  filterActorLabel: "معرّف الفاعل (UUID)",
-  filterTargetTypeLabel: "نوع الهدف",
-  filterTargetIdLabel: "معرّف الهدف",
-  filterTargetIdPlaceholder: "معرّف الكيان",
+  filterActorLabel: "معرّف المستخدم",
+  filterTargetTypeLabel: "نوع الكائن",
+  filterTargetIdLabel: "معرّف الكائن",
+  filterTargetIdPlaceholder: "معرّف الكائن",
   filterActionLabel: "الإجراء",
   filterAllActions: "جميع الإجراءات",
   filterFromLabel: "من",
@@ -20,9 +20,9 @@ const audit = {
 
   // --- audit-table: column headers and empty state ---
   colTime: "الوقت",
-  colActor: "الفاعل",
+  colActor: "المستخدم",
   colAction: "الإجراء",
-  colTarget: "الهدف",
+  colTarget: "الكائن",
   colDetails: "التفاصيل",
   detailsToggle: "عرض",
   emptyTitle: "لم يتم العثور على سجلات",

@@ -46,7 +46,7 @@ const users = {
     "Нельзя приостановить или заблокировать последнего активного администратора.",
   conflictDemoteLastAdmin:
     "Нельзя понизить роль последнего активного администратора.",
-  conflictFallback: "Операция отклонена сервером (конфликт).",
+  conflictFallback: "Не удалось сохранить: данные изменились. Обновите страницу и повторите.",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

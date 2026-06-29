@@ -114,7 +114,7 @@ const comments = {
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
-    loadSchemaFailed: "Failed to load comment schema",
+    loadSchemaFailed: "Couldn’t load the comment editor",
     loadListFailed: "Failed to load comments",
     loadSubtreeFailed: "Failed to load thread",
     searchFailed: "Search failed",

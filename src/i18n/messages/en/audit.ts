@@ -3,10 +3,10 @@
 const audit = {
   // --- audit-filter-form: field labels and buttons ---
   filterAllTypes: "All types",
-  filterActorLabel: "Actor ID (UUID)",
-  filterTargetTypeLabel: "Target type",
-  filterTargetIdLabel: "Target ID",
-  filterTargetIdPlaceholder: "Entity ID",
+  filterActorLabel: "User ID",
+  filterTargetTypeLabel: "Object type",
+  filterTargetIdLabel: "Object ID",
+  filterTargetIdPlaceholder: "Object ID",
   filterActionLabel: "Action",
   filterAllActions: "All actions",
   filterFromLabel: "From",
@@ -20,9 +20,9 @@ const audit = {
 
   // --- audit-table: column headers and empty state ---
   colTime: "Time",
-  colActor: "Actor",
+  colActor: "User",
   colAction: "Action",
-  colTarget: "Target",
+  colTarget: "Object",
   colDetails: "Details",
   detailsToggle: "Show",
   emptyTitle: "No records found",
@@ -30,7 +30,7 @@ const audit = {
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
-    loadLogFailed: "Failed to load audit log",
+    loadLogFailed: "Couldn’t load the audit log",
   },
 };
 

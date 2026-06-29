@@ -10,11 +10,11 @@ const banners = {
   fieldEndAt: "结束展示（你的时区，可选）",
   fieldEventId: "活动 ID（可选）",
   fieldBlocks: "横幅文本",
-  eventIdPlaceholder: "来自 /admin/events 的活动 UUID",
+  eventIdPlaceholder: "活动 ID（见「管理后台 → 活动」）",
 
   // --- Hints ---
   hintEndAt:
-    "已保存的「结束展示」时间无法清除——后端会忽略此字段的空值。",
+    "已保存的「结束展示」时间无法清除——请保留原有值或填写新值。",
   hintEventId: "若要解除关联活动——请清空该字段并保存。",
 
   // --- Buttons / submit ---

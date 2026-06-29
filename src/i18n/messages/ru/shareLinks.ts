@@ -45,7 +45,7 @@ const shareLinks = {
   // --- share-lookup-form ---
   resourceTypeLabel: "Тип ресурса",
   resourceIdLabel: "ID ресурса",
-  resourceIdPlaceholder: "UUID ресурса",
+  resourceIdPlaceholder: "ID ресурса",
   showLinksButton: "Показать ссылки",
 
   // --- toastActionError actions (родительный падеж для errors.forbiddenAction) ---

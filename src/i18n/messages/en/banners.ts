@@ -10,11 +10,11 @@ const banners = {
   fieldEndAt: "Show end (your timezone, optional)",
   fieldEventId: "Event ID (optional)",
   fieldBlocks: "Banner text",
-  eventIdPlaceholder: "Event UUID from /admin/events",
+  eventIdPlaceholder: "Event ID (see Admin → Events)",
 
   // --- Hints ---
   hintEndAt:
-    "A saved show end time cannot be cleared — the backend ignores an empty value for this field.",
+    "A saved “Show until” can’t be cleared — keep the current value or set a new one.",
   hintEventId: "To unlink the event — clear the field and save.",
 
   // --- Buttons / submit ---

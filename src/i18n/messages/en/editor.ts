@@ -2,10 +2,10 @@
 // UI strings for the AST editor component (mirror of ru/editor.ts).
 const editor = {
   // --- Editor (use-ast-editor) ---
-  editorAriaLabel: "AST Editor",
+  editorAriaLabel: "Editor",
 
   // --- Schema context (schema-context) ---
-  schemaUnavailable: "AST schema unavailable: {message}",
+  schemaUnavailable: "Couldn’t load the editor: {message}",
 
   // --- Image node view (image-node-view) ---
   imageLoading: "Image is loading",
@@ -102,7 +102,7 @@ const editor = {
   mediaTypeAudio: "audio",
 
   // --- Schema server (schema-server) ---
-  schemaLoadError: "Failed to load AST editor schema",
+  schemaLoadError: "Couldn’t load the editor",
 };
 
 export default editor;

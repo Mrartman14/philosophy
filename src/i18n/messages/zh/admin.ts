@@ -60,9 +60,9 @@ const admin = {
   // --- комментарии ---
   commentsTitle: "评论审核",
   commentsLectureIdLabel: "讲座 ID",
-  commentsLectureIdPlaceholder: "讲座 UUID",
+  commentsLectureIdPlaceholder: "讲座 ID",
   commentsShowButton: "显示",
-  commentsNoLectureHint: "请提供讲座 ID——后端没有全局评论列表。",
+  commentsNoLectureHint: "评论按具体讲座显示——请填写该讲座的 ID。",
   commentsTotal: "共计：{total}",
   commentsEmpty: "暂无评论。",
 

@@ -114,7 +114,7 @@ const comments = {
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
-    loadSchemaFailed: "无法加载评论结构",
+    loadSchemaFailed: "无法加载评论编辑器",
     loadListFailed: "无法加载评论",
     loadSubtreeFailed: "无法加载讨论串",
     searchFailed: "搜索失败",

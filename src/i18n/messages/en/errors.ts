@@ -14,7 +14,7 @@ const errors = {
   IDEMPOTENCY_KEY_REUSED:
     "A changed request conflicts with one already sent. Refresh the page.",
   IDEMPOTENCY_KEY_INVALID:
-    "Invalid idempotency key. Refresh the page and try again.",
+    "The request couldn’t be safely retried. Refresh the page and try again.",
 
   // --- comments slice: domain codes ---
   SELF_REACTION: "You can't react to your own comment.",
@@ -35,7 +35,7 @@ const errors = {
     "This comment type is not allowed as a reply to the selected node.",
   MAX_DEPTH_EXCEEDED: "Maximum thread depth exceeded.",
   BLOCKS_EMPTY: "Comment cannot be empty.",
-  BLOCKS_INVALID: "Comment body failed AST validation.",
+  BLOCKS_INVALID: "The comment text contains invalid formatting.",
   BLOCK_ID_UNKNOWN: "Block ID error. Please reload the editor.",
   DUPLICATE_BLOCK_ID: "Block ID error. Please reload the editor.",
   COMMENT_REFERENCED:
@@ -55,7 +55,7 @@ const errors = {
   RETRACT_NOT_APPLICABLE: "Retraction is only available for forms without response editing.",
   ALREADY_SUBMITTED: "You have already submitted a response to this form.",
   ALREADY_RETRACTED: "The response has already been retracted.",
-  INVALID_FORM_SCHEMA: "The form structure failed server-side validation.",
+  INVALID_FORM_SCHEMA: "The form structure didn’t pass validation.",
   INVALID_SUBMISSION: "The answers failed validation. Please fill in all required fields correctly.",
   FORM_NOT_FOUND: "Form not found.",
   SUBMISSION_NOT_FOUND: "Response not found.",
@@ -70,7 +70,7 @@ const errors = {
   DOCUMENT_BLOCKS_HAVE_ANCHORS:
     "Can't delete a block that has anchored comments. Remove the comments first.",
   DOCUMENT_BLOCKS_EMPTY: "The document must contain at least one block.",
-  DOCUMENT_BLOCKS_INVALID: "The document body failed AST validation.",
+  DOCUMENT_BLOCKS_INVALID: "The document text contains invalid formatting.",
   DOCUMENT_BLOCK_ID_UNKNOWN: "Block ID error. Please reload the editor.",
   DOCUMENT_DUPLICATE_BLOCK_ID: "Block ID error. Please reload the editor.",
   DOCUMENT_IMAGE_UNKNOWN_KEY: "The document contains an image with an unknown key.",
@@ -89,11 +89,11 @@ const errors = {
 
   // --- banners slice: domain codes ---
   BANNER_INVALID_COLOR:
-    "The backend rejected the background color: must be a hex value like #RGB or #RRGGBB.",
+    "Invalid background color: use a hex value like #RGB or #RRGGBB.",
   BANNER_INVALID_DATE:
-    "The backend rejected the show dates: check the format and the start/end order.",
+    "Invalid display dates: check the format and the order of start and end.",
   BANNER_INVALID_EVENT: "No event found with this ID.",
-  BANNER_BLOCKS_INVALID: "The banner text failed AST validation.",
+  BANNER_BLOCKS_INVALID: "The banner text contains invalid formatting.",
   BANNER_BLOCK_REFERENCED:
     "Other content references a block in this banner. Remove the references or keep the block.",
   BANNER_NOT_DISMISSIBLE: "This banner cannot be dismissed.",
@@ -112,9 +112,9 @@ const errors = {
 
   // --- events slice: domain codes ---
   INVALID_DATE:
-    "The backend rejected the date: check the format and the start/end date order.",
-  INVALID_RRULE: "The backend rejected the recurrence rule (RRULE).",
-  EVENT_BLOCKS_INVALID: "The event description failed AST validation.",
+    "Invalid date: check the format and the order of start and end dates.",
+  INVALID_RRULE: "The recurrence rule couldn’t be parsed. Check the repeat settings.",
+  EVENT_BLOCKS_INVALID: "The event description contains invalid formatting.",
   EVENT_BLOCK_REFERENCED:
     "Other content references a block in this event. Remove the references or keep the block.",
 
@@ -135,7 +135,7 @@ const errors = {
   RESOURCE_NOT_PRIVATE: "A share link can only be created for a private resource.",
 
   // --- preferences slice: domain codes ---
-  NOT_CONFIGURED: "Push notifications are not configured on the server.",
+  NOT_CONFIGURED: "Push notifications aren’t set up yet.",
 
   // --- tokens slice: domain codes ---
   TOKEN_LIMIT: "Token limit reached. Revoke unused tokens and try again.",
@@ -151,7 +151,7 @@ const errors = {
 
   // --- annotations slice: domain codes ---
   ANNOTATION_BLOCKS_EMPTY: "The annotation body cannot be empty.",
-  ANNOTATION_BLOCKS_INVALID: "The annotation body failed AST validation.",
+  ANNOTATION_BLOCKS_INVALID: "The annotation text contains invalid formatting.",
   ANNOTATION_ANCHOR_INVALID: "Invalid annotation anchor.",
   ANNOTATION_INVALID_PARENT_TYPE: "Annotations are not available for this entity type.",
   ANNOTATION_REQUEST_BODY_TOO_LARGE: "The annotation is too large.",

@@ -3,10 +3,10 @@
 const audit = {
   // --- audit-filter-form: field labels and buttons ---
   filterAllTypes: "所有类型",
-  filterActorLabel: "操作者 ID（UUID）",
-  filterTargetTypeLabel: "目标类型",
-  filterTargetIdLabel: "目标 ID",
-  filterTargetIdPlaceholder: "实体 ID",
+  filterActorLabel: "用户 ID",
+  filterTargetTypeLabel: "对象类型",
+  filterTargetIdLabel: "对象 ID",
+  filterTargetIdPlaceholder: "对象 ID",
   filterActionLabel: "操作",
   filterAllActions: "所有操作",
   filterFromLabel: "起始",
@@ -20,9 +20,9 @@ const audit = {
 
   // --- audit-table: column headers and empty state ---
   colTime: "时间",
-  colActor: "操作者",
+  colActor: "用户",
   colAction: "操作",
-  colTarget: "目标",
+  colTarget: "对象",
   colDetails: "详情",
   detailsToggle: "显示",
   emptyTitle: "未找到记录",
@@ -30,7 +30,7 @@ const audit = {
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
-    loadLogFailed: "加载审计日志失败",
+    loadLogFailed: "无法加载审计日志",
   },
 };
 

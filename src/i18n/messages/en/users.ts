@@ -46,7 +46,7 @@ const users = {
     "You cannot suspend or ban the last active administrator.",
   conflictDemoteLastAdmin:
     "You cannot demote the last active administrator.",
-  conflictFallback: "Operation rejected by the server (conflict).",
+  conflictFallback: "Couldn’t save: the data changed. Refresh the page and try again.",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

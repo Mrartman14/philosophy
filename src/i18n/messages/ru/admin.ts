@@ -59,9 +59,9 @@ const admin = {
   // --- комментарии ---
   commentsTitle: "Модерация комментариев",
   commentsLectureIdLabel: "ID лекции",
-  commentsLectureIdPlaceholder: "UUID лекции",
+  commentsLectureIdPlaceholder: "ID лекции",
   commentsShowButton: "Показать",
-  commentsNoLectureHint: "Укажите ID лекции — глобального списка комментариев на бекенде нет.",
+  commentsNoLectureHint: "Комментарии открываются по конкретной лекции — укажите её ID.",
   commentsTotal: "Всего: {total}",
   commentsEmpty: "Комментариев нет.",
 

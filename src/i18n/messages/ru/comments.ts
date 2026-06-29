@@ -116,7 +116,7 @@ const comments = {
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {
-    loadSchemaFailed: "Не удалось загрузить схему комментариев",
+    loadSchemaFailed: "Не удалось загрузить редактор комментариев",
     loadListFailed: "Не удалось загрузить комментарии",
     loadSubtreeFailed: "Не удалось загрузить ветку",
     searchFailed: "Не удалось выполнить поиск",

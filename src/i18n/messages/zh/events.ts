@@ -24,7 +24,7 @@ const events = {
   fieldBlocks: "活动描述",
   titlePlaceholder: "例如：「康德研讨会」",
   clearLimitation:
-    "已保存的「结束日期」和「重复」无法清除——后端会忽略这些字段的空值。",
+    "已保存的「结束日期」和「重复」无法清除——请保留原有值或填写新值。",
 
   // --- event-edit-form status ---
   savedSuccess: "已保存。",
