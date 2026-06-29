@@ -102,7 +102,7 @@ export function CanvasViewer({ data, className, children }: Props) {
       className={className}
       style={
         interactive
-          ? { position: "relative", overflow: "hidden", touchAction: "none", cursor: "grab", height: "100%" }
+          ? { position: "relative", overflow: "hidden", touchAction: "none", cursor: "grab", height: "min(70vh, 640px)", minHeight: "320px" }
           : { overflow: "auto", maxWidth: "100%" }
       }
     >
