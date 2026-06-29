@@ -86,3 +86,14 @@ export function canAdminDeleteForm(me: MaybeMe, form: Form): boolean {
 export function canListAdminForms(me: MaybeMe): boolean {
   return can(me, "form.delete_any");
 }
+
+/**
+ * Просмотр результатов формы — владелец ∨ публичные результаты.
+ * CanSee(form) уже гарантирован тем, что getFormById вернул объект (incl. ?token).
+ * Это ЧТЕНИЕ — без status-гейта: suspended-владелец сохраняет доступ к чтению.
+ */
+export function canViewFormResults(me: MaybeMe, form: Form): boolean {
+  if (!me) return false;
+  if (form.owner?.id === me.id) return true;
+  return form.submission_visibility === "public";
+}

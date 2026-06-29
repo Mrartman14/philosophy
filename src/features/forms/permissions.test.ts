@@ -14,6 +14,7 @@ import {
   canRetractSubmission,
   canAdminDeleteForm,
   canListAdminForms,
+  canViewFormResults,
 } from "./permissions";
 import type { Form, Submission } from "./types";
 
@@ -162,6 +163,46 @@ describe("canAdminDeleteForm / canListAdminForms", () => {
   it("без капы → list false", () => { expect(canListAdminForms(makeMe())).toBe(false); });
   it("с капой → list true", () =>
     { expect(canListAdminForms(makeMe({ capabilities: ["form.delete_any"] }))).toBe(true); });
+});
+
+describe("canViewFormResults (чтение: владелец ∨ public, без status-гейта)", () => {
+  const ownerPrivate: Form = {
+    id: "fr1",
+    owner: { id: "u1" },
+    visibility: "public",
+    submission_mode: "editable",
+    submission_visibility: "private",
+  };
+  const othersPublicResults: Form = {
+    id: "fr2",
+    owner: { id: "u9" },
+    visibility: "public",
+    submission_mode: "editable",
+    submission_visibility: "public",
+  };
+  const othersPrivateResults: Form = {
+    id: "fr3",
+    owner: { id: "u9" },
+    visibility: "public",
+    submission_mode: "editable",
+    submission_visibility: "private",
+  };
+
+  it("владелец видит результаты приватной формы", () => {
+    expect(canViewFormResults(makeMe(), ownerPrivate)).toBe(true);
+  });
+  it("suspended-владелец всё ещё видит (чтение, без status-гейта)", () => {
+    expect(canViewFormResults(makeMe({ status: "suspended" }), ownerPrivate)).toBe(true);
+  });
+  it("не-владелец видит публичные результаты", () => {
+    expect(canViewFormResults(makeMe(), othersPublicResults)).toBe(true);
+  });
+  it("не-владелец НЕ видит приватные результаты", () => {
+    expect(canViewFormResults(makeMe(), othersPrivateResults)).toBe(false);
+  });
+  it("аноним (me=null) → false", () => {
+    expect(canViewFormResults(null, othersPublicResults)).toBe(false);
+  });
 });
 
 describe("canDeleteSubmission (доп. ветки доступа)", () => {
