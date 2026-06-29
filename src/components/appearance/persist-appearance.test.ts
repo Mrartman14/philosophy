@@ -71,4 +71,12 @@ describe("persistAppearance", () => {
     const body = patch.mock.calls[0]?.[1] as { body: { appearance: Record<string, unknown> } };
     expect(body.body.appearance.motion).toBe("reduced");
   });
+
+  it("passes textAlign through as text_align (sent as-is, like motion)", async () => {
+    getMe.mockResolvedValue({ id: "u1", status: "active", capabilities: [] });
+    patch.mockResolvedValue({ data: {}, error: null });
+    await persistAppearance({ ...DEFAULT_APPEARANCE, textAlign: "justify" });
+    const body = patch.mock.calls[0]?.[1] as { body: { appearance: Record<string, unknown> } };
+    expect(body.body.appearance.text_align).toBe("justify");
+  });
 });

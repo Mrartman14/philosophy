@@ -32,8 +32,15 @@ describe("getAppearance", () => {
     getMe.mockResolvedValue({ id: "u1", status: "active", capabilities: [] });
     getPreferences.mockResolvedValue({ appearance: { theme: "dark", density: "compact", font: "serif", text_size: "lg" } });
     const a = await getAppearance();
-    // textAlign: бэкенд text_align ещё нет (стопгап) → дефолт start на seed-пути.
+    // textAlign отсутствует в payload → дефолт start (поле опциональное).
     expect(a).toEqual({ theme: "dark", contrast: "auto", density: "compact", font: "serif", textSize: "lg", motion: "system", textAlign: "start" });
+  });
+
+  it("seeds textAlign from the backend text_align (cross-device sync)", async () => {
+    cookieStore.get.mockReturnValue(undefined);
+    getMe.mockResolvedValue({ id: "u1", status: "active", capabilities: [] });
+    getPreferences.mockResolvedValue({ appearance: { text_align: "justify" } });
+    expect((await getAppearance()).textAlign).toBe("justify");
   });
 
   it("defaults for an anonymous user with no cookie (no backend call)", async () => {

@@ -22,10 +22,8 @@ function toAppearancePayload(a: Appearance): AppearancePayload {
     font: a.font,
     text_size: a.textSize,
     motion: a.motion,
+    text_align: a.textAlign,
     ...(a.contrast !== "auto" ? { contrast: a.contrast } : {}),
-    // СТОПГАП: a.textAlign НЕ шлём — preference.AppearancePatch ещё без text_align
-    // (бэк-аск открыт). Ось пока cookie-only. Когда поле появится в схеме →
-    // `text_align: a.textAlign` здесь + чтение в utils/appearance.ts fromBackend.
   };
 }
 
