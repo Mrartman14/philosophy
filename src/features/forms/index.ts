@@ -13,6 +13,14 @@ export type {
   FormListItem,
   SubmissionListItem,
   AstBlock,
+  FormStats,
+  FieldStats,
+  OptionStat,
+  NumberStats,
+  DateStats,
+  FieldAnswerItem,
+  AnswerValue,
+  SubmissionVisibility,
 } from "./types";
 
 export {
@@ -26,6 +34,7 @@ export {
   canRetractSubmission,
   canAdminDeleteForm,
   canListAdminForms,
+  canViewFormResults,
 } from "./permissions";
 
 export {
@@ -35,8 +44,13 @@ export {
   getSubmissionsByForm,
   getSubmissionById,
   getAdminForms,
+  getFormStats,
+  getFieldAnswers,
 } from "./api";
 export type { AdminFormListFilter, FormListResult } from "./api";
+
+export { readAnswerValue } from "./answer-read";
+export type { ReadValue } from "./answer-read";
 
 export {
   createForm,
