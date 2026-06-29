@@ -97,6 +97,11 @@ export function FormFill({ form, token }: Props) {
           onChange={(next) => { setValues((prev) => ({ ...prev, [f.id ?? ""]: next })); }}
         />
       ))}
+      {form.submission_visibility === "public" && (
+        <p className="rounded border border-(--color-border) bg-(--color-surface-subtle) p-3 text-xs text-(--color-fg-muted)">
+          {t("publicVoteConsent")}
+        </p>
+      )}
       <div>
         <Button type="button" disabled={pending} onClick={() => { void onSubmit(); }}>
           {pending ? t("submittingButton") : t("submitButton")}
