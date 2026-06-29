@@ -8,7 +8,9 @@ import {
   canPublishForm,
   canDeleteForm,
   canListFormSubmissions,
+  canViewFormResults,
   FormDetail,
+  FormVisibilityBadges,
   FormFill,
   FormEditForm,
   FormPublishButton,
@@ -38,6 +40,7 @@ export default async function FormPage({ params, searchParams }: Props) {
   const canPublish = canPublishForm(me, form);
   const canDelete = canDeleteForm(me, form);
   const canSeeSubmissions = canListFormSubmissions(me, form);
+  const canSeeResults = canViewFormResults(me, form);
 
   const canShare = canCreateShareLink(me, form);
   const shareLinks =
@@ -48,6 +51,7 @@ export default async function FormPage({ params, searchParams }: Props) {
     <div className="mx-auto flex max-w-3xl flex-col gap-8 p-6">
       <header className="flex flex-col gap-3">
         <FormDetail form={form} />
+        <FormVisibilityBadges form={form} />
         {/* actions-слот: share-кнопка (share-links) — композиция через страницу,
             без cross-feature импорта в слайсе forms. */}
         <div className="flex flex-wrap items-center gap-2">
@@ -65,6 +69,14 @@ export default async function FormPage({ params, searchParams }: Props) {
               className="text-sm text-(--color-link) hover:underline"
             >
               {t("formSubmissionsLink")}
+            </RouterLink>
+          )}
+          {canSeeResults && form.id && (
+            <RouterLink
+              href={`/forms/${form.id}/results${token ? `?token=${encodeURIComponent(token)}` : ""}`}
+              className="text-sm text-(--color-link) hover:underline"
+            >
+              {t("formResultsLink")}
             </RouterLink>
           )}
           {canPublish && form.id && <FormPublishButton formId={form.id} />}
