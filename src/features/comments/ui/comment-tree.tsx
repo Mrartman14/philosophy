@@ -20,7 +20,7 @@ function Branch({ node, childrenMap, lectureId, schema }: BranchProps) {
     <li id={commentNodeId(node.id)} className="flex flex-col gap-2">
       <CommentNode comment={node} lectureId={lectureId} schema={schema} />
       {kids.length > 0 && (
-        <ul className="ms-4 flex flex-col gap-2 border-s border-(--color-border) ps-3">
+        <ul className="ms-2 flex flex-col gap-2 border-s border-(--color-border) ps-3">
           {kids.map((kid) => (
             <Branch
               key={kid.id}

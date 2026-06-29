@@ -14,6 +14,7 @@
 import type { ReactNode } from "react";
 
 import { AstRender } from "@/components/ast-render";
+import { UserView } from "@/components/shared/user-view";
 import type { ResolvedLocale } from "@/i18n/locales";
 
 import { formatCommentDate } from "../comment-format";
@@ -82,10 +83,10 @@ export function CommentNodeView({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3">
+    <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <CommentTypeBadge type={comment.type} label={typeLabel} />
-        <span>{comment.author?.username ?? "—"}</span>
+        <UserView username={comment.author?.username} />
         <span>{formatCommentDate(comment.created_at, locale, tz)}</span>
         {comment.is_edited && <span>{editedLabel}</span>}
       </div>

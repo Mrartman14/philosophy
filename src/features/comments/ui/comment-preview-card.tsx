@@ -3,6 +3,7 @@
 // Лёгкое: тип + автор + тело + кнопка «к треду». Полная дискуссия/ответы/реакции —
 // в нижнем треде (CommentSection), куда ведёт OpenThreadButton.
 import { AstRender } from "@/components/ast-render";
+import { UserView } from "@/components/shared/user-view";
 import { getT } from "@/i18n";
 
 import type { Comment } from "../types";
@@ -13,10 +14,10 @@ import { OpenThreadButton } from "./open-thread-button";
 export async function CommentPreviewCard({ comment, replyCount }: { comment: Comment; replyCount: number }) {
   const t = await getT("comments");
   return (
-    <div className="flex flex-col gap-2 rounded border border-(--color-border) p-3 text-sm">
+    <div className="flex flex-col gap-2 text-sm">
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
-        <span>{comment.author?.username ?? "—"}</span>
+        <UserView username={comment.author?.username} />
       </div>
       <div className="content" data-size="sm">
         <AstRender blocks={comment.blocks ?? []} />
