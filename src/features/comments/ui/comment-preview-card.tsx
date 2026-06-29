@@ -18,7 +18,7 @@ export async function CommentPreviewCard({ comment, replyCount }: { comment: Com
     <div className="flex flex-col gap-2 text-sm">
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
-        <UserView user={{ username: comment.author?.username }} />
+        <UserView user={comment.author} />
       </div>
       <ClampableContent>
         <div className="content" data-size="sm">
