@@ -8,7 +8,7 @@ import { can, isMutationAllowed } from "@/utils/permissions";
  * owner_id и visibility приходят в payload lecture/document/media/trail/form.
  */
 export interface ShareableResource {
-  owner_id?: string;
+  owner?: { id?: string | null } | undefined;
   visibility?: string;
 }
 
@@ -26,7 +26,7 @@ export function canCreateShareLink(
   resource: ShareableResource,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (!resource.owner_id || resource.owner_id !== me.id) return false;
+  if (!resource.owner?.id || resource.owner.id !== me.id) return false;
   return resource.visibility === "private";
 }
 

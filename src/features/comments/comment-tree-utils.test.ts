@@ -10,7 +10,7 @@ import type { Comment } from "./types";
 function node(id: string, parent_id?: string): Comment {
   return {
     id,
-    user_id: "u",
+    author: { id: "u" },
     lecture_id: "l",
     type: "claim",
     blocks: [],

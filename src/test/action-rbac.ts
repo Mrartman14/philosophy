@@ -69,7 +69,7 @@ export function lectureOwnedByOther(
 ) {
   return {
     id,
-    owner_id: ownerId,
+    owner: { id: ownerId },
     title: "Test Lecture",
     description: "",
     date: "2024-01-01",

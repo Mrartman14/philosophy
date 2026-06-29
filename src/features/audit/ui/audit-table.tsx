@@ -78,13 +78,13 @@ export async function AuditTable({ records }: Props) {
             <Td>
               <div className="flex flex-col">
                 {/* у удалённого актора username пустой ("" → «—») — LEFT JOIN на беке */}
-                <UserView username={rec.actor_username} />
+                <UserView user={{ username: rec.actor?.username }} />
                 <code
                   dir="ltr"
                   className="text-xs text-(--color-fg-muted)"
-                  title={rec.actor_user_id}
+                  title={rec.actor?.id}
                 >
-                  {shortId(rec.actor_user_id)}
+                  {shortId(rec.actor?.id)}
                 </code>
               </div>
             </Td>

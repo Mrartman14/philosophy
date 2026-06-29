@@ -51,7 +51,7 @@ const admin: Me = {
 function ann(overrides: Partial<Annotation> = {}): Annotation {
   return {
     id: "a-1",
-    owner_id: "u-author",
+    owner: { id: "u-author" },
     visibility: "private",
     parent_entity_type: "document",
     parent_entity_id: "d-1",

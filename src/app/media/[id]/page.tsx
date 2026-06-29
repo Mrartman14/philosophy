@@ -40,7 +40,7 @@ export default async function MediaPage({ params, searchParams }: Props) {
   const canDelete = canDeleteMedia(me, media);
   const canChangeVisibility = canChangeMediaVisibility(me, media);
   // Admin-удаление: есть право удалять, но это не его медиа (для текста диалога).
-  const isAdminDelete = canDelete && !!me && media.owner_id !== me.id;
+  const isAdminDelete = canDelete && !!me && media.owner?.id !== me.id;
 
   const canShare = canCreateShareLink(me, media);
   const shareLinks = canShare

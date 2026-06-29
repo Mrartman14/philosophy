@@ -43,15 +43,15 @@ const suspendedAdmin: Me = { ...admin, status: "suspended" };
 
 const ownedPrivate: Media = {
   id: "m1",
-  owner_id: "owner-1",
+  owner: { id: "owner-1" },
   type: "video",
   filename: "a.mp4",
   visibility: "private",
   created_at: "2026-06-12T00:00:00Z",
 };
 const ownedPublic: Media = { ...ownedPrivate, visibility: "public" };
-const foreignPrivate: Media = { ...ownedPrivate, owner_id: "user-2" };
-const foreignPublic: Media = { ...ownedPublic, owner_id: "user-2" };
+const foreignPrivate: Media = { ...ownedPrivate, owner: { id: "user-2" } };
+const foreignPublic: Media = { ...ownedPublic, owner: { id: "user-2" } };
 
 describe("canCreateMedia", () => {
   it("гость → false", () => { expect(canCreateMedia(guest)).toBe(false); });

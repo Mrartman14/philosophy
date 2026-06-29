@@ -2,12 +2,12 @@
 import { UserView } from "@/components/shared/user-view";
 import { getServerFmt, getT } from "@/i18n";
 
-import type { AdminMediaItem } from "../types";
+import type { Media } from "../types";
 
 import { MediaDeleteButton } from "./media-delete-button";
 
 interface Props {
-  media: AdminMediaItem;
+  media: Media;
 }
 
 /**
@@ -46,7 +46,7 @@ export async function MediaAdminRow({ media }: Props) {
         >
           {isPublic ? t("statusPublic") : t("statusPrivate")}
         </span>
-        <UserView username={media.owner_username} id={media.owner_id} />
+        <UserView user={media.owner} />
       </div>
       <div>
         <MediaDeleteButton id={media.id} isAdminDelete />

@@ -9,18 +9,18 @@ export function canCreateLecture(me: MaybeMe): boolean {
 
 export function canUpdateLecture(
   me: MaybeMe,
-  lecture: { owner_id: string },
+  lecture: { owner?: { id?: string | null } | undefined },
 ): boolean {
   if (!isMutationAllowed(me)) return false;
-  return lecture.owner_id === me.id;
+  return lecture.owner?.id === me.id;
 }
 
 export function canSetLectureVisibility(
   me: MaybeMe,
-  lecture: { owner_id: string },
+  lecture: { owner?: { id?: string | null } | undefined },
 ): boolean {
   if (!isMutationAllowed(me)) return false;
-  return lecture.owner_id === me.id;
+  return lecture.owner?.id === me.id;
 }
 
 export function canDeleteLecture(me: MaybeMe): boolean {
@@ -34,10 +34,10 @@ export function canDeleteLecture(me: MaybeMe): boolean {
  */
 export function canManageCover(
   me: MaybeMe,
-  lecture: { owner_id: string },
+  lecture: { owner?: { id?: string | null } | undefined },
 ): boolean {
   if (!isMutationAllowed(me)) return false;
-  return lecture.owner_id === me.id;
+  return lecture.owner?.id === me.id;
 }
 
 /**
@@ -46,10 +46,10 @@ export function canManageCover(
  */
 export function canManageAttachments(
   me: MaybeMe,
-  lecture: { owner_id: string },
+  lecture: { owner?: { id?: string | null } | undefined },
 ): boolean {
   if (!isMutationAllowed(me)) return false;
-  return lecture.owner_id === me.id;
+  return lecture.owner?.id === me.id;
 }
 
 /**
@@ -59,11 +59,11 @@ export function canManageAttachments(
  */
 export function canAttachToLecture(
   me: MaybeMe,
-  lecture: { owner_id: string },
+  lecture: { owner?: { id?: string | null } | undefined },
 ): boolean {
   // isMutationAllowed сужает me к NonNullable (тип-гард) и проверяет
   // status==active; can() покрывает наличие capability.
   if (!isMutationAllowed(me)) return false;
   if (!can(me, "entity.attach")) return false;
-  return lecture.owner_id === me.id;
+  return lecture.owner?.id === me.id;
 }

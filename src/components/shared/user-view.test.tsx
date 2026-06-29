@@ -11,24 +11,29 @@ afterEach(cleanup);
 
 describe("UserView", () => {
   it("показывает username, когда он есть (id не светится)", () => {
-    render(<UserView username="alex_b" id={UUID} />);
+    render(<UserView user={{ id: UUID, username: "alex_b" }} />);
     expect(screen.getByText("alex_b")).toBeInTheDocument();
     expect(screen.queryByText(UUID)).not.toBeInTheDocument();
   });
 
   it("падает на UUID (моноширинный, dir=ltr), когда имени нет", () => {
-    render(<UserView id={UUID} />);
+    render(<UserView user={{ id: UUID }} />);
     const el = screen.getByText(UUID);
     expect(el).toHaveAttribute("dir", "ltr");
     expect(el).toHaveClass("font-mono");
   });
 
   it("пустой/whitespace username трактуется как отсутствующий", () => {
-    render(<UserView username="   " id={UUID} />);
+    render(<UserView user={{ id: UUID, username: "   " }} />);
     expect(screen.getByText(UUID)).toBeInTheDocument();
   });
 
-  it("показывает «—», когда нет ни имени, ни id", () => {
+  it("«—», когда есть только username-ключ без значения (id не передан)", () => {
+    render(<UserView user={{ username: undefined }} />);
+    expect(screen.getByText("—")).toBeInTheDocument();
+  });
+
+  it("показывает «—», когда user отсутствует целиком", () => {
     render(<UserView />);
     expect(screen.getByText("—")).toBeInTheDocument();
   });

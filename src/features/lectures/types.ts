@@ -6,7 +6,7 @@ export type Lecture = LectureSchema;
 export type LectureVisibility = components["schemas"]["access.Visibility"];
 export type LectureListItem = Pick<
   Lecture,
-  "id" | "owner_id" | "visibility" | "title" | "description" | "date" | "created_at" | "updated_at"
+  "id" | "owner" | "visibility" | "title" | "description" | "date" | "created_at" | "updated_at"
 >;
 
 /**

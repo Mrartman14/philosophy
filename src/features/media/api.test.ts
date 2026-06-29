@@ -180,7 +180,7 @@ describe("getAdminMedia — admin-список", () => {
   });
 
   it("разворачивает items/total через unwrapList", async () => {
-    const media = { id: "m-1", filename: "a.mp4", type: "video", owner_id: "u-1", visibility: "public", created_at: "2026-06-01T00:00:00Z" };
+    const media = { id: "m-1", filename: "a.mp4", type: "video", owner: { id: "u-1" }, visibility: "public", created_at: "2026-06-01T00:00:00Z" };
     getMock.mockResolvedValue(
       apiResult({ data: { data: [media], pagination: { total: 5, offset: 0, limit: 20 } } }),
     );

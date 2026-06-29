@@ -66,7 +66,7 @@ describe("lectureDescriptor.extractImageKeys", () => {
         title: "T",
         date: "2026-01-01",
         description: "desc",
-        owner_id: "o",
+        owner: { id: "o" },
         created_at: "2026-01-01T00:00:00Z",
         updated_at: "2026-01-01T00:00:00Z",
         visibility: "public",
@@ -78,7 +78,7 @@ describe("lectureDescriptor.extractImageKeys", () => {
         {
           root: {
             id: "c1",
-            user_id: "u",
+            author: { id: "u" },
             lecture_id: "l1",
             type: "claim",
             created_at: "2026-01-01T00:00:00Z",
@@ -97,7 +97,7 @@ describe("lectureDescriptor.extractImageKeys", () => {
   it("дедуплицирует повторяющиеся ключи", () => {
     const snap: LectureSnapshot = {
       lecture: {
-        id: "l1", title: "T", date: "d", description: "x", owner_id: "o",
+        id: "l1", title: "T", date: "d", description: "x", owner: { id: "o" },
         created_at: "2026-01-01T00:00:00Z", updated_at: "2026-01-01T00:00:00Z",
         visibility: "public", cover_image_key: KEY_A,
       },

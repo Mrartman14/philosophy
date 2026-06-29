@@ -12,11 +12,10 @@ afterEach(cleanup);
 function base(over: Partial<Comment> = {}): Comment {
   return {
     id: "c1",
-    user_id: "u1",
     lecture_id: "l1",
     type: "claim",
     blocks: [],
-    author: { username: "alice" },
+    author: { id: "u1", username: "alice" },
     created_at: "2026-06-14T10:30:00Z",
     updated_at: "2026-06-14T10:30:00Z",
     ...over,

@@ -23,7 +23,7 @@ export async function TrailAdminRow({ trail, canDelete }: Props) {
           {trail.title || t("adminUntitled")}
         </RouterLink>
         <span className="text-xs text-(--color-fg-muted)">
-          {trail.visibility} · {t("adminAuthorLabel")} <UserView id={trail.owner_id} />
+          {trail.visibility} · {t("adminAuthorLabel")} <UserView user={trail.owner} />
         </span>
       </div>
       {canDelete && trail.id && (

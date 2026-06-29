@@ -58,7 +58,7 @@ export async function UsersTable({ users, canModerate, meId }: Props) {
           return (
             <Tr key={u.id}>
               <Td>
-                <UserView username={u.username} />
+                <UserView user={u} />
                 {isSelf && (
                   <span className="ms-1 text-xs text-(--color-fg-muted)">
                     {t("selfBadge")}

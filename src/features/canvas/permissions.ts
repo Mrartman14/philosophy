@@ -24,7 +24,7 @@ export function canCreateCanvas(me: MaybeMe): boolean {
  */
 export function canEditCanvas(me: MaybeMe, canvas: Canvas): boolean {
   if (!isMutationAllowed(me)) return false;
-  return canvas.owner_id === me.id;
+  return canvas.owner?.id === me.id;
 }
 
 /**
@@ -33,7 +33,7 @@ export function canEditCanvas(me: MaybeMe, canvas: Canvas): boolean {
  */
 export function canChangeVisibility(me: MaybeMe, canvas: Canvas): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (canvas.owner_id !== me.id) return false;
+  if (canvas.owner?.id !== me.id) return false;
   return canvas.visibility === "private";
 }
 
@@ -44,7 +44,7 @@ export function canChangeVisibility(me: MaybeMe, canvas: Canvas): boolean {
 export function canDeleteCanvas(me: MaybeMe, canvas: Canvas): boolean {
   return ownerOrCap(
     me,
-    canvas.owner_id,
+    canvas.owner?.id,
     "canvas.delete_any",
     () => canvas.visibility === "public",
   );

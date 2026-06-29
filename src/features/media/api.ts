@@ -6,7 +6,7 @@ import { createApiClient } from "@/api/client";
 import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
-import type { AdminMediaItem, Media, MediaAttachment } from "./types";
+import type { Media, MediaAttachment } from "./types";
 
 export interface MyMediaFilter {
   offset?: number;
@@ -23,10 +23,11 @@ export interface MyMediaResult {
   limit: number;
 }
 
-/** Результат GET /api/admin/media — элементы admin-листинга (с owner_username),
- *  НЕ Media[]. Не переиспользует MyMediaResult (тот для getMyMedia). */
+/** Результат GET /api/admin/media — модерация неприватных медиа всех владельцев.
+ *  Бэк отдаёт обычные media.Media (owner: userref.Ref несёт username); отдельный
+ *  тип от MyMediaResult сохранён по смыслу (admin-листинг vs «мои медиа»). */
 export interface AdminMediaResult {
-  items: AdminMediaItem[];
+  items: Media[];
   total: number;
   offset: number;
   limit: number;
@@ -60,7 +61,7 @@ export const getMyMedia = cache(
 /**
  * GET /api/admin/media — admin-список неприватных медиа всех владельцев
  * (модерация, гейт media.delete_any). Приватные бек не листит. Отдаёт
- * AdminMediaItem[] (несёт owner_username) → результат AdminMediaResult, НЕ
+ * media.Media[] (owner: userref.Ref с username) → AdminMediaResult, НЕ
  * MyMediaResult. Per-actor → только React.cache, без unstable_cache (как
  * getMyMedia).
  */

@@ -23,10 +23,10 @@ function makeMe(over: Partial<Me> = {}): Me {
   };
 }
 
-const ownPrivate: Trail = { id: "t1", owner_id: "u1", title: "My", visibility: "private" };
-const ownPublic: Trail = { id: "t2", owner_id: "u1", title: "My2", visibility: "public" };
-const otherPublic: Trail = { id: "t3", owner_id: "u2", title: "Other", visibility: "public" };
-const otherPrivate: Trail = { id: "t4", owner_id: "u2", title: "OtherP", visibility: "private" };
+const ownPrivate: Trail = { id: "t1", owner: { id: "u1" }, title: "My", visibility: "private" };
+const ownPublic: Trail = { id: "t2", owner: { id: "u1" }, title: "My2", visibility: "public" };
+const otherPublic: Trail = { id: "t3", owner: { id: "u2" }, title: "Other", visibility: "public" };
+const otherPrivate: Trail = { id: "t4", owner: { id: "u2" }, title: "OtherP", visibility: "private" };
 
 describe("canCreateTrail", () => {
   it("гость → false", () => {

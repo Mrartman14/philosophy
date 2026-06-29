@@ -46,7 +46,7 @@ export default async function AdminFormsPage({ searchParams }: Props) {
           <FormAdminRow
             key={f.id}
             form={f}
-            canDelete={canAdminDeleteForm(me, { id: f.id, owner_id: "", visibility: f.visibility } as Form)}
+            canDelete={canAdminDeleteForm(me, { id: f.id, visibility: f.visibility } as Form)}
           />
         ))}
       </ul>

@@ -63,7 +63,7 @@ const SNAPSHOT = {
     title: "Заголовок лекции",
     date: "2026-01-01",
     description: "Описание лекции",
-    owner_id: "o",
+    owner: { id: "o" },
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",
     visibility: "public",
@@ -74,12 +74,11 @@ const SNAPSHOT = {
     {
       root: {
         id: "c1",
-        user_id: "u",
         lecture_id: "l1",
         type: "claim",
         created_at: "2026-01-01T00:00:00Z",
         updated_at: "2026-01-01T00:00:00Z",
-        author: { username: "alice" },
+        author: { id: "u", username: "alice" },
         blocks: [],
       },
       descendants: [],

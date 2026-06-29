@@ -36,7 +36,7 @@ const activeUserNotOwner: Me = { ...activeUser, id: stranger };
 
 const suspendedAdmin: Me = { ...activeAdmin, status: "suspended" };
 
-const lecture = { owner_id: owner };
+const lecture = { owner: { id: owner } };
 
 describe("canCreateLecture", () => {
   it("гость → false", () => {

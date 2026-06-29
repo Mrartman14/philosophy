@@ -76,7 +76,7 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
           {canDeleteComment(me, comment) && (
             <CommentDeleteButton
               commentId={comment.id}
-              admin={comment.user_id !== me?.id}
+              admin={comment.author?.id !== me?.id}
             />
           )}
           {me && (

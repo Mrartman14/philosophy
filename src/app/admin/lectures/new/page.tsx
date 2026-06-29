@@ -21,7 +21,7 @@ export default async function NewLecturePage() {
 
   // Создатель будет владельцем лекции → ownership гарантирован; гейт сводится к
   // capability entity.attach. Если её нет — пикер документов не показываем.
-  const canAttach = canAttachToLecture(me, { owner_id: me?.id ?? "" });
+  const canAttach = canAttachToLecture(me, { owner: { id: me?.id ?? "" } });
 
   const t = await getT("admin");
 

@@ -86,7 +86,7 @@ export function CommentNodeView({
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <CommentTypeBadge type={comment.type} label={typeLabel} />
-        <UserView username={comment.author?.username} />
+        <UserView user={comment.author} />
         <span>{formatCommentDate(comment.created_at, locale, tz)}</span>
         {comment.is_edited && <span>{editedLabel}</span>}
       </div>

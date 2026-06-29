@@ -21,9 +21,9 @@ export function canCreateAnnotation(me: MaybeMe): boolean {
  */
 export function canEditAnnotation(
   me: MaybeMe,
-  annotation: Pick<Annotation, "owner_id">,
+  annotation: Pick<Annotation, "owner">,
 ): boolean {
-  return isMutationAllowed(me) && annotation.owner_id === me.id;
+  return isMutationAllowed(me) && annotation.owner?.id === me.id;
 }
 
 /**
@@ -32,9 +32,9 @@ export function canEditAnnotation(
  */
 export function canDeleteAnnotation(
   me: MaybeMe,
-  annotation: Pick<Annotation, "owner_id">,
+  annotation: Pick<Annotation, "owner">,
 ): boolean {
-  return isMutationAllowed(me) && annotation.owner_id === me.id;
+  return isMutationAllowed(me) && annotation.owner?.id === me.id;
 }
 
 /**

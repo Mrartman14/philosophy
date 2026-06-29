@@ -37,7 +37,7 @@ export function canModerateMedia(me: MaybeMe): boolean {
  * philosophy-api internal/media/service.go:Delete).
  */
 export function canDeleteMedia(me: MaybeMe, media: Media): boolean {
-  return ownerOrCap(me, media.owner_id, "media.delete_any");
+  return ownerOrCap(me, media.owner?.id, "media.delete_any");
 }
 
 /**
@@ -48,6 +48,6 @@ export function canDeleteMedia(me: MaybeMe, media: Media): boolean {
  */
 export function canChangeMediaVisibility(me: MaybeMe, media: Media): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (media.owner_id !== me.id) return false;
+  if (media.owner?.id !== me.id) return false;
   return media.visibility === "private";
 }

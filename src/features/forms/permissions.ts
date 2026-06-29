@@ -23,14 +23,14 @@ export function canCreateForm(me: MaybeMe): boolean {
  */
 export function canEditForm(me: MaybeMe, form: Form): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (form.owner_id !== me.id) return false;
+  if (form.owner?.id !== me.id) return false;
   return !form.published_at;
 }
 
 /** Публикация (private → public). Owner, ещё приватная, не опубликована. */
 export function canPublishForm(me: MaybeMe, form: Form): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (form.owner_id !== me.id) return false;
+  if (form.owner?.id !== me.id) return false;
   return form.visibility === "private" && !form.published_at;
 }
 
@@ -41,7 +41,7 @@ export function canPublishForm(me: MaybeMe, form: Form): boolean {
 export function canDeleteForm(me: MaybeMe, form: Form): boolean {
   return ownerOrCap(
     me,
-    form.owner_id,
+    form.owner?.id,
     "form.delete_any",
     () => form.visibility === "public",
   );
@@ -50,13 +50,13 @@ export function canDeleteForm(me: MaybeMe, form: Form): boolean {
 /** Список откликов формы — только владелец (бек: 403 для остальных). */
 export function canListFormSubmissions(me: MaybeMe, form: Form): boolean {
   if (!isMutationAllowed(me)) return false;
-  return form.owner_id === me.id;
+  return form.owner?.id === me.id;
 }
 
 /** Редактирование отклика — автор, editable-форма, не retracted. */
 export function canEditSubmission(me: MaybeMe, form: Form, sub: Submission): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (sub.user_id !== me.id) return false;
+  if (sub.user?.id !== me.id) return false;
   if (form.submission_mode !== "editable") return false;
   return !sub.retracted_at;
 }
@@ -64,14 +64,14 @@ export function canEditSubmission(me: MaybeMe, form: Form, sub: Submission): boo
 /** Удаление отклика (освобождает слот) — автор, editable-форма. */
 export function canDeleteSubmission(me: MaybeMe, form: Form, sub: Submission): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (sub.user_id !== me.id) return false;
+  if (sub.user?.id !== me.id) return false;
   return form.submission_mode === "editable";
 }
 
 /** Отзыв отклика (сжигает слот) — автор, immutable-форма, не retracted. */
 export function canRetractSubmission(me: MaybeMe, form: Form, sub: Submission): boolean {
   if (!isMutationAllowed(me)) return false;
-  if (sub.user_id !== me.id) return false;
+  if (sub.user?.id !== me.id) return false;
   if (form.submission_mode !== "immutable") return false;
   return !sub.retracted_at;
 }

@@ -114,7 +114,7 @@ describe("createForm — Idempotency-Key wiring", () => {
         data: {
           id: FORM_ID,
           title: "Test Form",
-          owner_id: "u1",
+          owner: { id: "u1" },
           visibility: "private",
           submission_mode: "editable",
           fields: [],

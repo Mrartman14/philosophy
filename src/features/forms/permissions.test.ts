@@ -30,37 +30,37 @@ function makeMe(over: Partial<Me> = {}): Me {
 
 const draftPrivate: Form = {
   id: "f1",
-  owner_id: "u1",
+  owner: { id: "u1" },
   visibility: "private",
   submission_mode: "editable",
 };
 const publishedPublic: Form = {
   id: "f2",
-  owner_id: "u1",
+  owner: { id: "u1" },
   visibility: "public",
   submission_mode: "editable",
   published_at: "2026-06-01T00:00:00Z",
 };
 const othersPublic: Form = {
   id: "f3",
-  owner_id: "u9",
+  owner: { id: "u9" },
   visibility: "public",
   submission_mode: "immutable",
   published_at: "2026-06-01T00:00:00Z",
 };
 const immutableOwned: Form = {
   id: "f4",
-  owner_id: "u1",
+  owner: { id: "u1" },
   visibility: "public",
   submission_mode: "immutable",
   published_at: "2026-06-01T00:00:00Z",
 };
 
-const activeSub: Submission = { id: "s1", form_id: "f1", user_id: "u1" };
+const activeSub: Submission = { id: "s1", form_id: "f1", user: { id: "u1" } };
 const retractedSub: Submission = {
   id: "s2",
   form_id: "f4",
-  user_id: "u1",
+  user: { id: "u1" },
   retracted_at: "2026-06-02T00:00:00Z",
 };
 
@@ -102,7 +102,7 @@ describe("canDeleteForm", () => {
       canDeleteForm(makeMe({ id: "adm", role: "admin", capabilities: ["form.delete_any"] }), othersPublic),
     ).toBe(true); });
   it("admin delete_any на чужой private → false (бек 404)", () => {
-    const othersPrivate: Form = { id: "f5", owner_id: "u9", visibility: "private", submission_mode: "editable" };
+    const othersPrivate: Form = { id: "f5", owner: { id: "u9" }, visibility: "private", submission_mode: "editable" };
     expect(
       canDeleteForm(makeMe({ id: "adm", role: "admin", capabilities: ["form.delete_any"] }), othersPrivate),
     ).toBe(false);
@@ -125,7 +125,7 @@ describe("canEditSubmission / canDeleteSubmission (editable, автор)", () =>
     expect(canDeleteSubmission(makeMe(), draftPrivate, activeSub)).toBe(true);
   });
   it("immutable форма → edit/delete false", () => {
-    const sub: Submission = { id: "s9", form_id: "f4", user_id: "u1" };
+    const sub: Submission = { id: "s9", form_id: "f4", user: { id: "u1" } };
     expect(canEditSubmission(makeMe(), immutableOwned, sub)).toBe(false);
     expect(canDeleteSubmission(makeMe(), immutableOwned, sub)).toBe(false);
   });
@@ -139,7 +139,7 @@ describe("canEditSubmission / canDeleteSubmission (editable, автор)", () =>
 
 describe("canRetractSubmission (immutable, автор, не retracted)", () => {
   it("автор immutable active → true", () => {
-    const sub: Submission = { id: "s9", form_id: "f4", user_id: "u1" };
+    const sub: Submission = { id: "s9", form_id: "f4", user: { id: "u1" } };
     expect(canRetractSubmission(makeMe(), immutableOwned, sub)).toBe(true);
   });
   it("editable форма → false (RETRACT_NOT_APPLICABLE)", () =>
@@ -147,7 +147,7 @@ describe("canRetractSubmission (immutable, автор, не retracted)", () => {
   it("уже retracted → false", () =>
     { expect(canRetractSubmission(makeMe(), immutableOwned, retractedSub)).toBe(false); });
   it("не автор → false", () =>
-    { expect(canRetractSubmission(makeMe({ id: "x" }), immutableOwned, { id: "s9", form_id: "f4", user_id: "u1" })).toBe(
+    { expect(canRetractSubmission(makeMe({ id: "x" }), immutableOwned, { id: "s9", form_id: "f4", user: { id: "u1" } })).toBe(
       false,
     ); });
 });
@@ -156,7 +156,7 @@ describe("canAdminDeleteForm / canListAdminForms", () => {
   it("delete_any на public → true", () =>
     { expect(canAdminDeleteForm(makeMe({ capabilities: ["form.delete_any"] }), othersPublic)).toBe(true); });
   it("delete_any на private → false", () => {
-    const priv: Form = { id: "f7", owner_id: "u9", visibility: "private", submission_mode: "editable" };
+    const priv: Form = { id: "f7", owner: { id: "u9" }, visibility: "private", submission_mode: "editable" };
     expect(canAdminDeleteForm(makeMe({ capabilities: ["form.delete_any"] }), priv)).toBe(false);
   });
   it("без капы → list false", () => { expect(canListAdminForms(makeMe())).toBe(false); });

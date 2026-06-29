@@ -67,7 +67,7 @@ function lectureSuccessEnvelope() {
         date: "2024-01-01",
         description: "",
         visibility: "private",
-        owner_id: OWNER_ID,
+        owner: { id: OWNER_ID },
       },
     },
     error: undefined,

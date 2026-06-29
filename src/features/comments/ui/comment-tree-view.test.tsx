@@ -12,11 +12,10 @@ afterEach(cleanup);
 function node(id: string, username: string, parent_id?: string): Comment {
   return {
     id,
-    user_id: "u",
     lecture_id: "l",
     type: "claim",
     blocks: [],
-    author: { username },
+    author: { id: "u", username },
     created_at: "2026-06-14T00:00:00Z",
     updated_at: "2026-06-14T00:00:00Z",
     ...(parent_id ? { parent_id } : {}),

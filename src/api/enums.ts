@@ -139,6 +139,8 @@ export const AUDIT_ACTIONS = enumValues<S["audit.Action"]>()(
   "form.create",
   "form.delete",
   "form.publish",
+  "form.vote.retract",
+  "form.vote.submit",
   "glossary.create",
   "glossary.delete",
   "glossary.update",

@@ -41,8 +41,8 @@ const suspended: Me = {
   capabilities: ["share_link.moderate"],
 };
 
-const privateResource = { owner_id: "u-owner", visibility: "private" as const };
-const publicResource = { owner_id: "u-owner", visibility: "public" as const };
+const privateResource = { owner: { id: "u-owner" }, visibility: "private" as const };
+const publicResource = { owner: { id: "u-owner" }, visibility: "public" as const };
 
 describe("canCreateShareLink", () => {
   it("гость → false", () => {

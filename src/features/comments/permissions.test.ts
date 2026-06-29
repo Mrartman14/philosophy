@@ -41,9 +41,9 @@ const admin: Me = {
 
 const suspended: Me = { ...userCreator, status: "suspended" };
 
-const ownComment = { id: "c1", user_id: "u1", is_deleted: false } as Comment;
-const othersComment = { id: "c2", user_id: "u2", is_deleted: false } as Comment;
-const deletedComment = { id: "c3", user_id: "u1", is_deleted: true } as Comment;
+const ownComment = { id: "c1", author: { id: "u1" }, is_deleted: false } as Comment;
+const othersComment = { id: "c2", author: { id: "u2" }, is_deleted: false } as Comment;
+const deletedComment = { id: "c3", author: { id: "u1" }, is_deleted: true } as Comment;
 
 describe("canCreateComment", () => {
   it("гость → false", () => { expect(canCreateComment(guest)).toBe(false); });

@@ -22,7 +22,7 @@ export async function AnnotationAdminRow({ annotation, canAdminDelete }: Props) 
         <span>
           {annotation.parent_entity_type} · {annotation.parent_entity_id}
         </span>
-        <span>{t("adminAuthorLabel")}: <UserView id={annotation.owner_id} /></span>
+        <span>{t("adminAuthorLabel")}: <UserView user={annotation.owner} /></span>
       </header>
       <div className="content" data-size="sm">
         <AstRender blocks={annotation.blocks ?? []} />

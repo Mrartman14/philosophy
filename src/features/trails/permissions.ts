@@ -23,7 +23,7 @@ export function canCreateTrail(me: MaybeMe): boolean {
  * admin-override (service.go: who.UserID == t.OwnerID).
  */
 export function canEditTrail(me: MaybeMe, trail: Trail): boolean {
-  return isMutationAllowed(me) && trail.owner_id === me.id;
+  return isMutationAllowed(me) && trail.owner?.id === me.id;
 }
 
 /**
@@ -33,7 +33,7 @@ export function canEditTrail(me: MaybeMe, trail: Trail): boolean {
 export function canDeleteTrail(me: MaybeMe, trail: Trail): boolean {
   return ownerOrCap(
     me,
-    trail.owner_id,
+    trail.owner?.id,
     "trail.delete_any",
     () => trail.visibility === "public",
   );

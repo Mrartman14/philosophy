@@ -24,8 +24,8 @@ function makeMe(over: Partial<Me> = {}): Me {
   };
 }
 
-const ownDoc: Document = { id: "d1", owner_id: "u1", visibility: "private" };
-const otherDoc: Document = { id: "d2", owner_id: "u2", visibility: "public" };
+const ownDoc: Document = { id: "d1", owner: { id: "u1" }, visibility: "private" };
+const otherDoc: Document = { id: "d2", owner: { id: "u2" }, visibility: "public" };
 
 describe("canCreateDocument", () => {
   it("гость → false", () => {
@@ -77,7 +77,7 @@ describe("canDeleteDocument", () => {
     ).toBe(true);
   });
   it("admin delete_any на чужой PRIVATE → false (бек вернёт 404)", () => {
-    const privOther: Document = { id: "d3", owner_id: "u9", visibility: "private" };
+    const privOther: Document = { id: "d3", owner: { id: "u9" }, visibility: "private" };
     expect(
       canDeleteDocument(
         makeMe({ id: "admin1", role: "admin", capabilities: ["document.delete_any"] }),
@@ -97,7 +97,7 @@ describe("canAdminDeleteDocument (admin-список, только public)", () 
     expect(canAdminDeleteDocument(makeMe(), otherDoc)).toBe(false);
   });
   it("private → false", () => {
-    const priv: Document = { id: "d4", owner_id: "u9", visibility: "private" };
+    const priv: Document = { id: "d4", owner: { id: "u9" }, visibility: "private" };
     expect(
       canAdminDeleteDocument(makeMe({ role: "admin", capabilities: ["document.delete_any"] }), priv),
     ).toBe(false);

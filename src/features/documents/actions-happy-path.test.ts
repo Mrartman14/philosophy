@@ -97,7 +97,7 @@ function docSuccessEnvelope() {
       data: {
         id: DOC_ID,
         title: "My Document",
-        owner_id: "active-user-id",
+        owner: { id: "active-user-id" },
         visibility: "private",
         blocks: [],
         created_at: "2024-01-01T00:00:00Z",

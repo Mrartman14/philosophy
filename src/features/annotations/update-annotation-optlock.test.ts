@@ -21,7 +21,7 @@ vi.mock("@/i18n", async (importOriginal) => {
 });
 // getAnnotationById (defense-in-depth ownership) → возвращаем свою аннотацию.
 vi.mock("./api", () => ({
-  getAnnotationById: () => Promise.resolve({ id: "a1", owner_id: "u1" }),
+  getAnnotationById: () => Promise.resolve({ id: "a1", owner: { id: "u1" } }),
 }));
 vi.mock("./permissions", () => ({
   canCreateAnnotation: () => true,

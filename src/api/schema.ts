@@ -2845,7 +2845,7 @@ export interface paths {
          * @description Non-private media across all owners for the admin moderation
          *     UI. Private media is never listed (admins have no window into
          *     other users' private drafts). Gated by media.delete_any.
-         *     Each row includes owner_username for human-readable moderation.
+         *     Each row includes owner {id,username} for human-readable moderation.
          */
         get: {
             parameters: {
@@ -2870,7 +2870,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["media.AdminMediaItem"][];
+                            data?: components["schemas"]["media.Media"][];
                         };
                     };
                 };
@@ -9032,6 +9032,178 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/forms/{id}/fields/{fieldId}/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ответы на один вопрос формы (владелец или публичный опрос)
+         * @description Колоночный просмотр: все ответы на конкретное поле через живые (не retracted) отклики, с пагинацией.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID формы */
+                    id: string;
+                    /** @description ID поля */
+                    fieldId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["form.FieldAnswerItem"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/forms/{id}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Статистика по форме (владелец или публичный опрос)
+         * @description Per-field агрегат по живым (не retracted) откликам: распределение по вариантам для choice-полей, счётчик заполнения для всех типов.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description ID формы */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.Response"] & {
+                            data?: components["schemas"]["form.FormStats"];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/forms/{id}/submissions": {
         parameters: {
             query?: never;
@@ -9039,10 +9211,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Список откликов формы (только владелец) */
+        /** Список откликов формы (владелец или публичный опрос) */
         get: {
             parameters: {
                 query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
                     /** @description Смещение */
                     offset?: number;
                     /** @description Записей на странице */
@@ -15180,7 +15354,10 @@ export interface paths {
         /** Получить отклик */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
                 header?: never;
                 path: {
                     /** @description ID отклика */
@@ -16538,7 +16715,7 @@ export interface components {
             created_at?: string;
             id?: string;
             is_edited?: boolean;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             parent_entity_id?: string;
             parent_entity_type?: components["schemas"]["annotation.ParentEntityType"];
             updated_at?: string;
@@ -16565,7 +16742,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "ANCHOR_ENTITY_UNKNOWN" | "ANCHOR_BLOCK_NOT_FOUND" | "ANCHOR_TARGET_NOT_FOUND" | "ANCHOR_TARGET_WRONG_LECTURE" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "ENTRY_NOT_VISIBLE_ENOUGH" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY" | "GRAPH_NOT_READY";
+        "apperror.Code": "NOT_FOUND" | "BAD_REQUEST" | "VALIDATION_ERROR" | "INTERNAL" | "UNAUTHORIZED" | "FORBIDDEN" | "CONFLICT" | "RATE_LIMITED" | "PRECONDITION_FAILED" | "IF_MATCH_REQUIRED" | "VERSION_MISMATCH" | "NOT_CONFIGURED" | "UNSUPPORTED_MEDIA_TYPE" | "PAYLOAD_TOO_LARGE" | "REQUEST_BODY_TOO_LARGE" | "INVALID_ID" | "MISSING_PARAMS" | "BANNED" | "SUSPENDED" | "USER_NOT_FOUND" | "TOKEN_LIMIT" | "ATTACH_FORBIDDEN" | "LECTURE_NOT_FOUND" | "PUBLIC_IMMUTABLE" | "RESOURCE_NOT_PRIVATE" | "SELF_REACTION" | "AXIS_NOT_ALLOWED" | "COMMENT_DELETED" | "MAX_DEPTH_EXCEEDED" | "ANCHOR_INVALID" | "ANCHOR_ENTITY_UNKNOWN" | "ANCHOR_BLOCK_NOT_FOUND" | "ANCHOR_TARGET_NOT_FOUND" | "ANCHOR_TARGET_WRONG_LECTURE" | "RANGE_TOO_LARGE" | "INVALID_RANGE" | "BLOCKS_EMPTY" | "BLOCKS_INVALID" | "BLOCKS_HAVE_ANCHORS" | "BLOCK_ID_UNKNOWN" | "DUPLICATE_BLOCK_ID" | "REF_NOT_FOUND" | "INVALID_MARKDOWN" | "INVALID_ROOT_TYPE" | "INVALID_TYPE" | "INVALID_TYPE_FOR_PARENT" | "INVALID_PARENT_TYPE" | "PARENT_NOT_AVAILABLE" | "PARENT_WRONG_LECTURE" | "BLOCK_REFERENCED" | "COMMENT_REFERENCED" | "DOCUMENT_REFERENCED" | "GLOSSARY_REFERENCED" | "INVALID_ENTITY_TYPE" | "ALREADY_ATTACHED" | "ENTRY_NOT_VISIBLE_ENOUGH" | "FORM_NOT_FOUND" | "FORM_PUBLISHED" | "FORM_IMMUTABLE_MODE" | "SUBMISSION_NOT_FOUND" | "ALREADY_SUBMITTED" | "ALREADY_RETRACTED" | "RETRACT_NOT_APPLICABLE" | "MODE_CHANGE_FORBIDDEN" | "INVALID_FORM_SCHEMA" | "INVALID_SUBMISSION" | "INVALID_INSIGHT_VALUE" | "FIELD_NOT_FOUND" | "IMAGE_TOO_LARGE" | "IMAGE_INVALID_MIME" | "IMAGE_UNKNOWN_KEY" | "UPLOAD_FOREIGN" | "UPLOAD_NOT_FOUND" | "INVALID_FILE_TYPE" | "INVALID_DATE" | "INVALID_QUERY_DATE" | "INVALID_RRULE" | "INVALID_EVENT" | "INVALID_COLOR" | "INVALID_ENDPOINT" | "INVALID_REVISION_NUMBER" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_KEY_IN_USE" | "EMBEDDER_UNAVAILABLE" | "MAP_NOT_READY" | "GRAPH_NOT_READY";
         "ast.Block": {
             attrs?: {
                 [key: string]: unknown;
@@ -16683,11 +16860,10 @@ export interface components {
             sort_order?: number;
         };
         /** @enum {string} */
-        "audit.Action": "annotation.admin_delete" | "annotation.create" | "annotation.delete" | "annotation.update" | "attachment.create" | "attachment.delete" | "attachment.entry_clear" | "attachment.entry_set" | "attachment.reorder" | "banner.create" | "banner.delete" | "banner.update" | "canvas.create" | "canvas.delete" | "canvas.update" | "canvas.visibility_change" | "comment.admin_delete" | "comment.create" | "comment.delete" | "comment.update" | "document.create" | "document.delete" | "document.update" | "document.upload" | "document.visibility_change" | "event.create" | "event.delete" | "event.update" | "form.admin_delete" | "form.create" | "form.delete" | "form.publish" | "glossary.create" | "glossary.delete" | "glossary.update" | "lecture.cover.clear" | "lecture.cover.set" | "lecture.create" | "lecture.delete" | "lecture.update" | "lecture.visibility_change" | "map.rebuild" | "media.create" | "media.delete" | "media.upload" | "media.visibility_change" | "push.broadcast" | "share_link.admin_revoke" | "share_link.create" | "share_link.revoke" | "tag.create" | "tag.delete" | "tag.set_lecture_tags" | "tag.update" | "trail.create" | "trail.delete" | "trail.set_items" | "trail.update" | "trail.visibility_change" | "user.role_change" | "user.status_change";
+        "audit.Action": "annotation.admin_delete" | "annotation.create" | "annotation.delete" | "annotation.update" | "attachment.create" | "attachment.delete" | "attachment.entry_clear" | "attachment.entry_set" | "attachment.reorder" | "banner.create" | "banner.delete" | "banner.update" | "canvas.create" | "canvas.delete" | "canvas.update" | "canvas.visibility_change" | "comment.admin_delete" | "comment.create" | "comment.delete" | "comment.update" | "document.create" | "document.delete" | "document.update" | "document.upload" | "document.visibility_change" | "event.create" | "event.delete" | "event.update" | "form.admin_delete" | "form.create" | "form.delete" | "form.publish" | "form.vote.retract" | "form.vote.submit" | "glossary.create" | "glossary.delete" | "glossary.update" | "lecture.cover.clear" | "lecture.cover.set" | "lecture.create" | "lecture.delete" | "lecture.update" | "lecture.visibility_change" | "map.rebuild" | "media.create" | "media.delete" | "media.upload" | "media.visibility_change" | "push.broadcast" | "share_link.admin_revoke" | "share_link.create" | "share_link.revoke" | "tag.create" | "tag.delete" | "tag.set_lecture_tags" | "tag.update" | "trail.create" | "trail.delete" | "trail.set_items" | "trail.update" | "trail.visibility_change" | "user.role_change" | "user.status_change";
         "audit.Record": {
             action?: components["schemas"]["audit.Action"];
-            actor_user_id?: string;
-            actor_username?: string;
+            actor?: components["schemas"]["userref.Ref"];
             created_at?: string;
             details?: {
                 [key: string]: unknown;
@@ -16753,7 +16929,7 @@ export interface components {
              *     by-lecture listing is lightweight — Data is not populated there.
              */
             is_entry?: boolean;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             schema_version?: number;
             title?: string;
             updated_at?: string;
@@ -16762,7 +16938,7 @@ export interface components {
         };
         "canvas.CanvasSummary": {
             id?: string;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             title?: string;
             updated_at?: string;
             version?: number;
@@ -16819,14 +16995,14 @@ export interface components {
             canvas_id?: string;
             created_at?: string;
             data?: components["schemas"]["canvas.Data"];
-            editor_id?: string;
+            editor?: components["schemas"]["userref.Ref"];
             rev_num?: number;
             title?: string;
         };
         "canvas.RevisionMeta": {
             canvas_id?: string;
             created_at?: string;
-            editor_id?: string;
+            editor?: components["schemas"]["userref.Ref"];
             rev_num?: number;
         };
         "canvas.SetVisibilityRequest": {
@@ -16862,6 +17038,7 @@ export interface components {
             target_entity_type: "document" | "glossary" | "comment" | "media";
         };
         "comment.Author": {
+            id?: string;
             username?: string;
         };
         "comment.AxisCount": {
@@ -16884,7 +17061,6 @@ export interface components {
             reactions?: components["schemas"]["comment.ReactionSummary"];
             type: components["schemas"]["comment.CommentType"];
             updated_at: string;
-            user_id?: string;
             /**
              * @description Version is the optimistic-lock counter, present on every read shape
              *     (single GET /api/comments/{id}, subtree root + descendants, lecture list,
@@ -16902,7 +17078,6 @@ export interface components {
             lecture_id?: string;
             snippet?: string;
             type?: components["schemas"]["comment.CommentType"];
-            user_id?: string;
             /**
              * @description Version mirrors the comment's optimistic-lock counter so the picker can
              *     seed an If-Match without a follow-up read (per docs/conventions/optimistic-locking.md:
@@ -16983,7 +17158,7 @@ export interface components {
              *     (false) in standalone document responses (GET /api/documents/{id}).
              */
             is_entry?: boolean;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             updated_at?: string;
             /**
              * @description Version is the optimistic-locking counter (documents.version, migration
@@ -16996,7 +17171,7 @@ export interface components {
         "document.DocumentSummary": {
             filename?: string;
             id?: string;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             updated_at?: string;
             /**
              * @description Version mirrors Document.Version so the picker can seed an optimistic-lock
@@ -17093,6 +17268,8 @@ export interface components {
             fields: components["schemas"]["form.CreateFieldRequest"][];
             /** @enum {unknown} */
             submission_mode: "editable" | "immutable";
+            /** @enum {unknown} */
+            submission_visibility?: "private" | "public";
             title: string;
             /** @enum {unknown} */
             visibility: "private" | "public";
@@ -17103,9 +17280,22 @@ export interface components {
         "form.EditSubmissionRequest": {
             answers?: components["schemas"]["form.SubmitAnswer"][];
         };
+        "form.FieldAnswerItem": {
+            submission_id?: string;
+            /** @description RFC3339 */
+            submitted_at?: string;
+            user?: components["schemas"]["userref.Ref"];
+            value?: Record<string, never>;
+        };
         "form.FieldOption": {
             id?: string;
             label?: string;
+        };
+        "form.FieldStats": {
+            answered?: number;
+            field_id?: string;
+            options?: components["schemas"]["form.OptionStat"][];
+            type?: components["schemas"]["form.FieldType"];
         };
         /** @enum {string} */
         "form.FieldType": "text" | "long_text" | "single_choice" | "multi_choice" | "number" | "date";
@@ -17116,9 +17306,10 @@ export interface components {
             description?: components["schemas"]["ast.Block"][];
             fields?: components["schemas"]["form.FormField"][];
             id?: string;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             published_at?: string;
             submission_mode?: components["schemas"]["form.SubmissionMode"];
+            submission_visibility?: components["schemas"]["form.SubmissionVisibility"];
             title?: string;
             updated_at?: string;
             visibility?: components["schemas"]["access.Visibility"];
@@ -17137,11 +17328,21 @@ export interface components {
         "form.FormListItem": {
             created_at?: string;
             id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             /** @description RFC3339 */
             published_at?: string;
             submission_mode?: components["schemas"]["form.SubmissionMode"];
             title?: string;
             visibility?: components["schemas"]["access.Visibility"];
+        };
+        "form.FormStats": {
+            fields?: components["schemas"]["form.FieldStats"][];
+            total_submissions?: number;
+        };
+        "form.OptionStat": {
+            count?: number;
+            label?: string;
+            option_id?: string;
         };
         "form.Submission": {
             answers?: components["schemas"]["form.Answer"][];
@@ -17149,17 +17350,19 @@ export interface components {
             id?: string;
             retracted_at?: string;
             submitted_at?: string;
-            user_id?: string;
+            user?: components["schemas"]["userref.Ref"];
         };
         "form.SubmissionListItem": {
             form_id?: string;
             id?: string;
             retracted_at?: string;
             submitted_at?: string;
-            user_id?: string;
+            user?: components["schemas"]["userref.Ref"];
         };
         /** @enum {string} */
         "form.SubmissionMode": "editable" | "immutable";
+        /** @enum {string} */
+        "form.SubmissionVisibility": "private" | "public";
         "form.SubmitAnswer": {
             field_id: string;
             value?: {
@@ -17315,7 +17518,7 @@ export interface components {
             date: string;
             description: string;
             id: string;
-            owner_id: string;
+            owner?: components["schemas"]["userref.Ref"];
             title: string;
             updated_at: string;
             version?: number;
@@ -17361,23 +17564,6 @@ export interface components {
             limit?: number;
             query: string;
         };
-        "media.AdminMediaItem": {
-            created_at: string;
-            filename: string;
-            id: string;
-            /**
-             * @description IsEntry is populated ONLY by the by-lecture listing
-             *     (GET /api/lectures/{id}/media): true marks this media as that lecture's
-             *     entry point. Context-dependent (attachments-edge property), omitted in
-             *     standalone media responses.
-             */
-            is_entry?: boolean;
-            owner_id: string;
-            owner_username?: string;
-            type: components["schemas"]["media.FileType"];
-            url?: string;
-            visibility: components["schemas"]["access.Visibility"];
-        };
         /** @enum {string} */
         "media.FileType": "video" | "audio";
         "media.Media": {
@@ -17391,7 +17577,7 @@ export interface components {
              *     standalone media responses.
              */
             is_entry?: boolean;
-            owner_id: string;
+            owner?: components["schemas"]["userref.Ref"];
             type: components["schemas"]["media.FileType"];
             url?: string;
             visibility: components["schemas"]["access.Visibility"];
@@ -17400,7 +17586,7 @@ export interface components {
             created_at?: string;
             filename?: string;
             id?: string;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             type?: components["schemas"]["media.FileType"];
             visibility?: components["schemas"]["access.Visibility"];
         };
@@ -17413,7 +17599,7 @@ export interface components {
             unseen?: number;
         };
         "notification.Notification": {
-            actor_id?: string;
+            actor?: components["schemas"]["userref.Ref"];
             created_at?: string;
             group_count?: number;
             id?: string;
@@ -17475,6 +17661,7 @@ export interface components {
             density?: components["schemas"]["preference.Density"];
             font?: components["schemas"]["preference.Font"];
             motion?: components["schemas"]["preference.Motion"];
+            text_align?: components["schemas"]["preference.TextAlign"];
             text_size?: components["schemas"]["preference.TextSize"];
             theme?: components["schemas"]["preference.Theme"];
         };
@@ -17487,6 +17674,8 @@ export interface components {
             font?: "sans" | "legible" | "serif";
             /** @enum {unknown} */
             motion?: "system" | "reduced" | "full";
+            /** @enum {unknown} */
+            text_align?: "start" | "justify";
             /** @enum {unknown} */
             text_size?: "sm" | "md" | "lg" | "xl";
             /** @enum {unknown} */
@@ -17515,6 +17704,8 @@ export interface components {
         };
         /** @enum {string} */
         "preference.ReadingMode": "full" | "focused";
+        /** @enum {string} */
+        "preference.TextAlign": "start" | "justify";
         /** @enum {string} */
         "preference.TextSize": "sm" | "md" | "lg" | "xl";
         /** @enum {string} */
@@ -17635,13 +17826,13 @@ export interface components {
         "revision.Revision": {
             blocks?: components["schemas"]["ast.Block"][];
             created_at?: string;
-            editor_id?: string;
+            editor?: components["schemas"]["userref.Ref"];
             entity_id?: string;
             id?: string;
         };
         "revision.RevisionMeta": {
             created_at?: string;
-            editor_id?: string;
+            editor?: components["schemas"]["userref.Ref"];
             id?: string;
         };
         "semmap.BatchPointsRequest": {
@@ -17712,7 +17903,8 @@ export interface components {
         "sharelink.ResourceType": "lecture" | "document" | "trail" | "media" | "form" | "canvas";
         "sharelink.ShareLink": {
             created_at?: string;
-            created_by?: string;
+            /** @description объект в ответе API */
+            created_by?: components["schemas"]["userref.Ref"];
             expires_at?: string;
             resource_id?: string;
             resource_type?: components["schemas"]["sharelink.ResourceType"];
@@ -17760,7 +17952,7 @@ export interface components {
             created_at?: string;
             description?: string;
             id?: string;
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             title: string;
             updated_at?: string;
             version?: number;
@@ -17775,7 +17967,7 @@ export interface components {
             description?: string;
             id?: string;
             items?: components["schemas"]["trail.TrailItem"][];
-            owner_id?: string;
+            owner?: components["schemas"]["userref.Ref"];
             title: string;
             updated_at?: string;
             version?: number;
@@ -17818,6 +18010,10 @@ export interface components {
             status: components["schemas"]["rbac.Status"];
             updated_at: string;
             username: string;
+        };
+        "userref.Ref": {
+            id?: string;
+            username?: string;
         };
     };
     responses: never;

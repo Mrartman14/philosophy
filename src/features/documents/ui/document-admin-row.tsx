@@ -24,7 +24,7 @@ export async function DocumentAdminRow({ document, canDelete }: Props) {
         <span className="text-xs text-(--color-fg-muted)">
           {document.visibility === "public" ? t("visibilityPublic") : t("visibilityPrivate")}
           {" · "}
-          {t("authorLabel")} <UserView id={document.owner_id} />
+          {t("authorLabel")} <UserView user={document.owner} />
         </span>
       </div>
       {canDelete && document.id && (

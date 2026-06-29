@@ -21,11 +21,11 @@ export function canCreateComment(me: MaybeMe): boolean {
  */
 export function canEditComment(
   me: MaybeMe,
-  comment: Pick<Comment, "user_id" | "is_deleted">,
+  comment: Pick<Comment, "author" | "is_deleted">,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   if (comment.is_deleted) return false;
-  return comment.user_id === me.id;
+  return comment.author?.id === me.id;
 }
 
 /**
@@ -35,11 +35,11 @@ export function canEditComment(
  */
 export function canDeleteComment(
   me: MaybeMe,
-  comment: Pick<Comment, "user_id" | "is_deleted">,
+  comment: Pick<Comment, "author" | "is_deleted">,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   if (comment.is_deleted) return false;
-  return ownerOrCap(me, comment.user_id, "comment.delete_any");
+  return ownerOrCap(me, comment.author?.id, "comment.delete_any");
 }
 
 /**
@@ -48,11 +48,11 @@ export function canDeleteComment(
  */
 export function canReactToComment(
   me: MaybeMe,
-  comment: Pick<Comment, "user_id" | "is_deleted">,
+  comment: Pick<Comment, "author" | "is_deleted">,
 ): boolean {
   if (!isMutationAllowed(me)) return false;
   if (comment.is_deleted) return false;
-  return comment.user_id !== me.id;
+  return comment.author?.id !== me.id;
 }
 
 /** Поиск по комментариям лекции требует auth (бек: requiredAuth). */

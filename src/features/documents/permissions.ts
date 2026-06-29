@@ -22,7 +22,7 @@ export function canCreateDocument(me: MaybeMe): boolean {
  * Бек: doc.OwnerID == actor.UserID (service.go).
  */
 export function canEditDocument(me: MaybeMe, doc: Document): boolean {
-  return isMutationAllowed(me) && doc.owner_id === me.id;
+  return isMutationAllowed(me) && doc.owner?.id === me.id;
 }
 
 /**
@@ -32,7 +32,7 @@ export function canEditDocument(me: MaybeMe, doc: Document): boolean {
 export function canDeleteDocument(me: MaybeMe, doc: Document): boolean {
   return ownerOrCap(
     me,
-    doc.owner_id,
+    doc.owner?.id,
     "document.delete_any",
     () => doc.visibility === "public",
   );

@@ -33,7 +33,7 @@ export default async function FormPage({ params, searchParams }: Props) {
   const [me, form] = await Promise.all([getMe(), getFormById(id, token)]);
   if (!form) notFound();
 
-  const isOwner = !!me && me.status === "active" && me.id === form.owner_id;
+  const isOwner = !!me && me.status === "active" && me.id === form.owner?.id;
   const canEdit = canEditForm(me, form);
   const canPublish = canPublishForm(me, form);
   const canDelete = canDeleteForm(me, form);
