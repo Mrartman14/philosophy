@@ -6,13 +6,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { SchemaSnapshot } from "@/components/ast-editor";
 
 // Канарейка: РЕАЛЬНЫЙ AstEditor под внешним <Field name="blocks"> не должен
-// засорять FormData — тулбарные kit-контролы (HeadingSelect → Base UI Select)
-// не должны наследовать name="blocks". Значение несёт сырой сиблинг-<input>.
-// Падает, если изоляция (FieldNameBoundary внутри редактора) сломается / уедет
-// в будущем апгрейде Base UI.
-
-// blockLevels.full ОБЯЗАН содержать "heading": иначе HeadingSelect (источник
-// утечки name) не смонтируется и тест выродится в тавтологию.
+// засорять FormData — вложенные Base UI form-контролы (Combobox/Select рендерят
+// скрытый <input>, наследующий имя окружающего Field) не должны утечь как
+// name="blocks". Значение несёт сырой сиблинг-<input>. Падает, если изоляция
+// (FieldNameBoundary внутри редактора) сломается / уедет в апгрейде Base UI.
+//
+// Источник «зубов» — always-on @-меню: AtMenu монтирует RefPicker → Combobox.Root
+// безусловно (ast-editor.tsx), и его скрытый input без boundary унаследовал бы
+// name="blocks". (HeadingSelect раньше тоже тёк через Base UI Select, но теперь
+// это Menu-дропдаун без form-контрола — на «зубы» канарейки уже не влияет.)
 const snapshot: SchemaSnapshot = {
   blockLevels: { full: ["paragraph", "heading"] },
   entityBlockLimits: { full: 100 },

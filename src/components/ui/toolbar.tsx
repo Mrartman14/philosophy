@@ -14,14 +14,17 @@ const Root = forwardRef<
   ComponentRef<typeof BaseToolbar.Root>,
   ComponentPropsWithoutRef<typeof BaseToolbar.Root>
 >(function ToolbarRoot({ className, ...rest }, ref) {
-  return <BaseToolbar.Root ref={ref} className={cn("flex items-center gap-1 p-1", className as string)} {...rest} />;
+  // flex-wrap: тулбар редактора шире контейнера (≈7 групп) — без переноса
+  // последняя группа (@/ref) уходила за край и обрезалась `overflow-hidden`
+  // обёртки. gap-0.5 — максимально плотные зазоры между группами.
+  return <BaseToolbar.Root ref={ref} className={cn("flex flex-wrap items-center gap-0.5 p-1", className as string)} {...rest} />;
 });
 
 const Group = forwardRef<
   ComponentRef<typeof BaseToolbar.Group>,
   ComponentPropsWithoutRef<typeof BaseToolbar.Group>
 >(function ToolbarGroup({ className, ...rest }, ref) {
-  return <BaseToolbar.Group ref={ref} className={cn("flex items-center gap-1", className as string)} {...rest} />;
+  return <BaseToolbar.Group ref={ref} className={cn("flex items-center gap-0.5", className as string)} {...rest} />;
 });
 
 const Button = forwardRef<
@@ -33,11 +36,11 @@ const Button = forwardRef<
       ref={ref}
       className={cn(
         CONTROL_BOX,
-        // Высота — density-aware токен контрола (тот же тир, что дефолтный
-        // IconButton), а не литерал `h-9`. `min-w` + `px-2` оставлены, чтобы
-        // кнопка могла растягиваться шире квадрата (icon-only сейчас, но без
-        // регресса для текстовых триггеров).
-        "h-(--size-control-h-md) min-w-(--size-control-h-md) px-2",
+        // Высота — density-aware токен контрола (на тир ниже дефолтного
+        // IconButton: редакторный тулбар плотнее), а не литерал `h-8`. `min-w`
+        // держит icon-only кнопку квадратной, `px-1.5` даёт текстовым триггерам
+        // растянуться шире квадрата без лишнего внутреннего отступа у иконок.
+        "h-(--size-control-h-sm) min-w-(--size-control-h-sm) px-1.5",
         "hover:bg-(--color-surface-subtle)",
         // Активное (выбранное) состояние — инверсная заливка, тот же язык, что
         // у IconButton tone="primary" (bg-fg / text-surface). Отдельно от hover,
@@ -57,7 +60,7 @@ const Separator = forwardRef<
   ComponentRef<typeof BaseToolbar.Separator>,
   ComponentPropsWithoutRef<typeof BaseToolbar.Separator>
 >(function ToolbarSeparator({ className, ...rest }, ref) {
-  return <BaseToolbar.Separator ref={ref} className={cn("mx-1 h-5 w-px bg-(--color-border)", className as string)} {...rest} />;
+  return <BaseToolbar.Separator ref={ref} className={cn("mx-0.5 h-5 w-px bg-(--color-border)", className as string)} {...rest} />;
 });
 
 export const Toolbar = { Root, Group, Button, Separator };

@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/core";
 import { useEditorState } from "@tiptap/react";
 
-import { Select } from "@/components/ui/select";
+import { Menu, Toolbar } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { SchemaSnapshot, EntityContext } from "../../types";
@@ -14,6 +14,18 @@ interface Props {
 }
 
 type Value = "paragraph" | `h${1 | 2 | 3 | 4 | 5 | 6}`;
+
+// Короткий токен для триггер-кнопки: тулбар держит её квадратной, как соседние
+// icon-only кнопки. ¶ — параграф, H1…H6 — уровни заголовка.
+const SHORT: Record<Value, string> = {
+  paragraph: "¶",
+  h1: "H1",
+  h2: "H2",
+  h3: "H3",
+  h4: "H4",
+  h5: "H5",
+  h6: "H6",
+};
 
 function getActive(editor: Editor): Value {
   for (
@@ -44,8 +56,7 @@ export function HeadingSelect({ editor, schema, context }: Props) {
     { label: t("heading6"), value: "h6" },
   ];
 
-  const onChange = (v: string) => {
-    if (!v) return;
+  const apply = (v: Value) => {
     if (v === "paragraph") {
       editor.chain().focus().setParagraph().run();
     } else {
@@ -58,11 +69,30 @@ export function HeadingSelect({ editor, schema, context }: Props) {
   };
 
   return (
-    <Select
-      aria-label={t("blockTypeAriaLabel")}
-      value={active}
-      onValueChange={onChange}
-      options={items}
-    />
+    <Menu.Root>
+      <Menu.Trigger
+        render={<Toolbar.Button aria-label={t("blockTypeAriaLabel")} className="font-semibold" />}
+      >
+        {SHORT[active]}
+      </Menu.Trigger>
+      <Menu.Portal>
+        <Menu.Positioner sideOffset={4} align="start" className="outline-none">
+          <Menu.Popup>
+            {items.map((it) => (
+              <Menu.Item
+                key={it.value}
+                onClick={() => { apply(it.value); }}
+              >
+                {/* фикс-ширина слота галочки — лейблы выравниваются по левому краю */}
+                <span aria-hidden className="w-3 text-center">
+                  {active === it.value ? "✓" : ""}
+                </span>
+                {it.label}
+              </Menu.Item>
+            ))}
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
   );
 }

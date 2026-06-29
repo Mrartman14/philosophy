@@ -26,10 +26,10 @@ describe("Toolbar (compound)", () => {
       </Toolbar.Root>,
     );
     const btn = screen.getByRole("button", { name: "b" });
-    expect(btn).toHaveClass("h-(--size-control-h-md)");
-    expect(btn).toHaveClass("min-w-(--size-control-h-md)");
-    // Регресс-гард: больше не литерал h-9 (density-aware токен вместо фикс-px).
-    expect(btn).not.toHaveClass("h-9");
+    expect(btn).toHaveClass("h-(--size-control-h-sm)");
+    expect(btn).toHaveClass("min-w-(--size-control-h-sm)");
+    // Регресс-гард: больше не литерал h-8 (density-aware токен вместо фикс-px).
+    expect(btn).not.toHaveClass("h-8");
   });
 
   it("Button merges custom className over the default", () => {
