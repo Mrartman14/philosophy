@@ -36,3 +36,27 @@ export type SubmissionListItem = components["schemas"]["form.SubmissionListItem"
 
 /** ast.Block для рендера description/prompt/help_text/after_submit. */
 export type AstBlock = components["schemas"]["ast.Block"];
+
+/** Агрегат по форме (GET /api/forms/{id}/stats). */
+export type FormStats = components["schemas"]["form.FormStats"];
+
+/** Агрегат по одному полю. */
+export type FieldStats = components["schemas"]["form.FieldStats"];
+
+/** Счётчик одной опции choice-поля. */
+export type OptionStat = components["schemas"]["form.OptionStat"];
+
+/** Числовая сводка (number-поле). */
+export type NumberStats = components["schemas"]["form.NumberStats"];
+
+/** Сводка дат (date-поле). */
+export type DateStats = components["schemas"]["form.DateStats"];
+
+/** Один ответ в колоночном просмотре поля (GET /api/forms/{id}/fields/{fieldId}/answers). */
+export type FieldAnswerItem = components["schemas"]["form.FieldAnswerItem"];
+
+/** Типизированное значение ответа по типу поля. */
+export type AnswerValue = components["schemas"]["form.AnswerValue"];
+
+/** Видимость результатов: private | public. */
+export type SubmissionVisibility = components["schemas"]["form.SubmissionVisibility"];
