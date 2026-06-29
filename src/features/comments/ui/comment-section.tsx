@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { getAstSchema } from "@/components/ast-editor/schema-server";
+import { UserView } from "@/components/shared/user-view";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
@@ -53,7 +54,7 @@ function renderContent(
             <li key={item.id} className="rounded border border-(--color-border) p-2 text-sm">
               <span className="text-xs text-(--color-fg-muted)">
                 {typeLabel(item.type ?? "claim")} ·{" "}
-                {item.author?.username ?? "—"}
+                <UserView username={item.author?.username} />
               </span>
               <p>
                 {item.id ? (

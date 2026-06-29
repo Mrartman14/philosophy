@@ -1,4 +1,5 @@
 // src/features/documents/ui/document-admin-row.tsx
+import { UserView } from "@/components/shared/user-view";
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
@@ -23,7 +24,7 @@ export async function DocumentAdminRow({ document, canDelete }: Props) {
         <span className="text-xs text-(--color-fg-muted)">
           {document.visibility === "public" ? t("visibilityPublic") : t("visibilityPrivate")}
           {" · "}
-          {t("authorLabel")} {document.owner_id}
+          {t("authorLabel")} <UserView id={document.owner_id} />
         </span>
       </div>
       {canDelete && document.id && (

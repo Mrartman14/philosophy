@@ -1,5 +1,6 @@
 // src/features/comments/ui/admin-comment-row.tsx
 import { AstRender } from "@/components/ast-render";
+import { UserView } from "@/components/shared/user-view";
 import { getLocale, getT } from "@/i18n";
 import { getServerTz } from "@/utils/timezone-server";
 
@@ -21,7 +22,7 @@ export async function AdminCommentRow({ comment }: { comment: Comment }) {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 text-xs text-(--color-fg-muted)">
           <CommentTypeBadge type={comment.type} label={t(`type.${comment.type}`)} />
-          <span>{comment.author?.username ?? "—"}</span>
+          <UserView username={comment.author?.username} />
           <span>{formatCommentDate(comment.created_at, locale, tz)}</span>
           {deleted && <span className="text-(--color-danger)">{t("adminDeleted")}</span>}
         </div>

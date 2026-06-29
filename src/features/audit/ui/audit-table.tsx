@@ -1,4 +1,5 @@
 // src/features/audit/ui/audit-table.tsx
+import { UserView } from "@/components/shared/user-view";
 import { EmptyState, Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui";
 import { getServerFmt, getT } from "@/i18n";
 
@@ -76,9 +77,8 @@ export async function AuditTable({ records }: Props) {
             </Td>
             <Td>
               <div className="flex flex-col">
-                {/* у удалённого актора username пустой — LEFT JOIN на беке */}
-                {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- бек возвращает "" для удалённого актора (LEFT JOIN), "" → "—" намеренно */}
-                <span>{rec.actor_username || "—"}</span>
+                {/* у удалённого актора username пустой ("" → «—») — LEFT JOIN на беке */}
+                <UserView username={rec.actor_username} />
                 <code
                   dir="ltr"
                   className="text-xs text-(--color-fg-muted)"

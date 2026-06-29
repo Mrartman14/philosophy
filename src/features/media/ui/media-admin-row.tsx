@@ -1,4 +1,5 @@
 // src/features/media/ui/media-admin-row.tsx
+import { UserView } from "@/components/shared/user-view";
 import { getServerFmt, getT } from "@/i18n";
 
 import type { AdminMediaItem } from "../types";
@@ -45,10 +46,7 @@ export async function MediaAdminRow({ media }: Props) {
         >
           {isPublic ? t("statusPublic") : t("statusPrivate")}
         </span>
-        <span title={media.owner_id}>
-          {/* username с фолбэком на owner_id (UUID), если бэк не прислал имя. */}
-          {media.owner_username ?? media.owner_id}
-        </span>
+        <UserView username={media.owner_username} id={media.owner_id} />
       </div>
       <div>
         <MediaDeleteButton id={media.id} isAdminDelete />

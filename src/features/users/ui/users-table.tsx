@@ -1,4 +1,5 @@
 // src/features/users/ui/users-table.tsx
+import { UserView } from "@/components/shared/user-view";
 import { EmptyState, Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui";
 import { getServerFmt, getT } from "@/i18n";
 
@@ -57,7 +58,7 @@ export async function UsersTable({ users, canModerate, meId }: Props) {
           return (
             <Tr key={u.id}>
               <Td>
-                {u.username}
+                <UserView username={u.username} />
                 {isSelf && (
                   <span className="ms-1 text-xs text-(--color-fg-muted)">
                     {t("selfBadge")}

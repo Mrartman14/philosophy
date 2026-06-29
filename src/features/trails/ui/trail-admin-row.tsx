@@ -1,4 +1,5 @@
 // src/features/trails/ui/trail-admin-row.tsx
+import { UserView } from "@/components/shared/user-view";
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
@@ -22,7 +23,7 @@ export async function TrailAdminRow({ trail, canDelete }: Props) {
           {trail.title || t("adminUntitled")}
         </RouterLink>
         <span className="text-xs text-(--color-fg-muted)">
-          {trail.visibility} · {t("adminAuthorLabel")} {trail.owner_id}
+          {trail.visibility} · {t("adminAuthorLabel")} <UserView id={trail.owner_id} />
         </span>
       </div>
       {canDelete && trail.id && (

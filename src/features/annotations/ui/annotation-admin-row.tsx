@@ -1,5 +1,6 @@
 // src/features/annotations/ui/annotation-admin-row.tsx
 import { AstRender } from "@/components/ast-render";
+import { UserView } from "@/components/shared/user-view";
 import { getT } from "@/i18n";
 
 import type { Annotation } from "../types";
@@ -21,7 +22,7 @@ export async function AnnotationAdminRow({ annotation, canAdminDelete }: Props) 
         <span>
           {annotation.parent_entity_type} · {annotation.parent_entity_id}
         </span>
-        <span>{t("adminAuthorLabel")}: {annotation.owner_id}</span>
+        <span>{t("adminAuthorLabel")}: <UserView id={annotation.owner_id} /></span>
       </header>
       <div className="content" data-size="sm">
         <AstRender blocks={annotation.blocks ?? []} />
