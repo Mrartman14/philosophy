@@ -14,7 +14,7 @@
 // исходящий из интерактивного потомка, НЕ активирует (guard всплытия).
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
-import { resolveStack, type StackItem } from "./stacking";
+import { applyOrder, resolveStack, type StackItem } from "./stacking";
 
 // Селектор интерактивных потомков: клик по ним не активирует карточку.
 const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], [tabindex]';
@@ -40,6 +40,12 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNot
   const cardRefs = useRef(new Map<string, HTMLElement>());
   const [tops, setTops] = useState<Map<string, number>>(new Map());
   const [strut, setStrut] = useState(0);
+  // Вертикальный (по якорю) порядок карточек из resolveStack. Рендерим карточки
+  // в нём, чтобы DOM/таб-порядок совпадал с визуальным: на wide карточки
+  // позиционируются абсолютно по якорю, а в DOM шли бы во входном порядке —
+  // фокус «скакал» бы (WCAG 2.4.3 Focus Order). На narrow порядок пуст → поток
+  // во входном порядке (там DOM-порядок и так = визуальному).
+  const [order, setOrder] = useState<string[]>([]);
   const [wide, setWide] = useState(false);
 
   useEffect(() => {
@@ -68,6 +74,7 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNot
       if (!container || !wide) {
         setTops(new Map());
         setStrut(0);
+        setOrder([]);
         return;
       }
       const colTop = container.getBoundingClientRect().top; // общий референс
@@ -79,15 +86,21 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNot
         const el = cardRefs.current.get(n.id);
         items.push({ id: n.id, top: rect.top - colTop, height: el?.offsetHeight ?? 0 });
       }
-      const { tops: nextTops, totalHeight } = resolveStack(items);
+      const { tops: nextTops, totalHeight, order: nextOrder } = resolveStack(items);
       setTops(nextTops);
       setStrut(totalHeight);
+      setOrder(nextOrder);
     };
     update();
   }, [notes, getAnchorRect, wide, recomputeKey]);
 
   const orphans = notes.filter((n) => n.orphan);
-  const anchored = notes.filter((n) => !n.orphan);
+  // Привязанные — в вертикальном порядке якоря (applyOrder), чтобы таб-порядок
+  // совпадал с визуальным. На narrow order=[] → исходный порядок (поток).
+  const anchored = applyOrder(
+    notes.filter((n) => !n.orphan),
+    order,
+  );
 
   // Пойнтер-онли активация с guard всплытия: клик, исходящий из интерактивного
   // потомка карточки (edit/delete и т.п.), НЕ скроллит к якорю.

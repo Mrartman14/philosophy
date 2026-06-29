@@ -111,6 +111,35 @@ describe("MarginNotesColumn (smoke)", () => {
     expect(container).toBeTruthy();
   });
 
+  it("на wide карточки идут в DOM в порядке якоря, а не во входном (таб-порядок = визуальному)", () => {
+    // wide=true через mock matchMedia; tops якорей задаём через getAnchorRect.
+    // jsdom не делает layout, но getAnchorRect — наш проп, а container top = 0,
+    // поэтому resolveStack получает реальные tops и отдаёт порядок [b,c,a].
+    const mql = { matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() };
+    vi.stubGlobal("matchMedia", vi.fn().mockReturnValue(mql));
+    const tops: Record<string, number> = { a: 200, b: 0, c: 100 };
+    const rectFor = (id: string) => ({ top: tops[id] }) as DOMRect;
+    const notes: ColumnNote[] = [
+      { id: "a", node: <span>note-a</span>, orphan: false },
+      { id: "b", node: <span>note-b</span>, orphan: false },
+      { id: "c", node: <span>note-c</span>, orphan: false },
+    ];
+    const { container } = render(
+      <MarginNotesColumn
+        notes={notes}
+        getAnchorRect={(id) => rectFor(id)}
+        onActivate={() => undefined}
+        recomputeKey={0}
+      />,
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- карточка без роли по дизайну
+    const ids = [...container.querySelectorAll("[data-note-card-wrapper]")].map((el) =>
+      el.getAttribute("data-note-card-wrapper"),
+    );
+    expect(ids).toEqual(["b", "c", "a"]);
+    vi.unstubAllGlobals();
+  });
+
   it("пустой список нот не падает", () => {
     expect(() => {
       render(
