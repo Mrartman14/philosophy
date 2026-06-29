@@ -65,6 +65,8 @@ const annotations = {
   marginHighlightToggleOn: "Скрыть подсветку",
   marginHighlightToggleOff: "Показать подсветку",
   marginColumnLabel: "Аннотации на полях",
+  marginExpand: "Показать полностью",
+  marginCollapse: "Свернуть",
 
   // --- api.ts: fetch error fallbacks (thrown to React error boundary) ---
   api: {

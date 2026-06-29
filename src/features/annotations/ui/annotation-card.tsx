@@ -1,5 +1,6 @@
 // src/features/annotations/ui/annotation-card.tsx
 import { AstRender } from "@/components/ast-render";
+import { ClampableContent } from "@/components/ui";
 import { getT, getServerFmt } from "@/i18n";
 
 import type { Annotation } from "../types";
@@ -50,10 +51,21 @@ export async function AnnotationCard({
           {headerActions}
         </div>
       </header>
-      {hideAnchorOnWide ? <div className="xl:hidden">{anchorContext}</div> : anchorContext}
-      <div className="content" data-size="sm">
-        <AstRender blocks={annotation.blocks ?? []} />
-      </div>
+      {(() => {
+        // Цитата может быть большой — клампим её отдельным меньшим порогом
+        // (≈3 строки). На wide цитата и так скрыта (hideAnchorOnWide).
+        const quote = anchorContext ? (
+          <ClampableContent maxHeight={6} expandLabel={t("marginExpand")} collapseLabel={t("marginCollapse")}>
+            {anchorContext}
+          </ClampableContent>
+        ) : null;
+        return hideAnchorOnWide ? <div className="xl:hidden">{quote}</div> : quote;
+      })()}
+      <ClampableContent maxHeight={16} expandLabel={t("marginExpand")} collapseLabel={t("marginCollapse")}>
+        <div className="content" data-size="sm">
+          <AstRender blocks={annotation.blocks ?? []} />
+        </div>
+      </ClampableContent>
       {actions && <div className="flex gap-2">{actions}</div>}
     </article>
   );
