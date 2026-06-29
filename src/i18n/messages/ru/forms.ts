@@ -149,6 +149,8 @@ const forms = {
     loadSubmissionsFailed: "Не удалось загрузить отклики",
     loadSubmissionFailed: "Не удалось загрузить отклик",
     loadAdminFailed: "Не удалось загрузить формы",
+    loadStatsFailed: "Не удалось загрузить статистику формы",
+    loadFieldAnswersFailed: "Не удалось загрузить ответы на поле",
   },
 };
 

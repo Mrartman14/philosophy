@@ -7,8 +7,10 @@ import { getT } from "@/i18n";
 import { unwrap, unwrapList } from "@/utils/api-unwrap";
 
 import type {
+  FieldAnswerItem,
   Form,
   FormListItem,
+  FormStats,
   Submission,
   SubmissionListItem,
 } from "./types";
@@ -102,6 +104,50 @@ export const getAdminForms = cache(
     if (filter.ownerId) query.owner_id = filter.ownerId;
     const { data, error } = await api.GET("/api/admin/forms", { params: { query } });
     if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadAdminFailed"));
+    return unwrapList(data, { offset, limit });
+  },
+);
+
+/**
+ * Агрегат результатов формы (GET /api/forms/{id}/stats). Периметр результатов
+ * (владелец ∨ публичные результаты); 403/404 → null, чтобы роут отдал forbidden/404.
+ * token (?token=) — для приватной формы через share-link.
+ */
+export const getFormStats = cache(
+  async (id: string, token?: string): Promise<FormStats | null> => {
+    const api = await createApiClient();
+    const query: { token?: string } = {};
+    if (token) query.token = token;
+    const { data, error, response } = await api.GET("/api/forms/{id}/stats", {
+      params: { path: { id }, query },
+    });
+    if (response.status === 403 || response.status === 404) return null;
+    if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadStatsFailed"));
+    return unwrap(data);
+  },
+);
+
+/**
+ * Колоночный просмотр ответов одного поля (GET /api/forms/{id}/fields/{fieldId}/answers).
+ * Пагинация, тот же периметр, что и stats. 403/404 → null.
+ */
+export const getFieldAnswers = cache(
+  async (
+    id: string,
+    fieldId: string,
+    opts: { token?: string; offset?: number; limit?: number } = {},
+  ): Promise<{ items: FieldAnswerItem[]; total: number; offset: number; limit: number } | null> => {
+    const api = await createApiClient();
+    const offset = opts.offset ?? 0;
+    const limit = opts.limit ?? 20;
+    const query: { token?: string; offset: number; limit: number } = { offset, limit };
+    if (opts.token) query.token = opts.token;
+    const { data, error, response } = await api.GET(
+      "/api/forms/{id}/fields/{fieldId}/answers",
+      { params: { path: { id, fieldId }, query } },
+    );
+    if (response.status === 403 || response.status === 404) return null;
+    if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadFieldAnswersFailed"));
     return unwrapList(data, { offset, limit });
   },
 );

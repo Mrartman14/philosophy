@@ -149,6 +149,8 @@ const forms = {
     loadSubmissionsFailed: "加载回复失败",
     loadSubmissionFailed: "加载回复失败",
     loadAdminFailed: "加载表单失败",
+    loadStatsFailed: "加载表单统计失败",
+    loadFieldAnswersFailed: "加载字段答案失败",
   },
 };
 

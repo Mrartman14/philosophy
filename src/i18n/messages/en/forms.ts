@@ -149,6 +149,8 @@ const forms = {
     loadSubmissionsFailed: "Failed to load responses",
     loadSubmissionFailed: "Failed to load response",
     loadAdminFailed: "Failed to load forms",
+    loadStatsFailed: "Failed to load form statistics",
+    loadFieldAnswersFailed: "Failed to load field answers",
   },
 };
 

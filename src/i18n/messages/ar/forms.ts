@@ -149,6 +149,8 @@ const forms = {
     loadSubmissionsFailed: "تعذّر تحميل الردود",
     loadSubmissionFailed: "تعذّر تحميل الرد",
     loadAdminFailed: "تعذّر تحميل النماذج",
+    loadStatsFailed: "تعذّر تحميل إحصائيات النموذج",
+    loadFieldAnswersFailed: "تعذّر تحميل إجابات الحقل",
   },
 };
 
