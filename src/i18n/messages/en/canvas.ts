@@ -97,6 +97,7 @@ const canvas: Messages["canvas"] = {
   inspector: {
     emptyHint: "Select a node or edge.",
     nodeHeading: "Node: {type}",
+    nodeTextLabel: "Text",
     shapeLabel: "Shape",
     shapeAriaLabel: "Shape",
     shapeRect: "Rectangle",

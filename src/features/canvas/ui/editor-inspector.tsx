@@ -1,6 +1,6 @@
 "use client";
 // src/features/canvas/ui/editor-inspector.tsx
-import { Label, NumberField, Select, TextInput } from "@/components/ui";
+import { Label, NumberField, Select, Textarea, TextInput } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
 import type { EditorCommand, Side } from "../editor";
@@ -65,6 +65,18 @@ export function EditorInspector({ data, selectedNodeIds, selectedEdgeIds, dispat
                 { value: "ellipse", label: t("inspector.shapeEllipse") },
                 { value: "diamond", label: t("inspector.shapeDiamond") },
               ]}
+            />
+          </div>
+        )}
+        {(node.type === "text" || node.type === "shape") && (
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="inspector-node-text">{t("inspector.nodeTextLabel")}</Label>
+            <Textarea
+              id="inspector-node-text"
+              value={node.text ?? ""}
+              maxLength={10000}
+              rows={3}
+              onChange={(e) => { dispatch({ type: "setNodeText", nodeId, text: e.target.value }); }}
             />
           </div>
         )}

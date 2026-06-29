@@ -97,6 +97,7 @@ const canvas: Messages["canvas"] = {
   inspector: {
     emptyHint: "اختر عقدة أو حافة.",
     nodeHeading: "عقدة: {type}",
+    nodeTextLabel: "نص",
     shapeLabel: "الشكل",
     shapeAriaLabel: "الشكل",
     shapeRect: "مستطيل",

@@ -97,6 +97,7 @@ const canvas: Messages["canvas"] = {
   inspector: {
     emptyHint: "请选择一个节点或边。",
     nodeHeading: "节点：{type}",
+    nodeTextLabel: "文本",
     shapeLabel: "形状",
     shapeAriaLabel: "形状",
     shapeRect: "矩形",

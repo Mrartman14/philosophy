@@ -96,6 +96,7 @@ const canvas = {
   inspector: {
     emptyHint: "Выберите узел или ребро.",
     nodeHeading: "Узел: {type}",
+    nodeTextLabel: "Текст",
     shapeLabel: "Фигура",
     shapeAriaLabel: "Фигура",
     shapeRect: "Прямоугольник",
