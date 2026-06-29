@@ -140,8 +140,10 @@ export const fixtureFormattingMarks: AstBlock = {
     { type: "text", marks: [{ type: "italic" }], text: "курсив" },
     { type: "text", text: " и " },
     { type: "text", marks: [{ type: "code" }], text: "код" },
+    { type: "text", text: " и " },
+    { type: "text", marks: [{ type: "strike" }], text: "зачёркнуто" },
   ],
-  text: "жирный и курсив и код",
+  text: "жирный и курсив и код и зачёркнуто",
 };
 
 export const fixtureLink: AstBlock = {

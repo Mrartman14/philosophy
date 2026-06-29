@@ -159,7 +159,7 @@ const cases: [string, AstBlock][] = [
 ];
 
 // Маркированный параграф: по одному текст-спану на каждую марку, чтобы
-// получить РОВНО пять inline-обёрток (<strong>/<em>/<code>/<a>/<a>) в обоих
+// получить РОВНО шесть inline-обёрток (<strong>/<em>/<code>/<a>/<a>/<s>) в обоих
 // медиумах. nav-ref берём glossary_ref (id непустой → карта даёт <a>, не <span>).
 const fixtureMarkedParagraph: AstBlock = {
   id: "mk1",
@@ -175,8 +175,9 @@ const fixtureMarkedParagraph: AstBlock = {
       marks: [{ type: "glossary_ref", attrs: { id: "22222222-2222-2222-2222-222222222222" } }],
       text: "термин",
     },
+    { type: "text", marks: [{ type: "strike" }], text: "з" },
   ],
-  text: "жкcссылкатермин",
+  text: "жкcссылкатерминз",
 };
 
 /**
@@ -266,9 +267,9 @@ describe("EDIT↔READ структурный паритет node→DOM (реал
     const editWraps = Array.from(edit.children);
     const readWraps = Array.from(read.children);
     expect(readWraps.length, "число inline-обёрток").toBe(editWraps.length);
-    expect(editWraps.length).toBe(5); // strong, em, code, link-a, nav-ref-a
+    expect(editWraps.length).toBe(6); // strong, em, code, link-a, nav-ref-a, s
 
-    const order = ["strong (bold)", "em (italic)", "code (dir=ltr)", "a (link)", "a (nav-ref)"];
+    const order = ["strong (bold)", "em (italic)", "code (dir=ltr)", "a (link)", "a (nav-ref)", "s (strike)"];
     for (let i = 0; i < editWraps.length; i++) {
       const e = must(editWraps[i]);
       const r = must(readWraps[i]);

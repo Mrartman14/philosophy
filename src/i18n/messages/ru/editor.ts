@@ -14,6 +14,7 @@ const editor = {
   bold: "Жирный",
   italic: "Курсив",
   code: "Код",
+  strike: "Зачёркнутый",
 
   // --- Toolbar: block buttons (block-buttons) ---
   blockquote: "Цитата",

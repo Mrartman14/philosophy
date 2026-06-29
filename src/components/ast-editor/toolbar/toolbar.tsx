@@ -32,7 +32,10 @@ export function EditorToolbar({ editor, schema, context, defaultLectureId }: Edi
   const groups = [
     {
       visible:
-        schema.marks.has("bold") || schema.marks.has("italic") || schema.marks.has("code"),
+        schema.marks.has("bold") ||
+        schema.marks.has("italic") ||
+        schema.marks.has("code") ||
+        schema.marks.has("strike"),
       node: <InlineMarksGroup editor={editor} schema={schema} />,
     },
     {

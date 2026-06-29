@@ -5,6 +5,7 @@ import { useEditorState } from "@tiptap/react";
 import { BoldIcon } from "@/assets/icons/bold-icon";
 import { CodeIcon } from "@/assets/icons/code-icon";
 import { ItalicIcon } from "@/assets/icons/italic-icon";
+import { StrikethroughIcon } from "@/assets/icons/strikethrough-icon";
 import { Toolbar, Tooltip } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
@@ -27,12 +28,14 @@ export function InlineMarksGroup({ editor, schema }: Props) {
       bold: e.isActive("bold"),
       italic: e.isActive("italic"),
       code: e.isActive("code"),
+      strike: e.isActive("strike"),
     }),
   });
   if (
     !schema.marks.has("bold") &&
     !schema.marks.has("italic") &&
-    !schema.marks.has("code")
+    !schema.marks.has("code") &&
+    !schema.marks.has("strike")
   ) {
     return null;
   }
@@ -68,6 +71,17 @@ export function InlineMarksGroup({ editor, schema }: Props) {
             onClick={() => editor.chain().focus().toggleCode().run()}
           >
             <CodeIcon />
+          </Toolbar.Button>
+        </Tooltip>
+      )}
+      {schema.marks.has("strike") && (
+        <Tooltip content={t("strike")}>
+          <Toolbar.Button
+            aria-label={t("strike")}
+            aria-pressed={active.strike}
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+          >
+            <StrikethroughIcon />
           </Toolbar.Button>
         </Tooltip>
       )}

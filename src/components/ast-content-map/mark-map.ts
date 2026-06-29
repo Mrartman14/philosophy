@@ -11,6 +11,7 @@ export const MARK_MAP: Partial<Record<AstMarkType, MarkRenderer>> = {
   bold: () => ["strong", {}],
   italic: () => ["em", {}],
   code: () => ["code", { dir: "ltr" }],
+  strike: () => ["s", {}],
   link: (mark) => ["a", linkAttrs(mark)],
   glossary_ref: navRef,
   document_ref: navRef,

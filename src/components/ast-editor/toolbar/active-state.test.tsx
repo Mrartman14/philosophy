@@ -59,11 +59,12 @@ const fullSchema: SchemaSnapshot = {
   limits: { maxDepth: 32, maxTextLen: 1_000_000, maxContentItems: 10_000, maxMarksPerNode: 100 },
   urlPolicy: { dangerousSchemes: ["javascript", "data", "vbscript"] },
   nodes: new Map(),
-  marks: new Map([["bold", { attrs: {} }], ["italic", { attrs: {} }], ["code", { attrs: {} }], ["link", { attrs: {} }]]),
+  marks: new Map([["bold", { attrs: {} }], ["italic", { attrs: {} }], ["code", { attrs: {} }], ["strike", { attrs: {} }], ["link", { attrs: {} }]]),
   exclusiveCategories: [],
 };
 
-// "ab" обычный + "cd" жирный. Каретка: поз. 2 — внутри обычного, поз. 4 — внутри жирного.
+// "ab" обычный + "cd" жирный + "ef" зачёркнутый. Каретка: поз. 2 — внутри
+// обычного, поз. 4 — внутри жирного, поз. 6 — внутри зачёркнутого.
 const mixedDoc: AstBlock[] = [
   {
     type: "paragraph",
@@ -71,6 +72,7 @@ const mixedDoc: AstBlock[] = [
     content: [
       { type: "text", text: "ab" },
       { type: "text", text: "cd", marks: [{ type: "bold" }] },
+      { type: "text", text: "ef", marks: [{ type: "strike" }] },
     ],
   } as unknown as AstBlock,
 ];
@@ -110,6 +112,25 @@ describe("EditorToolbar активное состояние", () => {
     // Обратно в обычный → снова не активен.
     act(() => { editor.commands.setTextSelection(2); });
     expect(boldBtn).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("кнопка 'зачёркнутый' реактивно переключает aria-pressed по позиции каретки", async () => {
+    let ed: Editor | null = null;
+    render(<Harness onReady={(e) => { ed = e; }} />);
+
+    await waitFor(() => { expect(ed).not.toBeNull(); });
+    const editor = ed as unknown as Editor;
+    const strikeBtn = await screen.findByLabelText(/зачёркнутый/i);
+
+    // Каретка в обычном тексте → не активен.
+    act(() => { editor.commands.setTextSelection(2); });
+    expect(editor.isActive("strike")).toBe(false);
+    expect(strikeBtn).toHaveAttribute("aria-pressed", "false");
+
+    // Каретка в зачёркнутом тексте → активен.
+    act(() => { editor.commands.setTextSelection(6); });
+    expect(editor.isActive("strike")).toBe(true);
+    expect(strikeBtn).toHaveAttribute("aria-pressed", "true");
   });
 });
 

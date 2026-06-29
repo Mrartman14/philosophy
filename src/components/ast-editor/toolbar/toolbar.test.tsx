@@ -67,7 +67,7 @@ const fullSchema: SchemaSnapshot = {
   limits: { maxDepth: 32, maxTextLen: 1_000_000, maxContentItems: 10_000, maxMarksPerNode: 100 },
   urlPolicy: { dangerousSchemes: ["javascript", "data", "vbscript"] },
   nodes: new Map(),
-  marks: new Map([["bold", { attrs: {} }], ["italic", { attrs: {} }], ["code", { attrs: {} }], ["link", { attrs: {} }]]),
+  marks: new Map([["bold", { attrs: {} }], ["italic", { attrs: {} }], ["code", { attrs: {} }], ["strike", { attrs: {} }], ["link", { attrs: {} }]]),
   exclusiveCategories: [],
 };
 
@@ -86,6 +86,18 @@ describe("EditorToolbar gating", () => {
     expect(screen.getByLabelText(/таблица/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/горизонтальная линия/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/изображение/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/зачёркнутый/i)).toBeInTheDocument();
+    editor.destroy();
+  });
+
+  it("hides strike button when strike mark is not registered", () => {
+    const noStrikeSchema: SchemaSnapshot = {
+      ...fullSchema,
+      marks: new Map([["bold", { attrs: {} }], ["italic", { attrs: {} }], ["code", { attrs: {} }]]),
+    };
+    const editor = makeEditor("document");
+    render(<EditorToolbar editor={editor} schema={noStrikeSchema} context="document" />);
+    expect(screen.queryByLabelText(/зачёркнутый/i)).toBeNull();
     editor.destroy();
   });
 

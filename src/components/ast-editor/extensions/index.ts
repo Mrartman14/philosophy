@@ -14,6 +14,7 @@ import { CodeExt } from "./marks/code";
 import { ItalicExt } from "./marks/italic";
 import { LinkExt } from "./marks/link";
 import { navRefMarks } from "./marks/nav-ref";
+import { StrikeExt } from "./marks/strike";
 import { BlockquoteExt } from "./nodes/blockquote";
 import { CodeBlockExt } from "./nodes/code-block";
 import { HardBreakExt } from "./nodes/hard-break";
@@ -40,12 +41,13 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
   // camelCase names (hardBreak, codeBlock) where AST canonicals are snake_case
   // — those are re-registered under the right names by our extensions. We
   // also disable StarterKit's bundled Link (we ship our own LinkExt that
-  // doesn't leak rel/target/class into AST attrs). The bold/italic/code marks
-  // are likewise disabled here and re-registered via BoldExt/ItalicExt/CodeExt,
-  // which delegate mark→DOM to the shared MARK_MAP (single source of truth) —
-  // StarterKit's defaults would emit a bare `<code>` (no `dir="ltr"`) and bypass
-  // the map, drifting from read. The standalone @tiptap/extension-* bases
-  // preserve keymaps + input rules (**bold**, *italic*, `code`).
+  // doesn't leak rel/target/class into AST attrs). The bold/italic/code/strike
+  // marks are likewise disabled here and re-registered via
+  // BoldExt/ItalicExt/CodeExt/StrikeExt, which delegate mark→DOM to the shared
+  // MARK_MAP (single source of truth) — StarterKit's defaults would emit a bare
+  // `<code>` (no `dir="ltr"`) and bypass the map, drifting from read. The
+  // standalone @tiptap/extension-* bases preserve keymaps + input rules
+  // (**bold**, *italic*, `code`, ~~strike~~).
   // Keep StarterKit only for: text, history, dropcursor, gapcursor.
   const starter = StarterKit.configure({
     paragraph: false,
@@ -61,6 +63,7 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
     bold: false,
     italic: false,
     code: false,
+    strike: false,
   });
 
   // ParagraphExt is always required (it's the default block + appears inside
@@ -83,7 +86,7 @@ export function buildExtensions({ snapshot, context, placeholder }: BuildOpts): 
   if (allowedBlocks.has("thematic_break")) exts.push(ThematicBreakExt);
 
   // Marks are universally available (per-context filtering for marks lives in toolbar gating, Phase 2).
-  exts.push(BoldExt, ItalicExt, CodeExt, LinkExt, ...navRefMarks);
+  exts.push(BoldExt, ItalicExt, CodeExt, StrikeExt, LinkExt, ...navRefMarks);
 
   const validation = Extension.create({
     name: "ast-validation",

@@ -14,6 +14,7 @@ const editor = {
   bold: "Bold",
   italic: "Italic",
   code: "Code",
+  strike: "Strikethrough",
 
   // --- Toolbar: block buttons (block-buttons) ---
   blockquote: "Blockquote",

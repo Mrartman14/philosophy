@@ -14,6 +14,7 @@ const editor = {
   bold: "عريض",
   italic: "مائل",
   code: "رمز",
+  strike: "يتوسطه خط",
 
   // --- Toolbar: block buttons (block-buttons) ---
   blockquote: "اقتباس",

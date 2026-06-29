@@ -10,6 +10,17 @@ vi.mock("@/services/observability/client", () => ({
 
 afterEach(cleanup);
 
+describe("InlineRenderer марки", () => {
+  it("strike-марка оборачивает текст в <s>", () => {
+    const { container } = render(
+      <InlineRenderer nodes={[{ type: "text", text: "зачёркнуто", marks: [{ type: "strike" }] }]} />,
+    );
+    const s = container.querySelector("s");
+    expect(s).not.toBeNull();
+    expect(s?.textContent).toBe("зачёркнуто");
+  });
+});
+
 describe("InlineRenderer наблюдаемость", () => {
   it("логирует неизвестный тип марки через log.warn, а не console", async () => {
     const { log } = await import("@/services/observability/client");

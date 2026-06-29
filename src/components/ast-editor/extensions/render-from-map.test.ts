@@ -23,6 +23,10 @@ describe("EDIT-адаптер render-from-map → DOMOutputSpec", () => {
     expect(() => domSpecFromNode("__nope__", {})).toThrow(/no NODE_MAP entry/);
   });
 
+  it("strike mark → структурная база ['s', {}] (без content-hole)", () => {
+    expect(domSpecFromMark("strike", {})).toEqual(["s", {}]);
+  });
+
   it("link mark → структурная база ['a', {href}] (без content-hole)", () => {
     expect(domSpecFromMark("link", { href: "https://x.io" })).toEqual([
       "a",

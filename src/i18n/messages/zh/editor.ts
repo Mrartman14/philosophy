@@ -14,6 +14,7 @@ const editor = {
   bold: "加粗",
   italic: "斜体",
   code: "代码",
+  strike: "删除线",
 
   // --- Toolbar: block buttons (block-buttons) ---
   blockquote: "引用",

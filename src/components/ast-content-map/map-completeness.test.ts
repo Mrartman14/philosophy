@@ -38,6 +38,7 @@ const MARK_ALL: Record<AstMarkType, true> = {
   bold: true,
   italic: true,
   code: true,
+  strike: true,
   link: true,
   glossary_ref: true,
   document_ref: true,
