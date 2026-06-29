@@ -21,6 +21,11 @@ const themeScales = () => {
   // px-брейкпоинты + header
   L.push(`  --breakpoint-sm: 640px;`, `  --breakpoint-md: 768px;`, `  --breakpoint-lg: 1024px;`,
          `  --breakpoint-xl: 1280px;`, `  --breakpoint-2xl: 1536px;`, `  --spacing-header: 50px;`);
+  // Контейнер-порог раскрытия полей-маргиналий → даёт Tailwind-вариант `@marginalia:`
+  // (em → масштаб-инвариантно к --text-scale, матчит контейнер .page-shell). ЕДИНСТВЕННЫЙ
+  // источник числа для фиче-утилит; в layout.css тот же порог захардкожен сырым `80em`
+  // (var() в условии @container запрещён) — держать синхронно, см. layout.css §13.
+  L.push(`  --container-marginalia: 80em;`);
   return L.join("\n");
 };
 

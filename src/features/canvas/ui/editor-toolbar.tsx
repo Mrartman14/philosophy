@@ -121,7 +121,7 @@ export function EditorToolbar({
   // @container (тот же порог 80em что и reveal полей, layout.css §13), не вьюпортный
   // xl — иначе при крупном тексте reflow не в такт с раскрытием поля.
   const containerClass = vertical
-    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 @min-[80em]:ms-auto @min-[80em]:grid @min-[80em]:w-fit @min-[80em]:grid-cols-2 @min-[80em]:items-start @min-[80em]:justify-items-center @min-[80em]:rounded-lg @min-[80em]:border"
+    ? "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2 @marginalia:ms-auto @marginalia:grid @marginalia:w-fit @marginalia:grid-cols-2 @marginalia:items-start @marginalia:justify-items-center @marginalia:rounded-lg @marginalia:border"
     : "flex flex-wrap items-center gap-1 border-b border-(--color-border) p-2";
 
   return (

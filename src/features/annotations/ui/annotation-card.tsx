@@ -60,7 +60,7 @@ export async function AnnotationCard({
       <ClampableContent>
         <div className="flex flex-col gap-2">
           {anchorContext &&
-            (hideAnchorOnWide ? <div className="@min-[80em]:hidden">{anchorContext}</div> : anchorContext)}
+            (hideAnchorOnWide ? <div className="@marginalia:hidden">{anchorContext}</div> : anchorContext)}
           <div className="content" data-size="sm">
             <AstRender blocks={annotation.blocks ?? []} />
           </div>

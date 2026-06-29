@@ -125,7 +125,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
           его роль играет грид-гаттер (--layout-gutter), как у TOC-сайдбара. Внешний
           (pe, к краю экрана) ОСТАЁТСЯ — иначе панель упирается в край. На схлопнутом
           поле (панель втекает в поток, гаттера нет) — собственный p-4. */}
-      <MarginNote side="end" grow className="p-4 @min-[80em]:ps-0">
+      <MarginNote side="end" grow className="p-4 @marginalia:ps-0">
         {document.id ? (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={document.id} />

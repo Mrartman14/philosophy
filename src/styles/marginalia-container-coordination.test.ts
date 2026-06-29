@@ -13,17 +13,37 @@ import { describe, it, expect } from "vitest";
  * см. layout.css §13). Вьюпортный `xl:` (1280px) рассинхронизируется с reveal при
  * не-дефолтном размере текста → паддинг/sticky/скрытие срабатывают не в такт.
  *
- * Tailwind v4 контейнер-вариант `@min-[80em]:` эмитит `@container (min-width: 80em)`,
- * который браузер матчит к ближайшему контейнеру (.page-shell) — тот же порог в em,
- * что и в layout.css → синхронно.
+ * Порог токенизирован: `--container-marginalia: 80em` (tokens.generated.css из
+ * generate-tokens.mjs) → Tailwind-вариант `@marginalia:` эмитит
+ * `@container (min-width: 80em)`, который браузер матчит к ближайшему контейнеру
+ * (.page-shell) — тот же порог в em, что и в layout.css §13 → синхронно. Магическое
+ * число `80em` НЕ должно повторяться по фиче-файлам (только именованный вариант).
  */
 function read(rel: string): string {
   return readFileSync(resolve(process.cwd(), rel), "utf-8");
 }
 
-const CONTAINER = "@min-[80em]:";
+const CONTAINER = "@marginalia:";
+
+const FEATURE_FILES = [
+  "src/features/annotations/ui/annotation-card.tsx",
+  "src/app/documents/[id]/page.tsx",
+  "src/app/lectures/[id]/page.tsx",
+  "src/features/canvas/ui/canvas-editor.tsx",
+  "src/features/canvas/ui/editor-toolbar.tsx",
+];
 
 describe("marginalia: координация-спутники на @container, не на вьюпортный xl", () => {
+  it("порог токенизирован: --container-marginalia в сгенерированной теме (даёт @marginalia:)", () => {
+    expect(read("src/styles/tokens.generated.css")).toContain("--container-marginalia: 80em");
+  });
+
+  it("магическое число 80em НЕ дублируется по фиче-файлам (только именованный вариант)", () => {
+    for (const f of FEATURE_FILES) {
+      expect(read(f), `${f} использует сырой @min-[80em] вместо @marginalia`).not.toContain("@min-[80em]");
+    }
+  });
+
   it("annotation-card: цитата якоря прячется по контейнеру (а не xl:hidden)", () => {
     const src = read("src/features/annotations/ui/annotation-card.tsx");
     expect(src).toContain(`${CONTAINER}hidden`);

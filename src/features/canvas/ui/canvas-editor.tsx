@@ -559,7 +559,7 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     // тулбар сверху, холст, инспектор снизу. Координация — через @container (тот же
     // порог 80em что и reveal в layout.css §13), не вьюпортный xl.
     <>
-    <MarginNote side="start" className="p-2 @min-[80em]:pe-0 @min-[80em]:self-start @min-[80em]:sticky @min-[80em]:top-(--layout-sticky-top)">
+    <MarginNote side="start" className="p-2 @marginalia:pe-0 @marginalia:self-start @marginalia:sticky @marginalia:top-(--layout-sticky-top)">
       <EditorToolbar
         dispatch={dispatch} tool={state.tool} canUndo={state.past.length > 0} canRedo={state.future.length > 0}
         dirty={state.dirty} orientation="vertical"
@@ -697,8 +697,8 @@ export function CanvasEditor({ canvas, etag = null, mode = "edit" }: Props) {
     </div>
 
     {/* инспектор — в правом поле (маргиналии); на схлопнутом поле втекает под холст.
-        @min-[80em]:ps-0 — тот же @container-порог что и reveal (layout.css §13). */}
-    <MarginNote side="end" grow className="p-3 @min-[80em]:ps-0">
+        @marginalia:ps-0 — тот же @container-порог что и reveal (layout.css §13). */}
+    <MarginNote side="end" grow className="p-3 @marginalia:ps-0">
       <EditorInspector
         data={state.data}
         selectedNodeIds={state.selection.nodeIds}
