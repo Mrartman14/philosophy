@@ -39,7 +39,6 @@ import {
  * из DEFAULT_MESSAGES api-error.ts.
  * CONFLICT (409) — используется только в dismissBanner (dismissible=false). */
 const ERRORS: ApiErrorMessageKeys = {
-  INVALID_COLOR: "BANNER_INVALID_COLOR",
   INVALID_DATE: "BANNER_INVALID_DATE",
   INVALID_EVENT: "BANNER_INVALID_EVENT",
   BLOCKS_INVALID: "BANNER_BLOCKS_INVALID",
@@ -56,7 +55,7 @@ export const createBanner = createFormAction(async (formData, ctx) => {
   const api = await createApiClient();
   const { data, error } = await api.POST("/api/admin/banners", {
     body: {
-      background_color: input.background_color,
+      variant: input.variant,
       target_audience: input.target_audience,
       dismissible: input.dismissible,
       start_at: input.start_at,
@@ -89,7 +88,7 @@ export const updateBanner = createFormAction(async (formData, ctx) => {
       header: ifMatchHeader(formData, "баннера"),
     },
     body: {
-      background_color: input.background_color,
+      variant: input.variant,
       target_audience: input.target_audience,
       dismissible: input.dismissible,
       start_at: input.start_at,

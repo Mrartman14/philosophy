@@ -2,7 +2,13 @@
 // Mirror of ru/banners.ts. Key parity enforced by satisfies Messages.
 const banners = {
   // --- Form field labels (create + edit) ---
-  fieldColor: "لون الخلفية",
+  fieldVariant: "نوع اللافتة",
+  variantInfo: "معلومة",
+  variantSuccess: "نجاح",
+  variantWarning: "تحذير",
+  variantDanger: "حرج",
+  variantBrand: "علامة تجارية",
+  variantNeutral: "محايد",
   fieldAudience: "الجمهور",
   fieldAudienceAriaLabel: "الجمهور",
   fieldDismissible: "يمكن للمستخدم إخفاء اللافتة",

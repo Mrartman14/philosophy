@@ -94,7 +94,7 @@ const validation = {
 
   // --- banners: BannerFieldsSchema / BannerUpdateSchema / BannerIdSchema ---
   banners: {
-    colorFormat: "يجب أن يكون اللون قيمة سداسية مثل #RGB أو #RRGGBB",
+    variantRequired: "اختر نوع اللافتة",
     audienceRequired: "اختر الجمهور",
     dismissibleInvalid: 'قيمة غير صالحة لـ "يمكن إخفاؤه"',
     startAtRequired: "حدد وقت بدء العرض",

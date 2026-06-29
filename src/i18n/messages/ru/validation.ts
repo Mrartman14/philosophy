@@ -97,7 +97,7 @@ const validation = {
 
   // --- banners: BannerFieldsSchema / BannerUpdateSchema / BannerIdSchema ---
   banners: {
-    colorFormat: "Цвет — hex вида #RGB или #RRGGBB",
+    variantRequired: "Выберите тип баннера",
     audienceRequired: "Выберите аудиторию",
     dismissibleInvalid: "Некорректное значение «можно скрыть»",
     startAtRequired: "Укажите начало показа",

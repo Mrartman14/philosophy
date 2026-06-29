@@ -2,22 +2,20 @@
 import "server-only";
 import { z } from "zod";
 
-import { BANNER_TARGET_AUDIENCES } from "@/api/enums";
+import { BANNER_TARGET_AUDIENCES, BANNER_VARIANTS } from "@/api/enums";
 import type { NamespaceT } from "@/i18n";
 import { blocksJsonField } from "@/utils/blocks-json";
 import { wallClockToRfc3339 } from "@/utils/datetime-form";
 
-/** Регекс бекенда (internal/banner/service.go hexColorRe) — повторяем 1:1. */
-const HEX_COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+import type { BannerVariant } from "./types";
 
 type ValidationT = NamespaceT<"validation">;
 
 function makeBannerFieldsSchema(t: ValidationT) {
   return z.object({
-    background_color: z
-      .string()
-      .trim()
-      .regex(HEX_COLOR_RE, t("banners.colorFormat")),
+    variant: z.enum(BANNER_VARIANTS, {
+      message: t("banners.variantRequired"),
+    }),
     target_audience: z.enum(BANNER_TARGET_AUDIENCES, {
       message: t("banners.audienceRequired"),
     }),
@@ -40,7 +38,7 @@ type BannerFieldsRaw = z.infer<ReturnType<typeof makeBannerFieldsSchema>>;
  * end_at/event_id как `string | undefined` (обязательные ключи).
  */
 interface BannerInputCommon {
-  background_color: string;
+  variant: BannerVariant;
   target_audience: "all" | "authenticated" | "admin";
   dismissible: boolean;
   start_at: string;
@@ -50,7 +48,7 @@ interface BannerInputCommon {
 
 function normalizeFields(raw: BannerFieldsRaw, tz: string) {
   return {
-    background_color: raw.background_color,
+    variant: raw.variant,
     target_audience: raw.target_audience,
     dismissible: raw.dismissible === "true",
     start_at: wallClockToRfc3339(raw.start_at, tz),

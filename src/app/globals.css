@@ -17,6 +17,16 @@ html[data-theme="light"] { color-scheme: light; }
 html[data-theme="dark"] { color-scheme: dark; }
 :root { --vt-duration: 400ms; --vt-easing: ease-in-out; }
 
+/* Семантические варианты баннера: вариант → пара APCA-токенов (bg/fg), theme- и
+   contrast-aware. Заменили произвольный hex (inline style) ради CSP style-src-attr
+   и управляемого контраста. Класс задаёт BANNER_VARIANT_CLASS (features/banners/display.ts). */
+.banner--info    { background-color: var(--info-bg);        color: var(--info-fg); }
+.banner--success { background-color: var(--success-bg);     color: var(--success-fg); }
+.banner--warning { background-color: var(--warning-bg);     color: var(--warning-fg); }
+.banner--danger  { background-color: var(--danger-bg);      color: var(--danger-fg); }
+.banner--brand   { background-color: var(--accent);         color: var(--accent-fg); }
+.banner--neutral { background-color: var(--surface-subtle); color: var(--fg); }
+
 @media (forced-colors: active) {
   :root {
     --color-accent: AccentColor; --color-surface: Canvas; --color-fg: CanvasText;

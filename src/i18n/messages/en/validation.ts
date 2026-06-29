@@ -94,7 +94,7 @@ const validation = {
 
   // --- banners: BannerFieldsSchema / BannerUpdateSchema / BannerIdSchema ---
   banners: {
-    colorFormat: "Color must be a hex value like #RGB or #RRGGBB",
+    variantRequired: "Choose a banner type",
     audienceRequired: "Select an audience",
     dismissibleInvalid: 'Invalid value for "can be dismissed"',
     startAtRequired: "Specify the show start time",

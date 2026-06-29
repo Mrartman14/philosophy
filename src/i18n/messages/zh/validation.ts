@@ -94,7 +94,7 @@ const validation = {
 
   // --- banners: BannerFieldsSchema / BannerUpdateSchema / BannerIdSchema ---
   banners: {
-    colorFormat: "颜色必须是 #RGB 或 #RRGGBB 形式的十六进制值",
+    variantRequired: "请选择横幅类型",
     audienceRequired: "请选择受众",
     dismissibleInvalid: '"可关闭"的取值无效',
     startAtRequired: "请指定展示开始时间",

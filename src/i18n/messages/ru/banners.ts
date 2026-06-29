@@ -2,7 +2,13 @@
 // Строки слайса banners: UI-метки форм, admin-список, toast-действия.
 const banners = {
   // --- Метки полей форм (create + edit) ---
-  fieldColor: "Цвет фона",
+  fieldVariant: "Тип баннера",
+  variantInfo: "Информация",
+  variantSuccess: "Успех",
+  variantWarning: "Предупреждение",
+  variantDanger: "Критично",
+  variantBrand: "Бренд",
+  variantNeutral: "Нейтральный",
   fieldAudience: "Аудитория",
   fieldAudienceAriaLabel: "Аудитория",
   fieldDismissible: "Пользователь может скрыть баннер",

@@ -2,7 +2,13 @@
 // Mirror of ru/banners.ts. Key parity enforced by satisfies Messages.
 const banners = {
   // --- Form field labels (create + edit) ---
-  fieldColor: "背景颜色",
+  fieldVariant: "横幅类型",
+  variantInfo: "信息",
+  variantSuccess: "成功",
+  variantWarning: "警告",
+  variantDanger: "严重",
+  variantBrand: "品牌",
+  variantNeutral: "中性",
   fieldAudience: "受众",
   fieldAudienceAriaLabel: "受众",
   fieldDismissible: "允许用户关闭横幅",

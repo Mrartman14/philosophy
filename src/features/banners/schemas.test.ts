@@ -10,7 +10,7 @@ import {
 const UUID = "550e8400-e29b-41d4-a716-446655440000";
 
 const baseCreate = {
-  background_color: "#336699",
+  variant: "info",
   target_audience: "all",
   dismissible: "true",
   start_at: "2026-07-01T10:00",
@@ -25,7 +25,7 @@ describe("BannerCreateSchema", () => {
     });
     expect(r.success).toBe(true);
     if (r.success) {
-      expect(r.data.background_color).toBe("#336699");
+      expect(r.data.variant).toBe("info");
       expect(r.data.target_audience).toBe("all");
       expect(r.data.dismissible).toBe(true);
       expect(r.data.start_at).toBe("2026-07-01T10:00:00Z");
@@ -47,18 +47,17 @@ describe("BannerCreateSchema", () => {
     }
   });
 
-  it("принимает короткий hex #abc", () => {
-    const r = BannerCreateSchema.safeParse({
-      ...baseCreate,
-      background_color: "#abc",
-    });
-    expect(r.success).toBe(true);
+  it("принимает каждый валидный вариант", () => {
+    for (const variant of ["info", "success", "warning", "danger", "brand", "neutral"]) {
+      const r = BannerCreateSchema.safeParse({ ...baseCreate, variant });
+      expect(r.success).toBe(true);
+    }
   });
 
-  it("отклоняет не-hex цвет", () => {
+  it("отклоняет неизвестный вариант", () => {
     const r = BannerCreateSchema.safeParse({
       ...baseCreate,
-      background_color: "red",
+      variant: "rainbow",
     });
     expect(r.success).toBe(false);
   });
@@ -116,7 +115,7 @@ describe("BannerCreateSchema", () => {
 describe("BannerUpdateSchema", () => {
   const baseUpdate = {
     id: UUID,
-    background_color: "#aabbcc",
+    variant: "warning",
     target_audience: "authenticated",
     dismissible: "true",
     start_at: "2026-07-01T10:00",

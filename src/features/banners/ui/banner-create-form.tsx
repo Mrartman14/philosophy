@@ -4,7 +4,6 @@ import { useActionState, useState } from "react";
 
 import {
   Checkbox,
-  ColorInput,
   createTypedForm,
   Form,
   FormFeedback,
@@ -21,7 +20,7 @@ import { useT } from "@/i18n/client";
 import { initialActionState } from "@/utils/action-state";
 
 import { createBanner } from "../actions";
-import { audienceOptions } from "../display";
+import { audienceOptions, variantOptions, DEFAULT_BANNER_VARIANT } from "../display";
 import type { BannerCreateFormInput } from "../schemas";
 import type { Banner } from "../types";
 
@@ -47,11 +46,11 @@ export function BannerCreateForm() {
         />
         <IdempotencyField result={state} />
 
-        <Field name="background_color" label={t("fieldColor")} required>
-          <ColorInput
-            defaultValue="#336699"
-            aria-required
-            aria-label={t("fieldColor")}
+        <Field name="variant" label={t("fieldVariant")} required>
+          <Select
+            defaultValue={DEFAULT_BANNER_VARIANT}
+            options={variantOptions(t)}
+            aria-label={t("fieldVariant")}
           />
         </Field>
 

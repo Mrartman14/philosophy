@@ -1,5 +1,5 @@
 // src/features/banners/ui/banner-admin-row.tsx
-import { RouterLink } from "@/components/ui";
+import { cn, RouterLink } from "@/components/ui";
 import { getT, getLocale } from "@/i18n";
 import { getServerTz } from "@/utils/timezone-server";
 
@@ -7,6 +7,8 @@ import {
   bannerPreviewText,
   formatBannerPeriod,
   audienceLabel,
+  BANNER_VARIANT_CLASS,
+  DEFAULT_BANNER_VARIANT,
 } from "../display";
 import type { Banner } from "../types";
 
@@ -31,8 +33,10 @@ export async function BannerAdminRow({ banner, canEdit, canDelete }: Props) {
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <span
           aria-hidden
-          className="h-4 w-4 shrink-0 rounded border border-(--color-border)"
-          style={{ backgroundColor: banner.background_color }}
+          className={cn(
+            "h-4 w-4 shrink-0 rounded border border-(--color-border)",
+            BANNER_VARIANT_CLASS[banner.variant ?? DEFAULT_BANNER_VARIANT],
+          )}
         />
         <div className="flex min-w-0 flex-col">
           <span className="truncate font-medium">

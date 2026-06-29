@@ -87,8 +87,6 @@ const errors = {
     "فشل التحقق من الرسم البياني (العقد/الحواف/مراجع الكيانات).",
 
   // --- banners slice: domain codes ---
-  BANNER_INVALID_COLOR:
-    "لون خلفية غير صالح: استخدم قيمة hex مثل #RGB أو #RRGGBB.",
   BANNER_INVALID_DATE:
     "تواريخ عرض غير صالحة: تحقق من التنسيق وترتيب البداية والنهاية.",
   BANNER_INVALID_EVENT: "لا توجد فعالية بهذا المعرّف.",

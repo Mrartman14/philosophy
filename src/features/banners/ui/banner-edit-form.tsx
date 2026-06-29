@@ -6,7 +6,6 @@ import type { AstBlock } from "@/components/ast-editor";
 import { LazyAstEditor } from "@/components/ast-editor/lazy-ast-editor";
 import {
   Checkbox,
-  ColorInput,
   createTypedForm,
   Form,
   FormFeedback,
@@ -24,7 +23,7 @@ import { initialActionState } from "@/utils/action-state";
 import { instantToWallClock } from "@/utils/datetime-form";
 
 import { updateBanner } from "../actions";
-import { audienceOptions, toColorInputValue } from "../display";
+import { audienceOptions, variantOptions, DEFAULT_BANNER_VARIANT } from "../display";
 import type { BannerUpdateFormInput } from "../schemas";
 import type { Banner } from "../types";
 
@@ -66,11 +65,11 @@ export function BannerEditForm({ banner, tz }: Props) {
         />
         <IdempotencyField result={state} />
 
-        <Field name="background_color" label={t("fieldColor")} required>
-          <ColorInput
-            defaultValue={toColorInputValue(banner.background_color)}
-            aria-required
-            aria-label={t("fieldColor")}
+        <Field name="variant" label={t("fieldVariant")} required>
+          <Select
+            defaultValue={banner.variant ?? DEFAULT_BANNER_VARIANT}
+            options={variantOptions(t)}
+            aria-label={t("fieldVariant")}
           />
         </Field>
 

@@ -87,8 +87,6 @@ const errors = {
     "图谱未通过校验（节点／边／实体引用）。",
 
   // --- banners slice: domain codes ---
-  BANNER_INVALID_COLOR:
-    "背景颜色无效：请使用 #RGB 或 #RRGGBB 形式的十六进制值。",
   BANNER_INVALID_DATE:
     "展示日期无效：请检查格式以及开始与结束的顺序。",
   BANNER_INVALID_EVENT: "未找到此 ID 的活动。",

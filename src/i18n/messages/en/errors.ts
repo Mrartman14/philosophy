@@ -88,8 +88,6 @@ const errors = {
     "Graph failed validation (nodes/edges/entity references).",
 
   // --- banners slice: domain codes ---
-  BANNER_INVALID_COLOR:
-    "Invalid background color: use a hex value like #RGB or #RRGGBB.",
   BANNER_INVALID_DATE:
     "Invalid display dates: check the format and the order of start and end.",
   BANNER_INVALID_EVENT: "No event found with this ID.",

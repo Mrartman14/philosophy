@@ -1,9 +1,11 @@
 // src/features/banners/ui/active-banners.tsx
 import { AstRender } from "@/components/ast-render";
+import { cn } from "@/components/ui";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
 import { getActiveBanners } from "../api";
+import { BANNER_VARIANT_CLASS, DEFAULT_BANNER_VARIANT } from "../display";
 import type { Banner } from "../types";
 
 import { BannerDismissButton } from "./banner-dismiss-button";
@@ -41,8 +43,10 @@ export async function ActiveBanners() {
         banner.id ? (
           <div
             key={banner.id}
-            style={{ backgroundColor: banner.background_color }}
-            className="flex w-full items-start justify-between gap-3 border-b border-(--color-border) px-4 py-2"
+            className={cn(
+              BANNER_VARIANT_CLASS[banner.variant ?? DEFAULT_BANNER_VARIANT],
+              "flex w-full items-start justify-between gap-3 border-b border-(--color-border) px-4 py-2",
+            )}
           >
             <div className="content min-w-0 flex-1 text-sm">
               <AstRender blocks={banner.blocks ?? []} />

@@ -54,6 +54,14 @@ export const BANNER_TARGET_AUDIENCES = enumValues<S["banner.TargetAudience"]>()(
   "authenticated",
   "admin",
 );
+export const BANNER_VARIANTS = enumValues<S["banner.Variant"]>()(
+  "info",
+  "success",
+  "warning",
+  "danger",
+  "brand",
+  "neutral",
+);
 
 // --- Comments ---
 export const COMMENT_TYPES = enumValues<S["comment.CommentType"]>()(
@@ -139,6 +147,8 @@ export const AUDIT_ACTIONS = enumValues<S["audit.Action"]>()(
   "form.create",
   "form.delete",
   "form.publish",
+  "form.vote.delete",
+  "form.vote.edit",
   "form.vote.retract",
   "form.vote.submit",
   "glossary.create",

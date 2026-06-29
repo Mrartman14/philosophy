@@ -7,6 +7,9 @@ export type Banner = components["schemas"]["banner.Banner"];
 /** Аудитория показа: all | authenticated | admin. */
 export type BannerTargetAudience = components["schemas"]["banner.TargetAudience"];
 
+/** Семантический вариант оформления: info|success|warning|danger|brand|neutral. */
+export type BannerVariant = components["schemas"]["banner.Variant"];
+
 /** Мета ревизии (элемент списка GET /api/admin/banners/{id}/revisions). */
 export type BannerRevisionMeta = components["schemas"]["revision.RevisionMeta"];
 

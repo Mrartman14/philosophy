@@ -6,7 +6,9 @@ import {
   audienceOptions,
   formatBannerDate,
   formatBannerPeriod,
-  toColorInputValue,
+  variantLabel,
+  variantOptions,
+  BANNER_VARIANT_CLASS,
   bannerPreviewText,
 } from "./display";
 import type { Banner } from "./types";
@@ -86,18 +88,47 @@ describe("formatBannerPeriod", () => {
   });
 });
 
-describe("toColorInputValue", () => {
-  it("#abc разворачивается в #aabbcc", () => {
-    expect(toColorInputValue("#abc")).toBe("#aabbcc");
+describe("variantLabel", () => {
+  it("известный вариант → русский дефолт (без переводчика)", () => {
+    expect(variantLabel("info")).toBe("Информация");
+    expect(variantLabel("danger")).toBe("Критично");
+    expect(variantLabel("neutral")).toBe("Нейтральный");
   });
-  it("#AABBCC приводится к нижнему регистру", () => {
-    expect(toColorInputValue("#AABBCC")).toBe("#aabbcc");
+  it("undefined → пустая строка", () => {
+    expect(variantLabel(undefined)).toBe("");
   });
-  it("undefined → fallback", () => {
-    expect(toColorInputValue(undefined)).toBe("#336699");
+  it("с переводчиком → catalog-ключ", () => {
+    const t = (key: string) => `[${key}]`;
+    expect(variantLabel("success", t)).toBe("[variantSuccess]");
+    expect(variantLabel("brand", t)).toBe("[variantBrand]");
   });
-  it("мусор → fallback", () => {
-    expect(toColorInputValue("red")).toBe("#336699");
+});
+
+describe("variantOptions", () => {
+  it("без переводчика → все 6 вариантов в порядке enum + русские дефолты", () => {
+    const opts = variantOptions();
+    expect(opts.map((o) => o.value)).toEqual([
+      "info",
+      "success",
+      "warning",
+      "danger",
+      "brand",
+      "neutral",
+    ]);
+    expect(opts[0]).toEqual({ value: "info", label: "Информация" });
+  });
+  it("с переводчиком → ключи каталога", () => {
+    const t = (key: string) => `[${key}]`;
+    expect(variantOptions(t)[1]?.label).toBe("[variantSuccess]");
+  });
+});
+
+describe("BANNER_VARIANT_CLASS", () => {
+  it("маппит каждый вариант в статический класс banner--{v}", () => {
+    expect(BANNER_VARIANT_CLASS.info).toBe("banner--info");
+    expect(BANNER_VARIANT_CLASS.danger).toBe("banner--danger");
+    expect(BANNER_VARIANT_CLASS.brand).toBe("banner--brand");
+    expect(BANNER_VARIANT_CLASS.neutral).toBe("banner--neutral");
   });
 });
 

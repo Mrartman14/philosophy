@@ -27,7 +27,11 @@ export {
   audienceLabel,
   formatBannerDate,
   formatBannerPeriod,
-  toColorInputValue,
+  VARIANT_LABELS,
+  variantOptions,
+  variantLabel,
+  BANNER_VARIANT_CLASS,
+  DEFAULT_BANNER_VARIANT,
   bannerPreviewText,
 } from "./display";
 export { BannerCreateForm } from "./ui/banner-create-form";
@@ -41,6 +45,7 @@ export { BannerDismissButton } from "./ui/banner-dismiss-button";
 export type {
   Banner,
   BannerTargetAudience,
+  BannerVariant,
   BannerRevision,
   BannerRevisionMeta,
 } from "./types";

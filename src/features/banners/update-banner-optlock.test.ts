@@ -36,7 +36,7 @@ const ID = "ffffffff-ffff-4fff-8fff-ffffffffffff";
 function bannerForm(extra: Record<string, string>): FormData {
   const fd = new FormData();
   fd.set("id", ID);
-  fd.set("background_color", "#ffffff");
+  fd.set("variant", "info");
   fd.set("target_audience", "all");
   fd.set("dismissible", "true");
   fd.set("start_at", "2026-07-01T00:00");

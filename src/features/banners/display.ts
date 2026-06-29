@@ -1,10 +1,11 @@
 // src/features/banners/display.ts
 // Чистые display-хелперы домена banners. Без "server-only": нужны тестам,
 // server-safe UI и client-формам; никаких side effects и зависимостей.
+import { BANNER_VARIANTS } from "@/api/enums";
 import { getFmt } from "@/i18n/format";
 import { DEFAULT_LOCALE, type ResolvedLocale } from "@/i18n/locales";
 
-import type { Banner, BannerTargetAudience } from "./types";
+import type { Banner, BannerTargetAudience, BannerVariant } from "./types";
 
 // ИЗОМОРФНЫЙ КОНТРАКТ: display.ts чистый (server + client + display.test.ts), без
 // хуков. Переводимые строки приходят через ключ-резолверы (callers переводят);
@@ -93,19 +94,52 @@ export function formatBannerPeriod(
   return end ? `с ${start} по ${end}` : `с ${start}`;
 }
 
-/**
- * Нормализует hex-цвет для <input type="color"> (он понимает только #rrggbb):
- * #abc → #aabbcc, верхний регистр → нижний, не-hex → fallback.
- */
-export function toColorInputValue(value?: string, fallback = "#336699"): string {
-  if (!value) return fallback;
-  const short = /^#([0-9a-fA-F]{3})$/.exec(value);
-  if (short?.[1]) {
-    const [r, g, b] = short[1];
-    return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
-  }
-  if (/^#[0-9a-fA-F]{6}$/.test(value)) return value.toLowerCase();
-  return fallback;
+// --- Семантический вариант оформления (заменил произвольный hex) ---
+// Вариант → статический CSS-класс (.banner--{v} в globals.css), резолвящий
+// пару токенов --color-{v}-bg/--color-{v}-fg. Без inline-стиля (CSP) и с
+// гарантированным контрастом/dark-mode из APCA-системы.
+export const DEFAULT_BANNER_VARIANT: BannerVariant = "info";
+
+export const BANNER_VARIANT_CLASS: Record<BannerVariant, string> = {
+  info: "banner--info",
+  success: "banner--success",
+  warning: "banner--warning",
+  danger: "banner--danger",
+  brand: "banner--brand",
+  neutral: "banner--neutral",
+};
+
+const VARIANT_KEYS = {
+  info: "variantInfo",
+  success: "variantSuccess",
+  warning: "variantWarning",
+  danger: "variantDanger",
+  brand: "variantBrand",
+  neutral: "variantNeutral",
+} as const satisfies Record<BannerVariant, string>;
+
+/** Русские дефолты меток вариантов (offline/test fallback; зеркало banners.variant*). */
+export const VARIANT_LABELS: Record<BannerVariant, string> = {
+  info: "Информация",
+  success: "Успех",
+  warning: "Предупреждение",
+  danger: "Критично",
+  brand: "Бренд",
+  neutral: "Нейтральный",
+};
+
+/** Переводчик метки варианта по catalog-ключу (для caller'ов с useT/getT). */
+export type VariantLabelT = (key: (typeof VARIANT_KEYS)[BannerVariant]) => string;
+
+/** Метка варианта. Без `t` — русский дефолт (offline/test); с `t` — catalog-перевод. */
+export function variantLabel(variant?: BannerVariant, t?: VariantLabelT): string {
+  if (!variant) return "";
+  return t ? t(VARIANT_KEYS[variant]) : VARIANT_LABELS[variant];
+}
+
+/** Опции для <Select> вариантов в формах (порядок = BANNER_VARIANTS). */
+export function variantOptions(t?: VariantLabelT): { value: BannerVariant; label: string }[] {
+  return BANNER_VARIANTS.map((value) => ({ value, label: variantLabel(value, t) }));
 }
 
 /**
