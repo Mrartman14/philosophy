@@ -23,5 +23,5 @@ export {
 export type { Point, EdgeGeometry } from "./geometry";
 export { NodeShapeRender } from "./node-shapes";
 export { EdgeShapeRender, ArrowMarkerDefs } from "./edge-shape";
-export { CanvasScene, CANVAS_MARGIN } from "./canvas-scene";
+export { CanvasScene, CanvasSceneBody, CANVAS_MARGIN, staticViewBox } from "./canvas-scene";
 export type { CanvasSceneProps } from "./canvas-scene";

@@ -1,7 +1,7 @@
 // src/features/canvas/editor/coords.test.ts
 import { describe, it, expect } from "vitest";
 
-import { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, rulerTicks, snapToGrid, snapPoint } from "./coords";
+import { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, rulerTicks, snapToGrid, snapPoint, viewBoxFromViewport } from "./coords";
 import type { Viewport } from "./editor-types";
 
 const vp = (over: Partial<Viewport> = {}): Viewport => ({ x: 0, y: 0, zoom: 1, ...over });
@@ -120,5 +120,12 @@ describe("rulerTicks", () => {
   it("нулевая длина/зум → пусто", () => {
     expect(rulerTicks(0, 0, 1)).toEqual([]);
     expect(rulerTicks(0, 200, 0)).toEqual([]);
+  });
+});
+
+describe("viewBoxFromViewport", () => {
+  it("строит viewBox из вьюпорта и размера (учитывает zoom)", () => {
+    expect(viewBoxFromViewport({ x: 10, y: 20, zoom: 1 }, { width: 800, height: 600 })).toBe("10 20 800 600");
+    expect(viewBoxFromViewport({ x: 0, y: 0, zoom: 2 }, { width: 800, height: 600 })).toBe("0 0 400 300");
   });
 });

@@ -2,12 +2,10 @@
 // src/features/canvas/engine/svg/svg-export.tsx
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { ArrowMarkerDefs, boundingBox, EdgeShapeRender, NodeShapeRender } from "@/components/canvas-render";
+import { ArrowMarkerDefs, boundingBox, CANVAS_MARGIN, EdgeShapeRender, NodeShapeRender, staticViewBox } from "@/components/canvas-render";
 import type { EntityRefResolver, RenderData, RenderNode } from "@/components/canvas-render";
 
 import type { CanvasData } from "../../types";
-
-const MARGIN = 24;
 
 /**
  * Чистый экспортный SVG графа: ТОТ ЖЕ NodeShapeRender, что в read-only рендере
@@ -18,13 +16,12 @@ const MARGIN = 24;
  */
 function CanvasExportSvg({ data, resolveEntityRef }: { data: RenderData; resolveEntityRef: EntityRefResolver }) {
   const bbox = boundingBox(data.nodes);
-  const vbX = bbox.minX - MARGIN;
-  const vbY = bbox.minY - MARGIN;
-  const vbW = bbox.maxX - bbox.minX + MARGIN * 2;
-  const vbH = bbox.maxY - bbox.minY + MARGIN * 2;
+  const { viewBox, width: vbW, height: vbH } = staticViewBox(bbox);
+  const vbX = bbox.minX - CANVAS_MARGIN;
+  const vbY = bbox.minY - CANVAS_MARGIN;
   const byId = new Map<string, RenderNode>(data.nodes.map((n) => [n.id, n]));
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox={`${vbX} ${vbY} ${vbW} ${vbH}`} width={vbW} height={vbH}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} width={vbW} height={vbH}>
       <ArrowMarkerDefs />
       {/* Фон — чтобы текст (--color-fg) был читаем и в SVG, и в PNG (иначе прозрачный). */}
       <rect x={vbX} y={vbY} width={vbW} height={vbH} fill="var(--color-surface)" />
@@ -62,9 +59,7 @@ export interface ExportSvg {
 
 /** Строит самодостаточный SVG графа (цвета темы вшиты) + его пиксельные размеры. */
 export function buildExportSvg(data: RenderData, resolveEntityRef: EntityRefResolver, rootEl: Element): ExportSvg {
-  const bbox = boundingBox(data.nodes);
-  const width = bbox.maxX - bbox.minX + MARGIN * 2;
-  const height = bbox.maxY - bbox.minY + MARGIN * 2;
+  const { width, height } = staticViewBox(boundingBox(data.nodes));
   const raw = renderToStaticMarkup(<CanvasExportSvg data={data} resolveEntityRef={resolveEntityRef} />);
   return { svg: inlineThemeColors(raw, rootEl), width, height };
 }

@@ -1,7 +1,7 @@
 // src/features/canvas/editor/index.ts
 export { canvasReducer, initEditorState, NODE_DEFAULT_SIZE } from "./canvas-reducer";
 export { newId } from "./id";
-export { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, rulerTicks, snapToGrid, snapPoint } from "./coords";
+export { screenToWorld, worldToScreen, applyZoomAtPoint, fitViewport, centerViewport, rulerTicks, snapToGrid, snapPoint, viewBoxFromViewport, BTN_ZOOM_IN, BTN_ZOOM_OUT } from "./coords";
 export type { RulerTick } from "./coords";
 export { canvasDataToRenderData } from "./render-map";
 export { validateGraph } from "./validate";

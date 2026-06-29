@@ -118,3 +118,12 @@ export function snapToGrid(value: number, enabled: boolean): number {
 export function snapPoint(p: Point, enabled: boolean): Point {
   return { x: snapToGrid(p.x, enabled), y: snapToGrid(p.y, enabled) };
 }
+
+/** Строка SVG `viewBox` из вьюпорта и размера поверхности (px). Владелец зум-математики — этот модуль. */
+export function viewBoxFromViewport(vp: Viewport, size: { width: number; height: number }): string {
+  return `${vp.x} ${vp.y} ${size.width / vp.zoom} ${size.height / vp.zoom}`;
+}
+
+/** Шаг зума кнопкой тулбара/клавишей — крупнее одного «щелчка» колеса (комфортнее кликом). */
+export const BTN_ZOOM_IN = 1.4;
+export const BTN_ZOOM_OUT = 1 / 1.4;
