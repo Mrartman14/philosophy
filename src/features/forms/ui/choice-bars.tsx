@@ -27,8 +27,12 @@ export async function ChoiceBars({ options, answered, multi }: Props) {
         {options.map((o) => {
           const p = pct(o.count ?? 0, answered);
           return (
-            <li key={o.option_id} className="flex items-center gap-2 text-sm">
-              <span className="w-40 shrink-0 truncate">{o.label}</span>
+            <li
+              key={o.option_id}
+              className="flex items-center gap-2 text-sm"
+              aria-label={`${o.label}: ${o.count ?? 0}, ${p}%`}
+            >
+              <span className="w-40 shrink-0 truncate" title={o.label}>{o.label}</span>
               {/* CSP-safe: ширина бара через SVG-геометрию (атрибут), не inline-style. */}
               <svg
                 viewBox="0 0 100 8"
