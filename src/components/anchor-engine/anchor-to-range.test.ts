@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
+import { anchorFromSelection } from "./anchor-from-selection";
 import { rangeFromAnchor } from "./anchor-to-range";
 import type { TextAnchor } from "./types";
 
@@ -14,7 +15,7 @@ describe("rangeFromAnchor", () => {
   beforeEach(() => { document.body.innerHTML = ""; });
 
   it("точный путь block_id+char", () => {
-    const root = setup('<p data-block-id="p1">Hello bold world</p>');
+    const root = setup('<p data-block-id="p1" data-node-id="p1">Hello bold world</p>');
     const a: TextAnchor = { startBlockId: "p1", startNodeId: "p1", endBlockId: "p1", endNodeId: "p1", startChar: 6, endChar: 10, exact: "bold" };
     const r = rangeFromAnchor(a, root);
     expect(r?.toString()).toBe("bold");
@@ -51,9 +52,38 @@ describe("rangeFromAnchor", () => {
     expect(rangeFromAnchor(a, root)).toBeNull();
   });
   it("спецсимволы в block_id не роняют (CSS.escape guard)", () => {
-    const root = setup('<p data-block-id="a.b:c">text here</p>');
+    const root = setup('<p data-block-id="a.b:c" data-node-id="a.b:c">text here</p>');
     const a: TextAnchor = { startBlockId: "a.b:c", startNodeId: "a.b:c", endBlockId: "a.b:c", endNodeId: "a.b:c", startChar: 0, endChar: 4, exact: "text" };
     const r = rangeFromAnchor(a, root);
     expect(r?.toString()).toBe("text");
+  });
+
+  // --- Task 6: резолв по листу (node_id) ---
+
+  it("within-leaf: резолв офсетов внутри ячейки по node_id", () => {
+    const root = setup('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">Hello</td></tr></tbody></table>');
+    const a: TextAnchor = { startBlockId: "tbl-1", endBlockId: "tbl-1", startNodeId: "c1", endNodeId: "c1", startChar: 1, endChar: 4, exact: "ell" };
+    expect(rangeFromAnchor(a, root)?.toString()).toBe("ell");
+  });
+
+  it("table-rectangle (две разные ячейки) → null", () => {
+    const root = setup('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">aa</td><td data-node-id="c2">bb</td></tr></tbody></table>');
+    const a: TextAnchor = { startBlockId: "tbl-1", endBlockId: "tbl-1", startNodeId: "c1", endNodeId: "c2", startChar: 0, endChar: 2, exact: "aabb" };
+    expect(rangeFromAnchor(a, root)).toBeNull();
+  });
+
+  // ИНТЕГРАЦИЯ (M1): капчур → резолв на одном руте.
+  it("round-trip within-cell: anchorFromSelection → rangeFromAnchor резолвит ту же ячейку", () => {
+    const root = setup('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">Hello world</td></tr></tbody></table>');
+    const t = root.querySelector('[data-node-id="c1"]')!.firstChild as Text;
+    const range = document.createRange();
+    range.setStart(t, 6);
+    range.setEnd(t, 11);
+    const sel = window.getSelection()!;
+    sel.removeAllRanges();
+    sel.addRange(range);
+    const a = anchorFromSelection(sel, root)!;
+    expect(a.exact).toBe("world");
+    expect(rangeFromAnchor(a, root)?.toString()).toBe("world");
   });
 });

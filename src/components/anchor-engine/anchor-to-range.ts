@@ -3,8 +3,14 @@ import { cssEscape } from "./css-escape";
 import { locateOffset } from "./dom-text";
 import type { TextAnchor } from "./types";
 
-function block(root: HTMLElement, id: string): Element | null {
+function leafEl(root: HTMLElement, id: string): Element | null {
+  return root.querySelector(`[data-node-id="${cssEscape(id)}"]`);
+}
+function blockEl(root: HTMLElement, id: string): Element | null {
   return root.querySelector(`[data-block-id="${cssEscape(id)}"]`);
+}
+function isCell(el: Element | null): boolean {
+  return !!el && (el.tagName === "TD" || el.tagName === "TH");
 }
 
 // Один SHOW_TEXT-walker по scope: возвращает текстовые узлы с их глобальным офсетом
@@ -52,9 +58,9 @@ function searchQuote(scope: Element, a: TextAnchor): Range | null {
 }
 
 function tryExact(a: TextAnchor, root: HTMLElement): Range | null {
-  const sb = block(root, a.startBlockId), eb = block(root, a.endBlockId);
-  if (!sb || !eb) return null;
-  const s = locateOffset(sb, a.startChar), e = locateOffset(eb, a.endChar);
+  const sLeaf = leafEl(root, a.startNodeId), eLeaf = leafEl(root, a.endNodeId);
+  if (!sLeaf || !eLeaf) return null;
+  const s = locateOffset(sLeaf, a.startChar), e = locateOffset(eLeaf, a.endChar);
   if (!s || !e) return null;
   const r = root.ownerDocument.createRange();
   r.setStart(s.node, s.offset); r.setEnd(e.node, e.offset);
@@ -62,14 +68,25 @@ function tryExact(a: TextAnchor, root: HTMLElement): Range | null {
 }
 
 export function rangeFromAnchor(a: TextAnchor, root: HTMLElement): Range | null {
-  // 1) Быстрый путь: офсеты block_id+char, сверка с exact (authoritative).
+  // Phase 1: table-rectangle (разные ячейки) не поддержан → мягкий орфан.
+  // ДОЛГ Phase 2: при включении rectangle добавить проверку «обе ячейки ОДНОЙ
+  // таблицы» (одинаковый block_id) — anchors.md правило 4 (contract-MINOR).
+  if (a.startNodeId !== a.endNodeId) {
+    const sL = leafEl(root, a.startNodeId), eL = leafEl(root, a.endNodeId);
+    if (isCell(sL) && isCell(eL)) return null;
+  }
+  // 1) Быстрый путь: офсеты внутри листа + сверка exact.
   const exact = tryExact(a, root);
   if (exact) return exact;
-  // 2) Дрейф: блок гарантированно жив (бэк отвечает 409 BLOCKS_HAVE_ANCHORS на
-  //    удаление запинённого блока) → ищем цитату ВНУТРИ того же блока — точнее
-  //    дизамбигуация дубликатов, чем поиск по всему документу.
-  const startBlock = block(root, a.startBlockId);
-  if (startBlock) { const r = searchQuote(startBlock, a); if (r) return r; }
-  // 3) Последний резерв: квота-поиск по всему руту.
+  // 2) Квота-поиск внутри стартового листа (within-leaf дрейф).
+  const sLeaf = leafEl(root, a.startNodeId);
+  if (sLeaf) { const r = searchQuote(sLeaf, a); if (r) return r; }
+  // 3) Внутри объемлющего блока.
+  const sBlock = blockEl(root, a.startBlockId);
+  if (sBlock) { const r = searchQuote(sBlock, a); if (r) return r; }
+  // 4) Последний резерв — по всему руту. ПРИМЕЧАНИЕ: линейный кросс-лист прозы
+  //    (start_node_id != end_node_id, exact спанит границу двух листов) на
+  //    быстром пути tryExact обычно НЕ сходится (r.toString() включает текст
+  //    между листами) и резолвится именно здесь, по руту.
   return searchQuote(root, a);
 }
