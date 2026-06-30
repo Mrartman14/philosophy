@@ -1916,10 +1916,10 @@ EOF
 - Test: `src/features/comments/ui/comment-node-view.test.tsx` (или новый) — тело несёт `data-anchor-scope`
 
 **Interfaces:**
-- Consumes: `AnnotationScope` (Task 9, экспортируй из `@/features/annotations`), `getAnnotationsFor("comment", id)` (annotations server api), `buildAnnotationCards`.
-- Produces: тело комментария в DOM имеет предка `[data-anchor-scope="comment:<id>"]`.
+- Consumes: `AnnotationScope` (Task 9, экспортируй из `@/features/annotations`), `getLectureAnnotations` (новый батч-фетч, ниже), `buildAnnotationCards`.
+- Produces: тело комментария в DOM имеет предка `[data-anchor-scope="comment:<id>"]`; `getLectureAnnotations(lectureId, { parentEntityType, token }): Promise<Annotation[]>` (React `cache()` — один HTTP на запрос).
 
-Решение по фетчу (стопгап до бэкенд-хинта, см. спеку «К бэкенду»): фетчим аннотации **только для не-удалённых корневых/видимых комментариев**, и оборачиваем фетч в `try/catch` → пустой список при ошибке. Когда бэк добавит `annotation_count` на `comment.Comment` — фетчить лишь при `count > 0` (follow-up, отметить `// TODO(backend annotation_count)`).
+Решение по фетчу (N+1 РЕШЁН батч-ручкой, см. спеку «Бэкенд»): аннотации всех комментариев лекции тянем ОДНИМ вызовом `GET /api/lectures/{id}/annotations?parent_entity_type=comment`, группируем по `parent_entity_id`. Фетч обёрнут в React `cache()` → N серверных `CommentNode` дают один HTTP. Никакого пер-комментного фетча и стопгапа.
 
 - [ ] **Step 1: Write the failing test (comment body is an annotation scope)**
 
@@ -1973,28 +1973,65 @@ scopeEnabled?: boolean;
 Run: `pnpm vitest run src/features/comments/ui/comment-node-view.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 3: Server — фетч аннотаций комментария + AnnotationScope в `comment-node.tsx`**
+- [ ] **Step 3: Батч-фетч `getLectureAnnotations` (React `cache()`)**
 
-В `src/features/comments/ui/comment-node.tsx` (server component) после резолва прав добавь фетч и оборачивание. Экспортируй `AnnotationScope` и серверный сборщик карточек из annotations публично (`src/features/annotations/index.ts`). Псевдо-вставка (имплементатор сверится с текущим `comment-node.tsx`):
+В `src/features/annotations/api.ts` добавь батч-фетч аннотаций лекции с дедупликацией per-request и пагинацией. Сверься с существующим `getAnnotationsFor` (как строится URL/парсится `httputil.ListResponse`).
+
+```ts
+import { cache } from "react";
+
+// Все аннотации лекции одним вызовом (фильтр по типу родителя). Обёрнут в
+// React cache() → N серверных CommentNode дают один HTTP per-request.
+export const getLectureAnnotations = cache(
+  async (
+    lectureId: string,
+    opts?: { parentEntityType?: "document" | "comment" | "media"; token?: string },
+  ): Promise<Annotation[]> => {
+    const all: Annotation[] = [];
+    const limit = 200;
+    for (let offset = 0; ; offset += limit) {
+      const qs = new URLSearchParams({ offset: String(offset), limit: String(limit) });
+      if (opts?.parentEntityType) qs.set("parent_entity_type", opts.parentEntityType);
+      if (opts?.token) qs.set("token", opts.token);
+      // fetchJson/parseEnvelope — те же, что в getAnnotationsFor; data?: Annotation[]
+      const { data } = await fetchJson<{ data?: Annotation[] }>(
+        `/api/lectures/${lectureId}/annotations?${qs.toString()}`,
+      );
+      const page = data ?? [];
+      all.push(...page);
+      if (page.length < limit) break;
+    }
+    return all;
+  },
+);
+```
+
+(`Annotation` = `components["schemas"]["annotation.Annotation"]`, уже в `types.ts`. `fetchJson` — текущий помощник слайса; имплементатор подставит реальное имя.)
+
+- [ ] **Step 4: Server `comment-node.tsx` — группировка + AnnotationScope**
+
+Каждый `CommentNode` (server) берёт батч лекции, фильтрует по своему id, собирает карточки и оборачивает в `AnnotationScope`. Экспортируй из `@/features/annotations` (Step 5): `AnnotationScope`, `buildAnnotationCards`, `getLectureAnnotations`, `canCreateAnnotation`. Псевдо-вставка (сверься с текущим `comment-node.tsx`):
 
 ```tsx
-import { buildAnnotationCards, getAnnotationsFor } from "@/features/annotations";
-import { AnnotationScope } from "@/features/annotations";
+import {
+  AnnotationScope,
+  buildAnnotationCards,
+  canCreateAnnotation,
+  getLectureAnnotations,
+} from "@/features/annotations";
 
 // внутри компонента (server), для не-удалённого комментария:
-let annotationNotes: { id: string; anchor: ...; card: ReactNode }[] = [];
+let annotationNotes: { id: string; anchor: Anchor | undefined; card: ReactNode }[] = [];
 let canAnnotate = false;
 if (!comment.is_deleted) {
-  canAnnotate = canCreateAnnotation(me); // импорт из @/features/annotations
-  try {
-    const { items } = await getAnnotationsFor("comment", comment.id); // TODO(backend annotation_count): фетчить лишь при count>0
-    annotationNotes = buildAnnotationCards({ items, me, astSchema: null, hideAnchorOnWide: true });
-  } catch {
-    annotationNotes = [];
-  }
+  canAnnotate = canCreateAnnotation(me);
+  // cache() → один HTTP на всю лекцию, даже если CommentNode'ов сотня
+  const all = await getLectureAnnotations(comment.lecture_id, { parentEntityType: "comment" });
+  const items = all.filter((a) => a.parent_entity_id === comment.id);
+  annotationNotes = buildAnnotationCards({ items, me, astSchema: null, hideAnchorOnWide: true });
 }
 
-// рендер: CommentNodeView со scopeEnabled + клиентский AnnotationScope, регистрирующий заметки в правую рельсу
+// рендер: CommentNodeView со scopeEnabled + клиентский AnnotationScope (заметки → правая рельса)
 return (
   <>
     <CommentNodeView comment={comment} scopeEnabled anchorSlot={...} reactionsSlot={...} actionsSlot={...} {...labels} />
@@ -2011,24 +2048,25 @@ return (
 ```
 
 Замечания:
-- `AnnotationScope` ищет корень по `[data-anchor-scope="comment:<id>"]` — это обёртка `.content` из Step 2. Поскольку на странице комментариев таких корней МНОГО, селектор `document.querySelector(...)` с конкретным `comment:<id>` всё равно уникален (id уникален) — корректно.
-- `buildAnnotationCards` с `astSchema: null` рендерит read-карточки; если comment-аннотации тоже редактируемы/создаваемы с AST-композером, оберни в `SchemaContextProvider` как в `document-annotations.tsx` (загрузить схему один раз на уровне `CommentSection`, чтобы не грузить на каждый коммент). Зафиксируй: схему грузим один раз в `CommentSection` и прокидываем контекстом, а не per-comment.
+- `AnnotationScope` ищет корень по `[data-anchor-scope="comment:<id>"]` (обёртка `.content` из Step 2). Таких корней на странице много, но селектор с конкретным `comment:<id>` уникален (id уникален) — корректно.
+- `buildAnnotationCards` с `astSchema: null` рендерит read-карточки; если comment-аннотации создаются/редактируются AST-композером — схему грузи ОДИН раз на уровне `CommentSection` и прокидывай `SchemaContextProvider`-контекстом (как `document-annotations.tsx`), а не per-comment.
+- Если приватная лекция требует share-token для аннотаций — прокинь `token` в `CommentSection`→`CommentNode` и в `getLectureAnnotations({ token })`. Сейчас `CommentSection` токен не получает (как и `getLectureComments`); добавь, если нужно паритетно.
 
-- [ ] **Step 4: Export `AnnotationScope` + builders from annotations barrel**
+- [ ] **Step 5: Export `AnnotationScope` + builders + батч-фетч from annotations barrel**
 
-В `src/features/annotations/index.ts` добавь публичные реэкспорты `AnnotationScope`, `buildAnnotationCards`, `getAnnotationsFor`, `canCreateAnnotation` (если ещё не экспортированы). Не нарушай Guardrail: `getAnnotationsFor`/`canCreateAnnotation` — server-only, импортируются только в server-компонент `comment-node.tsx` (это допустимо: cross-feature импорт через barrel `index.ts`, не deep-import).
+В `src/features/annotations/index.ts` добавь публичные реэкспорты `AnnotationScope`, `buildAnnotationCards`, `getLectureAnnotations`, `canCreateAnnotation` (если ещё не экспортированы). Не нарушай Guardrail: `getLectureAnnotations`/`canCreateAnnotation` — server-only, импортируются только в server-компонент `comment-node.tsx` (cross-feature импорт через barrel `index.ts`, не deep-import).
 
-- [ ] **Step 5: Run gate**
+- [ ] **Step 6: Run gate**
 
 Run: `pnpm vitest run src/features/comments src/features/annotations && pnpm lint && pnpm build`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/features/comments/ui/comment-node-view.tsx src/features/comments/ui/comment-node-view.test.tsx src/features/comments/ui/comment-node.tsx src/features/annotations/index.ts
+git add src/features/comments/ui/comment-node-view.tsx src/features/comments/ui/comment-node-view.test.tsx src/features/comments/ui/comment-node.tsx src/features/annotations/api.ts src/features/annotations/index.ts
 git commit -m "$(cat <<'EOF'
-feat(comments): тело комментария — annotation-scope; фетч+регистрация его аннотаций в rail
+feat(comments): тело комментария — annotation-scope; аннотации лекции батчем (cache) в rail
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 EOF
@@ -2242,7 +2280,6 @@ EOF
 - [ ] Тред с многими комментариями (≥30): нет заметного лага при resize/scroll (один проход пересчёта в rail).
 
 ## Follow-up (вне объёма v1, зафиксировано)
-- Бэк: `annotation_count`/`has_annotations` на comment.Comment ИЛИ батч-ручка — убрать per-comment фетч (см. спеку).
 - Текст→карточка (useTextClick) и hover-из-текста (useHoverReveal) в мультикорневом rail (сейчас только карточка→текст).
 - Якорь-комментарий-в-комментарий (FE: снять хардкод document в comments/anchor.ts).
 - Глоссарий-карточки как annotation-скоуп на странице (тривиально: обернуть в AnchorScope).
@@ -2266,4 +2303,4 @@ EOF
 
 - **Регресс-риск** сосредоточен в Task 9-10 (миграция существующего UX на новый шов). Канарейка (Task 13) + ручной QA (Task 14) его закрывают. Если Task 9 ломает UX документа — откат только Task 9-10, ядро (Task 1-8) самостоятельно и протестировано.
 - **`ConnectorLayer` с мультикорнем** — единственная техническая неизвестность (нужен ли ему непустой `astRootRef`). Решение зафиксировать в Task 8 Step 2 (либо `{current:null}`, либо page-level контейнер-ref).
-- **Бэкенд-флаг** (per-comment фетч) — стопгап в Task 11, корень чинит бэк (в спеке). Не блокирует фичу, но без него тред с сотней комментов делает сотню GET — отметить пользователю при сдаче.
+- **N+1 решён бэком**: `GET /api/lectures/{id}/annotations?parent_entity_type=comment` (schema.ts:10819) + React `cache()` → один HTTP на всю лекцию (Task 11 Step 3-4). Стопгапа и флага к бэку нет.
