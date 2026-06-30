@@ -41,6 +41,7 @@ describe("FormCreateSchema", () => {
         title: "Опрос",
         visibility: "private",
         submission_mode: "editable",
+        submission_visibility: "private",
         fields: [field()],
       }),
     });
@@ -57,6 +58,7 @@ describe("FormCreateSchema", () => {
         title: "Выбор",
         visibility: "public",
         submission_mode: "immutable",
+        submission_visibility: "public",
         fields: [field({ type: "single_choice", options: ["Да", "Нет"] })],
       }),
     });
@@ -122,6 +124,16 @@ describe("FormCreateSchema", () => {
       }),
     });
     expect(r.success).toBe(false);
+  });
+
+  it("create требует submission_visibility", () => {
+    const fd = new FormData();
+    fd.set("payload", JSON.stringify({
+      title: "T", visibility: "private", submission_mode: "editable",
+      fields: [{ type: "text", prompt: "Q", required: false, sort_order: 0 }],
+    }));
+    const r = FormCreateSchema.safeParse(Object.fromEntries(fd));
+    expect(r.success).toBe(false); // нет submission_visibility
   });
 
   it("отклоняет неизвестный submission_mode", () => {

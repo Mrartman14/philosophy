@@ -2,7 +2,12 @@
 import "server-only";
 import { z } from "zod";
 
-import { VISIBILITY, FORM_SUBMISSION_MODES, FORM_FIELD_TYPES } from "@/api/enums";
+import {
+  VISIBILITY,
+  FORM_SUBMISSION_MODES,
+  FORM_FIELD_TYPES,
+  FORM_SUBMISSION_VISIBILITY,
+} from "@/api/enums";
 import type { NamespaceT } from "@/i18n";
 
 type ValidationT = NamespaceT<"validation">;
@@ -18,6 +23,7 @@ function makeTitleSchema(t: ValidationT) {
 const VisibilityEnum = z.enum(VISIBILITY);
 const ModeEnum = z.enum(FORM_SUBMISSION_MODES);
 const FieldTypeEnum = z.enum(FORM_FIELD_TYPES);
+const SubVisEnum = z.enum(FORM_SUBMISSION_VISIBILITY);
 
 /** Описание одного поля в payload конструктора. */
 function makeFieldSchema(t: ValidationT) {
@@ -55,6 +61,7 @@ function makeFormPayloadShape(t: ValidationT) {
       after_submit: z.string().optional(),
       visibility: VisibilityEnum.optional(),
       submission_mode: ModeEnum.optional(),
+      submission_visibility: SubVisEnum.optional(),
       fields: z.array(makeFieldSchema(t)).min(1, t("forms.fieldsRequired")),
     })
     .superRefine((p, ctx) => {
@@ -114,6 +121,13 @@ export function makeFormCreateSchema(t: ValidationT) {
       }
       if (!p.submission_mode) {
         ctx.addIssue({ code: "custom", message: t("forms.modeRequired"), path: ["submission_mode"] });
+      }
+      if (!p.submission_visibility) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("forms.submissionVisibilityRequired"),
+          path: ["submission_visibility"],
+        });
       }
     });
 }
