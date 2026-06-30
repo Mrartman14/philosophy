@@ -32,8 +32,8 @@ interface Props {
   attachments: ManagedAttachment[];
   /** entity.attach ∧ ownership (вычислено на сервере). */
   canAttach: boolean;
-  /** Тип прикрепляемых сущностей для пикера (документы или медиа). */
-  pickerEntityType: "document" | "media";
+  /** Тип прикрепляемых сущностей для пикера (документы, медиа или формы). */
+  pickerEntityType: "document" | "media" | "form";
   /** Fetcher целей для AsyncCombobox (server action, переданный страницей). */
   targetFetcher: (
     q: string,
@@ -68,7 +68,9 @@ export function LectureAttachmentsManager({
       ? { href: `/documents/${a.entityId}` }
       : a.entityType === "media"
         ? { href: `/media/${a.entityId}` }
-        : {}),
+        : a.entityType === "form"
+          ? { href: `/forms/${a.entityId}` }
+          : {}),
     entityType: a.entityType,
   }));
 
@@ -161,7 +163,9 @@ export function LectureAttachmentsManager({
           placeholder={
             pickerEntityType === "document"
               ? tL("searchDocumentPlaceholder")
-              : tL("searchMediaPlaceholder")
+              : pickerEntityType === "media"
+                ? tL("searchMediaPlaceholder")
+                : tL("searchFormPlaceholder")
           }
         />
       )}
