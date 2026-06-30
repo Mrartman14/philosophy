@@ -8,7 +8,9 @@ import type { TextAnchor } from "@/components/anchor-engine";
 
 export interface TextAnchorCoords {
   start_block_id?: string;
+  start_node_id?: string;
   end_block_id?: string;
+  end_node_id?: string;
   start_char?: number;
   end_char?: number;
   exact?: string;
@@ -24,7 +26,11 @@ export function coordsToEngineAnchor(a: TextAnchorCoords): TextAnchor | null {
   if (!a.start_block_id || !a.end_block_id || !a.exact) return null;
   const engine: TextAnchor = {
     startBlockId: a.start_block_id,
+    // fallback ?? block — ТОЛЬКО legacy/proza (node==block). Бэк теперь всегда
+    // минтит node_id; на ячейке/вложенном листе wire всегда несёт start_node_id.
+    startNodeId: a.start_node_id ?? a.start_block_id,
     endBlockId: a.end_block_id,
+    endNodeId: a.end_node_id ?? a.end_block_id,
     startChar: a.start_char ?? 0,
     endChar: a.end_char ?? 0,
     exact: a.exact,
@@ -38,7 +44,9 @@ export function coordsToEngineAnchor(a: TextAnchorCoords): TextAnchor | null {
 export function engineAnchorToCoords(a: TextAnchor): TextAnchorCoords {
   const coords: TextAnchorCoords = {
     start_block_id: a.startBlockId,
+    start_node_id: a.startNodeId,
     end_block_id: a.endBlockId,
+    end_node_id: a.endNodeId,
     start_char: a.startChar,
     end_char: a.endChar,
     exact: a.exact,

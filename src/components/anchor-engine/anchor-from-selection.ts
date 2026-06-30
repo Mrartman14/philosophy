@@ -23,7 +23,16 @@ export function anchorFromRange(range: Range, root: HTMLElement, contextLen = 32
   if (exact.length === 0) return null;
   const prefix = blockPlainText(sb).slice(Math.max(0, startChar - contextLen), startChar);
   const suffix = blockPlainText(eb).slice(endChar, endChar + contextLen);
-  const anchor: TextAnchor = { startBlockId: startId, endBlockId: endId, startChar, endChar, exact };
+  // Временный проброс: node-id == block-id (полноценный лист — Task 5).
+  const anchor: TextAnchor = {
+    startBlockId: startId,
+    startNodeId: startId,
+    endBlockId: endId,
+    endNodeId: endId,
+    startChar,
+    endChar,
+    exact,
+  };
   if (prefix) anchor.prefix = prefix;
   if (suffix) anchor.suffix = suffix;
   return anchor;

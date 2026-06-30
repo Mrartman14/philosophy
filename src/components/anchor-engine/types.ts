@@ -4,8 +4,10 @@
 // идентичны — UTF-16 code units).
 export interface TextAnchor {
   startBlockId: string;
+  startNodeId: string;
   endBlockId: string;
-  startChar: number; // UTF-16 code units
+  endNodeId: string;
+  startChar: number; // UTF-16 code units, node-relative (внутри листа)
   endChar: number;
   exact: string;
   prefix?: string;

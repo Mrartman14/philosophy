@@ -40,7 +40,7 @@ function Harness({ notes, tone }: { notes: AnchoredNote[]; tone?: "annotation" |
 
 const orphanNote: AnchoredNote = {
   id: "n1",
-  anchor: { startBlockId: "x", endBlockId: "x", startChar: 0, endChar: 4, exact: "zzzz" },
+  anchor: { startBlockId: "x", startNodeId: "x", endBlockId: "x", endNodeId: "x", startChar: 0, endChar: 4, exact: "zzzz" },
 };
 
 describe("MarginAnchorLayer (smoke)", () => {

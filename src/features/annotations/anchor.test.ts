@@ -14,7 +14,9 @@ describe("buildTextAnchor", () => {
   it("строит text-range якорь с обязательными полями", () => {
     const a = buildTextAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b2",
+      endNodeId: "b2",
       startChar: 0,
       endChar: 5,
       exact: "Кант",
@@ -23,7 +25,9 @@ describe("buildTextAnchor", () => {
     });
     expect(a).toEqual({
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b2",
+      end_node_id: "b2",
       start_char: 0,
       end_char: 5,
       exact: "Кант",
@@ -35,7 +39,9 @@ describe("buildTextAnchor", () => {
   it("опускает пустые prefix/suffix", () => {
     const a = buildTextAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b1",
+      endNodeId: "b1",
       startChar: 0,
       endChar: 3,
       exact: "abc",
@@ -111,7 +117,9 @@ describe("toEngineAnchor", () => {
     });
     expect(engine).toEqual({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b2",
+      endNodeId: "b2",
       startChar: 3,
       endChar: 9,
       exact: "Кант",
@@ -187,7 +195,9 @@ describe("fromEngineAnchor", () => {
   it("маппит TextAnchor → Anchor (snake_case) через buildTextAnchor", () => {
     const anchor = fromEngineAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b2",
+      endNodeId: "b2",
       startChar: 3,
       endChar: 9,
       exact: "Кант",
@@ -196,7 +206,9 @@ describe("fromEngineAnchor", () => {
     });
     expect(anchor).toEqual({
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b2",
+      end_node_id: "b2",
       start_char: 3,
       end_char: 9,
       exact: "Кант",
@@ -208,7 +220,9 @@ describe("fromEngineAnchor", () => {
   it("опускает пустые prefix/suffix", () => {
     const anchor = fromEngineAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b1",
+      endNodeId: "b1",
       startChar: 0,
       endChar: 3,
       exact: "abc",
@@ -222,7 +236,9 @@ describe("round-trip Anchor ↔ TextAnchor", () => {
   it("from(to(a)) сохраняет полный text-range", () => {
     const original = {
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b2",
+      end_node_id: "b2",
       start_char: 3,
       end_char: 9,
       exact: "Кант",
@@ -243,7 +259,9 @@ describe("round-trip Anchor ↔ TextAnchor", () => {
     if (engine === null) throw new Error("expected non-null engine anchor");
     expect(fromEngineAnchor(engine)).toEqual({
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b1",
+      end_node_id: "b1",
       start_char: 0,
       end_char: 0,
       exact: "abc",

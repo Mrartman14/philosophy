@@ -17,7 +17,7 @@ describe("noteContainingCaret", () => {
   it("возвращает note, чей range накрывает caret", () => {
     const root = setup();
     const notes: AnchoredNote[] = [
-      { id: "n1", anchor: { startBlockId: "p1", endBlockId: "p1", startChar: 6, endChar: 10, exact: "beta" } },
+      { id: "n1", anchor: { startBlockId: "p1", startNodeId: "p1", endBlockId: "p1", endNodeId: "p1", startChar: 6, endChar: 10, exact: "beta" } },
     ];
     const textNode = must(must(root.querySelector("p")).firstChild) as Text;
     // caret в середине "beta" (offset 8)
