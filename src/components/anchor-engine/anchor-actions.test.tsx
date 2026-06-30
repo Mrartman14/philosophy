@@ -2,7 +2,7 @@ import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, it, expect } from "vitest";
 
 import {
-  AnchorActionsProvider,
+  AnchorScopeProvider,
   applicableActions,
   SelectionAffordanceHost,
   useRegisterAnchorAction,
@@ -68,15 +68,15 @@ describe("anchor-actions registry", () => {
   it("useRegisterAnchorAction под провайдером: register → unregister без throw", () => {
     expect(() => {
       const { rerender, unmount } = render(
-        <AnchorActionsProvider>
+        <AnchorScopeProvider>
           <Consumer enabled />
-        </AnchorActionsProvider>,
+        </AnchorScopeProvider>,
       );
       // toggle enabled=false → cleanup-путь unregister
       rerender(
-        <AnchorActionsProvider>
+        <AnchorScopeProvider>
           <Consumer enabled={false} />
-        </AnchorActionsProvider>,
+        </AnchorScopeProvider>,
       );
       unmount();
     }).not.toThrow();
@@ -91,10 +91,10 @@ describe("anchor-actions registry", () => {
   it("несколько действий регистрируются параллельно без throw", () => {
     expect(() => {
       render(
-        <AnchorActionsProvider>
+        <AnchorScopeProvider>
           <Consumer enabled id="margin" label="Заметка" />
           <Consumer enabled id="inline" label="Комментарий" />
-        </AnchorActionsProvider>,
+        </AnchorScopeProvider>,
       );
     }).not.toThrow();
   });
@@ -109,9 +109,9 @@ describe("SelectionAffordanceHost (smoke)", () => {
     let html = "";
     expect(() => {
       const { container } = render(
-        <AnchorActionsProvider>
+        <AnchorScopeProvider>
           <SelectionAffordanceHost />
-        </AnchorActionsProvider>,
+        </AnchorScopeProvider>,
       );
       html = container.innerHTML;
     }).not.toThrow();
@@ -131,10 +131,10 @@ describe("SelectionAffordanceHost (smoke)", () => {
     let html = "";
     expect(() => {
       const { container } = render(
-        <AnchorActionsProvider>
+        <AnchorScopeProvider>
           <Consumer enabled />
           <SelectionAffordanceHost />
-        </AnchorActionsProvider>,
+        </AnchorScopeProvider>,
       );
       html = container.innerHTML;
     }).not.toThrow();

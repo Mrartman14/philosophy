@@ -128,9 +128,6 @@ export function AnchorScopeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// временный alias до миграции страниц (снимается в Task 13)
-export const AnchorActionsProvider = AnchorScopeProvider;
-
 /**
  * Слой регистрирует своё действие создания якоря в общий хост. Без провайдера
  * (контекст undefined) — no-op (безопасно до монтирования провайдера). При
