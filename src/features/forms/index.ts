@@ -75,6 +75,7 @@ export { FormAfterSubmit } from "./ui/form-after-submit";
 export { FormFill } from "./ui/form-fill";
 export { FormResultsView } from "./ui/form-results-view";
 export { FormVisibilityBadges } from "./ui/form-visibility-badges";
+export { FieldAnswersColumn } from "./ui/field-answers-column";
 export { FormFieldInput } from "./ui/form-field-input";
 export { SubmissionDetail } from "./ui/submission-detail";
 export { SubmissionEditForm } from "./ui/submission-edit-form";
