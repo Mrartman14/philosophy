@@ -165,8 +165,8 @@ export function useRegisterAnchorAction({
 /**
  * Слой-фасад над useRegisterAnchorAction: инкапсулирует ref-стабилизацию
  * onCreate (чтобы меняющийся колбэк не дёргал re-register loop в эффекте
- * регистрации) + саму регистрацию. ВНУТРЕННИЙ — слои зовут относительным
- * импортом, из index НЕ выносим.
+ * регистрации) + саму регистрацию. Слайсы (create-action компоненты) зовут
+ * его через barrel @/components/anchor-engine.
  */
 export function useStableAnchorAction({
   id,

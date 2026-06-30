@@ -5,7 +5,18 @@
 // поэтому в публичный сёрфейс НЕ выносим (гигиена минимального API; knip-скрипт
 // тоже пометил бы их unused — knip отдельный скрипт, не в гейте lint/test/build).
 export { MarginAnchorLayer, type MarginAnchorLayerProps } from "./margin-anchor-layer";
+// Идентичность скоупа + хелпер JSX-атрибута для разметки тел сущностей в слайсах.
+export { anchorScopeAttr, type AnchorScopeId } from "./scope-id";
 // Единая shared-поверхность захвата+аффорданса (PR3 dual-affordance fix).
 // useRegisterAnchorAction — ВНУТРЕННИЙ (слои зовут относительным импортом), НЕ выносим.
-export { AnchorActionsProvider, SelectionAffordanceHost } from "./anchor-actions";
+// useStableAnchorAction регистрируют слайсы (create-action компоненты) через barrel.
+export {
+  AnchorActionsProvider,
+  AnchorScopeProvider,
+  SelectionAffordanceHost,
+  useStableAnchorAction,
+  type RailScopeEntry,
+} from "./anchor-actions";
+// Реестр scope-заметок для rail: слайсы регистрируют свои заметки, MarginRail читает.
+export { useRegisterRailScope, useRailScopes } from "./use-rail-scopes";
 export type { TextAnchor, AnchoredNote, AnchorDraft } from "./types";

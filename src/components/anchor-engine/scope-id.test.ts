@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { formatScopeId, nearestScope, parseScopeId } from "./scope-id";
+import { anchorScopeAttr, formatScopeId, nearestScope, parseScopeId } from "./scope-id";
 import { must } from "./test-support";
 
 describe("scope-id", () => {
+  it("anchorScopeAttr builds the data-* prop object", () => {
+    expect(anchorScopeAttr("comment", "c1")).toEqual({ "data-anchor-scope": "comment:c1" });
+  });
+
   it("format → parse round-trips", () => {
     const s = { entityType: "comment", entityId: "11111111-2222-3333-4444-555555555555" };
     expect(formatScopeId(s)).toBe("comment:11111111-2222-3333-4444-555555555555");

@@ -10,6 +10,14 @@ export function formatScopeId(s: AnchorScopeId): string {
   return `${s.entityType}:${s.entityId}`;
 }
 
+/** Проп-объект для JSX-разметки тела сущности как скоупа: {...anchorScopeAttr("comment", id)}. */
+export function anchorScopeAttr(
+  entityType: string,
+  entityId: string,
+): { "data-anchor-scope": string } {
+  return { "data-anchor-scope": formatScopeId({ entityType, entityId }) };
+}
+
 export function parseScopeId(raw: string | null | undefined): AnchorScopeId | null {
   if (!raw) return null;
   const idx = raw.indexOf(":");
