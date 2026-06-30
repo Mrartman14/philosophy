@@ -13,8 +13,10 @@ import {
   getLectureById,
   getLectureCanvases,
   getLectureDocuments,
+  getLectureForms,
   getLectureMedia,
   LectureCanvasList,
+  LectureFormList,
   lectureCoverUrl,
   LectureDetail,
   LectureDocumentSelector,
@@ -45,13 +47,14 @@ interface Props {
 export default async function LecturePage({ params, searchParams }: Props) {
   const { id } = await params;
   const { cq, token, doc } = await searchParams;
-  const [me, lecture, tags, documents, media, canvases] = await Promise.all([
+  const [me, lecture, tags, documents, media, canvases, forms] = await Promise.all([
     getMe(),
     getLectureById(id, token),
     getLectureTags(id),
     getLectureDocuments(id, token),
     getLectureMedia(id, token),
     getLectureCanvases(id, token),
+    getLectureForms(id, token),
   ]);
   if (!lecture) notFound();
 
@@ -147,6 +150,15 @@ export default async function LecturePage({ params, searchParams }: Props) {
           heading={t("lectureCanvasesHeading")}
           entryBadge={t("lectureCanvasEntryBadge")}
           untitledLabel={t("lectureCanvasUntitled")}
+        />
+
+        {/* Формы — листинг прикреплённых форм (опросы/анкеты лекции). */}
+        <LectureFormList
+          forms={forms}
+          token={token}
+          heading={t("lectureFormsHeading")}
+          entryBadge={t("lectureFormEntryBadge")}
+          untitledLabel={t("lectureFormUntitled")}
         />
 
         <Suspense fallback={<Skeleton className="h-48 w-full" />}>
