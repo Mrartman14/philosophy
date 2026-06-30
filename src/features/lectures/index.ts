@@ -33,6 +33,7 @@ export { setLectureCover, clearLectureCover } from "./actions";
 export { getLectureDocuments, getLectureMedia, getLectureCanvases, getLectureForms } from "./api";
 export { resolveActiveDocId } from "./active-document";
 export { LectureCanvasList } from "./ui/lecture-canvas-list";
+export { LectureFormList } from "./ui/lecture-form-list";
 export {
   attachToLecture,
   detachFromLecture,
