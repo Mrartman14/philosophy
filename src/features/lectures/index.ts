@@ -40,6 +40,7 @@ export {
   reorderLectureAttachment,
   searchDocumentsForAttach,
   searchMediaForAttach,
+  searchFormsForAttach,
 } from "./actions";
 export { canManageAttachments, canAttachToLecture } from "./permissions";
 export { LectureAttachmentsManager } from "./ui/lecture-attachments-manager";

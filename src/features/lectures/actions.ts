@@ -366,6 +366,34 @@ export const searchMediaForAttach = createAction(
 );
 
 /**
+ * Поиск форм владельца для attach-пикера. Источник — GET /api/me/forms (формы
+ * текущего пользователя; attach owner-only, прикрепляют свои формы).
+ *
+ * СТОПГАП: у /api/me/forms нет q/пагинации (в отличие от /api/documents и
+ * /api/media). Фильтруем по title подстрокой и режем offset/limit здесь. Когда
+ * бэк добавит серверный поиск форм (GET /api/forms?q= …) — заменить на него.
+ */
+export const searchFormsForAttach = createAction(
+  async (raw: { q: string; offset: number; limit: number }) => {
+    const api = await createApiClient();
+    const { data, error } = await api.GET("/api/me/forms");
+    if (error) rethrowApiError(error, ERRORS);
+    const all = (data.data ?? [])
+      .filter((f): f is typeof f & { id: string } => Boolean(f.id))
+      .map((f) => ({ id: f.id, label: f.title ?? f.id }));
+    const q = raw.q.trim().toLowerCase();
+    const filtered = q
+      ? all.filter((f) => f.label.toLowerCase().includes(q))
+      : all;
+    return {
+      data: filtered.slice(raw.offset, raw.offset + raw.limit),
+      total: filtered.length,
+    };
+  },
+  "searchFormsForAttach",
+);
+
+/**
  * PATCH /api/lectures/{lectureID}/attachments/{entityType}/{entityID}.
  * Абсолютный sort_order (не swap, бек клампит). Гейт: ownership. 204.
  */
