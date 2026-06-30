@@ -136,15 +136,26 @@ export const getAllLectureAnnotations = cache(
   ): Promise<Annotation[]> => {
     const all: Annotation[] = [];
     const limit = 200;
-    for (let offset = 0; ; offset += limit) {
+    // Терминируем по ПУСТОЙ странице, а НЕ по `items.length < limit`, И продвигаем
+    // offset на ФАКТИЧЕСКОЕ число полученных элементов, а не на запрошенный limit.
+    // Бэк может клампить limit server-side (частая Go-конвенция, напр. cap 100):
+    // тогда (а) `< limit`-предикат оборвал бы обход после 1-й страницы, МОЛЧА
+    // потеряв аннотации >cap; (б) шаг offset на limit (200) при отдаче 100
+    // ПЕРЕПРЫГНУЛ бы записи 100..199. Шаг по items.length + терминация по пустой
+    // странице корректны независимо от клампа. Защитный кап итераций — против
+    // бесконечного цикла на битом бэке.
+    const MAX_PAGES = 50;
+    let offset = 0;
+    for (let page = 0; page < MAX_PAGES; page++) {
       const { items } = await getLectureAnnotations(
         lectureId,
         offset,
         limit,
         parentEntityType,
       );
+      if (items.length === 0) break;
       all.push(...items);
-      if (items.length < limit) break;
+      offset += items.length;
     }
     return all;
   },
