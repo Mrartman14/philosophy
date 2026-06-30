@@ -449,57 +449,35 @@ EOF
 - Produces: `AnchorAction` теперь `{ id; label; onCreate; appliesTo: (entityType: string) => boolean }`;
   `useStableAnchorAction`/`useRegisterAnchorAction` принимают `appliesTo`.
 
-- [ ] **Step 1: Write the failing test (action filtering by scope type)**
+- [ ] **Step 1: Write the failing test (pure predicate — без живого Selection)**
 
-Добавь в `src/components/anchor-engine/anchor-actions.test.tsx`:
+jsdom не даёт настоящего `window.getSelection()` (зафиксировано в `anchor-actions.test.tsx:11` / `use-selection-capture.test.tsx:9`), поэтому фильтрацию проверяем ДЕТЕРМИНИРОВАННО через чистый предикат `applicableActions`, не поднимая `SelectionAffordanceHost`/выделение. Добавь в `src/components/anchor-engine/anchor-actions.test.tsx`:
 
 ```tsx
-import { act, render } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import {
-  AnchorScopeProvider,
-  SelectionAffordanceHost,
-  useStableAnchorAction,
-} from "./anchor-actions";
+import { applicableActions, type AnchorAction } from "./anchor-actions";
 
-function RegisterDocOnly() {
-  useStableAnchorAction({
-    id: "comment-anchor",
-    label: "Комментировать",
-    onCreate: () => {},
-    enabled: true,
-    appliesTo: (t) => t === "document",
+describe("applicableActions", () => {
+  const annotate: AnchorAction = { id: "annotation", label: "A", onCreate: () => {}, appliesTo: () => true };
+  const commentAnchor: AnchorAction = {
+    id: "comment-anchor", label: "C", onCreate: () => {}, appliesTo: (t) => t === "document",
+  };
+  const all = [annotate, commentAnchor];
+
+  it("в document-скоупе доступны оба действия", () => {
+    expect(applicableActions(all, "document").map((a) => a.id)).toEqual(["annotation", "comment-anchor"]);
   });
-  return null;
-}
-
-it("hides an action whose appliesTo rejects the selection's scope", () => {
-  document.body.innerHTML =
-    '<div data-anchor-scope="comment:c1"><p data-block-id="b1">hello world</p></div>';
-  render(
-    <AnchorScopeProvider>
-      <RegisterDocOnly />
-      <SelectionAffordanceHost />
-    </AnchorScopeProvider>,
-  );
-  const p = document.querySelector("[data-block-id]")!;
-  const sel = window.getSelection()!;
-  const r = document.createRange();
-  r.setStart(p.firstChild!, 0);
-  r.setEnd(p.firstChild!, 5);
-  sel.removeAllRanges();
-  sel.addRange(r);
-  act(() => {
-    document.dispatchEvent(new Event("pointerup"));
+  it("в comment-скоупе comment-anchor отфильтрован", () => {
+    expect(applicableActions(all, "comment").map((a) => a.id)).toEqual(["annotation"]);
   });
-  // comment-anchor применимо только к document → в comment-скоупе кнопки нет
-  expect(document.body.textContent).not.toContain("Комментировать");
 });
 ```
 
 Run: `pnpm vitest run src/components/anchor-engine/anchor-actions.test.tsx`
-Expected: FAIL (`appliesTo` ещё не поддержан; провайдер называется `AnchorActionsProvider`).
+Expected: FAIL («`applicableActions` is not exported» — модуль/экспорт ещё нет).
+
+Замечание: существующие кейсы в `anchor-actions.test.tsx` (если есть `Consumer`, зовущий `useRegisterAnchorAction` без `appliesTo`) **продолжат работать** — `appliesTo` теперь опционален с дефолтом `() => true`. Импорт `AnchorActionsProvider` в старых кейсах тоже резолвится (alias из Step 3). Менять старые кейсы не нужно.
 
 - [ ] **Step 2: Update `anchor-actions.tsx`**
 
@@ -516,7 +494,7 @@ export interface AnchorAction {
 }
 ```
 
-`useRegisterAnchorAction` — добавь `appliesTo` в параметры и в объект `register(...)`:
+`useRegisterAnchorAction` — добавь `appliesTo` **опционально** (дефолт `() => true`), чтобы существующие вызовы без него не сломались, и в объект `register(...)`:
 
 ```tsx
 export function useRegisterAnchorAction({
@@ -524,13 +502,13 @@ export function useRegisterAnchorAction({
   label,
   onCreate,
   enabled,
-  appliesTo,
+  appliesTo = () => true,
 }: {
   id: string;
   label: string;
   onCreate: (draft: AnchorDraft) => void;
   enabled: boolean;
-  appliesTo: (entityType: string) => boolean;
+  appliesTo?: (entityType: string) => boolean;
 }) {
   const ctx = useContext(AnchorActionsContext);
   const register = ctx?.register;
@@ -545,7 +523,7 @@ export function useRegisterAnchorAction({
 }
 ```
 
-`useStableAnchorAction` — пробрось `appliesTo`:
+`useStableAnchorAction` — пробрось `appliesTo` (тоже опционально):
 
 ```tsx
 export function useStableAnchorAction({
@@ -559,7 +537,7 @@ export function useStableAnchorAction({
   label: string;
   onCreate: (draft: AnchorDraft) => void;
   enabled: boolean;
-  appliesTo: (entityType: string) => boolean;
+  appliesTo?: (entityType: string) => boolean;
 }): void {
   const ref = useRef(onCreate);
   useEffect(() => {
@@ -572,7 +550,17 @@ export function useStableAnchorAction({
 }
 ```
 
-`SelectionAffordanceHost` — убери discovery `[data-ast-root]`, фильтруй по `draft.scope`:
+В интерфейсе `AnchorAction` поле `appliesTo` остаётся **обязательным** (его всегда проставляет `useRegisterAnchorAction` через дефолт) — так `SelectionAffordanceHost` не делает лишних guard'ов.
+
+Вынеси ЧИСТЫЙ предикат фильтрации (для детерминированного теста, без рендера host):
+
+```tsx
+export function applicableActions(actions: AnchorAction[], entityType: string): AnchorAction[] {
+  return actions.filter((a) => a.appliesTo(entityType));
+}
+```
+
+`SelectionAffordanceHost` — убери discovery `[data-ast-root]`, фильтруй по `draft.scope` через `applicableActions`:
 
 ```tsx
 export function SelectionAffordanceHost() {
@@ -581,7 +569,7 @@ export function SelectionAffordanceHost() {
   const { draft, clear } = useSelectionCapture({ enabled: actions.length > 0 });
 
   if (!ctx || actions.length === 0 || !draft) return null;
-  const applicable = actions.filter((a) => a.appliesTo(draft.scope.entityType));
+  const applicable = applicableActions(actions, draft.scope.entityType);
   if (applicable.length === 0) return null;
 
   const { rect } = draft;
@@ -642,9 +630,9 @@ Expected: тест PASS; lint без ошибок (почини unused imports, 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/components/anchor-engine/anchor-actions.tsx src/components/anchor-engine/anchor-actions.test.tsx src/components/anchor-engine/index.ts
+git add src/components/anchor-engine/anchor-actions.tsx src/components/anchor-engine/anchor-actions.test.tsx
 git commit -m "$(cat <<'EOF'
-feat(anchor-engine): action.appliesTo + scope-aware SelectionAffordanceHost; AnchorScopeProvider
+feat(anchor-engine): action.appliesTo (опц.) + applicableActions + scope-aware host; AnchorScopeProvider
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 EOF
@@ -998,6 +986,12 @@ import type { RailScopeEntry } from "./use-rail-scopes";
 export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
   const [recomputeKey, setRecomputeKey] = useState(0);
 
+  // СТАБИЛЬНЫЙ ключ набора корней: пересоздавать ResizeObserver'ы только при смене
+  // самих корней/состава скоупов, а НЕ при каждой новой идентичности массива
+  // `scopes` (которую плодит .filter() в useRailScopes на каждый register). Без
+  // этого N register'ов на гидрации = O(N²) перемонтирований RO.
+  const scopeKey = scopes.map((s) => s.key).join("|");
+
   useEffect(() => {
     const bump = () => setRecomputeKey((k) => k + 1);
     bump();
@@ -1016,7 +1010,9 @@ export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
       window.removeEventListener("resize", bump);
       for (const ro of ros) ro.disconnect();
     };
-  }, [scopes]);
+    // Ключуем по стабильному scopeKey (состав/корни), не по идентичности массива.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scopeKey]);
 
   const ranges = useMemo(() => {
     const m = new Map<string, Range | null>();
@@ -1024,9 +1020,10 @@ export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
       for (const n of s.notes) m.set(n.id, rangeFromAnchor(n.anchor, s.rootEl));
     }
     return m;
-    // recomputeKey намеренно в deps — форсит перестроение при смене геометрии.
+    // scopeKey (стабильный) + recomputeKey форсят перестроение при реальной смене
+    // состава/геометрии, не на каждую новую идентичность массива scopes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scopes, recomputeKey]);
+  }, [scopeKey, recomputeKey]);
 
   const getAnchorRect = useCallback(
     (id: string) => {
@@ -1064,15 +1061,86 @@ EOF
 Page-level колонка одного тона: собирает заметки всех скоупов, подсвечивает, рисует одну колонку + выноски. Аналог прежнего `MarginAnchorLayer`, но по многим корням.
 
 **Files:**
+- Modify: `src/components/anchor-engine/connector-layer.tsx` (мультикорень: X текстовой стороны из rect корня-владельца заметки, а не единого root)
+- Modify: `src/components/anchor-engine/connector-layer.test.tsx` (кейс на `getRootRect`)
 - Create: `src/components/anchor-engine/margin-rail.tsx`
-- Modify: `src/components/anchor-engine/index.ts` (экспорт `MarginRail`, `AnchorScope`, `AnchorScopeProvider`)
+- Modify: `src/components/anchor-engine/index.ts` (экспорт `MarginRail`)
 - Test: `src/components/anchor-engine/margin-rail.test.tsx`
 
 **Interfaces:**
-- Consumes: `useRailScopes` (Task 5), `useAggregatedAnchorRanges` (Task 7), `MarginNotesColumn`/`ColumnNote` (existing), `ConnectorLayer` (existing), `HighlightController` (existing), `toneColor` (existing).
+- Consumes: `useRailScopes` (Task 5), `useAggregatedAnchorRanges` (Task 7), `MarginNotesColumn`/`ColumnNote`, `ConnectorLayer` (доработанный), `HighlightController`, `toneColor`, `useTextClick`/`useHoverReveal` (existing — переиспользуем без изменений, передав `document.body` как корень).
 - Produces: `MarginRail({ tone, highlightName }: { tone: "annotation" | "comment"; highlightName: string }): ReactNode`.
 
-- [ ] **Step 1: Write the failing test (smoke: рендерит карточки из 2 скоупов в одну колонку)**
+**ВАЖНО (из ревью):** прежний черновик передавал `astRootRef={{ current: null }}` в `ConnectorLayer` — это РЕАЛЬНО отключало все выноски (`connector-layer.tsx:43` `if (!root) return []`) и было неверно концептуально (root задавал X текстовой стороны, `:55`). В мультикорневом rail единого корня нет, поэтому сначала дорабатываем `ConnectorLayer` (Step 1), затем строим `MarginRail` поверх него (Step 3). Реципрокную навигацию текст→карточка (`useTextClick`/`useHoverReveal`) СОХРАНЯЕМ (паритет UX документа) — они уже принимают корень-ref, передаём им `document.body`.
+
+- [ ] **Step 1: Доработать `ConnectorLayer` под мультикорень (X текстовой стороны из rect корня-владельца)**
+
+Сейчас `measure()` (`connector-layer.tsx:42-44,55`) берёт единый `astRootRef` и `rootRect.right/left` как X текстового края. Делаем X **по корню-владельцу каждой заметки**: новый опциональный проп `getRootRect: (id) => DOMRect | null` (приоритетнее `astRootRef`), `astRootRef` становится опциональным (обратная совместимость существующего теста).
+
+Сначала тест-кейс в `src/components/anchor-engine/connector-layer.test.tsx` (по образцу существующего — он уже стабит геометрию через `getAnchorRect`-проп, `rect()` и `stubMatch(true)`):
+
+```tsx
+it("getRootRect задаёт X текстовой стороны per-id (мультикорень, без astRootRef)", () => {
+  // wide=true (stubMatch), карточка справа от якоря, корень-владелец слева
+  // → x1 берётся из getRootRect(id).right, не из общего root.
+  // (детали стабов — как в существующем тесте: getAnchorRect→rect, data-note-card-wrapper в DOM)
+  // Ассерта: рендерится <path data-connector="n1"> (выноска построена без astRootRef).
+});
+```
+
+Затем правка `connector-layer.tsx`:
+
+```tsx
+export interface ConnectorLayerProps {
+  ids: string[];
+  getAnchorRect: (id: string) => DOMRect | null;
+  // Корень-владелец заметки (для X текстовой стороны). Приоритетнее astRootRef;
+  // если задан — astRootRef не нужен. Мультикорневой rail передаёт его.
+  getRootRect?: (id: string) => DOMRect | null;
+  astRootRef?: RefObject<HTMLElement | null>;
+  activeId: string | null;
+  tone: Tone;
+  recomputeKey: number;
+}
+
+function measure(
+  ids: string[],
+  getAnchorRect: (id: string) => DOMRect | null,
+  getRootRect: ((id: string) => DOMRect | null) | undefined,
+  astRootRef: RefObject<HTMLElement | null> | undefined,
+): Seg[] {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return [];
+  if (!window.matchMedia(WIDE).matches) return [];
+  const segs: Seg[] = [];
+  for (const id of ids) {
+    const a = getAnchorRect(id);
+    if (!a) continue;
+    // X текстовой стороны: rect корня-владельца этой заметки (мультикорень) ИЛИ
+    // единый astRootRef (легаси/один корень).
+    const rootRect = getRootRect ? getRootRect(id) : (astRootRef?.current?.getBoundingClientRect() ?? null);
+    if (!rootRect) continue;
+    const card = document.querySelector<HTMLElement>(`[data-note-card-wrapper="${cssEscape(id)}"]`);
+    if (!card) continue;
+    const c = card.getBoundingClientRect();
+    const right = c.left >= a.right;
+    const x1 = (right ? rootRect.right : rootRect.left) + window.scrollX;
+    const x2 = (right ? c.left : c.right) + window.scrollX;
+    const anchorTop = a.top + window.scrollY;
+    const anchorBottom = a.bottom + window.scrollY;
+    const anchorY = anchorTop + Math.min(a.height, FIRST_LINE_CLAMP_PX) / 2;
+    const { y1, y2 } = attachYs(anchorTop, anchorBottom, anchorY, c.top + window.scrollY, c.bottom + window.scrollY, CARD_EDGE_PAD);
+    segs.push({ id, d: connectorPath({ x1, y1, x2, y2 }) });
+  }
+  return segs;
+}
+```
+
+В компоненте проброс `getRootRect` в `measure(...)` и в deps `useLayoutEffect` (вместо `astRootRef` ключуй по `getRootRect`/`astRootRef`). Существующий тест с `astRootRef` остаётся зелёным (ветка fallback).
+
+Run: `pnpm vitest run src/components/anchor-engine/connector-layer.test.tsx`
+Expected: PASS (новый кейс + старые).
+
+- [ ] **Step 2: Write the failing test for `MarginRail` (агрегация 2 скоупов в ОДНУ колонку)**
 
 ```tsx
 // src/components/anchor-engine/margin-rail.test.tsx
@@ -1103,34 +1171,44 @@ function makeScope(key: string, noteId: string, label: string): RailScopeEntry {
 }
 
 describe("MarginRail", () => {
-  it("renders cards aggregated from multiple scopes in one column", () => {
-    render(
+  it("агрегирует карточки из 2 скоупов в ОДНУ колонку", () => {
+    // jsdom: нет matchMedia → wide=false → MarginNotesColumn рендерит в потоке (без
+    // абсолютного позиционирования и getBoundingClientRect-геометрии) → карточки в DOM.
+    const { container } = render(
       <AnchorScopeProvider>
         <Reg entry={makeScope("annotation:document:a", "n-a", "card-A")} />
         <Reg entry={makeScope("annotation:document:b", "n-b", "card-B")} />
         <MarginRail tone="annotation" highlightName="annotation" />
       </AnchorScopeProvider>,
     );
+    const cards = container.querySelectorAll("[data-note-card]");
+    expect(cards.length).toBe(2); // обе заметки
     expect(document.body.textContent).toContain("card-A");
     expect(document.body.textContent).toContain("card-B");
-    expect(document.querySelector('[data-note-card="n-a"]')).not.toBeNull();
-    expect(document.querySelector('[data-note-card="n-b"]')).not.toBeNull();
+    // обе — в одном контейнере колонки (общий ближайший предок-список)
+    const colA = cards[0]!.closest("[data-margin-column]") ?? cards[0]!.parentElement;
+    const colB = cards[1]!.closest("[data-margin-column]") ?? cards[1]!.parentElement;
+    expect(colA).toBe(colB);
   });
 });
 ```
 
-Run: `pnpm vitest run src/components/anchor-engine/margin-rail.test.tsx`
-Expected: FAIL (нет модуля).
+(Если `MarginNotesColumn` не помечает контейнер `data-margin-column` — имплементатор сверится с реальной обёрткой колонки и поправит селектор; суть ассерты — обе карточки в ОДНОМ контейнере, а не в двух.)
 
-- [ ] **Step 2: Implement `margin-rail.tsx`** (перенеси логику из `margin-anchor-layer.tsx`, заменив один `astRootRef`/`notes` на агрегат скоупов)
+Run: `pnpm vitest run src/components/anchor-engine/margin-rail.test.tsx`
+Expected: FAIL (нет модуля `margin-rail`).
+
+- [ ] **Step 3: Implement `margin-rail.tsx`** (перенос логики `margin-anchor-layer.tsx` на агрегат скоупов; выноски через доработанный `ConnectorLayer`; текст→карточка через `document.body`)
 
 ```tsx
 "use client";
 // src/components/anchor-engine/margin-rail.tsx
 // Page-level агрегатор-приёмник одного тона. Собирает заметки ВСЕХ скоупов
-// (useRailScopes) → мультикорневая геометрия → одна колонка карточек + выноски +
-// подсветка по общему каналу. Заменяет per-feature MarginAnchorLayer.
-import { useCallback, useMemo, useRef, useState } from "react";
+// (useRailScopes) → мультикорневая геометрия → одна колонка карточек + выноски
+// (X текстовой стороны из корня-владельца) + подсветка по общему каналу +
+// реципрокная навигация текст→карточка (useTextClick/useHoverReveal, слушают
+// document.body, хит-тест по агрегированным ranges). Заменяет MarginAnchorLayer.
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Motion } from "@/styles/tokens/enums";
 import { isReducedMotion } from "@/utils/is-reduced-motion";
@@ -1144,7 +1222,9 @@ import { toneColor } from "./tone";
 import type { AnchoredNote } from "./types";
 import { useAggregatedAnchorRanges } from "./use-aggregated-anchor-ranges";
 import { useAnchorHighlights } from "./use-anchor-highlights";
+import { useHoverReveal } from "./use-hover-reveal";
 import { useRailScopes } from "./use-rail-scopes";
+import { useTextClick } from "./use-text-click";
 
 function scrollBehavior(): ScrollBehavior {
   if (typeof document === "undefined") return "auto";
@@ -1175,7 +1255,9 @@ export function MarginRail({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const emphasizedId = hoveredId ?? activeId;
 
-  // Все заметки всех скоупов (плоско) + renderNote + флаг подсветки скоупа по id.
+  // Стабильный scope-key (для мемоизации, как в useAggregatedAnchorRanges).
+  const scopeKey = scopes.map((s) => s.key).join("|");
+
   const flat = useMemo(() => {
     const items: {
       note: AnchoredNote;
@@ -1186,18 +1268,43 @@ export function MarginRail({
       for (const n of s.notes)
         items.push({ note: n, render: s.renderNote, highlight: s.highlightEnabled !== false });
     return items;
-  }, [scopes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scopeKey]);
   const allIds = flat.map((f) => f.note.id);
-  // Подсвечиваем только заметки скоупов с highlightEnabled !== false (reading-mode).
   const persistentIds = flat.filter((f) => f.highlight).map((f) => f.note.id);
 
-  useAnchorHighlights({
-    controller,
-    ranges,
-    persistentIds,
-    activeId: emphasizedId,
-    enabled: true,
-  });
+  useAnchorHighlights({ controller, ranges, persistentIds, activeId: emphasizedId, enabled: true });
+
+  // id заметки → корень её скоупа (для X текстовой стороны выносок). Карту держим
+  // в ref → getRootRect стабилен по идентичности (не дёргает эффект ConnectorLayer).
+  const rootByIdRef = useRef(new Map<string, HTMLElement>());
+  rootByIdRef.current = useMemo(() => {
+    const m = new Map<string, HTMLElement>();
+    for (const s of scopes) for (const n of s.notes) m.set(n.id, s.rootEl);
+    return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scopeKey]);
+  const getRootRect = useCallback((id: string) => {
+    const el = rootByIdRef.current.get(id);
+    return el ? el.getBoundingClientRect() : null;
+  }, []);
+
+  // Реципрокная навигация (паритет с MarginAnchorLayer): слушаем document.body,
+  // хит-тест по агрегированным ranges. bodyRef стабилен; ready после монтирования.
+  const bodyRef = useRef<HTMLElement | null>(null);
+  const [bodyReady, setBodyReady] = useState(false);
+  useEffect(() => {
+    bodyRef.current = document.body;
+    setBodyReady(true);
+  }, []);
+  const pickFromText = useCallback((id: string) => {
+    setActiveId(id);
+    document
+      .querySelector(`[data-note-card="${cssEscape(id)}"]`)
+      ?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
+  }, []);
+  useHoverReveal({ astRootRef: bodyRef, ranges, ready: bodyReady, onHover: setHoveredId });
+  useTextClick({ astRootRef: bodyRef, ranges, ready: bodyReady, onPick: pickFromText });
 
   const onActivate = useCallback(
     (id: string) => {
@@ -1205,10 +1312,7 @@ export function MarginRail({
       const r = ranges.get(id);
       if (r) {
         const rect = r.getBoundingClientRect();
-        window.scrollTo({
-          top: rect.top + window.scrollY - ACTIVATE_SCROLL_OFFSET_PX,
-          behavior: scrollBehavior(),
-        });
+        window.scrollTo({ top: rect.top + window.scrollY - ACTIVATE_SCROLL_OFFSET_PX, behavior: scrollBehavior() });
       }
     },
     [ranges],
@@ -1221,10 +1325,7 @@ export function MarginRail({
       id: note.id,
       orphan,
       node: (
-        <div
-          data-note-card={note.id}
-          style={{ borderInlineStart: `3px solid ${accent}`, paddingInlineStart: "0.5rem" }}
-        >
+        <div data-note-card={note.id} style={{ borderInlineStart: `3px solid ${accent}`, paddingInlineStart: "0.5rem" }}>
           {render(note, orphan)}
         </div>
       ),
@@ -1235,19 +1336,10 @@ export function MarginRail({
     ? [...ranges.values()].filter((r): r is Range => r !== null)
     : [];
 
-  // Двусторонний клик карточка→текст оставлен (onActivate). Текст→карточка
-  // (useTextClick) и hover-из-текста (useHoverReveal) в rail НЕ навешиваем: они
-  // требовали единого astRootRef; в мультикорневом rail это follow-up (см. план,
-  // раздел «вне объёма v1»). cssEscape/scrollBehavior используются onActivate.
-  void cssEscape;
-
   return (
     <>
       {overlayRanges.length > 0 && (
-        <HighlightOverlay
-          ranges={overlayRanges}
-          activeRange={activeId ? (ranges.get(activeId) ?? null) : null}
-        />
+        <HighlightOverlay ranges={overlayRanges} activeRange={activeId ? (ranges.get(activeId) ?? null) : null} />
       )}
       <MarginNotesColumn
         notes={columnNotes}
@@ -1259,7 +1351,7 @@ export function MarginRail({
       <ConnectorLayer
         ids={allIds}
         getAnchorRect={getAnchorRect}
-        astRootRef={{ current: null }}
+        getRootRect={getRootRect}
         activeId={emphasizedId}
         tone={tone}
         recomputeKey={recomputeKey}
@@ -1269,9 +1361,7 @@ export function MarginRail({
 }
 ```
 
-Примечание имплементатору: проверь сигнатуру `ConnectorLayer` (`src/components/anchor-engine/connector-layer.tsx`) — если `astRootRef` используется только для системы координат контейнера, передача `{ current: null }` допустима (выноски считаются по вьюпорт-rect'ам из `getAnchorRect`). Если `ConnectorLayer` обязательно требует непустой root — заведи невидимый page-level контейнер-ref на обёртке rail и передай его. Зафиксируй выбор в тесте на выноску в Task 13.
-
-- [ ] **Step 3: Export from index**
+- [ ] **Step 4: Export from index**
 
 В `src/components/anchor-engine/index.ts` добавь (остальной публичный API уже добавлен в Task 6):
 
@@ -1281,17 +1371,17 @@ export { MarginRail } from "./margin-rail";
 
 (Старые экспорты `MarginAnchorLayer`/`AnchorActionsProvider` пока оставь — удалим в Task 13.)
 
-- [ ] **Step 4: Run test to verify it passes**
+- [ ] **Step 5: Run test to verify it passes**
 
-Run: `pnpm vitest run src/components/anchor-engine/margin-rail.test.tsx`
+Run: `pnpm vitest run src/components/anchor-engine/margin-rail.test.tsx src/components/anchor-engine/connector-layer.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/components/anchor-engine/margin-rail.tsx src/components/anchor-engine/index.ts src/components/anchor-engine/margin-rail.test.tsx
+git add src/components/anchor-engine/connector-layer.tsx src/components/anchor-engine/connector-layer.test.tsx src/components/anchor-engine/margin-rail.tsx src/components/anchor-engine/index.ts src/components/anchor-engine/margin-rail.test.tsx
 git commit -m "$(cat <<'EOF'
-feat(anchor-engine): MarginRail — page-level агрегатор заметок одного тона
+feat(anchor-engine): MarginRail-агрегатор + мультикорневой ConnectorLayer (getRootRect); текст→карточка сохранён
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 EOF
@@ -1330,7 +1420,7 @@ EOF
 <div data-ast-root {...anchorScopeAttr("document", activeId)}>
 ```
 
-То же в `src/app/documents/[id]/page.tsx:93`, подставив реальное имя переменной id активного документа (имплементатор сверится — на странице документа это id из `params`/загруженного документа).
+То же в `src/app/documents/[id]/page.tsx:93`. **ВАЖНО (из ревью):** используй `anchorScopeAttr("document", document.id)` — ТОТ ЖЕ id, что уходит в `<DocumentAnnotations parentId={document.id}>`, а НЕ `params.id` (при slug/redirect они могут разойтись, и `AnnotationScope` не найдёт корень). На лекциях оба — `activeId`, там вопроса нет.
 
 Замечание: `data-ast-root` оставляем как дополнительный маркер на время переходного периода (на него ещё смотрит удаляемый код), удалим в Task 13.
 
@@ -1513,30 +1603,53 @@ export function AnnotationScope({
   const ssrOnly = notes.filter((n) => !engineIds.has(n.id));
 
   // Корень сущности (server-rendered) ищем по уникальному id и держим в state,
-  // чтобы entry пересобрался, когда узел найден.
+  // чтобы entry пересобрался, когда узел найден. Один retry через rAF — узел может
+  // ещё не быть в DOM при стриминге (CommentSection под Suspense).
   const [rootEl, setRootEl] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    setRootEl(
-      document.querySelector<HTMLElement>(`[data-anchor-scope="${parentEntityType}:${parentId}"]`),
-    );
+    const find = () =>
+      document.querySelector<HTMLElement>(`[data-anchor-scope="${parentEntityType}:${parentId}"]`);
+    const el = find();
+    if (el) setRootEl(el);
+    else if (typeof requestAnimationFrame === "function") {
+      const raf = requestAnimationFrame(() => setRootEl(find()));
+      return () => cancelAnimationFrame(raf);
+    }
   }, [parentEntityType, parentId]);
   const ready = rootEl !== null;
 
+  // Wide-гейт (та же media, что MarginNotesColumn): на narrow карточки текут inline
+  // ПОД своим телом (локальность спеки), в rail регистрируем ТОЛЬКО на wide. SSR →
+  // false (показываем inline-фолбэк), после mount поднимаем при совпадении.
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(min-width: 80rem)");
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  // renderNote: зависим от РАЗРЕШЁННОЙ строки orphanLabel (стабильна по значению
+  // даже если useT отдаёт новую функцию-идентичность) — иначе renderNote→entry
+  // менялись бы каждый рендер и крутили register-цикл. (Из ревью.)
+  const orphanLabel = t("marginOrphanLabel");
   const renderNote = useCallback(
     (n: AnchoredNote, orphan: boolean): ReactNode => (
       <>
-        {orphan && <p className="text-xs text-(--color-fg-muted)">{t("marginOrphanLabel")}</p>}
+        {orphan && <p className="text-xs text-(--color-fg-muted)">{orphanLabel}</p>}
         {cardById.get(n.id) ?? null}
       </>
     ),
-    [cardById, t],
+    [cardById, orphanLabel],
   );
 
-  // Стабильный entry: меняется только при смене корня/заметок/renderNote/highlight,
-  // НЕ на каждый рендер → нет register-цикла в провайдере.
+  // Стабильный entry: меняется только при смене корня/заметок/renderNote/highlight.
+  // Регистрируем в rail ТОЛЬКО на wide (на narrow карточки рендерим inline ниже).
   const entry = useMemo(
     () =>
-      rootEl
+      rootEl && wide
         ? {
             key: `annotation:${parentEntityType}:${parentId}`,
             rootEl,
@@ -1546,7 +1659,7 @@ export function AnnotationScope({
             highlightEnabled: highlight,
           }
         : null,
-    [rootEl, parentEntityType, parentId, engineNotes, renderNote, highlight],
+    [rootEl, wide, parentEntityType, parentId, engineNotes, renderNote, highlight],
   );
   useRegisterRailScope(entry);
 
@@ -1575,9 +1688,10 @@ export function AnnotationScope({
         <div key={n.id}>{n.card}</div>
       ))}
 
-      {/* До mount (ready=false): якорённые карточки списком (есть в HTML). После —
-          их позиционирует MarginRail из реестра; здесь больше не рендерим. */}
-      {!ready && engineNotes.map((n) => <div key={n.id}>{cardById.get(n.id)}</div>)}
+      {/* Якорённые карточки inline-списком, когда rail их НЕ позиционирует:
+          до mount (SSR/no-JS, есть в HTML) ИЛИ на narrow (локальность под телом
+          своего скоупа — требование спеки). На wide+ready их рисует MarginRail. */}
+      {(!ready || !wide) && engineNotes.map((n) => <div key={n.id}>{cardById.get(n.id)}</div>)}
 
       <AnnotationCreateAction
         canCreate={canCreate}
@@ -1587,6 +1701,7 @@ export function AnnotationScope({
       />
 
       <AnnotationComposerDialog
+        parentEntityType={parentEntityType}
         parentId={composer.parentId}
         open={composer.open}
         onOpenChange={(open) => setComposer((c) => ({ ...c, open }))}
@@ -1597,7 +1712,7 @@ export function AnnotationScope({
 }
 ```
 
-Примечание: проверь проп `AnnotationComposerDialog` — сейчас он `parentId: string` (см. `document-annotation-layer.tsx:137`). Если он жёстко завязан на `parentEntityType="document"` внутри (роут create), это станет видно при аннотировании комментария — тогда расширить его проп `parentEntityType` и прокинуть в `createAnnotation`. Зафиксируй в Task 12. На комментариях тулбар не нужен (`showToolbar` опускается → false).
+Примечание: `AnnotationComposerDialog` получает `parentEntityType` (новый обяз. проп — добавляется в Task 12, который выполняется ДО Task 11). Для документа это `"document"` (паритет), для комментария — `"comment"`. На комментариях тулбар не нужен (`showToolbar` опускается → false).
 
 - [ ] **Step 5: Update server `document-annotations.tsx` + mount `MarginRail` on pages**
 
@@ -1640,7 +1755,7 @@ Expected: PASS; сборка зелёная. (Если `build` падает на
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/features/annotations/ui/annotation-scope.tsx src/features/annotations/ui/annotation-create-action.tsx src/features/annotations/ui/annotation-create-action.test.tsx src/features/annotations/ui/document-annotations.tsx src/features/annotations/index.ts src/app/lectures/[id]/page.tsx src/app/documents/[id]/page.tsx
+git add src/features/annotations/ui/annotation-scope.tsx src/features/annotations/ui/annotation-create-action.tsx src/features/annotations/ui/annotation-create-action.test.tsx src/features/annotations/ui/document-annotations.tsx src/app/lectures/[id]/page.tsx src/app/documents/[id]/page.tsx
 git rm src/features/annotations/ui/document-annotation-layer.tsx
 git commit -m "$(cat <<'EOF'
 refactor(annotations): документ на AnchorScope + MarginRail; create по draft.scope
@@ -1798,6 +1913,17 @@ export function CommentAnchorScope({
   }, [documentId]);
   const ready = rootEl !== null;
 
+  // Wide-гейт (как в AnnotationScope): на narrow превью текут inline, в rail только на wide.
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(min-width: 80rem)");
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const engineNotes = useMemo<AnchoredNote[]>(
     () =>
       notes.flatMap((n) => {
@@ -1810,19 +1936,21 @@ export function CommentAnchorScope({
   const engineIds = new Set(engineNotes.map((n) => n.id));
   const ssrOnly = notes.filter((n) => !engineIds.has(n.id));
 
+  // renderNote зависит от РАЗРЕШЁННОЙ строки (не идентичности t) — анти-register-цикл.
+  const orphanLabel = t("marginOrphanLabel");
   const renderNote = useCallback(
     (n: AnchoredNote, orphan: boolean): ReactNode => (
       <>
-        {orphan && <p className="text-xs text-(--color-fg-muted)">{t("marginOrphanLabel")}</p>}
+        {orphan && <p className="text-xs text-(--color-fg-muted)">{orphanLabel}</p>}
         {previewById.get(n.id) ?? null}
       </>
     ),
-    [previewById, t],
+    [previewById, orphanLabel],
   );
 
   const entry = useMemo(
     () =>
-      rootEl
+      rootEl && wide
         ? {
             key: `comment:document:${documentId}`,
             rootEl,
@@ -1831,7 +1959,7 @@ export function CommentAnchorScope({
             renderNote,
           }
         : null,
-    [rootEl, documentId, engineNotes, renderNote],
+    [rootEl, wide, documentId, engineNotes, renderNote],
   );
   useRegisterRailScope(entry);
 
@@ -1840,7 +1968,7 @@ export function CommentAnchorScope({
       {ssrOnly.map((n) => (
         <div key={n.id}>{n.preview}</div>
       ))}
-      {!ready && engineNotes.map((n) => <div key={n.id}>{previewById.get(n.id)}</div>)}
+      {(!ready || !wide) && engineNotes.map((n) => <div key={n.id}>{previewById.get(n.id)}</div>)}
 
       <CommentAnchorCreateAction
         canCreate={canCreate}
@@ -1881,10 +2009,12 @@ Expected: PASS.
 )}
 ```
 
-- [ ] **Step 5: Delete obsolete layer + run gate**
+- [ ] **Step 5: Delete obsolete layer (+ ЕГО ТЕСТ) + run gate**
+
+⚠️ Из ревью: в каталоге есть и `document-comment-layer.test.tsx` — без его удаления тест-гейт упадёт на импорте удалённого модуля. Удаляем оба:
 
 ```bash
-git rm src/features/comments/ui/document-comment-layer.tsx
+git rm src/features/comments/ui/document-comment-layer.tsx src/features/comments/ui/document-comment-layer.test.tsx
 ```
 Поправь `src/features/comments/index.ts`, если реэкспортил слой.
 
@@ -1895,7 +2025,7 @@ Expected: PASS.
 
 ```bash
 git add src/features/comments/ui/comment-anchor-scope.tsx src/features/comments/ui/comment-anchor-create.test.tsx src/features/comments/ui/document-comments.tsx src/features/comments/index.ts src/app/lectures/[id]/page.tsx
-git rm src/features/comments/ui/document-comment-layer.tsx
+git rm src/features/comments/ui/document-comment-layer.tsx src/features/comments/ui/document-comment-layer.test.tsx
 git commit -m "$(cat <<'EOF'
 refactor(comments): заякоренные комментарии на CommentAnchorScope + MarginRail(comment)
 
@@ -1973,88 +2103,97 @@ scopeEnabled?: boolean;
 Run: `pnpm vitest run src/features/comments/ui/comment-node-view.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 3: Батч-фетч `getLectureAnnotations` (React `cache()`)**
+- [ ] **Step 3: Батч-фетч ВСЕХ аннотаций лекции — `getAllLectureAnnotations` (поверх существующей)**
 
-В `src/features/annotations/api.ts` добавь батч-фетч аннотаций лекции с дедупликацией per-request и пагинацией. Сверься с существующим `getAnnotationsFor` (как строится URL/парсится `httputil.ListResponse`).
+⚠️ **Из ревью:** `getLectureAnnotations` **уже существует** в `src/features/annotations/api.ts:99` и экспортирована из `index.ts` (используется страницей `/lectures/[id]/annotations`). Её сигнатура: `(lectureId, offset=0, limit=20, parentEntityType?) => Promise<AnnotationListResult>` (`{ items, total }`), уже обёрнута в `cache()`. **НЕ создавать одноимённую** — это `Cannot redeclare` + поломка той страницы. И `fetchJson`/`parseEnvelope` в слайсе НЕТ (реально `createApiClient()` + openapi-fetch + `unwrapList`).
+
+Добавь НОВУЮ функцию `getAllLectureAnnotations`, которая крутит пагинацию ПОВЕРХ существующей (дефолтный `limit=20` иначе тихо режет >20 аннотаций), обёрнута в свой `cache()`:
 
 ```ts
 import { cache } from "react";
 
-// Все аннотации лекции одним вызовом (фильтр по типу родителя). Обёрнут в
-// React cache() → N серверных CommentNode дают один HTTP per-request.
-export const getLectureAnnotations = cache(
+import type { ParentEntityType } from "./types"; // или узкий тип фильтра
+// getLectureAnnotations — СУЩЕСТВУЮЩАЯ (api.ts:99), НЕ переопределяем.
+
+/**
+ * ВСЕ аннотации лекции (по типу родителя), все страницы. Поверх существующей
+ * getLectureAnnotations. cache() → один проход на запрос даже при N CommentNode.
+ */
+export const getAllLectureAnnotations = cache(
   async (
     lectureId: string,
-    opts?: { parentEntityType?: "document" | "comment" | "media"; token?: string },
+    parentEntityType?: "document" | "comment" | "media",
   ): Promise<Annotation[]> => {
     const all: Annotation[] = [];
     const limit = 200;
     for (let offset = 0; ; offset += limit) {
-      const qs = new URLSearchParams({ offset: String(offset), limit: String(limit) });
-      if (opts?.parentEntityType) qs.set("parent_entity_type", opts.parentEntityType);
-      if (opts?.token) qs.set("token", opts.token);
-      // fetchJson/parseEnvelope — те же, что в getAnnotationsFor; data?: Annotation[]
-      const { data } = await fetchJson<{ data?: Annotation[] }>(
-        `/api/lectures/${lectureId}/annotations?${qs.toString()}`,
-      );
-      const page = data ?? [];
-      all.push(...page);
-      if (page.length < limit) break;
+      const { items } = await getLectureAnnotations(lectureId, offset, limit, parentEntityType);
+      all.push(...items);
+      if (items.length < limit) break;
     }
     return all;
   },
 );
 ```
 
-(`Annotation` = `components["schemas"]["annotation.Annotation"]`, уже в `types.ts`. `fetchJson` — текущий помощник слайса; имплементатор подставит реальное имя.)
+Замечания:
+- `getLectureAnnotations` уже `cache()` — но per-page; `getAllLectureAnnotations` обёрнут отдельно, чтобы дедуплицировать ИМЕННО полный обход на запрос.
+- Существующая `getLectureAnnotations` не принимает `token`. Если приватные лекции потребуют share-token для аннотаций комментариев — это доработка КОНТРАКТА существующей функции (добавить `token`-параметр и прокинуть в openapi-fetch query), не «подставит имплементатор». На странице лекции комментарии сейчас тянутся без token — паритетно можно начать без него; пометь как открытый вопрос.
 
-- [ ] **Step 4: Server `comment-node.tsx` — группировка + AnnotationScope**
+- [ ] **Step 4: Server `comment-node.tsx` — группировка + AnnotationScope (ТОЛЬКО не-deleted путь)**
 
-Каждый `CommentNode` (server) берёт батч лекции, фильтрует по своему id, собирает карточки и оборачивает в `AnnotationScope`. Экспортируй из `@/features/annotations` (Step 5): `AnnotationScope`, `buildAnnotationCards`, `getLectureAnnotations`, `canCreateAnnotation`. Псевдо-вставка (сверься с текущим `comment-node.tsx`):
+⚠️ **Из ревью:**
+- `comment.lecture_id` — НЕ полагайся на него (на типе `Comment` его может не быть). `CommentNode` уже получает `lectureId` **пропом** (от `comment-tree.tsx`) — используй проп.
+- У `comment-node.tsx` ДВА пути: ранний возврат для `comment.is_deleted` (рендерит `CommentNodeView` с `deletedLabel`) и полный путь со слотами `anchorSlot/reactionsSlot/actionsSlot/labels`. **Оборачивай ТОЛЬКО полный (не-deleted) путь, сохранив ВСЕ существующие слоты.** Deleted-ветку не трогай (там нет тела → нечего аннотировать).
+
+Псевдо-вставка в полный путь (сверься с текущим `comment-node.tsx`, сохрани его слоты как есть — `{...}` ниже = существующие значения, НЕ удалять):
 
 ```tsx
 import {
   AnnotationScope,
   buildAnnotationCards,
   canCreateAnnotation,
-  getLectureAnnotations,
+  getAllLectureAnnotations,
 } from "@/features/annotations";
 
-// внутри компонента (server), для не-удалённого комментария:
-let annotationNotes: { id: string; anchor: Anchor | undefined; card: ReactNode }[] = [];
-let canAnnotate = false;
-if (!comment.is_deleted) {
-  canAnnotate = canCreateAnnotation(me);
-  // cache() → один HTTP на всю лекцию, даже если CommentNode'ов сотня
-  const all = await getLectureAnnotations(comment.lecture_id, { parentEntityType: "comment" });
-  const items = all.filter((a) => a.parent_entity_id === comment.id);
-  annotationNotes = buildAnnotationCards({ items, me, astSchema: null, hideAnchorOnWide: true });
-}
+// CommentNode(props: { comment, lectureId, ... }) — lectureId уже есть в пропах.
+// В полном (не-deleted) пути, перед return:
+const canAnnotate = canCreateAnnotation(me);
+const all = await getAllLectureAnnotations(lectureId, "comment"); // cache() → один обход на запрос
+const items = all.filter((a) => a.parent_entity_id === comment.id);
+const annotationNotes = buildAnnotationCards({ items, me, astSchema: null, hideAnchorOnWide: true });
 
-// рендер: CommentNodeView со scopeEnabled + клиентский AnnotationScope (заметки → правая рельса)
 return (
   <>
-    <CommentNodeView comment={comment} scopeEnabled anchorSlot={...} reactionsSlot={...} actionsSlot={...} {...labels} />
+    <CommentNodeView
+      comment={comment}
+      scopeEnabled
+      anchorSlot={/* существующий */}
+      reactionsSlot={/* существующий */}
+      actionsSlot={/* существующий */}
+      {/* ...existing labels/locale/tz props — НЕ удалять */}
+    />
     {(annotationNotes.length > 0 || canAnnotate) && (
-      <AnnotationScope
-        parentEntityType="comment"
-        parentId={comment.id}
-        notes={annotationNotes}
-        canCreate={canAnnotate}
-      />
+      <AnnotationScope parentEntityType="comment" parentId={comment.id} notes={annotationNotes} canCreate={canAnnotate} />
     )}
   </>
 );
 ```
 
 Замечания:
-- `AnnotationScope` ищет корень по `[data-anchor-scope="comment:<id>"]` (обёртка `.content` из Step 2). Таких корней на странице много, но селектор с конкретным `comment:<id>` уникален (id уникален) — корректно.
+- `AnnotationScope` ищет корень по `[data-anchor-scope="comment:<id>"]` (обёртка `.content` из Step 2) — селектор с конкретным `comment:<id>` уникален.
 - `buildAnnotationCards` с `astSchema: null` рендерит read-карточки; если comment-аннотации создаются/редактируются AST-композером — схему грузи ОДИН раз на уровне `CommentSection` и прокидывай `SchemaContextProvider`-контекстом (как `document-annotations.tsx`), а не per-comment.
-- Если приватная лекция требует share-token для аннотаций — прокинь `token` в `CommentSection`→`CommentNode` и в `getLectureAnnotations({ token })`. Сейчас `CommentSection` токен не получает (как и `getLectureComments`); добавь, если нужно паритетно.
+- Если `CommentNode` пробрасывается под `<Suspense>` (на странице лекции `CommentSection` в Suspense) — `AnnotationScope` ищет корень `querySelector` в эффекте; на всякий случай предусмотри один retry через `requestAnimationFrame`, если первый поиск вернул null (тело могло ещё не быть в DOM при стриминге).
 
-- [ ] **Step 5: Export `AnnotationScope` + builders + батч-фетч from annotations barrel**
+- [ ] **Step 5: Export `AnnotationScope` + `buildAnnotationCards` + `getAllLectureAnnotations` from annotations barrel**
 
-В `src/features/annotations/index.ts` добавь публичные реэкспорты `AnnotationScope`, `buildAnnotationCards`, `getLectureAnnotations`, `canCreateAnnotation` (если ещё не экспортированы). Не нарушай Guardrail: `getLectureAnnotations`/`canCreateAnnotation` — server-only, импортируются только в server-компонент `comment-node.tsx` (cross-feature импорт через barrel `index.ts`, не deep-import).
+В `src/features/annotations/index.ts` проверь/добавь реэкспорты:
+- `AnnotationScope` (client) — ДОБАВИТЬ (новый, Task 9).
+- `buildAnnotationCards` (server-only, из `annotation-cards-builder.tsx`) — ДОБАВИТЬ (сейчас НЕ экспортирован).
+- `getAllLectureAnnotations` — ДОБАВИТЬ (новый, Step 3).
+- `canCreateAnnotation`, `getLectureAnnotations` — УЖЕ экспортированы (`index.ts:6`), не дублировать.
+
+Guardrail: `buildAnnotationCards`/`getAllLectureAnnotations`/`canCreateAnnotation` — server-only, импортируются только в server-компонент `comment-node.tsx` (cross-feature через barrel — допустимо). `AnnotationScope` — client (`"use client"`), server-компонент его легально рендерит.
 
 - [ ] **Step 6: Run gate**
 
@@ -2075,76 +2214,68 @@ EOF
 
 ---
 
-## Task 12: Маршрутизация create аннотации по `parentEntityType`
+## Task 12: Проброс `parentEntityType` в композер create (НЕ хардкод "document")
 
-Композер/экшен создания аннотации должны слать на `/api/{parentEntityType}/{parentId}/annotations`, а не хардкодить `document`.
+⚠️ **Из ревью — переосмыслено.** Прежний черновик предлагал чистый билдер `annotationCreatePath` в `api.ts` — это ТУПИК: создание идёт через `createAnnotation` (`actions.ts:58`, `createFormAction`), который **уже роутит по `parent_entity_type`** литеральным `switch` openapi-fetch (он не может потреблять строковый путь — ему нужен литерал маршрута). Билдер был бы мёртвым кодом, тест — зелёным-но-бесполезным. **Реальная** проблема: `AnnotationComposerDialog` (`annotation-composer-dialog.tsx:31`) хардкодит `parentEntityType="document"`. Цель задачи — пробросить тип из скоупа до формы.
+
+**ПОРЯДОК:** выполнять ДО Task 11 (создание аннотации к комментарию опирается на этот проброс; иначе между Task 11 и 12 create к комментарию ушёл бы на document-роут). Если исполняешь субагентами — диспатчи этот таск перед Task 11.
 
 **Files:**
-- Modify: `src/features/annotations/ui/annotation-composer-dialog.tsx` (проп `parentEntityType`)
-- Modify: `src/features/annotations/actions.ts` (или `api.ts`) — функция create принимает `parentEntityType`
-- Test: `src/features/annotations/<create>.test.ts` (юнит на построение роута)
+- Modify: `src/features/annotations/ui/annotation-composer-dialog.tsx` (проп `parentEntityType`, прокинуть в форму вместо хардкода)
+- Modify: `src/features/annotations/ui/annotation-create-form.tsx` (hidden-поле/значение `parent_entity_type`, читается `parseFormData` в `createAnnotation`)
+- Modify: `src/features/annotations/ui/annotation-scope.tsx` (передавать `parentEntityType` в `AnnotationComposerDialog`)
+- Test: `src/features/annotations/ui/annotation-composer-dialog.test.tsx` (форма несёт правильный `parent_entity_type`)
 
 **Interfaces:**
-- Consumes: `ParentEntityType` (`../types`), `AnnotationCreateBody`.
-- Produces: `createAnnotation` принимает `parentEntityType: ParentEntityType` и строит путь `/api/${parentEntityType}/${parentId}/annotations`.
+- Consumes: существующий `createAnnotation` (`actions.ts`, уже роутит по `parent_entity_type`), `ParentEntityType` (`../types`).
+- Produces: `AnnotationComposerDialog` принимает обяз. `parentEntityType: ParentEntityType`; форма отправляет это значение полем `parent_entity_type`.
 
-- [ ] **Step 1: Inspect current create route**
+- [ ] **Step 1: Подтвердить, что `createAnnotation` уже роутит по типу**
 
-Открой `src/features/annotations/actions.ts` и `api.ts`. Найди функцию create (literal switch по роутам — упомянут в `types.ts` комментарии). Установи, как сейчас выбирается путь. Если уже есть `parentEntityType`-параметр (switch по 4 значениям) — задача сводится к прокидыванию его из `AnnotationScope`/композера; тест ниже это закрепляет.
+Открой `src/features/annotations/actions.ts` (`createAnnotation`) и форму `annotation-create-form.tsx`. Убедись: `createFormAction`/`parseFormData` читает `parent_entity_type` из формы и `switch`-ит по нему на нужный openapi-fetch роут (ветка `comment` есть). Если так — менять `actions.ts` НЕ нужно; задача = довести значение `parent_entity_type` от скоупа до формы (сейчас оно хардкодится `document` в диалоге).
 
-- [ ] **Step 2: Write the failing test (route built from parentEntityType)**
+- [ ] **Step 2: Failing-тест — форма отправляет правильный `parent_entity_type`**
 
-```ts
-// src/features/annotations/create-route.test.ts
-import { describe, expect, it } from "vitest";
+```tsx
+// src/features/annotations/ui/annotation-composer-dialog.test.tsx (добавь кейс)
+import { render } from "@testing-library/react";
+import { expect, it, vi } from "vitest";
 
-import { annotationCreatePath } from "./api"; // экспортируй чистый билдер пути
+import { AnnotationComposerDialog } from "./annotation-composer-dialog";
 
-describe("annotationCreatePath", () => {
-  it("routes by parentEntityType", () => {
-    expect(annotationCreatePath("comment", "c1")).toBe("/api/comments/c1/annotations");
-    expect(annotationCreatePath("document", "d1")).toBe("/api/documents/d1/annotations");
-    expect(annotationCreatePath("glossary", "g1")).toBe("/api/glossary/g1/annotations");
-    expect(annotationCreatePath("media", "m1")).toBe("/api/media/m1/annotations");
-  });
+vi.mock("@/i18n/client", () => ({ useT: () => (k: string) => k }));
+
+it("кладёт parent_entity_type из пропа в форму (не хардкод document)", () => {
+  const { container } = render(
+    <AnnotationComposerDialog parentEntityType="comment" parentId="cmt-42" open onOpenChange={() => {}} />,
+  );
+  const field = container.querySelector('input[name="parent_entity_type"]') as HTMLInputElement | null;
+  expect(field?.value).toBe("comment");
+  const pid = container.querySelector('input[name="parent_id"]') as HTMLInputElement | null;
+  expect(pid?.value).toBe("cmt-42");
 });
 ```
 
-Run: `pnpm vitest run src/features/annotations/create-route.test.ts`
-Expected: FAIL (если билдера ещё нет — выдели его).
+(Сверься с реальными `name`-полями формы — если create читает `parent_id`/`parent_entity_type` иначе, подгони селекторы под фактические скрытые поля.)
 
-- [ ] **Step 3: Extract/confirm `annotationCreatePath` + thread `parentEntityType`**
+Run: `pnpm vitest run src/features/annotations/ui/annotation-composer-dialog.test.tsx`
+Expected: FAIL (диалог хардкодит `document`, проп `parentEntityType` не принимается).
 
-Выдели чистый билдер (обрати внимание на нерегулярность: `glossary` без `s`, `media` без `s`, остальные — множественное число; сверься с роутами в `schema.ts`):
+- [ ] **Step 3: Пробросить `parentEntityType` через диалог → форму**
 
-```ts
-import type { ParentEntityType } from "./types";
-
-const PARENT_SEGMENT: Record<ParentEntityType, string> = {
-  document: "documents",
-  glossary: "glossary",
-  media: "media",
-  comment: "comments",
-};
-
-export function annotationCreatePath(parentEntityType: ParentEntityType, parentId: string): string {
-  return `/api/${PARENT_SEGMENT[parentEntityType]}/${parentId}/annotations`;
-}
-```
-
-Прокинь `parentEntityType` через `AnnotationComposerDialog` (новый проп) → server action create. В `AnnotationScope` (Task 9) передавай `parentEntityType` в композер (сейчас прокидывается только `parentId`).
+В `annotation-composer-dialog.tsx`: добавь обяз. проп `parentEntityType: ParentEntityType`, замени хардкод `:31` на него, передай в `AnnotationCreateForm` (которая кладёт его hidden-полем `parent_entity_type`). В `annotation-scope.tsx` (Task 9) у тебя уже есть `parentEntityType` в пропах — передай его в `<AnnotationComposerDialog parentEntityType={...} parentId={composer.parentId} ...>` (composer.parentId приходит из `draft.scope.entityId` через `AnnotationCreateAction`).
 
 - [ ] **Step 4: Run test + gate**
 
-Run: `pnpm vitest run src/features/annotations/create-route.test.ts && pnpm lint && pnpm build`
+Run: `pnpm vitest run src/features/annotations/ui/annotation-composer-dialog.test.tsx && pnpm lint && pnpm build`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/features/annotations/api.ts src/features/annotations/create-route.test.ts src/features/annotations/ui/annotation-composer-dialog.tsx src/features/annotations/ui/annotation-scope.tsx src/features/annotations/actions.ts
+git add src/features/annotations/ui/annotation-composer-dialog.tsx src/features/annotations/ui/annotation-composer-dialog.test.tsx src/features/annotations/ui/annotation-create-form.tsx src/features/annotations/ui/annotation-scope.tsx
 git commit -m "$(cat <<'EOF'
-feat(annotations): create маршрутизируется по parentEntityType (comments segment)
+feat(annotations): композер create принимает parentEntityType (снят хардкод document)
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 EOF
@@ -2208,19 +2339,61 @@ describe("MarginRail regression parity", () => {
 Run: `pnpm vitest run src/components/anchor-engine/margin-rail.regression.test.tsx`
 Expected: PASS (rail уже реализован).
 
+- [ ] **Step 1b: Интеграционная канарейка на РЕАЛЬНЫЙ `AnnotationScope` (регресс миграции Task 9)**
+
+⚠️ Из ревью (M5): канарейка выше дёргает `MarginRail` с синтетическим entry — она НЕ ловит, что слайс annotations всё ещё находит корень и регистрирует заметки. Добавь тест на `AnnotationScope` (client), который ловит реальную регресс-поверхность Task 9 (поиск корня по `[data-anchor-scope]`, wide-гейт, дедуп inline↔rail):
+
+```tsx
+// src/features/annotations/ui/annotation-scope.test.tsx
+import { render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
+import { AnchorScopeProvider, MarginRail } from "@/components/anchor-engine";
+
+import { AnnotationScope } from "./annotation-scope";
+
+vi.mock("@/i18n/client", () => ({ useT: () => (k: string) => k }));
+// matchMedia → wide=true (иначе scope держит карточки inline, в rail не регистрирует)
+beforeEach(() => {
+  vi.stubGlobal("matchMedia", (q: string) => ({
+    matches: true, media: q, addEventListener() {}, removeEventListener() {},
+  }));
+});
+
+it("находит размеченный корень, регистрирует заякоренную карточку в rail (wide)", async () => {
+  document.body.innerHTML = '<div data-anchor-scope="document:d1"><p data-block-id="b1">alpha beta</p></div>';
+  const notes = [{ id: "n1", anchor: { start_block_id: "b1", end_block_id: "b1", start_char: 0, end_char: 5, exact: "alpha" }, card: <span>card-1</span> }];
+  render(
+    <AnchorScopeProvider>
+      <AnnotationScope parentEntityType="document" parentId="d1" notes={notes as never} canCreate={false} showToolbar />
+      <MarginRail tone="annotation" highlightName="annotation" />
+    </AnchorScopeProvider>,
+  );
+  // после mount: карточка зарегистрирована и отрисована rail'ом (data-note-card),
+  // inline-дубль погашен (ready && wide).
+  await vi.waitFor(() => expect(document.querySelector('[data-note-card="n1"]')).not.toBeNull());
+});
+```
+
+(Аналогичный лёгкий тест на `CommentAnchorScope` — корень `document:<id>`, `tone:"comment"` — по желанию.)
+
+Run: `pnpm vitest run src/features/annotations/ui/annotation-scope.test.tsx`
+Expected: PASS. Добавь файл в коммит Step 5 (`git add src/features/annotations/ui/annotation-scope.test.tsx`).
+
 - [ ] **Step 2: Delete `MarginAnchorLayer` + alias**
 
-```bash
-git rm src/components/anchor-engine/margin-anchor-layer.tsx
-```
-Если есть `margin-anchor-layer.test.tsx` — удали его тем же `git rm` (поведение покрыто `margin-rail*.test.tsx`).
-В `anchor-actions.tsx` удали строку `export const AnchorActionsProvider = AnchorScopeProvider;`.
-В `index.ts` убери экспорт `MarginAnchorLayer` и `AnchorActionsProvider`.
+`margin-anchor-layer.test.tsx` существует (подтверждено) — удаляем оба, поведение покрыто `margin-rail*.test.tsx`:
 
-- [ ] **Step 3: Grep for dangling references**
+```bash
+git rm src/components/anchor-engine/margin-anchor-layer.tsx src/components/anchor-engine/margin-anchor-layer.test.tsx
+```
+В `anchor-actions.tsx` удали строку `export const AnchorActionsProvider = AnchorScopeProvider;`.
+В `index.ts` убери экспорты `MarginAnchorLayer`, `MarginAnchorLayerProps` (index.ts:7) и `AnchorActionsProvider`.
+
+- [ ] **Step 3: Grep for dangling references (только импорты/JSX/типы)**
 
 Run: `grep -rn "MarginAnchorLayer\|AnchorActionsProvider" src`
-Expected: пусто. Любые попадания — поправь импорт на `MarginRail`/`AnchorScopeProvider`.
+⚠️ Из ревью: ХИТЫ В КОММЕНТАРИЯХ — норма (напр. `use-hover-reveal.ts:4` «Используется eager-слоем MarginAnchorLayer», шапки файлов). Их чистить НЕ обязательно. Цель: ноль **импортов/JSX/типов** этих имён — реальные потребители должны перейти на `MarginRail`/`AnchorScopeProvider`. Проверь именно `import`/`<.../>`/`: MarginAnchorLayerProps`.
 
 - [ ] **Step 4: Full gate**
 
@@ -2231,7 +2404,7 @@ Expected: всё зелёное.
 
 ```bash
 git add src/components/anchor-engine/index.ts src/components/anchor-engine/anchor-actions.tsx src/components/anchor-engine/margin-rail.regression.test.tsx
-git rm src/components/anchor-engine/margin-anchor-layer.tsx
+git rm src/components/anchor-engine/margin-anchor-layer.tsx src/components/anchor-engine/margin-anchor-layer.test.tsx
 git commit -m "$(cat <<'EOF'
 refactor(anchor-engine): удалить MarginAnchorLayer/alias; регресс-канарейка rail
 
@@ -2280,7 +2453,7 @@ EOF
 - [ ] Тред с многими комментариями (≥30): нет заметного лага при resize/scroll (один проход пересчёта в rail).
 
 ## Follow-up (вне объёма v1, зафиксировано)
-- Текст→карточка (useTextClick) и hover-из-текста (useHoverReveal) в мультикорневом rail (сейчас только карточка→текст).
+- (текст→карточка и hover СОХРАНЕНЫ в v1 — паритет, см. Task 8 Step 3; из follow-up снято.)
 - Якорь-комментарий-в-комментарий (FE: снять хардкод document в comments/anchor.ts).
 - Глоссарий-карточки как annotation-скоуп на странице (тривиально: обернуть в AnchorScope).
 ```
@@ -2301,6 +2474,9 @@ EOF
 
 ## Замечания по объёму и риску
 
-- **Регресс-риск** сосредоточен в Task 9-10 (миграция существующего UX на новый шов). Канарейка (Task 13) + ручной QA (Task 14) его закрывают. Если Task 9 ломает UX документа — откат только Task 9-10, ядро (Task 1-8) самостоятельно и протестировано.
-- **`ConnectorLayer` с мультикорнем** — единственная техническая неизвестность (нужен ли ему непустой `astRootRef`). Решение зафиксировать в Task 8 Step 2 (либо `{current:null}`, либо page-level контейнер-ref).
+- **Регресс-риск** сосредоточен в Task 9-10 (миграция существующего UX на новый шов). Канарейка (Task 13, вкл. интеграционный тест на `AnnotationScope`) + ручной QA (Task 14) его закрывают. Если Task 9 ломает UX документа — откат только Task 9-10, ядро (Task 1-8) самостоятельно и протестировано.
+- **2 PR (рекоменд. конвенции):** Task 1-8 (foundation: движок) — отдельный PR, самодостаточный и зелёный; Task 9-14 (миграция слайсов + фича) — второй PR поверх. Foundation отдельно от фичи.
+- **`ConnectorLayer` с мультикорнем** — РЕШЕНО в Task 8 Step 1: X текстовой стороны берётся из rect корня-владельца заметки (`getRootRect(id)`), `astRootRef` больше не нужен; покрыто тестом. (Прежний `{current:null}` отключал бы выноски — это поймало ревью.)
+- **Порядок Task 12 → Task 11**: проброс `parentEntityType` (Task 12) делать ДО аннотаций комментариев (Task 11), иначе create к комментарию временно уходит на document-роут.
+- **Register-петля / wide-гейт / scope-key** — учтены в Task 5/7/9/10 (renderNote по разрешённой строке, геометрия по стабильному `scopeKey`, регистрация в rail только на wide).
 - **N+1 решён бэком**: `GET /api/lectures/{id}/annotations?parent_entity_type=comment` (schema.ts:10819) + React `cache()` → один HTTP на всю лекцию (Task 11 Step 3-4). Стопгапа и флага к бэку нет.
