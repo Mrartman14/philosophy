@@ -40,11 +40,14 @@ function Probe({
 }
 
 describe("useAggregatedAnchorRanges", () => {
-  it("resolves each scope's note within its own root", () => {
-    // Тот же block-id "b1" в ДВУХ разных скоупах — каждая заметка должна
-    // резолвиться в корне своего скоупа, не в чужом.
-    const a = scopeEl("alpha beta");
-    const b = scopeEl("alpha beta");
+  it("resolves each scope's note within its OWN root, not a sibling's", () => {
+    // Тот же block-id "b1" в ДВУХ скоупах, но РАЗНЫЙ текст: каждая заметка должна
+    // резолвиться строго в корне своего скоупа. exact каждой заметки существует
+    // ТОЛЬКО в её корне — если бы n-b резолвился против корня A («alpha beta»),
+    // строки «delta» там нет → Range = null → тест бы упал. Так single-root баг
+    // (оба резолвятся в одном корне) не прошёл бы мимо non-null проверки.
+    const a = scopeEl("alpha beta"); // exact «alpha» (0..5) живёт только тут
+    const b = scopeEl("gamma delta"); // exact «delta» (6..11) живёт только тут
     const scopes: RailScopeEntry[] = [
       {
         key: "annotation:document:a",
@@ -75,8 +78,8 @@ describe("useAggregatedAnchorRanges", () => {
               startBlockId: "b1",
               endBlockId: "b1",
               startChar: 6,
-              endChar: 10,
-              exact: "beta",
+              endChar: 11,
+              exact: "delta",
             },
           },
         ],

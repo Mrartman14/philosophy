@@ -11,11 +11,16 @@ import type { RailScopeEntry } from "./use-rail-scopes";
 export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
   const [recomputeKey, setRecomputeKey] = useState(0);
 
-  // СТАБИЛЬНЫЙ ключ набора корней: пересоздавать ResizeObserver'ы только при смене
-  // самих корней/состава скоупов, а НЕ при каждой новой идентичности массива
-  // `scopes` (которую плодит .filter() в useRailScopes на каждый register). Без
-  // этого N register'ов на гидрации = O(N²) перемонтирований RO.
-  const scopeKey = scopes.map((s) => s.key).join("|");
+  // СТАБИЛЬНЫЙ ключ набора корней: пересоздавать ResizeObserver'ы и пересчитывать
+  // ranges только при смене самих корней / СОСТАВА скоупов (вкл. add/remove нот в
+  // рамках того же key — реестр replace-по-key свежим entry), а НЕ при каждой
+  // новой идентичности массива `scopes` (которую плодит .filter() в useRailScopes
+  // на каждый register). Без id-нот в ключе новая аннотация при том же key не
+  // получила бы Range (сирота); без стабильности на чистом array-churn вернулся бы
+  // O(N²) перемонтирований RO на гидрации. Эталон деп-поведения — use-anchor-ranges.
+  const scopeKey = scopes
+    .map((s) => `${s.key}#${s.notes.map((n) => n.id).join(",")}`)
+    .join("|");
 
   useEffect(() => {
     const bump = () => {
