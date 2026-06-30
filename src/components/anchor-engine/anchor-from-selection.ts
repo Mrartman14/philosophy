@@ -17,13 +17,19 @@ export function anchorFromRange(range: Range, root: HTMLElement, contextLen = 32
   const sLeaf = closestAttr(range.startContainer, root, "data-node-id");
   const eLeaf = closestAttr(range.endContainer, root, "data-node-id");
   if (!sLeaf || !eLeaf) return null;
-  // Single-cell гард (Phase 1): если хоть один конец — ячейка, оба конца обязаны
-  // быть ОДНОЙ ячейкой. Cross-cell / cell+проза → не создаём якорь.
-  if ((isCell(sLeaf) || isCell(eLeaf)) && sLeaf !== eLeaf) return null;
 
   const sBlock = closestAttr(range.startContainer, root, "data-block-id");
   const eBlock = closestAttr(range.endContainer, root, "data-block-id");
   if (!sBlock || !eBlock) return null;
+
+  // Правило 4 (контракт): если хоть один конец — ячейка, ОБА обязаны быть
+  // ячейками ОДНОЙ таблицы (sBlock === eBlock) → прямоугольник. Иначе (cross-table
+  // ячейки ИЛИ ячейка+проза) — не создаём якорь. Линейная проза (ни одной ячейки)
+  // — без ограничений.
+  if (isCell(sLeaf) || isCell(eLeaf)) {
+    const bothCells = isCell(sLeaf) && isCell(eLeaf);
+    if (!bothCells || sBlock !== eBlock) return null;
+  }
 
   const startNodeId = sLeaf.getAttribute("data-node-id");
   const endNodeId = eLeaf.getAttribute("data-node-id");

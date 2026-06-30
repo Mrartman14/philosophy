@@ -82,7 +82,7 @@ describe("anchorFromRange", () => {
   });
 });
 
-describe("anchorFromSelection — leaf-капчур + single-cell гард", () => {
+describe("anchorFromSelection — leaf-капчур + правило 4 (rectangle)", () => {
   beforeEach(() => { document.body.innerHTML = ""; });
 
   it("офсет node-relative внутри ячейки; node_id = ячейка, block_id = таблица", () => {
@@ -92,15 +92,26 @@ describe("anchorFromSelection — leaf-капчур + single-cell гард", () 
     expect(a).toMatchObject({ startNodeId: "cell-1", endNodeId: "cell-1", startBlockId: "tbl-1", startChar: 1, endChar: 4, exact: "ell" });
   });
 
-  it("single-cell гард: выделение через две ячейки → null", () => {
-    const r = root('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">aa</td><td data-node-id="c2">bb</td></tr></tbody></table>');
+  it("same-table cross-cell → прямоугольный якорь (оба cell node_id)", () => {
+    const r = root('<table data-block-id="t1"><tbody><tr><td data-node-id="c1">aa</td><td data-node-id="c2">bb</td></tr></tbody></table>');
+    const t1 = must(r.querySelector('[data-node-id="c1"]')).firstChild as Text;
+    const t2 = must(r.querySelector('[data-node-id="c2"]')).firstChild as Text;
+    const a = anchorFromSelection(selectRange(t1, 0, t2, 2), r);
+    expect(a).toMatchObject({ startNodeId: "c1", endNodeId: "c2", startBlockId: "t1", endBlockId: "t1" });
+  });
+
+  it("cross-table выделение → null", () => {
+    const r = root(
+      '<table data-block-id="t1"><tbody><tr><td data-node-id="c1">aa</td></tr></tbody></table>' +
+      '<table data-block-id="t2"><tbody><tr><td data-node-id="c2">bb</td></tr></tbody></table>',
+    );
     const t1 = must(r.querySelector('[data-node-id="c1"]')).firstChild as Text;
     const t2 = must(r.querySelector('[data-node-id="c2"]')).firstChild as Text;
     expect(anchorFromSelection(selectRange(t1, 0, t2, 2), r)).toBeNull();
   });
 
-  it("single-cell гард: ячейка + проза (mixed) → null", () => {
-    const r = root('<p data-block-id="p0" data-node-id="p0">pre</p><table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">aa</td></tr></tbody></table>');
+  it("ячейка + проза (mixed) → null (явный регресс-ассерт)", () => {
+    const r = root('<p data-block-id="p0" data-node-id="p0">pre</p><table data-block-id="t1"><tbody><tr><td data-node-id="c1">aa</td></tr></tbody></table>');
     const p = must(r.querySelector('[data-node-id="p0"]')).firstChild as Text;
     const c = must(r.querySelector('[data-node-id="c1"]')).firstChild as Text;
     expect(anchorFromSelection(selectRange(p, 0, c, 2), r)).toBeNull();

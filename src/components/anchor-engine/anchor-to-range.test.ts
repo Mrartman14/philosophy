@@ -144,7 +144,21 @@ describe("resolveAnchor", () => {
     expect(g?.kind).toBe("range");
   });
 
-  // ПРИМЕЧАНИЕ: сквозной capture→resolve round-trip для прямоугольника (две ячейки)
-  // живёт в Task 3 — он зависит от капчур-послабления правила 4 в
-  // anchor-from-selection.ts (вне объёма Task 2).
+  // Сквозной capture→resolve round-trip для прямоугольника (две ячейки):
+  // зависит от капчур-послабления правила 4 в anchor-from-selection.ts (Task 3).
+  it("round-trip rect: anchorFromSelection(2 ячейки) → resolveAnchor kind:rect", () => {
+    const r = setup('<table data-block-id="t1"><tbody><tr><td data-node-id="c1" id="c1">aa</td><td data-node-id="c2" id="c2">bb</td></tr></tbody></table>');
+    must(r.querySelector("#c1")).getBoundingClientRect = () => new DOMRect(0, 0, 10, 10);
+    must(r.querySelector("#c2")).getBoundingClientRect = () => new DOMRect(10, 0, 10, 10);
+    const t1 = must(r.querySelector("#c1")).firstChild as Text;
+    const t2 = must(r.querySelector("#c2")).firstChild as Text;
+    const range = document.createRange();
+    range.setStart(t1, 0); range.setEnd(t2, 2);
+    const sel = must(window.getSelection());
+    sel.removeAllRanges(); sel.addRange(range);
+    const a = anchorFromSelection(sel, r);
+    expect(a).toMatchObject({ startNodeId: "c1", endNodeId: "c2" });
+    const g = a ? resolveAnchor(a, r) : null;
+    expect(g?.kind).toBe("rect");
+  });
 });
