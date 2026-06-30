@@ -144,7 +144,8 @@ export const searchFormsForAttach = createAction(
 );
 ```
 Источник — `/api/me/forms` (формы владельца): attach owner-only, прикрепляют свои
-формы. У эндпоинта нет `q`/пагинации → фильтр по `title` и срез `offset/limit`
+формы. У эндпоинта есть `offset`/`limit`, но нет серверного `q` → q-фильтр обязан
+быть клиентским, поэтому фильтр по `title` и срез `offset/limit`
 делаем в action. См. «Флаг бэку».
 
 **`ui/lecture-form-list.tsx`** — новый компонент, близнец `LectureCanvasList`:
@@ -211,10 +212,11 @@ interface Props {
 
 ## Флаг бэку
 
-`/api/me/forms` не имеет `q`/пагинации, тогда как attach-пикеры документов и
-медиа опираются на `GET /api/documents` и `GET /api/media` с `q`/`offset`/`limit`.
-Это асимметрия контракта: для единообразия желателен `GET /api/forms` (picker,
-requiredAuth) с `q`/`offset`/`limit`, либо `q`/пагинация на `/api/me/forms`. Пока
+`/api/me/forms` имеет `offset`/`limit`, но НЕ имеет серверного `q`, тогда как
+attach-пикеры документов и медиа опираются на `GET /api/documents` и
+`GET /api/media` с `q`/`offset`/`limit`. Это асимметрия контракта: для
+единообразия желателен `GET /api/forms` (picker, requiredAuth) с
+`q`/`offset`/`limit`, либо добавить `q` на `/api/me/forms`. Пока
 корень не выровнен — FE-стопгап (фильтр+срез в `searchFormsForAttach`); когда
 бэк добавит серверный поиск, стопгап убрать. Источник `/api/me/forms` отдаёт все
 формы владельца разом (ограниченный набор), так что in-memory фильтр приемлем.

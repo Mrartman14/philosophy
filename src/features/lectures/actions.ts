@@ -369,9 +369,12 @@ export const searchMediaForAttach = createAction(
  * Поиск форм владельца для attach-пикера. Источник — GET /api/me/forms (формы
  * текущего пользователя; attach owner-only, прикрепляют свои формы).
  *
- * СТОПГАП: у /api/me/forms нет q/пагинации (в отличие от /api/documents и
- * /api/media). Фильтруем по title подстрокой и режем offset/limit здесь. Когда
- * бэк добавит серверный поиск форм (GET /api/forms?q= …) — заменить на него.
+ * СТОПГАП: у /api/me/forms есть offset/limit, но НЕТ серверного `q` (в отличие
+ * от /api/documents и /api/media). q-фильтр обязан быть клиентским, а раз так —
+ * серверная пагинация неприменима к отфильтрованному набору, поэтому тянем весь
+ * (ограниченный) список форм владельца, фильтруем по label подстрокой и режем
+ * offset/limit здесь. Когда бэк добавит `q` форм (GET /api/forms?q= …) —
+ * заменить на серверный поиск с пагинацией.
  */
 export const searchFormsForAttach = createAction(
   async (raw: { q: string; offset: number; limit: number }) => {
