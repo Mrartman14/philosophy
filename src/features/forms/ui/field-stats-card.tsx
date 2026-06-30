@@ -1,4 +1,5 @@
 // src/features/forms/ui/field-stats-card.tsx
+import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
 import type { FieldStats, FormField } from "../types";
@@ -30,7 +31,17 @@ export async function FieldStatsCard({ field, stats, formId, token }: Props) {
         </p>
       </header>
       {(type === "single_choice" || type === "multi_choice") && (
-        <ChoiceBars options={stats?.options ?? []} answered={answered} multi={type === "multi_choice"} />
+        <div className="flex flex-col gap-2">
+          <ChoiceBars options={stats?.options ?? []} answered={answered} multi={type === "multi_choice"} />
+          {answered > 0 && (
+            <RouterLink
+              href={`/forms/${formId}/fields/${field.id ?? ""}${token ? `?token=${encodeURIComponent(token)}` : ""}`}
+              className="self-start text-sm text-(--color-link) hover:underline"
+            >
+              {t("results.allAnswers")}
+            </RouterLink>
+          )}
+        </div>
       )}
       {type === "number" && stats?.number && <NumberSummary stats={stats.number} />}
       {type === "date" && stats?.date && <DateSummary stats={stats.date} />}
