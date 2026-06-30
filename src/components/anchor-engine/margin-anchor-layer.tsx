@@ -83,7 +83,10 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
 
   // Геометрия движка (Range/ready/пересчёт/getAnchorRect) — вынесена в общий хук,
   // переиспользуемый eager/lazy-политиками. Поведение идентично прежней инлайн-логике.
-  const { ranges, getAnchorRect, recomputeKey, ready } = useAnchorRanges({ astRootRef, notes });
+  const { geometries, ranges, getAnchorRect, recomputeKey, ready } = useAnchorRanges({
+    astRootRef,
+    notes,
+  });
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // Hover-акцент поверх постоянной видимости: наведение на текст (useHoverReveal)
@@ -128,22 +131,21 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   const onActivate = useCallback(
     (id: string) => {
       setActiveId(id);
-      const r = ranges.get(id);
-      if (r) {
-        const rect = r.getBoundingClientRect();
+      const rect = geometries.get(id)?.boundingRect ?? null;
+      if (rect) {
         window.scrollTo({
           top: rect.top + window.scrollY - ACTIVATE_SCROLL_OFFSET_PX,
           behavior: scrollBehavior(),
         });
       }
     },
-    [ranges],
+    [geometries],
   );
 
   // Тон-акцент карточки: бордюр по логической стартовой стороне (RTL-safe).
   const accent = toneColor(tone);
   const columnNotes: ColumnNote[] = notes.map((n) => {
-    const orphan = (ranges.get(n.id) ?? null) === null;
+    const orphan = (geometries.get(n.id) ?? null) === null;
     return {
       id: n.id,
       orphan,

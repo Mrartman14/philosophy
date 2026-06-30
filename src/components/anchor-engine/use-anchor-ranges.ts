@@ -5,8 +5,8 @@
 // для eager- и lazy-политик.
 import { useCallback, useEffect, useMemo, useState, type RefObject } from "react";
 
-import { rangeFromAnchor } from "./anchor-to-range";
-import type { AnchoredNote } from "./types";
+import { resolveAnchor } from "./anchor-to-range";
+import type { AnchoredNote, AnchorGeometry } from "./types";
 
 export function useAnchorRanges({
   astRootRef,
@@ -45,25 +45,31 @@ export function useAnchorRanges({
     };
   }, [astRootRef, notes, ready]);
 
-  // Range по каждому note (для подсветки / позиций / хит-теста). recomputeKey и
-  // ready в deps: пересчитывается после готовности рута и при смене геометрии.
-  const ranges = useMemo(() => {
+  // Геометрия (range|rect) по каждому note (для подсветки / позиций / хит-теста).
+  // recomputeKey и ready в deps: пересчитывается после готовности рута и при смене
+  // геометрии.
+  const geometries = useMemo(() => {
     const root = astRootRef.current;
-    const m = new Map<string, Range | null>();
-    if (root) for (const n of notes) m.set(n.id, rangeFromAnchor(n.anchor, root));
+    const m = new Map<string, AnchorGeometry | null>();
+    if (root) for (const n of notes) m.set(n.id, resolveAnchor(n.anchor, root));
     return m;
     // ready/recomputeKey намеренно в deps — форсят перестроение карты, хотя
     // astRootRef стабилен по идентичности (см. комментарии к эффектам выше).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notes, astRootRef, ready, recomputeKey]);
 
+  // Производный range-only слой для существующих Range-потребителей (Highlight API
+  // контроллер / hover / click до T6). rect-якоря → null (в Highlight API не идут).
+  const ranges = useMemo(() => {
+    const m = new Map<string, Range | null>();
+    for (const [id, g] of geometries) m.set(id, g?.kind === "range" ? g.range : null);
+    return m;
+  }, [geometries]);
+
   const getAnchorRect = useCallback(
-    (id: string) => {
-      const r = ranges.get(id);
-      return r ? r.getBoundingClientRect() : null;
-    },
-    [ranges],
+    (id: string) => geometries.get(id)?.boundingRect ?? null,
+    [geometries],
   );
 
-  return { ranges, getAnchorRect, recomputeKey, ready };
+  return { geometries, ranges, getAnchorRect, recomputeKey, ready };
 }
