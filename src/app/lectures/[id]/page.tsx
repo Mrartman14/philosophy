@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { SaveOfflineButton } from "@/app/_offline/save-offline-button";
-import { AnchorActionsProvider, SelectionAffordanceHost } from "@/components/anchor-engine";
+import {
+  anchorScopeAttr,
+  AnchorScopeProvider,
+  MarginRail,
+  SelectionAffordanceHost,
+} from "@/components/anchor-engine";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { DocumentAnnotations } from "@/features/annotations";
 import { CommentSection, DocumentComments } from "@/features/comments";
@@ -76,7 +81,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
   ]);
 
   return (
-    <AnchorActionsProvider>
+    <AnchorScopeProvider>
       {/* Единый хост захвата выделения + аффорданса (PR3 dual-affordance fix):
           охватывает контент с data-ast-root И оба MarginNote (annotations +
           comments), чтобы их useRegisterAnchorAction достигли провайдера. */}
@@ -113,7 +118,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
               token={token}
               navLabel={t("lectureDocumentsNavLabel")}
             />
-            <div data-ast-root>
+            <div data-ast-root {...anchorScopeAttr("document", activeId)}>
               {activeDoc ? (
                 <DocumentDetail document={activeDoc} />
               ) : (
@@ -174,6 +179,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={activeId} />
           </Suspense>
+          <MarginRail tone="annotation" highlightName="annotation" />
         </MarginNote>
       )}
 
@@ -186,7 +192,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
           </Suspense>
         </MarginNote>
       )}
-    </AnchorActionsProvider>
+    </AnchorScopeProvider>
   );
 }
 

@@ -14,7 +14,7 @@ import {
   buildAnnotationCards,
   loadSchemaIfNeeded,
 } from "./annotation-cards-builder";
-import { DocumentAnnotationLayer } from "./document-annotation-layer";
+import { AnnotationScope } from "./annotation-scope";
 
 /**
  * Margin-режим аннотаций документа. Server component: фетч + RBAC + сборка
@@ -41,10 +41,12 @@ export async function DocumentAnnotations({ parentId }: { parentId: string }) {
         initial={astSchema ?? undefined}
         fallback={<p className="text-sm">{t("editorLoading")}</p>}
       >
-        <DocumentAnnotationLayer
+        <AnnotationScope
+          parentEntityType="document"
           parentId={parentId}
           notes={notes}
           canCreate={canCreate}
+          showToolbar
         />
       </SchemaContextProvider>
     </section>

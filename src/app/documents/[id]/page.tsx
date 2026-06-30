@@ -2,7 +2,12 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { AnchorActionsProvider, SelectionAffordanceHost } from "@/components/anchor-engine";
+import {
+  anchorScopeAttr,
+  AnchorScopeProvider,
+  MarginRail,
+  SelectionAffordanceHost,
+} from "@/components/anchor-engine";
 import { AstToc, extractHeadings } from "@/components/ast-toc";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { DocumentAnnotations } from "@/features/annotations";
@@ -56,7 +61,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
   ]);
 
   return (
-    <AnchorActionsProvider>
+    <AnchorScopeProvider>
       {/* Единый хост захвата выделения + аффорданса (PR3 dual-affordance fix):
           охватывает контент с data-ast-root И MarginNote с аннотациями. */}
       <SelectionAffordanceHost />
@@ -90,7 +95,10 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         </div>
       </header>
 
-      <div data-ast-root>
+      <div
+        data-ast-root
+        {...(document.id ? anchorScopeAttr("document", document.id) : {})}
+      >
         <DocumentDetail document={document} />
       </div>
 
@@ -127,14 +135,17 @@ export default async function DocumentPage({ params, searchParams }: Props) {
           поле (панель втекает в поток, гаттера нет) — собственный p-4. */}
       <MarginNote side="end" grow className="p-4 @marginalia:ps-0">
         {document.id ? (
-          <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-            <DocumentAnnotations parentId={document.id} />
-          </Suspense>
+          <>
+            <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+              <DocumentAnnotations parentId={document.id} />
+            </Suspense>
+            <MarginRail tone="annotation" highlightName="annotation" />
+          </>
         ) : (
           <p className="text-sm text-(--color-fg-muted)">{t("documentMarginHint")}</p>
         )}
       </MarginNote>
-    </AnchorActionsProvider>
+    </AnchorScopeProvider>
   );
 }
 
