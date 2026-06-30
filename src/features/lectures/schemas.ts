@@ -90,6 +90,7 @@ const ENTITY_TYPE_SET = {
   document: true,
   media: true,
   canvas: true,
+  form: true,
 } as const satisfies Record<AttachmentEntityType, true>;
 
 const ENTITY_TYPE = z.enum(

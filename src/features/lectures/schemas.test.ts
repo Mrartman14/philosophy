@@ -199,8 +199,8 @@ describe("LectureCoverClearSchema", () => {
 });
 
 describe("LectureAttachSchema", () => {
-  it("принимает document/media/canvas", () => {
-    for (const t of ["document", "media", "canvas"] as const) {
+  it("принимает document/media/canvas/form", () => {
+    for (const t of ["document", "media", "canvas", "form"] as const) {
       const r = LectureAttachSchema.safeParse({
         lecture_id: "550e8400-e29b-41d4-a716-446655440000",
         entity_id: "11111111-1111-1111-1111-111111111111",
@@ -235,6 +235,15 @@ describe("LectureDetachSchema", () => {
       lecture_id: "550e8400-e29b-41d4-a716-446655440000",
       entity_id: "11111111-1111-1111-1111-111111111111",
       entity_type: "media",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("принимает entity_type=form", () => {
+    const r = LectureDetachSchema.safeParse({
+      lecture_id: "550e8400-e29b-41d4-a716-446655440000",
+      entity_id: "11111111-1111-1111-1111-111111111111",
+      entity_type: "form",
     });
     expect(r.success).toBe(true);
   });
