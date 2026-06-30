@@ -1255,8 +1255,13 @@ export function MarginRail({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const emphasizedId = hoveredId ?? activeId;
 
-  // Стабильный scope-key (для мемоизации, как в useAggregatedAnchorRanges).
-  const scopeKey = scopes.map((s) => s.key).join("|");
+  // Стабильный scope-key (как в useAggregatedAnchorRanges). ВКЛЮЧАЕТ fingerprint
+  // id-нот, иначе при смене notes того же скоупа (новая аннотация, тот же key)
+  // `flat` не пересчитается → карточка не появится/останется сиротой (находка
+  // ревью Task 7). Стабилен под array-identity-churn от useRailScopes.
+  const scopeKey = scopes
+    .map((s) => `${s.key}#${s.notes.map((n) => n.id).join(",")}`)
+    .join("|");
 
   const flat = useMemo(() => {
     const items: {
