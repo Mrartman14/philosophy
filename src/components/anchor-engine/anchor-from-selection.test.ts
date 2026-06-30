@@ -25,7 +25,7 @@ function selectRange(s: Node, so: number, e: Node, eo: number): Selection {
   const range = document.createRange();
   range.setStart(s, so);
   range.setEnd(e, eo);
-  const sel = window.getSelection()!;
+  const sel = must(window.getSelection());
   sel.removeAllRanges();
   sel.addRange(range);
   return sel;
@@ -87,29 +87,29 @@ describe("anchorFromSelection — leaf-капчур + single-cell гард", () 
 
   it("офсет node-relative внутри ячейки; node_id = ячейка, block_id = таблица", () => {
     const r = root('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="cell-1">Hello</td></tr></tbody></table>');
-    const t = r.querySelector('[data-node-id="cell-1"]')!.firstChild as Text;
+    const t = must(r.querySelector('[data-node-id="cell-1"]')).firstChild as Text;
     const a = anchorFromSelection(selectRange(t, 1, t, 4), r);
     expect(a).toMatchObject({ startNodeId: "cell-1", endNodeId: "cell-1", startBlockId: "tbl-1", startChar: 1, endChar: 4, exact: "ell" });
   });
 
   it("single-cell гард: выделение через две ячейки → null", () => {
     const r = root('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">aa</td><td data-node-id="c2">bb</td></tr></tbody></table>');
-    const t1 = r.querySelector('[data-node-id="c1"]')!.firstChild as Text;
-    const t2 = r.querySelector('[data-node-id="c2"]')!.firstChild as Text;
+    const t1 = must(r.querySelector('[data-node-id="c1"]')).firstChild as Text;
+    const t2 = must(r.querySelector('[data-node-id="c2"]')).firstChild as Text;
     expect(anchorFromSelection(selectRange(t1, 0, t2, 2), r)).toBeNull();
   });
 
   it("single-cell гард: ячейка + проза (mixed) → null", () => {
     const r = root('<p data-block-id="p0" data-node-id="p0">pre</p><table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">aa</td></tr></tbody></table>');
-    const p = r.querySelector('[data-node-id="p0"]')!.firstChild as Text;
-    const c = r.querySelector('[data-node-id="c1"]')!.firstChild as Text;
+    const p = must(r.querySelector('[data-node-id="p0"]')).firstChild as Text;
+    const c = must(r.querySelector('[data-node-id="c1"]')).firstChild as Text;
     expect(anchorFromSelection(selectRange(p, 0, c, 2), r)).toBeNull();
   });
 
   it("линейный кросс-лист прозы (два абзаца) — разрешён", () => {
     const r = root('<p data-block-id="p1" data-node-id="p1">foo</p><p data-block-id="p2" data-node-id="p2">bar</p>');
-    const t1 = r.querySelector('[data-node-id="p1"]')!.firstChild as Text;
-    const t2 = r.querySelector('[data-node-id="p2"]')!.firstChild as Text;
+    const t1 = must(r.querySelector('[data-node-id="p1"]')).firstChild as Text;
+    const t2 = must(r.querySelector('[data-node-id="p2"]')).firstChild as Text;
     expect(anchorFromSelection(selectRange(t1, 1, t2, 2), r)).toMatchObject({ startNodeId: "p1", endNodeId: "p2" });
   });
 });

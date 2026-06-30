@@ -59,8 +59,8 @@ describe("deserializer", () => {
         ] },
       ] },
     ];
-    const cell = deserialize(blocks).content![0]!.content![0]!.content![0]!;
-    expect(cell.attrs?.blockId).toBe("cell-1");
+    const cell = deserialize(blocks).content?.[0]?.content?.[0]?.content?.[0];
+    expect(cell?.attrs?.blockId).toBe("cell-1");
   });
 
   it("deserializeNode: id структурного узла НЕ гидрируется в blockId", () => {
@@ -71,7 +71,7 @@ describe("deserializer", () => {
         ] },
       ] },
     ];
-    const row = deserialize(blocks).content![0]!.content![0]!;
-    expect(row.attrs?.blockId).toBeUndefined();
+    const row = deserialize(blocks).content?.[0]?.content?.[0];
+    expect(row?.attrs?.blockId).toBeUndefined();
   });
 });

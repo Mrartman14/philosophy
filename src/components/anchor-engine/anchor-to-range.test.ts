@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 
 import { anchorFromSelection } from "./anchor-from-selection";
 import { rangeFromAnchor } from "./anchor-to-range";
+import { must } from "./test-support";
 import type { TextAnchor } from "./types";
 
 function setup(html: string): HTMLElement {
@@ -75,14 +76,14 @@ describe("rangeFromAnchor", () => {
   // ИНТЕГРАЦИЯ (M1): капчур → резолв на одном руте.
   it("round-trip within-cell: anchorFromSelection → rangeFromAnchor резолвит ту же ячейку", () => {
     const root = setup('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">Hello world</td></tr></tbody></table>');
-    const t = root.querySelector('[data-node-id="c1"]')!.firstChild as Text;
+    const t = must(root.querySelector('[data-node-id="c1"]')).firstChild as Text;
     const range = document.createRange();
     range.setStart(t, 6);
     range.setEnd(t, 11);
-    const sel = window.getSelection()!;
+    const sel = must(window.getSelection());
     sel.removeAllRanges();
     sel.addRange(range);
-    const a = anchorFromSelection(sel, root)!;
+    const a = must(anchorFromSelection(sel, root));
     expect(a.exact).toBe("world");
     expect(rangeFromAnchor(a, root)?.toString()).toBe("world");
   });

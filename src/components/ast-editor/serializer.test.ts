@@ -125,9 +125,9 @@ describe("serializer", () => {
         },
       ],
     };
-    const cell = serialize(doc)[0]!.content![0]!.content![0]!;
-    expect(cell.id).toBe("cell-1");
-    expect((cell.attrs as Record<string, unknown> | undefined)?.blockId).toBeUndefined();
+    const cell = serialize(doc)[0]?.content?.[0]?.content?.[0];
+    expect(cell?.id).toBe("cell-1");
+    expect((cell?.attrs as Record<string, unknown> | undefined)?.blockId).toBeUndefined();
   });
 
   it("serializeNode: структурный table_row НЕ несёт id", () => {
@@ -141,6 +141,6 @@ describe("serializer", () => {
         ] },
       ],
     };
-    expect(serialize(doc)[0]!.content![0]!.id).toBeUndefined();
+    expect(serialize(doc)[0]?.content?.[0]?.id).toBeUndefined();
   });
 });
