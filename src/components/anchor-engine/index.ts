@@ -5,6 +5,8 @@
 // поэтому в публичный сёрфейс НЕ выносим (гигиена минимального API; knip-скрипт
 // тоже пометил бы их unused — knip отдельный скрипт, не в гейте lint/test/build).
 export { MarginAnchorLayer, type MarginAnchorLayerProps } from "./margin-anchor-layer";
+// Page-level агрегатор-приёмник одного тона (мультикорень). Заменяет MarginAnchorLayer.
+export { MarginRail } from "./margin-rail";
 // Идентичность скоупа + хелпер JSX-атрибута для разметки тел сущностей в слайсах.
 export { anchorScopeAttr, type AnchorScopeId } from "./scope-id";
 // Единая shared-поверхность захвата+аффорданса (PR3 dual-affordance fix).
