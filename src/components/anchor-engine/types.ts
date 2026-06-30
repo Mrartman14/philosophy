@@ -2,6 +2,8 @@
 // Доменно-агностичные, но AST-субстрат-специфичные типы движка. НЕ импортируют
 // схему аннотаций; обвязка маппит annotation.Anchor ↔ TextAnchor (поля и единицы
 // идентичны — UTF-16 code units).
+import type { AnchorScopeId } from "./scope-id";
+
 export interface TextAnchor {
   startBlockId: string;
   endBlockId: string;
@@ -18,4 +20,5 @@ export interface AnchoredNote {
 export interface AnchorDraft {
   anchor: TextAnchor;
   rect: DOMRect; // вьюпорт-координаты выделения для тултипа
+  scope: AnchorScopeId; // какой сущности принадлежит выделение (маршрутизация create)
 }
