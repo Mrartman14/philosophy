@@ -9082,6 +9082,72 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/forms/{id}/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List containers an entity is attached to */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Лимит */
+                    limit?: number;
+                };
+                header?: never;
+                path: {
+                    /** @description Entity ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["attachment.AttachmentDTO"][];
+                        };
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/forms/{id}/fields/{fieldId}/answers": {
         parameters: {
             query?: never;
@@ -11544,6 +11610,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/lectures/{id}/forms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список форм лекции */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Share-token для доступа к приватному ресурсу */
+                    token?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description ID лекции */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["form.Form"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description invalid Bearer token (optional-auth) */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/lectures/{id}/manifest": {
         parameters: {
             query?: never;
@@ -11997,7 +12134,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Attach entity (document|media) to a lecture */
+        /** Attach entity (document|media|canvas|form) to a lecture */
         post: {
             parameters: {
                 query?: never;
@@ -12116,7 +12253,7 @@ export interface paths {
                     /** @description Lecture ID */
                     lectureID: string;
                     /** @description Тип сущности */
-                    entityType: "document" | "media" | "canvas";
+                    entityType: "document" | "media" | "canvas" | "form";
                     /** @description Entity ID */
                     entityID: string;
                 };
@@ -12189,7 +12326,7 @@ export interface paths {
                     /** @description Lecture ID */
                     lectureID: string;
                     /** @description Тип сущности */
-                    entityType: "document" | "media" | "canvas";
+                    entityType: "document" | "media" | "canvas" | "form";
                     /** @description Entity ID */
                     entityID: string;
                 };
@@ -16988,7 +17125,7 @@ export interface components {
             type?: components["schemas"]["ast.MarkType"];
         };
         /** @enum {string} */
-        "ast.MarkType": "bold" | "italic" | "code" | "link" | "glossary_ref" | "document_ref" | "comment_ref" | "media_ref" | "canvas_ref";
+        "ast.MarkType": "bold" | "italic" | "code" | "strike" | "link" | "glossary_ref" | "document_ref" | "comment_ref" | "media_ref" | "canvas_ref";
         "ast.Node": {
             attrs?: {
                 [key: string]: unknown;
@@ -17039,15 +17176,15 @@ export interface components {
             /** @description EntityID is the target entity's ID. */
             entity_id: string;
             /**
-             * @description EntityType is one of "document" | "media" | "canvas".
+             * @description EntityType is one of "document" | "media" | "canvas" | "form".
              * @enum {unknown}
              */
-            entity_type: "document" | "media" | "canvas";
+            entity_type: "document" | "media" | "canvas" | "form";
             /** @description SortOrder is optional; when nil the service treats it as 0 (prepends). */
             sort_order?: number;
         };
         /** @enum {string} */
-        "attachment.EntityType": "document" | "media" | "canvas";
+        "attachment.EntityType": "document" | "media" | "canvas" | "form";
         "attachment.UpdateAttachmentRequest": {
             /**
              * @description IsEntry, when present, sets (true) or clears (false) this attachment as the
@@ -17339,7 +17476,7 @@ export interface components {
             blocks: components["schemas"]["ast.Block"][];
         };
         /** @enum {string} */
-        "composition.Kind": "lecture" | "trail" | "document" | "media" | "canvas" | "comment" | "annotation" | "tag";
+        "composition.Kind": "lecture" | "trail" | "document" | "media" | "canvas" | "form" | "comment" | "annotation" | "tag";
         "composition.NodeRef": {
             id?: string;
             kind?: components["schemas"]["composition.Kind"];
@@ -17490,6 +17627,12 @@ export interface components {
         "form.CreateOptionInput": {
             label: string;
         };
+        "form.DateStats": {
+            /** @description YYYY-MM-DD */
+            max?: string;
+            /** @description YYYY-MM-DD */
+            min?: string;
+        };
         "form.EditSubmissionRequest": {
             answers?: components["schemas"]["form.SubmitAnswer"][];
         };
@@ -17506,7 +17649,9 @@ export interface components {
         };
         "form.FieldStats": {
             answered?: number;
+            date?: components["schemas"]["form.DateStats"];
             field_id?: string;
+            number?: components["schemas"]["form.NumberStats"];
             options?: components["schemas"]["form.OptionStat"][];
             type?: components["schemas"]["form.FieldType"];
         };
@@ -17519,6 +17664,11 @@ export interface components {
             description?: components["schemas"]["ast.Block"][];
             fields?: components["schemas"]["form.FormField"][];
             id?: string;
+            /**
+             * @description IsEntry is the per-lecture entry-point flag (the attachments edge
+             *     property), populated only by ListByLecture; omitted elsewhere.
+             */
+            is_entry?: boolean;
             owner?: components["schemas"]["userref.Ref"];
             published_at?: string;
             submission_mode?: components["schemas"]["form.SubmissionMode"];
@@ -17551,6 +17701,12 @@ export interface components {
         "form.FormStats": {
             fields?: components["schemas"]["form.FieldStats"][];
             total_submissions?: number;
+        };
+        "form.NumberStats": {
+            avg?: number;
+            max?: number;
+            min?: number;
+            sum?: number;
         };
         "form.OptionStat": {
             count?: number;
