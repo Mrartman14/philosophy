@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { rangeFromAnchor } from "./anchor-to-range";
+import { railScopeFingerprint } from "./rail-scope-key";
 import type { RailScopeEntry } from "./use-rail-scopes";
 
 export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
@@ -18,9 +19,9 @@ export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
   // на каждый register). Без id-нот в ключе новая аннотация при том же key не
   // получила бы Range (сирота); без стабильности на чистом array-churn вернулся бы
   // O(N²) перемонтирований RO на гидрации. Эталон деп-поведения — use-anchor-ranges.
-  const scopeKey = scopes
-    .map((s) => `${s.key}#${s.notes.map((n) => n.id).join(",")}`)
-    .join("|");
+  // Отпечаток — чистый railScopeFingerprint (общий с margin-rail, чтобы формат не
+  // разъехался).
+  const scopeKey = railScopeFingerprint(scopes);
 
   useEffect(() => {
     const bump = () => {

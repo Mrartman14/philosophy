@@ -15,6 +15,7 @@ import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
 import { HighlightOverlay } from "./highlight-overlay";
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
+import { railScopeFingerprint } from "./rail-scope-key";
 import { toneColor } from "./tone";
 import type { AnchoredNote } from "./types";
 import { useAggregatedAnchorRanges } from "./use-aggregated-anchor-ranges";
@@ -52,13 +53,12 @@ export function MarginRail({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const emphasizedId = hoveredId ?? activeId;
 
-  // Стабильный scope-key (как в useAggregatedAnchorRanges). ВКЛЮЧАЕТ fingerprint
-  // id-нот, иначе при смене notes того же скоупа (новая аннотация, тот же key)
-  // `flat` не пересчитается → карточка не появится/останется сиротой (находка
-  // ревью Task 7). Стабилен под array-identity-churn от useRailScopes.
-  const scopeKey = scopes
-    .map((s) => `${s.key}#${s.notes.map((n) => n.id).join(",")}`)
-    .join("|");
+  // Стабильный scope-key (как в useAggregatedAnchorRanges — тот же чистый
+  // railScopeFingerprint). ВКЛЮЧАЕТ fingerprint id-нот, иначе при смене notes того
+  // же скоупа (новая аннотация, тот же key) `flat` не пересчитается → карточка не
+  // появится/останется сиротой (находка ревью Task 7). Стабилен под array-identity-
+  // churn от useRailScopes.
+  const scopeKey = railScopeFingerprint(scopes);
 
   const flat = useMemo(() => {
     const items: {
