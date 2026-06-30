@@ -10,6 +10,7 @@ import type {
   Lecture,
   LectureCanvasItem,
   LectureDocument,
+  LectureFormItem,
   LectureMediaItem,
 } from "./types";
 
@@ -109,6 +110,21 @@ export const getLectureCanvases = cache(
     });
     if (response.status === 404) return [];
     if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadCanvasesFailed"));
+    return unwrap(data) ?? [];
+  },
+);
+
+/** GET /api/lectures/{id}/forms — формы лекции (лёгкий листинг). is_entry
+ *  помечает основную форму. 404 → [].
+ *  token (?token=) для приватных лекций через share-link. */
+export const getLectureForms = cache(
+  async (id: string, token?: string): Promise<LectureFormItem[]> => {
+    const api = await createApiClient();
+    const { data, error, response } = await api.GET("/api/lectures/{id}/forms", {
+      params: { path: { id }, ...(token ? { query: { token } } : {}) },
+    });
+    if (response.status === 404) return [];
+    if (error) throw new Error(error.error ?? (await getT("lectures"))("api.loadFormsFailed"));
     return unwrap(data) ?? [];
   },
 );

@@ -30,13 +30,21 @@ export type LectureMediaItem = components["schemas"]["media.Media"];
  */
 export type LectureCanvasItem = components["schemas"]["canvas.Canvas"];
 
+/**
+ * Форма, прикреплённая к лекции (GET /api/lectures/{id}/forms). Лёгкий листинг —
+ * поля формы не рендерятся в листинге; is_entry помечает основную форму лекции
+ * и выставляется только этим листингом.
+ */
+export type LectureFormItem = components["schemas"]["form.Form"];
+
 /** Элемент attachment-списка лекции (reverse — какие сущности прикреплены). */
 export type LectureAttachment = components["schemas"]["attachment.AttachmentDTO"];
 
 /**
  * Тип прикрепляемой сущности. Ре-экспорт сгенерированного enum из request-схемы
- * attachment (`validate:"oneof=document media canvas"` на бэке). canvas валиден
- * на беке, отдельного просмотра нет (§4 спеки). НЕ редактировать руками.
+ * attachment (`validate:"oneof=document media canvas form"` на бэке — бэк теперь
+ * принимает и form). canvas валиден на беке, отдельного просмотра нет (§4 спеки).
+ * НЕ редактировать руками.
  */
 export type AttachmentEntityType =
   components["schemas"]["attachment.CreateAttachmentRequest"]["entity_type"];

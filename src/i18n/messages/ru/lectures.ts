@@ -82,6 +82,7 @@ const lectures = {
     loadDocumentsFailed: "Не удалось загрузить документы лекции",
     loadMediaFailed: "Не удалось загрузить медиа лекции",
     loadCanvasesFailed: "Не удалось загрузить канвасы лекции",
+    loadFormsFailed: "Не удалось загрузить формы лекции",
   },
 };
 

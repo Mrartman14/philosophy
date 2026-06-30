@@ -78,6 +78,7 @@ const lectures = {
     loadDocumentsFailed: "无法加载讲座文档",
     loadMediaFailed: "无法加载讲座媒体",
     loadCanvasesFailed: "无法加载讲座画布",
+    loadFormsFailed: "无法加载讲座表单",
   },
 };
 
