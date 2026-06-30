@@ -2,37 +2,43 @@
 import { blockPlainText, offsetWithinBlock } from "./dom-text";
 import type { TextAnchor } from "./types";
 
-function astBlock(node: Node, root: HTMLElement): Element | null {
+function closestAttr(node: Node, root: HTMLElement, attr: string): HTMLElement | null {
   const el = node.nodeType === Node.ELEMENT_NODE ? (node as Element) : node.parentElement;
-  const block = el?.closest<HTMLElement>("[data-block-id]") ?? null;
-  // AST-субстрат-гард: блок обязан быть внутри переданного AST-рута.
-  return block && root.contains(block) ? block : null;
+  const found = el?.closest<HTMLElement>(`[${attr}]`) ?? null;
+  return found && root.contains(found) ? found : null;
+}
+
+function isCell(leaf: HTMLElement): boolean {
+  return leaf.tagName === "TD" || leaf.tagName === "TH";
 }
 
 export function anchorFromRange(range: Range, root: HTMLElement, contextLen = 32): TextAnchor | null {
   if (range.collapsed) return null;
-  const sb = astBlock(range.startContainer, root);
-  const eb = astBlock(range.endContainer, root);
-  if (!sb || !eb) return null;
-  const startId = sb.getAttribute("data-block-id");
-  const endId = eb.getAttribute("data-block-id");
-  if (!startId || !endId) return null;
-  const startChar = offsetWithinBlock(sb, range.startContainer, range.startOffset);
-  const endChar = offsetWithinBlock(eb, range.endContainer, range.endOffset);
+  const sLeaf = closestAttr(range.startContainer, root, "data-node-id");
+  const eLeaf = closestAttr(range.endContainer, root, "data-node-id");
+  if (!sLeaf || !eLeaf) return null;
+  // Single-cell гард (Phase 1): если хоть один конец — ячейка, оба конца обязаны
+  // быть ОДНОЙ ячейкой. Cross-cell / cell+проза → не создаём якорь.
+  if ((isCell(sLeaf) || isCell(eLeaf)) && sLeaf !== eLeaf) return null;
+
+  const sBlock = closestAttr(range.startContainer, root, "data-block-id");
+  const eBlock = closestAttr(range.endContainer, root, "data-block-id");
+  if (!sBlock || !eBlock) return null;
+
+  const startNodeId = sLeaf.getAttribute("data-node-id");
+  const endNodeId = eLeaf.getAttribute("data-node-id");
+  const startBlockId = sBlock.getAttribute("data-block-id");
+  const endBlockId = eBlock.getAttribute("data-block-id");
+  if (!startNodeId || !endNodeId || !startBlockId || !endBlockId) return null;
+
+  const startChar = offsetWithinBlock(sLeaf, range.startContainer, range.startOffset);
+  const endChar = offsetWithinBlock(eLeaf, range.endContainer, range.endOffset);
   const exact = range.toString();
   if (exact.length === 0) return null;
-  const prefix = blockPlainText(sb).slice(Math.max(0, startChar - contextLen), startChar);
-  const suffix = blockPlainText(eb).slice(endChar, endChar + contextLen);
-  // Временный проброс: node-id == block-id (полноценный лист — Task 5).
-  const anchor: TextAnchor = {
-    startBlockId: startId,
-    startNodeId: startId,
-    endBlockId: endId,
-    endNodeId: endId,
-    startChar,
-    endChar,
-    exact,
-  };
+  const prefix = blockPlainText(sLeaf).slice(Math.max(0, startChar - contextLen), startChar);
+  const suffix = blockPlainText(eLeaf).slice(endChar, endChar + contextLen);
+
+  const anchor: TextAnchor = { startBlockId, startNodeId, endBlockId, endNodeId, startChar, endChar, exact };
   if (prefix) anchor.prefix = prefix;
   if (suffix) anchor.suffix = suffix;
   return anchor;
