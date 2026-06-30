@@ -6,7 +6,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { FORM_SUBMISSION_MODES, VISIBILITY } from "@/api/enums";
+import { FORM_SUBMISSION_MODES, FORM_SUBMISSION_VISIBILITY, VISIBILITY } from "@/api/enums";
 
 const post = vi.fn();
 
@@ -91,6 +91,7 @@ function createFormData(extra: Record<string, string>): FormData {
     title: "Test Form",
     visibility: VISIBILITY[0],
     submission_mode: FORM_SUBMISSION_MODES[0],
+    submission_visibility: FORM_SUBMISSION_VISIBILITY[0],
     fields: [
       {
         type: "text",
