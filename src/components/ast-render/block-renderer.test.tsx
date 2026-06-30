@@ -102,16 +102,19 @@ describe("BlockRenderer — data-block-id (DOM-контракт движка)", 
     ).toContain('data-block-id="code1"');
   });
 
-  it("blockquote и его вложенный paragraph несут собственные data-block-id", () => {
+  it("blockquote несёт data-block-id; вложенный paragraph — data-node-id, НЕ data-block-id", () => {
     const blockquote = {
       id: "bq",
       type: "blockquote",
       content: [
-        { id: "p2", type: "paragraph", content: [{ type: "text", text: "x" }] },
+        { id: "p2", type: "paragraph", content: [{ type: "text", text: "q" }] },
       ],
     } as unknown as AstBlock;
     expect(markupFor(blockquote)).toContain('data-block-id="bq"');
-    expect(markupFor(blockquote)).toContain('data-block-id="p2"');
+    // Вложенный лист несёт ТОЛЬКО data-node-id: block_id только у top-level, иначе
+    // closest('[data-block-id]') зарезолвит в лист вместо объемлющего блока.
+    expect(markupFor(blockquote)).toContain('data-node-id="p2"');
+    expect(markupFor(blockquote)).not.toMatch(/<p[^>]*data-block-id="p2"/);
   });
 
   it("thematic_break несёт data-block-id", () => {
@@ -120,19 +123,33 @@ describe("BlockRenderer — data-block-id (DOM-контракт движка)", 
     );
   });
 
-  it("table — БЕЗ data-block-id (строки/ячейки без id → мусорный якорь)", () => {
-    expect(
-      markupFor({
-        id: "t1",
-        type: "table",
-        content: [
-          {
-            type: "table_row",
-            content: [{ type: "table_cell", content: [{ type: "text", text: "c" }] }],
-          },
-        ],
-      } as unknown as AstBlock),
-    ).not.toContain("data-block-id");
+  it("table несёт data-block-id, ячейка — data-node-id (read)", () => {
+    const table = {
+      id: "tbl-1",
+      type: "table",
+      content: [
+        {
+          type: "table_row",
+          content: [
+            { type: "table_cell", id: "cell-1", content: [{ type: "text", text: "x" }] },
+          ],
+        },
+      ],
+    } as unknown as AstBlock;
+    // table — единственный top-block, которому block-id добавляет BlockRenderer
+    // (карта его опускает). Ячейка — вложенный лист → data-node-id.
+    expect(markupFor(table)).toContain('data-block-id="tbl-1"');
+    expect(markupFor(table)).toContain('data-node-id="cell-1"');
+  });
+
+  it("top-level paragraph несёт оба атрибута с одним id", () => {
+    const paragraph: AstBlock = {
+      id: "p-1",
+      type: "paragraph",
+      content: [{ type: "text", text: "hi" }],
+    };
+    expect(markupFor(paragraph)).toContain('data-block-id="p-1"');
+    expect(markupFor(paragraph)).toContain('data-node-id="p-1"');
   });
 
   it("image — DOM не меняется (нет data-block-id на figure)", () => {
