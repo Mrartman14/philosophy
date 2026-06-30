@@ -171,28 +171,34 @@ export default async function LecturePage({ params, searchParams }: Props) {
         </Suspense>
       </div>
 
-      {/* Аннотации активного документа — правое поле грида (как /documents/[id]).
+      {/* Правое поле грида (как /documents/[id]). MarginNote монтируется
+          БЕЗУСЛОВНО: annotation-рельса нужна на ЛЮБОЙ лекции (per-comment
+          AnnotationScope регистрирует скоуп вне activeDoc-гейта → без рельсы на
+          wide карточки негде показать). DocumentAnnotations (нужен activeId)
+          остаётся под своим гейтом. MarginRail без скоупов рисует пусто.
           @marginalia:ps-0 — гасим внутренний паддинг, когда поле раскрыто (тот же
           @container-порог что и reveal, см. layout.css §13; не вьюпортный xl). */}
-      {activeDoc && activeId && (
-        <MarginNote side="end" grow className="p-4 @marginalia:ps-0">
+      <MarginNote side="end" grow className="p-4 @marginalia:ps-0">
+        {activeDoc && activeId && (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentAnnotations parentId={activeId} />
           </Suspense>
-          <MarginRail tone="annotation" highlightName="annotation" />
-        </MarginNote>
-      )}
+        )}
+        <MarginRail tone="annotation" highlightName="annotation" />
+      </MarginNote>
 
-      {/* Заякоренные комментарии активного документа — ЛЕВОЕ поле грида.
+      {/* ЛЕВОЕ поле грида. MarginNote монтируется БЕЗУСЛОВНО: comment-рельса
+          нужна на любой лекции с заякоренными комментариями (без инлайн-документа
+          тоже). DocumentComments (нужен activeId) остаётся под своим гейтом.
           @marginalia:pe-0 — гасим внутренний паддинг (к хребту), когда поле раскрыто. */}
-      {activeDoc && activeId && (
-        <MarginNote side="start" grow className="p-4 @marginalia:pe-0">
+      <MarginNote side="start" grow className="p-4 @marginalia:pe-0">
+        {activeDoc && activeId && (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentComments lectureId={id} documentId={activeId} />
           </Suspense>
-          <MarginRail tone="comment" highlightName="comment" />
-        </MarginNote>
-      )}
+        )}
+        <MarginRail tone="comment" highlightName="comment" />
+      </MarginNote>
     </AnchorScopeProvider>
   );
 }
