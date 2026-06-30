@@ -2,6 +2,7 @@
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
+import { fieldAnswersHref } from "../results-href";
 import type { FieldStats, FormField } from "../types";
 
 import { blocksToPlainText } from "./blocks-text";
@@ -35,7 +36,7 @@ export async function FieldStatsCard({ field, stats, formId, token }: Props) {
           <ChoiceBars options={stats?.options ?? []} answered={answered} multi={type === "multi_choice"} />
           {answered > 0 && (
             <RouterLink
-              href={`/forms/${formId}/fields/${field.id ?? ""}${token ? `?token=${encodeURIComponent(token)}` : ""}`}
+              href={fieldAnswersHref(formId, field.id ?? "", token ? { token } : {})}
               className="self-start text-sm text-(--color-link) hover:underline"
             >
               {t("results.allAnswers")}
@@ -51,7 +52,6 @@ export async function FieldStatsCard({ field, stats, formId, token }: Props) {
           fieldId={field.id ?? ""}
           fieldType={type}
           {...(token ? { token } : {})}
-          answered={answered}
         />
       )}
     </section>
