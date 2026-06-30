@@ -119,6 +119,37 @@ export const getLectureAnnotations = cache(
   },
 );
 
+/**
+ * ВСЕ аннотации лекции (по типу родителя), все страницы — поверх существующей
+ * пагинированной `getLectureAnnotations` (дефолтный limit там 20, тихо режет
+ * >20). Свой `cache()` дедуплицирует ИМЕННО полный обход на запрос: N серверных
+ * `CommentNode` в дереве дают один проход (а не N).
+ *
+ * Решение N+1 (см. спеку «Бэкенд»): аннотации всех комментариев лекции тянем
+ * лекционной агрегат-ручкой `GET /api/lectures/{id}/annotations?parent_entity_type=...`,
+ * группировка по `parent_entity_id` — на стороне потребителя (`CommentNode`).
+ */
+export const getAllLectureAnnotations = cache(
+  async (
+    lectureId: string,
+    parentEntityType?: "document" | "comment" | "media",
+  ): Promise<Annotation[]> => {
+    const all: Annotation[] = [];
+    const limit = 200;
+    for (let offset = 0; ; offset += limit) {
+      const { items } = await getLectureAnnotations(
+        lectureId,
+        offset,
+        limit,
+        parentEntityType,
+      );
+      all.push(...items);
+      if (items.length < limit) break;
+    }
+    return all;
+  },
+);
+
 /** Admin-список публичных аннотаций (GET /api/admin/annotations). */
 export const getAdminAnnotations = cache(
   async (filter: {

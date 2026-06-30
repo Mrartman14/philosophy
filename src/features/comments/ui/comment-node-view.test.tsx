@@ -98,4 +98,32 @@ describe("CommentNodeView", () => {
     expect(screen.queryByText("static")).toBeNull();
     expect(screen.queryByText("+9 / −9")).toBeNull();
   });
+
+  it("scopeEnabled → тело несёт data-anchor-scope=comment:<id> (онлайн annotation-scope)", () => {
+    const { container } = render(
+      <CommentNodeView
+        comment={base({
+          id: "cmt-1",
+          blocks: [
+            {
+              id: "b1",
+              type: "paragraph",
+              content: [{ type: "text", text: "тело" }],
+            },
+          ] as never,
+        })}
+        scopeEnabled
+      />,
+    );
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- data-* scope-маркер, семантической роли нет (прецедент: semantic-map-direction.test.tsx)
+    const scope = container.querySelector('[data-anchor-scope="comment:cmt-1"]');
+    expect(scope).not.toBeNull();
+    expect(scope?.textContent).toContain("тело");
+  });
+
+  it("без scopeEnabled (офлайн/изоморфный путь) → тело без data-anchor-scope", () => {
+    const { container } = render(<CommentNodeView comment={base({ id: "cmt-2" })} />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- data-* scope-маркер, семантической роли нет
+    expect(container.querySelector("[data-anchor-scope]")).toBeNull();
+  });
 });

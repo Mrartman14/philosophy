@@ -4,6 +4,7 @@ export {
   getAnnotationById,
   getMyAnnotations,
   getLectureAnnotations,
+  getAllLectureAnnotations,
   getAdminAnnotations,
   getAnnotationRevisions,
   getAnnotationRevision,
@@ -30,6 +31,11 @@ export {
 } from "./anchor";
 export { AnnotationsSection } from "./ui/annotations-section";
 export { DocumentAnnotations } from "./ui/document-annotations";
+// Client-коннектор скоупа сущности → rail (Task 9). Server-компоненты (CommentNode,
+// DocumentAnnotations) легально рендерят его. Server-сборщик карточек (server-only)
+// — потребляется только server-компонентами через barrel (cross-feature OK).
+export { AnnotationScope } from "./ui/annotation-scope";
+export { buildAnnotationCards } from "./ui/annotation-cards-builder";
 export { AnnotationCard } from "./ui/annotation-card";
 export { AnnotationList } from "./ui/annotation-list";
 export { AnnotationCreateForm } from "./ui/annotation-create-form";

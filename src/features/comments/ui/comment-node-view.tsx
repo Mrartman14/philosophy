@@ -61,6 +61,18 @@ interface Props {
    * чтобы дата комментария отображалась в зоне предпочтения пользователя.
    */
   tz?: string | undefined;
+  /**
+   * Онлайн: пометить обёртку тела как annotation-scope
+   * (`data-anchor-scope="comment:<id>"`) — корень, по которому client-коннектор
+   * `AnnotationScope` находит тело и позиционирует/регистрирует аннотации в rail.
+   * Дефолт false — офлайн/изоморфный путь (SavedLectureView) без скоупа.
+   *
+   * ИЗОМОРФНЫЙ КОНТРАКТ (Guardrail 4): атрибут вставляется ИНЛАЙН-литералом, БЕЗ
+   * импорта `anchorScopeAttr` из barrel `@/components/anchor-engine` — barrel тянет
+   * "use client"-движок (MarginRail/AnchorScopeProvider) в офлайн-бандл и сломал бы
+   * hook-free контракт view. Значение `comment:<id>` идентично `anchorScopeAttr`.
+   */
+  scopeEnabled?: boolean;
 }
 
 export function CommentNodeView({
@@ -73,6 +85,7 @@ export function CommentNodeView({
   typeLabel,
   locale,
   tz,
+  scopeEnabled = false,
 }: Props): ReactNode {
   if (comment.is_deleted) {
     return (
@@ -98,7 +111,11 @@ export function CommentNodeView({
           </p>
         ) : null)}
 
-      <div className="content" data-size="sm">
+      <div
+        className="content"
+        data-size="sm"
+        {...(scopeEnabled ? { "data-anchor-scope": `comment:${comment.id}` } : {})}
+      >
         <AstRender blocks={comment.blocks ?? []} />
       </div>
 
