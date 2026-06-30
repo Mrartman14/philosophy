@@ -160,18 +160,23 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
     };
   });
 
-  const overlayRanges =
-    !controller.supported && highlightEnabled
-      ? [...ranges.values()].filter((r): r is Range => r !== null)
-      : [];
+  // Оверлей: rect-якоря ВСЕГДА (Highlight API их не берёт) + линейные ТОЛЬКО когда
+  // Highlight API не поддержан. Активный — в activeRects (annotation-overlay--active).
+  const overlayRects: DOMRect[] = [];
+  const activeOverlayRects: DOMRect[] = [];
+  if (highlightEnabled) {
+    for (const [id, g] of geometries) {
+      if (!g) continue;
+      const toOverlay = g.kind === "rect" || !controller.supported;
+      if (!toOverlay) continue;
+      (id === emphasizedId ? activeOverlayRects : overlayRects).push(...g.clientRects);
+    }
+  }
 
   return (
     <>
-      {overlayRanges.length > 0 && (
-        <HighlightOverlay
-          ranges={overlayRanges}
-          activeRange={activeId ? (ranges.get(activeId) ?? null) : null}
-        />
+      {(overlayRects.length > 0 || activeOverlayRects.length > 0) && (
+        <HighlightOverlay rects={overlayRects} activeRects={activeOverlayRects} />
       )}
       <MarginNotesColumn
         notes={columnNotes}

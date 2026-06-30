@@ -1,15 +1,17 @@
 "use client";
 // src/components/anchor-engine/highlight-overlay.tsx
-// Фолбэк подсветки для браузеров без CSS Custom Highlight API: прямоугольники
-// из range.getClientRects() в абсолютном слое. Ноль мутаций текстового DOM.
+// Подсветка прямоугольниками в абсолютном слое. Ноль мутаций текстового DOM.
+// Источник rect'ов — вызывающий (range.getClientRects() для линейных в фолбэке,
+// bounding-box для прямоугольных якорей). Прямоугольный якорь рисуется ТОЛЬКО здесь
+// (CSS Custom Highlight API берёт лишь текстовые Range).
 import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface Props {
-  ranges: Range[];
-  activeRange: Range | null;
+  rects: DOMRect[];
+  activeRects: DOMRect[];
 }
-interface Rect {
+interface Box {
   top: number;
   left: number;
   width: number;
@@ -17,31 +19,22 @@ interface Rect {
   active: boolean;
 }
 
-function collect(ranges: Range[], active: Range | null): Rect[] {
-  const out: Rect[] = [];
-  const push = (r: Range, isActive: boolean) => {
-    for (const cr of Array.from(r.getClientRects())) {
-      out.push({
-        top: cr.top + window.scrollY,
-        left: cr.left + window.scrollX,
-        width: cr.width,
-        height: cr.height,
-        active: isActive,
-      });
-    }
-  };
-  ranges.forEach((r) => {
-    push(r, false);
+function collect(rects: DOMRect[], activeRects: DOMRect[]): Box[] {
+  const map = (r: DOMRect, active: boolean): Box => ({
+    top: r.top + window.scrollY,
+    left: r.left + window.scrollX,
+    width: r.width,
+    height: r.height,
+    active,
   });
-  if (active) push(active, true);
-  return out;
+  return [...rects.map((r) => map(r, false)), ...activeRects.map((r) => map(r, true))];
 }
 
-export function HighlightOverlay({ ranges, activeRange }: Props) {
-  const [rects, setRects] = useState<Rect[]>([]);
+export function HighlightOverlay({ rects, activeRects }: Props) {
+  const [boxes, setBoxes] = useState<Box[]>([]);
   useLayoutEffect(() => {
     const update = () => {
-      setRects(collect(ranges, activeRange));
+      setBoxes(collect(rects, activeRects));
     };
     update();
     window.addEventListener("resize", update);
@@ -50,15 +43,15 @@ export function HighlightOverlay({ ranges, activeRange }: Props) {
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-  }, [ranges, activeRange]);
+  }, [rects, activeRects]);
   return createPortal(
     <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-      {rects.map((r, i) => (
+      {boxes.map((b, i) => (
         <div
           key={i}
-          className={r.active ? "annotation-overlay annotation-overlay--active" : "annotation-overlay"}
+          className={b.active ? "annotation-overlay annotation-overlay--active" : "annotation-overlay"}
           // eslint-disable-next-line no-restricted-syntax -- координатный оверлей, направление-нейтрально
-          style={{ position: "absolute", top: r.top, left: r.left, width: r.width, height: r.height }}
+          style={{ position: "absolute", top: b.top, left: b.left, width: b.width, height: b.height }}
         />
       ))}
     </div>,
