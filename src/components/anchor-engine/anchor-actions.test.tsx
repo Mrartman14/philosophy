@@ -1,4 +1,5 @@
 import { cleanup, render } from "@testing-library/react";
+import { useEffect } from "react";
 import { afterEach, describe, it, expect } from "vitest";
 
 import {
@@ -6,6 +7,7 @@ import {
   applicableActions,
   SelectionAffordanceHost,
   useRegisterAnchorAction,
+  useStableAnchorAction,
   type AnchorAction,
 } from "./anchor-actions";
 import type { AnchorDraft } from "./types";
@@ -97,6 +99,89 @@ describe("anchor-actions registry", () => {
         </AnchorScopeProvider>,
       );
     }).not.toThrow();
+  });
+});
+
+// Счётчик commit'ов вне React. Инкремент в useEffect (без deps) — фиксирует
+// КАЖДЫЙ commit/рендер; мутация во время рендера запрещена (react-hooks/
+// immutability), а в эффекте — разрешена. Каждый тест сбрасывает перед mount.
+const renderTally = { count: 0 };
+
+// Слайс-имитация: вызывает useStableAnchorAction с ИНЛАЙН-замыканием appliesTo
+// (новая идентичность каждый рендер, как annotation-create-action /
+// comment-anchor-scope). До фикса C1 это крутило бесконечный register-цикл.
+function InlineAppliesToConsumer({ predicate }: { predicate: (t: string) => boolean }) {
+  // Без deps → эффект коммитится после каждого рендера: счётчик = число commit'ов.
+  useEffect(() => {
+    renderTally.count += 1;
+  });
+  useStableAnchorAction({
+    id: "slice",
+    label: "Add",
+    enabled: true,
+    onCreate: (draft: AnchorDraft) => {
+      void draft;
+    },
+    // Инлайн-обёртка над predicate → новая идентичность appliesTo каждый рендер.
+    appliesTo: (t) => predicate(t),
+  });
+  return null;
+}
+
+describe("useStableAnchorAction (render-loop guard)", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  // Регресс C1: до фикса useStableAnchorAction ref-стабилизировал только onCreate,
+  // а appliesTo пробрасывал сырым → оно попадало в useEffect-deps регистрации →
+  // unregister+register каждый рендер → setActions (новый массив) → новый context
+  // value → ре-рендер консьюмера → новое замыкание → ЦИКЛ («Maximum update depth
+  // exceeded»). На СТАРОМ коде этот тест зависал/падал; на новом — сходится.
+  it("инлайн appliesTo (always) не вызывает бесконечный register-цикл", () => {
+    renderTally.count = 0;
+    expect(() => {
+      render(
+        <AnchorScopeProvider>
+          <InlineAppliesToConsumer predicate={() => true} />
+        </AnchorScopeProvider>,
+      );
+    }).not.toThrow();
+    // Сходимость: один register-эффект + один коммит actions → единичный лишний
+    // рендер консьюмера, далее стабильно. На баге счётчик улетел бы в десятки/
+    // сотни до «Maximum update depth». Порог с запасом.
+    expect(renderTally.count).toBeLessThan(20);
+  });
+
+  it("инлайн appliesTo (document-only предикат) — также сходится без цикла", () => {
+    renderTally.count = 0;
+    expect(() => {
+      render(
+        <AnchorScopeProvider>
+          <InlineAppliesToConsumer predicate={(t) => t === "document"} />
+        </AnchorScopeProvider>,
+      );
+    }).not.toThrow();
+    expect(renderTally.count).toBeLessThan(20);
+  });
+
+  it("ре-рендер родителя с НОВОЙ инлайн-appliesTo не зацикливает регистрацию", () => {
+    renderTally.count = 0;
+    expect(() => {
+      const { rerender } = render(
+        <AnchorScopeProvider>
+          <InlineAppliesToConsumer predicate={() => true} />
+        </AnchorScopeProvider>,
+      );
+      // Новый predicate → новая инлайн-appliesTo. Без ref-стабилизации это
+      // переинициализировало бы эффект регистрации и могло раскрутить цикл.
+      rerender(
+        <AnchorScopeProvider>
+          <InlineAppliesToConsumer predicate={(t) => t === "document"} />
+        </AnchorScopeProvider>,
+      );
+    }).not.toThrow();
+    expect(renderTally.count).toBeLessThan(20);
   });
 });
 

@@ -161,9 +161,14 @@ export function useRegisterAnchorAction({
 
 /**
  * Слой-фасад над useRegisterAnchorAction: инкапсулирует ref-стабилизацию
- * onCreate (чтобы меняющийся колбэк не дёргал re-register loop в эффекте
- * регистрации) + саму регистрацию. Слайсы (create-action компоненты) зовут
- * его через barrel @/components/anchor-engine.
+ * onCreate И appliesTo (чтобы меняющиеся колбэки не дёргали re-register loop в
+ * эффекте регистрации) + саму регистрацию. Слайсы передают инлайн-замыкания
+ * (`() => true`, `(t) => t === "document"`) — новая идентичность каждый рендер;
+ * без стабилизации appliesTo попадало бы в useEffect-deps регистрации и крутило
+ * бы unregister+register→setActions→ре-рендер→новое замыкание→ЦИКЛ (C1,
+ * «Maximum update depth»). Стабилизация ЗДЕСЬ (в движке) защищает корень: любая
+ * инлайн-appliesTo из слайса не меняет депы эффекта. Слайсы зовут этот хук через
+ * barrel @/components/anchor-engine.
  */
 export function useStableAnchorAction({
   id,
@@ -178,21 +183,27 @@ export function useStableAnchorAction({
   enabled: boolean;
   appliesTo?: (entityType: string) => boolean;
 }): void {
-  const ref = useRef(onCreate);
+  const onCreateRef = useRef(onCreate);
+  const appliesToRef = useRef(appliesTo);
   useEffect(() => {
-    ref.current = onCreate;
+    onCreateRef.current = onCreate;
+    appliesToRef.current = appliesTo;
   });
-  const stable = useCallback((draft: AnchorDraft) => {
-    ref.current(draft);
+  const stableCreate = useCallback((draft: AnchorDraft) => {
+    onCreateRef.current(draft);
   }, []);
-  // appliesTo опционален — пробрасываем только когда задан (exactOptionalPropertyTypes:
-  // undefined нельзя присвоить опц.-полю в value-позиции; опускание → дефолт хука).
+  // Стабильная обёртка читает свежий предикат из ref. Когда appliesTo не задан —
+  // ALWAYS_APPLIES (тот же дефолт, что и у прямых вызовов useRegisterAnchorAction).
+  const stableApplies = useCallback(
+    (entityType: string) => (appliesToRef.current ?? ALWAYS_APPLIES)(entityType),
+    [],
+  );
   useRegisterAnchorAction({
     id,
     label,
-    onCreate: stable,
+    onCreate: stableCreate,
     enabled,
-    ...(appliesTo ? { appliesTo } : {}),
+    appliesTo: stableApplies,
   });
 }
 

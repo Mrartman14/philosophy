@@ -35,6 +35,11 @@ export interface CommentAnchorComposerOpen {
   anchor: Anchor;
 }
 
+// Стабильная module-scope ссылка предиката (defense-in-depth: НЕ новая функция
+// каждый рендер — движок уже ref-стабилизирует appliesTo, но передаём константу,
+// чтобы слайс физически не мог переинтродьюсить инлайн-замыкание).
+const APPLIES_TO_DOCUMENT = (t: string) => t === "document"; // v1: якорь комментария только в документ
+
 export function CommentAnchorCreateAction({
   canCreate,
   onOpenComposer,
@@ -47,7 +52,7 @@ export function CommentAnchorCreateAction({
     id: "comment-anchor",
     label: t("marginCommentAdd"),
     enabled: canCreate,
-    appliesTo: (type) => type === "document", // v1: якорь комментария только в документ
+    appliesTo: APPLIES_TO_DOCUMENT,
     onCreate: (d: AnchorDraft) => {
       onOpenComposer({
         targetDocumentId: d.scope.entityId,

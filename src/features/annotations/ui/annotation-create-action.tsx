@@ -26,6 +26,11 @@ function isParentEntityType(value: string): value is ParentEntityType {
   return (PARENT_ENTITY_TYPES as readonly string[]).includes(value);
 }
 
+// Стабильная module-scope ссылка предиката (defense-in-depth: НЕ новая функция
+// каждый рендер — движок уже ref-стабилизирует appliesTo, но передаём константу,
+// чтобы слайс физически не мог переинтродьюсить инлайн-замыкание).
+const APPLIES_TO_ANY = () => true; // аннотировать можно любой AST-скоуп
+
 export function AnnotationCreateAction({
   canCreate,
   onOpenComposer,
@@ -38,7 +43,7 @@ export function AnnotationCreateAction({
     id: "annotation",
     label: t("marginAddButton"),
     enabled: canCreate,
-    appliesTo: () => true, // аннотировать можно любой AST-скоуп
+    appliesTo: APPLIES_TO_ANY,
     onCreate: (d: AnchorDraft) => {
       // Скоуп выделения может быть типом, который не является parent аннотации
       // (движок применяет действие к любому AST-скоупу). Тогда composer не зовём.
