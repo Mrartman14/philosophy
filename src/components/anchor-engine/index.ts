@@ -20,4 +20,6 @@ export {
 } from "./anchor-actions";
 // Реестр scope-заметок для rail: слайсы регистрируют свои заметки, MarginRail читает.
 export { useRegisterRailScope, useRailScopes } from "./use-rail-scopes";
+// Единый wide-гейт rail (один порог WIDE_MEDIA): слайсы решают inline-vs-rail.
+export { useWide, WIDE_MEDIA } from "./use-wide";
 export type { TextAnchor, AnchoredNote, AnchorDraft } from "./types";

@@ -21,6 +21,7 @@ import {
   type AnchoredNote,
   useRegisterRailScope,
   useStableAnchorAction,
+  useWide,
 } from "@/components/anchor-engine";
 import { useT } from "@/i18n/client";
 import { coordsToEngineAnchor } from "@/utils/text-anchor";
@@ -92,20 +93,9 @@ export function CommentAnchorScope({
   }, [documentId]);
   const ready = rootEl !== null;
 
-  // Wide-гейт (как в AnnotationScope): на narrow превью текут inline, в rail только на wide.
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia("(min-width: 80rem)");
-    const sync = () => {
-      setWide(mq.matches);
-    };
-    sync();
-    mq.addEventListener("change", sync);
-    return () => {
-      mq.removeEventListener("change", sync);
-    };
-  }, []);
+  // Wide-гейт (общий useWide, как в AnnotationScope): на narrow превью текут inline,
+  // в rail только на wide.
+  const wide = useWide();
 
   const engineNotes = useMemo<AnchoredNote[]>(
     () =>

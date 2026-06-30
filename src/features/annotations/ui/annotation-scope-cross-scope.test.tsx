@@ -26,6 +26,9 @@ vi.mock("@/components/anchor-engine", () => ({
   },
   // no-op-стаб (rail в этом тесте не нужен); возвращает undefined, как хук.
   useRegisterRailScope: (): void => undefined,
+  // wide-гейт: narrow (false) — как jsdom-дефолт до извлечения хука; этот тест про
+  // роутинг композера, не про rail-позиционирование.
+  useWide: (): boolean => false,
 }));
 
 // Композер-диалог мокаем: выносим его prop parentEntityType в DOM для ассерта.

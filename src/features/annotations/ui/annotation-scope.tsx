@@ -10,7 +10,7 @@
 // Guardrail 4: только pure-фасады + движок + kit + i18n/client + композер.
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { useRegisterRailScope, type AnchoredNote } from "@/components/anchor-engine";
+import { useRegisterRailScope, useWide, type AnchoredNote } from "@/components/anchor-engine";
 import { Button, Inline } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
@@ -108,22 +108,11 @@ export function AnnotationScope({
   }, [parentEntityType, parentId]);
   const ready = rootEl !== null;
 
-  // Wide-гейт (та же media, что MarginNotesColumn): на narrow карточки текут inline
-  // ПОД своим телом (локальность спеки), в rail регистрируем ТОЛЬКО на wide. SSR →
-  // false (показываем inline-фолбэк), после mount поднимаем при совпадении.
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia("(min-width: 80rem)");
-    const sync = () => {
-      setWide(mq.matches);
-    };
-    sync();
-    mq.addEventListener("change", sync);
-    return () => {
-      mq.removeEventListener("change", sync);
-    };
-  }, []);
+  // Wide-гейт (общий useWide, та же media WIDE_MEDIA, что MarginNotesColumn): на
+  // narrow карточки текут inline ПОД своим телом (локальность спеки), в rail
+  // регистрируем ТОЛЬКО на wide. SSR → false (показываем inline-фолбэк), после mount
+  // поднимаем при совпадении.
+  const wide = useWide();
 
   // renderNote: зависим от РАЗРЕШЁННОЙ строки orphanLabel (стабильна по значению
   // даже если useT отдаёт новую функцию-идентичность) — иначе renderNote→entry
