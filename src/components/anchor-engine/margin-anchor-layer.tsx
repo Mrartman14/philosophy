@@ -92,7 +92,7 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   // Hover-акцент поверх постоянной видимости: наведение на текст (useHoverReveal)
   // или на карточку (onHoverNote колонки) → hoveredId; эмфаза = hoveredId ?? activeId.
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  useHoverReveal({ astRootRef, ranges, ready, onHover: setHoveredId });
+  useHoverReveal({ astRootRef, geometries, ready, onHover: setHoveredId });
   const emphasizedId = hoveredId ?? activeId;
 
   // Захват выделения + аффорданс делегированы общему хосту (SelectionAffordanceHost):
@@ -125,7 +125,7 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
       .querySelector(`[data-note-card="${cssEscape(id)}"]`)
       ?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
   }, []);
-  useTextClick({ astRootRef, ranges, ready, onPick: pickFromText });
+  useTextClick({ astRootRef, geometries, ready, onPick: pickFromText });
 
   // Двусторонний клик (карточка → текст): активация карточки → скролл к фрагменту.
   const onActivate = useCallback(

@@ -1,6 +1,6 @@
 // src/components/anchor-engine/hit-test.ts
 import { rangeFromAnchor } from "./anchor-to-range";
-import type { AnchoredNote } from "./types";
+import type { AnchoredNote, AnchorGeometry } from "./types";
 
 export interface CaretPos {
   node: Node;
@@ -46,22 +46,31 @@ export function noteAtPoint(x: number, y: number, notes: AnchoredNote[], root: H
   return noteContainingCaret(caret, notes, root);
 }
 
+function pointInRect(x: number, y: number, r: DOMRect): boolean {
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
+
 /**
- * Хит-тест по УЖЕ ПОСЧИТАННЫМ ranges (порядок Map = порядок notes → first-match).
- * Для hover (mousemove-intensive): O(1) caret-resolve + N дешёвых comparePoint,
- * без пересчёта rangeFromAnchor. Эквивалентен noteAtPoint, т.к. ranges строятся
- * тем же rangeFromAnchor (см. useAnchorRanges).
+ * Хит-тест по УЖЕ ПОСЧИТАННЫМ geometries (порядок Map = порядок notes → first-match).
+ * range-kind → O(1) caret-resolve + дешёвый comparePoint (без пересчёта
+ * rangeFromAnchor, эквивалентно noteAtPoint — ranges строятся тем же
+ * rangeFromAnchor, см. useAnchorRanges); rect-kind → point-in-boundingRect (caret
+ * не применим — нет Range). Заменяет noteAtPointInRanges.
  */
-export function noteAtPointInRanges(
+export function noteAtPointInGeometry(
   x: number,
   y: number,
-  ranges: Map<string, Range | null>,
+  geometries: Map<string, AnchorGeometry | null>,
   root: HTMLElement,
 ): string | null {
   const caret = caretFromPoint(x, y, root);
-  if (!caret) return null;
-  for (const [id, r] of ranges) {
-    if (r?.comparePoint(caret.node, caret.offset) === 0) return id;
+  for (const [id, g] of geometries) {
+    if (!g) continue;
+    if (g.kind === "rect") {
+      if (pointInRect(x, y, g.boundingRect)) return id;
+    } else if (caret && g.range.comparePoint(caret.node, caret.offset) === 0) {
+      return id;
+    }
   }
   return null;
 }
