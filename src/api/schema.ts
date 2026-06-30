@@ -3758,6 +3758,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/annotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список пометок (scope-фасет)
+         * @description Единый scope-фасетный листинг пометок.
+         *     scope=mine (дефолт) — собственные аннотации актора (включая приватные).
+         *     scope=all — публичные пометки по всей платформе; требует CapAnnotationDeleteAny (роль admin).
+         *     Фильтры parent_entity_id и author_id применяются только на scope=all;
+         *     на scope=mine author_id игнорируется (автор всегда = actor).
+         *     Несуществующий author_id/parent_entity_id возвращает пустой 200 (A12).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Фасет листинга */
+                    scope?: "mine" | "all";
+                    /** @description Фильтр по типу родителя */
+                    parent_entity_type?: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
+                    /** @description Фильтр по ID родителя (только scope=all) */
+                    parent_entity_id?: string;
+                    /** @description Фильтр по автору (только scope=all) */
+                    author_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Записей на странице */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["annotation.Annotation"][];
+                        };
+                    };
+                };
+                /** @description VALIDATION — недопустимый scope */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description scope=all без capability */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/annotations/{id}": {
         parameters: {
             query?: never;
@@ -5236,14 +5322,19 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Поиск канвасов (picker)
-         * @description Lightweight summary list of canvases visible to the actor,
-         *     filtered by ?q= LIKE on title. Used by the AST editor's
-         *     canvas_ref picker.
+         * Список canvas'ов (scope-фасетный)
+         * @description Единый листинг canvas'ов. scope=visible (дефолт, own∪public, пиккер) |
+         *     scope=public (строго non-private, anon-доступ) |
+         *     scope=mine (свои вкл. приватные, requiredAuth).
+         *     scope=all НЕ поддерживается для canvas (admin-листинга нет) → 400.
+         *     Поле total для scope=visible и scope=public — верхняя оценка: периметр
+         *     применяется после пагинации, точный счётчик не гарантируется (A10).
          */
         get: {
             parameters: {
                 query?: {
+                    /** @description visible|public|mine */
+                    scope?: string;
                     /** @description Поиск по title */
                     q?: string;
                     /** @description Смещение */
@@ -7166,16 +7257,25 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Поиск документов (picker)
-         * @description Lightweight summary list of documents visible to the actor,
-         *     filtered by ?q= LIKE on filename. Used by the AST editor's
-         *     document_ref picker.
+         * Список документов (scope-фасетный)
+         * @description Единый листинг документов. scope=visible (дефолт, own∪public, пиккер) |
+         *     scope=public (строго non-private, anon-доступ) |
+         *     scope=mine (свои вкл. приватные, requiredAuth) |
+         *     scope=all (non-private платформенно, требует document.delete_any).
+         *     Поле total для scope=visible и scope=public — верхняя оценка: периметр
+         *     применяется после пагинации, точный счётчик не гарантируется (A10).
          */
         get: {
             parameters: {
                 query?: {
+                    /** @description visible|public|mine|all */
+                    scope?: string;
                     /** @description Поиск по filename */
                     q?: string;
+                    /** @description Только незакреплённые (scope=mine) */
+                    free_floating?: boolean;
+                    /** @description Фильтр по автору (scope=all) */
+                    owner_id?: string;
                     /** @description Смещение */
                     offset?: number;
                     /** @description Лимит */
@@ -7194,7 +7294,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["document.DocumentSummary"][];
+                            data?: components["schemas"]["document.DocumentListItem"][];
                         };
                     };
                 };
@@ -8768,7 +8868,70 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Список форм (scope-фасетный)
+         * @description scope=visible (own∪public, дефолт) | mine (свои вкл. приватные) | all (модерация, требует form.delete_any).
+         *     public НЕ допускается — формы требуют аутентификации (public∧authenticated).
+         *     A10: total — верхняя оценка при scope=visible (периметр применяется после SQL LIMIT).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description visible|mine|all */
+                    scope?: string;
+                    /** @description Фильтр по автору (только scope=all) */
+                    owner_id?: string;
+                    /** @description Смещение */
+                    offset?: number;
+                    /** @description Лимит */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ListResponse"] & {
+                            data?: components["schemas"]["form.FormListItem"][];
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+            };
+        };
         put?: never;
         /** Создать форму */
         post: {
@@ -14372,17 +14535,30 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Поиск медиа (picker)
-         * @description Lightweight summary list of media visible to the actor,
-         *     filtered by ?q= LIKE on filename and optional ?type=video|audio.
+         * Список медиа (scope-фасетный)
+         * @description Единый листинг медиа. scope=visible (дефолт, own∪public, пиккер) |
+         *     scope=public (строго non-private, anon-доступ) |
+         *     scope=mine (свои вкл. приватные, requiredAuth) |
+         *     scope=all (non-private платформенно, требует media.delete_any).
+         *     Фильтр type (video|audio) применяется только для scope=visible и scope=public
+         *     (SearchVisible); для mine/all игнорируется (A6).
+         *     Поле total для scope=visible и scope=public — верхняя оценка: периметр
+         *     применяется после пагинации, точный счётчик не гарантируется (A10).
+         *     RL по худшему (анонимному) пути; scope=all унаследовал publicRL вместо adminRL — осознанно (A9).
          */
         get: {
             parameters: {
                 query?: {
+                    /** @description visible|public|mine|all */
+                    scope?: string;
                     /** @description Поиск по filename */
                     q?: string;
-                    /** @description Тип медиа */
+                    /** @description Тип медиа (scope=visible/public) */
                     type?: "video" | "audio";
+                    /** @description Только незакреплённые (scope=mine) */
+                    free_floating?: boolean;
+                    /** @description Фильтр по автору (scope=all) */
+                    owner_id?: string;
                     /** @description Смещение */
                     offset?: number;
                     /** @description Лимит */
@@ -14401,7 +14577,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["media.MediaSummary"][];
+                            data?: components["schemas"]["media.MediaListItem"][];
                         };
                     };
                 };
@@ -14425,15 +14601,6 @@ export interface paths {
                 };
                 /** @description Forbidden */
                 403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description INVALID_FILE_TYPE */
-                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -16044,10 +16211,18 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Список маршрутов */
+        /**
+         * Список маршрутов (scope-фасетный)
+         * @description scope=visible (public ∪ own-private, дефолт) | public (только public) | mine (свои вкл. приватные) | all (все non-private, требует trail.delete_any).
+         *     total — верхняя оценка для visible/public (периметр применяется после пагинации).
+         */
         get: {
             parameters: {
                 query?: {
+                    /** @description visible|public|mine|all */
+                    scope?: string;
+                    /** @description Фильтр по владельцу (только для scope=all) */
+                    owner_id?: string;
                     /** @description Смещение */
                     offset?: number;
                     /** @description Записей на странице */
@@ -16070,8 +16245,26 @@ export interface paths {
                         };
                     };
                 };
-                /** @description invalid Bearer token (optional-auth) */
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -17016,6 +17209,7 @@ export interface components {
              *     units (JS String.length / DOM Range semantics). Stored opaquely.
              */
             end_char?: number;
+            end_node_id?: string;
             end_sec?: number;
             exact?: string;
             prefix?: string;
@@ -17025,6 +17219,7 @@ export interface components {
              *     code units (JS String.length / DOM Range semantics). Stored opaquely.
              */
             start_char?: number;
+            start_node_id?: string;
             start_sec?: number;
             suffix?: string;
         };
@@ -17035,6 +17230,7 @@ export interface components {
              *     units (JS String.length / DOM Range semantics). Stored opaquely.
              */
             end_char?: number;
+            end_node_id?: string;
             end_sec?: number;
             exact?: string;
             prefix?: string;
@@ -17044,6 +17240,7 @@ export interface components {
              *     code units (JS String.length / DOM Range semantics). Stored opaquely.
              */
             start_char?: number;
+            start_node_id?: string;
             start_sec?: number;
             suffix?: string;
         };
@@ -17131,6 +17328,7 @@ export interface components {
                 [key: string]: unknown;
             };
             content?: components["schemas"]["ast.Node"][];
+            id?: string;
             marks?: components["schemas"]["ast.Mark"][];
             text?: string;
             type?: components["schemas"]["ast.NodeType"];
@@ -17364,6 +17562,7 @@ export interface components {
              *     units (JS String.length / DOM Range semantics). Stored opaquely.
              */
             end_char?: number;
+            end_node_id?: string;
             end_sec?: number;
             exact?: string;
             prefix?: string;
@@ -17373,6 +17572,7 @@ export interface components {
              *     code units (JS String.length / DOM Range semantics). Stored opaquely.
              */
             start_char?: number;
+            start_node_id?: string;
             start_sec?: number;
             suffix?: string;
             target_entity_id: string;
@@ -17507,6 +17707,14 @@ export interface components {
              *     007). The single GET surfaces it both as a body field and as a strong
              *     ETag; the client echoes it back in If-Match on the blocks-update PUT.
              */
+            version?: number;
+            visibility?: components["schemas"]["access.Visibility"];
+        };
+        "document.DocumentListItem": {
+            filename?: string;
+            id?: string;
+            owner?: components["schemas"]["userref.Ref"];
+            updated_at?: string;
             version?: number;
             visibility?: components["schemas"]["access.Visibility"];
         };
@@ -17958,7 +18166,7 @@ export interface components {
             url?: string;
             visibility: components["schemas"]["access.Visibility"];
         };
-        "media.MediaSummary": {
+        "media.MediaListItem": {
             created_at?: string;
             filename?: string;
             id?: string;
