@@ -45,9 +45,19 @@ export function AnnotationScope({
   showToolbar = false,
 }: Props) {
   const t = useT("annotations");
-  const [composer, setComposer] = useState<{ open: boolean; anchor?: Anchor; parentId: string }>({
+  // composer.parentEntityType/parentId следуют за ВЫДЕЛЕНИЕМ (из драфта), не за
+  // пропом скоупа: одно page-level действие «аннотировать» переживает N+1 скоупов
+  // (документ + каждый комментарий), и выживший action может принадлежать чужому
+  // скоупу. Дефолт = проп скоупа — для пути «add unanchored», где драфта нет.
+  const [composer, setComposer] = useState<{
+    open: boolean;
+    anchor?: Anchor;
+    parentId: string;
+    parentEntityType: ParentEntityType;
+  }>({
     open: false,
     parentId,
+    parentEntityType,
   });
   const [highlight, setHighlight] = useState(true);
 
@@ -157,7 +167,7 @@ export function AnnotationScope({
               compact
               tone="primary"
               onClick={() => {
-                setComposer({ open: true, parentId });
+                setComposer({ open: true, parentId, parentEntityType });
               }}
             >
               {t("marginAddUnanchored")}
@@ -182,12 +192,17 @@ export function AnnotationScope({
       <AnnotationCreateAction
         canCreate={canCreate}
         onOpenComposer={(o: AnnotationComposerOpen) => {
-          setComposer({ open: true, anchor: o.anchor, parentId: o.parentId });
+          setComposer({
+            open: true,
+            anchor: o.anchor,
+            parentId: o.parentId,
+            parentEntityType: o.parentEntityType,
+          });
         }}
       />
 
       <AnnotationComposerDialog
-        parentEntityType={parentEntityType}
+        parentEntityType={composer.parentEntityType}
         parentId={composer.parentId}
         open={composer.open}
         onOpenChange={(open) => {
