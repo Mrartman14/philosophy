@@ -12,6 +12,14 @@ import type { Document } from "./types";
  * can()). Owner-aware-комбинации — через `ownerOrCap` / `isMutationAllowed`.
  */
 
+/**
+ * Owner-aware-хелперам нужны только owner+visibility — общий знаменатель
+ * полного Document и облегчённого DocumentListItem. Принимаем оба, чтобы
+ * admin-список (отдаёт DocumentListItem) и страница документа (Document)
+ * звали одни и те же чеки без каста.
+ */
+type DocumentPermSubject = Pick<Document, "owner" | "visibility">;
+
 /** Создание документа (JSON и upload) — capability document.create. */
 export function canCreateDocument(me: MaybeMe): boolean {
   return can(me, "document.create");
@@ -21,7 +29,7 @@ export function canCreateDocument(me: MaybeMe): boolean {
  * Редактирование (title, blocks, visibility) — OWNER-ONLY без admin-override.
  * Бек: doc.OwnerID == actor.UserID (service.go).
  */
-export function canEditDocument(me: MaybeMe, doc: Document): boolean {
+export function canEditDocument(me: MaybeMe, doc: DocumentPermSubject): boolean {
   return isMutationAllowed(me) && doc.owner?.id === me.id;
 }
 
@@ -29,7 +37,7 @@ export function canEditDocument(me: MaybeMe, doc: Document): boolean {
  * Удаление со страницы документа. Владелец — любая видимость. Admin с
  * delete_any — только public (private чужой → бек вернёт 404).
  */
-export function canDeleteDocument(me: MaybeMe, doc: Document): boolean {
+export function canDeleteDocument(me: MaybeMe, doc: DocumentPermSubject): boolean {
   return ownerOrCap(
     me,
     doc.owner?.id,
@@ -42,7 +50,7 @@ export function canDeleteDocument(me: MaybeMe, doc: Document): boolean {
  * Удаление из admin-списка: только delete_any и только public (§6.2 спеки).
  * Admin-список и так отдаёт только public-документы.
  */
-export function canAdminDeleteDocument(me: MaybeMe, doc: Document): boolean {
+export function canAdminDeleteDocument(me: MaybeMe, doc: DocumentPermSubject): boolean {
   return can(me, "document.delete_any") && doc.visibility === "public";
 }
 

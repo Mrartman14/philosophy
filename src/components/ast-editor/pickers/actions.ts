@@ -6,8 +6,9 @@ import { rethrowApiError, type ApiErrorMessageKeys } from "@/utils/api-error";
 
 export type Lecture = components["schemas"]["lecture.Lecture"];
 export type GlossaryTerm = components["schemas"]["glossary.Term"];
-export type DocumentSummary = components["schemas"]["document.DocumentSummary"];
-export type MediaSummary = components["schemas"]["media.MediaSummary"];
+// *Summary свёрнуты в *ListItem при scope-фасетном регене (2026-06-30).
+export type DocumentSummary = components["schemas"]["document.DocumentListItem"];
+export type MediaSummary = components["schemas"]["media.MediaListItem"];
 export type CanvasSummary = components["schemas"]["canvas.CanvasSummary"];
 export type CommentSummary = components["schemas"]["comment.CommentSummary"];
 

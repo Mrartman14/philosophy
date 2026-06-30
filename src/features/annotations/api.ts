@@ -73,7 +73,7 @@ export const getAnnotationById = cache(
   },
 );
 
-/** «Мои аннотации» (GET /api/me/annotations, требует auth). */
+/** «Мои аннотации» (GET /api/annotations?scope=mine, требует auth). */
 export const getMyAnnotations = cache(
   async (
     offset = 0,
@@ -81,9 +81,10 @@ export const getMyAnnotations = cache(
     parentEntityType?: ParentEntityType,
   ): Promise<AnnotationListResult> => {
     const api = await createApiClient();
-    const { data, error } = await api.GET("/api/me/annotations", {
+    const { data, error } = await api.GET("/api/annotations", {
       params: {
         query: {
+          scope: "mine",
           offset,
           limit,
           ...(parentEntityType ? { parent_entity_type: parentEntityType } : {}),
@@ -119,7 +120,7 @@ export const getLectureAnnotations = cache(
   },
 );
 
-/** Admin-список публичных аннотаций (GET /api/admin/annotations). */
+/** Admin-список публичных аннотаций (GET /api/annotations?scope=all). */
 export const getAdminAnnotations = cache(
   async (filter: {
     parent_entity_type?: string;
@@ -131,9 +132,10 @@ export const getAdminAnnotations = cache(
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const { data, error } = await api.GET("/api/admin/annotations", {
+    const { data, error } = await api.GET("/api/annotations", {
       params: {
         query: {
+          scope: "all",
           offset,
           limit,
           // Admin-фильтр приходит нетипизированной строкой из URL searchParams;

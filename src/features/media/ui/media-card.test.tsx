@@ -3,7 +3,7 @@ import { afterEach, describe, it, expect, vi } from "vitest";
 
 import { FOCUS_RING_CONTROL } from "@/components/ui";
 
-import type { Media } from "../types";
+import type { MediaListItem } from "../types";
 
 // Мок @/i18n: getT("media") возвращает переводчик по реальному каталогу ru.
 vi.mock("@/i18n", async () => {
@@ -27,7 +27,7 @@ import { MediaCard } from "./media-card";
 
 afterEach(cleanup);
 
-const media: Media = {
+const media: MediaListItem = {
   created_at: "2026-06-22T00:00:00Z",
   filename: "lecture-1.mp4",
   id: "m1",

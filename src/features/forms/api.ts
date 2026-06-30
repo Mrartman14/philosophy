@@ -21,6 +21,12 @@ export interface AdminFormListFilter {
   ownerId?: string;
 }
 
+/** Фильтр листинга «моих» форм (scope=mine). owner_id неприменим — это всегда свои. */
+export interface MyFormListFilter {
+  offset?: number;
+  limit?: number;
+}
+
 export interface FormListResult {
   items: FormListItem[];
   total: number;
@@ -46,13 +52,27 @@ export const getFormById = cache(
   },
 );
 
-/** Мои формы (GET /api/me/forms). Гейт — auth. Без пагинации (бек отдаёт все). */
-export const getMyForms = cache(async (): Promise<FormListItem[]> => {
-  const api = await createApiClient();
-  const { data, error } = await api.GET("/api/me/forms");
-  if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadMyFailed"));
-  return unwrap(data) ?? [];
-});
+/**
+ * Мои формы (GET /api/forms?scope=mine). Гейт — auth. scope=mine отдаёт свои
+ * формы ВКЛЮЧАЯ приватные. Бек УДАЛИЛ непагинированный /api/me/forms — единый
+ * листинг /api/forms пагинирован (httputil.ListResponse), поэтому возвращаем
+ * FormListResult, как getAdminForms. scope передаём ЯВНО (дефолт бека = visible).
+ */
+export const getMyForms = cache(
+  async (filter: MyFormListFilter = {}): Promise<FormListResult> => {
+    const api = await createApiClient();
+    const offset = filter.offset ?? 0;
+    const limit = filter.limit ?? 20;
+    const query: { scope: string; offset: number; limit: number } = {
+      scope: "mine",
+      offset,
+      limit,
+    };
+    const { data, error } = await api.GET("/api/forms", { params: { query } });
+    if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadMyFailed"));
+    return unwrapList(data, { offset, limit });
+  },
+);
 
 /** Мои отклики (GET /api/me/submissions). Гейт — auth. */
 export const getMySubmissions = cache(async (): Promise<SubmissionListItem[]> => {
@@ -94,15 +114,24 @@ export const getSubmissionById = cache(
   },
 );
 
-/** Admin-список форм (GET /api/admin/forms — только НЕ-private). */
+/**
+ * Admin-список форм (GET /api/forms?scope=all). Бек УДАЛИЛ /api/admin/forms —
+ * платформенная модерация теперь scope=all (non-private платформенно, требует
+ * form.delete_any; 403 без капы). owner_id-фильтр допустим только при scope=all.
+ * Гейт страницы (canListAdminForms) отсеивает запрос без капы до фетча.
+ */
 export const getAdminForms = cache(
   async (filter: AdminFormListFilter = {}): Promise<FormListResult> => {
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const query: { offset: number; limit: number; owner_id?: string } = { offset, limit };
+    const query: { scope: string; offset: number; limit: number; owner_id?: string } = {
+      scope: "all",
+      offset,
+      limit,
+    };
     if (filter.ownerId) query.owner_id = filter.ownerId;
-    const { data, error } = await api.GET("/api/admin/forms", { params: { query } });
+    const { data, error } = await api.GET("/api/forms", { params: { query } });
     if (error) throw new Error(error.error ?? (await getT("forms"))("api.loadAdminFailed"));
     return unwrapList(data, { offset, limit });
   },

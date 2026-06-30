@@ -366,20 +366,22 @@ export const searchMediaForAttach = createAction(
 );
 
 /**
- * Поиск форм владельца для attach-пикера. Источник — GET /api/me/forms (формы
- * текущего пользователя; attach owner-only, прикрепляют свои формы).
+ * Поиск форм владельца для attach-пикера. Источник — GET /api/forms?scope=mine
+ * (формы текущего пользователя; attach owner-only, прикрепляют свои формы).
  *
- * СТОПГАП: у /api/me/forms есть offset/limit, но НЕТ серверного `q` (в отличие
- * от /api/documents и /api/media). q-фильтр обязан быть клиентским, а раз так —
- * серверная пагинация неприменима к отфильтрованному набору, поэтому тянем весь
- * (ограниченный) список форм владельца, фильтруем по label подстрокой и режем
- * offset/limit здесь. Когда бэк добавит `q` форм (GET /api/forms?q= …) —
- * заменить на серверный поиск с пагинацией.
+ * СТОПГАП: у /api/forms есть scope/owner_id/offset/limit, но НЕТ серверного `q`
+ * (в отличие от /api/documents и /api/media). q-фильтр обязан быть клиентским, а
+ * раз так — серверная пагинация неприменима к отфильтрованному набору, поэтому
+ * тянем весь (ограниченный) список форм владельца, фильтруем по label подстрокой
+ * и режем offset/limit здесь. Когда бэк добавит `q` форм — заменить на серверный
+ * поиск с пагинацией.
  */
 export const searchFormsForAttach = createAction(
   async (raw: { q: string; offset: number; limit: number }) => {
     const api = await createApiClient();
-    const { data, error } = await api.GET("/api/me/forms");
+    const { data, error } = await api.GET("/api/forms", {
+      params: { query: { scope: "mine" } },
+    });
     if (error) rethrowApiError(error, ERRORS);
     const all = (data.data ?? [])
       .filter((f): f is typeof f & { id: string } => Boolean(f.id))

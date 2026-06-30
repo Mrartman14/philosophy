@@ -26,28 +26,45 @@ export interface TrailListResult {
   limit: number;
 }
 
-/** Публичный список маршрутов (GET /api/trails). Гость видит только public. */
+/**
+ * Список маршрутов — единый scope-фасетный GET /api/trails (см. эталон
+ * src/features/canvas/api.ts). Бекенд УДАЛИЛ /api/trails/my и /api/admin/trails,
+ * заменив их одной ручкой с query `scope`:
+ *   visible (дефолт) — own ∪ public; public — только public (anon);
+ *   mine — свои вкл. приватные (auth); all — все non-private, требует
+ *   `trail.delete_any`.
+ * ДЕФОЛТ бека = visible, но мы ВСЕГДА передаём scope ЯВНО (контракт), чтобы
+ * семантика была видна на месте вызова и не плыла при смене дефолта.
+ */
+const SCOPE_VISIBLE = "visible";
+const SCOPE_MINE = "mine";
+const SCOPE_ALL = "all";
+
+/**
+ * Публичный список маршрутов: scope=visible (own ∪ public). Для гостя бек
+ * сужает до public автоматически (актора нет).
+ */
 export const getTrails = cache(
   async (filter: TrailListFilter = {}): Promise<TrailListResult> => {
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
     const { data, error } = await api.GET("/api/trails", {
-      params: { query: { offset, limit } },
+      params: { query: { scope: SCOPE_VISIBLE, offset, limit } },
     });
     if (error) throw new Error(error.error ?? (await getT("trails"))("api.loadListFailed"));
     return unwrapList(data, { offset, limit });
   },
 );
 
-/** Мои маршруты (GET /api/trails/my). Гейт — auth. */
+/** Мои маршруты: scope=mine — свои вкл. приватные. Гейт — auth. */
 export const getMyTrails = cache(
   async (filter: TrailListFilter = {}): Promise<TrailListResult> => {
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const { data, error } = await api.GET("/api/trails/my", {
-      params: { query: { offset, limit } },
+    const { data, error } = await api.GET("/api/trails", {
+      params: { query: { scope: SCOPE_MINE, offset, limit } },
     });
     if (error) throw new Error(error.error ?? (await getT("trails"))("api.loadListFailed"));
     return unwrapList(data, { offset, limit });
@@ -75,15 +92,22 @@ export const getTrailById = cache(
   },
 );
 
-/** Admin-список маршрутов (GET /api/admin/trails — только НЕ-private). */
+/**
+ * Admin-список маршрутов: scope=all — все НЕ-private (требует `trail.delete_any`,
+ * иначе бек вернёт 403). owner-фильтр (`owner_id`) допустим ТОЛЬКО на scope=all.
+ */
 export const getAdminTrails = cache(
   async (filter: AdminTrailListFilter = {}): Promise<TrailListResult> => {
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const query: { offset: number; limit: number; owner_id?: string } = { offset, limit };
+    const query: { scope: string; offset: number; limit: number; owner_id?: string } = {
+      scope: SCOPE_ALL,
+      offset,
+      limit,
+    };
     if (filter.ownerId) query.owner_id = filter.ownerId;
-    const { data, error } = await api.GET("/api/admin/trails", { params: { query } });
+    const { data, error } = await api.GET("/api/trails", { params: { query } });
     if (error) throw new Error(error.error ?? (await getT("trails"))("api.loadListFailed"));
     return unwrapList(data, { offset, limit });
   },

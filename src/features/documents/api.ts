@@ -9,6 +9,7 @@ import { unwrap, unwrapList } from "@/utils/api-unwrap";
 import type {
   AttachmentDTO,
   Document,
+  DocumentListItem,
   DocumentRevision,
   DocumentRevisionMeta,
 } from "./types";
@@ -20,7 +21,7 @@ export interface DocumentListFilter {
 }
 
 export interface DocumentListResult {
-  items: Document[];
+  items: DocumentListItem[];
   total: number;
   offset: number;
   limit: number;
@@ -32,18 +33,25 @@ export interface AdminDocumentListFilter {
   ownerId?: string;
 }
 
-/** Мои документы (GET /api/me/documents). Гейт — auth. */
+/**
+ * Мои документы — единый scope-фасетный листинг GET /api/documents?scope=mine
+ * (свои, включая приватные; requiredAuth). После реген-контракта старый
+ * /api/me/documents удалён. scope передаётся ЯВНО (дефолт бека = visible).
+ * Ответ — облегчённый DocumentListItem[] (без blocks).
+ */
 export const getMyDocuments = cache(
   async (filter: DocumentListFilter = {}): Promise<DocumentListResult> => {
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const query: { offset: number; limit: number; free_floating?: boolean } = {
-      offset,
-      limit,
-    };
+    const query: {
+      scope: "mine";
+      offset: number;
+      limit: number;
+      free_floating?: boolean;
+    } = { scope: "mine", offset, limit };
     if (filter.freeFloating) query.free_floating = true;
-    const { data, error } = await api.GET("/api/me/documents", { params: { query } });
+    const { data, error } = await api.GET("/api/documents", { params: { query } });
     if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadMyFailed"));
     return unwrapList(data, { offset, limit });
   },
@@ -112,15 +120,26 @@ export const getDocumentRevision = cache(
   },
 );
 
-/** Admin-список документов (GET /api/admin/documents — только НЕ-private). */
+/**
+ * Admin-список документов — единый scope-фасетный листинг
+ * GET /api/documents?scope=all (non-private платформенно; требует capability
+ * document.delete_any, иначе бек вернёт 403). После реген-контракта старый
+ * /api/admin/documents (листинг) удалён. scope передаётся ЯВНО. owner_id —
+ * опциональный фильтр по автору (действует на scope=all). Ответ —
+ * облегчённый DocumentListItem[] (без blocks).
+ */
 export const getAdminDocuments = cache(
   async (filter: AdminDocumentListFilter = {}): Promise<DocumentListResult> => {
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const query: { offset: number; limit: number; owner_id?: string } = { offset, limit };
+    const query: { scope: "all"; offset: number; limit: number; owner_id?: string } = {
+      scope: "all",
+      offset,
+      limit,
+    };
     if (filter.ownerId) query.owner_id = filter.ownerId;
-    const { data, error } = await api.GET("/api/admin/documents", { params: { query } });
+    const { data, error } = await api.GET("/api/documents", { params: { query } });
     if (error) throw new Error(error.error ?? (await getT("documents"))("api.loadAdminFailed"));
     return unwrapList(data, { offset, limit });
   },

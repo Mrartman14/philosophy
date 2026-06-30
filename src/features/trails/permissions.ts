@@ -41,7 +41,7 @@ export function canDeleteTrail(me: MaybeMe, trail: Trail): boolean {
 
 /**
  * Удаление из admin-списка: только delete_any и только public (§6.2 спеки).
- * Admin-список (GET /api/admin/trails) и так отдаёт только public.
+ * Admin-список (GET /api/trails?scope=all) и так отдаёт только non-private.
  */
 export function canAdminDeleteTrail(me: MaybeMe, trail: Trail): boolean {
   return can(me, "trail.delete_any") && trail.visibility === "public";

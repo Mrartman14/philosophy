@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
+import { UserView } from "@/components/shared/user-view";
 import { Button, ConfirmDialog, RouterLink, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
@@ -28,6 +29,10 @@ export function FormAdminRow({ form, canDelete }: Props) {
         {form.title ?? t("untitledForm")}
       </RouterLink>
       <div className="flex items-center gap-2">
+        {/* scope=all охватывает разных авторов — показываем владельца (userref.Ref). */}
+        <span className="text-xs text-(--color-fg-muted)">
+          <UserView user={form.owner} />
+        </span>
         <span className="text-xs text-(--color-fg-muted)">{form.visibility}</span>
         {canDelete && form.id && (
           <ConfirmDialog

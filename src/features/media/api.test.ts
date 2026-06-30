@@ -95,6 +95,36 @@ describe("getMediaContainers — 404 → []", () => {
 // getMyMedia — pagination defaults через unwrapList
 // ---------------------------------------------------------------------------
 describe("getMyMedia — pagination defaults (через unwrapList)", () => {
+  it("обращается к GET /api/media со scope=mine (явный scope, не дефолт)", async () => {
+    getMock.mockResolvedValue(apiResult({ data: { data: [], pagination: null } }));
+
+    await getMyMedia({ offset: 0, limit: 20 });
+
+    expect(getMock).toHaveBeenCalledWith("/api/media", {
+      params: { query: { scope: "mine", offset: 0, limit: 20 } },
+    });
+  });
+
+  it("пробрасывает free_floating в query, когда флаг включён", async () => {
+    getMock.mockResolvedValue(apiResult({ data: { data: [], pagination: null } }));
+
+    await getMyMedia({ offset: 0, limit: 20, freeFloating: true });
+
+    expect(getMock).toHaveBeenCalledWith("/api/media", {
+      params: { query: { scope: "mine", offset: 0, limit: 20, free_floating: true } },
+    });
+  });
+
+  it("НЕ пробрасывает free_floating, когда флаг выключен/не задан", async () => {
+    getMock.mockResolvedValue(apiResult({ data: { data: [], pagination: null } }));
+
+    await getMyMedia({ offset: 0, limit: 20 });
+
+    expect(getMock).toHaveBeenCalledWith("/api/media", {
+      params: { query: { scope: "mine", offset: 0, limit: 20 } },
+    });
+  });
+
   it("возвращает переданные offset/limit, если pagination отсутствует", async () => {
     getMock.mockResolvedValue(apiResult({ data: { data: [], pagination: null } }));
 
@@ -144,16 +174,16 @@ describe("getMyMedia — pagination defaults (через unwrapList)", () => {
 // ---------------------------------------------------------------------------
 // getAdminMedia — admin-список (GET /api/admin/media)
 // ---------------------------------------------------------------------------
-describe("getAdminMedia — admin-список", () => {
-  it("пробрасывает offset/limit и owner_id в query, когда owner_id задан", async () => {
+describe("getAdminMedia — admin-список (scope=all)", () => {
+  it("обращается к GET /api/media со scope=all и пробрасывает owner_id, когда он задан", async () => {
     getMock.mockResolvedValue(
       apiResult({ data: { data: [], pagination: { total: 0, offset: 0, limit: 20 } } }),
     );
 
     await getAdminMedia({ offset: 0, limit: 20, owner_id: "u-7" });
 
-    expect(getMock).toHaveBeenCalledWith("/api/admin/media", {
-      params: { query: { offset: 0, limit: 20, owner_id: "u-7" } },
+    expect(getMock).toHaveBeenCalledWith("/api/media", {
+      params: { query: { scope: "all", offset: 0, limit: 20, owner_id: "u-7" } },
     });
   });
 
@@ -164,8 +194,8 @@ describe("getAdminMedia — admin-список", () => {
 
     await getAdminMedia({ offset: 0, limit: 20 });
 
-    expect(getMock).toHaveBeenCalledWith("/api/admin/media", {
-      params: { query: { offset: 0, limit: 20 } },
+    expect(getMock).toHaveBeenCalledWith("/api/media", {
+      params: { query: { scope: "all", offset: 0, limit: 20 } },
     });
   });
 

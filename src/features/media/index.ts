@@ -26,4 +26,4 @@ export { MediaPlayer } from "./ui/media-player";
 export { MediaAdminRow } from "./ui/media-admin-row";
 export { MediaAdminFilterForm } from "./ui/media-admin-filter-form";
 
-export type { Media, MediaSummary, FileType, Visibility, MediaAttachment } from "./types";
+export type { Media, MediaListItem, FileType, Visibility, MediaAttachment } from "./types";
