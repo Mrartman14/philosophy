@@ -74,8 +74,14 @@ describe("rangeFromAnchor", () => {
   });
 
   // ИНТЕГРАЦИЯ (M1): капчур → резолв на одном руте.
-  it("round-trip within-cell: anchorFromSelection → rangeFromAnchor резолвит ту же ячейку", () => {
-    const root = setup('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c1">Hello world</td></tr></tbody></table>');
+  // Таблица с ДВУМЯ ячейками: c0 "XXXX" ПЕРЕД целевой c1. Текст блока,
+  // склеенный по таблице, = "XXXXHello world" ≠ текст листа "Hello world",
+  // поэтому лист-относительный и блок-относительный офсеты РАСХОДЯТСЯ.
+  // Капчур "world" внутри c1 даёт startChar 6 (лист-относительный). Резолв
+  // тоже лист-относительный → "world". Если бы резолв был блок-относительным,
+  // startChar 6 в "XXXXHello world" попал бы в "ello "/c0 — assert упал бы.
+  it("round-trip within-cell: лист-относительные офсеты (вторая ячейка перед целевой)", () => {
+    const root = setup('<table data-block-id="tbl-1"><tbody><tr><td data-node-id="c0">XXXX</td><td data-node-id="c1">Hello world</td></tr></tbody></table>');
     const t = must(root.querySelector('[data-node-id="c1"]')).firstChild as Text;
     const range = document.createRange();
     range.setStart(t, 6);
@@ -85,6 +91,18 @@ describe("rangeFromAnchor", () => {
     sel.addRange(range);
     const a = must(anchorFromSelection(sel, root));
     expect(a.exact).toBe("world");
+    expect(a.startChar).toBe(6); // лист-относительный (а не 10 = блок-относительный в "XXXXHello world")
     expect(rangeFromAnchor(a, root)?.toString()).toBe("world");
+  });
+
+  // Резолв линейной КРОСС-ЛИСТ прозы (start_node_id != end_node_id, оба НЕ ячейки):
+  // rectangle-гард НЕ должен срабатывать (он нулит только когда ОБА конца — TD/TH).
+  // Проза резолвится фолбэком searchQuote по руту.
+  it("кросс-лист проза (два абзаца) резолвится — rectangle-гард не over-fire", () => {
+    const root = setup('<p data-block-id="p1" data-node-id="p1">foo</p><p data-block-id="p2" data-node-id="p2">bar</p>');
+    const a: TextAnchor = { startBlockId: "p1", startNodeId: "p1", endBlockId: "p2", endNodeId: "p2", startChar: 0, endChar: 3, exact: "foobar" };
+    const r = rangeFromAnchor(a, root);
+    expect(r).not.toBeNull();
+    expect(r?.toString()).toBe("foobar");
   });
 });

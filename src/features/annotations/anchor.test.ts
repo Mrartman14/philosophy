@@ -60,17 +60,23 @@ describe("buildTextAnchor", () => {
 });
 
 describe("isValidTextAnchor", () => {
-  it("валиден: оба block_id + exact заданы", () =>
+  it("валиден: оба block_id + оба node_id + exact заданы", () =>
     { expect(
       isValidTextAnchor({
         start_block_id: "b1",
+        start_node_id: "b1",
         end_block_id: "b2",
+        end_node_id: "b2",
         exact: "x",
       }),
     ).toBe(true); });
   it("невалиден: нет exact", () =>
     { expect(
-      isValidTextAnchor({ start_block_id: "b1", end_block_id: "b2" }),
+      isValidTextAnchor({ start_block_id: "b1", start_node_id: "b1", end_block_id: "b2", end_node_id: "b2" }),
+    ).toBe(false); });
+  it("невалиден: нет node_id (anchors.md правило 1)", () =>
+    { expect(
+      isValidTextAnchor({ start_block_id: "b1", end_block_id: "b2", exact: "x" }),
     ).toBe(false); });
   it("невалиден: нет end_block_id", () =>
     { expect(isValidTextAnchor({ start_block_id: "b1", exact: "x" })).toBe(

@@ -1,3 +1,4 @@
+import { TEXT_LEAF_NODE_TYPES } from "./text-leaf-types";
 import type { AstBlock, AstNode, AstMark } from "./types";
 
 type BlockType = NonNullable<AstBlock["type"]>;
@@ -13,8 +14,6 @@ export interface ProseMirrorJSON {
 }
 
 const LEAF_BLOCK_TYPES = new Set(["code_block", "image", "thematic_break"]);
-
-const TEXT_LEAF_NODE_TYPES = new Set(["paragraph", "heading", "code_block", "table_cell"]);
 
 export function serialize(doc: ProseMirrorJSON): AstBlock[] {
   if (doc.type !== "doc" || !doc.content) return [];
