@@ -21,7 +21,11 @@ const FIRST_LINE_CLAMP_PX = 24; // оценка высоты первой стр
 export interface ConnectorLayerProps {
   ids: string[];
   getAnchorRect: (id: string) => DOMRect | null; // viewport-координаты якоря
-  astRootRef: RefObject<HTMLElement | null>;
+  // Корень-владелец заметки (для X текстовой стороны). Приоритетнее astRootRef;
+  // если задан — astRootRef не нужен. Мультикорневой rail (MarginRail) передаёт его.
+  getRootRect?: (id: string) => DOMRect | null;
+  // Единый корень (легаси/один корень: MarginAnchorLayer). Опционален при getRootRect.
+  astRootRef?: RefObject<HTMLElement | null>;
   activeId: string | null;
   tone: Tone;
   recomputeKey: number;
@@ -35,17 +39,21 @@ interface Seg {
 function measure(
   ids: string[],
   getAnchorRect: (id: string) => DOMRect | null,
-  astRootRef: RefObject<HTMLElement | null>,
+  getRootRect: ((id: string) => DOMRect | null) | undefined,
+  astRootRef: RefObject<HTMLElement | null> | undefined,
 ): Seg[] {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return [];
   if (!window.matchMedia(WIDE).matches) return [];
-  const root = astRootRef.current;
-  if (!root) return [];
-  const rootRect = root.getBoundingClientRect();
   const segs: Seg[] = [];
   for (const id of ids) {
     const a = getAnchorRect(id);
     if (!a) continue; // сирота / неразрешённый якорь
+    // X текстовой стороны: rect корня-владельца этой заметки (мультикорень) ИЛИ
+    // единый astRootRef (легаси/один корень).
+    const rootRect = getRootRect
+      ? getRootRect(id)
+      : (astRootRef?.current?.getBoundingClientRect() ?? null);
+    if (!rootRect) continue;
     const card = document.querySelector<HTMLElement>(
       `[data-note-card-wrapper="${cssEscape(id)}"]`,
     );
@@ -75,6 +83,7 @@ function measure(
 export function ConnectorLayer({
   ids,
   getAnchorRect,
+  getRootRect,
   astRootRef,
   activeId,
   tone,
@@ -85,7 +94,7 @@ export function ConnectorLayer({
 
   useLayoutEffect(() => {
     const update = () => {
-      setSegs(measure(ids, getAnchorRect, astRootRef));
+      setSegs(measure(ids, getAnchorRect, getRootRect, astRootRef));
     };
     update();
     // rAF: даём MarginNotesColumn спозиционировать карточки в его layout-эффекте,
@@ -98,9 +107,11 @@ export function ConnectorLayer({
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-    // ids покрыт idsKey по значению; getAnchorRect стабилен (useCallback в движке).
+    // ids покрыт idsKey по значению; getAnchorRect/getRootRect стабильны (useCallback
+    // в движке); astRootRef — стабильный ref. Мультикорень ключует по getRootRect,
+    // легаси — по astRootRef.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idsKey, getAnchorRect, astRootRef, recomputeKey]);
+  }, [idsKey, getAnchorRect, getRootRect, astRootRef, recomputeKey]);
 
   if (segs.length === 0) return null;
   const stroke = toneColor(tone);

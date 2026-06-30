@@ -53,6 +53,13 @@ function pathYs(id: string): number[] {
   return [...d.matchAll(/[ML] \S+ (\S+)/g)].map((m) => Number(m[1]));
 }
 
+function pathX1(id: string): number {
+  // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
+  const d = document.querySelector(`[data-connector="${id}"]`)?.getAttribute("d") ?? "";
+  const m = /^M (\S+) /.exec(d);
+  return m ? Number(m[1]) : NaN;
+}
+
 const anchorRect = () => rect({ left: 100, right: 300, top: 50, bottom: 70, width: 200, height: 20 });
 
 afterEach(() => {
@@ -173,5 +180,28 @@ describe("ConnectorLayer", () => {
       />,
     );
     expect(new Set(pathYs("a")).size).toBeGreaterThan(1); // разные высоты → локоть
+  });
+
+  it("getRootRect задаёт X текстовой стороны per-id (мультикорень, без astRootRef)", () => {
+    stubMatch(true); // wide=true
+    // Корень-владелец заметки слева (right=500), карточка справа от якоря (left=760)
+    // → правая сторона: x1 берётся из getRootRect(id).right (500), не из общего root.
+    addCard("n1"); // карточка left=760 > anchor.right=300 → right-сторона
+    const ownerRoot = () => rect({ left: 0, right: 500, top: 0, bottom: 1000, width: 500, height: 1000 });
+    render(
+      <ConnectorLayer
+        ids={["n1"]}
+        getAnchorRect={anchorRect}
+        getRootRect={ownerRoot}
+        activeId={null}
+        tone="annotation"
+        recomputeKey={0}
+      />,
+    );
+    // выноска построена БЕЗ astRootRef
+    // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
+    expect(document.querySelector('[data-connector="n1"]')).not.toBeNull();
+    // x1 = rootRect.right (500) + scrollX(0); НЕ из единого root (которого тут нет).
+    expect(pathX1("n1")).toBe(500);
   });
 });
