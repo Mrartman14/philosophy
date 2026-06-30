@@ -24,7 +24,7 @@ import { createPortal } from "react-dom";
 
 import { Button, Inline } from "@/components/ui";
 
-import type { AnchorDraft } from "./types";
+import type { AnchorDraft, AnchoredNote } from "./types";
 import { useSelectionCapture } from "./use-selection-capture";
 
 // Подъём аффорданса над выделением.
@@ -54,6 +54,31 @@ const AnchorActionsContext = createContext<AnchorActionsContextValue | undefined
   undefined,
 );
 
+// ── Второй контекст: реестр scope-заметок для rail ─────────────────────────
+// Слой (margin/comment) РЕГИСТРИРУЕТ свой скоуп заметок (rootEl + notes +
+// renderNote) под общим ключом `${tone}:${entityType}:${entityId}`. MarginRail
+// читает их через useRailScopes(tone) и рисует единую колонку маргиналий тона.
+
+export interface RailScopeEntry {
+  key: string;
+  rootEl: HTMLElement;
+  tone: "annotation" | "comment";
+  notes: AnchoredNote[];
+  renderNote: (note: AnchoredNote, orphan: boolean) => ReactNode;
+  // Подсвечивать ли фрагменты этого скоупа (тумблер reading-mode). Default true.
+  highlightEnabled?: boolean;
+}
+
+interface RailScopesContextValue {
+  scopes: RailScopeEntry[];
+  registerRailScope: (e: RailScopeEntry) => void;
+  unregisterRailScope: (key: string) => void;
+}
+
+export const RailScopesContext = createContext<RailScopesContextValue | undefined>(
+  undefined,
+);
+
 export function AnchorScopeProvider({ children }: { children: ReactNode }) {
   const [actions, setActions] = useState<AnchorAction[]>([]);
 
@@ -75,9 +100,30 @@ export function AnchorScopeProvider({ children }: { children: ReactNode }) {
     [actions, register, unregister],
   );
 
+  // Реестр scope-заметок. Идемпотентен по key: повторная регистрация заменяет
+  // (свежие notes/rootEl/renderNote) — entry пересоздаётся при смене данных, а
+  // не дублируется. register/unregister стабильны (useCallback) → не дёргают
+  // re-register loop в эффекте useRegisterRailScope.
+  const [scopes, setScopes] = useState<RailScopeEntry[]>([]);
+
+  const registerRailScope = useCallback((e: RailScopeEntry) => {
+    setScopes((prev) => [...prev.filter((s) => s.key !== e.key), e]);
+  }, []);
+
+  const unregisterRailScope = useCallback((key: string) => {
+    setScopes((prev) => prev.filter((s) => s.key !== key));
+  }, []);
+
+  const railValue = useMemo<RailScopesContextValue>(
+    () => ({ scopes, registerRailScope, unregisterRailScope }),
+    [scopes, registerRailScope, unregisterRailScope],
+  );
+
   return (
     <AnchorActionsContext.Provider value={value}>
-      {children}
+      <RailScopesContext.Provider value={railValue}>
+        {children}
+      </RailScopesContext.Provider>
     </AnchorActionsContext.Provider>
   );
 }
