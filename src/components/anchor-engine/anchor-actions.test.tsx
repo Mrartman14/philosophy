@@ -3,8 +3,10 @@ import { afterEach, describe, it, expect } from "vitest";
 
 import {
   AnchorActionsProvider,
+  applicableActions,
   SelectionAffordanceHost,
   useRegisterAnchorAction,
+  type AnchorAction,
 } from "./anchor-actions";
 import type { AnchorDraft } from "./types";
 
@@ -31,6 +33,32 @@ function Consumer({
   useRegisterAnchorAction({ id, label, onCreate: noopCreate, enabled });
   return null;
 }
+
+describe("applicableActions", () => {
+  const annotate: AnchorAction = {
+    id: "annotation",
+    label: "A",
+    onCreate: noopCreate,
+    appliesTo: () => true,
+  };
+  const commentAnchor: AnchorAction = {
+    id: "comment-anchor",
+    label: "C",
+    onCreate: noopCreate,
+    appliesTo: (t) => t === "document",
+  };
+  const all = [annotate, commentAnchor];
+
+  it("в document-скоупе доступны оба действия", () => {
+    expect(applicableActions(all, "document").map((a) => a.id)).toEqual([
+      "annotation",
+      "comment-anchor",
+    ]);
+  });
+  it("в comment-скоупе comment-anchor отфильтрован", () => {
+    expect(applicableActions(all, "comment").map((a) => a.id)).toEqual(["annotation"]);
+  });
+});
 
 describe("anchor-actions registry", () => {
   afterEach(() => {

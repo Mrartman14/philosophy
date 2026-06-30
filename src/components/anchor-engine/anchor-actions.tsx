@@ -30,10 +30,18 @@ import { useSelectionCapture } from "./use-selection-capture";
 // Подъём аффорданса над выделением.
 const AFFORDANCE_OFFSET_PX = 40;
 
+// Стабильная module-scope ссылка дефолтного предиката (анти-OOM: НЕ новая
+// функция каждый рендер — иначе она попадает в useEffect-deps регистрации и
+// дёргает register/unregister в цикле).
+const ALWAYS_APPLIES = () => true;
+
 export interface AnchorAction {
   id: string;
   label: string;
   onCreate: (draft: AnchorDraft) => void;
+  // Применимо ли действие к скоупу данного типа сущности. annotation → все;
+  // comment-anchor (v1) → только "document".
+  appliesTo: (entityType: string) => boolean;
 }
 
 interface AnchorActionsContextValue {
@@ -46,7 +54,7 @@ const AnchorActionsContext = createContext<AnchorActionsContextValue | undefined
   undefined,
 );
 
-export function AnchorActionsProvider({ children }: { children: ReactNode }) {
+export function AnchorScopeProvider({ children }: { children: ReactNode }) {
   const [actions, setActions] = useState<AnchorAction[]>([]);
 
   const register = useCallback((action: AnchorAction) => {
@@ -74,6 +82,9 @@ export function AnchorActionsProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// временный alias до миграции страниц (снимается в Task 13)
+export const AnchorActionsProvider = AnchorScopeProvider;
+
 /**
  * Слой регистрирует своё действие создания якоря в общий хост. Без провайдера
  * (контекст undefined) — no-op (безопасно до монтирования провайдера). При
@@ -84,11 +95,13 @@ export function useRegisterAnchorAction({
   label,
   onCreate,
   enabled,
+  appliesTo = ALWAYS_APPLIES,
 }: {
   id: string;
   label: string;
   onCreate: (draft: AnchorDraft) => void;
   enabled: boolean;
+  appliesTo?: (entityType: string) => boolean;
 }) {
   const ctx = useContext(AnchorActionsContext);
   const register = ctx?.register;
@@ -96,11 +109,11 @@ export function useRegisterAnchorAction({
 
   useEffect(() => {
     if (!enabled || !register || !unregister) return;
-    register({ id, label, onCreate });
+    register({ id, label, onCreate, appliesTo });
     return () => {
       unregister(id);
     };
-  }, [id, label, onCreate, enabled, register, unregister]);
+  }, [id, label, onCreate, enabled, appliesTo, register, unregister]);
 }
 
 /**
@@ -114,11 +127,13 @@ export function useStableAnchorAction({
   label,
   onCreate,
   enabled,
+  appliesTo,
 }: {
   id: string;
   label: string;
   onCreate: (draft: AnchorDraft) => void;
   enabled: boolean;
+  appliesTo?: (entityType: string) => boolean;
 }): void {
   const ref = useRef(onCreate);
   useEffect(() => {
@@ -127,40 +142,39 @@ export function useStableAnchorAction({
   const stable = useCallback((draft: AnchorDraft) => {
     ref.current(draft);
   }, []);
-  useRegisterAnchorAction({ id, label, onCreate: stable, enabled });
+  // appliesTo опционален — пробрасываем только когда задан (exactOptionalPropertyTypes:
+  // undefined нельзя присвоить опц.-полю в value-позиции; опускание → дефолт хука).
+  useRegisterAnchorAction({
+    id,
+    label,
+    onCreate: stable,
+    enabled,
+    ...(appliesTo ? { appliesTo } : {}),
+  });
+}
+
+/** Чистый предикат: действия, применимые к скоупу данного типа сущности. */
+export function applicableActions(
+  actions: AnchorAction[],
+  entityType: string,
+): AnchorAction[] {
+  return actions.filter((a) => a.appliesTo(entityType));
 }
 
 /**
- * Единый хост захвата выделения + аффорданса. Сам discover'ит `[data-ast-root]`
- * (как document-annotation-layer), запускает ОДИН useSelectionCapture и при
- * наличии выделения + зарегистрированных действий рендерит ОДИН поповер с рядом
- * kit-кнопок. Без провайдера / рута / действий — null.
+ * Единый хост захвата выделения + аффорданса. Запускает ОДИН useSelectionCapture
+ * (scope-рамка [data-anchor-scope] внутри самого хука) и при наличии выделения +
+ * применимых к его скоупу действий рендерит ОДИН поповер с рядом kit-кнопок.
+ * Без провайдера / выделения / применимых действий — null.
  */
 export function SelectionAffordanceHost() {
   const ctx = useContext(AnchorActionsContext);
-  const astRootRef = useRef<HTMLElement | null>(null);
-  const [ready, setReady] = useState(false);
-
-  // Discover AST-рут ПОСЛЕ первого коммита (SSR/первый client-рендер видят
-  // ready=false — без mismatch; захват включается следующим тиком).
-  useEffect(() => {
-    astRootRef.current = document.querySelector<HTMLElement>("[data-ast-root]");
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time post-mount discovery (SSR/первый рендер ready=false → без hydration-mismatch), как в document-annotation-layer
-    setReady(true);
-  }, []);
-
   const actions = ctx?.actions ?? [];
-  const { draft, clear } = useSelectionCapture({
-    rootRef: astRootRef,
-    enabled: ready && actions.length > 0,
-  });
+  const { draft, clear } = useSelectionCapture({ enabled: actions.length > 0 });
 
-  // Без выделения draft===null — а draft строится только когда rootRef.current
-  // (AST-рут) найден и обе границы выделения внутри него (см. useSelectionCapture).
-  // Поэтому отдельная проверка astRootRef.current тут не нужна (и нельзя читать
-  // ref во время рендера — react-hooks/refs).
-  if (!ctx || !ready || actions.length === 0) return null;
-  if (!draft) return null;
+  if (!ctx || actions.length === 0 || !draft) return null;
+  const applicable = applicableActions(actions, draft.scope.entityType);
+  if (applicable.length === 0) return null;
 
   const { rect } = draft;
   const top = rect.top + window.scrollY - AFFORDANCE_OFFSET_PX;
@@ -174,7 +188,7 @@ export function SelectionAffordanceHost() {
       style={{ position: "absolute", top, left, transform: "translateX(-50%)", zIndex: 50 }}
     >
       <Inline gap="tight" align="center">
-        {actions.map((action) => (
+        {applicable.map((action) => (
           <Button
             key={action.id}
             type="button"
