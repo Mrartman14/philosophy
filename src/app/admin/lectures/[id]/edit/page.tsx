@@ -11,11 +11,13 @@ import {
   canUpdateLecture,
   getLectureById,
   getLectureDocuments,
+  getLectureForms,
   getLectureMedia,
   LectureAttachmentsManager,
   LectureCoverForm,
   LectureEditForm,
   searchDocumentsForAttach,
+  searchFormsForAttach,
   searchMediaForAttach,
 } from "@/features/lectures";
 import type { ManagedAttachment } from "@/features/lectures";
@@ -56,9 +58,9 @@ export default async function EditLecturePage({ params }: Props) {
   const [allTags, lectureTags] = canAssign
     ? await Promise.all([getTags(), getLectureTags(lecture.id)])
     : [null, null];
-  const [docs, media] = canManage
-    ? await Promise.all([getLectureDocuments(id), getLectureMedia(id)])
-    : [null, null];
+  const [docs, media, forms] = canManage
+    ? await Promise.all([getLectureDocuments(id), getLectureMedia(id), getLectureForms(id)])
+    : [null, null, null];
 
   const t = await getT("admin");
 
@@ -74,6 +76,12 @@ export default async function EditLecturePage({ params }: Props) {
     label: m.filename,
     sortOrder: i,
   }));
+  const formItems: ManagedAttachment[] = (forms ?? []).map((f, i) => ({
+    entityId: f.id ?? "",
+    entityType: "form",
+    label: f.title ?? f.id ?? t("attachmentsFormsSectionTitle"),
+    sortOrder: i,
+  }));
   const canAttach = canAttachToLecture(me, lecture);
 
   async function docFetcher(q: string, offset: number, limit: number) {
@@ -84,6 +92,11 @@ export default async function EditLecturePage({ params }: Props) {
   async function mediaFetcher(q: string, offset: number, limit: number) {
     "use server";
     const r = await searchMediaForAttach({ q, offset, limit });
+    return r.success ? r.data : { data: [], total: null };
+  }
+  async function formFetcher(q: string, offset: number, limit: number) {
+    "use server";
+    const r = await searchFormsForAttach({ q, offset, limit });
     return r.success ? r.data : { data: [], total: null };
   }
 
@@ -138,6 +151,14 @@ export default async function EditLecturePage({ params }: Props) {
             pickerEntityType="media"
             targetFetcher={mediaFetcher}
             title={t("attachmentsMediaSectionTitle")}
+          />
+          <LectureAttachmentsManager
+            lectureId={id}
+            attachments={formItems}
+            canAttach={canAttach}
+            pickerEntityType="form"
+            targetFetcher={formFetcher}
+            title={t("attachmentsFormsSectionTitle")}
           />
         </section>
       )}
