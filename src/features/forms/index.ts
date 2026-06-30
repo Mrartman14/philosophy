@@ -52,6 +52,9 @@ export type { AdminFormListFilter, FormListResult } from "./api";
 export { readAnswerValue } from "./answer-read";
 export type { ReadValue } from "./answer-read";
 
+export { formResultsHref, fieldAnswersHref } from "./results-href";
+export { loadFormResultsContext } from "./results-context";
+
 export {
   createForm,
   updateForm,
