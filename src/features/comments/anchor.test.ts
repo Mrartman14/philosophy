@@ -32,4 +32,14 @@ describe("buildCommentTextAnchor", () => {
     expect(a.prefix).toBeUndefined();
     expect(a.suffix).toBeUndefined();
   });
+
+  // Характеризующий тест: node_id наследуется через общий конвертер
+  // (engineAnchorToCoords, Task 4) — фиксируем lock-in под-блочной адресации.
+  it("buildCommentTextAnchor: пробрасывает node_id", () => {
+    const a = buildCommentTextAnchor(
+      { startBlockId: "tbl-1", endBlockId: "tbl-1", startNodeId: "c1", endNodeId: "c1", startChar: 0, endChar: 2, exact: "ab" },
+      "doc-1",
+    );
+    expect(a).toMatchObject({ start_node_id: "c1", end_node_id: "c1", target_entity_id: "doc-1" });
+  });
 });

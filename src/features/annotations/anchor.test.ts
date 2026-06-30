@@ -50,6 +50,13 @@ describe("buildTextAnchor", () => {
     expect(a.suffix).toBeUndefined();
     expect(a.start_block_id).toBe("b1");
   });
+
+  // Характеризующий тест: node_id наследуется через общий конвертер
+  // (engineAnchorToCoords, Task 4) — фиксируем lock-in под-блочной адресации.
+  it("buildTextAnchor: пробрасывает node_id", () => {
+    const a = buildTextAnchor({ startBlockId: "b1", endBlockId: "b1", startNodeId: "b1", endNodeId: "b1", startChar: 0, endChar: 2, exact: "ab" });
+    expect(a).toMatchObject({ start_node_id: "b1", end_node_id: "b1" });
+  });
 });
 
 describe("isValidTextAnchor", () => {
