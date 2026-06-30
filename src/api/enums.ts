@@ -47,6 +47,7 @@ export const FORM_FIELD_TYPES = enumValues<S["form.FieldType"]>()(
   "date",
 );
 export const FORM_SUBMISSION_MODES = enumValues<S["form.SubmissionMode"]>()("editable", "immutable");
+export const FORM_SUBMISSION_VISIBILITY = enumValues<S["form.SubmissionVisibility"]>()("private", "public");
 
 // --- Banners ---
 export const BANNER_TARGET_AUDIENCES = enumValues<S["banner.TargetAudience"]>()(
