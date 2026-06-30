@@ -92,6 +92,7 @@ export const createForm = createFormAction(async (formData, ctx) => {
       fields: buildFieldsBody(input.fields),
       submission_mode: input.submission_mode,
       visibility: input.visibility,
+      ...(input.submission_visibility ? { submission_visibility: input.submission_visibility } : {}),
       ...(input.description ? { description: input.description } : {}),
       ...(input.after_submit ? { after_submit: input.after_submit } : {}),
     },
