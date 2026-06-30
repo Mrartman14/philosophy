@@ -190,6 +190,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
             <DocumentComments lectureId={id} documentId={activeId} />
           </Suspense>
+          <MarginRail tone="comment" highlightName="comment" />
         </MarginNote>
       )}
     </AnchorScopeProvider>

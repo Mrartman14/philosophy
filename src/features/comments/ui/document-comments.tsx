@@ -1,6 +1,6 @@
 // src/features/comments/ui/document-comments.tsx
 // Server-сборщик левого поля: заякоренные на текущий документ комментарии →
-// превью-карточки → client-коннектор (DocumentCommentLayer → eager MarginAnchorLayer).
+// превью-карточки → client-коннектор (CommentAnchorScope → rail tone "comment").
 // Под SchemaContextProvider, т.к. композер монтирует AstEditor. Заякоренные комменты
 // ВИДНЫ и в нижнем треде — это поле подсветка+позиционирование+выноски (доп. доступ).
 import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
@@ -11,8 +11,8 @@ import { selectAnchoredRoots } from "../anchored";
 import { getCommentSchema, getLectureComments } from "../api";
 import { canCreateComment } from "../permissions";
 
+import { CommentAnchorScope, type CommentAnchorNote } from "./comment-anchor-scope";
 import { CommentPreviewCard } from "./comment-preview-card";
-import { DocumentCommentLayer, type DocumentCommentNote } from "./document-comment-layer";
 
 export async function DocumentComments({
   lectureId,
@@ -33,7 +33,7 @@ export async function DocumentComments({
   const anchored = selectAnchoredRoots(list.subtrees, documentId);
   if (anchored.length === 0 && !canCreateComment(me)) return null;
 
-  const notes: DocumentCommentNote[] = anchored.map((a) => ({
+  const notes: CommentAnchorNote[] = anchored.map((a) => ({
     id: a.id,
     anchor: a.anchor,
     preview: <CommentPreviewCard comment={a.root} replyCount={a.replyCount} />,
@@ -41,7 +41,7 @@ export async function DocumentComments({
 
   return (
     <SchemaContextProvider initial={astSchema}>
-      <DocumentCommentLayer
+      <CommentAnchorScope
         lectureId={lectureId}
         documentId={documentId}
         rootTypes={schema.allowed_roots ?? []}
