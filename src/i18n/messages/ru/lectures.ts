@@ -58,6 +58,7 @@ const lectures = {
   attachForbidden: "У вас нет прав на прикрепление.",
   searchDocumentPlaceholder: "Поиск документа…",
   searchMediaPlaceholder: "Поиск медиа…",
+  searchFormPlaceholder: "Поиск формы…",
   attachmentsEmpty: "Пока ничего не прикреплено.",
 
   // --- attach docs on create (Вариант A) ---

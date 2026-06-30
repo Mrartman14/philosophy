@@ -55,6 +55,7 @@ const admin = {
   attachmentsDocumentFallback: "Документ",
   attachmentsDocsSectionTitle: "Документы лекции",
   attachmentsMediaSectionTitle: "Медиа лекции",
+  attachmentsFormsSectionTitle: "Формы лекции",
 
   // --- комментарии ---
   commentsTitle: "Модерация комментариев",

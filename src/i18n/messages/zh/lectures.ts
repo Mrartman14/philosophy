@@ -57,6 +57,7 @@ const lectures = {
   attachForbidden: "您没有添加关联的权限。",
   searchDocumentPlaceholder: "搜索文档…",
   searchMediaPlaceholder: "搜索媒体…",
+  searchFormPlaceholder: "搜索表单…",
   attachmentsEmpty: "暂无关联内容。",
 
   // --- attach docs on create (Variant A) ---

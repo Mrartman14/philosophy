@@ -57,6 +57,7 @@ const lectures = {
   attachForbidden: "ليست لديك صلاحية الإرفاق.",
   searchDocumentPlaceholder: "ابحث عن مستند…",
   searchMediaPlaceholder: "ابحث عن وسائط…",
+  searchFormPlaceholder: "ابحث عن نموذج…",
   attachmentsEmpty: "لا شيء مُرفَق بعد.",
 
   // --- attach docs on create (Variant A) ---

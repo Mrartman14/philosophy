@@ -56,6 +56,7 @@ const admin = {
   attachmentsDocumentFallback: "مستند",
   attachmentsDocsSectionTitle: "مستندات المحاضرة",
   attachmentsMediaSectionTitle: "وسائط المحاضرة",
+  attachmentsFormsSectionTitle: "نماذج المحاضرة",
 
   // --- комментарии ---
   commentsTitle: "إشراف التعليقات",

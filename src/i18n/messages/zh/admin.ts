@@ -56,6 +56,7 @@ const admin = {
   attachmentsDocumentFallback: "文档",
   attachmentsDocsSectionTitle: "讲座文档",
   attachmentsMediaSectionTitle: "讲座媒体",
+  attachmentsFormsSectionTitle: "讲座表单",
 
   // --- комментарии ---
   commentsTitle: "评论审核",

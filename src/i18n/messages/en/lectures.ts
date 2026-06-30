@@ -57,6 +57,7 @@ const lectures = {
   attachForbidden: "You don't have permission to attach.",
   searchDocumentPlaceholder: "Search document…",
   searchMediaPlaceholder: "Search media…",
+  searchFormPlaceholder: "Search form…",
   attachmentsEmpty: "Nothing attached yet.",
 
   // --- attach docs on create (Variant A) ---
