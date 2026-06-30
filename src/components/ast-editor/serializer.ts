@@ -14,6 +14,8 @@ export interface ProseMirrorJSON {
 
 const LEAF_BLOCK_TYPES = new Set(["code_block", "image", "thematic_break"]);
 
+const TEXT_LEAF_NODE_TYPES = new Set(["paragraph", "heading", "code_block", "table_cell"]);
+
 export function serialize(doc: ProseMirrorJSON): AstBlock[] {
   if (doc.type !== "doc" || !doc.content) return [];
   return doc.content.map((node, i) => serializeBlock(node, i));
@@ -58,6 +60,10 @@ function serializeBlock(node: ProseMirrorJSON, position: number): AstBlock {
 function serializeNode(node: ProseMirrorJSON): AstNode {
   const result: AstNode = { type: node.type as NodeType };
   if (node.attrs) {
+    const blockId = node.attrs.blockId;
+    if (TEXT_LEAF_NODE_TYPES.has(node.type) && typeof blockId === "string" && blockId.length > 0) {
+      result.id = blockId;
+    }
     const attrs = stripBlockId(node.attrs);
     if (attrs && Object.keys(attrs).length > 0) result.attrs = attrs;
   }

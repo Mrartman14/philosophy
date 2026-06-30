@@ -109,4 +109,38 @@ describe("serializer", () => {
       attrs: { id: "uuid" },
     });
   });
+
+  it("serializeNode: вложенный table_cell несёт node id из attrs.blockId", () => {
+    const doc = {
+      type: "doc",
+      content: [
+        {
+          type: "table",
+          attrs: { blockId: "tbl-1" },
+          content: [
+            { type: "table_row", content: [
+              { type: "table_cell", attrs: { blockId: "cell-1" }, content: [{ type: "text", text: "x" }] },
+            ] },
+          ],
+        },
+      ],
+    };
+    const cell = serialize(doc)[0]!.content![0]!.content![0]!;
+    expect(cell.id).toBe("cell-1");
+    expect((cell.attrs as Record<string, unknown> | undefined)?.blockId).toBeUndefined();
+  });
+
+  it("serializeNode: структурный table_row НЕ несёт id", () => {
+    const doc = {
+      type: "doc",
+      content: [
+        { type: "table", attrs: { blockId: "tbl-1" }, content: [
+          { type: "table_row", attrs: { blockId: "should-drop" }, content: [
+            { type: "table_cell", content: [{ type: "text", text: "x" }] },
+          ] },
+        ] },
+      ],
+    };
+    expect(serialize(doc)[0]!.content![0]!.id).toBeUndefined();
+  });
 });
