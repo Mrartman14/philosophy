@@ -1,14 +1,13 @@
 // src/app/forms/[id]/results/page.tsx
-import { forbidden, notFound } from "next/navigation";
+import { forbidden } from "next/navigation";
 
 import {
   getFormById,
   getFormStats,
-  canViewFormResults,
+  loadFormResultsContext,
   FormResultsView,
 } from "@/features/forms";
 import { getT } from "@/i18n";
-import { getMe } from "@/utils/me";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -18,9 +17,7 @@ interface Props {
 export default async function FormResultsPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { token } = await searchParams;
-  const [me, form] = await Promise.all([getMe(), getFormById(id, token)]);
-  if (!form) notFound();
-  if (!canViewFormResults(me, form)) forbidden();
+  const { form } = await loadFormResultsContext(id, token);
 
   const stats = await getFormStats(id, token);
   // Видимая форма, но результаты закрыты (бек 403) — страховка от гонки.

@@ -77,6 +77,7 @@ const forms = {
     titleSuffix: "Результаты",
     prevPage: "← Назад",
     nextPage: "Вперёд →",
+    paginationLabel: "Навигация по ответам",
     fieldType: {
       text: "текст",
       long_text: "текст",

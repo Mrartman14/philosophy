@@ -4,10 +4,10 @@ import { forbidden, notFound } from "next/navigation";
 import {
   getFormById,
   getFieldAnswers,
-  canViewFormResults,
+  loadFormResultsContext,
   FieldAnswersColumn,
 } from "@/features/forms";
-import { getMe } from "@/utils/me";
+import { getT } from "@/i18n";
 
 interface Props {
   params: Promise<{ id: string; fieldId: string }>;
@@ -19,9 +19,7 @@ const LIMIT = 20;
 export default async function FieldAnswersPage({ params, searchParams }: Props) {
   const { id, fieldId } = await params;
   const { token, p } = await searchParams;
-  const [me, form] = await Promise.all([getMe(), getFormById(id, token)]);
-  if (!form) notFound();
-  if (!canViewFormResults(me, form)) forbidden();
+  const { form } = await loadFormResultsContext(id, token);
 
   const field = (form.fields ?? []).find((f) => f.id === fieldId);
   if (!field) notFound();
@@ -45,4 +43,13 @@ export default async function FieldAnswersPage({ params, searchParams }: Props) 
       />
     </div>
   );
+}
+
+export async function generateMetadata({ params, searchParams }: Props) {
+  const { id } = await params;
+  const { token } = await searchParams;
+  const [form, t] = await Promise.all([getFormById(id, token), getT("forms")]);
+  return {
+    title: form ? `${form.title} — ${t("results.titleSuffix")}` : t("results.titleSuffix"),
+  };
 }

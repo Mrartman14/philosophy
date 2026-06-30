@@ -75,6 +75,7 @@ const forms = {
     titleSuffix: "结果",
     prevPage: "← 上一页",
     nextPage: "下一页 →",
+    paginationLabel: "答案分页导航",
     fieldType: {
       text: "文本",
       long_text: "文本",

@@ -4,7 +4,10 @@ import { RouterLink } from "@/components/ui";
 import { getServerFmt, getT } from "@/i18n";
 
 import { readAnswerValue } from "../answer-read";
+import { fieldAnswersHref } from "../results-href";
 import type { FieldAnswerItem, FormField } from "../types";
+
+import { blocksToPlainText } from "./blocks-text";
 
 interface Page {
   items: FieldAnswerItem[];
@@ -53,39 +56,65 @@ export async function FieldAnswersColumn({ field, page, formId, token }: Props) 
     }
   }
 
-  const tokenQs = token ? `&token=${encodeURIComponent(token)}` : "";
-  const prev = page.offset - page.limit;
-  const next = page.offset + page.limit;
-  const base = `/forms/${formId}/fields/${field.id ?? ""}`;
+  const prompt = blocksToPlainText(field.prompt ?? []);
+
+  const limit = page.limit;
+  const currentPage = Math.floor(page.offset / limit);
+  const hasPrev = currentPage > 0;
+  const hasNext = page.offset + limit < page.total;
 
   return (
     <div className="flex flex-col gap-3">
-      <ul className="flex flex-col divide-y divide-(--color-border)">
-        {page.items.map((a) => (
-          <li
-            key={a.submission_id}
-            className="flex items-center justify-between gap-3 py-2 text-sm"
-          >
-            <span className="whitespace-pre-wrap">{renderValue(a.value)}</span>
-            <span className="flex shrink-0 items-center gap-2 text-xs text-(--color-fg-muted)">
-              <UserView user={a.user} />
-              {a.submitted_at ? fmt.dateTime(a.submitted_at) : ""}
-            </span>
-          </li>
-        ))}
-      </ul>
-      <nav className="flex items-center gap-4 text-sm">
-        {prev >= 0 && (
-          <RouterLink href={`${base}?p=${prev / page.limit}${tokenQs}`}>
-            {t("results.prevPage")}
-          </RouterLink>
-        )}
-        {next < page.total && (
-          <RouterLink href={`${base}?p=${next / page.limit}${tokenQs}`}>
-            {t("results.nextPage")}
-          </RouterLink>
-        )}
-      </nav>
+      {prompt && <h2 className="text-base font-semibold">{prompt}</h2>}
+      {page.items.length === 0 ? (
+        <p className="text-sm text-(--color-fg-muted)">{t("results.noTextAnswers")}</p>
+      ) : (
+        <>
+          <ul className="flex flex-col divide-y divide-(--color-border)">
+            {page.items.map((a) => (
+              <li
+                key={a.submission_id}
+                className="flex items-center justify-between gap-3 py-2 text-sm"
+              >
+                <span className="whitespace-pre-wrap">{renderValue(a.value)}</span>
+                <span className="flex shrink-0 items-center gap-2 text-xs text-(--color-fg-muted)">
+                  <UserView user={a.user} />
+                  {a.submitted_at ? fmt.dateTime(a.submitted_at) : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+          {(hasPrev || hasNext) && (
+            <nav
+              className="flex items-center gap-4 text-sm"
+              aria-label={t("results.paginationLabel")}
+            >
+              {hasPrev && (
+                <RouterLink
+                  href={fieldAnswersHref(formId, field.id ?? "", {
+                    ...(token ? { token } : {}),
+                    page: currentPage - 1,
+                  })}
+                  className="text-sm text-(--color-link) hover:underline"
+                >
+                  {t("results.prevPage")}
+                </RouterLink>
+              )}
+              {hasNext && (
+                <RouterLink
+                  href={fieldAnswersHref(formId, field.id ?? "", {
+                    ...(token ? { token } : {}),
+                    page: currentPage + 1,
+                  })}
+                  className="text-sm text-(--color-link) hover:underline"
+                >
+                  {t("results.nextPage")}
+                </RouterLink>
+              )}
+            </nav>
+          )}
+        </>
+      )}
     </div>
   );
 }

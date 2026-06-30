@@ -75,6 +75,7 @@ const forms = {
     titleSuffix: "Results",
     prevPage: "← Prev",
     nextPage: "Next →",
+    paginationLabel: "Answers pagination",
     fieldType: {
       text: "text",
       long_text: "text",

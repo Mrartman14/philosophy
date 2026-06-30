@@ -77,6 +77,7 @@ const forms = {
     titleSuffix: "النتائج",
     prevPage: "← السابق",
     nextPage: "التالي →",
+    paginationLabel: "التنقل بين الإجابات",
     fieldType: {
       text: "نص",
       long_text: "نص",
