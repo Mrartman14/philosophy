@@ -35,6 +35,7 @@ function toBuilderInitial(form: FormEntity): BuilderInitial {
     after_submit: blocksToPlainText(form.after_submit_blocks ?? []),
     visibility: form.visibility ?? "private",
     submission_mode: form.submission_mode ?? "editable",
+    submission_visibility: form.submission_visibility ?? "private",
     fields: fields.length > 0 ? fields : [{ type: "text", prompt: "", help_text: "", required: false, options: [] }],
   };
 }

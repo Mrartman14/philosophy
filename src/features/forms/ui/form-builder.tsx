@@ -6,7 +6,7 @@ import { Button, FormField, Label, Select, TextInput, Textarea } from "@/compone
 import { useT } from "@/i18n/client";
 
 import type { FormPayloadInput } from "../schemas";
-import type { FieldType, SubmissionMode, Visibility } from "../types";
+import type { FieldType, SubmissionMode, SubmissionVisibility, Visibility } from "../types";
 
 import { FormBuilderFieldRow, type BuilderField } from "./form-builder-field-row";
 
@@ -16,6 +16,7 @@ export interface BuilderInitial {
   after_submit: string;
   visibility: Visibility;
   submission_mode: SubmissionMode;
+  submission_visibility: SubmissionVisibility;
   fields: BuilderField[];
 }
 
@@ -37,6 +38,7 @@ const DEFAULT_INITIAL: BuilderInitial = {
   after_submit: "",
   visibility: "private",
   submission_mode: "editable",
+  submission_visibility: "private",
   fields: [emptyField()],
 };
 
@@ -54,6 +56,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
   const [afterSubmit, setAfterSubmit] = useState(init.after_submit);
   const [visibility, setVisibility] = useState<Visibility>(init.visibility);
   const [submissionMode, setSubmissionMode] = useState<SubmissionMode>(init.submission_mode);
+  const [submissionVisibility, setSubmissionVisibility] = useState<SubmissionVisibility>(init.submission_visibility);
   const [fields, setFields] = useState<BuilderField[]>(
     init.fields.length > 0 ? init.fields : [emptyField()],
   );
@@ -64,7 +67,7 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
     title,
     description,
     after_submit: afterSubmit,
-    ...(mode === "create" ? { visibility, submission_mode: submissionMode } : {}),
+    ...(mode === "create" ? { visibility, submission_mode: submissionMode, submission_visibility: submissionVisibility } : {}),
     fields: fields.map((f, i) => ({
       type: f.type,
       prompt: f.prompt,
@@ -143,6 +146,20 @@ export function FormBuilder({ initial, mode, disabled = false }: Props) {
           <p className="text-xs text-(--color-fg-muted)">
             {t("builder.submissionModeHint")}
           </p>
+          <div className="flex flex-col gap-1 text-sm">
+            <Label>{t("builder.submissionVisibilityLabel")}</Label>
+            <Select
+              aria-label={t("builder.submissionVisibilityLabel")}
+              value={submissionVisibility}
+              disabled={disabled}
+              onValueChange={(v) => { setSubmissionVisibility(v as SubmissionVisibility); }}
+              options={[
+                { value: "private", label: t("builder.submissionVisibilityPrivate") },
+                { value: "public", label: t("builder.submissionVisibilityPublic") },
+              ]}
+            />
+            <p className="text-xs text-(--color-fg-muted)">{t("builder.submissionVisibilityHint")}</p>
+          </div>
         </div>
       )}
 
