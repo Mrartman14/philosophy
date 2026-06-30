@@ -1,7 +1,8 @@
 // src/components/anchor-engine/anchor-to-range.ts
 import { cssEscape } from "./css-escape";
 import { locateOffset } from "./dom-text";
-import type { TextAnchor } from "./types";
+import { boundingBoxOf, rectangleCells } from "./table-grid";
+import type { AnchorGeometry, TextAnchor } from "./types";
 
 function leafEl(root: HTMLElement, id: string): Element | null {
   return root.querySelector(`[data-node-id="${cssEscape(id)}"]`);
@@ -89,4 +90,33 @@ export function rangeFromAnchor(a: TextAnchor, root: HTMLElement): Range | null 
   //    быстром пути tryExact обычно НЕ сходится (r.toString() включает текст
   //    между листами) и резолвится именно здесь, по руту.
   return searchQuote(root, a);
+}
+
+/**
+ * Нормализованный резолв: прямоугольник (две ячейки ОДНОЙ таблицы — правило 4)
+ * структурно по node_id; иначе линейный через rangeFromAnchor. Прямоугольный
+ * резолв ИГНОРИРУЕТ офсеты/exact (ячейки id-стабильны).
+ */
+export function resolveAnchor(a: TextAnchor, root: HTMLElement): AnchorGeometry | null {
+  if (a.startNodeId !== a.endNodeId) {
+    const sL = leafEl(root, a.startNodeId), eL = leafEl(root, a.endNodeId);
+    if (isCell(sL) && isCell(eL) && sL && eL) {
+      const cells = rectangleCells(sL, eL);
+      const bbox = cells ? boundingBoxOf(cells) : null;
+      if (!bbox) return null; // разные таблицы / мёртвый угол → орфан
+      return { kind: "rect", boundingRect: bbox, clientRects: [bbox] };
+    }
+  }
+  const range = rangeFromAnchor(a, root);
+  if (!range) return null;
+  // jsdom: Range.getBoundingClientRect/getClientRects ОТСУТСТВУЮТ (есть только у
+  // Element; в браузере есть и у Range). Guard — иначе юнит-тест с резолвимым
+  // линейным якорем падает с TypeError, а не на ассертах (C1 из ревью). TS-lib
+  // типизирует метод как всегда-наличный → no-unnecessary-condition ложно срабатывает
+  // на ?./??; guard рантайм-обязателен (jsdom), оставляем.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const boundingRect = range.getBoundingClientRect?.() ?? new DOMRect();
+  const clientRects =
+    typeof range.getClientRects === "function" ? Array.from(range.getClientRects()) : [];
+  return { kind: "range", range, boundingRect, clientRects };
 }

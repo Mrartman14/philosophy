@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 import { anchorFromSelection } from "./anchor-from-selection";
-import { rangeFromAnchor } from "./anchor-to-range";
+import { rangeFromAnchor, resolveAnchor } from "./anchor-to-range";
 import { must } from "./test-support";
 import type { TextAnchor } from "./types";
 
@@ -105,4 +105,46 @@ describe("rangeFromAnchor", () => {
     expect(r).not.toBeNull();
     expect(r?.toString()).toBe("foobar");
   });
+});
+
+describe("resolveAnchor", () => {
+  beforeEach(() => { document.body.innerHTML = ""; });
+
+  it("две ячейки одной таблицы → kind:rect", () => {
+    const r = setup(
+      '<table data-block-id="t1"><tbody><tr>' +
+      '<td data-node-id="c1" id="c1">aa</td><td data-node-id="c2" id="c2">bb</td>' +
+      '</tr></tbody></table>',
+    );
+    must(r.querySelector("#c1")).getBoundingClientRect = () => new DOMRect(0, 0, 10, 10);
+    must(r.querySelector("#c2")).getBoundingClientRect = () => new DOMRect(10, 0, 10, 10);
+    const g = resolveAnchor(
+      { startBlockId: "t1", endBlockId: "t1", startNodeId: "c1", endNodeId: "c2", startChar: 0, endChar: 2, exact: "aabb" },
+      r,
+    );
+    expect(g?.kind).toBe("rect");
+    expect(g?.clientRects.length).toBe(1);
+  });
+
+  it("мёртвый угол (node_id нет) → null", () => {
+    const r = setup('<table data-block-id="t1"><tbody><tr><td data-node-id="c1">aa</td></tr></tbody></table>');
+    const g = resolveAnchor(
+      { startBlockId: "t1", endBlockId: "t1", startNodeId: "c1", endNodeId: "GONE", startChar: 0, endChar: 2, exact: "aabb" },
+      r,
+    );
+    expect(g).toBeNull();
+  });
+
+  it("линейный within-leaf → kind:range", () => {
+    const r = setup('<p data-block-id="p1" data-node-id="p1">Hello</p>');
+    const g = resolveAnchor(
+      { startBlockId: "p1", endBlockId: "p1", startNodeId: "p1", endNodeId: "p1", startChar: 1, endChar: 4, exact: "ell" },
+      r,
+    );
+    expect(g?.kind).toBe("range");
+  });
+
+  // ПРИМЕЧАНИЕ: сквозной capture→resolve round-trip для прямоугольника (две ячейки)
+  // живёт в Task 3 — он зависит от капчур-послабления правила 4 в
+  // anchor-from-selection.ts (вне объёма Task 2).
 });

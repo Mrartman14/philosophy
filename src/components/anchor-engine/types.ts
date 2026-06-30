@@ -21,3 +21,12 @@ export interface AnchorDraft {
   anchor: TextAnchor;
   rect: DOMRect; // вьюпорт-координаты выделения для тултипа
 }
+
+/**
+ * Нормализованная геометрия резолва: линейный якорь несёт Range (для Highlight API
+ * и caret-хит-теста), прямоугольный — только rect'ы. Общие boundingRect/clientRects
+ * у обоих → потребители (карточка/коннектор/оверлей) source-agnostic.
+ */
+export type AnchorGeometry =
+  | { kind: "range"; range: Range; boundingRect: DOMRect; clientRects: DOMRect[] }
+  | { kind: "rect"; boundingRect: DOMRect; clientRects: DOMRect[] };
