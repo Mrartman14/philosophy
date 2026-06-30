@@ -71,7 +71,7 @@ const forms = {
     empty: "No responses yet",
     noTextAnswers: "No answers",
     allAnswers: "All answers →",
-    forbidden: "This form's results are private",
+    viewResults: "View results →",
     titleSuffix: "Results",
     prevPage: "← Prev",
     nextPage: "Next →",

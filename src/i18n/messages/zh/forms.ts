@@ -71,7 +71,7 @@ const forms = {
     empty: "暂无回复",
     noTextAnswers: "没有答案",
     allAnswers: "全部答案 →",
-    forbidden: "此表单的结果为私有",
+    viewResults: "查看结果 →",
     titleSuffix: "结果",
     prevPage: "← 上一页",
     nextPage: "下一页 →",

@@ -73,7 +73,7 @@ const forms = {
     empty: "Пока нет откликов",
     noTextAnswers: "Нет ответов",
     allAnswers: "Все ответы →",
-    forbidden: "Результаты этой формы закрыты",
+    viewResults: "Посмотреть результаты →",
     titleSuffix: "Результаты",
     prevPage: "← Назад",
     nextPage: "Вперёд →",

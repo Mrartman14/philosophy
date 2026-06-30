@@ -2,7 +2,7 @@
 // src/features/forms/ui/form-fill.tsx
 import { useState } from "react";
 
-import { Button, useToast } from "@/components/ui";
+import { Button, RouterLink, useToast } from "@/components/ui";
 import { useIdempotencyKey } from "@/hooks/use-idempotency-key";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
@@ -19,9 +19,11 @@ interface Props {
   form: Form;
   /** share-token из ?token= — для отправки в приватную форму. */
   token?: string;
+  /** Ссылка на результаты — показывается после submit, если результаты видны зрителю. */
+  resultsHref?: string;
 }
 
-export function FormFill({ form, token }: Props) {
+export function FormFill({ form, token, resultsHref }: Props) {
   const toast = useToast();
   const t = useT("forms");
   const tErrors = useT("errors");
@@ -44,6 +46,11 @@ export function FormFill({ form, token }: Props) {
       <div className="flex flex-col gap-4">
         <p className="text-sm font-medium">{t("submitSuccessMessage")}</p>
         {afterBlocks && afterBlocks.length > 0 && <FormAfterSubmit blocks={afterBlocks} />}
+        {resultsHref && (
+          <RouterLink href={resultsHref} className="self-start text-sm text-(--color-link) hover:underline">
+            {t("results.viewResults")}
+          </RouterLink>
+        )}
       </div>
     );
   }

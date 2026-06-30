@@ -9,6 +9,7 @@ import {
   canDeleteForm,
   canListFormSubmissions,
   canViewFormResults,
+  formResultsHref,
   FormDetail,
   FormVisibilityBadges,
   FormFill,
@@ -41,6 +42,8 @@ export default async function FormPage({ params, searchParams }: Props) {
   const canDelete = canDeleteForm(me, form);
   const canSeeSubmissions = canListFormSubmissions(me, form);
   const canSeeResults = canViewFormResults(me, form);
+  const resultsHref =
+    canSeeResults && form.id ? formResultsHref(form.id, token) : undefined;
 
   const canShare = canCreateShareLink(me, form);
   const shareLinks =
@@ -71,9 +74,9 @@ export default async function FormPage({ params, searchParams }: Props) {
               {t("formSubmissionsLink")}
             </RouterLink>
           )}
-          {canSeeResults && form.id && (
+          {resultsHref && (
             <RouterLink
-              href={`/forms/${form.id}/results${token ? `?token=${encodeURIComponent(token)}` : ""}`}
+              href={resultsHref}
               className="text-sm text-(--color-link) hover:underline"
             >
               {t("formResultsLink")}
@@ -88,7 +91,11 @@ export default async function FormPage({ params, searchParams }: Props) {
           CanSeeForm — auth/public/?token). Владелец тоже может откликнуться. */}
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold">{t("formFillSection")}</h2>
-        <FormFill form={form} {...(token ? { token } : {})} />
+        <FormFill
+          form={form}
+          {...(token ? { token } : {})}
+          {...(resultsHref ? { resultsHref } : {})}
+        />
       </section>
 
       {canEdit && (

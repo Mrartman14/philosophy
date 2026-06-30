@@ -73,7 +73,7 @@ const forms = {
     empty: "لا توجد ردود بعد",
     noTextAnswers: "لا توجد إجابات",
     allAnswers: "كل الإجابات →",
-    forbidden: "نتائج هذا النموذج خاصة",
+    viewResults: "عرض النتائج →",
     titleSuffix: "النتائج",
     prevPage: "← السابق",
     nextPage: "التالي →",
