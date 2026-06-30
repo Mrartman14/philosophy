@@ -1,78 +1,99 @@
-import { cleanup, render } from "@testing-library/react";
-import { useRef } from "react";
-import { afterEach, describe, it, expect } from "vitest";
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, describe, it, expect, vi } from "vitest";
 
 import { must } from "./test-support";
-import type { AnchorDraft } from "./types";
 import { useSelectionCapture } from "./use-selection-capture";
 
 // jsdom: getBoundingClientRect → нули, selectionchange/getSelection частичны.
-// Дым-тест проверяет ТОЛЬКО что хук монтируется и без выделения draft===null,
-// без throw. Реальная геометрия/поведение — ручной QA (Task 20).
+// Дым-тесты проверяют монтирование/clear без throw; scope-тест проверяет, что
+// draft несёт scope, найденный из самого выделения (без rootRef).
+// Реальная геометрия — ручной QA (Task 20).
 
-interface Probe {
-  draft: AnchorDraft | null;
-  clear: () => void;
+afterEach(() => {
+  document.body.innerHTML = "";
+  vi.useRealTimers();
+});
+
+// Программно строим <div data-anchor-scope><p data-block-id>…</p></div> и держим
+// ссылку на текстовый узел напрямую — без querySelector/.firstChild
+// (testing-library/no-node-access).
+function buildScope(
+  scopeAttr: string,
+  text: string,
+): { root: HTMLElement; textNode: Text } {
+  const root = document.createElement("div");
+  root.setAttribute("data-anchor-scope", scopeAttr);
+  const p = document.createElement("p");
+  p.dataset.blockId = "b1";
+  const textNode = document.createTextNode(text);
+  p.appendChild(textNode);
+  root.appendChild(p);
+  document.body.appendChild(root);
+  return { root, textNode };
 }
 
-function Harness({ enabled, seen }: { enabled: boolean; seen: Probe[] }) {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const state = useSelectionCapture({ rootRef, enabled });
-  seen.push(state);
-  // Callback-ref присваивает rootRef.current на коммите (host-элемент, не во время рендера).
-  const setRoot = (el: HTMLDivElement | null) => {
-    rootRef.current = el;
-  };
-  // Контент-рут с AST-блоком — рендерим, чтобы rootRef мог зацепиться.
-  return (
-    <div ref={setRoot}>
-      <p data-block-id="b1">hello</p>
-    </div>
-  );
-}
-
-function last(seen: Probe[]): Probe {
-  return must(seen.at(-1));
-}
-
-describe("useSelectionCapture (smoke)", () => {
-  afterEach(() => {
-    cleanup();
-  });
-
+describe("useSelectionCapture (scope-aware)", () => {
   it("монтируется без throw; без выделения draft===null", () => {
-    const seen: Probe[] = [];
-    expect(() => {
-      render(<Harness enabled seen={seen} />);
-    }).not.toThrow();
-    expect(last(seen).draft).toBeNull();
+    const { result } = renderHook(() => useSelectionCapture({ enabled: true }));
+    expect(result.current.draft).toBeNull();
   });
 
   it("selectionchange без выделения не падает и оставляет draft===null", () => {
-    const seen: Probe[] = [];
-    render(<Harness enabled seen={seen} />);
+    const { result } = renderHook(() => useSelectionCapture({ enabled: true }));
     expect(() => {
       document.dispatchEvent(new Event("selectionchange"));
       document.dispatchEvent(new Event("pointerup"));
     }).not.toThrow();
-    expect(last(seen).draft).toBeNull();
+    expect(result.current.draft).toBeNull();
   });
 
   it("clear() не падает (программное снятие выделения)", () => {
-    const seen: Probe[] = [];
-    render(<Harness enabled seen={seen} />);
+    const { result } = renderHook(() => useSelectionCapture({ enabled: true }));
     expect(() => {
-      last(seen).clear();
+      result.current.clear();
     }).not.toThrow();
-    expect(last(seen).draft).toBeNull();
+    expect(result.current.draft).toBeNull();
   });
 
   it("enabled=false: без подписок, монтируется чисто", () => {
-    const seen: Probe[] = [];
+    const { result } = renderHook(() => useSelectionCapture({ enabled: false }));
     expect(() => {
-      render(<Harness enabled={false} seen={seen} />);
       document.dispatchEvent(new Event("selectionchange"));
     }).not.toThrow();
-    expect(last(seen).draft).toBeNull();
+    expect(result.current.draft).toBeNull();
+  });
+
+  it("builds a draft carrying the selection's scope", () => {
+    // jsdom не реализует Range.getBoundingClientRect — шим на время кейса,
+    // чтобы хук смог собрать draft.rect (восстанавливаем в finally).
+    const proto = Range.prototype as unknown as {
+      getBoundingClientRect?: () => DOMRect;
+    };
+    const original = proto.getBoundingClientRect;
+    proto.getBoundingClientRect = () => new DOMRect(0, 0, 0, 0);
+    try {
+      const { textNode } = buildScope("comment:c1", "hello world");
+      const { result } = renderHook(() =>
+        useSelectionCapture({ enabled: true }),
+      );
+
+      const sel = must(window.getSelection());
+      const r = document.createRange();
+      r.setStart(textNode, 0);
+      r.setEnd(textNode, 5);
+      sel.removeAllRanges();
+      sel.addRange(r);
+
+      act(() => {
+        document.dispatchEvent(new Event("pointerup"));
+      });
+
+      const draft = result.current.draft;
+      expect(draft?.scope).toEqual({ entityType: "comment", entityId: "c1" });
+      expect(draft?.anchor.exact).toBe("hello");
+    } finally {
+      if (original) proto.getBoundingClientRect = original;
+      else delete proto.getBoundingClientRect;
+    }
   });
 });

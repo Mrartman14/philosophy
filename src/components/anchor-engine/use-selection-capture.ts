@@ -1,20 +1,15 @@
 "use client";
 // src/components/anchor-engine/use-selection-capture.ts
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { anchorFromSelection } from "./anchor-from-selection";
+import { scopeFromSelection } from "./scope-from-selection";
 import type { AnchorDraft } from "./types";
 
 // Дебаунс пересчёта якоря после selectionchange (drag-выделение шлёт залп событий).
 const SELECTION_DEBOUNCE_MS = 250;
 
-export function useSelectionCapture({
-  rootRef,
-  enabled,
-}: {
-  rootRef: RefObject<HTMLElement | null>;
-  enabled: boolean;
-}) {
+export function useSelectionCapture({ enabled }: { enabled: boolean }) {
   const [draft, setDraft] = useState<AnchorDraft | null>(null);
   const suppress = useRef(false);
 
@@ -22,35 +17,21 @@ export function useSelectionCapture({
     if (!enabled) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
     const recompute = () => {
-      const root = rootRef.current;
-      if (!root) {
-        setDraft(null);
-        return;
-      }
       const sel = window.getSelection();
-      // AST-рамка (устрожение): выделение вне контент-рута даже не обрабатываем —
-      // обе границы обязаны быть внутри AST-рута. Это гейт ПЕРВЫМ, до построения якоря.
-      if (!sel) {
+      // Scope-рамка: выделение должно целиком лежать в ОДНОМ [data-anchor-scope].
+      // Кросс-скоуп / вне скоупа → drop (аффорданс не показываем).
+      const found = scopeFromSelection(sel);
+      if (!sel || !found) {
         setDraft(null);
         return;
       }
-      const { anchorNode, focusNode } = sel;
-      if (
-        !anchorNode ||
-        !focusNode ||
-        !root.contains(anchorNode) ||
-        !root.contains(focusNode)
-      ) {
-        setDraft(null);
-        return;
-      }
-      const anchor = anchorFromSelection(sel, root);
+      const anchor = anchorFromSelection(sel, found.scopeEl);
       if (!anchor || sel.rangeCount === 0) {
         setDraft(null);
         return;
       }
       const rect = sel.getRangeAt(0).getBoundingClientRect();
-      setDraft({ anchor, rect });
+      setDraft({ anchor, rect, scope: found.scope });
     };
     const onSelectionChange = () => {
       if (suppress.current) {
@@ -80,7 +61,7 @@ export function useSelectionCapture({
       window.removeEventListener("scroll", onScrollResize, true);
       window.removeEventListener("resize", onScrollResize);
     };
-  }, [enabled, rootRef]);
+  }, [enabled]);
 
   const clear = () => {
     suppress.current = true;
