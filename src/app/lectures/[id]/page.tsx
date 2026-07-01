@@ -51,12 +51,12 @@ import { LectureActionsMenu } from "./lecture-actions-menu";
 
 interface Props {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ cq?: string; token?: string; doc?: string }>;
+  searchParams: Promise<{ cq?: string; token?: string; doc?: string; comment?: string }>;
 }
 
 export default async function LecturePage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { cq, token, doc } = await searchParams;
+  const { cq, token, doc, comment } = await searchParams;
   const [me, lecture, tags, documents, media, canvases, forms] = await Promise.all([
     getMe(),
     getLectureById(id, token),
@@ -186,7 +186,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
             ненадёжен). Рендерит null. */}
         <CommentHashScroll />
         <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-          <CommentSection lectureId={id} query={cq} token={token} />
+          <CommentSection lectureId={id} query={cq} token={token} focusCommentId={comment} />
         </Suspense>
       </div>
 

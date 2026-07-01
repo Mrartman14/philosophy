@@ -92,6 +92,28 @@ export const getCommentSubtree = cache(
 );
 
 /**
+ * Корневой тред узла (GET /api/comments/{id}/thread) — весь тред, которому
+ * принадлежит {id} (корень цепочки + все потомки, сам {id} включён). Для
+ * deep-link из инбокса к ответу (comment.replied), чей корневой тред вне 1-й
+ * страницы ленты. Мягкая деградация → null (404 невидимой лекции / ошибка /
+ * reject): страница покажет обычную ленту без подмешивания.
+ */
+export const getCommentThread = cache(
+  async (commentId: string): Promise<RootSubtree | null> => {
+    try {
+      const api = await createApiClient();
+      const { data, error } = await api.GET("/api/comments/{id}/thread", {
+        params: { path: { id: commentId } },
+      });
+      if (error) return null;
+      return data.data ?? null;
+    } catch {
+      return null;
+    }
+  },
+);
+
+/**
  * Поиск по комментариям лекции (requiredAuth — для гостя бек вернёт 401).
  * Вызывать только после canSearchComments(me).
  */

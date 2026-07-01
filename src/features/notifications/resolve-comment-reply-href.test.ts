@@ -41,7 +41,7 @@ describe("resolveCommentReplyHref", () => {
 
     const result = await resolveCommentReplyHref("cmt-9");
 
-    expect(result).toMatchObject({ success: true, data: "/lectures/lec-42#comment-cmt-9" });
+    expect(result).toMatchObject({ success: true, data: "/lectures/lec-42?comment=cmt-9#comment-cmt-9" });
     const [path, opts] = get.mock.calls[0] as [string, Record<string, unknown>];
     expect(path).toBe("/api/comments/{id}");
     expect((opts.params as { path: { id: string } }).path.id).toBe("cmt-9");

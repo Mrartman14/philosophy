@@ -9,10 +9,12 @@ import { getMe } from "@/utils/me";
 
 import {
   getCommentSchema,
+  getCommentThread,
   getLectureComments,
   searchComments,
 } from "../api";
 import type { CommentListResult, CommentSearchResult } from "../api";
+import { prependFocusThread } from "../comment-tree-utils";
 import { canCreateComment, canSearchComments } from "../permissions";
 import type { CommentSchema, CommentType } from "../types";
 
@@ -28,6 +30,11 @@ interface Props {
   query?: string | undefined;
   /** ?token= (share-link) — доступ к комментариям приватной лекции. */
   token?: string | undefined;
+  /**
+   * ?comment= из deep-link инбокса (comment.replied). Подмешиваем корневой тред
+   * этого ответа в начало ленты, если он вне 1-й страницы — иначе узла нет в DOM.
+   */
+  focusCommentId?: string | undefined;
 }
 
 /**
@@ -80,7 +87,7 @@ function renderContent(
   ) : null;
 }
 
-export async function CommentSection({ lectureId, query, token }: Props) {
+export async function CommentSection({ lectureId, query, token, focusCommentId }: Props) {
   const [me, schema, t] = await Promise.all([
     getMe(),
     getCommentSchema(),
@@ -95,18 +102,27 @@ export async function CommentSection({ lectureId, query, token }: Props) {
   const trimmed = (query ?? "").trim();
   const searching = trimmed.length > 0 && canSearchComments(me);
 
-  const [list, search, astSchema] = await Promise.all([
+  const [list, search, astSchema, focusThread] = await Promise.all([
     searching
       ? Promise.resolve(null)
       : getLectureComments(lectureId, token ? { token } : {}),
     searching ? searchComments(lectureId, trimmed) : Promise.resolve(null),
     getAstSchema(),
+    !searching && focusCommentId
+      ? getCommentThread(focusCommentId)
+      : Promise.resolve(null),
   ]);
+
+  // Deep-link из инбокса: подмешиваем корневой тред ответа в начало ленты, если
+  // его нет на 1-й странице (иначе узла #comment-<id> нет в DOM и скроллить некуда).
+  const mergedList = list
+    ? { ...list, subtrees: prependFocusThread(list.subtrees, focusThread) }
+    : list;
 
   const content = renderContent(
     searching,
     search,
-    list,
+    mergedList,
     lectureId,
     token,
     schema,

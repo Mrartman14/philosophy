@@ -1,8 +1,8 @@
 // src/features/comments/comment-tree-utils.test.ts
 import { describe, it, expect } from "vitest";
 
-import { groupByParent } from "./comment-tree-utils";
-import type { Comment } from "./types";
+import { groupByParent, prependFocusThread } from "./comment-tree-utils";
+import type { Comment, RootSubtree } from "./types";
 
 // Фикстура с ОБЯЗАТЕЛЬНЫМИ полями comment.Comment (created_at/updated_at/lecture_id/id/type)
 // — без `as Comment`, иначе tsc даёт TS2352 (overlap) / лишний каст. Если tsc сообщит о
@@ -32,5 +32,28 @@ describe("groupByParent", () => {
   });
   it("пустой вход → пустая map", () => {
     expect(groupByParent([]).size).toBe(0);
+  });
+});
+
+function subtree(rootId: string): RootSubtree {
+  return { root: node(rootId), descendants: [] };
+}
+
+describe("prependFocusThread", () => {
+  it("препендит focus-тред, если его корня нет в ленте", () => {
+    const result = prependFocusThread([subtree("a"), subtree("b")], subtree("z"));
+    expect(result.map((s) => s.root?.id)).toEqual(["z", "a", "b"]);
+  });
+  it("не дублирует и не двигает, если корень focus уже в ленте", () => {
+    const result = prependFocusThread([subtree("a"), subtree("b")], subtree("a"));
+    expect(result.map((s) => s.root?.id)).toEqual(["a", "b"]);
+  });
+  it("null focus → та же ссылка на ленту", () => {
+    const list = [subtree("a")];
+    expect(prependFocusThread(list, null)).toBe(list);
+  });
+  it("focus без root → лента без изменений", () => {
+    const list = [subtree("a")];
+    expect(prependFocusThread(list, {})).toBe(list);
   });
 });

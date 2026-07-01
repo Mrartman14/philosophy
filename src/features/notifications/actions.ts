@@ -133,5 +133,9 @@ export const resolveCommentReplyHref = createAction(async (commentId: string) =>
   });
   if (error) return null;
   const lectureId = data.data?.lecture_id;
-  return lectureId ? `/lectures/${lectureId}${commentHash(commentId)}` : null;
+  // ?comment= — SSR-подмешивание корневого треда в ленту (сервер не видит #-хэш);
+  // #comment- — клиентский скролл island'а. Тред может быть вне 1-й страницы ленты.
+  return lectureId
+    ? `/lectures/${lectureId}?comment=${commentId}${commentHash(commentId)}`
+    : null;
 }, "resolveCommentReplyHref");
