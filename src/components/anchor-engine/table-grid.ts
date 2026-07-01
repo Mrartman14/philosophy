@@ -12,6 +12,11 @@ function ownRows(table: Element): Element[] {
   return Array.from(table.querySelectorAll("tr")).filter((tr) => tr.closest("table") === table);
 }
 
+/** Type-guard: элемент — ячейка таблицы (TD/TH). null-толерантен. */
+export function isCell(el: Element | null): el is HTMLTableCellElement {
+  return !!el && (el.tagName === "TD" || el.tagName === "TH");
+}
+
 export function cellGridPos(cell: Element): { row: number; col: number } | null {
   const tr = cell.parentElement;
   if (tr?.tagName !== "TR") return null;

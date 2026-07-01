@@ -1,7 +1,7 @@
 // src/components/anchor-engine/anchor-to-range.ts
 import { cssEscape } from "./css-escape";
 import { locateOffset } from "./dom-text";
-import { boundingBoxOf, rectangleCells } from "./table-grid";
+import { boundingBoxOf, isCell, rectangleCells } from "./table-grid";
 import type { AnchorGeometry, TextAnchor } from "./types";
 
 function leafEl(root: HTMLElement, id: string): Element | null {
@@ -9,9 +9,6 @@ function leafEl(root: HTMLElement, id: string): Element | null {
 }
 function blockEl(root: HTMLElement, id: string): Element | null {
   return root.querySelector(`[data-block-id="${cssEscape(id)}"]`);
-}
-function isCell(el: Element | null): boolean {
-  return !!el && (el.tagName === "TD" || el.tagName === "TH");
 }
 
 // Один SHOW_TEXT-walker по scope: возвращает текстовые узлы с их глобальным офсетом
@@ -104,7 +101,7 @@ export function rangeFromAnchor(a: TextAnchor, root: HTMLElement): Range | null 
 export function resolveAnchor(a: TextAnchor, root: HTMLElement): AnchorGeometry | null {
   if (a.startNodeId !== a.endNodeId) {
     const sL = leafEl(root, a.startNodeId), eL = leafEl(root, a.endNodeId);
-    if (isCell(sL) && isCell(eL) && sL && eL) {
+    if (isCell(sL) && isCell(eL)) {
       const cells = rectangleCells(sL, eL);
       const bbox = cells ? boundingBoxOf(cells) : null;
       if (!bbox) return null; // разные таблицы / мёртвый угол → орфан

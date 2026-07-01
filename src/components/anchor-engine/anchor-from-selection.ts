@@ -1,15 +1,12 @@
 // src/components/anchor-engine/anchor-from-selection.ts
 import { blockPlainText, offsetWithinBlock } from "./dom-text";
+import { isCell } from "./table-grid";
 import type { TextAnchor } from "./types";
 
 function closestAttr(node: Node, root: HTMLElement, attr: string): HTMLElement | null {
   const el = node.nodeType === Node.ELEMENT_NODE ? (node as Element) : node.parentElement;
   const found = el?.closest<HTMLElement>(`[${attr}]`) ?? null;
   return found && root.contains(found) ? found : null;
-}
-
-function isCell(leaf: HTMLElement): boolean {
-  return leaf.tagName === "TD" || leaf.tagName === "TH";
 }
 
 export function anchorFromRange(range: Range, root: HTMLElement, contextLen = 32): TextAnchor | null {
