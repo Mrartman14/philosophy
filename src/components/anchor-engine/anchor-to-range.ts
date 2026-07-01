@@ -69,12 +69,16 @@ function tryExact(a: TextAnchor, root: HTMLElement): Range | null {
 }
 
 export function rangeFromAnchor(a: TextAnchor, root: HTMLElement): Range | null {
-  // Phase 1: table-rectangle (разные ячейки) не поддержан → мягкий орфан.
-  // ДОЛГ Phase 2: при включении rectangle добавить проверку «обе ячейки ОДНОЙ
-  // таблицы» (одинаковый block_id) — anchors.md правило 4 (contract-MINOR).
+  // Кросс-node якорь, у которого ХОТЯ БЫ ОДИН конец — ячейка таблицы, не имеет
+  // валидного ЛИНЕЙНОГО резолва: прямоугольный кейс (обе ячейки одной таблицы)
+  // обрабатывается выше в resolveAnchor; всё остальное с участием ячейки (мёртвый
+  // угол, ячейка+проза) → чистый орфан. Симметрично капчуру (anchor-from-selection
+  // правило 4). БЕЗ этого гарда мёртвый угол уходил бы в searchQuote(root) по
+  // junk-exact (range.toString() через колонки) и мог фантомно совпасть с
+  // несвязанной прозой. anchors.md правило 4.
   if (a.startNodeId !== a.endNodeId) {
     const sL = leafEl(root, a.startNodeId), eL = leafEl(root, a.endNodeId);
-    if (isCell(sL) && isCell(eL)) return null;
+    if (isCell(sL) || isCell(eL)) return null;
   }
   // 1) Быстрый путь: офсеты внутри листа + сверка exact.
   const exact = tryExact(a, root);

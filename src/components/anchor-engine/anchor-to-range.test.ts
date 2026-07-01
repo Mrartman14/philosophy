@@ -135,6 +135,24 @@ describe("resolveAnchor", () => {
     expect(g).toBeNull();
   });
 
+  // I-1: rect-якорь с УДАЛЁННЫМ углом (одна ячейка жива, вторая — нет) обязан стать
+  // ЧИСТЫМ орфаном (null), а НЕ фантомно подсветить постороннюю прозу. junk-`exact`
+  // (range.toString() через колонки) ДОЛЖЕН встречаться в абзаце ниже — иначе тест
+  // зелёный и на старом коде (searchQuote(root) не нашёл бы совпадения случайно).
+  it("мёртвый угол rect-якоря → null, НЕ прилипает к прозе с тем же exact", () => {
+    const r = setup(
+      '<table data-block-id="t1"><tbody><tr><td data-node-id="c1">aa</td></tr></tbody></table>' +
+      '<p data-block-id="p9" data-node-id="p9">aabb</p>',
+    );
+    // endNodeId "c2" удалён из DOM (удалили столбец); startNodeId "c1" жив.
+    // exact "aabb" СОВПАДАЕТ с абзацем p9 → старый код прилипнет к нему, новый → null.
+    const g = resolveAnchor(
+      { startBlockId: "t1", endBlockId: "t1", startNodeId: "c1", endNodeId: "c2", startChar: 0, endChar: 2, exact: "aabb" },
+      r,
+    );
+    expect(g).toBeNull();
+  });
+
   it("линейный within-leaf → kind:range", () => {
     const r = setup('<p data-block-id="p1" data-node-id="p1">Hello</p>');
     const g = resolveAnchor(
