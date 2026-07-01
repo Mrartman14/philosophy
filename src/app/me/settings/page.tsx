@@ -6,9 +6,11 @@ import { RouterLink } from "@/components/ui";
 import { LogoutAllForm, LogoutForm } from "@/features/auth";
 import { SubscriptionsSection } from "@/features/notifications";
 import {
+  CommentReplyNotifyToggle,
   PreferencesForm,
   PushSubscriptionToggle,
   canSubscribePush,
+  canUpdatePreferences,
   getPreferences,
   getVapidKey,
   type ReadingMode,
@@ -75,6 +77,10 @@ export default async function SettingsPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">{t("sectionSubscriptions")}</h2>
+        <CommentReplyNotifyToggle
+          initialEnabled={prefs.notify_on_comment_reply ?? true}
+          canManage={canUpdatePreferences(me)}
+        />
         <SubscriptionsSection />
       </section>
 
