@@ -31,6 +31,7 @@ export {
 } from "./anchor";
 export { AnnotationsSection } from "./ui/annotations-section";
 export { DocumentAnnotations } from "./ui/document-annotations";
+export { AnnotationCreateAffordance } from "./ui/annotation-create-affordance";
 // Client-коннектор скоупа сущности → rail (Task 9). Server-компоненты (CommentNode,
 // DocumentAnnotations) легально рендерят его. Server-сборщик карточек (server-only)
 // — потребляется только server-компонентами через barrel (cross-feature OK).

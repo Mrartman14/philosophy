@@ -10,7 +10,7 @@ import {
   SelectionAffordanceHost,
 } from "@/components/anchor-engine";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
-import { DocumentAnnotations } from "@/features/annotations";
+import { AnnotationCreateAffordance, DocumentAnnotations } from "@/features/annotations";
 import { CommentSection, DocumentComments } from "@/features/comments";
 import { DocumentDetail, getDocumentById } from "@/features/documents";
 import {
@@ -86,6 +86,12 @@ export default async function LecturePage({ params, searchParams }: Props) {
           охватывает контент с data-ast-root И оба MarginNote (annotations +
           comments), чтобы их useRegisterAnchorAction достигли провайдера. */}
       <SelectionAffordanceHost />
+      {/* Единственный page-level маунт действия «аннотировать» (id=annotation):
+          регистрирует действие ОДИН раз, независимо от числа скоупов. Suspense/null —
+          аффорданс невидим до выделения. */}
+      <Suspense fallback={null}>
+        <AnnotationCreateAffordance />
+      </Suspense>
       <div className="flex flex-col gap-8 p-4">
         {/* Тулбар действий: владелец — правка; залогинен — подписка; офлайн;
             ⋯-меню (скачать .md/.txt + поделиться). */}

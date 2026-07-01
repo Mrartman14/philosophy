@@ -10,7 +10,7 @@ import {
 } from "@/components/anchor-engine";
 import { AstToc, extractHeadings } from "@/components/ast-toc";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
-import { DocumentAnnotations } from "@/features/annotations";
+import { AnnotationCreateAffordance, DocumentAnnotations } from "@/features/annotations";
 import {
   canEditDocument,
   canDeleteDocument,
@@ -65,6 +65,10 @@ export default async function DocumentPage({ params, searchParams }: Props) {
       {/* Единый хост захвата выделения + аффорданса (PR3 dual-affordance fix):
           охватывает контент с data-ast-root И MarginNote с аннотациями. */}
       <SelectionAffordanceHost />
+      {/* Единственный page-level маунт действия «аннотировать» (id=annotation). */}
+      <Suspense fallback={null}>
+        <AnnotationCreateAffordance />
+      </Suspense>
       <div className="flex flex-col gap-8 p-4">
       <header className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{document.filename ?? t("documentDefaultTitle")}</h1>
