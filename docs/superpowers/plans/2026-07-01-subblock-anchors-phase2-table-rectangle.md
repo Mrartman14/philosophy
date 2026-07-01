@@ -255,28 +255,10 @@ it("resolveAnchor: линейный within-leaf → kind:range", () => {
   );
   expect(g?.kind).toBe("range");
 });
-
-// СКВОЗНОЙ round-trip (#9): капчур двух ячеек → резолв → kind:rect (шов
-// anchorFromSelection↔resolveAnchor для прямоугольника). anchorFromSelection
-// уже импортирован в файле (есть Core-тест "round-trip within-cell").
-it("round-trip rect: anchorFromSelection(2 ячейки) → resolveAnchor kind:rect", () => {
-  const r = setup('<table data-block-id="t1"><tbody><tr><td data-node-id="c1" id="c1">aa</td><td data-node-id="c2" id="c2">bb</td></tr></tbody></table>');
-  r.querySelector("#c1")!.getBoundingClientRect = () => new DOMRect(0, 0, 10, 10);
-  r.querySelector("#c2")!.getBoundingClientRect = () => new DOMRect(10, 0, 10, 10);
-  const t1 = r.querySelector("#c1")!.firstChild as Text;
-  const t2 = r.querySelector("#c2")!.firstChild as Text;
-  const range = document.createRange();
-  range.setStart(t1, 0); range.setEnd(t2, 2);
-  const sel = window.getSelection()!;
-  sel.removeAllRanges(); sel.addRange(range);
-  const a = anchorFromSelection(sel, r);
-  expect(a).toMatchObject({ startNodeId: "c1", endNodeId: "c2" });
-  const g = a ? resolveAnchor(a, r) : null;
-  expect(g?.kind).toBe("rect");
-});
 ```
 
 > `setup(html)` — хелпер уже есть в `anchor-to-range.test.ts` (НЕ `root` — тот в `anchor-from-selection.test.ts`). Заменить `!` на `must()`/`?.` перед коммитом.
+> **Сквозной round-trip тест (capture→resolve) перенесён в Task 3** — он зависит от капчур-правила 4 (выделение 2 ячеек даёт `null` до Task 3). В Task 2 — только 3 resolve-юнита (rect / dead-corner→null / linear→range).
 
 - [ ] **Step 3: Run — verify fail**
 
@@ -378,6 +360,27 @@ it("ячейка + проза (mixed) → null (явный регресс-асс
 
 > `selectRange`/`root` — хелперы уже в файле (из Core T5). Если имена иные — использовать существующие. Заменить `!` перед коммитом. Существующие cell+prose→null и within-cell тесты Core остаются (cell+prose мёртв через mixed-ветку ниже).
 
+**СКВОЗНОЙ round-trip (#9) — ДОБАВИТЬ в `anchor-to-range.test.ts`** (там живёт Core-тест «round-trip within-cell», уже импортит и `anchorFromSelection`, и `resolveAnchor`; `setup`-хелпер тоже там). После капчур-правила 4 он зелёный (до Task 3 капчур двух ячеек → null, поэтому он здесь, не в Task 2):
+
+```ts
+it("round-trip rect: anchorFromSelection(2 ячейки) → resolveAnchor kind:rect", () => {
+  const r = setup('<table data-block-id="t1"><tbody><tr><td data-node-id="c1" id="c1">aa</td><td data-node-id="c2" id="c2">bb</td></tr></tbody></table>');
+  r.querySelector("#c1")!.getBoundingClientRect = () => new DOMRect(0, 0, 10, 10);
+  r.querySelector("#c2")!.getBoundingClientRect = () => new DOMRect(10, 0, 10, 10);
+  const t1 = r.querySelector("#c1")!.firstChild as Text;
+  const t2 = r.querySelector("#c2")!.firstChild as Text;
+  const range = document.createRange();
+  range.setStart(t1, 0); range.setEnd(t2, 2);
+  const sel = window.getSelection()!;
+  sel.removeAllRanges(); sel.addRange(range);
+  const a = anchorFromSelection(sel, r);
+  expect(a).toMatchObject({ startNodeId: "c1", endNodeId: "c2" });
+  const g = a ? resolveAnchor(a, r) : null;
+  expect(g?.kind).toBe("rect");
+});
+```
+(Заменить `!` на `must()`/`?.`. → Task 3 коммитит ТАКЖЕ `anchor-to-range.test.ts`.)
+
 - [ ] **Step 2: Run — verify fail**
 
 Run: `pnpm exec vitest run src/components/anchor-engine/anchor-from-selection.test.ts`
@@ -412,8 +415,8 @@ Expected: PASS (same-table cross-cell → якорь; cross-table → null; with
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/components/anchor-engine/anchor-from-selection.ts src/components/anchor-engine/anchor-from-selection.test.ts
-git commit --only src/components/anchor-engine/anchor-from-selection.ts src/components/anchor-engine/anchor-from-selection.test.ts -m "feat(anchor): капчур разрешает same-table прямоугольник (правило 4)"
+git add src/components/anchor-engine/anchor-from-selection.ts src/components/anchor-engine/anchor-from-selection.test.ts src/components/anchor-engine/anchor-to-range.test.ts
+git commit --only src/components/anchor-engine/anchor-from-selection.ts src/components/anchor-engine/anchor-from-selection.test.ts src/components/anchor-engine/anchor-to-range.test.ts -m "feat(anchor): капчур разрешает same-table прямоугольник (правило 4) + round-trip"
 ```
 
 ---
