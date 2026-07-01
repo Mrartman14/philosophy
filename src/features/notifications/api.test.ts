@@ -195,3 +195,70 @@ describe("getDocumentSubscription — soft-degrade + boolean derivation", () => 
     expect(await getDocumentSubscription("doc-abc")).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// getNotifications — обогащение comment.replied хост-лекцией
+// ---------------------------------------------------------------------------
+describe("getNotifications — commentLectureId enrichment", () => {
+  it("резолвит lecture_id для comment.replied через GET /api/comments/{id}", async () => {
+    getMock.mockImplementation((path: string) => {
+      if (path === "/api/me/notifications") {
+        return Promise.resolve(
+          apiResult({
+            data: {
+              data: [
+                { id: "n-1", type: "comment.replied", target_type: "comment", target_id: "cmt-9" },
+              ],
+              pagination: { total: 1, offset: 0, limit: 20 },
+            },
+          }),
+        );
+      }
+      // GET /api/comments/{id}
+      return Promise.resolve(apiResult({ data: { data: { id: "cmt-9", lecture_id: "lec-42" } } }));
+    });
+
+    const { items } = await getNotifications();
+
+    expect(items[0]).toMatchObject({ type: "comment.replied", commentLectureId: "lec-42" });
+  });
+
+  it("commentLectureId=null, если GET комментария вернул ошибку (мягкая деградация)", async () => {
+    getMock.mockImplementation((path: string) => {
+      if (path === "/api/me/notifications") {
+        return Promise.resolve(
+          apiResult({
+            data: {
+              data: [
+                { id: "n-2", type: "comment.replied", target_type: "comment", target_id: "cmt-gone" },
+              ],
+              pagination: { total: 1, offset: 0, limit: 20 },
+            },
+          }),
+        );
+      }
+      return Promise.resolve(apiResult({ error: { error: "not found" }, status: 404 }));
+    });
+
+    const { items } = await getNotifications();
+
+    expect(items[0].commentLectureId).toBeNull();
+  });
+
+  it("не дергает GET комментария для не-comment-типов (commentLectureId=null)", async () => {
+    getMock.mockResolvedValue(
+      apiResult({
+        data: {
+          data: [{ id: "n-3", type: "document.updated", target_type: "document", target_id: "doc-1" }],
+          pagination: { total: 1, offset: 0, limit: 20 },
+        },
+      }),
+    );
+
+    const { items } = await getNotifications();
+
+    expect(items[0].commentLectureId).toBeNull();
+    // единственный GET — за уведомлениями; за комментом не ходили
+    expect(getMock).toHaveBeenCalledOnce();
+  });
+});
