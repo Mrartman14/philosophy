@@ -64,6 +64,15 @@ export const PARENT_ENTITY_TYPES = Object.keys(
   PARENT_ENTITY_TYPE_SET,
 ) as [ParentEntityType, ...ParentEntityType[]];
 
+/**
+ * Type-guard на границе движок→слайс: `draft.scope.entityType` это `string`;
+ * сужаем к `ParentEntityType` по рантайм-набору (document/glossary/media/comment).
+ * Канонический guard рядом с `PARENT_ENTITY_TYPES` — потребляется композером создания.
+ */
+export function isParentEntityType(value: string): value is ParentEntityType {
+  return (PARENT_ENTITY_TYPES as readonly string[]).includes(value);
+}
+
 /** Унифицированный результат списка для UI-компонентов. */
 export interface AnnotationListResult {
   items: Annotation[];

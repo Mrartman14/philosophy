@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { AnchorDraft } from "@/components/anchor-engine";
@@ -29,13 +29,30 @@ vi.mock("./comment-composer-dialog", () => ({
     open,
     anchor,
     lectureId,
+    onOpenChange,
   }: {
     open: boolean;
-    anchor?: { exact?: string };
+    anchor?: { exact?: string; target_entity_id?: string };
     lectureId: string;
+    onOpenChange: (open: boolean) => void;
   }) =>
     open ? (
-      <div data-testid="composer" data-lecture-id={lectureId} data-anchor-exact={anchor?.exact ?? ""} />
+      <div
+        data-testid="composer"
+        data-lecture-id={lectureId}
+        data-anchor-exact={anchor?.exact ?? ""}
+        data-target-id={anchor?.target_entity_id ?? ""}
+      >
+        <button
+          type="button"
+          data-testid="close"
+          onClick={() => {
+            onOpenChange(false);
+          }}
+        >
+          close
+        </button>
+      </div>
     ) : null,
 }));
 
@@ -88,5 +105,17 @@ describe("CommentAnchorSelectionComposer", () => {
     const composer = screen.getByTestId("composer");
     expect(composer.getAttribute("data-lecture-id")).toBe("lec-1");
     expect(composer.getAttribute("data-anchor-exact")).toBe("hello");
+    // Якорь построен из draft.scope.entityId → target_entity_id документа (не lectureId).
+    expect(composer.getAttribute("data-target-id")).toBe("doc-7");
+  });
+
+  it("закрывает композер через onOpenChange(false)", () => {
+    render(<CommentAnchorSelectionComposer lectureId="lec-1" rootTypes={[]} />);
+    act(() => {
+      reg().onCreate(draftIn("document", "doc-7"));
+    });
+    expect(screen.getByTestId("composer")).not.toBeNull();
+    fireEvent.click(screen.getByTestId("close"));
+    expect(screen.queryByTestId("composer")).toBeNull();
   });
 });
