@@ -12,7 +12,7 @@
 // Guardrail 4: client-коннектор импортит ТОЛЬКО pure-фасады (../anchor —
 // type+fn, ../types — типы), движок, kit, i18n/client и composer-диалог. НЕ
 // тянет server-only ../api/../actions/../permissions/../schemas.
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import {
   MarginAnchorLayer,
@@ -70,14 +70,21 @@ export function DocumentAnnotationLayer({ parentId, notes, canCreate }: Props) {
 
   // Доменные ноты → движковые: только валидные text-range якоря (media/неполные
   // → null, отсеиваются flatMap). Карточки без движкового якоря рендерятся
-  // обычным серверным списком (ssrOnly), всегда.
-  const engineNotes: AnchoredNote[] = notes.flatMap((n) => {
-    const engine = n.anchor ? toEngineAnchor(n.anchor) : null;
-    return engine ? [{ id: n.id, anchor: engine }] : [];
-  });
-  const cardById = new Map(notes.map((n) => [n.id, n.card]));
-  const engineIds = new Set(engineNotes.map((n) => n.id));
-  const ssrOnly = notes.filter((n) => !engineIds.has(n.id));
+  // обычным серверным списком (ssrOnly), всегда. Мемоизация по notes:
+  // MarginAnchorLayer держит notes в deps useAnchorRanges (иначе новая
+  // идентичность каждый рендер → перерегистрация listeners + форс-пересчёт
+  // геометрии). Паритет с document-comment-layer.
+  const engineNotes: AnchoredNote[] = useMemo(
+    () =>
+      notes.flatMap((n) => {
+        const engine = n.anchor ? toEngineAnchor(n.anchor) : null;
+        return engine ? [{ id: n.id, anchor: engine }] : [];
+      }),
+    [notes],
+  );
+  const cardById = useMemo(() => new Map(notes.map((n) => [n.id, n.card])), [notes]);
+  const engineIds = useMemo(() => new Set(engineNotes.map((n) => n.id)), [engineNotes]);
+  const ssrOnly = useMemo(() => notes.filter((n) => !engineIds.has(n.id)), [notes, engineIds]);
 
   return (
     <div className="flex flex-col gap-4" aria-label={t("marginColumnLabel")}>
