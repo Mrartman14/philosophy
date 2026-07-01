@@ -13,15 +13,9 @@ import { type AnchorDraft, useStableAnchorAction } from "@/components/anchor-eng
 import { useT } from "@/i18n/client";
 
 import { fromEngineAnchor } from "../anchor";
-import { PARENT_ENTITY_TYPES, type Anchor, type ParentEntityType } from "../types";
+import { isParentEntityType, type Anchor, type ParentEntityType } from "../types";
 
 import { AnnotationComposerDialog } from "./annotation-composer-dialog";
-
-// Type-guard на границе движок→слайс: draft.scope.entityType это string; сужаем к
-// ParentEntityType по рантайм-набору (document/glossary/media/comment).
-function isParentEntityType(value: string): value is ParentEntityType {
-  return (PARENT_ENTITY_TYPES as readonly string[]).includes(value);
-}
 
 // Стабильная module-scope ссылка предиката (defense-in-depth: движок ref-стабилизирует
 // appliesTo, но передаём константу, чтобы слайс физически не мог переинтродьюсить инлайн).

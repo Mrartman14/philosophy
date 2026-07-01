@@ -65,7 +65,9 @@ export default async function DocumentPage({ params, searchParams }: Props) {
       {/* Единый хост захвата выделения + аффорданса (PR3 dual-affordance fix):
           охватывает контент с data-ast-root И MarginNote с аннотациями. */}
       <SelectionAffordanceHost />
-      {/* Единственный page-level маунт действия «аннотировать» (id=annotation). */}
+      {/* Единственный page-level маунт действия «аннотировать» (id=annotation):
+          регистрирует действие ОДИН раз, независимо от числа скоупов. Suspense/null —
+          аффорданс невидим до выделения. */}
       <Suspense fallback={null}>
         <AnnotationCreateAffordance />
       </Suspense>

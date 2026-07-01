@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { AnchorDraft } from "@/components/anchor-engine";
@@ -10,7 +10,9 @@ vi.mock("@/i18n/client", () => ({ useT: () => (k: string) => k }));
 // jsdom не даёт живого Selection → перехватываем cfg, который компонент
 // регистрирует через useStableAnchorAction, и зовём onCreate синтетическим драфтом.
 let captured: { onCreate: (d: AnchorDraft) => void } | null = null;
-const registerSpy = vi.fn();
+// vi.hoisted: фабрика vi.mock поднимается выше module-scope const (единый идиом
+// с соседними тестами — иначе ссылка на spy в фабрике риск TDZ).
+const registerSpy = vi.hoisted(() => vi.fn());
 vi.mock("@/components/anchor-engine", () => ({
   useStableAnchorAction: (cfg: { onCreate: (d: AnchorDraft) => void }) => {
     registerSpy(cfg);
@@ -18,18 +20,21 @@ vi.mock("@/components/anchor-engine", () => ({
   },
 }));
 
-// Композер-диалог мокаем: выносим props в data-атрибуты для ассерта.
+// Композер-диалог мокаем: выносим props в data-атрибуты + кнопка close дёргает
+// onOpenChange(false) — так тестируем и открытие, и путь закрытия.
 vi.mock("./annotation-composer-dialog", () => ({
   AnnotationComposerDialog: ({
     parentEntityType,
     parentId,
     open,
     anchor,
+    onOpenChange,
   }: {
     parentEntityType?: string;
     parentId: string;
     open: boolean;
     anchor?: { exact?: string };
+    onOpenChange: (open: boolean) => void;
   }) =>
     open ? (
       <div
@@ -37,7 +42,17 @@ vi.mock("./annotation-composer-dialog", () => ({
         data-parent-entity-type={parentEntityType}
         data-parent-id={parentId}
         data-anchor-exact={anchor?.exact ?? ""}
-      />
+      >
+        <button
+          type="button"
+          data-testid="close"
+          onClick={() => {
+            onOpenChange(false);
+          }}
+        >
+          close
+        </button>
+      </div>
     ) : null,
 }));
 
@@ -102,6 +117,16 @@ describe("AnnotationSelectionComposer", () => {
       // "banner" — валидный backend parent, но НЕ из UI-набора PARENT_ENTITY_TYPES.
       onCreate()(draftIn("banner", "ban-1"));
     });
+    expect(screen.queryByTestId("composer")).toBeNull();
+  });
+
+  it("закрывает композер через onOpenChange(false)", () => {
+    render(<AnnotationSelectionComposer />);
+    act(() => {
+      onCreate()(draftIn("document", "doc-7"));
+    });
+    expect(screen.getByTestId("composer")).not.toBeNull();
+    fireEvent.click(screen.getByTestId("close"));
     expect(screen.queryByTestId("composer")).toBeNull();
   });
 });
