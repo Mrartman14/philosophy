@@ -8,9 +8,10 @@
 // block:center). Рендерит null.
 import { useEffect } from "react";
 
-import { commentNodeId, useScrollToCommentThread } from "../thread-scroll";
+import { commentIdFromHash, commentNodeId } from "@/utils/comment-anchor";
 
-const HASH_PREFIX = "#comment-";
+import { useScrollToCommentThread } from "../thread-scroll";
+
 const WAIT_TIMEOUT_MS = 10_000;
 // noop с непустым телом (void 0) — eslint no-empty-function запрещает `{}`.
 const noop = (): void => {
@@ -24,9 +25,7 @@ export function CommentHashScroll() {
     function run() {
       dispose(); // очистить прошлый наблюдатель при смене hash
       dispose = noop;
-      const hash = window.location.hash;
-      if (!hash.startsWith(HASH_PREFIX)) return;
-      const id = hash.slice(HASH_PREFIX.length);
+      const id = commentIdFromHash(window.location.hash);
       if (!id) return;
       if (document.getElementById(commentNodeId(id))) {
         scroll(id);

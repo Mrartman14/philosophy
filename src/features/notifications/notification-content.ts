@@ -1,5 +1,7 @@
 // src/features/notifications/notification-content.ts
 // Чистый client-safe дескриптор уведомления. Текст рендерится в компоненте через @/i18n.
+import { commentHash } from "@/utils/comment-anchor";
+
 import type { AppNotification, NotificationTargetType } from "./types";
 
 /**
@@ -55,7 +57,7 @@ export function describeNotification(n: AppNotification): NotificationDescriptor
       // comment-<id> (см. comment-tree.tsx / thread-scroll.ts). null-хост → нет ссылки.
       const commentHref =
         n.commentLectureId && n.targetId
-          ? `/lectures/${n.commentLectureId}#comment-${n.targetId}`
+          ? `/lectures/${n.commentLectureId}${commentHash(n.targetId)}`
           : null;
       return { kind: "commentReplied", count, href: commentHref };
     }

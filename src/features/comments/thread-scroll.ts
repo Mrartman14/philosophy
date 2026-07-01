@@ -7,9 +7,13 @@
 import { useCallback } from "react";
 
 import { useReducedMotion } from "@/components/appearance";
+import { commentNodeId } from "@/utils/comment-anchor";
 
-/** DOM-id узла корневого комментария в нижнем треде (стабильный контракт). */
-export const commentNodeId = (id: string): string => `comment-${id}`;
+// Ре-экспорт SOT DOM-контракта якоря из @/utils/comment-anchor (единый для
+// comments и notifications — Guardrail-2 запрещает cross-feature импорт). Шов
+// сохранён: существующие потребители (comment-tree.tsx, hash-scroll island)
+// импортируют commentNodeId отсюда.
+export { commentNodeId };
 
 /**
  * Хук-фабрика скролла к треду комментария по id. Возвращает стабильный коллбэк
