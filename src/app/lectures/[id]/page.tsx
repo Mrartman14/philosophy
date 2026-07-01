@@ -11,7 +11,12 @@ import {
 } from "@/components/anchor-engine";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { AnnotationCreateAffordance, DocumentAnnotations } from "@/features/annotations";
-import { CommentAnchorCreateAffordance, CommentSection, DocumentComments } from "@/features/comments";
+import {
+  CommentAnchorCreateAffordance,
+  CommentHashScroll,
+  CommentSection,
+  DocumentComments,
+} from "@/features/comments";
 import { DocumentDetail, getDocumentById } from "@/features/documents";
 import {
   canUpdateLecture,
@@ -176,6 +181,10 @@ export default async function LecturePage({ params, searchParams }: Props) {
           untitledLabel={t("lectureFormUntitled")}
         />
 
+        {/* Island: доскролливает к #comment-<id> из deep-link инбокса, когда
+            CommentSection дострима под Suspense (нативный fragment-scroll
+            ненадёжен). Рендерит null. */}
+        <CommentHashScroll />
         <Suspense fallback={<Skeleton className="h-48 w-full" />}>
           <CommentSection lectureId={id} query={cq} token={token} />
         </Suspense>

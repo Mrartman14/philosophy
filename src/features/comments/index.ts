@@ -55,6 +55,7 @@ export type {
 } from "./types";
 
 export { CommentSection } from "./ui/comment-section";
+export { CommentHashScroll } from "./ui/comment-hash-scroll";
 export { DocumentComments } from "./ui/document-comments";
 export { CommentAnchorCreateAffordance } from "./ui/comment-anchor-create-affordance";
 export { CommentTree } from "./ui/comment-tree";
