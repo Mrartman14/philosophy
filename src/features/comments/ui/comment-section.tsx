@@ -26,6 +26,8 @@ interface Props {
   lectureId: string;
   /** ?cq= из searchParams страницы лекции (поиск). */
   query?: string | undefined;
+  /** ?token= (share-link) — доступ к комментариям приватной лекции. */
+  token?: string | undefined;
 }
 
 /**
@@ -77,7 +79,7 @@ function renderContent(
   ) : null;
 }
 
-export async function CommentSection({ lectureId, query }: Props) {
+export async function CommentSection({ lectureId, query, token }: Props) {
   const [me, schema, t] = await Promise.all([
     getMe(),
     getCommentSchema(),
@@ -93,7 +95,9 @@ export async function CommentSection({ lectureId, query }: Props) {
   const searching = trimmed.length > 0 && canSearchComments(me);
 
   const [list, search, astSchema] = await Promise.all([
-    searching ? Promise.resolve(null) : getLectureComments(lectureId),
+    searching
+      ? Promise.resolve(null)
+      : getLectureComments(lectureId, token ? { token } : {}),
     searching ? searchComments(lectureId, trimmed) : Promise.resolve(null),
     getAstSchema(),
   ]);
