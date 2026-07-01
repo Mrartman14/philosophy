@@ -45,6 +45,14 @@ declare module "culori" {
   export function inGamut(
     mode: string,
   ): (color: Color | undefined) => boolean;
+
+  /**
+   * Serialise a Color (or CSS colour string) to an sRGB hex string.
+   * Returns `undefined` when the input is `undefined` / not a valid colour.
+   */
+  export function formatHex(
+    color: Color | string | undefined,
+  ): string | undefined;
 }
 
 // ---------------------------------------------------------------------------
