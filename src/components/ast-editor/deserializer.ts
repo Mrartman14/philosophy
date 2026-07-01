@@ -1,5 +1,6 @@
+import { TEXT_LEAF_NODE_TYPES } from "@/components/ast-content-map";
+
 import type { ProseMirrorJSON } from "./serializer";
-import { TEXT_LEAF_NODE_TYPES } from "./text-leaf-types";
 import type { AstBlock, AstNode, SchemaSnapshot } from "./types";
 
 const LEAF_BLOCK_TYPES = new Set(["code_block", "image", "thematic_break"]);

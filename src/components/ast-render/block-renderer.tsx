@@ -1,7 +1,13 @@
 // src/components/ast-render/block-renderer.tsx
 import type { ReactNode } from "react";
 
-import { HOLE, NODE_MAP, type AstNodeType, type NeutralSpec } from "@/components/ast-content-map";
+import {
+  HOLE,
+  NODE_MAP,
+  TEXT_LEAF_NODE_TYPES,
+  type AstNodeType,
+  type NeutralSpec,
+} from "@/components/ast-content-map";
 import { log } from "@/services/observability/client";
 
 import { InlineRenderer } from "./inline-renderer";
@@ -24,14 +30,6 @@ const BLOCK_CONTAINERS = new Set<AstNodeType>([
 // Inline-контейнеры: их content — inline-ноды (text/hard_break) → InlineRenderer.
 const INLINE_CONTAINERS = new Set<AstNodeType>(["paragraph", "heading", "table_cell"]);
 
-// Текст-листы: несут data-node-id (sub-block-якорь). table_cell — вложенный лист.
-const TEXT_LEAF_TYPES = new Set<AstNodeType>([
-  "paragraph",
-  "heading",
-  "code_block",
-  "table_cell",
-]);
-
 /**
  * Depth-aware identity поверх карты:
  *  - вложенный узел: СНЯТЬ data-block-id (block_id — только top-level; иначе
@@ -52,7 +50,7 @@ function applyIdentity(
   } else if (block.type === "table" && id) {
     attrs["data-block-id"] = id; // table: карта block-id опускает
   }
-  if (id && block.type && TEXT_LEAF_TYPES.has(block.type)) {
+  if (id && block.type && TEXT_LEAF_NODE_TYPES.has(block.type)) {
     attrs["data-node-id"] = id;
   }
   return attrs;
