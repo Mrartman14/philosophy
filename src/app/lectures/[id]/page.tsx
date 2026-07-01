@@ -11,7 +11,7 @@ import {
 } from "@/components/anchor-engine";
 import { MarginNote, RouterLink, Skeleton } from "@/components/ui";
 import { AnnotationCreateAffordance, DocumentAnnotations } from "@/features/annotations";
-import { CommentSection, DocumentComments } from "@/features/comments";
+import { CommentAnchorCreateAffordance, CommentSection, DocumentComments } from "@/features/comments";
 import { DocumentDetail, getDocumentById } from "@/features/documents";
 import {
   canUpdateLecture,
@@ -91,6 +91,10 @@ export default async function LecturePage({ params, searchParams }: Props) {
           аффорданс невидим до выделения. */}
       <Suspense fallback={null}>
         <AnnotationCreateAffordance />
+      </Suspense>
+      {/* Единственный page-level маунт действия «заякоренный комментарий» (id=comment-anchor). */}
+      <Suspense fallback={null}>
+        <CommentAnchorCreateAffordance lectureId={id} />
       </Suspense>
       <div className="flex flex-col gap-8 p-4">
         {/* Тулбар действий: владелец — правка; залогинен — подписка; офлайн;

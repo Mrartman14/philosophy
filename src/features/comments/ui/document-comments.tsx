@@ -1,14 +1,13 @@
 // src/features/comments/ui/document-comments.tsx
-// Server-сборщик левого поля: заякоренные на текущий документ комментарии →
-// превью-карточки → client-коннектор (CommentAnchorScope → rail tone "comment").
-// Под SchemaContextProvider, т.к. композер монтирует AstEditor. Заякоренные комменты
-// ВИДНЫ и в нижнем треде — это поле подсветка+позиционирование+выноски (доп. доступ).
-import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
-import { getAstSchema } from "@/components/ast-editor/schema-server";
+// Server-сборщик левого поля: заякоренные на текущий документ комментарии → превью-карточки
+// → client-коннектор (CommentAnchorScope → rail tone "comment"). Композер создания ушёл на
+// page-level (CommentAnchorCreateAffordance) → здесь больше НЕ нужен SchemaContextProvider/
+// AST-схема: rail рендерит только read-превью. Заякоренные комменты видны и в нижнем треде —
+// это поле лишь подсветка+позиционирование+выноски (доп. доступ).
 import { getMe } from "@/utils/me";
 
 import { selectAnchoredRoots } from "../anchored";
-import { getCommentSchema, getLectureComments } from "../api";
+import { getLectureComments } from "../api";
 import { canCreateComment } from "../permissions";
 
 import { CommentAnchorScope, type CommentAnchorNote } from "./comment-anchor-scope";
@@ -24,16 +23,14 @@ export async function DocumentComments({
   /** ?token= (share-link) — доступ к комментариям приватной лекции. */
   token?: string | undefined;
 }) {
-  const [me, schema, list, astSchema] = await Promise.all([
+  const [me, list] = await Promise.all([
     getMe(),
-    getCommentSchema(),
     getLectureComments(lectureId, token ? { token } : {}),
-    getAstSchema(),
   ]);
 
-  if (!schema) return null;
-
   const anchored = selectAnchoredRoots(list.subtrees, documentId);
+  // Пустое поле без права создавать нечего показывать. При наличии права колонку
+  // держим (page-level композер положит новые заякоренные комменты сюда после ревалидации).
   if (anchored.length === 0 && !canCreateComment(me)) return null;
 
   const notes: CommentAnchorNote[] = anchored.map((a) => ({
@@ -42,15 +39,5 @@ export async function DocumentComments({
     preview: <CommentPreviewCard comment={a.root} replyCount={a.replyCount} />,
   }));
 
-  return (
-    <SchemaContextProvider initial={astSchema}>
-      <CommentAnchorScope
-        lectureId={lectureId}
-        documentId={documentId}
-        rootTypes={schema.allowed_roots ?? []}
-        notes={notes}
-        canCreate={canCreateComment(me)}
-      />
-    </SchemaContextProvider>
-  );
+  return <CommentAnchorScope documentId={documentId} notes={notes} />;
 }
