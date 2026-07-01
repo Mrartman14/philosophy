@@ -2,8 +2,9 @@
 // src/features/preferences/ui/comment-reply-notify-toggle.tsx
 // Instant-toggle глобального уведомления об ответах на комментарии
 // (preference.notify_on_comment_reply). Оптимистичный флип + откат при ошибке;
-// на успехе router.refresh() перечитывает getPreferences на странице. Паттерн —
-// HistoryTrackingToggle, но недеструктивно (без ConfirmDialog).
+// на успехе router.refresh() перечитывает getPreferences на странице. Паттерн
+// instant-toggle Checkbox+Label — как form-builder-field-row / lecture-tags-form
+// (недеструктивно, без ConfirmDialog).
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 

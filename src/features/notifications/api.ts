@@ -52,6 +52,8 @@ export const getNotifications = cache(
     if (error) throw new Error(error.error ?? (await getT("notifications"))("api.loadNotificationsFailed"));
     const items = (data.data ?? []).map(normalizeNotification);
     // Обогащаем comment.replied хост-лекцией параллельно (N+1, мягкая деградация).
+    // In-place mutation безопасна: объекты только что созданы normalizeNotification
+    // внутри memoized-тела cache() — внешних ссылок на них нет.
     await Promise.all(
       items.map(async (n) => {
         if (n.type === "comment.replied" && n.targetId) {

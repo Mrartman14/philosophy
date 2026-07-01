@@ -28,7 +28,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
     const base = t("fallback");
     text = d.count > 1 ? `${base} (${d.count})` : base;
   } else {
-    // documentUpdated | lectureUpdated | canvasUpdated — ICU-plural по count (group_count)
+    // documentUpdated | lectureUpdated | canvasUpdated | commentReplied — ICU-plural по count (group_count)
     text = t(d.kind, { count: d.count });
   }
 
