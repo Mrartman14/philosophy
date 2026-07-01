@@ -45,9 +45,9 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNot
   // фокус «скакал» бы (WCAG 2.4.3 Focus Order). На narrow порядок пуст → поток
   // во входном порядке (там DOM-порядок и так = визуальному).
   const [order, setOrder] = useState<string[]>([]);
-  // Wide-гейт — общий хук useWide (единый порог WIDE, тот же, что у выносок и
-  // wide-гейта слайсов): в поток на narrow, абсолют по якорю на wide. SSR/jsdom без
-  // matchMedia → false (хук деградирует в поток, не бросает).
+  // Wide-гейт — общий хук useWide (container-детект .page-shell, тот же, что у
+  // выносок и wide-гейта слайсов): в поток на narrow, абсолют по якорю на wide.
+  // SSR/jsdom/нет .page-shell → false (хук деградирует в поток, не бросает).
   const wide = useWide();
   // Бампится при изменении высоты любой карточки (разворот ClampableContent,
   // догрузка картинки, шрифт) — форсит restack ниже. Чинит латентный баг: ранее

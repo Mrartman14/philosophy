@@ -3,10 +3,11 @@ import { afterEach, describe, it, expect, vi } from "vitest";
 
 import { MarginNotesColumn, type ColumnNote } from "./margin-notes-column";
 
-// jsdom: getBoundingClientRect/offsetHeight → нули, window.matchMedia ОТСУТСТВУЕТ.
-// Компонент несёт defensive-guard (typeof window.matchMedia !== "function" → wide=false),
-// поэтому деградирует в чистый поток-список и НЕ падает. Реальное абсолютное
-// позиционирование/распорка/раздвижка — ручной QA (Task 20).
+// Wide-гейт колонки — useWide() (container-детект; реальную геометрию тестируют
+// use-wide.test/breakpoints.test). Мокаем его напрямую: wideState → узкий/широкий.
+// jsdom не делает layout, реальное позиционирование — ручной QA (Task 20).
+let wideState = false;
+vi.mock("./use-wide", () => ({ useWide: () => wideState }));
 
 const noRect = () => null;
 
@@ -21,9 +22,10 @@ function makeNotes(): ColumnNote[] {
 describe("MarginNotesColumn (smoke)", () => {
   afterEach(() => {
     cleanup();
+    wideState = false;
   });
 
-  it("монтируется без throw при отсутствующем window.matchMedia (jsdom)", () => {
+  it("монтируется без throw при wide=false (jsdom, деградация в поток)", () => {
     expect(() => {
       render(
         <MarginNotesColumn
@@ -50,7 +52,7 @@ describe("MarginNotesColumn (smoke)", () => {
     expect(screen.getByText("note-orphan")).toBeTruthy();
   });
 
-  it("на узких (нет matchMedia → wide=false) карточки в потоке, без position:absolute", () => {
+  it("на узких (wide=false) карточки в потоке, без position:absolute", () => {
     const { container } = render(
       <MarginNotesColumn
         notes={makeNotes()}
@@ -112,11 +114,10 @@ describe("MarginNotesColumn (smoke)", () => {
   });
 
   it("на wide карточки идут в DOM в порядке якоря, а не во входном (таб-порядок = визуальному)", () => {
-    // wide=true через mock matchMedia; tops якорей задаём через getAnchorRect.
+    // wide=true через мок useWide; tops якорей задаём через getAnchorRect.
     // jsdom не делает layout, но getAnchorRect — наш проп, а container top = 0,
     // поэтому resolveStack получает реальные tops и отдаёт порядок [b,c,a].
-    const mql = { matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() };
-    vi.stubGlobal("matchMedia", vi.fn().mockReturnValue(mql));
+    wideState = true;
     const tops: Record<string, number> = { a: 200, b: 0, c: 100 };
     const rectFor = (id: string) => ({ top: tops[id] }) as DOMRect;
     const notes: ColumnNote[] = [
@@ -137,7 +138,6 @@ describe("MarginNotesColumn (smoke)", () => {
       el.getAttribute("data-note-card-wrapper"),
     );
     expect(ids).toEqual(["b", "c", "a"]);
-    vi.unstubAllGlobals();
   });
 
   it("ResizeObserver карточки → пересчёт раскладки (restack при смене высоты)", () => {
@@ -153,8 +153,7 @@ describe("MarginNotesColumn (smoke)", () => {
         disconnect = vi.fn();
       },
     );
-    const mql = { matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() };
-    vi.stubGlobal("matchMedia", vi.fn().mockReturnValue(mql));
+    wideState = true;
     const tops: Record<string, number> = { a: 0, b: 100 };
     const getRect = vi.fn((id: string) => ({ top: tops[id] }) as DOMRect);
     const notes: ColumnNote[] = [

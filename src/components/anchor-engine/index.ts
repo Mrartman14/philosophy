@@ -24,7 +24,8 @@ export {
 // useRegisterRailScope. useRailScopes читает ТОЛЬКО MarginRail (относительным
 // импортом) — в публичный barrel не выносим.
 export { useRegisterRailScope } from "./use-rail-scopes";
-// Единый wide-гейт rail (один порог WIDE): слайсы решают inline-vs-rail. Саму
-// media-константу WIDE держим внутренней (breakpoints.ts) — слайсам нужен только хук.
+// Единый wide-гейт rail (container-детект .page-shell, scale-инвариантно): слайсы
+// решают inline-vs-rail. Само измерение (isMarginaliaWide) держим внутренним
+// (breakpoints.ts) — слайсам нужен только реактивный хук.
 export { useWide } from "./use-wide";
 export type { TextAnchor, AnchoredNote, AnchorDraft } from "./types";

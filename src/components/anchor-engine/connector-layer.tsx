@@ -10,7 +10,7 @@
 import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { WIDE } from "./breakpoints";
+import { isMarginaliaWide } from "./breakpoints";
 import { anchorAttachY, attachYs, connectorPath } from "./connector-geometry";
 import { cssEscape } from "./css-escape";
 import { toneColor, type Tone } from "./tone";
@@ -40,8 +40,9 @@ function measure(
   getRootRect: (id: string) => DOMRect | null,
   rectIds: Set<string>,
 ): Seg[] {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return [];
-  if (!window.matchMedia(WIDE).matches) return [];
+  // Только на wide (поля раскрыты) — иначе линии пересекли бы текст. Тот же
+  // container-детект, что у useWide/колонки → включаются синхронно с CSS-полями.
+  if (!isMarginaliaWide()) return [];
   const segs: Seg[] = [];
   for (const id of ids) {
     const a = getAnchorRect(id);

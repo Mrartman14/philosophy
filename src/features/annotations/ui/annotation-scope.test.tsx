@@ -2,7 +2,7 @@
 // Интеграционная канарейка регресса миграции Task 9: РЕАЛЬНЫЙ AnnotationScope
 // (а не синтетический rail-entry) находит размеченный корень [data-anchor-scope],
 // маппит снейк-кейс якорь в движковый и регистрирует заякоренную карточку в rail.
-// matchMedia → wide=true (иначе scope держит карточки inline и в rail не пишет);
+// useWide → true (мок ниже; иначе scope держит карточки inline и в rail не пишет);
 // после mount карточка отрисована rail'ом (data-note-card), inline-дубль погашен.
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -12,6 +12,10 @@ import { AnchorScopeProvider, MarginRail } from "@/components/anchor-engine";
 import { AnnotationScope } from "./annotation-scope";
 
 vi.mock("@/i18n/client", () => ({ useT: () => (k: string) => k }));
+// wide=true через мок useWide (scope на container-детекте, не matchMedia): barrel-
+// реэкспорт и relative-импорт колонки резолвятся в тот же модуль → один мок покрывает
+// и AnnotationScope, и MarginNotesColumn.
+vi.mock("@/components/anchor-engine/use-wide", () => ({ useWide: () => true }));
 
 function rect(): DOMRect {
   return {
@@ -21,16 +25,9 @@ function rect(): DOMRect {
   } as DOMRect;
 }
 
-// matchMedia → wide=true (иначе scope держит карточки inline, в rail не регистрирует).
 // Под wide rail зовёт геометрию якоря/выносок: jsdom не реализует layout у Range —
 // стабим getBoundingClientRect/getClientRects (значения не важны, проверяем регистрацию).
 beforeEach(() => {
-  vi.stubGlobal("matchMedia", (q: string) => ({
-    matches: true,
-    media: q,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  }));
   if (typeof Range !== "undefined") {
     Range.prototype.getBoundingClientRect = () => rect();
     Range.prototype.getClientRects = () => [] as unknown as DOMRectList;

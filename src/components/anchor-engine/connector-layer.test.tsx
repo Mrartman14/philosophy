@@ -4,17 +4,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ConnectorLayer } from "./connector-layer";
 
+// Wide-гейт connector-а теперь isMarginaliaWide() (container-детект, см.
+// breakpoints.test для реальной геометрии). Управляем им напрямую; имя stubMatch
+// сохранено — прежние вызовы stubMatch(true/false) продолжают форсить wide.
+let wideState = false;
+vi.mock("./breakpoints", () => ({
+  isMarginaliaWide: () => wideState,
+}));
 function stubMatch(matches: boolean) {
-  vi.stubGlobal("matchMedia", (q: string) => ({
-    matches,
-    media: q,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    onchange: null,
-    dispatchEvent: vi.fn(),
-  }));
+  wideState = matches;
 }
 
 function rect(o: Partial<DOMRect>): DOMRect {

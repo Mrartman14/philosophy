@@ -1,28 +1,49 @@
 "use client";
 // src/components/anchor-engine/use-wide.ts
-// Единый wide-гейт движка маргиналий: matchMedia(WIDE) с подпиской на смену.
-// Дублировался инлайн (annotation-scope, comment-anchor-scope) — извлечён сюда,
-// чтобы гейт жил в ОДНОМ хуке. Медиа-порог берём из ЕДИНОЙ константы WIDE
-// (breakpoints.ts) — тот же, что у колонки карточек и выносок, иначе rail включался
-// бы рассинхронно. SSR → false (рисуем inline-фолбэк под телом скоупа), после mount
-// поднимаем при совпадении media. Guard на отсутствие matchMedia (jsdom/SSR) →
-// остаётся false, не подписывается, не бросает.
+// Реактивный wide-гейт движка маргиналий поверх isMarginaliaWide() (container-детект
+// .page-shell, scale-инвариантно — см. breakpoints.ts). Дублировался инлайн
+// (annotation-scope, comment-anchor-scope) — извлечён сюда, чтобы гейт жил в ОДНОМ
+// хуке, синхронно с колонкой карточек и выносками.
+//
+// Пересчёт по двум каналам:
+//  • ResizeObserver на .page-shell — смена inline-size контейнера (ресайз окна,
+//    открытие/закрытие сайдбара) двигает ширину относительно порога;
+//  • MutationObserver на <html> — смена `--text-scale`/атрибутов темы меняет
+//    font-size контейнера → порог (80em × fontSize) сдвигается БЕЗ смены ширины,
+//    поэтому ResizeObserver бы это пропустил;
+//  • window.resize — дешёвый фолбэк (нет ResizeObserver / контейнер найден позже).
+//
+// SSR / нет .page-shell → false (рисуем inline-фолбэк под телом скоупа), после mount
+// поднимаем при совпадении. Guards на отсутствие API (jsdom) → остаётся false, не бросает.
 import { useEffect, useState } from "react";
 
-import { WIDE } from "./breakpoints";
+import { isMarginaliaWide, PAGE_SHELL_SELECTOR } from "./breakpoints";
 
 export function useWide(): boolean {
   const [wide, setWide] = useState(false);
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia(WIDE);
+    if (typeof document === "undefined" || typeof window === "undefined") return;
     const sync = () => {
-      setWide(mq.matches);
+      setWide(isMarginaliaWide());
     };
     sync();
-    mq.addEventListener("change", sync);
+
+    const shell = document.querySelector<HTMLElement>(PAGE_SHELL_SELECTOR);
+    let ro: ResizeObserver | undefined;
+    if (shell && typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(sync);
+      ro.observe(shell);
+    }
+    let mo: MutationObserver | undefined;
+    if (typeof MutationObserver !== "undefined") {
+      mo = new MutationObserver(sync);
+      mo.observe(document.documentElement, { attributes: true });
+    }
+    window.addEventListener("resize", sync);
     return () => {
-      mq.removeEventListener("change", sync);
+      ro?.disconnect();
+      mo?.disconnect();
+      window.removeEventListener("resize", sync);
     };
   }, []);
   return wide;
