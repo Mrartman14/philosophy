@@ -242,7 +242,7 @@ describe("getNotifications — commentLectureId enrichment", () => {
 
     const { items } = await getNotifications();
 
-    expect(items[0].commentLectureId).toBeNull();
+    expect(items[0]).toMatchObject({ commentLectureId: null });
   });
 
   it("не дергает GET комментария для не-comment-типов (commentLectureId=null)", async () => {
@@ -257,7 +257,7 @@ describe("getNotifications — commentLectureId enrichment", () => {
 
     const { items } = await getNotifications();
 
-    expect(items[0].commentLectureId).toBeNull();
+    expect(items[0]).toMatchObject({ commentLectureId: null });
     // единственный GET — за уведомлениями; за комментом не ходили
     expect(getMock).toHaveBeenCalledOnce();
   });

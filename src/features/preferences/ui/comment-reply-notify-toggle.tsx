@@ -8,7 +8,7 @@
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 
-import { Checkbox, Label, Stack, useToast } from "@/components/ui";
+import { Checkbox, Inline, Label, Stack, useToast } from "@/components/ui";
 import { useT } from "@/i18n/client";
 import { toastActionError } from "@/utils/action-toast";
 
@@ -50,7 +50,7 @@ export function CommentReplyNotifyToggle({ initialEnabled, canManage }: Props) {
 
   return (
     <Stack>
-      <div className="flex items-center gap-2">
+      <Inline gap="tight">
         <Checkbox
           id={id}
           checked={enabled}
@@ -60,7 +60,7 @@ export function CommentReplyNotifyToggle({ initialEnabled, canManage }: Props) {
           }}
         />
         <Label htmlFor={id}>{t("commentReplyNotifyLabel")}</Label>
-      </div>
+      </Inline>
       <p className="text-sm text-(--color-fg-muted)">
         {t("commentReplyNotifyDescription")}
       </p>
