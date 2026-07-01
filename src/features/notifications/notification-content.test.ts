@@ -8,7 +8,7 @@ function make(p: Partial<AppNotification>): AppNotification {
   return {
     id: "n1", type: null, reason: null, actorId: null, actorName: null, targetId: null,
     targetType: null, targetVersion: null, groupCount: 1,
-    readAt: null, seenAt: null, createdAt: null, ...p,
+    readAt: null, seenAt: null, createdAt: null, commentLectureId: null, ...p,
   };
 }
 
@@ -37,6 +37,18 @@ describe("describeNotification", () => {
     expect(describeNotification(make({ type: "document.updated", targetType: "document" })).href).toBeNull();
   });
   it("off-contract target_type → href null", () => {
-    expect(describeNotification(make({ type: "document.updated", targetType: "comment" as never, targetId: "x1" })).href).toBeNull();
+    expect(describeNotification(make({ type: "document.updated", targetType: "media" as never, targetId: "x1" })).href).toBeNull();
+  });
+  it("comment.replied → commentReplied + deep-link на ответ", () => {
+    const d = describeNotification(
+      make({ type: "comment.replied", targetType: "comment", targetId: "cmt-9", commentLectureId: "lec-42", groupCount: 2 }),
+    );
+    expect(d).toEqual({ kind: "commentReplied", count: 2, href: "/lectures/lec-42#comment-cmt-9" });
+  });
+  it("comment.replied без резолвнутой лекции → href null", () => {
+    const d = describeNotification(
+      make({ type: "comment.replied", targetType: "comment", targetId: "cmt-9", commentLectureId: null }),
+    );
+    expect(d).toEqual({ kind: "commentReplied", count: 1, href: null });
   });
 });

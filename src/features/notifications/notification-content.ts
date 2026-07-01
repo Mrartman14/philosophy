@@ -11,6 +11,7 @@ export type NotificationDescriptor =
   | { kind: "documentUpdated"; count: number; href: string | null }
   | { kind: "lectureUpdated"; count: number; href: string | null }
   | { kind: "canvasUpdated"; count: number; href: string | null }
+  | { kind: "commentReplied"; count: number; href: string | null }
   | { kind: "raw"; count: number; href: string | null };
 
 /** Fallback-ссылка на сущность по target_type. */
@@ -49,6 +50,15 @@ export function describeNotification(n: AppNotification): NotificationDescriptor
       return { kind: "lectureUpdated", count, href };
     case "canvas.updated":
       return { kind: "canvasUpdated", count, href };
+    case "comment.replied": {
+      // Коммент живёт в /lectures/{id}; deep-link по стабильному DOM-контракту
+      // comment-<id> (см. comment-tree.tsx / thread-scroll.ts). null-хост → нет ссылки.
+      const commentHref =
+        n.commentLectureId && n.targetId
+          ? `/lectures/${n.commentLectureId}#comment-${n.targetId}`
+          : null;
+      return { kind: "commentReplied", count, href: commentHref };
+    }
     default:
       return { kind: "raw", count, href };
   }

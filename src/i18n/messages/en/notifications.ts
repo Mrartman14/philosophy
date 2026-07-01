@@ -7,6 +7,8 @@ const notifications = {
     "{count, plural, one{A lecture you follow was updated} other{A lecture you follow was updated # times}}",
   canvasUpdated:
     "{count, plural, one{A canvas you follow was updated} other{A canvas you follow was updated # times}}",
+  commentReplied:
+    "{count, plural, one{New reply to your comment} other{# new replies to your comment}}",
   fallback: "New notification",
   byActor: "by {actor}",
 

@@ -4,6 +4,7 @@ const notifications = {
   documentUpdated: "{count, plural, other{您订阅的文档已更新 # 次}}",
   lectureUpdated: "{count, plural, other{您订阅的讲座已更新 # 次}}",
   canvasUpdated: "{count, plural, other{您订阅的画布已更新 # 次}}",
+  commentReplied: "{count, plural, other{您的评论有 # 条新回复}}",
   fallback: "新通知",
   byActor: "由 {actor}",
 
