@@ -21,13 +21,9 @@ function rect(): DOMRect {
   } as DOMRect;
 }
 
-// useWide → true (иначе scope держит карточки inline, в rail не регистрирует).
-// useWide мерит size-контейнер .page-shell: clientWidth ≥ 80 × font-size(px).
-// jsdom не считает layout — стабим clientWidth (широкий) + getComputedStyle(font)
-// + ResizeObserver (паттерн use-wide.test). matchMedia стабим тоже (connector-layer
-// и прочие потребители). Под wide rail зовёт геометрию якоря/выносок: jsdom не
-// реализует layout у Range — стабим getBoundingClientRect/getClientRects (значения
-// не важны, проверяем регистрацию).
+// matchMedia → wide=true (иначе scope держит карточки inline, в rail не регистрирует).
+// Под wide rail зовёт геометрию якоря/выносок: jsdom не реализует layout у Range —
+// стабим getBoundingClientRect/getClientRects (значения не важны, проверяем регистрацию).
 beforeEach(() => {
   vi.stubGlobal("matchMedia", (q: string) => ({
     matches: true,
@@ -35,28 +31,6 @@ beforeEach(() => {
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
   }));
-  // .page-shell широкий (2000px) при font 16px → 2000 ≥ 80 × 16 = 1280 → wide.
-  Object.defineProperty(HTMLElement.prototype, "clientWidth", {
-    configurable: true,
-    get(this: HTMLElement) {
-      return this.classList.contains("page-shell") ? 2000 : 0;
-    },
-  });
-  const realGCS = window.getComputedStyle.bind(window);
-  vi.stubGlobal("getComputedStyle", (el: Element, pseudo?: string | null) => {
-    if (el instanceof HTMLElement && el.classList.contains("page-shell")) {
-      return { fontSize: "16px" } as CSSStyleDeclaration;
-    }
-    return realGCS(el, pseudo ?? undefined);
-  });
-  vi.stubGlobal(
-    "ResizeObserver",
-    class {
-      observe = vi.fn();
-      unobserve = vi.fn();
-      disconnect = vi.fn();
-    },
-  );
   if (typeof Range !== "undefined") {
     Range.prototype.getBoundingClientRect = () => rect();
     Range.prototype.getClientRects = () => [] as unknown as DOMRectList;
@@ -67,15 +41,12 @@ afterEach(() => {
   cleanup();
   document.body.innerHTML = "";
   vi.unstubAllGlobals();
-  // @ts-expect-error снять override прототипа (вернётся реализация jsdom)
-  delete HTMLElement.prototype.clientWidth;
 });
 
 describe("AnnotationScope (migration regression)", () => {
   it("находит размеченный корень, регистрирует заякоренную карточку в rail (wide)", async () => {
-    // Обёртка .page-shell — size-контейнер, который useWide мерит для wide-гейта.
     document.body.innerHTML =
-      '<main class="page-shell"><div data-anchor-scope="document:d1"><p data-block-id="b1">alpha beta</p></div></main>';
+      '<div data-anchor-scope="document:d1"><p data-block-id="b1">alpha beta</p></div>';
     const notes = [
       {
         id: "n1",

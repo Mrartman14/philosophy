@@ -108,7 +108,7 @@ export function AnnotationScope({
   }, [parentEntityType, parentId]);
   const ready = rootEl !== null;
 
-  // Wide-гейт (общий useWide, тот же контейнер-порог, что раскрытие полей): на
+  // Wide-гейт (общий useWide, та же media WIDE_MEDIA, что MarginNotesColumn): на
   // narrow карточки текут inline ПОД своим телом (локальность спеки), в rail
   // регистрируем ТОЛЬКО на wide. SSR → false (показываем inline-фолбэк), после mount
   // поднимаем при совпадении.
