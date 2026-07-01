@@ -46,7 +46,7 @@ export const getMyMedia = cache(
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
     const query: {
-      scope: string;
+      scope: "mine";
       offset: number;
       limit: number;
       free_floating?: boolean;

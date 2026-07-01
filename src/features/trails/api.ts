@@ -101,7 +101,7 @@ export const getAdminTrails = cache(
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const query: { scope: string; offset: number; limit: number; owner_id?: string } = {
+    const query: { scope: "all"; offset: number; limit: number; owner_id?: string } = {
       scope: SCOPE_ALL,
       offset,
       limit,
