@@ -170,16 +170,21 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
 
   // Оверлей: rect-якоря ВСЕГДА (Highlight API их не берёт) + линейные ТОЛЬКО когда
   // Highlight API не поддержан. Активный — в activeRects (annotation-overlay--active).
-  const overlayRects: DOMRect[] = [];
-  const activeOverlayRects: DOMRect[] = [];
-  if (highlightEnabled) {
-    for (const [id, g] of geometries) {
-      if (!g) continue;
-      const toOverlay = g.kind === "rect" || !controller.supported;
-      if (!toOverlay) continue;
-      (id === emphasizedId ? activeOverlayRects : overlayRects).push(...g.clientRects);
+  // useMemo: стабильная идентичность массивов между recompute'ами → HighlightOverlay
+  // useLayoutEffect не перезапускается зря.
+  const { overlayRects, activeOverlayRects } = useMemo(() => {
+    const rects: DOMRect[] = [];
+    const active: DOMRect[] = [];
+    if (highlightEnabled) {
+      for (const [id, g] of geometries) {
+        if (!g) continue;
+        const toOverlay = g.kind === "rect" || !controller.supported;
+        if (!toOverlay) continue;
+        (id === emphasizedId ? active : rects).push(...g.clientRects);
+      }
     }
-  }
+    return { overlayRects: rects, activeOverlayRects: active };
+  }, [geometries, emphasizedId, highlightEnabled, controller]);
 
   return (
     <>
