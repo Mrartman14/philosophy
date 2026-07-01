@@ -77,3 +77,11 @@ schema.ts перегенерирован незакоммиченным в main)
 При мерже потребуется ребейз движка под `node_id` (`data-block-id`→`data-node-id`,
 `start_block_id`→`start_node_id`) — адресация инкапсулирована в `anchor-to-range`/
 `anchor-from-selection`/`text-anchor`, развязка scope+rail ортогональна.
+
+## Follow-up после комплексной проверки (2026-07-01)
+
+- **80em-выравнивание wide-гейта (foundation):** JS wide-детект (`useWide` + `margin-notes-column` + `connector-layer`) сейчас на вьюпортном `matchMedia("(min-width: 80rem)")` — согласован между собой, но дрейфует от CSS-раскрытия полей `@container page-shell (min-width: 80em)` (scale-инвариантного). При не-дефолтном `--text-scale` возможен рассинхрон rail↔CSS. Перевести ВСЕ ТРИ примитива на единый container-детект (`.page-shell` clientWidth ≥ 80 × container font-size, ResizeObserver) ОДНИМ foundation-PR. (Пробная реализация useWide была откачена — половинчатая давала внутренний мисматч; делать целиком.)
+- **id-действие page-level (архитектура, опц.):** `AnnotationCreateAction`/`CommentAnchorCreateAction` регистрируются из per-scope `AnnotationScope` (N+1 монтирований, один выживший action под фикс-`id`). C1-loop и маршрутизация уже КОРРЕКТНЫ (стабилизация appliesTo + composer следует за draft.scope), это лишь элегантность/перф. Follow-up: поднять create-действие + композер (+ провижн AST-схемы) на уровень страницы — одна регистрация by construction.
+- **token в комментарии/аннотации:** проброс сделан на `main` (коммиты fede5a61/cbf5f83c параллельного окружения); на ветке фичи придёт при node_id-ребейзе (там доделается ветко-специфичное — `getAllLectureAnnotations`/`comment-node`). Бэк-ГАП: `GET /api/lectures/{id}/comments` не объявляет `token` в OpenAPI-query (стопгап `as never` в `getLectureComments`) — добавить в схему + подтвердить shareTokenMW.
+- **Бэк-аск (limit cap):** подтвердить максимальный `limit` на `GET /api/lectures/{id}/annotations` (FE-цикл `getAllLectureAnnotations` уже устойчив к клампу, но оптимальный размер страницы зависит от cap).
+- **Мёртвая ветка `astRootRef`** в `connector-layer.tsx` (после удаления MarginAnchorLayer) — trim тем же 80em/foundation-PR.
