@@ -131,4 +131,41 @@ describe("MarginAnchorLayer (smoke)", () => {
       g.Highlight = savedHL;
     }
   });
+
+  it("rect-якорь: карточка присутствует в колонке (потребление наследуется)", () => {
+    function RectCardHarness() {
+      const ref = useRef<HTMLDivElement>(null);
+      return (
+        <div>
+          <div ref={ref} data-ast-root>
+            <table data-block-id="t1">
+              <tbody>
+                <tr>
+                  <td data-node-id="c1">aa</td>
+                  <td data-node-id="c2">bb</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <MarginAnchorLayer
+            astRootRef={ref}
+            notes={[
+              {
+                id: "r1",
+                anchor: { startBlockId: "t1", endBlockId: "t1", startNodeId: "c1", endNodeId: "c2", startChar: 0, endChar: 2, exact: "aabb" },
+              },
+            ]}
+            highlightEnabled
+            canCreate={false}
+            onCreateRequest={() => undefined}
+            affordanceLabel="Add"
+            renderNote={(n) => <span>card:{n.id}</span>}
+          />
+        </div>
+      );
+    }
+    render(<RectCardHarness />);
+    // rect-нота порождает доступную карточку (anchored или orphan — renderNote для обоих).
+    expect(screen.getByText(/card:r1/)).toBeTruthy();
+  });
 });

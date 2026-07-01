@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { act, cleanup, render } from "@testing-library/react";
 import { useRef } from "react";
 import { afterEach, describe, it, expect } from "vitest";
 
@@ -74,5 +74,59 @@ describe("useSelectionCapture (smoke)", () => {
       document.dispatchEvent(new Event("selectionchange"));
     }).not.toThrow();
     expect(last(seen).draft).toBeNull();
+  });
+
+  it("кросс-ячеечное выделение одной таблицы → draft с прямоугольным якорем (device-agnostic)", () => {
+    // Тач-капчур неотличим от указательного: обе подписки (touchend/pointerup) идут
+    // в ОДИН onPointerUp → идентичный recompute из window.getSelection(). Строим
+    // РЕАЛЬНОЕ кросс-ячеечное Selection и проверяем ПОЛНЫЙ путь до draft.anchor.
+    //
+    // jsdom-Range не имеет getBoundingClientRect (recompute бросил бы на непустом
+    // якоре) — стабим на время теста, чтобы дойти до setDraft. Стаб восстанавливаем.
+    const proto = Range.prototype as { getBoundingClientRect?: () => DOMRect };
+    const saved = proto.getBoundingClientRect;
+    proto.getBoundingClientRect = () => new DOMRect(0, 0, 10, 10);
+    try {
+      const seen: Probe[] = [];
+      function TableHarness() {
+        const rootRef = useRef<HTMLElement | null>(null);
+        seen.push(useSelectionCapture({ rootRef, enabled: true }));
+        return (
+          <div
+            ref={(el) => {
+              rootRef.current = el;
+            }}
+          >
+            <table data-block-id="t1">
+              <tbody>
+                <tr>
+                  <td data-node-id="c1">aa</td>
+                  <td data-node-id="c2">bb</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+      render(<TableHarness />);
+      // eslint-disable-next-line testing-library/no-node-access -- нужен text-node ячейки для построения Range (TL-методы его не дают)
+      const c1 = must(document.querySelector('[data-node-id="c1"]')).firstChild as Text;
+      // eslint-disable-next-line testing-library/no-node-access -- нужен text-node ячейки для построения Range (TL-методы его не дают)
+      const c2 = must(document.querySelector('[data-node-id="c2"]')).firstChild as Text;
+      const range = document.createRange();
+      range.setStart(c1, 0);
+      range.setEnd(c2, 2);
+      const sel = must(window.getSelection());
+      sel.removeAllRanges();
+      sel.addRange(range);
+      // touchend (тач) → тот же onPointerUp, что pointerup → device-agnostic.
+      act(() => {
+        document.dispatchEvent(new Event("touchend"));
+      });
+      expect(last(seen).draft?.anchor).toMatchObject({ startNodeId: "c1", endNodeId: "c2" });
+    } finally {
+      if (saved) proto.getBoundingClientRect = saved;
+      else delete proto.getBoundingClientRect;
+    }
   });
 });
