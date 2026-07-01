@@ -84,4 +84,25 @@ schema.ts перегенерирован незакоммиченным в main)
 - **id-действие page-level (архитектура, опц.):** `AnnotationCreateAction`/`CommentAnchorCreateAction` регистрируются из per-scope `AnnotationScope` (N+1 монтирований, один выживший action под фикс-`id`). C1-loop и маршрутизация уже КОРРЕКТНЫ (стабилизация appliesTo + composer следует за draft.scope), это лишь элегантность/перф. Follow-up: поднять create-действие + композер (+ провижн AST-схемы) на уровень страницы — одна регистрация by construction.
 - **token в комментарии/аннотации:** проброс сделан на `main` (коммиты fede5a61/cbf5f83c параллельного окружения); на ветке фичи придёт при node_id-ребейзе (там доделается ветко-специфичное — `getAllLectureAnnotations`/`comment-node`). Бэк-ГАП: `GET /api/lectures/{id}/comments` не объявляет `token` в OpenAPI-query (стопгап `as never` в `getLectureComments`) — добавить в схему + подтвердить shareTokenMW.
 - **Бэк-аск (limit cap):** подтвердить максимальный `limit` на `GET /api/lectures/{id}/annotations` (FE-цикл `getAllLectureAnnotations` уже устойчив к клампу, но оптимальный размер страницы зависит от cap).
-- **Мёртвая ветка `astRootRef`** в `connector-layer.tsx` (после удаления MarginAnchorLayer) — trim тем же 80em/foundation-PR.
+- **Мёртвая ветка `astRootRef`** в `connector-layer.tsx` (после удаления MarginAnchorLayer) — trim тем же 80em/foundation-PR. → ✅ СДЕЛАНО в `ecd3d6bf` (astRootRef удалён, getRootRect обязателен).
+
+## Многослойный аудит + ремедиация (2026-07-01, fix `ecd3d6bf` на main)
+
+Аудит субагентами (9 осей → адверсариальная верификация → синтез): **15 important + 25 minor**, 0 опровергнуто. Починено (TDD + субагенты с ревьюерами):
+
+**Important (функциональные) — ПОЧИНЕНЫ:**
+- **F1 тумблер подсветки на wide/rail** (регресс vs MarginAnchorLayer): `railScopeFingerprint` теперь кодирует `highlightEnabled` → `flat`/`persistentIds`/`overlay` в MarginRail пересчитываются на флипе. Тест в `rail-scope-key.test`.
+- **F2 share-token → аннотации комментариев**: `token` протянут `CommentSection→Tree→Branch→CommentNode→getAllLectureAnnotations` + 404-guard в `getLectureAnnotations` (паритет с `getAnnotationsFor`).
+- **F3 share-token → `DocumentAnnotations`** на `documents/[id]/page.tsx`.
+- **F4 scroll-дрейф подсветки/выносок** (был preexisting из Phase 2, `23e57280`): throttled (rAF) scroll-listener в `useAggregatedAnchorRanges` пере-снимает `geometries` свежими viewport-rect'ами → overlay и connector anchor-точка не дрейфуют. Тесты `highlight-overlay.test` + `use-aggregated-anchor-ranges.scroll.test`.
+- **F5 мёртвый код**: удалён `use-anchor-ranges.{ts,test}` (0 потребителей); снят legacy `astRootRef` из `ConnectorLayer`; сужен barrel `index.ts`; стейл-комменты MarginAnchorLayer→MarginRail.
+- **F6 покрытие**: rect-в-rail (живой агрегатор), orphan-в-rail, node_id-дискриминация.
+
+**Minor — ПОЧИНЕНЫ:** M1 единый wide-порог `WIDE` (дубль `WIDE_MEDIA` убран; 80em @container не тронут); M2 хелперы `rangesFromGeometries`/`geometryRect`; M3 `anchorScopeSelector`; M6 rAF-ретрай в `CommentAnchorScope`; M11 `DocumentAnnotations` limit 20→200 (стопгап). Дизайн-джаджмент (#3 hit-test приоритет, #5 иммутабельность якоря, #6 два rail-listeners, #8 rootEl-стабильность, #14/#17/#18 тумблер per-document) — задокументированы контрактами, код не менялся рискованно.
+
+**ОСТАЁТСЯ (follow-up):**
+- **Бэк-аск:** `GET /api/lectures/{id}/comments` — добавить `token` в OpenAPI-query (снять стопгап `as never`); подтвердить `limit`-cap на `/lectures/{id}/annotations`; полная проходка аннотаций для `parent=document` (сейчас `DocumentAnnotations` тянет одну страницу limit=200, документ с >200 усечётся).
+- **Guardrail-2 foundation-PR:** allow-исключение в `eslint.config.mjs` для `comment-node.tsx→@/features/annotations` seam (снять `eslint-disable`).
+- **Fix C (опц.):** id-действие create → page-level (элегантность/перф).
+- **3 ПРЕД-СУЩЕСТВУЮЩИХ ЧУЖИХ typecheck-эрора** (`globals-rtl.test` es2018 ×2, `theme-color.generated` culori `formatHex`) — вне фичи, были на main до мёржа; `pnpm typecheck` не входит в гейт (lint+test+build). Не моя регрессия.
+- Браузер-QA (геометрия/дрейф/RTL/touch — автотесты не ловят).
