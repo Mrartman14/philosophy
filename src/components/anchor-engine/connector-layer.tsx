@@ -10,11 +10,11 @@
 import { useLayoutEffect, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 
+import { WIDE } from "./breakpoints";
 import { anchorAttachY, attachYs, connectorPath } from "./connector-geometry";
 import { cssEscape } from "./css-escape";
 import { toneColor, type Tone } from "./tone";
 
-const WIDE = "(min-width: 80rem)";
 const CARD_EDGE_PAD = 8; // отступ внутрь от края карточки при локте (нет пересечения)
 
 export interface ConnectorLayerProps {
