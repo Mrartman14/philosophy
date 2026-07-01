@@ -12,7 +12,8 @@
 export function blockIdPmAttr() {
   return {
     default: "",
-    parseHTML: (el: HTMLElement) => el.getAttribute("data-block-id") ?? "",
+    parseHTML: (el: HTMLElement) =>
+      el.getAttribute("data-block-id") ?? el.getAttribute("data-node-id") ?? "",
     renderHTML: (attrs: { blockId?: string }) =>
       attrs.blockId ? { "data-block-id": attrs.blockId } : {},
   };

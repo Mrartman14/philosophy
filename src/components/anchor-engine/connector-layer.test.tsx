@@ -82,6 +82,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -100,6 +101,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -118,6 +120,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -137,6 +140,7 @@ describe("ConnectorLayer", () => {
         activeId="a"
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -160,6 +164,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     expect(new Set(pathYs("a")).size).toBe(1); // все точки на одной высоте → горизонталь
@@ -177,6 +182,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     expect(new Set(pathYs("a")).size).toBeGreaterThan(1); // разные высоты → локоть
@@ -196,6 +202,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // выноска построена БЕЗ astRootRef
@@ -203,5 +210,29 @@ describe("ConnectorLayer", () => {
     expect(document.querySelector('[data-connector="n1"]')).not.toBeNull();
     // x1 = rootRect.right (500) + scrollX(0); НЕ из единого root (которого тут нет).
     expect(pathX1("n1")).toBe(500);
+  });
+
+  it("rectIds → крепление в ЦЕНТР bbox (top+H/2), а не в line-clamp первой строки", () => {
+    stubMatch(true);
+    const root = makeRoot();
+    // Прямоугольный якорь: top=50, H=100 (>48) → центр bbox = 100.
+    // line-clamp дал бы top + min(100,24)/2 = 62 — так НЕ должно быть для rect.
+    const tallRect = () => rect({ left: 100, right: 300, top: 50, bottom: 150, width: 200, height: 100 });
+    // Карточка перекрывает центр (span 40..160 включает y=100) → горизонталь, y1===y2===anchorY.
+    addCardWith("a", { top: 40, bottom: 160 });
+    render(
+      <ConnectorLayer
+        ids={["a"]}
+        getAnchorRect={tallRect}
+        astRootRef={{ current: root }}
+        activeId={null}
+        tone="annotation"
+        recomputeKey={0}
+        rectIds={new Set(["a"])}
+      />,
+    );
+    const ys = pathYs("a");
+    expect(new Set(ys).size).toBe(1); // горизонталь (крепление внутри пересечения)
+    expect(ys[0]).toBe(100); // центр bbox top+H/2, НЕ 62 (line-clamp)
   });
 });

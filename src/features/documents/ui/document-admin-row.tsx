@@ -3,12 +3,12 @@ import { UserView } from "@/components/shared/user-view";
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
-import type { Document } from "../types";
+import type { DocumentListItem } from "../types";
 
 import { DocumentDeleteButton } from "./document-delete-button";
 
 interface Props {
-  document: Document;
+  document: DocumentListItem;
   /** Можно ли admin-удалить (delete_any и не-private). */
   canDelete: boolean;
 }

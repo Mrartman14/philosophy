@@ -34,14 +34,14 @@ describe("MarginRail regression parity", () => {
   it("annotation card carries data-note-card and inline-start accent", () => {
     const el = document.createElement("div");
     el.setAttribute("data-anchor-scope", "document:d1");
-    el.innerHTML = '<p data-block-id="b1">alpha beta</p>';
+    el.innerHTML = '<p data-block-id="b1" data-node-id="b1">alpha beta</p>';
     document.body.appendChild(el);
     const entry: RailScopeEntry = {
       key: "annotation:document:d1",
       rootEl: el,
       tone: "annotation",
       notes: [
-        { id: "n1", anchor: { startBlockId: "b1", endBlockId: "b1", startChar: 0, endChar: 5, exact: "alpha" } },
+        { id: "n1", anchor: { startBlockId: "b1", startNodeId: "b1", endBlockId: "b1", endNodeId: "b1", startChar: 0, endChar: 5, exact: "alpha" } },
       ],
       renderNote: () => <span>card</span>,
     };

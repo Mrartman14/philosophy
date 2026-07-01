@@ -48,7 +48,8 @@ export function MarginRail({
   controllerRef.current ??= new HighlightController(highlightName);
   const controller = controllerRef.current;
 
-  const { ranges, getAnchorRect, recomputeKey } = useAggregatedAnchorRanges(scopes);
+  const { geometries, ranges, getAnchorRect, recomputeKey } =
+    useAggregatedAnchorRanges(scopes);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const emphasizedId = hoveredId ?? activeId;
@@ -105,24 +106,31 @@ export function MarginRail({
       .querySelector(`[data-note-card="${cssEscape(id)}"]`)
       ?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
   }, []);
-  useHoverReveal({ astRootRef: bodyRef, ranges, ready: bodyReady, onHover: setHoveredId });
-  useTextClick({ astRootRef: bodyRef, ranges, ready: bodyReady, onPick: pickFromText });
+  useHoverReveal({ astRootRef: bodyRef, geometries, ready: bodyReady, onHover: setHoveredId });
+  useTextClick({ astRootRef: bodyRef, geometries, ready: bodyReady, onPick: pickFromText });
 
   const onActivate = useCallback(
     (id: string) => {
       setActiveId(id);
-      const r = ranges.get(id);
-      if (r) {
-        const rect = r.getBoundingClientRect();
+      const rect = geometries.get(id)?.boundingRect ?? null;
+      if (rect) {
         window.scrollTo({ top: rect.top + window.scrollY - ACTIVATE_SCROLL_OFFSET_PX, behavior: scrollBehavior() });
       }
     },
-    [ranges],
+    [geometries],
+  );
+
+  // Прямоугольные (table-cell) якоря — их выноска крепится в центр bbox
+  // (kind-aware в ConnectorLayer). useMemo: стабильная идентичность Set между
+  // recompute'ами (иначе connector-эффект перезапускался бы каждый рендер).
+  const rectIds = useMemo(
+    () => new Set([...geometries].filter(([, g]) => g?.kind === "rect").map(([id]) => id)),
+    [geometries],
   );
 
   const accent = toneColor(tone);
   const columnNotes: ColumnNote[] = flat.map(({ note, render }) => {
-    const orphan = (ranges.get(note.id) ?? null) === null;
+    const orphan = (geometries.get(note.id) ?? null) === null;
     return {
       id: note.id,
       orphan,
@@ -134,14 +142,29 @@ export function MarginRail({
     };
   });
 
-  const overlayRanges = !controller.supported
-    ? [...ranges.values()].filter((r): r is Range => r !== null)
-    : [];
+  // Оверлей-фолбэк: rect-якоря ВСЕГДА (Highlight API их не берёт) + линейные ТОЛЬКО
+  // когда Highlight API не поддержан; лишь для нот с включённой подсветкой
+  // (persistentIds). Активный → activeOverlayRects. useMemo: стабильная идентичность
+  // массивов между recompute'ами (HighlightOverlay useLayoutEffect не дёргается зря).
+  const { overlayRects, activeOverlayRects } = useMemo(() => {
+    const rects: DOMRect[] = [];
+    const active: DOMRect[] = [];
+    const highlightSet = new Set(persistentIds);
+    for (const [id, g] of geometries) {
+      if (!g || !highlightSet.has(id)) continue;
+      const toOverlay = g.kind === "rect" || !controller.supported;
+      if (!toOverlay) continue;
+      (id === emphasizedId ? active : rects).push(...g.clientRects);
+    }
+    return { overlayRects: rects, activeOverlayRects: active };
+    // persistentIds покрыт scopeKey (композиция highlight-нот); прочие — прямые деп.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geometries, emphasizedId, controller, scopeKey]);
 
   return (
     <>
-      {overlayRanges.length > 0 && (
-        <HighlightOverlay ranges={overlayRanges} activeRange={activeId ? (ranges.get(activeId) ?? null) : null} />
+      {(overlayRects.length > 0 || activeOverlayRects.length > 0) && (
+        <HighlightOverlay rects={overlayRects} activeRects={activeOverlayRects} />
       )}
       <MarginNotesColumn
         notes={columnNotes}
@@ -157,6 +180,7 @@ export function MarginRail({
         activeId={emphasizedId}
         tone={tone}
         recomputeKey={recomputeKey}
+        rectIds={rectIds}
       />
     </>
   );

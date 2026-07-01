@@ -1,9 +1,13 @@
 // src/components/anchor-engine/anchor-to-range.ts
 import { cssEscape } from "./css-escape";
 import { locateOffset } from "./dom-text";
-import type { TextAnchor } from "./types";
+import { boundingBoxOf, isCell, rectangleCells } from "./table-grid";
+import type { AnchorGeometry, TextAnchor } from "./types";
 
-function block(root: HTMLElement, id: string): Element | null {
+function leafEl(root: HTMLElement, id: string): Element | null {
+  return root.querySelector(`[data-node-id="${cssEscape(id)}"]`);
+}
+function blockEl(root: HTMLElement, id: string): Element | null {
   return root.querySelector(`[data-block-id="${cssEscape(id)}"]`);
 }
 
@@ -52,9 +56,9 @@ function searchQuote(scope: Element, a: TextAnchor): Range | null {
 }
 
 function tryExact(a: TextAnchor, root: HTMLElement): Range | null {
-  const sb = block(root, a.startBlockId), eb = block(root, a.endBlockId);
-  if (!sb || !eb) return null;
-  const s = locateOffset(sb, a.startChar), e = locateOffset(eb, a.endChar);
+  const sLeaf = leafEl(root, a.startNodeId), eLeaf = leafEl(root, a.endNodeId);
+  if (!sLeaf || !eLeaf) return null;
+  const s = locateOffset(sLeaf, a.startChar), e = locateOffset(eLeaf, a.endChar);
   if (!s || !e) return null;
   const r = root.ownerDocument.createRange();
   r.setStart(s.node, s.offset); r.setEnd(e.node, e.offset);
@@ -62,14 +66,58 @@ function tryExact(a: TextAnchor, root: HTMLElement): Range | null {
 }
 
 export function rangeFromAnchor(a: TextAnchor, root: HTMLElement): Range | null {
-  // 1) Быстрый путь: офсеты block_id+char, сверка с exact (authoritative).
+  // Кросс-node якорь, у которого ХОТЯ БЫ ОДИН конец — ячейка таблицы, не имеет
+  // валидного ЛИНЕЙНОГО резолва: прямоугольный кейс (обе ячейки одной таблицы)
+  // обрабатывается выше в resolveAnchor; всё остальное с участием ячейки (мёртвый
+  // угол, ячейка+проза) → чистый орфан. Симметрично капчуру (anchor-from-selection
+  // правило 4). БЕЗ этого гарда мёртвый угол уходил бы в searchQuote(root) по
+  // junk-exact (range.toString() через колонки) и мог фантомно совпасть с
+  // несвязанной прозой. anchors.md правило 4.
+  if (a.startNodeId !== a.endNodeId) {
+    const sL = leafEl(root, a.startNodeId), eL = leafEl(root, a.endNodeId);
+    if (isCell(sL) || isCell(eL)) return null;
+  }
+  // 1) Быстрый путь: офсеты внутри листа + сверка exact.
   const exact = tryExact(a, root);
   if (exact) return exact;
-  // 2) Дрейф: блок гарантированно жив (бэк отвечает 409 BLOCKS_HAVE_ANCHORS на
-  //    удаление запинённого блока) → ищем цитату ВНУТРИ того же блока — точнее
-  //    дизамбигуация дубликатов, чем поиск по всему документу.
-  const startBlock = block(root, a.startBlockId);
-  if (startBlock) { const r = searchQuote(startBlock, a); if (r) return r; }
-  // 3) Последний резерв: квота-поиск по всему руту.
+  // 2) Квота-поиск внутри стартового листа (within-leaf дрейф).
+  const sLeaf = leafEl(root, a.startNodeId);
+  if (sLeaf) { const r = searchQuote(sLeaf, a); if (r) return r; }
+  // 3) Внутри объемлющего блока.
+  const sBlock = blockEl(root, a.startBlockId);
+  if (sBlock) { const r = searchQuote(sBlock, a); if (r) return r; }
+  // 4) Последний резерв — по всему руту. ПРИМЕЧАНИЕ: линейный кросс-лист прозы
+  //    (start_node_id != end_node_id, exact спанит границу двух листов) на
+  //    быстром пути tryExact обычно НЕ сходится (r.toString() включает текст
+  //    между листами) и резолвится именно здесь, по руту.
   return searchQuote(root, a);
+}
+
+/**
+ * Нормализованный резолв: прямоугольник (две ячейки ОДНОЙ таблицы — правило 4)
+ * структурно по node_id; иначе линейный через rangeFromAnchor. Прямоугольный
+ * резолв ИГНОРИРУЕТ офсеты/exact (ячейки id-стабильны).
+ */
+export function resolveAnchor(a: TextAnchor, root: HTMLElement): AnchorGeometry | null {
+  if (a.startNodeId !== a.endNodeId) {
+    const sL = leafEl(root, a.startNodeId), eL = leafEl(root, a.endNodeId);
+    if (isCell(sL) && isCell(eL)) {
+      const cells = rectangleCells(sL, eL);
+      const bbox = cells ? boundingBoxOf(cells) : null;
+      if (!bbox) return null; // разные таблицы / мёртвый угол → орфан
+      return { kind: "rect", boundingRect: bbox, clientRects: [bbox] };
+    }
+  }
+  const range = rangeFromAnchor(a, root);
+  if (!range) return null;
+  // jsdom: Range.getBoundingClientRect/getClientRects ОТСУТСТВУЮТ (есть только у
+  // Element; в браузере есть и у Range). Guard — иначе юнит-тест с резолвимым
+  // линейным якорем падает с TypeError, а не на ассертах (C1 из ревью). TS-lib
+  // типизирует метод как всегда-наличный → no-unnecessary-condition ложно срабатывает
+  // на ?./??; guard рантайм-обязателен (jsdom), оставляем.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const boundingRect = range.getBoundingClientRect?.() ?? new DOMRect();
+  const clientRects =
+    typeof range.getClientRects === "function" ? Array.from(range.getClientRects()) : [];
+  return { kind: "range", range, boundingRect, clientRects };
 }

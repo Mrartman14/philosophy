@@ -22,7 +22,9 @@ function draftIn(entityType: string, entityId: string): AnchorDraft {
   return {
     anchor: {
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b1",
+      endNodeId: "b1",
       startChar: 0,
       endChar: 5,
       exact: "hello",

@@ -10,8 +10,10 @@ import { domSpecFromNode } from "../render-from-map";
  *    canonicals are snake_case — round-trip via PM would emit invalid types.
  *  - Tiptap's default table_cell content is "block+" (paragraph nesting), but
  *    AST table_cell holds inline text directly.
- * blockId lives only on top-level Block (table); rows/cells are AST Nodes
- * without their own id.
+ * blockId lives on the top-level Block (table) AND on table_cell — cells are
+ * a text-leaf node addressable by node_id (sub-block anchors round-trip cell
+ * id via JSON: getJSON → serialize → node.id). Rows stay structural, without
+ * their own id.
  */
 
 export const TableExt = Node.create({
@@ -80,6 +82,7 @@ export const TableCellExt = Node.create({
 
   addAttributes() {
     return {
+      blockId: blockIdPmAttr(),
       align: {
         default: null,
         parseHTML: (el) => el.getAttribute("data-align"),

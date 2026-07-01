@@ -1,7 +1,13 @@
 // src/components/ast-render/block-renderer.tsx
 import type { ReactNode } from "react";
 
-import { HOLE, NODE_MAP, type AstNodeType, type NeutralSpec } from "@/components/ast-content-map";
+import {
+  HOLE,
+  NODE_MAP,
+  TEXT_LEAF_NODE_TYPES,
+  type AstNodeType,
+  type NeutralSpec,
+} from "@/components/ast-content-map";
 import { log } from "@/services/observability/client";
 
 import { InlineRenderer } from "./inline-renderer";
@@ -10,6 +16,7 @@ import type { AstBlock, AstNode } from "./types";
 
 interface Props {
   block: AstBlock;
+  isTopLevel?: boolean;
 }
 
 // Блочные контейнеры: их content — дочерние БЛОКИ (рекурсивный BlockRenderer).
@@ -23,7 +30,33 @@ const BLOCK_CONTAINERS = new Set<AstNodeType>([
 // Inline-контейнеры: их content — inline-ноды (text/hard_break) → InlineRenderer.
 const INLINE_CONTAINERS = new Set<AstNodeType>(["paragraph", "heading", "table_cell"]);
 
-export function BlockRenderer({ block }: Props): ReactNode {
+/**
+ * Depth-aware identity поверх карты:
+ *  - вложенный узел: СНЯТЬ data-block-id (block_id — только top-level; иначе
+ *    closest('[data-block-id]') зарезолвит в лист вместо объемлющего блока);
+ *  - table (top-level): ДОБАВИТЬ data-block-id (карта его опускает);
+ *  - текст-лист (top И nested): ДОБАВИТЬ data-node-id.
+ * image/thematic_break не трогаем — их block-id-контракт остаётся как в карте.
+ */
+function applyIdentity(
+  baseAttrs: Record<string, string>,
+  block: AstBlock,
+  isTopLevel: boolean,
+): Record<string, string> {
+  const id = typeof block.id === "string" && block.id.length > 0 ? block.id : null;
+  const attrs: Record<string, string> = { ...baseAttrs };
+  if (!isTopLevel) {
+    delete attrs["data-block-id"]; // вложенный никогда не несёт block_id
+  } else if (block.type === "table" && id) {
+    attrs["data-block-id"] = id; // table: карта block-id опускает
+  }
+  if (id && block.type && TEXT_LEAF_NODE_TYPES.has(block.type)) {
+    attrs["data-node-id"] = id;
+  }
+  return attrs;
+}
+
+export function BlockRenderer({ block, isTopLevel = true }: Props): ReactNode {
   const type = block.type;
   const renderer = type ? NODE_MAP[type] : undefined;
   if (!renderer) {
@@ -36,14 +69,15 @@ export function BlockRenderer({ block }: Props): ReactNode {
     return <div data-unsupported={label} />;
   }
 
-  let spec: NeutralSpec = renderer(block as AstNode);
+  const [tag, baseAttrs, ...kids] = renderer(block as AstNode);
+  let attrs = applyIdentity(baseAttrs, block, isTopLevel);
   // READ-only: id заголовка (scroll-spy/TOC). Карта его не добавляет — это
-  // read-атрибут поверх data-block-id. Сливаем в attrs спека до рендера.
+  // read-атрибут поверх data-block-id. Сливаем в attrs спека до рендера
+  // (системный block.id, НЕ attrs.id).
   if (type === "heading" && typeof block.id === "string" && block.id.length > 0) {
-    const [tag, attrs, ...kids] = spec;
-    spec = [tag, { ...attrs, id: block.id }, ...kids];
+    attrs = { ...attrs, id: block.id };
   }
-
+  const spec: NeutralSpec = [tag, attrs, ...kids];
   return specToReact(spec, renderChildren(block, type));
 }
 
@@ -72,7 +106,7 @@ function renderChildren(block: AstBlock, type: AstNodeType | undefined): ReactNo
       if (isHeaderRow && child.type === "table_cell") {
         return <HeaderCell key={key} cell={child} />;
       }
-      return <BlockRenderer key={key} block={child} />;
+      return <BlockRenderer key={key} block={child} isTopLevel={false} />;
     });
   }
   // Лист без HOLE (thematic_break, image): детей нет.
@@ -84,6 +118,7 @@ function HeaderCell({ cell }: { cell: AstBlock }): ReactNode {
   const renderer = NODE_MAP.table_cell;
   if (!renderer) return null;
   const [, attrs] = renderer(cell as AstNode);
-  const spec: NeutralSpec = ["th", { ...attrs, scope: "col" }, HOLE];
+  // Ячейка — вложенный лист: applyIdentity навешивает data-node-id, block-id нет.
+  const spec: NeutralSpec = ["th", { ...applyIdentity(attrs, cell, false), scope: "col" }, HOLE];
   return specToReact(spec, <InlineRenderer nodes={cell.content} />);
 }

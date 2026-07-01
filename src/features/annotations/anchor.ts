@@ -36,6 +36,8 @@ function hasAnyText(a: Anchor): boolean {
   return (
     !!a.start_block_id ||
     !!a.end_block_id ||
+    !!a.start_node_id ||
+    !!a.end_node_id ||
     (a.start_char ?? 0) !== 0 ||
     (a.end_char ?? 0) !== 0 ||
     !!a.exact ||
@@ -44,10 +46,14 @@ function hasAnyText(a: Anchor): boolean {
   );
 }
 
-/** Text-range валиден: оба block_id + exact, без media-полей. */
+/**
+ * Text-range валиден: оба block_id, оба node_id и exact, без media-полей.
+ * node_id обязателен — anchors.md правило 1 (пустой node_id = ANCHOR_INVALID);
+ * прод-данных без node_id нет, конвертер (engineAnchorToCoords) всегда его минтит.
+ */
 export function isValidTextAnchor(a: Anchor): boolean {
   if (hasAnyMedia(a)) return false;
-  return !!a.start_block_id && !!a.end_block_id && !!a.exact;
+  return !!a.start_block_id && !!a.end_block_id && !!a.start_node_id && !!a.end_node_id && !!a.exact;
 }
 
 /** Media-interval валиден: start_sec >= 0, end_sec (если есть) > start, без text-полей. */

@@ -14,7 +14,9 @@ describe("buildTextAnchor", () => {
   it("строит text-range якорь с обязательными полями", () => {
     const a = buildTextAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b2",
+      endNodeId: "b2",
       startChar: 0,
       endChar: 5,
       exact: "Кант",
@@ -23,7 +25,9 @@ describe("buildTextAnchor", () => {
     });
     expect(a).toEqual({
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b2",
+      end_node_id: "b2",
       start_char: 0,
       end_char: 5,
       exact: "Кант",
@@ -35,7 +39,9 @@ describe("buildTextAnchor", () => {
   it("опускает пустые prefix/suffix", () => {
     const a = buildTextAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b1",
+      endNodeId: "b1",
       startChar: 0,
       endChar: 3,
       exact: "abc",
@@ -44,20 +50,33 @@ describe("buildTextAnchor", () => {
     expect(a.suffix).toBeUndefined();
     expect(a.start_block_id).toBe("b1");
   });
+
+  // Характеризующий тест: node_id наследуется через общий конвертер
+  // (engineAnchorToCoords, Task 4) — фиксируем lock-in под-блочной адресации.
+  it("buildTextAnchor: пробрасывает node_id", () => {
+    const a = buildTextAnchor({ startBlockId: "b1", endBlockId: "b1", startNodeId: "b1", endNodeId: "b1", startChar: 0, endChar: 2, exact: "ab" });
+    expect(a).toMatchObject({ start_node_id: "b1", end_node_id: "b1" });
+  });
 });
 
 describe("isValidTextAnchor", () => {
-  it("валиден: оба block_id + exact заданы", () =>
+  it("валиден: оба block_id + оба node_id + exact заданы", () =>
     { expect(
       isValidTextAnchor({
         start_block_id: "b1",
+        start_node_id: "b1",
         end_block_id: "b2",
+        end_node_id: "b2",
         exact: "x",
       }),
     ).toBe(true); });
   it("невалиден: нет exact", () =>
     { expect(
-      isValidTextAnchor({ start_block_id: "b1", end_block_id: "b2" }),
+      isValidTextAnchor({ start_block_id: "b1", start_node_id: "b1", end_block_id: "b2", end_node_id: "b2" }),
+    ).toBe(false); });
+  it("невалиден: нет node_id (anchors.md правило 1)", () =>
+    { expect(
+      isValidTextAnchor({ start_block_id: "b1", end_block_id: "b2", exact: "x" }),
     ).toBe(false); });
   it("невалиден: нет end_block_id", () =>
     { expect(isValidTextAnchor({ start_block_id: "b1", exact: "x" })).toBe(
@@ -96,6 +115,14 @@ describe("isValidMediaAnchor", () => {
     { expect(
       isValidMediaAnchor({ start_sec: 5, start_block_id: "b1" }),
     ).toBe(false); });
+  it("невалиден: примешан start_node_id (node_id — text-поле, anchors.md)", () =>
+    { expect(
+      isValidMediaAnchor({ start_sec: 5, start_node_id: "n1" }),
+    ).toBe(false); });
+  it("невалиден: примешан end_node_id (node_id — text-поле, anchors.md)", () =>
+    { expect(
+      isValidMediaAnchor({ start_sec: 5, end_node_id: "n1" }),
+    ).toBe(false); });
 });
 
 describe("toEngineAnchor", () => {
@@ -111,7 +138,9 @@ describe("toEngineAnchor", () => {
     });
     expect(engine).toEqual({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b2",
+      endNodeId: "b2",
       startChar: 3,
       endChar: 9,
       exact: "Кант",
@@ -187,7 +216,9 @@ describe("fromEngineAnchor", () => {
   it("маппит TextAnchor → Anchor (snake_case) через buildTextAnchor", () => {
     const anchor = fromEngineAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b2",
+      endNodeId: "b2",
       startChar: 3,
       endChar: 9,
       exact: "Кант",
@@ -196,7 +227,9 @@ describe("fromEngineAnchor", () => {
     });
     expect(anchor).toEqual({
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b2",
+      end_node_id: "b2",
       start_char: 3,
       end_char: 9,
       exact: "Кант",
@@ -208,7 +241,9 @@ describe("fromEngineAnchor", () => {
   it("опускает пустые prefix/suffix", () => {
     const anchor = fromEngineAnchor({
       startBlockId: "b1",
+      startNodeId: "b1",
       endBlockId: "b1",
+      endNodeId: "b1",
       startChar: 0,
       endChar: 3,
       exact: "abc",
@@ -222,7 +257,9 @@ describe("round-trip Anchor ↔ TextAnchor", () => {
   it("from(to(a)) сохраняет полный text-range", () => {
     const original = {
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b2",
+      end_node_id: "b2",
       start_char: 3,
       end_char: 9,
       exact: "Кант",
@@ -243,7 +280,9 @@ describe("round-trip Anchor ↔ TextAnchor", () => {
     if (engine === null) throw new Error("expected non-null engine anchor");
     expect(fromEngineAnchor(engine)).toEqual({
       start_block_id: "b1",
+      start_node_id: "b1",
       end_block_id: "b1",
+      end_node_id: "b1",
       start_char: 0,
       end_char: 0,
       exact: "abc",

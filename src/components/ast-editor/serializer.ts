@@ -1,3 +1,5 @@
+import { TEXT_LEAF_NODE_TYPES } from "@/components/ast-content-map";
+
 import type { AstBlock, AstNode, AstMark } from "./types";
 
 type BlockType = NonNullable<AstBlock["type"]>;
@@ -58,6 +60,14 @@ function serializeBlock(node: ProseMirrorJSON, position: number): AstBlock {
 function serializeNode(node: ProseMirrorJSON): AstNode {
   const result: AstNode = { type: node.type as NodeType };
   if (node.attrs) {
+    const blockId = node.attrs.blockId;
+    if (
+      TEXT_LEAF_NODE_TYPES.has(node.type as NodeType) &&
+      typeof blockId === "string" &&
+      blockId.length > 0
+    ) {
+      result.id = blockId;
+    }
     const attrs = stripBlockId(node.attrs);
     if (attrs && Object.keys(attrs).length > 0) result.attrs = attrs;
   }

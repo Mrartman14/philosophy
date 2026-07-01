@@ -10,13 +10,12 @@
 import { useLayoutEffect, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 
-import { attachYs, connectorPath } from "./connector-geometry";
+import { WIDE } from "./breakpoints";
+import { anchorAttachY, attachYs, connectorPath } from "./connector-geometry";
 import { cssEscape } from "./css-escape";
 import { toneColor, type Tone } from "./tone";
 
-const WIDE = "(min-width: 80rem)";
 const CARD_EDGE_PAD = 8; // отступ внутрь от края карточки при локте (нет пересечения)
-const FIRST_LINE_CLAMP_PX = 24; // оценка высоты первой строки для центра якоря
 
 export interface ConnectorLayerProps {
   ids: string[];
@@ -29,6 +28,7 @@ export interface ConnectorLayerProps {
   activeId: string | null;
   tone: Tone;
   recomputeKey: number;
+  rectIds: Set<string>; // прямоугольные якоря — их выноска крепится в центр bbox
 }
 
 interface Seg {
@@ -41,6 +41,7 @@ function measure(
   getAnchorRect: (id: string) => DOMRect | null,
   getRootRect: ((id: string) => DOMRect | null) | undefined,
   astRootRef: RefObject<HTMLElement | null> | undefined,
+  rectIds: Set<string>,
 ): Seg[] {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return [];
   if (!window.matchMedia(WIDE).matches) return [];
@@ -66,7 +67,7 @@ function measure(
     // пересекаются → горизонталь; нет пересечения → локоть, чтобы «добраться» (attachYs).
     const anchorTop = a.top + window.scrollY;
     const anchorBottom = a.bottom + window.scrollY;
-    const anchorY = anchorTop + Math.min(a.height, FIRST_LINE_CLAMP_PX) / 2;
+    const anchorY = anchorAttachY(anchorTop, a.height, rectIds.has(id));
     const { y1, y2 } = attachYs(
       anchorTop,
       anchorBottom,
@@ -88,13 +89,14 @@ export function ConnectorLayer({
   activeId,
   tone,
   recomputeKey,
+  rectIds,
 }: ConnectorLayerProps) {
   const [segs, setSegs] = useState<Seg[]>([]);
   const idsKey = ids.join(",");
 
   useLayoutEffect(() => {
     const update = () => {
-      setSegs(measure(ids, getAnchorRect, getRootRect, astRootRef));
+      setSegs(measure(ids, getAnchorRect, getRootRect, astRootRef, rectIds));
     };
     update();
     // rAF: даём MarginNotesColumn спозиционировать карточки в его layout-эффекте,
@@ -109,9 +111,10 @@ export function ConnectorLayer({
     };
     // ids покрыт idsKey по значению; getAnchorRect/getRootRect стабильны (useCallback
     // в движке); astRootRef — стабильный ref. Мультикорень ключует по getRootRect,
-    // легаси — по astRootRef.
+    // легаси — по astRootRef. rectIds — стабильная идентичность (useMemo в
+    // оркестраторе): эффект не дёргается зря.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idsKey, getAnchorRect, getRootRect, astRootRef, recomputeKey]);
+  }, [idsKey, getAnchorRect, getRootRect, astRootRef, recomputeKey, rectIds]);
 
   if (segs.length === 0) return null;
   const stroke = toneColor(tone);

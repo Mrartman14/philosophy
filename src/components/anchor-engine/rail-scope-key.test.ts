@@ -15,7 +15,20 @@ function entry(key: string, noteIds: string[]): RailScopeEntry {
     // rootEl в отпечаток НЕ входит — для чистого теста хватает заглушки.
     rootEl: { nodeType: 1 } as unknown as HTMLElement,
     tone: "annotation",
-    notes: noteIds.map((id) => ({ id, anchor: { kind: "text", blockId: id } })),
+    notes: noteIds.map((id) => ({
+      id,
+      // Отпечаток не смотрит в содержимое якоря (только key + id заметок) — хватает
+      // минимального валидного TextAnchor.
+      anchor: {
+        startBlockId: id,
+        startNodeId: id,
+        endBlockId: id,
+        endNodeId: id,
+        startChar: 0,
+        endChar: 0,
+        exact: "",
+      },
+    })),
     renderNote: noopRender,
   };
 }

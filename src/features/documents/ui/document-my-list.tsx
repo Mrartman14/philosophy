@@ -2,10 +2,10 @@
 import { RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
-import type { Document } from "../types";
+import type { DocumentListItem } from "../types";
 
 interface Props {
-  documents: Document[];
+  documents: DocumentListItem[];
 }
 
 export async function DocumentMyList({ documents }: Props) {

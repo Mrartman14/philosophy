@@ -6,8 +6,10 @@ import type { AnchorScopeId } from "./scope-id";
 
 export interface TextAnchor {
   startBlockId: string;
+  startNodeId: string;
   endBlockId: string;
-  startChar: number; // UTF-16 code units
+  endNodeId: string;
+  startChar: number; // UTF-16 code units, node-relative (внутри листа)
   endChar: number;
   exact: string;
   prefix?: string;
@@ -22,3 +24,12 @@ export interface AnchorDraft {
   rect: DOMRect; // вьюпорт-координаты выделения для тултипа
   scope: AnchorScopeId; // какой сущности принадлежит выделение (маршрутизация create)
 }
+
+/**
+ * Нормализованная геометрия резолва: линейный якорь несёт Range (для Highlight API
+ * и caret-хит-теста), прямоугольный — только rect'ы. Общие boundingRect/clientRects
+ * у обоих → потребители (карточка/коннектор/оверлей) source-agnostic.
+ */
+export type AnchorGeometry =
+  | { kind: "range"; range: Range; boundingRect: DOMRect; clientRects: DOMRect[] }
+  | { kind: "rect"; boundingRect: DOMRect; clientRects: DOMRect[] };

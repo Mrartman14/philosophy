@@ -17,6 +17,7 @@ function scopeEl(text: string): HTMLElement {
   el.setAttribute("data-anchor-scope", "document:x");
   const p = document.createElement("p");
   p.dataset.blockId = "b1";
+  p.dataset.nodeId = "b1"; // одиночный лист: node_id == block_id (resolveAnchor tryExact)
   p.appendChild(document.createTextNode(text));
   el.appendChild(p);
   document.body.appendChild(el);
@@ -58,7 +59,9 @@ describe("useAggregatedAnchorRanges", () => {
             id: "n-a",
             anchor: {
               startBlockId: "b1",
+              startNodeId: "b1",
               endBlockId: "b1",
+              endNodeId: "b1",
               startChar: 0,
               endChar: 5,
               exact: "alpha",
@@ -76,7 +79,9 @@ describe("useAggregatedAnchorRanges", () => {
             id: "n-b",
             anchor: {
               startBlockId: "b1",
+              startNodeId: "b1",
               endBlockId: "b1",
+              endNodeId: "b1",
               startChar: 6,
               endChar: 11,
               exact: "delta",

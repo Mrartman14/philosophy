@@ -67,5 +67,7 @@ export type PushSubscribeKeys = Schemas["push.SubscribeKeys"];
 export type UploadImageResponse = Schemas["image.UploadImageResponse"];
 
 // --- Documents / Media (списочные проекции для пикеров) ---
-export type DocumentSummary = Schemas["document.DocumentSummary"];
-export type MediaSummary = Schemas["media.MediaSummary"];
+// Бэк свернул *Summary в *ListItem при scope-фасетном регене (2026-06-30);
+// алиасы сохранены для пикеров/lectures и указывают на новые ListItem-типы.
+export type DocumentSummary = Schemas["document.DocumentListItem"];
+export type MediaSummary = Schemas["media.MediaListItem"];

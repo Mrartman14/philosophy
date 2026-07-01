@@ -5,8 +5,9 @@
 // resize / шрифты / смена scopes / ResizeObserver на каждом корне.
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { rangeFromAnchor } from "./anchor-to-range";
+import { resolveAnchor } from "./anchor-to-range";
 import { railScopeFingerprint } from "./rail-scope-key";
+import type { AnchorGeometry } from "./types";
 import type { RailScopeEntry } from "./use-rail-scopes";
 
 export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
@@ -47,10 +48,14 @@ export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scopeKey]);
 
-  const ranges = useMemo(() => {
-    const m = new Map<string, Range | null>();
+  // Геометрия (range|rect) по каждой заметке — каждая резолвится в корне СВОЕГО
+  // скоупа. resolveAnchor поддерживает node_id-адресацию и прямоугольные (table-
+  // cell) якоря; прежний rangeFromAnchor давал только Range → rect-якоря были бы
+  // сиротами. Паритет single-root use-anchor-ranges, но по многим корням.
+  const geometries = useMemo(() => {
+    const m = new Map<string, AnchorGeometry | null>();
     for (const s of scopes) {
-      for (const n of s.notes) m.set(n.id, rangeFromAnchor(n.anchor, s.rootEl));
+      for (const n of s.notes) m.set(n.id, resolveAnchor(n.anchor, s.rootEl));
     }
     return m;
     // scopeKey (стабильный) + recomputeKey форсят перестроение при реальной смене
@@ -58,13 +63,18 @@ export function useAggregatedAnchorRanges(scopes: RailScopeEntry[]) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scopeKey, recomputeKey]);
 
+  // Производный range-only слой для Highlight API / overlay (rect → null: в
+  // Highlight API прямоугольники не идут, подсвечиваются оверлеем bbox).
+  const ranges = useMemo(() => {
+    const m = new Map<string, Range | null>();
+    for (const [id, g] of geometries) m.set(id, g?.kind === "range" ? g.range : null);
+    return m;
+  }, [geometries]);
+
   const getAnchorRect = useCallback(
-    (id: string) => {
-      const r = ranges.get(id);
-      return r ? r.getBoundingClientRect() : null;
-    },
-    [ranges],
+    (id: string) => geometries.get(id)?.boundingRect ?? null,
+    [geometries],
   );
 
-  return { ranges, getAnchorRect, recomputeKey };
+  return { geometries, ranges, getAnchorRect, recomputeKey };
 }

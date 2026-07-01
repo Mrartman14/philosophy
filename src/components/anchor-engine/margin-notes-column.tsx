@@ -14,6 +14,7 @@
 // исходящий из интерактивного потомка, НЕ активирует (guard всплытия).
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
+import { WIDE } from "./breakpoints";
 import { applyOrder, resolveStack, type StackItem } from "./stacking";
 
 // Селектор интерактивных потомков: клик по ним не активирует карточку.
@@ -32,8 +33,6 @@ interface Props {
   // пересчёта — позиции относительны контейнеру колонки)
   onHoverNote?: (id: string | null) => void;
 }
-
-const WIDE = "(min-width: 80rem)";
 
 export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNote, recomputeKey }: Props) {
   const anchoredRef = useRef<HTMLDivElement | null>(null);

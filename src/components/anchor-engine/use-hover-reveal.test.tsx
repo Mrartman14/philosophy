@@ -2,7 +2,18 @@ import { renderHook } from "@testing-library/react";
 import { createRef } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { AnchorGeometry } from "./types";
 import { useHoverReveal } from "./use-hover-reveal";
+
+// Оборачиваем live-Range в range-geometry (проп hook'а сменился ranges → geometries).
+// noteAtPointInGeometry для range-kind читает ТОЛЬКО g.range.comparePoint — bbox/rects
+// не консультируются; в jsdom Range.getBoundingClientRect отсутствует → ставим заглушки.
+const wrap = (r: Range): AnchorGeometry => ({
+  kind: "range",
+  range: r,
+  boundingRect: new DOMRect(),
+  clientRects: [],
+});
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -44,7 +55,7 @@ describe("useHoverReveal", () => {
     const ref = createRef<HTMLElement>();
     ref.current = el;
     renderHook(() => {
-      useHoverReveal({ astRootRef: ref, ranges: new Map(), ready: true, onHover: vi.fn() });
+      useHoverReveal({ astRootRef: ref, geometries: new Map(), ready: true, onHover: vi.fn() });
     });
     expect(add).toHaveBeenCalledWith("mousemove", expect.any(Function));
     expect(add).toHaveBeenCalledWith("mouseleave", expect.any(Function));
@@ -56,7 +67,7 @@ describe("useHoverReveal", () => {
     ref.current = el;
     const onHover = vi.fn();
     renderHook(() => {
-      useHoverReveal({ astRootRef: ref, ranges: new Map(), ready: true, onHover });
+      useHoverReveal({ astRootRef: ref, geometries: new Map(), ready: true, onHover });
     });
     el.dispatchEvent(new MouseEvent("mouseleave"));
     expect(onHover).toHaveBeenCalledWith(null);
@@ -75,14 +86,14 @@ describe("useHoverReveal", () => {
     const r = document.createRange();
     r.setStart(textNode, 6);
     r.setEnd(textNode, 10);
-    const ranges = new Map<string, Range | null>([["n1", r]]);
+    const geometries = new Map<string, AnchorGeometry | null>([["n1", wrap(r)]]);
     stubCaret(textNode, 8);
 
     const ref = createRef<HTMLElement>();
     ref.current = root;
     const onHover = vi.fn();
     renderHook(() => {
-      useHoverReveal({ astRootRef: ref, ranges, ready: true, onHover });
+      useHoverReveal({ astRootRef: ref, geometries, ready: true, onHover });
     });
 
     root.dispatchEvent(new MouseEvent("mousemove", { clientX: 1, clientY: 1 }));

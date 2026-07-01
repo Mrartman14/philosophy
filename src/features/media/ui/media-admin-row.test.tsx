@@ -3,7 +3,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, it, expect, vi } from "vitest";
 
-import type { Media } from "../types";
+import type { MediaListItem } from "../types";
 
 import { MediaAdminRow } from "./media-admin-row";
 
@@ -33,7 +33,7 @@ vi.mock("./media-delete-button", () => ({
   ),
 }));
 
-const media: Media = {
+const media: MediaListItem = {
   id: "m-1",
   filename: "lecture-intro.mp4",
   type: "video",
@@ -66,7 +66,7 @@ describe("MediaAdminRow", () => {
   });
 
   it("фолбэк на owner_id когда owner_username отсутствует", async () => {
-    const noUsername: Media = { ...media, owner: { id: "owner-uuid-7" } };
+    const noUsername: MediaListItem = { ...media, owner: { id: "owner-uuid-7" } };
     render(await MediaAdminRow({ media: noUsername }));
     expect(screen.getByText("owner-uuid-7")).toBeInTheDocument();
   });

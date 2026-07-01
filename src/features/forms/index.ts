@@ -47,7 +47,7 @@ export {
   getFormStats,
   getFieldAnswers,
 } from "./api";
-export type { AdminFormListFilter, FormListResult } from "./api";
+export type { AdminFormListFilter, MyFormListFilter, FormListResult } from "./api";
 
 export { readAnswerValue } from "./answer-read";
 export type { ReadValue } from "./answer-read";

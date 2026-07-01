@@ -1,20 +1,21 @@
 // src/components/anchor-engine/use-hover-reveal.ts
-// Lazy-подсветка: движение мыши в AST-руте → hit-test по КЭШИРОВАННЫМ ranges →
+// Lazy-подсветка: движение мыши в AST-руте → hit-test по КЭШИРОВАННЫМ geometries →
 // onHover(id) подсвечивает фрагмент под курсором; mouseleave → onHover(null).
 // Throttle через rAF. Используется eager-слоем MarginAnchorLayer (текст-hover →
-// эмфаза). Хит-тест по готовым ranges (не пересчитывает rangeFromAnchor на каждый кадр).
+// эмфаза). Хит-тест по готовым geometries (не пересчитывает rangeFromAnchor на каждый кадр).
 import { useEffect, type RefObject } from "react";
 
-import { noteAtPointInRanges } from "./hit-test";
+import { noteAtPointInGeometry } from "./hit-test";
+import type { AnchorGeometry } from "./types";
 
 export function useHoverReveal({
   astRootRef,
-  ranges,
+  geometries,
   ready,
   onHover,
 }: {
   astRootRef: RefObject<HTMLElement | null>;
-  ranges: Map<string, Range | null>;
+  geometries: Map<string, AnchorGeometry | null>;
   ready: boolean;
   onHover: (id: string | null) => void;
 }) {
@@ -34,7 +35,7 @@ export function useHoverReveal({
       const { clientX, clientY } = e;
       const run = () => {
         raf = 0;
-        emit(noteAtPointInRanges(clientX, clientY, ranges, root));
+        emit(noteAtPointInGeometry(clientX, clientY, geometries, root));
       };
       raf = typeof requestAnimationFrame === "function" ? requestAnimationFrame(run) : 0;
       if (!raf) run();
@@ -55,5 +56,5 @@ export function useHoverReveal({
       root.removeEventListener("mousemove", onMove);
       root.removeEventListener("mouseleave", onLeave);
     };
-  }, [astRootRef, ranges, ready, onHover]);
+  }, [astRootRef, geometries, ready, onHover]);
 }

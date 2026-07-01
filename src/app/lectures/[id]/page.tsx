@@ -167,7 +167,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
         />
 
         <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-          <CommentSection lectureId={id} query={cq} />
+          <CommentSection lectureId={id} query={cq} token={token} />
         </Suspense>
       </div>
 
@@ -181,7 +181,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
       <MarginNote side="end" grow className="p-4 @marginalia:ps-0">
         {activeDoc && activeId && (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-            <DocumentAnnotations parentId={activeId} />
+            <DocumentAnnotations parentId={activeId} token={token} />
           </Suspense>
         )}
         <MarginRail tone="annotation" highlightName="annotation" />
@@ -194,7 +194,7 @@ export default async function LecturePage({ params, searchParams }: Props) {
       <MarginNote side="start" grow className="p-4 @marginalia:pe-0">
         {activeDoc && activeId && (
           <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-            <DocumentComments lectureId={id} documentId={activeId} />
+            <DocumentComments lectureId={id} documentId={activeId} token={token} />
           </Suspense>
         )}
         <MarginRail tone="comment" highlightName="comment" />

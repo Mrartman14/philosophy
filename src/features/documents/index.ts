@@ -24,6 +24,7 @@ export { documentExportUrls } from "./export-urls";
 export type { DocumentExportUrls } from "./export-urls";
 export type {
   Document,
+  DocumentListItem,
   DocumentSummary,
   Visibility,
   DocumentRevision,

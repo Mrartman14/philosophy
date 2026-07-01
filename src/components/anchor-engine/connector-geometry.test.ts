@@ -1,7 +1,7 @@
 // src/components/anchor-engine/connector-geometry.test.ts
 import { describe, expect, it } from "vitest";
 
-import { attachYs, connectorPath } from "./connector-geometry";
+import { anchorAttachY, attachYs, connectorPath } from "./connector-geometry";
 
 describe("connectorPath", () => {
   it("правая сторона (карточка правее текста): вертикаль у края текста", () => {
@@ -55,5 +55,17 @@ describe("attachYs", () => {
   it("НЕТ пересечения, карточка выше → карточка у нижнего края (локоть)", () => {
     // якорь [300,320], карточка [50,120] → не пересекаются
     expect(attachYs(300, 320, 310, 50, 120)).toEqual({ y1: 310, y2: 112 }); // 120 - edgePad(8)
+  });
+});
+
+describe("anchorAttachY", () => {
+  it("прямоугольник → центр bbox", () => {
+    expect(anchorAttachY(0, 100, true)).toBe(50);
+    expect(anchorAttachY(20, 40, true)).toBe(40);
+  });
+
+  it("линейный → центр первой строки (clamp 24)", () => {
+    expect(anchorAttachY(0, 100, false)).toBe(12); // min(100,24)/2 = 12
+    expect(anchorAttachY(0, 10, false)).toBe(5); // height < clamp → height/2
   });
 });

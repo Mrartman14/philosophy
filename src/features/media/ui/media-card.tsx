@@ -2,10 +2,10 @@
 import { cn, FOCUS_RING_CONTROL, RouterLink } from "@/components/ui";
 import { getT } from "@/i18n";
 
-import type { Media } from "../types";
+import type { MediaListItem } from "../types";
 
 interface MediaCardProps {
-  media: Media;
+  media: MediaListItem;
 }
 
 /** Карточка медиа в списке «Мои медиа». Ссылка на /media/{id} + бейджи. */
@@ -30,7 +30,7 @@ export async function MediaCard({ media }: MediaCardProps) {
       </span>
       <span className="flex items-center gap-2 text-xs text-(--color-fg-muted)">
         <span className="rounded bg-(--color-surface-subtle) px-2 py-0.5">
-          {typeLabel[media.type] ?? media.type}
+          {media.type ? (typeLabel[media.type] ?? media.type) : null}
         </span>
         <span
           className={

@@ -2,12 +2,12 @@
 import { UserView } from "@/components/shared/user-view";
 import { getServerFmt, getT } from "@/i18n";
 
-import type { Media } from "../types";
+import type { MediaListItem } from "../types";
 
 import { MediaDeleteButton } from "./media-delete-button";
 
 interface Props {
-  media: Media;
+  media: MediaListItem;
 }
 
 /**
@@ -31,11 +31,15 @@ export async function MediaAdminRow({ media }: Props) {
         <span className="truncate font-semibold text-(--color-fg)" title={media.filename}>
           {media.filename}
         </span>
-        <span>{fmt.dateTime(media.created_at, { dateStyle: "short", timeStyle: "short" })}</span>
+        <span>
+          {media.created_at
+            ? fmt.dateTime(media.created_at, { dateStyle: "short", timeStyle: "short" })
+            : null}
+        </span>
       </header>
       <div className="flex flex-wrap items-center gap-2 text-xs text-(--color-fg-muted)">
         <span className="rounded bg-(--color-surface-subtle) px-2 py-0.5">
-          {typeLabel[media.type] ?? media.type}
+          {media.type ? (typeLabel[media.type] ?? media.type) : null}
         </span>
         <span
           className={
@@ -48,9 +52,11 @@ export async function MediaAdminRow({ media }: Props) {
         </span>
         <UserView user={media.owner} />
       </div>
-      <div>
-        <MediaDeleteButton id={media.id} isAdminDelete />
-      </div>
+      {media.id ? (
+        <div>
+          <MediaDeleteButton id={media.id} isAdminDelete />
+        </div>
+      ) : null}
     </article>
   );
 }

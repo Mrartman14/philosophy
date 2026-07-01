@@ -1,3 +1,5 @@
+import { TEXT_LEAF_NODE_TYPES } from "@/components/ast-content-map";
+
 import type { ProseMirrorJSON } from "./serializer";
 import type { AstBlock, AstNode, SchemaSnapshot } from "./types";
 
@@ -40,8 +42,13 @@ function deserializeBlock(block: AstBlock): ProseMirrorJSON {
 }
 
 function deserializeNode(node: AstNode): ProseMirrorJSON {
-  const out: ProseMirrorJSON = { type: node.type ?? "text" };
-  if (node.attrs) out.attrs = { ...node.attrs };
+  const type = node.type ?? "text";
+  const out: ProseMirrorJSON = { type };
+  const attrs: Record<string, unknown> = node.attrs ? { ...node.attrs } : {};
+  if (TEXT_LEAF_NODE_TYPES.has(type) && typeof node.id === "string" && node.id.length > 0) {
+    attrs.blockId = node.id;
+  }
+  if (Object.keys(attrs).length > 0) out.attrs = attrs;
   if (node.text != null) out.text = node.text;
   if (node.marks) {
     out.marks = node.marks.map((m) => ({

@@ -50,4 +50,28 @@ describe("deserializer", () => {
   it("empty input returns empty doc", () => {
     expect(deserialize([], fakeSnapshot)).toEqual({ type: "doc", content: [{ type: "paragraph" }] });
   });
+
+  it("deserializeNode: node.id текст-листа → attrs.blockId", () => {
+    const blocks = [
+      { id: "tbl-1", type: "table" as const, position: 0, content: [
+        { type: "table_row" as const, content: [
+          { type: "table_cell" as const, id: "cell-1", content: [{ type: "text" as const, text: "x" }] },
+        ] },
+      ] },
+    ];
+    const cell = deserialize(blocks).content?.[0]?.content?.[0]?.content?.[0];
+    expect(cell?.attrs?.blockId).toBe("cell-1");
+  });
+
+  it("deserializeNode: id структурного узла НЕ гидрируется в blockId", () => {
+    const blocks = [
+      { id: "tbl-1", type: "table" as const, position: 0, content: [
+        { type: "table_row" as const, id: "row-x", content: [
+          { type: "table_cell" as const, id: "cell-1", content: [{ type: "text" as const, text: "x" }] },
+        ] },
+      ] },
+    ];
+    const row = deserialize(blocks).content?.[0]?.content?.[0];
+    expect(row?.attrs?.blockId).toBeUndefined();
+  });
 });

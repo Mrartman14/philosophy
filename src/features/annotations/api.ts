@@ -29,10 +29,14 @@ export const getAnnotationsFor = cache(
     parentId: string,
     offset = 0,
     limit = 20,
+    token?: string,
   ): Promise<AnnotationListResult> => {
     const api = await createApiClient();
     const init = {
-      params: { path: { id: parentId }, query: { offset, limit } },
+      params: {
+        path: { id: parentId },
+        query: { offset, limit, ...(token ? { token } : {}) },
+      },
     } as const;
     const get = (type: ParentEntityType) => {
       switch (type) {
@@ -73,7 +77,7 @@ export const getAnnotationById = cache(
   },
 );
 
-/** «Мои аннотации» (GET /api/me/annotations, требует auth). */
+/** «Мои аннотации» (GET /api/annotations?scope=mine, требует auth). */
 export const getMyAnnotations = cache(
   async (
     offset = 0,
@@ -81,9 +85,10 @@ export const getMyAnnotations = cache(
     parentEntityType?: ParentEntityType,
   ): Promise<AnnotationListResult> => {
     const api = await createApiClient();
-    const { data, error } = await api.GET("/api/me/annotations", {
+    const { data, error } = await api.GET("/api/annotations", {
       params: {
         query: {
+          scope: "mine",
           offset,
           limit,
           ...(parentEntityType ? { parent_entity_type: parentEntityType } : {}),
@@ -95,13 +100,15 @@ export const getMyAnnotations = cache(
   },
 );
 
-/** Агрегация по лекции (GET /api/lectures/{id}/annotations — есть в schema.ts). */
+/** Агрегация по лекции (GET /api/lectures/{id}/annotations — есть в schema.ts).
+ *  token (?token=) для приватных лекций через share-link (query объявлен в schema.ts). */
 export const getLectureAnnotations = cache(
   async (
     lectureId: string,
     offset = 0,
     limit = 20,
     parentEntityType?: "document" | "comment" | "media",
+    token?: string,
   ): Promise<AnnotationListResult> => {
     const api = await createApiClient();
     const { data, error } = await api.GET("/api/lectures/{id}/annotations", {
@@ -111,6 +118,7 @@ export const getLectureAnnotations = cache(
           offset,
           limit,
           ...(parentEntityType ? { parent_entity_type: parentEntityType } : {}),
+          ...(token ? { token } : {}),
         },
       },
     });
@@ -128,11 +136,13 @@ export const getLectureAnnotations = cache(
  * Решение N+1 (см. спеку «Бэкенд»): аннотации всех комментариев лекции тянем
  * лекционной агрегат-ручкой `GET /api/lectures/{id}/annotations?parent_entity_type=...`,
  * группировка по `parent_entity_id` — на стороне потребителя (`CommentNode`).
+ * `token` (?token=) пробрасывается в read-путь для приватных лекций (share-link).
  */
 export const getAllLectureAnnotations = cache(
   async (
     lectureId: string,
     parentEntityType?: "document" | "comment" | "media",
+    token?: string,
   ): Promise<Annotation[]> => {
     const all: Annotation[] = [];
     const limit = 200;
@@ -152,6 +162,7 @@ export const getAllLectureAnnotations = cache(
         offset,
         limit,
         parentEntityType,
+        token,
       );
       if (items.length === 0) break;
       all.push(...items);
@@ -161,7 +172,7 @@ export const getAllLectureAnnotations = cache(
   },
 );
 
-/** Admin-список публичных аннотаций (GET /api/admin/annotations). */
+/** Admin-список публичных аннотаций (GET /api/annotations?scope=all). */
 export const getAdminAnnotations = cache(
   async (filter: {
     parent_entity_type?: string;
@@ -173,9 +184,10 @@ export const getAdminAnnotations = cache(
     const api = await createApiClient();
     const offset = filter.offset ?? 0;
     const limit = filter.limit ?? 20;
-    const { data, error } = await api.GET("/api/admin/annotations", {
+    const { data, error } = await api.GET("/api/annotations", {
       params: {
         query: {
+          scope: "all",
           offset,
           limit,
           // Admin-фильтр приходит нетипизированной строкой из URL searchParams;

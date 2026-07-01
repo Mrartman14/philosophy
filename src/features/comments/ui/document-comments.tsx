@@ -17,14 +17,17 @@ import { CommentPreviewCard } from "./comment-preview-card";
 export async function DocumentComments({
   lectureId,
   documentId,
+  token,
 }: {
   lectureId: string;
   documentId: string;
+  /** ?token= (share-link) — доступ к комментариям приватной лекции. */
+  token?: string | undefined;
 }) {
   const [me, schema, list, astSchema] = await Promise.all([
     getMe(),
     getCommentSchema(),
-    getLectureComments(lectureId),
+    getLectureComments(lectureId, token ? { token } : {}),
     getAstSchema(),
   ]);
 

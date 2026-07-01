@@ -34,13 +34,13 @@ function Reg({ entry }: { entry: RailScopeEntry }) {
 function makeScope(key: string, noteId: string, label: string): RailScopeEntry {
   const el = document.createElement("div");
   el.setAttribute("data-anchor-scope", "document:x");
-  el.innerHTML = '<p data-block-id="b1">alpha beta</p>';
+  el.innerHTML = '<p data-block-id="b1" data-node-id="b1">alpha beta</p>';
   document.body.appendChild(el);
   return {
     key,
     rootEl: el,
     tone: "annotation",
-    notes: [{ id: noteId, anchor: { startBlockId: "b1", endBlockId: "b1", startChar: 0, endChar: 5, exact: "alpha" } }],
+    notes: [{ id: noteId, anchor: { startBlockId: "b1", startNodeId: "b1", endBlockId: "b1", endNodeId: "b1", startChar: 0, endChar: 5, exact: "alpha" } }],
     renderNote: () => <span>{label}</span>,
   };
 }
