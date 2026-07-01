@@ -10870,6 +10870,8 @@ export interface paths {
                     block_id?: string;
                     /** @description Маргиналийный слой: только треды, чей корень заякорен в этот документ, в document-order */
                     document_id?: string;
+                    /** @description Share-link токен: открывает ленту комментариев приватной лекции держателю lecture-ссылки (комментарий не имеет своей оси видимости — виден в периметре лекции, С2.3) */
+                    token?: string;
                     /** @description Смещение */
                     offset?: number;
                     /** @description Записей на странице */
@@ -17518,7 +17520,7 @@ export interface components {
             updated_at?: string;
         };
         /** @enum {string} */
-        "notification.Reason": "subscribed";
+        "notification.Reason": "subscribed" | "reply";
         "notification.Subscription": {
             created_at?: string;
             id?: string;
@@ -17527,9 +17529,9 @@ export interface components {
             user_id?: string;
         };
         /** @enum {string} */
-        "notification.TargetType": "document" | "lecture" | "canvas";
+        "notification.TargetType": "document" | "lecture" | "canvas" | "comment";
         /** @enum {string} */
-        "notification.Type": "document.updated" | "lecture.updated" | "canvas.updated";
+        "notification.Type": "document.updated" | "lecture.updated" | "canvas.updated" | "comment.replied";
         "pat.MintResult": {
             created_at?: number;
             /** @description Unix sec, nil = no expiry */
@@ -17599,6 +17601,13 @@ export interface components {
         "preference.Preferences": {
             appearance?: components["schemas"]["preference.Appearance"];
             locale?: components["schemas"]["preference.Locale"];
+            /**
+             * @description NotifyOnCommentReply toggles the comment.replied notification (default true).
+             *     A bare bool: both values are valid, so Validate() needs no change. Legacy
+             *     blobs without the key keep the seeded default (GetForUser seeds
+             *     DefaultPreferences before unmarshalling).
+             */
+            notify_on_comment_reply?: boolean;
             reading_mode?: components["schemas"]["preference.ReadingMode"];
             /**
              * @description Timezone is the user's IANA time zone (e.g. "Europe/Moscow"), or "system"
@@ -17619,6 +17628,8 @@ export interface components {
             appearance?: components["schemas"]["preference.AppearancePatch"];
             /** @enum {unknown} */
             locale?: "system" | "ru" | "en" | "ar" | "zh";
+            /** @description NotifyOnCommentReply toggles reply notifications; both bool values are valid (no validate tag). */
+            notify_on_comment_reply?: boolean;
             /** @enum {unknown} */
             reading_mode?: "full" | "focused";
             /**
