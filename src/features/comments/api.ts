@@ -49,10 +49,8 @@ export const getCommentSchema = unstable_cache(
 /** Список корней лекции с поддеревьями (public, my_reactions при auth).
  *  token (?token=) пробрасывается для приватных лекций через share-link, чтобы
  *  комментарии были видны зрителю по share-токену (иначе — анонимная выдача /
- *  401 на приватной лекции). ⚠️ БЭК-ГАП: /api/lectures/{id}/comments НЕ объявляет
- *  token в query (в отличие от /documents, /media, /canvases, /forms, /annotations,
- *  где token уже есть) → cast `as never`. Нужно выровнять контракт на бэке
- *  (shareTokenMW + token в OpenAPI query этого роута), затем снять cast. */
+ *  401 на приватной лекции). token объявлен в OpenAPI-query этого роута (бэк
+ *  выровнял контракт — shareTokenMW) → типизированный params.query, без каста. */
 export const getLectureComments = cache(
   async (
     lectureId: string,
@@ -68,7 +66,7 @@ export const getLectureComments = cache(
     if (opts.blockId) query.block_id = opts.blockId;
     if (opts.token) query.token = opts.token;
     const { data, error } = await api.GET("/api/lectures/{id}/comments", {
-      params: { path: { id: lectureId }, query: query as never },
+      params: { path: { id: lectureId }, query },
     });
     if (error) throw new Error(error.error ?? (await getT("comments"))("api.loadListFailed"));
     return {
