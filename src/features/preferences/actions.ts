@@ -1,6 +1,8 @@
 // src/features/preferences/actions.ts
 "use server";
 import "server-only";
+import { z } from "zod";
+
 import { createApiClient } from "@/api/client";
 import { Tags } from "@/api/tags";
 import { getT } from "@/i18n";
@@ -105,3 +107,22 @@ export const sendPushBroadcast = createFormAction(async (formData, ctx) => {
   // Бекенд отвечает 202 Accepted — рассылка асинхронная.
   return true;
 }, "sendPushBroadcast");
+
+/**
+ * Глобальный тумблер уведомлений об ответах на комментарии
+ * (preference.notify_on_comment_reply, default true на бэке). Partial-patch —
+ * шлём ТОЛЬКО это поле. Зовётся из comment-reply-notify-toggle (клиент) с
+ * типизированным boolean; z.boolean() валидирует runtime-границу.
+ */
+export const setNotifyOnCommentReply = createAction(async (raw: unknown) => {
+  const me = await getMe();
+  requireCapability(me, canUpdatePreferences);
+  const enabled = z.boolean().parse(raw);
+  const api = await createApiClient();
+  const { error } = await api.PATCH("/api/me/preferences", {
+    body: { notify_on_comment_reply: enabled },
+  });
+  if (error) rethrowApiError(error, ERRORS);
+  revalidateEntity(Tags.PREFERENCES);
+  return undefined;
+}, "setNotifyOnCommentReply");
