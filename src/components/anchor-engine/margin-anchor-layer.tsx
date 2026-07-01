@@ -8,6 +8,7 @@
 // геометрии при resize / загрузке шрифтов / смене нот.
 import {
   useCallback,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -109,6 +110,13 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
   // через controller.supported. Eager-политика: держим подсветку ВСЕХ нот
   // (persistentIds = все id), activeId — отдельный канал.
   const allIds = notes.map((n) => n.id);
+  // Прямоугольные якоря — их выноска крепится в центр bbox (kind-aware в connector).
+  // useMemo: стабильная идентичность Set между recompute'ами (иначе connector-эффект
+  // перезапускался бы каждый рендер).
+  const rectIds = useMemo(
+    () => new Set([...geometries].filter(([, g]) => g?.kind === "rect").map(([id]) => id)),
+    [geometries],
+  );
   useAnchorHighlights({
     controller,
     ranges,
@@ -192,6 +200,7 @@ export function MarginAnchorLayer(props: MarginAnchorLayerProps) {
         activeId={emphasizedId}
         tone={tone}
         recomputeKey={recomputeKey}
+        rectIds={rectIds}
       />
     </>
   );

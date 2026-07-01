@@ -75,6 +75,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -93,6 +94,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -111,6 +113,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -130,6 +133,7 @@ describe("ConnectorLayer", () => {
         activeId="a"
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
@@ -153,6 +157,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     expect(new Set(pathYs("a")).size).toBe(1); // все точки на одной высоте → горизонталь
@@ -170,6 +175,7 @@ describe("ConnectorLayer", () => {
         activeId={null}
         tone="annotation"
         recomputeKey={0}
+        rectIds={new Set()}
       />,
     );
     expect(new Set(pathYs("a")).size).toBeGreaterThan(1); // разные высоты → локоть

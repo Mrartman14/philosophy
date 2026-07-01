@@ -17,6 +17,16 @@ function round(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
+export const FIRST_LINE_CLAMP_PX = 24; // оценка высоты первой строки (центр линейного якоря)
+
+/**
+ * Y-точка крепления выноски к якорю (document-координаты).
+ * Прямоугольник → вертикальный ЦЕНТР bbox; линейный → центр ПЕРВОЙ строки (clamp).
+ */
+export function anchorAttachY(anchorTop: number, height: number, isRect: boolean): number {
+  return isRect ? anchorTop + height / 2 : anchorTop + Math.min(height, FIRST_LINE_CLAMP_PX) / 2;
+}
+
 export function connectorPath({ x1, y1, x2, y2, stub = 12 }: ElbowInput): string {
   // На одной высоте → строго горизонтальная прямая, без локтя и без диагонали.
   if (y1 === y2) return `M ${round(x1)} ${round(y1)} L ${round(x2)} ${round(y2)}`;
