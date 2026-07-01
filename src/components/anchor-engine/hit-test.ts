@@ -1,24 +1,12 @@
 // src/components/anchor-engine/hit-test.ts
-import { rangeFromAnchor } from "./anchor-to-range";
-import type { AnchoredNote, AnchorGeometry } from "./types";
+import type { AnchorGeometry } from "./types";
 
 export interface CaretPos {
   node: Node;
   offset: number;
 }
 
-/** Чистое ядро: какой note накрывает caret-позицию. Тестируемо без геометрии. */
-export function noteContainingCaret(caret: CaretPos, notes: AnchoredNote[], root: HTMLElement): string | null {
-  for (const n of notes) {
-    const r = rangeFromAnchor(n.anchor, root);
-    if (!r) continue;
-    // point внутри r: r.start <= point <= r.end → comparePoint === 0.
-    if (r.comparePoint(caret.node, caret.offset) === 0) return n.id;
-  }
-  return null;
-}
-
-/** Резолв координат → caret (вынесено из noteAtPoint для переиспользования). */
+/** Резолв координат → caret (для range-kind хит-теста в noteAtPointInGeometry). */
 function caretFromPoint(x: number, y: number, root: HTMLElement): CaretPos | null {
   const doc = root.ownerDocument;
   // caretPositionFromPoint (стандарт/Firefox) и caretRangeFromPoint (WebKit/Blink)
@@ -39,23 +27,15 @@ function caretFromPoint(x: number, y: number, root: HTMLElement): CaretPos | nul
   return caret;
 }
 
-/** Браузерная обёртка: координаты клика → caret → noteContainingCaret. */
-export function noteAtPoint(x: number, y: number, notes: AnchoredNote[], root: HTMLElement): string | null {
-  const caret = caretFromPoint(x, y, root);
-  if (!caret) return null;
-  return noteContainingCaret(caret, notes, root);
-}
-
 function pointInRect(x: number, y: number, r: DOMRect): boolean {
   return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
 }
 
 /**
- * Хит-тест по УЖЕ ПОСЧИТАННЫМ geometries (порядок Map = порядок notes → first-match).
- * range-kind → O(1) caret-resolve + дешёвый comparePoint (без пересчёта
- * rangeFromAnchor, эквивалентно noteAtPoint — ranges строятся тем же
- * rangeFromAnchor, см. useAnchorRanges); rect-kind → point-in-boundingRect (caret
- * не применим — нет Range). Заменяет noteAtPointInRanges.
+ * Единственный хит-тест-контракт движка: точка → id ноты по УЖЕ ПОСЧИТАННЫМ
+ * geometries (порядок Map = порядок notes → first-match). range-kind →
+ * caret-resolve + comparePoint (caret внутри range → 0); rect-kind →
+ * point-in-boundingRect (caret не применим — у rect нет Range).
  */
 export function noteAtPointInGeometry(
   x: number,

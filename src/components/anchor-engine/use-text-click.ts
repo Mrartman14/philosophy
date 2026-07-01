@@ -2,8 +2,8 @@
 // Клик в AST-руте → hit-test (какой note под caret) → onPick(id). Политика
 // решает, что делать с id (активировать карточку / скроллить к треду). Хит-тест
 // по УЖЕ ПОСЧИТАННЫМ geometries (как useHoverReveal) — без пересчёта rangeFromAnchor
-// на каждый клик; эквивалентно noteAtPoint, т.к. range-geometries строятся тем же
-// rangeFromAnchor (см. useAnchorRanges / коммент в hit-test).
+// на каждый клик; kind-aware внутри noteAtPointInGeometry (range → caret+comparePoint,
+// rect → point-in-boundingRect).
 import { useEffect, type RefObject } from "react";
 
 import { noteAtPointInGeometry } from "./hit-test";
