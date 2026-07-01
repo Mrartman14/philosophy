@@ -13,6 +13,12 @@ const preferences = {
   // Action для «У вас нет прав на {action}.» (Case 3)
   updateSettingsAction: "изменение настроек",
 
+  // --- comment-reply-notify-toggle ---
+  commentReplyNotifyLabel: "Уведомлять об ответах на мои комментарии",
+  commentReplyNotifyDescription:
+    "Когда кто-то отвечает на ваш комментарий, вы получаете уведомление.",
+  commentReplyNotifySaved: "Настройка сохранена.",
+
   // --- push-send-form ---
   pushTitleLabel: "Заголовок",
   pushBodyLabel: "Текст",

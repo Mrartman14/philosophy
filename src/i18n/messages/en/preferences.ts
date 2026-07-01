@@ -13,6 +13,12 @@ const preferences = {
   // Action phrase for "You don't have permission for {action}."
   updateSettingsAction: "changing settings",
 
+  // --- comment-reply-notify-toggle ---
+  commentReplyNotifyLabel: "Notify me about replies to my comments",
+  commentReplyNotifyDescription:
+    "You get a notification when someone replies to your comment.",
+  commentReplyNotifySaved: "Setting saved.",
+
   // --- push-send-form ---
   pushTitleLabel: "Title",
   pushBodyLabel: "Body",

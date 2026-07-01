@@ -13,6 +13,11 @@ const preferences = {
   // Action phrase for "You don't have permission for {action}."
   updateSettingsAction: "修改设置",
 
+  // --- comment-reply-notify-toggle ---
+  commentReplyNotifyLabel: "当有人回复我的评论时通知我",
+  commentReplyNotifyDescription: "有人回复您的评论时，您会收到通知。",
+  commentReplyNotifySaved: "设置已保存。",
+
   // --- push-send-form ---
   pushTitleLabel: "标题",
   pushBodyLabel: "正文",

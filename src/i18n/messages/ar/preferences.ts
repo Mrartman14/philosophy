@@ -13,6 +13,12 @@ const preferences = {
   // Action phrase for "You don't have permission for {action}."
   updateSettingsAction: "تغيير الإعدادات",
 
+  // --- comment-reply-notify-toggle ---
+  commentReplyNotifyLabel: "أبلغني بالردود على تعليقاتي",
+  commentReplyNotifyDescription:
+    "تصلك إشعارات عندما يرد أحدهم على تعليقك.",
+  commentReplyNotifySaved: "تم حفظ الإعداد.",
+
   // --- push-send-form ---
   pushTitleLabel: "العنوان",
   pushBodyLabel: "النص",
