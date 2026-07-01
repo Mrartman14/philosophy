@@ -635,6 +635,38 @@ const eslintConfig = [
       ],
     },
   },
+  // Guardrail 2 — санкционированный provider-seam «universal annotation scopes».
+  // Аннотация — сквозная СПОСОБНОСТЬ (любая AST-сущность аннотируема), а не лист-
+  // фича наравне с остальными: перечисленные ниже потребители МОГУТ импортить
+  // ПУБЛИЧНЫЙ barrel @/features/annotations (index/client). Deep-импорты аннотаций
+  // (@/features/annotations/ui/…) и ЛЮБОЙ другой cross-feature импорт остаются под
+  // запретом — barrel и есть контракт интеграции. Курируемый allow-list: расширять
+  // ПОФАЙЛОВО по мере надобности (глоссарий/медиа-скоупы и т.п.). flat-config не
+  // мержит опции no-restricted-imports → блок несёт весь нужный срез (deep-бан +
+  // cross-feature-бан-кроме-annotations + no-next-intl), идёт ПОСЛЕ G2 (last-match
+  // перезаписывает его для этих файлов; ни G3=api.ts, ни G4=client.ts их не матчат).
+  {
+    files: ["src/features/comments/ui/comment-node.tsx"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            // deep-импорты фич (вкл. @/features/annotations/ui/…) — по-прежнему нельзя
+            DEEP_IMPORT_PATTERN,
+            {
+              // bare cross-feature бан, КРОМЕ публичного barrel санкционированного
+              // провайдера @/features/annotations (gitignore-style негация).
+              group: ["@/features/*", "!@/features/annotations"],
+              message:
+                "Cross-feature импорты запрещены, кроме санкционированного провайдера @/features/annotations (universal annotation scopes, только публичный barrel). Прочий общий код — через @/components, @/utils, @/hooks.",
+            },
+            NO_NEXT_INTL_PATTERN,
+          ],
+        },
+      ],
+    },
+  },
   // Guardrail 3: server-only files in slices shouldn't import client-only packages
   {
     files: [

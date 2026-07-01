@@ -1,16 +1,11 @@
 // src/features/comments/ui/comment-node.tsx
-// СТОПГАП / ФЛАГ ПОЛЬЗОВАТЕЛЮ: импорт из @/features/annotations через публичный
-// barrel — это САНКЦИОНИРОВАННЫЙ дизайном foundation-уровневый seam («universal
-// annotation scopes»: каждый CommentNode оборачивает тело в AnnotationScope, см.
-// docs/superpowers/specs/2026-06-30-universal-annotation-scopes-design.md §«Правки
-// слайсов»/«Поток данных»). Но ESLint Guardrail 2 (eslint.config.mjs:619) запрещает
-// ЛЮБОЙ cross-feature @/features/* импорт внутри src/features/*/** БЕЗ исключений —
-// план ошибочно считал «через barrel допустимо». Это первый и единственный такой
-// импорт в слайсах. КОРЕНЬ нужно решить на foundation-уровне (отдельный
-// foundation-update PR к eslint.config.mjs: добавить курируемое allow-исключение
-// для annotation-scope seam — как canvas-engine-seam), либо изменить архитектуру
-// (mount scope не из CommentNode). Пока — точечный disable как временный стопгап.
-// eslint-disable-next-line no-restricted-imports -- sanctioned foundation seam (universal annotation scopes); root: amend Guardrail 2 in a foundation PR
+// Импорт публичного barrel @/features/annotations — САНКЦИОНИРОВАННЫЙ provider-seam
+// «universal annotation scopes»: аннотация — сквозная способность, каждый CommentNode
+// оборачивает тело в AnnotationScope (спека 2026-06-30-universal-annotation-scopes-
+// design §«Правки слайсов»). ESLint Guardrail 2 разрешает этот barrel-импорт через
+// курируемый allow-list (eslint.config.mjs, блок после G2); deep-импорты аннотаций и
+// прочий cross-feature — по-прежнему запрещены. Нового потребителя добавлять в тот
+// allow-list пофайлово. (Стопгап-eslint-disable снят foundation-PR 2026-07-01.)
 import {
   AnnotationScope,
   buildAnnotationCards,
