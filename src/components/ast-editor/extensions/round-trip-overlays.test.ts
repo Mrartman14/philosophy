@@ -153,4 +153,29 @@ describe("editor round-trip-оверлеи в сериализованном DOM
     expect(el.tagName.toLowerCase()).toBe("table");
     expect(el.getAttribute("data-block-id")).toBe("tbl-1"); // editor-only round-trip
   });
+
+  it("table_cell в редакторном DOM НЕ несёт data-node-id (капчур над read-рендером)", () => {
+    // editor-cell id намеренно только в JSON; DOM-капчур ячейки — read-surface
+    // (block-renderer applyIdentity), не editor. Round-trip getJSON → node.id для
+    // ячейки покрыт serializer.test.ts («serializeNode: вложенный table_cell несёт
+    // node id из attrs.blockId») — здесь не дублируем, фиксируем лишь DOM-контракт:
+    // <td> редактора не получает data-node-id (карта table_cell → <td data-align?>,
+    // и per-cell renderHTML не накладывает blockId-оверлей, в отличие от <table>).
+    const table = schema.nodes.table;
+    const row = schema.nodes.table_row;
+    const cell = schema.nodes.table_cell;
+    if (!table || !row || !cell) throw new Error("table/row/cell не зарегистрированы");
+    const node = table.createChecked(
+      { blockId: "tbl-1" },
+      row.createChecked(
+        null,
+        cell.createChecked({ blockId: "cell-1" }, schema.text("ячейка")),
+      ),
+    );
+    const td = serializeToElement(node).querySelector("td");
+    expect(td).not.toBeNull();
+    if (td === null) throw new Error("<td> не найден");
+    expect(td.hasAttribute("data-node-id")).toBe(false);
+    expect(td.hasAttribute("data-block-id")).toBe(false); // и структурный id-attr тоже не течёт в DOM ячейки
+  });
 });

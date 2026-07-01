@@ -94,6 +94,31 @@ describe("useTextClick", () => {
     expect(onPick).toHaveBeenCalledWith("n1");
   });
 
+  it("клик внутри rect-bbox → onPick(id); caret-стаб не нужен (rect-ветка)", () => {
+    // Программный рут без текстового узла — rect-ветка не читает caret.
+    const root = document.createElement("div");
+    document.body.appendChild(root);
+
+    // rect-geometry: boundingRect (0,0,100,50) накрывает точку клика (10,10).
+    const geometries = new Map<string, AnchorGeometry | null>([
+      [
+        "img1",
+        { kind: "rect", boundingRect: new DOMRect(0, 0, 100, 50), clientRects: [new DOMRect(0, 0, 100, 50)] },
+      ],
+    ]);
+
+    const ref = createRef<HTMLElement>();
+    ref.current = root;
+    const onPick = vi.fn();
+    renderHook(() => {
+      useTextClick({ astRootRef: ref, geometries, ready: true, onPick });
+    });
+
+    root.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 10, clientY: 10 }));
+    expect(onPick).toHaveBeenCalledTimes(1);
+    expect(onPick).toHaveBeenCalledWith("img1");
+  });
+
   it("клик вне любого range → onPick не зовётся", () => {
     const { root, textNode } = buildRoot("alpha beta gamma");
 
