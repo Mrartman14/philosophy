@@ -4,9 +4,11 @@
 // data-anchor-scope на странице (документ) / в comment-node-view (комментарий);
 // здесь: (1) находим этот корень по уникальному id, (2) регистрируем заякоренные
 // заметки в rail (мемоизированный entry — иначе register-цикл в провайдере),
-// (3) SSR-фолбэк-список + действие create + композер. Тулбар (add-unanchored +
-// тумблер подсветки) рендерим ТОЛЬКО при showToolbar (документ), не на каждый
-// комментарий. Тумблер влияет на highlightEnabled этого скоупа в rail.
+// (3) SSR-фолбэк-список. Тулбар (add-unanchored + тумблер подсветки) рендерим
+// ТОЛЬКО при showToolbar (документ), не на каждый комментарий; там же живёт
+// локальный композер для unanchored. Тумблер влияет на highlightEnabled этого
+// скоупа в rail. Selection-driven anchor-действие вынесено в page-level
+// AnnotationSelectionComposer (здесь его больше нет).
 // Guardrail 4: только pure-фасады + движок + kit + i18n/client + композер.
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
@@ -23,7 +25,6 @@ import { toEngineAnchor } from "../anchor";
 import type { Anchor, ParentEntityType } from "../types";
 
 import { AnnotationComposerDialog } from "./annotation-composer-dialog";
-import { AnnotationCreateAction, type AnnotationComposerOpen } from "./annotation-create-action";
 
 interface NoteVM {
   id: string;
@@ -50,20 +51,9 @@ export function AnnotationScope({
   showToolbar = false,
 }: Props) {
   const t = useT("annotations");
-  // composer.parentEntityType/parentId следуют за ВЫДЕЛЕНИЕМ (из драфта), не за
-  // пропом скоупа: одно page-level действие «аннотировать» переживает N+1 скоупов
-  // (документ + каждый комментарий), и выживший action может принадлежать чужому
-  // скоупу. Дефолт = проп скоупа — для пути «add unanchored», где драфта нет.
-  const [composer, setComposer] = useState<{
-    open: boolean;
-    anchor?: Anchor;
-    parentId: string;
-    parentEntityType: ParentEntityType;
-  }>({
-    open: false,
-    parentId,
-    parentEntityType,
-  });
+  // Композер ТОЛЬКО для unanchored-пути (кнопка «Добавить аннотацию» в document-тулбаре).
+  // Selection-driven создание живёт в page-level AnnotationSelectionComposer.
+  const [composerOpen, setComposerOpen] = useState(false);
   const [highlight, setHighlight] = useState(true);
 
   useEffect(() => {
@@ -161,7 +151,7 @@ export function AnnotationScope({
               compact
               tone="primary"
               onClick={() => {
-                setComposer({ open: true, parentId, parentEntityType });
+                setComposerOpen(true);
               }}
             >
               {t("marginAddUnanchored")}
@@ -183,27 +173,14 @@ export function AnnotationScope({
           своего скоупа — требование спеки). На wide+ready их рисует MarginRail. */}
       {(!ready || !wide) && engineNotes.map((n) => <div key={n.id}>{cardById.get(n.id)}</div>)}
 
-      <AnnotationCreateAction
-        canCreate={canCreate}
-        onOpenComposer={(o: AnnotationComposerOpen) => {
-          setComposer({
-            open: true,
-            anchor: o.anchor,
-            parentId: o.parentId,
-            parentEntityType: o.parentEntityType,
-          });
-        }}
-      />
-
-      <AnnotationComposerDialog
-        parentEntityType={composer.parentEntityType}
-        parentId={composer.parentId}
-        open={composer.open}
-        onOpenChange={(open) => {
-          setComposer((c) => ({ ...c, open }));
-        }}
-        anchor={composer.anchor}
-      />
+      {showToolbar && (
+        <AnnotationComposerDialog
+          parentEntityType={parentEntityType}
+          parentId={parentId}
+          open={composerOpen}
+          onOpenChange={setComposerOpen}
+        />
+      )}
     </div>
   );
 }
