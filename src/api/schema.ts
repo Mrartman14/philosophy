@@ -4,73 +4,6 @@
  */
 
 export interface paths {
-    "/api/admin/annotations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Список публичных пометок (для админов) */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Фильтр по типу сущности */
-                    parent_entity_type?: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
-                    /** @description Фильтр по ID сущности */
-                    parent_entity_id?: string;
-                    /** @description Фильтр по автору */
-                    author_id?: string;
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Записей на странице */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["annotation.Annotation"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/annotations/{id}": {
         parameters: {
             query?: never;
@@ -1119,69 +1052,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/documents": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Список документов (админ) */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Лимит */
-                    limit?: number;
-                    /** @description Фильтр по автору */
-                    owner_id?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["document.Document"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/documents/{document_id}": {
         parameters: {
             query?: never;
@@ -2038,69 +1908,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/forms": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Список всех форм (admin) */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Записей на странице */
-                    limit?: number;
-                    /** @description Фильтр по владельцу */
-                    owner_id?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["form.FormListItem"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/glossary": {
         parameters: {
             query?: never;
@@ -2833,75 +2640,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Список медиа (админ-модерация)
-         * @description Non-private media across all owners for the admin moderation
-         *     UI. Private media is never listed (admins have no window into
-         *     other users' private drafts). Gated by media.delete_any.
-         *     Each row includes owner {id,username} for human-readable moderation.
-         */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Лимит */
-                    limit?: number;
-                    /** @description Фильтр по автору */
-                    owner_id?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["media.Media"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/push/send": {
         parameters: {
             query?: never;
@@ -3416,69 +3154,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/trails": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Список маршрутов (админ) */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Записей на странице */
-                    limit?: number;
-                    /** @description Фильтр по владельцу */
-                    owner_id?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["trail.Trail"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/users": {
         parameters: {
             query?: never;
@@ -3772,7 +3447,7 @@ export interface paths {
          *     scope=all — публичные пометки по всей платформе; требует CapAnnotationDeleteAny (роль admin).
          *     Фильтры parent_entity_id и author_id применяются только на scope=all;
          *     на scope=mine author_id игнорируется (автор всегда = actor).
-         *     Несуществующий author_id/parent_entity_id возвращает пустой 200 (A12).
+         *     Несуществующий author_id/parent_entity_id возвращает пустой 200.
          */
         get: {
             parameters: {
@@ -3909,7 +3584,11 @@ export interface paths {
                 };
             };
         };
-        /** Редактировать пометку */
+        /**
+         * Редактировать пометку
+         * @description Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
+         */
         put: {
             parameters: {
                 query?: never;
@@ -5000,6 +4679,8 @@ export interface paths {
         /**
          * Создать аннотацию для родительской сущности
          * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
          */
         post: {
             parameters: {
@@ -5328,13 +5009,13 @@ export interface paths {
          *     scope=mine (свои вкл. приватные, requiredAuth).
          *     scope=all НЕ поддерживается для canvas (admin-листинга нет) → 400.
          *     Поле total для scope=visible и scope=public — верхняя оценка: периметр
-         *     применяется после пагинации, точный счётчик не гарантируется (A10).
+         *     применяется после пагинации, точный счётчик не гарантируется.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description visible|public|mine */
-                    scope?: string;
+                    /** @description Фасет листинга */
+                    scope?: "visible" | "public" | "mine";
                     /** @description Поиск по title */
                     q?: string;
                     /** @description Смещение */
@@ -5803,6 +5484,8 @@ export interface paths {
         /**
          * Создать аннотацию для родительской сущности
          * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
          */
         post: {
             parameters: {
@@ -6503,6 +6186,8 @@ export interface paths {
         /**
          * Создать аннотацию для родительской сущности
          * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
          */
         post: {
             parameters: {
@@ -7263,13 +6948,13 @@ export interface paths {
          *     scope=mine (свои вкл. приватные, requiredAuth) |
          *     scope=all (non-private платформенно, требует document.delete_any).
          *     Поле total для scope=visible и scope=public — верхняя оценка: периметр
-         *     применяется после пагинации, точный счётчик не гарантируется (A10).
+         *     применяется после пагинации, точный счётчик не гарантируется.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description visible|public|mine|all */
-                    scope?: string;
+                    /** @description Фасет листинга */
+                    scope?: "visible" | "public" | "mine" | "all";
                     /** @description Поиск по filename */
                     q?: string;
                     /** @description Только незакреплённые (scope=mine) */
@@ -8240,6 +7925,8 @@ export interface paths {
         /**
          * Создать аннотацию для родительской сущности
          * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
          */
         post: {
             parameters: {
@@ -8761,6 +8448,8 @@ export interface paths {
         /**
          * Создать аннотацию для родительской сущности
          * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
          */
         post: {
             parameters: {
@@ -8877,8 +8566,8 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description visible|mine|all */
-                    scope?: string;
+                    /** @description Фасет листинга */
+                    scope?: "visible" | "mine" | "all";
                     /** @description Фильтр по автору (только scope=all) */
                     owner_id?: string;
                     /** @description Смещение */
@@ -10163,6 +9852,8 @@ export interface paths {
         /**
          * Создать аннотацию для родительской сущности
          * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
          */
         post: {
             parameters: {
@@ -10546,10 +10237,19 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Список лекций */
+        /**
+         * Список лекций (scope-фасетный)
+         * @description scope=visible (дефолт, public∪own-private) |
+         *     scope=public (строго public, anon-доступ) |
+         *     scope=mine (свои вкл. приватные, requiredAuth).
+         *     scope=all не поддерживается (400).
+         *     Поле total для scope=visible и scope=public — верхняя оценка.
+         */
         get: {
             parameters: {
                 query?: {
+                    /** @description Фасет листинга */
+                    scope?: "visible" | "public" | "mine";
                     /** @description Смещение */
                     offset?: number;
                     /** @description Записей на странице */
@@ -10576,7 +10276,16 @@ export interface paths {
                         };
                     };
                 };
-                /** @description invalid Bearer token (optional-auth) */
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["httputil.ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -12792,260 +12501,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/annotations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Список своих пометок */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Фильтр по типу родительской сущности */
-                    parent_entity_type?: "document" | "comment" | "glossary" | "banner" | "event" | "media" | "canvas";
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Записей на странице */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["annotation.Annotation"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/me/canvases": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Мои canvas'ы
-         * @description Owner-scoped листинг всех canvas'ов актора (любой видимости),
-         *     в отличие от picker-Search (GET /api/canvases), который ищет по
-         *     всем видимым canvas'ам с фильтром по title. Peer-симметрия с
-         *     /api/me/documents.
-         */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Лимит */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["canvas.CanvasSummary"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/me/documents": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Мои документы */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Лимит */
-                    limit?: number;
-                    /** @description Только незакреплённые (без вхождения в attachments) */
-                    free_floating?: boolean;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["document.Document"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/me/forms": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Мои формы */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Записей на странице */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["form.FormListItem"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/me/history": {
         parameters: {
             query?: never;
@@ -13539,69 +12994,6 @@ export interface paths {
                 };
             };
         };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/me/media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Мои медиа */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Лимит */
-                    limit?: number;
-                    /** @description Только незакреплённые (без вхождения в attachments) */
-                    free_floating?: boolean;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["media.Media"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -14541,16 +13933,16 @@ export interface paths {
          *     scope=mine (свои вкл. приватные, requiredAuth) |
          *     scope=all (non-private платформенно, требует media.delete_any).
          *     Фильтр type (video|audio) применяется только для scope=visible и scope=public
-         *     (SearchVisible); для mine/all игнорируется (A6).
+         *     (SearchVisible); для mine/all игнорируется.
          *     Поле total для scope=visible и scope=public — верхняя оценка: периметр
-         *     применяется после пагинации, точный счётчик не гарантируется (A10).
-         *     RL по худшему (анонимному) пути; scope=all унаследовал publicRL вместо adminRL — осознанно (A9).
+         *     применяется после пагинации, точный счётчик не гарантируется.
+         *     RL по худшему (анонимному) пути; scope=all унаследовал publicRL вместо adminRL — осознанно.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description visible|public|mine|all */
-                    scope?: string;
+                    /** @description Фасет листинга */
+                    scope?: "visible" | "public" | "mine" | "all";
                     /** @description Поиск по filename */
                     q?: string;
                     /** @description Тип медиа (scope=visible/public) */
@@ -14777,6 +14169,8 @@ export interface paths {
         /**
          * Создать аннотацию для родительской сущности
          * @description Создать аннотацию для конкретной родительской сущности; тип зашит в путь. Один хендлер обслуживает все per-entity роуты ниже.
+         *     Доменные коды ошибок якоря (422):
+         *     — ANCHOR_INVALID — структурно невалидный якорь
          */
         post: {
             parameters: {
@@ -16219,8 +15613,8 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description visible|public|mine|all */
-                    scope?: string;
+                    /** @description Фасет листинга */
+                    scope?: "visible" | "public" | "mine" | "all";
                     /** @description Фильтр по владельцу (только для scope=all) */
                     owner_id?: string;
                     /** @description Смещение */
@@ -16362,67 +15756,6 @@ export interface paths {
                 };
             };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/trails/my": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Мои маршруты */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Смещение */
-                    offset?: number;
-                    /** @description Записей на странице */
-                    limit?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ListResponse"] & {
-                            data?: components["schemas"]["trail.Trail"][];
-                        };
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["httputil.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -17715,18 +17048,6 @@ export interface components {
             id?: string;
             owner?: components["schemas"]["userref.Ref"];
             updated_at?: string;
-            version?: number;
-            visibility?: components["schemas"]["access.Visibility"];
-        };
-        "document.DocumentSummary": {
-            filename?: string;
-            id?: string;
-            owner?: components["schemas"]["userref.Ref"];
-            updated_at?: string;
-            /**
-             * @description Version mirrors Document.Version so the picker can seed an optimistic-lock
-             *     If-Match without a follow-up single GET.
-             */
             version?: number;
             visibility?: components["schemas"]["access.Visibility"];
         };
