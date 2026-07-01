@@ -7,8 +7,10 @@ import type { AnchorDraft } from "./types";
 import { useSelectionCapture } from "./use-selection-capture";
 
 // jsdom: getBoundingClientRect → нули, selectionchange/getSelection частичны.
-// Дым-тест проверяет ТОЛЬКО что хук монтируется и без выделения draft===null,
-// без throw. Реальная геометрия/поведение — ручной QA (Task 20).
+// Дым-тесты проверяют монтирование хука + что без выделения draft===null без
+// throw. Плюс один содержательный тест: реальное cross-cell Selection одной
+// таблицы → прямоугольный draft (device-agnostic путь touchend/pointerup).
+// Пиксельная геометрия крепления — ручной QA (Task 20).
 
 interface Probe {
   draft: AnchorDraft | null;
