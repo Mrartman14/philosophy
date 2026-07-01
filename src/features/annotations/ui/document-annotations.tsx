@@ -25,9 +25,16 @@ import { DocumentAnnotationLayer } from "./document-annotation-layer";
  * AstEditor). Грузим серверно один раз и прокидываем пропом `initial` —
  * браузер за ней не ходит.
  */
-export async function DocumentAnnotations({ parentId }: { parentId: string }) {
+export async function DocumentAnnotations({
+  parentId,
+  token,
+}: {
+  parentId: string;
+  /** ?token= (share-link) — доступ к аннотациям приватной лекции/документа. */
+  token?: string | undefined;
+}) {
   const [me, t] = await Promise.all([getMe(), getT("annotations")]);
-  const { items } = await getAnnotationsFor("document", parentId);
+  const { items } = await getAnnotationsFor("document", parentId, 0, 20, token);
   const canCreate = canCreateAnnotation(me);
   const astSchema = await loadSchemaIfNeeded(me, items, canCreate);
   // margin-режим: цитату якоря прячем на ≥xl (связь показывает выноска-линия), на

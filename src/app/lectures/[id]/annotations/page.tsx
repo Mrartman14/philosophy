@@ -17,7 +17,7 @@ export async function generateMetadata() {
 
 interface Props {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ offset?: string }>;
+  searchParams: Promise<{ offset?: string; token?: string }>;
 }
 
 const LIMIT = 20;
@@ -34,7 +34,13 @@ export default async function LectureAnnotationsPage({
   const { id } = await params;
   const sp = await searchParams;
   const offset = parseNonNegativeInt(sp.offset, 0);
-  const { items, total } = await getLectureAnnotations(id, offset, LIMIT);
+  const { items, total } = await getLectureAnnotations(
+    id,
+    offset,
+    LIMIT,
+    undefined,
+    sp.token,
+  );
   const t = await getT("pages");
 
   const paginationLabels = await getPaginationLabels();

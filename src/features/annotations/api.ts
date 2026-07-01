@@ -29,10 +29,14 @@ export const getAnnotationsFor = cache(
     parentId: string,
     offset = 0,
     limit = 20,
+    token?: string,
   ): Promise<AnnotationListResult> => {
     const api = await createApiClient();
     const init = {
-      params: { path: { id: parentId }, query: { offset, limit } },
+      params: {
+        path: { id: parentId },
+        query: { offset, limit, ...(token ? { token } : {}) },
+      },
     } as const;
     const get = (type: ParentEntityType) => {
       switch (type) {
@@ -96,13 +100,15 @@ export const getMyAnnotations = cache(
   },
 );
 
-/** Агрегация по лекции (GET /api/lectures/{id}/annotations — есть в schema.ts). */
+/** Агрегация по лекции (GET /api/lectures/{id}/annotations — есть в schema.ts).
+ *  token (?token=) для приватных лекций через share-link (query объявлен в schema.ts). */
 export const getLectureAnnotations = cache(
   async (
     lectureId: string,
     offset = 0,
     limit = 20,
     parentEntityType?: "document" | "comment" | "media",
+    token?: string,
   ): Promise<AnnotationListResult> => {
     const api = await createApiClient();
     const { data, error } = await api.GET("/api/lectures/{id}/annotations", {
@@ -112,6 +118,7 @@ export const getLectureAnnotations = cache(
           offset,
           limit,
           ...(parentEntityType ? { parent_entity_type: parentEntityType } : {}),
+          ...(token ? { token } : {}),
         },
       },
     });
