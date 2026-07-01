@@ -1,7 +1,5 @@
 // src/features/notifications/notification-content.ts
 // Чистый client-safe дескриптор уведомления. Текст рендерится в компоненте через @/i18n.
-import { commentHash } from "@/utils/comment-anchor";
-
 import type { AppNotification, NotificationTargetType } from "./types";
 
 /**
@@ -13,7 +11,10 @@ export type NotificationDescriptor =
   | { kind: "documentUpdated"; count: number; href: string | null }
   | { kind: "lectureUpdated"; count: number; href: string | null }
   | { kind: "canvasUpdated"; count: number; href: string | null }
-  | { kind: "commentReplied"; count: number; href: string | null }
+  // commentReplied НЕ несёт href: у коммента нет своей страницы, хост-лекцию
+  // резолвим по клику (см. notification-item → resolveCommentReplyHref), чтобы не
+  // делать N+1 GET /api/comments/{id} на рендере ленты. commentId = id ответа.
+  | { kind: "commentReplied"; count: number; commentId: string | null }
   | { kind: "raw"; count: number; href: string | null };
 
 /** Fallback-ссылка на сущность по target_type. */
@@ -52,15 +53,9 @@ export function describeNotification(n: AppNotification): NotificationDescriptor
       return { kind: "lectureUpdated", count, href };
     case "canvas.updated":
       return { kind: "canvasUpdated", count, href };
-    case "comment.replied": {
-      // Коммент живёт в /lectures/{id}; deep-link по стабильному DOM-контракту
-      // comment-<id> (см. comment-tree.tsx / thread-scroll.ts). null-хост → нет ссылки.
-      const commentHref =
-        n.commentLectureId && n.targetId
-          ? `/lectures/${n.commentLectureId}${commentHash(n.targetId)}`
-          : null;
-      return { kind: "commentReplied", count, href: commentHref };
-    }
+    case "comment.replied":
+      // targetId = id ответа. Хост-лекцию и итоговый href резолвим по клику.
+      return { kind: "commentReplied", count, commentId: n.targetId };
     default:
       return { kind: "raw", count, href };
   }

@@ -30,13 +30,6 @@ export interface AppNotification {
   readAt: string | null;
   seenAt: string | null;
   createdAt: string | null;
-  /**
-   * Резолвнутая хост-лекция для comment.replied (target=comment). Комментарий
-   * не имеет своей страницы — живёт в /lectures/{id}; поле нужно для deep-link.
-   * null — не comment-таргет ИЛИ резолв не удался (мягкая деградация). Бэк-ask:
-   * положить lecture_id прямо в payload уведомления, тогда N+1 GET уйдёт.
-   */
-  commentLectureId: string | null;
 }
 
 export interface NotificationCounts {

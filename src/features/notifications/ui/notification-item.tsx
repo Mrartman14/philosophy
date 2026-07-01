@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
-import { markRead } from "../actions";
+import { markRead, resolveCommentReplyHref } from "../actions";
 import { describeNotification } from "../notification-content";
 import type { AppNotification } from "../types";
 
@@ -20,8 +20,8 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
   const router = useRouter();
   const t = useT("notifications");
   const [read, setRead] = useState(notification.readAt !== null);
+  const [pending, setPending] = useState(false);
   const d = describeNotification(notification);
-  const href = d.href;
 
   let text: string;
   if (d.kind === "raw") {
@@ -32,22 +32,38 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
     text = t(d.kind, { count: d.count });
   }
 
-  function handleClick() {
+  async function handleClick() {
+    if (pending) return; // не даём повторный клик во время резолва
     if (!read) {
       setRead(true); // оптимистично
       void markRead(notification.id); // ошибку игнорируем — некритично
     }
+    // commentReplied: у коммента нет своей страницы — хост-лекцию резолвим по
+    // клику (1 запрос на реальный переход вместо N+1 на рендере ленты).
+    if (d.kind === "commentReplied") {
+      if (!d.commentId) {
+        onNavigate?.();
+        return;
+      }
+      setPending(true);
+      const result = await resolveCommentReplyHref(d.commentId);
+      setPending(false);
+      onNavigate?.();
+      if (result.success && result.data) router.push(result.data);
+      return;
+    }
     onNavigate?.();
-    if (href) router.push(href);
+    if (d.href) router.push(d.href);
   }
 
   return (
     <Button
       unstyled
-      onClick={handleClick}
+      onClick={() => void handleClick()}
+      aria-busy={pending}
       className={`flex w-full items-start gap-2 rounded px-3 py-2 text-start text-sm hover:bg-(--color-surface-subtle) ${
         read ? "text-(--color-fg-muted)" : "font-medium"
-      }`}
+      } ${pending ? "opacity-60" : ""}`}
     >
       {!read && (
         <span

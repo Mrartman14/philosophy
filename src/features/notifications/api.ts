@@ -29,7 +29,6 @@ function normalizeNotification(dto: NotificationDTO): AppNotification {
     readAt: dto.read_at ?? null,
     seenAt: dto.seen_at ?? null,
     createdAt: dto.created_at ?? null,
-    commentLectureId: null,
   };
 }
 
@@ -50,43 +49,14 @@ export const getNotifications = cache(
       params: { query: { offset, limit } },
     });
     if (error) throw new Error(error.error ?? (await getT("notifications"))("api.loadNotificationsFailed"));
-    const items = (data.data ?? []).map(normalizeNotification);
-    // Обогащаем comment.replied хост-лекцией параллельно (N+1, мягкая деградация).
-    // In-place mutation безопасна: объекты только что созданы normalizeNotification
-    // внутри memoized-тела cache() — внешних ссылок на них нет.
-    await Promise.all(
-      items.map(async (n) => {
-        if (n.type === "comment.replied" && n.targetId) {
-          n.commentLectureId = await getCommentLectureId(n.targetId);
-        }
-      }),
-    );
     return {
-      items,
+      items: (data.data ?? []).map(normalizeNotification),
       total: data.pagination?.total ?? 0,
       offset: data.pagination?.offset ?? offset,
       limit: data.pagination?.limit ?? limit,
     };
   },
 );
-
-/**
- * Хост-лекция комментария (для deep-link comment.replied). Комментарий несёт
- * обязательное lecture_id (comment.Comment). Мягкая деградация → null (карточка
- * без ссылки). N+1 бэк-ask: включить lecture_id в payload уведомления.
- */
-const getCommentLectureId = cache(async (commentId: string): Promise<string | null> => {
-  try {
-    const api = await createApiClient();
-    const { data, error } = await api.GET("/api/comments/{id}", {
-      params: { path: { id: commentId } },
-    });
-    if (error) return null;
-    return data.data?.lecture_id ?? null;
-  } catch {
-    return null;
-  }
-});
 
 /** Счётчики (GET /api/me/notifications/counts). */
 export const getNotificationCounts = cache(async (): Promise<NotificationCounts> => {

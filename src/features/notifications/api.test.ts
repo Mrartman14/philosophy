@@ -197,59 +197,16 @@ describe("getDocumentSubscription — soft-degrade + boolean derivation", () => 
 });
 
 // ---------------------------------------------------------------------------
-// getNotifications — обогащение comment.replied хост-лекцией
+// comment.replied — deep-link резолвится ПО КЛИКУ (resolveCommentReplyHref в
+// actions.ts), НЕ обогащается на рендере ленты. getNotifications не ходит за
+// комментами: см. resolve-comment-reply-href.test.ts.
 // ---------------------------------------------------------------------------
-describe("getNotifications — commentLectureId enrichment", () => {
-  it("резолвит lecture_id для comment.replied через GET /api/comments/{id}", async () => {
-    getMock.mockImplementation((path: string) => {
-      if (path === "/api/me/notifications") {
-        return Promise.resolve(
-          apiResult({
-            data: {
-              data: [
-                { id: "n-1", type: "comment.replied", target_type: "comment", target_id: "cmt-9" },
-              ],
-              pagination: { total: 1, offset: 0, limit: 20 },
-            },
-          }),
-        );
-      }
-      // GET /api/comments/{id}
-      return Promise.resolve(apiResult({ data: { data: { id: "cmt-9", lecture_id: "lec-42" } } }));
-    });
-
-    const { items } = await getNotifications();
-
-    expect(items[0]).toMatchObject({ type: "comment.replied", commentLectureId: "lec-42" });
-  });
-
-  it("commentLectureId=null, если GET комментария вернул ошибку (мягкая деградация)", async () => {
-    getMock.mockImplementation((path: string) => {
-      if (path === "/api/me/notifications") {
-        return Promise.resolve(
-          apiResult({
-            data: {
-              data: [
-                { id: "n-2", type: "comment.replied", target_type: "comment", target_id: "cmt-gone" },
-              ],
-              pagination: { total: 1, offset: 0, limit: 20 },
-            },
-          }),
-        );
-      }
-      return Promise.resolve(apiResult({ error: { error: "not found" }, status: 404 }));
-    });
-
-    const { items } = await getNotifications();
-
-    expect(items[0]).toMatchObject({ commentLectureId: null });
-  });
-
-  it("не дергает GET комментария для не-comment-типов (commentLectureId=null)", async () => {
+describe("getNotifications — comment.replied НЕ дергает GET комментария", () => {
+  it("не резолвит хост-лекцию на рендере (0 доп. запросов)", async () => {
     getMock.mockResolvedValue(
       apiResult({
         data: {
-          data: [{ id: "n-3", type: "document.updated", target_type: "document", target_id: "doc-1" }],
+          data: [{ id: "n-1", type: "comment.replied", target_type: "comment", target_id: "cmt-9" }],
           pagination: { total: 1, offset: 0, limit: 20 },
         },
       }),
@@ -257,8 +214,8 @@ describe("getNotifications — commentLectureId enrichment", () => {
 
     const { items } = await getNotifications();
 
-    expect(items[0]).toMatchObject({ commentLectureId: null });
-    // единственный GET — за уведомлениями; за комментом не ходили
+    expect(items[0]).toMatchObject({ type: "comment.replied", targetId: "cmt-9" });
+    // единственный GET — за уведомлениями; за комментом на рендере НЕ ходим
     expect(getMock).toHaveBeenCalledOnce();
   });
 });

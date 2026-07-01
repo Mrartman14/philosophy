@@ -4,6 +4,7 @@ import "server-only";
 
 import { createApiClient } from "@/api/client";
 import { rethrowApiError } from "@/utils/api-error";
+import { commentHash } from "@/utils/comment-anchor";
 import { createAction } from "@/utils/create-action";
 import { getMe } from "@/utils/me";
 import { ForbiddenError, requireActive } from "@/utils/permissions";
@@ -115,3 +116,22 @@ export const fetchNotifications = createAction(
   },
   "fetchNotifications",
 );
+
+/**
+ * Deep-link к ответу (comment.replied) — резолв ПО КЛИКУ, не на рендере ленты.
+ * Коммент не имеет своей страницы: живёт в /lectures/{lecture_id}. Тянем
+ * lecture_id из GET /api/comments/{id} (обязательное поле) и строим href по SOT
+ * (`commentHash`). Резолв на клик = 1 запрос на реальный переход вместо N+1 на
+ * рендере. Мягкая деградация: коммент удалён / ошибка → null (переход не делаем).
+ */
+export const resolveCommentReplyHref = createAction(async (commentId: string) => {
+  const me = await getMe();
+  if (!canUseNotifications(me)) throw new ForbiddenError("guest");
+  const api = await createApiClient();
+  const { data, error } = await api.GET("/api/comments/{id}", {
+    params: { path: { id: commentId } },
+  });
+  if (error) return null;
+  const lectureId = data.data?.lecture_id;
+  return lectureId ? `/lectures/${lectureId}${commentHash(commentId)}` : null;
+}, "resolveCommentReplyHref");

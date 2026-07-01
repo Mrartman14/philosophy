@@ -8,7 +8,7 @@ function make(p: Partial<AppNotification>): AppNotification {
   return {
     id: "n1", type: null, reason: null, actorId: null, actorName: null, targetId: null,
     targetType: null, targetVersion: null, groupCount: 1,
-    readAt: null, seenAt: null, createdAt: null, commentLectureId: null, ...p,
+    readAt: null, seenAt: null, createdAt: null, ...p,
   };
 }
 
@@ -34,21 +34,25 @@ describe("describeNotification", () => {
     expect(d).toEqual({ kind: "raw", count: 1, href: null });
   });
   it("нет targetId → href null", () => {
-    expect(describeNotification(make({ type: "document.updated", targetType: "document" })).href).toBeNull();
+    expect(describeNotification(make({ type: "document.updated", targetType: "document" }))).toEqual({
+      kind: "documentUpdated", count: 1, href: null,
+    });
   });
   it("off-contract target_type → href null", () => {
-    expect(describeNotification(make({ type: "document.updated", targetType: "media" as never, targetId: "x1" })).href).toBeNull();
+    expect(describeNotification(make({ type: "document.updated", targetType: "media" as never, targetId: "x1" }))).toEqual({
+      kind: "documentUpdated", count: 1, href: null,
+    });
   });
-  it("comment.replied → commentReplied + deep-link на ответ", () => {
+  it("comment.replied → commentReplied + commentId (href резолвится по клику)", () => {
     const d = describeNotification(
-      make({ type: "comment.replied", targetType: "comment", targetId: "cmt-9", commentLectureId: "lec-42", groupCount: 2 }),
+      make({ type: "comment.replied", targetType: "comment", targetId: "cmt-9", groupCount: 2 }),
     );
-    expect(d).toEqual({ kind: "commentReplied", count: 2, href: "/lectures/lec-42#comment-cmt-9" });
+    expect(d).toEqual({ kind: "commentReplied", count: 2, commentId: "cmt-9" });
   });
-  it("comment.replied без резолвнутой лекции → href null", () => {
+  it("comment.replied без targetId → commentId null", () => {
     const d = describeNotification(
-      make({ type: "comment.replied", targetType: "comment", targetId: "cmt-9", commentLectureId: null }),
+      make({ type: "comment.replied", targetType: "comment", targetId: null }),
     );
-    expect(d).toEqual({ kind: "commentReplied", count: 1, href: null });
+    expect(d).toEqual({ kind: "commentReplied", count: 1, commentId: null });
   });
 });
