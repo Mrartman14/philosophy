@@ -7,7 +7,7 @@
 // Только на wide (на narrow поля схлопнуты — линии пересекли бы текст). Сторона
 // выводится из геометрии (RTL-safe). aria-hidden + pointer-events:none —
 // декоративный слой; клавиатурный путь — карточки и доступный список заметок.
-import { useLayoutEffect, useState, type RefObject } from "react";
+import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { WIDE } from "./breakpoints";
@@ -20,11 +20,9 @@ const CARD_EDGE_PAD = 8; // отступ внутрь от края карточ
 export interface ConnectorLayerProps {
   ids: string[];
   getAnchorRect: (id: string) => DOMRect | null; // viewport-координаты якоря
-  // Корень-владелец заметки (для X текстовой стороны). Приоритетнее astRootRef;
-  // если задан — astRootRef не нужен. Мультикорневой rail (MarginRail) передаёт его.
-  getRootRect?: (id: string) => DOMRect | null;
-  // Единый корень (легаси/один корень: MarginAnchorLayer). Опционален при getRootRect.
-  astRootRef?: RefObject<HTMLElement | null>;
+  // Корень-владелец КАЖДОЙ заметки (для X текстовой стороны выноски). Мультикорневой
+  // rail (MarginRail) — единственный потребитель; возвращает rect корня скоупа ноты.
+  getRootRect: (id: string) => DOMRect | null;
   activeId: string | null;
   tone: Tone;
   recomputeKey: number;
@@ -39,8 +37,7 @@ interface Seg {
 function measure(
   ids: string[],
   getAnchorRect: (id: string) => DOMRect | null,
-  getRootRect: ((id: string) => DOMRect | null) | undefined,
-  astRootRef: RefObject<HTMLElement | null> | undefined,
+  getRootRect: (id: string) => DOMRect | null,
   rectIds: Set<string>,
 ): Seg[] {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return [];
@@ -49,11 +46,8 @@ function measure(
   for (const id of ids) {
     const a = getAnchorRect(id);
     if (!a) continue; // сирота / неразрешённый якорь
-    // X текстовой стороны: rect корня-владельца этой заметки (мультикорень) ИЛИ
-    // единый astRootRef (легаси/один корень).
-    const rootRect = getRootRect
-      ? getRootRect(id)
-      : (astRootRef?.current?.getBoundingClientRect() ?? null);
+    // X текстовой стороны — rect корня-владельца ЭТОЙ заметки (мультикорень).
+    const rootRect = getRootRect(id);
     if (!rootRect) continue;
     const card = document.querySelector<HTMLElement>(
       `[data-note-card-wrapper="${cssEscape(id)}"]`,
@@ -85,7 +79,6 @@ export function ConnectorLayer({
   ids,
   getAnchorRect,
   getRootRect,
-  astRootRef,
   activeId,
   tone,
   recomputeKey,
@@ -96,7 +89,7 @@ export function ConnectorLayer({
 
   useLayoutEffect(() => {
     const update = () => {
-      setSegs(measure(ids, getAnchorRect, getRootRect, astRootRef, rectIds));
+      setSegs(measure(ids, getAnchorRect, getRootRect, rectIds));
     };
     update();
     // rAF: даём MarginNotesColumn спозиционировать карточки в его layout-эффекте,
@@ -110,11 +103,10 @@ export function ConnectorLayer({
       window.removeEventListener("scroll", update, true);
     };
     // ids покрыт idsKey по значению; getAnchorRect/getRootRect стабильны (useCallback
-    // в движке); astRootRef — стабильный ref. Мультикорень ключует по getRootRect,
-    // легаси — по astRootRef. rectIds — стабильная идентичность (useMemo в
-    // оркестраторе): эффект не дёргается зря.
+    // в MarginRail). rectIds — стабильная идентичность (useMemo в оркестраторе):
+    // эффект не дёргается зря.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idsKey, getAnchorRect, getRootRect, astRootRef, recomputeKey, rectIds]);
+  }, [idsKey, getAnchorRect, getRootRect, recomputeKey, rectIds]);
 
   if (segs.length === 0) return null;
   const stroke = toneColor(tone);

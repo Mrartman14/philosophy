@@ -68,9 +68,19 @@ interface Props {
    * Дефолт false — офлайн/изоморфный путь (SavedLectureView) без скоупа.
    *
    * ИЗОМОРФНЫЙ КОНТРАКТ (Guardrail 4): атрибут вставляется ИНЛАЙН-литералом, БЕЗ
-   * импорта `anchorScopeAttr` из barrel `@/components/anchor-engine` — barrel тянет
-   * "use client"-движок (MarginRail/AnchorScopeProvider) в офлайн-бандл и сломал бы
-   * hook-free контракт view. Значение `comment:<id>` идентично `anchorScopeAttr`.
+   * импорта `anchorScopeAttr`/`formatScopeId` из barrel `@/components/anchor-engine` —
+   * barrel тянет "use client"-движок (MarginRail/AnchorScopeProvider) в офлайн-бандл
+   * и сломал бы hook-free контракт view (deep-импорт `./scope-id` мимо barrel запрещён
+   * Guardrail 2 и всё равно не даёт `formatScopeId` — его в barrel нет). Значение
+   * `comment:<id>` обязано совпадать с `formatScopeId({entityType:"comment", entityId})`
+   * = `anchorScopeAttr("comment", id)`, по которому `AnnotationScope` (client) находит
+   * этот корень через `anchorScopeSelector("comment", id)`.
+   *
+   * ДРЕЙФ-РИСК: формат scope-id живёт в scope-id.ts, здесь он продублирован строкой.
+   * Инвариант-канарейка `comment-node-view.test.tsx` («scopeEnabled → тело несёт
+   * data-anchor-scope=comment:<id>») фиксирует ровно этот литерал — если формат
+   * scope-id сменится, тест здесь и парный тест anchorScopeSelector в scope-id.test.ts
+   * должны обновиться синхронно.
    */
   scopeEnabled?: boolean;
 }

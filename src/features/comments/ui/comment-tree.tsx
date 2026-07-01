@@ -12,13 +12,14 @@ interface BranchProps {
   childrenMap: Map<string | null, Comment[]>;
   lectureId: string;
   schema: CommentSchema;
+  token?: string | undefined;
 }
 
-function Branch({ node, childrenMap, lectureId, schema }: BranchProps) {
+function Branch({ node, childrenMap, lectureId, schema, token }: BranchProps) {
   const kids = childrenMap.get(node.id) ?? [];
   return (
     <li id={commentNodeId(node.id)} className="flex flex-col gap-2">
-      <CommentNode comment={node} lectureId={lectureId} schema={schema} />
+      <CommentNode comment={node} lectureId={lectureId} schema={schema} token={token} />
       {kids.length > 0 && (
         <ul className="ms-2 flex flex-col gap-2 border-s border-(--color-border) ps-3">
           {kids.map((kid) => (
@@ -28,6 +29,7 @@ function Branch({ node, childrenMap, lectureId, schema }: BranchProps) {
               childrenMap={childrenMap}
               lectureId={lectureId}
               schema={schema}
+              token={token}
             />
           ))}
         </ul>
@@ -40,9 +42,11 @@ interface Props {
   subtrees: RootSubtree[];
   lectureId: string;
   schema: CommentSchema;
+  /** ?token= (share-link) — доступ к аннотациям комментов приватной лекции. */
+  token?: string | undefined;
 }
 
-export async function CommentTree({ subtrees, lectureId, schema }: Props) {
+export async function CommentTree({ subtrees, lectureId, schema, token }: Props) {
   const t = await getT("comments");
 
   if (subtrees.length === 0) {
@@ -62,6 +66,7 @@ export async function CommentTree({ subtrees, lectureId, schema }: Props) {
             childrenMap={childrenMap}
             lectureId={lectureId}
             schema={schema}
+            token={token}
           />,
         ];
       })}

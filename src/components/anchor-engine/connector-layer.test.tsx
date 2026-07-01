@@ -78,7 +78,7 @@ describe("ConnectorLayer", () => {
       <ConnectorLayer
         ids={["a", "b"]}
         getAnchorRect={anchorRect}
-        astRootRef={{ current: root }}
+        getRootRect={() => root.getBoundingClientRect()}
         activeId={null}
         tone="annotation"
         recomputeKey={0}
@@ -97,7 +97,7 @@ describe("ConnectorLayer", () => {
       <ConnectorLayer
         ids={["a", "b"]}
         getAnchorRect={anchorRect}
-        astRootRef={{ current: root }}
+        getRootRect={() => root.getBoundingClientRect()}
         activeId={null}
         tone="annotation"
         recomputeKey={0}
@@ -116,7 +116,7 @@ describe("ConnectorLayer", () => {
       <ConnectorLayer
         ids={["a"]}
         getAnchorRect={anchorRect}
-        astRootRef={{ current: root }}
+        getRootRect={() => root.getBoundingClientRect()}
         activeId={null}
         tone="annotation"
         recomputeKey={0}
@@ -136,7 +136,7 @@ describe("ConnectorLayer", () => {
       <ConnectorLayer
         ids={["a", "b"]}
         getAnchorRect={anchorRect}
-        astRootRef={{ current: root }}
+        getRootRect={() => root.getBoundingClientRect()}
         activeId="a"
         tone="annotation"
         recomputeKey={0}
@@ -160,7 +160,7 @@ describe("ConnectorLayer", () => {
       <ConnectorLayer
         ids={["a"]}
         getAnchorRect={anchorRect}
-        astRootRef={{ current: root }}
+        getRootRect={() => root.getBoundingClientRect()}
         activeId={null}
         tone="annotation"
         recomputeKey={0}
@@ -178,7 +178,7 @@ describe("ConnectorLayer", () => {
       <ConnectorLayer
         ids={["a"]}
         getAnchorRect={anchorRect}
-        astRootRef={{ current: root }}
+        getRootRect={() => root.getBoundingClientRect()}
         activeId={null}
         tone="annotation"
         recomputeKey={0}
@@ -188,10 +188,10 @@ describe("ConnectorLayer", () => {
     expect(new Set(pathYs("a")).size).toBeGreaterThan(1); // разные высоты → локоть
   });
 
-  it("getRootRect задаёт X текстовой стороны per-id (мультикорень, без astRootRef)", () => {
+  it("getRootRect задаёт X текстовой стороны per-id (мультикорень)", () => {
     stubMatch(true); // wide=true
     // Корень-владелец заметки слева (right=500), карточка справа от якоря (left=760)
-    // → правая сторона: x1 берётся из getRootRect(id).right (500), не из общего root.
+    // → правая сторона: x1 берётся из getRootRect(id).right (500).
     addCard("n1"); // карточка left=760 > anchor.right=300 → right-сторона
     const ownerRoot = () => rect({ left: 0, right: 500, top: 0, bottom: 1000, width: 500, height: 1000 });
     render(
@@ -205,10 +205,9 @@ describe("ConnectorLayer", () => {
         rectIds={new Set()}
       />,
     );
-    // выноска построена БЕЗ astRootRef
     // eslint-disable-next-line testing-library/no-node-access -- декоративный SVG-оверлей без роли (прецедент: margin-notes-column.test.tsx)
     expect(document.querySelector('[data-connector="n1"]')).not.toBeNull();
-    // x1 = rootRect.right (500) + scrollX(0); НЕ из единого root (которого тут нет).
+    // x1 = rootRect.right (500) + scrollX(0).
     expect(pathX1("n1")).toBe(500);
   });
 
@@ -224,7 +223,7 @@ describe("ConnectorLayer", () => {
       <ConnectorLayer
         ids={["a"]}
         getAnchorRect={tallRect}
-        astRootRef={{ current: root }}
+        getRootRect={() => root.getBoundingClientRect()}
         activeId={null}
         tone="annotation"
         recomputeKey={0}

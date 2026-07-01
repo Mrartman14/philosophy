@@ -137,7 +137,7 @@ export default async function DocumentPage({ params, searchParams }: Props) {
         {document.id ? (
           <>
             <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-              <DocumentAnnotations parentId={document.id} />
+              <DocumentAnnotations parentId={document.id} token={token} />
             </Suspense>
             <MarginRail tone="annotation" highlightName="annotation" />
           </>

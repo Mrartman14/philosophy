@@ -14,8 +14,8 @@
 // исходящий из интерактивного потомка, НЕ активирует (guard всплытия).
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
-import { WIDE } from "./breakpoints";
 import { applyOrder, resolveStack, type StackItem } from "./stacking";
+import { useWide } from "./use-wide";
 
 // Селектор интерактивных потомков: клик по ним не активирует карточку.
 const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], [tabindex]';
@@ -45,26 +45,14 @@ export function MarginNotesColumn({ notes, getAnchorRect, onActivate, onHoverNot
   // фокус «скакал» бы (WCAG 2.4.3 Focus Order). На narrow порядок пуст → поток
   // во входном порядке (там DOM-порядок и так = визуальному).
   const [order, setOrder] = useState<string[]>([]);
-  const [wide, setWide] = useState(false);
+  // Wide-гейт — общий хук useWide (единый порог WIDE, тот же, что у выносок и
+  // wide-гейта слайсов): в поток на narrow, абсолют по якорю на wide. SSR/jsdom без
+  // matchMedia → false (хук деградирует в поток, не бросает).
+  const wide = useWide();
   // Бампится при изменении высоты любой карточки (разворот ClampableContent,
   // догрузка картинки, шрифт) — форсит restack ниже. Чинит латентный баг: ранее
   // изменение высоты карточки не пересчитывало стек и карточки наезжали.
   const [sizeKey, setSizeKey] = useState(0);
-
-  useEffect(() => {
-    // Defensive: в jsdom/SSR window.matchMedia отсутствует → деградируем в поток
-    // (wide=false), не подписываемся, не бросаем.
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia(WIDE);
-    const sync = () => {
-      setWide(mq.matches);
-    };
-    sync();
-    mq.addEventListener("change", sync);
-    return () => {
-      mq.removeEventListener("change", sync);
-    };
-  }, []);
 
   // Пересчёт позиций — синхронизация измерительного слоя с внешней геометрией
   // (DOM-rect якорей, offsetHeight карточек, viewport). Логика в named-closure

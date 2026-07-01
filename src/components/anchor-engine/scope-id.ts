@@ -1,6 +1,8 @@
 // Идентичность scope: пара (entityType, entityId), сериализуемая в атрибут
 // data-anchor-scope="<type>:<id>". entityType и entityId (UUID) разделены ПЕРВЫМ
 // двоеточием — остаток уходит в entityId (defensive, на случай ":"-в-id).
+import { cssEscape } from "./css-escape";
+
 export interface AnchorScopeId {
   entityType: string;
   entityId: string;
@@ -16,6 +18,16 @@ export function anchorScopeAttr(
   entityId: string,
 ): { "data-anchor-scope": string } {
   return { "data-anchor-scope": formatScopeId({ entityType, entityId }) };
+}
+
+/**
+ * CSS-селектор тела скоупа: `[data-anchor-scope="<escaped type:id>"]`. Значение
+ * атрибута экранируется через cssEscape (безопасно для UUID/типа с спецсимволами) —
+ * пара к anchorScopeAttr, которым размечают скоуп. Для querySelector в фичах
+ * (annotation-scope / comment-anchor-scope находят свой корень по типу+id).
+ */
+export function anchorScopeSelector(entityType: string, entityId: string): string {
+  return `[data-anchor-scope="${cssEscape(formatScopeId({ entityType, entityId }))}"]`;
 }
 
 export function parseScopeId(raw: string | null | undefined): AnchorScopeId | null {

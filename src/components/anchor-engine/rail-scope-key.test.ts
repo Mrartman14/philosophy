@@ -9,7 +9,11 @@ import type { RailScopeEntry } from "./use-rail-scopes";
 // при том же составе, чтобы не вернулся orphan-card баг (находка ревью Task 7).
 const noopRender = () => null;
 
-function entry(key: string, noteIds: string[]): RailScopeEntry {
+function entry(
+  key: string,
+  noteIds: string[],
+  highlightEnabled?: boolean,
+): RailScopeEntry {
   return {
     key,
     // rootEl в отпечаток НЕ входит — для чистого теста хватает заглушки.
@@ -30,6 +34,7 @@ function entry(key: string, noteIds: string[]): RailScopeEntry {
       },
     })),
     renderNote: noopRender,
+    ...(highlightEnabled === undefined ? {} : { highlightEnabled }),
   };
 }
 
@@ -67,6 +72,21 @@ describe("railScopeFingerprint", () => {
     expect(two).not.toBe(one);
   });
 
+  it("меняется при переключении highlightEnabled (reading-mode тумблер)", () => {
+    // Регресс: тумблер подсветки на wide/rail молча не работал, т.к. отпечаток не
+    // кодировал highlightEnabled → flat/persistentIds/overlay в MarginRail застревали
+    // stale (мемо по scopeKey). Отпечаток обязан меняться при флипе.
+    const on = railScopeFingerprint([entry("k", ["n1"], true)]);
+    const off = railScopeFingerprint([entry("k", ["n1"], false)]);
+    expect(off).not.toBe(on);
+  });
+
+  it("highlightEnabled по умолчанию (undefined) эквивалентен true", () => {
+    const def = railScopeFingerprint([entry("k", ["n1"])]);
+    const on = railScopeFingerprint([entry("k", ["n1"], true)]);
+    expect(def).toBe(on);
+  });
+
   it("пустой набор скоупов → пустая строка", () => {
     expect(railScopeFingerprint([])).toBe("");
   });
@@ -74,10 +94,13 @@ describe("railScopeFingerprint", () => {
   it("воспроизводит ровно тот же формат, что инлайн-выражение потребителей", () => {
     const scopes = [
       entry("annotation:document:d1", ["n1", "n2"]),
-      entry("comment:document:d1", ["n3"]),
+      entry("comment:document:d1", ["n3"], false),
     ];
     const inline = scopes
-      .map((s) => `${s.key}#${s.notes.map((n) => n.id).join(",")}`)
+      .map(
+        (s) =>
+          `${s.key}:${s.highlightEnabled === false ? 0 : 1}#${s.notes.map((n) => n.id).join(",")}`,
+      )
       .join("|");
     expect(railScopeFingerprint(scopes)).toBe(inline);
   });

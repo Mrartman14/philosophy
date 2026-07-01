@@ -7,19 +7,24 @@
 // Page-level агрегатор-приёмник одного тона (мультикорень). Единственная политика
 // движка: слайсы регистрируют scope-заметки, MarginRail рисует колонку маргиналий.
 export { MarginRail } from "./margin-rail";
-// Идентичность скоупа + хелпер JSX-атрибута для разметки тел сущностей в слайсах.
-export { anchorScopeAttr, type AnchorScopeId } from "./scope-id";
+// Идентичность скоупа + хелпер JSX-атрибута для разметки тел сущностей в слайсах +
+// парный CSS-селектор (anchorScopeSelector) для querySelector корня скоупа в фичах.
+export { anchorScopeAttr, anchorScopeSelector, type AnchorScopeId } from "./scope-id";
 // Единая shared-поверхность захвата+аффорданса (PR3 dual-affordance fix).
 // useRegisterAnchorAction — ВНУТРЕННИЙ (слои зовут относительным импортом), НЕ выносим.
 // useStableAnchorAction регистрируют слайсы (create-action компоненты) через barrel.
+// RailScopeEntry — ВНУТРЕННИЙ тип реестра (его строит MarginRail/тесты относительным
+// импортом; слайсы отдают заметки через useRegisterRailScope), в barrel НЕ выносим.
 export {
   AnchorScopeProvider,
   SelectionAffordanceHost,
   useStableAnchorAction,
-  type RailScopeEntry,
 } from "./anchor-actions";
-// Реестр scope-заметок для rail: слайсы регистрируют свои заметки, MarginRail читает.
-export { useRegisterRailScope, useRailScopes } from "./use-rail-scopes";
-// Единый wide-гейт rail (один порог WIDE_MEDIA): слайсы решают inline-vs-rail.
-export { useWide, WIDE_MEDIA } from "./use-wide";
+// Реестр scope-заметок для rail: слайсы регистрируют свои заметки через
+// useRegisterRailScope. useRailScopes читает ТОЛЬКО MarginRail (относительным
+// импортом) — в публичный barrel не выносим.
+export { useRegisterRailScope } from "./use-rail-scopes";
+// Единый wide-гейт rail (один порог WIDE): слайсы решают inline-vs-rail. Саму
+// media-константу WIDE держим внутренней (breakpoints.ts) — слайсам нужен только хук.
+export { useWide } from "./use-wide";
 export type { TextAnchor, AnchoredNote, AnchorDraft } from "./types";

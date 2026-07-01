@@ -12,8 +12,9 @@ interface Props {
   parentId: string;
   /**
    * Тип родительской сущности — маршрутизирует create на нужный per-entity роут
-   * (`createAnnotation` switch-ит по нему). По умолчанию `"document"`: на этом
-   * этапе ещё жив `document-annotation-layer`, зовущий диалог без типа.
+   * (`createAnnotation` switch-ит по нему). По умолчанию `"document"` — безопасный
+   * дефолт для прямых вызовов диалога без явного типа (самый частый родитель).
+   * AnnotationScope всегда передаёт тип явно (document/comment/…).
    */
   parentEntityType?: ParentEntityType;
   open: boolean;

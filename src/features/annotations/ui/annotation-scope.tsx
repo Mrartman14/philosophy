@@ -10,7 +10,12 @@
 // Guardrail 4: только pure-фасады + движок + kit + i18n/client + композер.
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { useRegisterRailScope, useWide, type AnchoredNote } from "@/components/anchor-engine";
+import {
+  anchorScopeSelector,
+  useRegisterRailScope,
+  useWide,
+  type AnchoredNote,
+} from "@/components/anchor-engine";
 import { Button, Inline } from "@/components/ui";
 import { useT } from "@/i18n/client";
 
@@ -93,7 +98,7 @@ export function AnnotationScope({
   const [rootEl, setRootEl] = useState<HTMLElement | null>(null);
   useEffect(() => {
     const find = () =>
-      document.querySelector<HTMLElement>(`[data-anchor-scope="${parentEntityType}:${parentId}"]`);
+      document.querySelector<HTMLElement>(anchorScopeSelector(parentEntityType, parentId));
     const el = find();
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time post-mount discovery of server-rendered scope root by unique id; entry rebuilds when found
     if (el) setRootEl(el);
@@ -108,7 +113,7 @@ export function AnnotationScope({
   }, [parentEntityType, parentId]);
   const ready = rootEl !== null;
 
-  // Wide-гейт (общий useWide, та же media WIDE_MEDIA, что MarginNotesColumn): на
+  // Wide-гейт (общий useWide, та же media WIDE, что MarginNotesColumn): на
   // narrow карточки текут inline ПОД своим телом (локальность спеки), в rail
   // регистрируем ТОЛЬКО на wide. SSR → false (показываем inline-фолбэк), после mount
   // поднимаем при совпадении.

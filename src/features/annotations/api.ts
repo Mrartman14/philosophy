@@ -111,7 +111,7 @@ export const getLectureAnnotations = cache(
     token?: string,
   ): Promise<AnnotationListResult> => {
     const api = await createApiClient();
-    const { data, error } = await api.GET("/api/lectures/{id}/annotations", {
+    const { data, error, response } = await api.GET("/api/lectures/{id}/annotations", {
       params: {
         path: { id: lectureId },
         query: {
@@ -122,6 +122,9 @@ export const getLectureAnnotations = cache(
         },
       },
     });
+    // 404 (лекция невидима зрителю без гранта) → пустой список, не валим рендер
+    // дерева комментов throw'ом (паритет с getAnnotationsFor). Аудит 2026-07-01.
+    if (response.status === 404) return unwrapList({}, { offset, limit });
     if (error) throw new Error(error.error ?? (await getT("annotations"))("api.loadLectureFailed"));
     return unwrapList(data, { offset, limit });
   },

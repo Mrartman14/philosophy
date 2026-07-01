@@ -36,6 +36,16 @@ function pointInRect(x: number, y: number, r: DOMRect): boolean {
  * geometries (порядок Map = порядок notes → first-match). range-kind →
  * caret-resolve + comparePoint (caret внутри range → 0); rect-kind →
  * point-in-boundingRect (caret не применим — у rect нет Range).
+ *
+ * КОНТРАКТ ПРИОРИТЕТА (аудит #3): перебор строго в порядке notes (Map-порядок) →
+ * возвращается ПЕРВАЯ совпавшая нота, без предпочтения kind. В bbox-зазоре
+ * прямоугольного якоря (точка внутри bbox, но НЕ на тексте) rect-нота может выиграть
+ * у линейной, идущей позже, хотя каретка стоит на её тексте. Это осознанно: (1)
+ * пересечение rect-bbox и чужого range в живой раскладке — краевой случай (rect —
+ * это ячейки таблицы; линейные caret-якоря обычно вне их bbox); (2) сортировка «все
+ * range сначала, потом rect» сломала бы first-match по порядку notes (визуальный
+ * приоритет верхней ноты). При появлении реального конфликта решать точечно, не
+ * глобальным реордерингом kind.
  */
 export function noteAtPointInGeometry(
   x: number,

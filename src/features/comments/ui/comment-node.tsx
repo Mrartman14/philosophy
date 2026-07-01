@@ -40,9 +40,11 @@ interface Props {
   comment: Comment;
   lectureId: string;
   schema: CommentSchema;
+  /** ?token= (share-link) — доступ к аннотациям комментов приватной лекции. */
+  token?: string | undefined;
 }
 
-export async function CommentNode({ comment, lectureId, schema }: Props) {
+export async function CommentNode({ comment, lectureId, schema, token }: Props) {
   const [me, t, locale, tz] = await Promise.all([
     getMe(),
     getT("comments"),
@@ -65,7 +67,10 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
   // батчем (cache() → один HTTP на запрос даже при N CommentNode в дереве) и
   // группируются по parent_entity_id. lectureId — ПРОП (не comment.lecture_id).
   const canAnnotate = canCreateAnnotation(me);
-  const all = await getAllLectureAnnotations(lectureId, "comment");
+  // token — share-link доступ к аннотациям комментов приватной лекции (паритет с
+  // DocumentAnnotations, которому token проброшен на странице). Без него аноним/
+  // зритель по ?token= терял бы аннотации комментов (аудит 2026-07-01).
+  const all = await getAllLectureAnnotations(lectureId, "comment", token);
   const items = all.filter((a) => a.parent_entity_id === comment.id);
   // astSchema: null — read-карточки; диалог create/edit подтянет схему из
   // SchemaContextProvider, который CommentSection уже держит выше по дереву.
@@ -125,6 +130,11 @@ export async function CommentNode({ comment, lectureId, schema }: Props) {
           </div>
         }
       />
+      {/* AnnotationScope без showToolbar (#14/#17/#18): у аннотаций КОММЕНТАРИЯ нет
+          per-scope тумблера подсветки — они подсвечены всегда. Тумблер живёт лишь на
+          документе (DocumentAnnotations → showToolbar), где он один на весь
+          document-scope; плодить N тумблеров по одному на комментарий — шум.
+          Сознательная асимметрия, не забытый проп. */}
       {(annotationNotes.length > 0 || canAnnotate) && (
         <AnnotationScope
           parentEntityType="comment"

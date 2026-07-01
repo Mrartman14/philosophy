@@ -1,11 +1,25 @@
 import { describe, expect, it } from "vitest";
 
-import { anchorScopeAttr, formatScopeId, nearestScope, parseScopeId } from "./scope-id";
+import {
+  anchorScopeAttr,
+  anchorScopeSelector,
+  formatScopeId,
+  nearestScope,
+  parseScopeId,
+} from "./scope-id";
 import { must } from "./test-support";
 
 describe("scope-id", () => {
   it("anchorScopeAttr builds the data-* prop object", () => {
     expect(anchorScopeAttr("comment", "c1")).toEqual({ "data-anchor-scope": "comment:c1" });
+  });
+
+  it("anchorScopeSelector строит CSS-селектор тела скоупа и находит его в DOM", () => {
+    expect(anchorScopeSelector("comment", "c1")).toBe('[data-anchor-scope="comment:c1"]');
+    // Парность anchorScopeAttr ↔ anchorScopeSelector: размеченный элемент находится.
+    document.body.innerHTML = '<div data-anchor-scope="comment:c1"></div>';
+    expect(document.querySelector(anchorScopeSelector("comment", "c1"))).not.toBeNull();
+    document.body.innerHTML = "";
   });
 
   it("format → parse round-trips", () => {

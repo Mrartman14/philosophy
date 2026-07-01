@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Motion } from "@/styles/tokens/enums";
 import { isReducedMotion } from "@/utils/is-reduced-motion";
 
+import { geometryRect } from "./anchor-to-range";
 import { ConnectorLayer } from "./connector-layer";
 import { cssEscape } from "./css-escape";
 import { HighlightController } from "./highlight-controller";
@@ -55,10 +56,10 @@ export function MarginRail({
   const emphasizedId = hoveredId ?? activeId;
 
   // Стабильный scope-key (как в useAggregatedAnchorRanges — тот же чистый
-  // railScopeFingerprint). ВКЛЮЧАЕТ fingerprint id-нот, иначе при смене notes того
-  // же скоупа (новая аннотация, тот же key) `flat` не пересчитается → карточка не
-  // появится/останется сиротой (находка ревью Task 7). Стабилен под array-identity-
-  // churn от useRailScopes.
+  // railScopeFingerprint). ВКЛЮЧАЕТ fingerprint id-нот (иначе при смене notes того
+  // же скоупа новая аннотация останется сиротой — находка ревью Task 7) И флаг
+  // highlightEnabled (иначе тумблер reading-mode не пересчитал бы flat/persistentIds/
+  // overlay — находка аудита 2026-07-01). Стабилен под array-identity-churn useRailScopes.
   const scopeKey = railScopeFingerprint(scopes);
 
   const flat = useMemo(() => {
@@ -94,6 +95,13 @@ export function MarginRail({
 
   // Реципрокная навигация (паритет с MarginAnchorLayer): слушаем document.body,
   // хит-тест по агрегированным ranges. bodyRef стабилен; ready после монтирования.
+  //
+  // КОНТРАКТ ДВУХ RAIL (аудит #6): страница монтирует ДВА MarginRail (tone
+  // annotation + comment), каждый вешает свою пару mousemove/click на document.body
+  // (useHoverReveal/useTextClick) → 4 body-листенера. Это осознанно приемлемо:
+  // хит-тест каждого идёт по СВОЕЙ tone-карте geometries (аннотации vs комментарии),
+  // объединить в один слушатель нельзя без слияния карт и потери tone-разводки
+  // эмфазы. rAF-throttle в useHoverReveal держит стоимость на кадр константной.
   const bodyRef = useRef<HTMLElement | null>(null);
   const [bodyReady, setBodyReady] = useState(false);
   useEffect(() => {
@@ -112,7 +120,7 @@ export function MarginRail({
   const onActivate = useCallback(
     (id: string) => {
       setActiveId(id);
-      const rect = geometries.get(id)?.boundingRect ?? null;
+      const rect = geometryRect(geometries.get(id));
       if (rect) {
         window.scrollTo({ top: rect.top + window.scrollY - ACTIVATE_SCROLL_OFFSET_PX, behavior: scrollBehavior() });
       }

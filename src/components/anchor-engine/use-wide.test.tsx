@@ -1,7 +1,8 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { useWide, WIDE_MEDIA } from "./use-wide";
+import { WIDE } from "./breakpoints";
+import { useWide } from "./use-wide";
 
 // Управляемый matchMedia: mutable matches + реестр change-листенеров (паттерн
 // use-reduced-motion.test): тестируем и начальное значение, и live-переключение.
@@ -12,7 +13,7 @@ function stubMatchMedia(matches: boolean) {
   mqListeners = [];
   vi.stubGlobal("matchMedia", (query: string) => ({
     get matches() {
-      return query === WIDE_MEDIA ? mqMatches : false;
+      return query === WIDE ? mqMatches : false;
     },
     media: query,
     addEventListener: (_: string, cb: () => void) => {

@@ -29,6 +29,11 @@ vi.mock("@/components/anchor-engine", () => ({
   // wide-гейт: narrow (false) — как jsdom-дефолт до извлечения хука; этот тест про
   // роутинг композера, не про rail-позиционирование.
   useWide: (): boolean => false,
+  // AnnotationScope зовёт anchorScopeSelector в rootEl-discovery-эффекте (M3):
+  // держим формат-совместимый стаб, чтобы querySelector не бросал (корня всё равно
+  // нет в этом DOM-less тесте — rootEl остаётся null, что для роутинга не важно).
+  anchorScopeSelector: (type: string, id: string): string =>
+    `[data-anchor-scope="${type}:${id}"]`,
 }));
 
 // Композер-диалог мокаем: выносим его prop parentEntityType в DOM для ассерта.

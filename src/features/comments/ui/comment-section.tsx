@@ -42,6 +42,7 @@ function renderContent(
   search: CommentSearchResult | null,
   list: CommentListResult | null,
   lectureId: string,
+  token: string | undefined,
   schema: CommentSchema,
   noSnippet: string,
   searchFoundCount: (count: number) => string,
@@ -75,7 +76,7 @@ function renderContent(
     );
   }
   return list ? (
-    <CommentTree subtrees={list.subtrees} lectureId={lectureId} schema={schema} />
+    <CommentTree subtrees={list.subtrees} lectureId={lectureId} schema={schema} token={token} />
   ) : null;
 }
 
@@ -107,6 +108,7 @@ export async function CommentSection({ lectureId, query, token }: Props) {
     search,
     list,
     lectureId,
+    token,
     schema,
     t("noSnippet"),
     (count) => t("searchFoundCount", { count }),

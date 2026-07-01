@@ -17,6 +17,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import {
+  anchorScopeSelector,
   type AnchorDraft,
   type AnchoredNote,
   useRegisterRailScope,
@@ -70,6 +71,14 @@ export interface CommentAnchorNote {
   preview: ReactNode;
 }
 
+// #10: CommentAnchorScope сознательно ЗЕРКАЛИТ AnnotationScope (rootEl-discovery,
+// wide-гейт, engineNotes/ssrOnly split, orphan-renderNote, entry-memo). Дедупликация
+// в общий хук/обёртку потребовала бы либо cross-feature seam (comments↔annotations,
+// Guardrail 2), либо нового shared-модуля в движке — рискованный рефактор, не
+// оправданный размером тела. Расхождения намеренные: тон "comment" (левая rail),
+// канал coordsToEngineAnchor вместо toEngineAnchor, якорь только в document (v1),
+// без тумблера подсветки и без per-scope showToolbar. Держим два параллельных
+// коннектора как контракт, а не как долг к слиянию.
 export function CommentAnchorScope({
   lectureId,
   documentId,
@@ -87,9 +96,25 @@ export function CommentAnchorScope({
   const [composer, setComposer] = useState<{ open: boolean; anchor?: Anchor }>({ open: false });
 
   // Корень = тело документа (скоуп document:<id>) — у него же якорятся комментарии.
+  // Селектор строим через anchorScopeSelector (единый формат scope-id, а не
+  // рукописная строка) — паритет с AnnotationScope. Один retry через rAF: узел может
+  // ещё не быть в DOM при стриминге (документ/CommentSection под Suspense) —
+  // симметрия с AnnotationScope (M6).
   const [rootEl, setRootEl] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    setRootEl(document.querySelector<HTMLElement>(`[data-anchor-scope="document:${documentId}"]`));
+    const find = () =>
+      document.querySelector<HTMLElement>(anchorScopeSelector("document", documentId));
+    const el = find();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time post-mount discovery of server-rendered scope root by unique id; entry rebuilds when found
+    if (el) setRootEl(el);
+    else if (typeof requestAnimationFrame === "function") {
+      const raf = requestAnimationFrame(() => {
+        setRootEl(find());
+      });
+      return () => {
+        cancelAnimationFrame(raf);
+      };
+    }
   }, [documentId]);
   const ready = rootEl !== null;
 
@@ -121,6 +146,11 @@ export function CommentAnchorScope({
     [previewById, orphanLabel],
   );
 
+  // Сознательная асимметрия с AnnotationScope (#14/#17/#18): у comment-скоупа НЕТ
+  // тумблера подсветки — заякоренные комментарии подсвечены ВСЕГДА (entry без
+  // highlightEnabled → движок трактует как on). Тумблер AnnotationScope
+  // per-document-scope и относится к тону annotation; переносить его на comment-канал
+  // (или делать глобальным) — отдельная продуктовая фича, здесь НЕ делаем.
   const entry = useMemo(
     () =>
       rootEl && wide

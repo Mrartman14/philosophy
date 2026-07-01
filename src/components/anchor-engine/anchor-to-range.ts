@@ -98,6 +98,24 @@ export function rangeFromAnchor(a: TextAnchor, root: HTMLElement): Range | null 
  * структурно по node_id; иначе линейный через rangeFromAnchor. Прямоугольный
  * резолв ИГНОРИРУЕТ офсеты/exact (ячейки id-стабильны).
  */
+/**
+ * Range-only слой из geometries (для Highlight API / overlay / хит-тест): rect-якорь
+ * → null (в Highlight API прямоугольники не идут — подсвечиваются оверлеем bbox).
+ * Чистая деривация, общая для useAggregatedAnchorRanges и потребителей.
+ */
+export function rangesFromGeometries(
+  geometries: Map<string, AnchorGeometry | null>,
+): Map<string, Range | null> {
+  const m = new Map<string, Range | null>();
+  for (const [id, g] of geometries) m.set(id, g?.kind === "range" ? g.range : null);
+  return m;
+}
+
+/** boundingRect геометрии (range|rect) или null для сироты. Общая деривация. */
+export function geometryRect(g: AnchorGeometry | null | undefined): DOMRect | null {
+  return g?.boundingRect ?? null;
+}
+
 export function resolveAnchor(a: TextAnchor, root: HTMLElement): AnchorGeometry | null {
   if (a.startNodeId !== a.endNodeId) {
     const sL = leafEl(root, a.startNodeId), eL = leafEl(root, a.endNodeId);
