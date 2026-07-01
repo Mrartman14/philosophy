@@ -36,6 +36,8 @@ function hasAnyText(a: Anchor): boolean {
   return (
     !!a.start_block_id ||
     !!a.end_block_id ||
+    !!a.start_node_id ||
+    !!a.end_node_id ||
     (a.start_char ?? 0) !== 0 ||
     (a.end_char ?? 0) !== 0 ||
     !!a.exact ||

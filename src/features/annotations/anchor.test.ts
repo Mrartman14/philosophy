@@ -115,6 +115,14 @@ describe("isValidMediaAnchor", () => {
     { expect(
       isValidMediaAnchor({ start_sec: 5, start_block_id: "b1" }),
     ).toBe(false); });
+  it("невалиден: примешан start_node_id (node_id — text-поле, anchors.md)", () =>
+    { expect(
+      isValidMediaAnchor({ start_sec: 5, start_node_id: "n1" }),
+    ).toBe(false); });
+  it("невалиден: примешан end_node_id (node_id — text-поле, anchors.md)", () =>
+    { expect(
+      isValidMediaAnchor({ start_sec: 5, end_node_id: "n1" }),
+    ).toBe(false); });
 });
 
 describe("toEngineAnchor", () => {
