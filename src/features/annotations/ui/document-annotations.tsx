@@ -7,7 +7,7 @@ import { SchemaContextProvider } from "@/components/ast-editor/schema-context";
 import { getT } from "@/i18n";
 import { getMe } from "@/utils/me";
 
-import { getAnnotationsFor } from "../api";
+import { getAllAnnotationsFor } from "../api";
 import { canCreateAnnotation } from "../permissions";
 
 import {
@@ -34,16 +34,10 @@ export async function DocumentAnnotations({
   token?: string | undefined;
 }) {
   const [me, t] = await Promise.all([getMe(), getT("annotations")]);
-  // Контракт-потолок одной страницы: 200 (паритет с getAllLectureAnnotations,
-  // которым CommentNode собирает аннотации комментов). До этой правки было limit=20 —
-  // документ с >20 аннотациями МОЛЧА терял остаток в rail (M11/#24). 200 покрывает
-  // реалистичный документ, но НЕ полноценная проходка: документ с >200 аннотациями
-  // всё ещё усечётся тихо (total из ответа это показал бы, но UI пагинации в margin
-  // нет). Корректный фикс — фул-пагинейт-хелпер для parent=document (аналог
-  // getAllLectureAnnotations поверх getAnnotationsFor), но это правка api.ts
-  // (вне ui/*) — вынесено в бэк/архитектурный аск, см. отчёт.
-  const DOCUMENT_RAIL_LIMIT = 200;
-  const { items } = await getAnnotationsFor("document", parentId, 0, DOCUMENT_RAIL_LIMIT, token);
+  // Полная проходка (все страницы) — rail документа НЕ усекается на limit
+  // (прежний стопгап limit=200 терял остаток у документа с >200 аннотациями,
+  // M11/#24). Проходка устойчива к server-side кламп limit (см. paginateAll).
+  const items = await getAllAnnotationsFor("document", parentId, token);
   const canCreate = canCreateAnnotation(me);
   const astSchema = await loadSchemaIfNeeded(me, items, canCreate);
   // margin-режим: цитату якоря прячем на ≥xl (связь показывает выноска-линия), на

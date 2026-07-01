@@ -131,48 +131,68 @@ export const getLectureAnnotations = cache(
 );
 
 /**
- * ВСЕ аннотации лекции (по типу родителя), все страницы — поверх существующей
- * пагинированной `getLectureAnnotations` (дефолтный limit там 20, тихо режет
- * >20). Свой `cache()` дедуплицирует ИМЕННО полный обход на запрос: N серверных
- * `CommentNode` в дереве дают один проход (а не N).
- *
- * Решение N+1 (см. спеку «Бэкенд»): аннотации всех комментариев лекции тянем
- * лекционной агрегат-ручкой `GET /api/lectures/{id}/annotations?parent_entity_type=...`,
- * группировка по `parent_entity_id` — на стороне потребителя (`CommentNode`).
- * `token` (?token=) пробрасывается в read-путь для приватных лекций (share-link).
+ * Полная проходка страничной ручки. Терминируем по ПУСТОЙ странице (НЕ по
+ * `items.length < limit`) и продвигаем offset на ФАКТИЧЕСКОЕ число элементов.
+ * Бэк может клампить limit server-side (частая Go-конвенция, напр. cap 100):
+ * тогда (а) `< limit`-предикат оборвал бы обход после 1-й страницы, МОЛЧА потеряв
+ * >cap; (б) шаг offset на запрошенный limit ПЕРЕПРЫГНУЛ бы записи. Шаг по
+ * items.length + терминация по пустой странице корректны независимо от клампа.
+ * `maxPages` — защита от бесконечного цикла на битом бэке.
+ */
+async function paginateAll(
+  fetchPage: (offset: number, limit: number) => Promise<Annotation[]>,
+  limit = 200,
+  maxPages = 50,
+): Promise<Annotation[]> {
+  const all: Annotation[] = [];
+  let offset = 0;
+  for (let page = 0; page < maxPages; page++) {
+    const items = await fetchPage(offset, limit);
+    if (items.length === 0) break;
+    all.push(...items);
+    offset += items.length;
+  }
+  return all;
+}
+
+/**
+ * ВСЕ аннотации лекции (по типу родителя), все страницы — поверх пагинированной
+ * `getLectureAnnotations`. Свой `cache()` дедуплицирует полный обход: N серверных
+ * `CommentNode` в дереве дают один проход (а не N). Решение N+1 — лекционный
+ * агрегат `GET /api/lectures/{id}/annotations?parent_entity_type=...`, группировка
+ * по `parent_entity_id` на стороне потребителя. `token` (?token=) — share-link.
  */
 export const getAllLectureAnnotations = cache(
   async (
     lectureId: string,
     parentEntityType?: "document" | "comment" | "media",
     token?: string,
-  ): Promise<Annotation[]> => {
-    const all: Annotation[] = [];
-    const limit = 200;
-    // Терминируем по ПУСТОЙ странице, а НЕ по `items.length < limit`, И продвигаем
-    // offset на ФАКТИЧЕСКОЕ число полученных элементов, а не на запрошенный limit.
-    // Бэк может клампить limit server-side (частая Go-конвенция, напр. cap 100):
-    // тогда (а) `< limit`-предикат оборвал бы обход после 1-й страницы, МОЛЧА
-    // потеряв аннотации >cap; (б) шаг offset на limit (200) при отдаче 100
-    // ПЕРЕПРЫГНУЛ бы записи 100..199. Шаг по items.length + терминация по пустой
-    // странице корректны независимо от клампа. Защитный кап итераций — против
-    // бесконечного цикла на битом бэке.
-    const MAX_PAGES = 50;
-    let offset = 0;
-    for (let page = 0; page < MAX_PAGES; page++) {
-      const { items } = await getLectureAnnotations(
-        lectureId,
-        offset,
-        limit,
-        parentEntityType,
-        token,
-      );
-      if (items.length === 0) break;
-      all.push(...items);
-      offset += items.length;
-    }
-    return all;
-  },
+  ): Promise<Annotation[]> =>
+    paginateAll((offset, limit) =>
+      getLectureAnnotations(lectureId, offset, limit, parentEntityType, token).then(
+        (r) => r.items,
+      ),
+    ),
+);
+
+/**
+ * ВСЕ аннотации одной сущности (document/comment/glossary/media), все страницы —
+ * поверх пагинированной `getAnnotationsFor`. Для маргиналий документа rail больше
+ * НЕ усекается на limit (был стопгап limit=200 в DocumentAnnotations — M11/#24):
+ * документ с >200 аннотациями теперь собирается полностью. Свой `cache()`
+ * дедуплицирует полный обход на запрос. `token` (?token=) — share-link.
+ */
+export const getAllAnnotationsFor = cache(
+  async (
+    parentEntityType: ParentEntityType,
+    parentId: string,
+    token?: string,
+  ): Promise<Annotation[]> =>
+    paginateAll((offset, limit) =>
+      getAnnotationsFor(parentEntityType, parentId, offset, limit, token).then(
+        (r) => r.items,
+      ),
+    ),
 );
 
 /** Admin-список публичных аннотаций (GET /api/annotations?scope=all). */
